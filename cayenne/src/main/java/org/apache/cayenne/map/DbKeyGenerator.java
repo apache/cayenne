@@ -20,7 +20,7 @@
 
 package org.apache.cayenne.map;
 
-import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
+import org.apache.cayenne.configuration.ProjectNodeVisitor;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
@@ -77,7 +77,7 @@ public class DbKeyGenerator implements CayenneMapEntry, XMLSerializable {
      * @since 1.1
      */
     @Override
-    public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
+    public void encodeAsXML(XMLEncoder encoder, ProjectNodeVisitor delegate) {
         if (getGeneratorType() == null) {
             return;
         }

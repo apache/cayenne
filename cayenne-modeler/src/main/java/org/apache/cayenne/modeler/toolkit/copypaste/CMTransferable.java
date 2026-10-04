@@ -18,8 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.toolkit.copypaste;
 
-import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
-import org.apache.cayenne.configuration.EmptyConfigurationNodeVisitor;
+import org.apache.cayenne.configuration.ProjectNodeVisitor;
+import org.apache.cayenne.configuration.EmptyProjectNodeVisitor;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
 
@@ -52,7 +52,7 @@ public class CMTransferable implements Transferable {
         } else {
             StringWriter out = new StringWriter();
             XMLEncoder encoder = new XMLEncoder(new PrintWriter(out), "\t");
-            ConfigurationNodeVisitor visitor = new EmptyConfigurationNodeVisitor();
+            ProjectNodeVisitor visitor = new EmptyProjectNodeVisitor();
 
             encoder.println("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
 

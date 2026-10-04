@@ -20,16 +20,15 @@
 package org.apache.cayenne.dbsync.reverse.dbimport;
 
 import org.apache.cayenne.configuration.ConfigurationNameMapper;
-import org.apache.cayenne.configuration.ConfigurationTree;
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.configuration.DataMapLoader;
 import org.apache.cayenne.configuration.DefaultConfigurationNameMapper;
 import org.apache.cayenne.configuration.upgrade.ConfigurationUpgrader;
-import org.apache.cayenne.configuration.xml.DataChannelMetaData;
+import org.apache.cayenne.configuration.xml.ProjectMetaData;
 import org.apache.cayenne.configuration.xml.DefaultHandlerFactory;
 import org.apache.cayenne.configuration.xml.HandlerFactory;
-import org.apache.cayenne.configuration.xml.NoopDataChannelMetaData;
-import org.apache.cayenne.configuration.xml.XMLDataChannelDescriptorLoader;
+import org.apache.cayenne.configuration.xml.NoopProjectMetaData;
+import org.apache.cayenne.configuration.xml.XMLProjectLoader;
 import org.apache.cayenne.configuration.xml.XMLDataMapLoader;
 import org.apache.cayenne.configuration.xml.XMLReaderProvider;
 import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
@@ -65,22 +64,22 @@ public class ManyToManyCandidateEntityTest {
             binder.bind(ConfigurationUpgrader.class).to(ConfigurationUpgrader.class);
             binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);
             binder.bind(HandlerFactory.class).to(DefaultHandlerFactory.class);
-            binder.bind(DataChannelMetaData.class).to(NoopDataChannelMetaData.class);
+            binder.bind(ProjectMetaData.class).to(NoopProjectMetaData.class);
             binder.bind(XMLReader.class).toProviderInstance(new XMLReaderProvider(false)).withoutScope();
         };
 
         Injector injector = DIBootstrap.createInjector(testModule);
 
         // create and initialize loader instance to test
-        XMLDataChannelDescriptorLoader loader = new XMLDataChannelDescriptorLoader();
+        XMLProjectLoader loader = new XMLProjectLoader();
         injector.injectMembers(loader);
 
         String testConfigName = "relationship-optimisation";
         URL url = getClass().getResource("cayenne-" + testConfigName + ".xml");
 
-        ConfigurationTree<DataChannelDescriptor> tree = loader.load(new URLResource(url));
+        Project project = loader.load(new URLResource(url));
 
-        map = tree.getRootNode().getDataMap(testConfigName);
+        map = project.getDataMap(testConfigName);
     }
 
     @Test

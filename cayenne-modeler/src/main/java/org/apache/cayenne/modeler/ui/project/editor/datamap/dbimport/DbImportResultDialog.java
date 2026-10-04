@@ -45,7 +45,7 @@ public class DbImportResultDialog extends AppDialog {
     private final JScrollPane scrollPane;
 
     // TODO: globalImport is import-session state, not dialog state. It is read/written
-    //  independently of the dialog (DataDomainDbImportTab, ProjectTree, DbSyncDbImportAction).
+    //  independently of the dialog (ProjectDbImportTab, ProjectTree, DbSyncDbImportAction).
     //  Move to a session-scoped service when one exists.
     private boolean globalImport;
 

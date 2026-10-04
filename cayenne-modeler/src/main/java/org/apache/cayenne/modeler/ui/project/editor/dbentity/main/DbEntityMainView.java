@@ -21,7 +21,6 @@ package org.apache.cayenne.modeler.ui.project.editor.dbentity.main;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
-import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbKeyGenerator;
 import org.apache.cayenne.modeler.event.display.DbEntityDisplayEvent;
@@ -176,7 +175,7 @@ public class DbEntityMainView extends ProjectPanel
 
     public void processExistingSelection(EventObject e) {
         DbEntityDisplayEvent ede = new DbEntityDisplayEvent(this,
-                (DataChannelDescriptor) session.project().getRootNode(),
+                session.project(),
                 session.getSelectedDataMap(),
                 session.getSelectedDbEntity());
         session.displayDbEntity(ede);

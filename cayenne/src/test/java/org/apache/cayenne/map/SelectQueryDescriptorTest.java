@@ -23,7 +23,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Map;
 
-import org.apache.cayenne.configuration.EmptyConfigurationNodeVisitor;
+import org.apache.cayenne.configuration.EmptyProjectNodeVisitor;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.Ordering;
@@ -206,7 +206,7 @@ public class SelectQueryDescriptorTest {
 
     private static String encode(SelectQueryDescriptor descriptor) {
         StringWriter out = new StringWriter();
-        descriptor.encodeAsXML(new XMLEncoder(new PrintWriter(out)), new EmptyConfigurationNodeVisitor());
+        descriptor.encodeAsXML(new XMLEncoder(new PrintWriter(out)), new EmptyProjectNodeVisitor());
         return out.toString();
     }
 }

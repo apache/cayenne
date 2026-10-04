@@ -19,17 +19,16 @@
 
 package org.apache.cayenne.project.upgrade;
 
-import org.apache.cayenne.configuration.ConfigurationTree;
-import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.configuration.DataChannelDescriptorLoader;
+import org.apache.cayenne.configuration.Project;
+import org.apache.cayenne.configuration.ProjectLoader;
 import org.apache.cayenne.configuration.DataMapLoader;
 import org.apache.cayenne.configuration.upgrade.UpgradeType;
 import org.apache.cayenne.configuration.upgrade.ConfigurationUpgrader;
-import org.apache.cayenne.configuration.xml.DataChannelMetaData;
+import org.apache.cayenne.configuration.xml.ProjectMetaData;
 import org.apache.cayenne.configuration.xml.DefaultHandlerFactory;
 import org.apache.cayenne.configuration.xml.HandlerFactory;
-import org.apache.cayenne.configuration.xml.NoopDataChannelMetaData;
-import org.apache.cayenne.configuration.xml.XMLDataChannelDescriptorLoader;
+import org.apache.cayenne.configuration.xml.NoopProjectMetaData;
+import org.apache.cayenne.configuration.xml.XMLProjectLoader;
 import org.apache.cayenne.configuration.xml.XMLDataMapLoader;
 import org.apache.cayenne.configuration.xml.XMLReaderProvider;
 import org.apache.cayenne.di.AdhocObjectFactory;
@@ -71,9 +70,9 @@ public class DefaultProjectUpgraderTest {
             binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
             binder.bind(DataMapLoader.class).to(XMLDataMapLoader.class);
             binder.bind(ConfigurationUpgrader.class).to(ConfigurationUpgrader.class);
-            binder.bind(DataChannelDescriptorLoader.class).to(XMLDataChannelDescriptorLoader.class);
+            binder.bind(ProjectLoader.class).to(XMLProjectLoader.class);
             binder.bind(HandlerFactory.class).to(DefaultHandlerFactory.class);
-            binder.bind(DataChannelMetaData.class).to(NoopDataChannelMetaData.class);
+            binder.bind(ProjectMetaData.class).to(NoopProjectMetaData.class);
             binder.bind(XMLReader.class).toProviderInstance(new XMLReaderProvider(false)).withoutScope();
         };
         injector = DIBootstrap.createInjector(new ProjectModule(), testModule);
@@ -128,9 +127,9 @@ public class DefaultProjectUpgraderTest {
 
         // the upgraded project loads without an upgrade
         assertEquals(UpgradeType.UPGRADE_NOT_NEEDED, upgrader.checkUpgradeNeeded(resource).requiredUpgrade());
-        ConfigurationTree<DataChannelDescriptor> tree = injector.getInstance(DataChannelDescriptorLoader.class).load(resource);
-        assertEquals(1, tree.getRootNode().getDataMaps().size());
-        DataMap dataMap = tree.getRootNode().getDataMaps().iterator().next();
+        Project loadedProject = injector.getInstance(ProjectLoader.class).load(resource);
+        assertEquals(1, loadedProject.getDataMaps().size());
+        DataMap dataMap = loadedProject.getDataMaps().iterator().next();
         assertEquals(2, dataMap.getDbEntities().size());
     }
 

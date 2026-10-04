@@ -19,8 +19,8 @@
 
 package org.apache.cayenne.project.extension.info;
 
-import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
-import org.apache.cayenne.configuration.xml.DataChannelMetaData;
+import org.apache.cayenne.configuration.ProjectNodeVisitor;
+import org.apache.cayenne.configuration.xml.ProjectMetaData;
 import org.apache.cayenne.configuration.upgrade.UpgradeHandler;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.project.extension.BaseNamingDelegate;
@@ -30,7 +30,7 @@ import org.apache.cayenne.project.extension.SaverDelegate;
 
 /**
  * Extension that provides additional properties for project entities.
- * It stores data in {@link ObjectInfo} associated with objects via {@link DataChannelMetaData}.
+ * It stores data in {@link ObjectInfo} associated with objects via {@link ProjectMetaData}.
  * Currently used by Modeler and cgen tools to provide user comments.
  *
  * @since 4.1
@@ -41,7 +41,7 @@ public class InfoExtension implements ProjectExtension {
             + UpgradeHandler.CURRENT_VERSION + "/info";
 
     @Inject
-    private DataChannelMetaData metaData;
+    private ProjectMetaData metaData;
 
     @Override
     public LoaderDelegate createLoaderDelegate() {
@@ -54,7 +54,7 @@ public class InfoExtension implements ProjectExtension {
     }
 
     @Override
-    public ConfigurationNodeVisitor<String> createNamingDelegate() {
+    public ProjectNodeVisitor<String> createNamingDelegate() {
         return new BaseNamingDelegate();
     }
 

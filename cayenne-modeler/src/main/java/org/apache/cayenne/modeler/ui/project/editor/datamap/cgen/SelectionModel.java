@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.modeler.ui.project.editor.datamap.cgen;
 
-import org.apache.cayenne.configuration.ConfigurationNode;
+import org.apache.cayenne.configuration.ProjectNode;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;
@@ -63,9 +63,9 @@ class SelectionModel {
         selectedDataMaps.clear();
     }
 
-    boolean updateSelection(Predicate<ConfigurationNode> predicate, Collection<ConfigurationNode> classes) {
+    boolean updateSelection(Predicate<ProjectNode> predicate, Collection<ProjectNode> classes) {
         boolean modified = false;
-        for (ConfigurationNode classObj : classes) {
+        for (ProjectNode classObj : classes) {
             boolean select = predicate.test(classObj);
             if (classObj instanceof ObjEntity) {
                 if (select) {
@@ -106,7 +106,7 @@ class SelectionModel {
         return (getSelectedEntitiesCount() == 0 && getSelecetedEmbeddablesCount() == 0 && getSelectedDataMapsCount() == 0);
     }
 
-    List<Embeddable> getSelectedEmbeddables(Collection<ConfigurationNode> classes) {
+    List<Embeddable> getSelectedEmbeddables(Collection<ProjectNode> classes) {
         List<Embeddable> selected = new ArrayList<>(selectedEmbeddables.size());
         for (Object classObj : classes) {
             if (classObj instanceof Embeddable) {
@@ -120,7 +120,7 @@ class SelectionModel {
         return selected;
     }
 
-    List<ObjEntity> getSelectedEntities(Collection<ConfigurationNode> classes) {
+    List<ObjEntity> getSelectedEntities(Collection<ProjectNode> classes) {
         List<ObjEntity> selected = new ArrayList<>(selectedEntities.size());
         for (Object classObj : classes) {
             if (classObj instanceof ObjEntity) {

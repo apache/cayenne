@@ -52,9 +52,9 @@ public class EntityErrorMsg extends ValidationDisplayHandler {
 
     public void displayField(ProjectSession session, JFrame frame) {
         if (entity instanceof ObjEntity) {
-            session.displayObjEntity(new ObjEntityDisplayEvent(frame, domain, map, (ObjEntity) entity));
+            session.displayObjEntity(new ObjEntityDisplayEvent(frame, project, map, (ObjEntity) entity));
         } else if (entity instanceof DbEntity) {
-            session.displayDbEntity(new DbEntityDisplayEvent(frame, domain, map, (DbEntity) entity));
+            session.displayDbEntity(new DbEntityDisplayEvent(frame, project, map, (DbEntity) entity));
         }
     }
 }

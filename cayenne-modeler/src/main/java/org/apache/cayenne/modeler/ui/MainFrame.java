@@ -41,9 +41,8 @@ import org.apache.cayenne.modeler.ui.project.ProjectView;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportResultDialog;
 import org.apache.cayenne.modeler.ui.welcome.WelcomeScreen;
 import org.apache.cayenne.modeler.toolkit.filechooser.FileFilters;
-import org.apache.cayenne.project.Project;
+import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.project.validation.ProjectValidator;
-import org.apache.cayenne.validation.ValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
 
 import javax.swing.BorderFactory;
@@ -68,8 +67,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -288,31 +285,18 @@ public class MainFrame extends AppFrame {
         session.restoreSelectionFromPrefs();
 
         // do status update AFTER the project is actually opened...
-        if (project.getConfigurationResource() == null) {
+        if (project.getConfigurationSource() == null) {
             updateStatus("New project created...");
         } else {
             updateStatus("Project opened...");
             fireRecentFileListChanged();
         }
 
-        // for validation purposes combine load failures with post-load validation (not
-        // sure if that'll cause duplicate messages?).
-        List<ValidationFailure> allFailures = new ArrayList<>();
-        Collection<ValidationFailure> loadFailures = project.getConfigurationTree().getLoadFailures();
-
-        if (!loadFailures.isEmpty()) {
-            // mark project as unsaved
-            project.setModified(true);
-            session.setDirty(true);
-            allFailures.addAll(loadFailures);
-        }
-
         ProjectValidator projectValidator = app.getProjectValidator();
-        ValidationResult validationResult = projectValidator.validate(project.getRootNode());
-        allFailures.addAll(validationResult.getFailures());
+        ValidationResult validationResult = projectValidator.validate(project);
 
-        if (!allFailures.isEmpty()) {
-            app.getActionManager().getAction(ValidateAction.class).showFailures(allFailures);
+        if (validationResult.hasFailures()) {
+            app.getActionManager().getAction(ValidateAction.class).showFailures(validationResult.getFailures());
         }
 
         if (mcpHandshakeNonce != null) {
@@ -380,11 +364,11 @@ public class MainFrame extends AppFrame {
     }
 
     private String getProjectLocationString() {
-        if (session.project().getConfigurationResource() == null) {
+        if (session.project().getConfigurationSource() == null) {
             return "[New Project]";
         }
         try {
-            File projectFile = new File(session.project().getConfigurationResource().getURL().toURI());
+            File projectFile = new File(session.project().getConfigurationSource().getURL().toURI());
             return projectFile.toString();
         } catch (URISyntaxException e) {
             throw new CayenneRuntimeException("Invalid project source URL", e);

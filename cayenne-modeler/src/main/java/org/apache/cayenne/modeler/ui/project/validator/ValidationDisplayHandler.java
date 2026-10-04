@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.modeler.ui.project.validator;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
@@ -44,7 +44,7 @@ public abstract class ValidationDisplayHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(ValidationDisplayHandler.class);
 
     protected ValidationFailure validationFailure;
-    protected DataChannelDescriptor domain;
+    protected Project project;
 
     public static ValidationDisplayHandler getErrorMsg(ValidationFailure result, ProjectSession session) {
         Object validatedObj = result.getSource();
@@ -68,8 +68,8 @@ public abstract class ValidationDisplayHandler {
         else if (validatedObj instanceof DataMap) {
             msg = new DataMapErrorMsg(result);
         }
-        else if (validatedObj instanceof DataChannelDescriptor) {
-            msg = new DomainErrorMsg(result);
+        else if (validatedObj instanceof Project) {
+            msg = new ProjectErrorMsg(result);
         }
         else if (validatedObj instanceof Procedure) {
             msg = new ProcedureErrorMsg(result);
@@ -86,7 +86,7 @@ public abstract class ValidationDisplayHandler {
             msg = new NullHanlder(result);
         }
 
-        msg.setDomain((DataChannelDescriptor) session.project().getRootNode());
+        msg.setProject(session.project());
         return msg;
     }
 
@@ -104,12 +104,12 @@ public abstract class ValidationDisplayHandler {
         return validationFailure.getDescription();
     }
 
-    public DataChannelDescriptor getDomain() {
-        return domain;
+    public Project getProject() {
+        return project;
     }
 
-    public void setDomain(DataChannelDescriptor domain) {
-        this.domain = domain;
+    public void setProject(Project project) {
+        this.project = project;
     }
 
     public String toString() {

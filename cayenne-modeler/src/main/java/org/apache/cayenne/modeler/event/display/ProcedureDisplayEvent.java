@@ -19,35 +19,35 @@
 
 package org.apache.cayenne.modeler.event.display;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Procedure;
 
 public class ProcedureDisplayEvent extends DisplayEvent {
 
-    private final DataChannelDescriptor domain;
+    private final Project project;
     private final DataMap dataMap;
     private final Procedure procedure;
     private final boolean tabReset;
 
-    public ProcedureDisplayEvent(Object src, DataChannelDescriptor domain, DataMap dataMap, Procedure procedure) {
-        this(src, domain, dataMap, procedure, false);
+    public ProcedureDisplayEvent(Object src, Project project, DataMap dataMap, Procedure procedure) {
+        this(src, project, dataMap, procedure, false);
     }
 
     public ProcedureDisplayEvent(Object src,
-                                 DataChannelDescriptor domain,
+                                 Project project,
                                  DataMap dataMap,
                                  Procedure procedure,
                                  boolean tabReset) {
         super(src);
-        this.domain = domain;
+        this.project = project;
         this.dataMap = dataMap;
         this.procedure = procedure;
         this.tabReset = tabReset;
     }
 
-    public DataChannelDescriptor getDomain() {
-        return domain;
+    public Project getProject() {
+        return project;
     }
 
     public DataMap getDataMap() {

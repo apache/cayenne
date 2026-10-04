@@ -20,10 +20,10 @@
 package org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.runner;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.configuration.DataChannelDescriptorLoader;
+import org.apache.cayenne.configuration.ProjectLoader;
 import org.apache.cayenne.configuration.DataMapLoader;
 import org.apache.cayenne.dbsync.reverse.configuration.DbAdapterFactory;
-import org.apache.cayenne.configuration.xml.DataChannelMetaData;
+import org.apache.cayenne.configuration.xml.ProjectMetaData;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
 import org.apache.cayenne.dbsync.reverse.dbimport.DbImportConfiguration;
@@ -56,8 +56,8 @@ public class ModelerDbImportAction extends DefaultDbImportAction {
             @Inject DbAdapterFactory adapterFactory,
             @Inject DataMapLoader mapLoader,
             @Inject MergerTokenFactoryProvider mergerTokenFactoryProvider,
-            @Inject DataChannelMetaData metaData,
-            @Inject DataChannelDescriptorLoader dataChannelDescriptorLoader) {
+            @Inject ProjectMetaData metaData,
+            @Inject ProjectLoader projectLoader) {
 
         super(
                 logger,
@@ -65,7 +65,7 @@ public class ModelerDbImportAction extends DefaultDbImportAction {
                 adapterFactory,
                 mapLoader,
                 mergerTokenFactoryProvider,
-                dataChannelDescriptorLoader,
+                projectLoader,
                 metaData);
 
         this.targetMap = targetMap;

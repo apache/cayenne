@@ -25,7 +25,7 @@ import java.util.Deque;
 import java.util.LinkedList;
 import java.util.Map;
 
-import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
+import org.apache.cayenne.configuration.ProjectNodeVisitor;
 
 /**
  * <p>
@@ -240,7 +240,7 @@ public class XMLEncoder {
      * @param delegate visitor
      * @return this
      */
-    public XMLEncoder nested(XMLSerializable object, ConfigurationNodeVisitor delegate) {
+    public XMLEncoder nested(XMLSerializable object, ProjectNodeVisitor delegate) {
         if(object == null) {
             return this;
         }
@@ -254,7 +254,7 @@ public class XMLEncoder {
      * @param delegate visitor
      * @return this
      */
-    public XMLEncoder nested(Collection<? extends XMLSerializable> collection, ConfigurationNodeVisitor delegate) {
+    public XMLEncoder nested(Collection<? extends XMLSerializable> collection, ProjectNodeVisitor delegate) {
         if(collection == null) {
             return this;
         }
@@ -270,7 +270,7 @@ public class XMLEncoder {
      * @param delegate visitor
      * @return this
      */
-    public XMLEncoder nested(Map<?, ? extends XMLSerializable> map, ConfigurationNodeVisitor delegate) {
+    public XMLEncoder nested(Map<?, ? extends XMLSerializable> map, ProjectNodeVisitor delegate) {
         if(map == null) {
             return this;
         }

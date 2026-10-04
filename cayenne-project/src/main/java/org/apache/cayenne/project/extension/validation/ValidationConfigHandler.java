@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.project.extension.validation;
 
-import org.apache.cayenne.configuration.xml.DataChannelMetaData;
+import org.apache.cayenne.configuration.xml.ProjectMetaData;
 import org.apache.cayenne.configuration.xml.NamespaceAwareNestedTagHandler;
 import org.apache.cayenne.project.validation.Inspection;
 import org.apache.cayenne.project.validation.ValidationConfig;
@@ -33,10 +33,10 @@ public class ValidationConfigHandler extends NamespaceAwareNestedTagHandler {
 
     static final String EXCLUDE_TAG = "exclude";
 
-    private final DataChannelMetaData metaData;
+    private final ProjectMetaData metaData;
     private final EnumSet<Inspection> disabledInspections;
 
-    ValidationConfigHandler(NamespaceAwareNestedTagHandler parentHandler, DataChannelMetaData metaData) {
+    ValidationConfigHandler(NamespaceAwareNestedTagHandler parentHandler, ProjectMetaData metaData) {
         super(parentHandler);
         this.metaData = metaData;
         targetNamespace = ValidationExtension.NAMESPACE;
@@ -70,7 +70,7 @@ public class ValidationConfigHandler extends NamespaceAwareNestedTagHandler {
 
     private void createConfig() {
         Set<Inspection> enabledInspections = EnumSet.complementOf(disabledInspections);
-        loaderContext.addDataChannelListener(dataChannel -> {
+        loaderContext.addProjectListener(dataChannel -> {
             metaData.add(dataChannel, new ValidationConfig(enabledInspections));
         });
     }

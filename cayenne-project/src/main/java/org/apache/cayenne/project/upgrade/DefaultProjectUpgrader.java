@@ -19,9 +19,8 @@
 
 package org.apache.cayenne.project.upgrade;
 
-import org.apache.cayenne.configuration.ConfigurationTree;
-import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.configuration.DataChannelDescriptorLoader;
+import org.apache.cayenne.configuration.Project;
+import org.apache.cayenne.configuration.ProjectLoader;
 import org.apache.cayenne.configuration.upgrade.UpgradeContext;
 import org.apache.cayenne.configuration.upgrade.ConfigurationUpgrader;
 import org.apache.cayenne.configuration.upgrade.UpgradeHandler;
@@ -29,7 +28,6 @@ import org.apache.cayenne.configuration.upgrade.UpgradeType;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.ProjectSaver;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.util.Util;
@@ -69,7 +67,7 @@ public class DefaultProjectUpgrader implements ProjectUpgrader {
     private ProjectSaver projectSaver;
 
     @Inject
-    private DataChannelDescriptorLoader loader;
+    private ProjectLoader loader;
 
     @Inject
     private ConfigurationUpgrader upgrader;
@@ -102,9 +100,9 @@ public class DefaultProjectUpgrader implements ProjectUpgrader {
 
         // load the model back from the upgraded XML, upgrade it and save once again via the project saver,
         // which normalizes the XML to minimize the final diff
-        ConfigurationTree<DataChannelDescriptor> configurationTree = loadProject(resource);
-        upgrader.upgradeModel(version, configurationTree.getRootNode());
-        projectSaver.save(new Project(configurationTree));
+        Project project = loadProject(resource);
+        upgrader.upgradeModel(version, project);
+        projectSaver.save(project);
 
         return new PostUpgradeState(resource, collectPostUpgradeMessages(contexts));
     }
@@ -117,17 +115,17 @@ public class DefaultProjectUpgrader implements ProjectUpgrader {
         return new ArrayList<>(messages);
     }
 
-    protected ConfigurationTree<DataChannelDescriptor> loadProject(Resource resource) {
-        ConfigurationTree<DataChannelDescriptor> configurationTree = loader.load(resource);
+    protected Project loadProject(Resource resource) {
+        Project project = loader.load(resource);
 
         // link all datamaps, or else we will lose cross-datamaps relationships
         EntityResolver resolver = new EntityResolver();
-        for (DataMap dataMap : configurationTree.getRootNode().getDataMaps()) {
+        for (DataMap dataMap : project.getDataMaps()) {
             resolver.addDataMap(dataMap);
             dataMap.setNamespace(resolver);
         }
 
-        return configurationTree;
+        return project;
     }
 
     /**

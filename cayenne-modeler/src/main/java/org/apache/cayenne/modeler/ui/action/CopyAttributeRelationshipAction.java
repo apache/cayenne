@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.ui.action;
 
-import org.apache.cayenne.configuration.ConfigurationNode;
+import org.apache.cayenne.configuration.ProjectNode;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.project.editor.dbentity.properties.DbAttributePanel;
@@ -49,7 +49,7 @@ public class CopyAttributeRelationshipAction extends CopyAction implements Multi
         }
     }
 
-    public boolean enableForPath(ConfigurationNode object) {
+    public boolean enableForPath(ProjectNode object) {
         if (currentSelectedPanel instanceof ObjAttributePanel || currentSelectedPanel instanceof DbAttributePanel) {
             return copyAttributeAction.enableForPath(object);
         } else {

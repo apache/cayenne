@@ -23,7 +23,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
@@ -383,7 +383,7 @@ public class DbRelationshipDialog extends ProjectDialog {
 
             DbRelationshipDisplayEvent rde = new DbRelationshipDisplayEvent(
                     this,
-                    (DataChannelDescriptor) session.project().getRootNode(),
+                    session.project(),
                     session.getSelectedDataMap(),
                     dbEntity,
                     relationship);
@@ -499,9 +499,9 @@ public class DbRelationshipDialog extends ProjectDialog {
     }
 
     private boolean showWarningDialog(DbRelationship relationship) {
-        DataChannelDescriptor domain = (DataChannelDescriptor) session.project().getRootNode();
-        Collection<ObjRelationship> objRelationships = DbRelationshipOps.objRelationshipsUsingDbRelationship(domain, relationship);
-        Collection<ObjAttribute> objAttributes = DbRelationshipOps.objAttributesUsingDbRelationship(domain, relationship);
+        Project project = session.project();
+        Collection<ObjRelationship> objRelationships = DbRelationshipOps.objRelationshipsUsingDbRelationship(project, relationship);
+        Collection<ObjAttribute> objAttributes = DbRelationshipOps.objAttributesUsingDbRelationship(project, relationship);
 
         if (objAttributes.isEmpty() && objRelationships.isEmpty()) {
             int result = JOptionPane.showConfirmDialog(

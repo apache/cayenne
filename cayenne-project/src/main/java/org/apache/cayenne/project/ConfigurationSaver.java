@@ -20,8 +20,8 @@ package org.apache.cayenne.project;
 
 import java.io.PrintWriter;
 
-import org.apache.cayenne.configuration.BaseConfigurationNodeVisitor;
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.BaseProjectNodeVisitor;
+import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.project.extension.SaverDelegate;
 import org.apache.cayenne.util.XMLEncoder;
@@ -30,7 +30,7 @@ import org.apache.cayenne.util.XMLSerializable;
 /**
  * @since 3.1
  */
-class ConfigurationSaver extends BaseConfigurationNodeVisitor<Void> {
+class ConfigurationSaver extends BaseProjectNodeVisitor<Void> {
 
     private PrintWriter printWriter;
     private SaverDelegate delegate;
@@ -41,7 +41,7 @@ class ConfigurationSaver extends BaseConfigurationNodeVisitor<Void> {
     }
 
     @Override
-    public Void visitDataChannelDescriptor(DataChannelDescriptor node) {
+    public Void visitProject(Project node) {
         encodeNode(node);
         return null;
     }

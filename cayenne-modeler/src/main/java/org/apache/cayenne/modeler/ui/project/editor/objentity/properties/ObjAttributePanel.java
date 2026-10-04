@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.ui.project.editor.objentity.properties;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjAttribute;
@@ -155,7 +154,7 @@ public class ObjAttributePanel extends ProjectPanel implements ObjEntityDisplayL
         List<String> embeddableNames = new ArrayList<>();
         List<String> typeNames = new ArrayList<>();
 
-        for (DataMap dataMap : ((DataChannelDescriptor) session.project().getRootNode()).getDataMaps()) {
+        for (DataMap dataMap : session.project().getDataMaps()) {
             for (Embeddable emb : dataMap.getEmbeddables()) {
                 embeddableNames.add(emb.getClassName());
             }
@@ -482,7 +481,7 @@ public class ObjAttributePanel extends ProjectPanel implements ObjEntityDisplayL
 
         session.displayObjAttribute(new ObjAttributeDisplayEvent(
                 this,
-                session.getSelectedDataDomain(),
+                session.getSelectedProject(),
                 session.getSelectedDataMap(),
                 session.getSelectedObjEntity(),
                 attrs));

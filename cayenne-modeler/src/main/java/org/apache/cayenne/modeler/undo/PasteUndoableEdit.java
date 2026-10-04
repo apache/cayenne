@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.undo;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -45,15 +45,15 @@ import javax.swing.undo.CannotUndoException;
 
 public class PasteUndoableEdit extends CayenneUndoableEdit {
 
-    private final DataChannelDescriptor domain;
+    private final Project project;
     private final DataMap map;
     private final Object where;
     private final Object content;
 
     public PasteUndoableEdit(
-            ProjectSession session, DataChannelDescriptor domain, DataMap map, Object where, Object content) {
+            ProjectSession session, Project project, DataMap map, Object where, Object content) {
         super(session);
-        this.domain = domain;
+        this.project = project;
         this.map = map;
         this.where = where;
         this.content = content;
@@ -73,7 +73,7 @@ public class PasteUndoableEdit extends CayenneUndoableEdit {
     public void redo() throws CannotRedoException {
         PasteAction action = globalActions.getAction(PasteAction.class);
 
-        action.paste(where, content, domain);
+        action.paste(where, content, project);
     }
 
     @Override
@@ -93,7 +93,7 @@ public class PasteUndoableEdit extends CayenneUndoableEdit {
                 .getAction(RemoveProcedureParameterAction.class);
 
         if (content instanceof DataMap dataMap) {
-            if (where instanceof DataChannelDescriptor) {
+            if (where instanceof Project) {
                 rAction.removeDataMap(dataMap);
             }
         } else if (where instanceof DataMap) {

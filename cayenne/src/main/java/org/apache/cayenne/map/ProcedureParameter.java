@@ -19,8 +19,8 @@
 
 package org.apache.cayenne.map;
 
-import org.apache.cayenne.configuration.ConfigurationNode;
-import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
+import org.apache.cayenne.configuration.ProjectNode;
+import org.apache.cayenne.configuration.ProjectNodeVisitor;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.XMLEncoder;
@@ -29,7 +29,7 @@ import org.apache.cayenne.util.XMLSerializable;
 /**
  * A descriptor for the Procedure parameter.
  */
-public class ProcedureParameter implements ConfigurationNode, CayenneMapEntry,
+public class ProcedureParameter implements ProjectNode, CayenneMapEntry,
         XMLSerializable {
 
     public static final int IN_OUT_PARAMETER = 3;
@@ -64,7 +64,7 @@ public class ProcedureParameter implements ConfigurationNode, CayenneMapEntry,
         setDirection(direction);
     }
     
-    public <T> T acceptVisitor(ConfigurationNodeVisitor<T> visitor) {
+    public <T> T acceptVisitor(ProjectNodeVisitor<T> visitor) {
         return visitor.visitProcedureParameter(this);
     }
 
@@ -94,7 +94,7 @@ public class ProcedureParameter implements ConfigurationNode, CayenneMapEntry,
      * @since 1.1
      */
     @Override
-    public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
+    public void encodeAsXML(XMLEncoder encoder, ProjectNodeVisitor delegate) {
         encoder.start("procedureParameter")
                 .attribute("name", getName())
                 .attribute("type", TypesMapping.getSqlNameByType(getType()))

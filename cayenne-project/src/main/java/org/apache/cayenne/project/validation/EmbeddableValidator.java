@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.project.validation;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.util.Util;
@@ -26,7 +26,7 @@ import org.apache.cayenne.validation.ValidationResult;
 
 import java.util.function.Supplier;
 
-class EmbeddableValidator extends ConfigurationNodeValidator<Embeddable> {
+class EmbeddableValidator extends ProjectNodeValidator<Embeddable> {
 
     /**
      * @param configSupplier the config defining the behavior of this validator.
@@ -71,11 +71,11 @@ class EmbeddableValidator extends ConfigurationNodeValidator<Embeddable> {
         }
 
         // check for duplicates in other DataMaps
-        DataChannelDescriptor domain = map.getDataChannelDescriptor();
-        if (domain == null) {
+        Project project = map.getProject();
+        if (project == null) {
             return;
         }
-        for (DataMap nextMap : domain.getDataMaps()) {
+        for (DataMap nextMap : project.getDataMaps()) {
             if (nextMap == map) {
                 continue;
             }

@@ -19,8 +19,7 @@
 
 package org.apache.cayenne.modeler.ui.action;
 
-import org.apache.cayenne.configuration.ConfigurationNode;
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.ProjectNode;
 import org.apache.cayenne.modeler.event.model.ProcedureEvent;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.map.DataMap;
@@ -45,7 +44,7 @@ public class CreateProcedureAction extends AppAction {
         session.fireProcedureEvent(ProcedureEvent.ofAdd(src, procedure));
         ProcedureDisplayEvent displayEvent = new ProcedureDisplayEvent(
                 src,
-                (DataChannelDescriptor) session.project().getRootNode(),
+                session.project(),
                 session.getSelectedDataMap(),
                 procedure,
                 true);
@@ -78,7 +77,7 @@ public class CreateProcedureAction extends AppAction {
      * Returns <code>true</code> if path contains a DataMap object.
      */
     @Override
-    public boolean enableForPath(ConfigurationNode object) {
+    public boolean enableForPath(ProjectNode object) {
         if (object == null) {
             return false;
         }

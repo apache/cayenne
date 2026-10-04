@@ -18,8 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.ui.action;
 
-import org.apache.cayenne.configuration.ConfigurationNode;
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.ProjectNode;
+import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.dbsync.naming.CallbackNode;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.map.DataMap;
@@ -99,13 +99,12 @@ public class PasteAction extends AppAction implements FlavorListener {
             Object currentObject = getProjectSession().getSelectedObject();
 
             if (content instanceof DataMap) {
-                currentObject = getProjectSession().project().getRootNode();
+                currentObject = getProjectSession().project();
             }
 
             if (content != null && currentObject != null) {
-                DataChannelDescriptor domain = (DataChannelDescriptor) getProjectSession()
-                        .project()
-                        .getRootNode();
+                Project project = getProjectSession()
+                        .project();
                 DataMap map = getProjectSession().getSelectedDataMap();
 
                 UndoableEdit undoableEdit;
@@ -116,14 +115,14 @@ public class PasteAction extends AppAction implements FlavorListener {
                         paste(currentObject, o);
                         undoableEdit.addEdit(new PasteUndoableEdit(
                                 getProjectSession(),
-                                domain,
+                                project,
                                 map,
                                 currentObject,
                                 o));
                     }
                 } else {
                     paste(currentObject, content);
-                    undoableEdit = new PasteUndoableEdit(getProjectSession(), domain, map, currentObject, content);
+                    undoableEdit = new PasteUndoableEdit(getProjectSession(), project, map, currentObject, content);
                 }
 
                 app.getUndoManager().addEdit(undoableEdit);
@@ -136,7 +135,7 @@ public class PasteAction extends AppAction implements FlavorListener {
     }
 
     private void paste(Object where, Object content) {
-        paste(where, content, (DataChannelDescriptor) getProjectSession().project().getRootNode());
+        paste(where, content, getProjectSession().project());
     }
 
     /**
@@ -145,7 +144,7 @@ public class PasteAction extends AppAction implements FlavorListener {
     public void paste(
             Object where,
             Object content,
-            DataChannelDescriptor dataChannelDescriptor) {
+            Project project) {
 
         ProjectSession session = getProjectSession();
 
@@ -154,17 +153,17 @@ public class PasteAction extends AppAction implements FlavorListener {
             where = session.getSelectedDataMap();
         }
 
-        if (where instanceof DataChannelDescriptor && content instanceof DataMap dataMap) {
+        if (where instanceof Project && content instanceof DataMap dataMap) {
             // paste DataMap to DataDomain
 
             dataMap.setName(NameBuilder
-                    .of(dataMap, dataChannelDescriptor)
+                    .of(dataMap, project)
                     .preferredName(dataMap.getName())
                     .dupesPattern(COPY_PATTERN)
                     .build());
 
             // Update all names in the new DataMap, so that they would not conflict with
-            // names from other datamaps of this domain.
+            // names from other datamaps of this project.
             // Add some intelligence - if we rename an entity, we should rename all links
             // to it as well
             Map<String, String> renamedDbEntities = new HashMap<>();
@@ -433,7 +432,7 @@ public class PasteAction extends AppAction implements FlavorListener {
      * Returns <code>true</code> if last object in the path contains a removable object.
      */
     @Override
-    public boolean enableForPath(ConfigurationNode object) {
+    public boolean enableForPath(ProjectNode object) {
         if (object == null) {
             return false;
         }
@@ -467,7 +466,7 @@ public class PasteAction extends AppAction implements FlavorListener {
             }
 
             //  Checking all available pairs source-pasting object
-            return (currentObject instanceof DataChannelDescriptor && content instanceof DataMap)
+            return (currentObject instanceof Project && content instanceof DataMap)
                     ||
 
                     (currentObject instanceof DataMap && isTreeLeaf(content))

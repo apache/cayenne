@@ -19,15 +19,15 @@
 
 package org.apache.cayenne.map;
 
-import org.apache.cayenne.configuration.ConfigurationNode;
-import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
+import org.apache.cayenne.configuration.ProjectNode;
+import org.apache.cayenne.configuration.ProjectNodeVisitor;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.util.XMLEncoder;
 
 /**
  * A DbAttribute defines a descriptor for a single database table column.
  */
-public class DbAttribute extends Attribute<DbEntity, DbAttribute, DbRelationship> implements ConfigurationNode {
+public class DbAttribute extends Attribute<DbEntity, DbAttribute, DbRelationship> implements ProjectNode {
 
     /**
      * Defines JDBC type of the column.
@@ -85,7 +85,7 @@ public class DbAttribute extends Attribute<DbEntity, DbAttribute, DbRelationship
         return (DbEntity) super.getEntity();
     }
 
-    public <T> T acceptVisitor(ConfigurationNodeVisitor<T> visitor) {
+    public <T> T acceptVisitor(ProjectNodeVisitor<T> visitor) {
         return visitor.visitDbAttribute(this);
     }
 
@@ -95,7 +95,7 @@ public class DbAttribute extends Attribute<DbEntity, DbAttribute, DbRelationship
      * @since 1.1
      */
     @Override
-    public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
+    public void encodeAsXML(XMLEncoder encoder, ProjectNodeVisitor delegate) {
 
         encoder.start("dbAttribute").attribute("name", getName());
 

@@ -55,9 +55,9 @@ In the console you'll see output similar to this, indicating that Cayenne stack 
 
 ----
 [main] INFO org.apache.cayenne.datasource.DriverDataSource - +++ Connecting: SUCCESS.
-[main] INFO org.apache.cayenne.configuration.xml.XMLDataChannelDescriptorLoader - Loading
+[main] INFO org.apache.cayenne.configuration.xml.XMLProjectLoader - Loading
     XML configuration resource from file:/.../cayenne-project.xml
-[main] INFO org.apache.cayenne.configuration.xml.XMLDataChannelDescriptorLoader - Loading
+[main] INFO org.apache.cayenne.configuration.xml.XMLProjectLoader - Loading
     XML DataMap resource from file:/.../datamap.map.xml
 [main] INFO org.apache.cayenne.configuration.runtime.DataDomainProvider - setting DataNode
     'cayenne-0' as default, used by all unlinked DataMaps

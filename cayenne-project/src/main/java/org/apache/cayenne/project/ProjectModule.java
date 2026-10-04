@@ -54,10 +54,9 @@ public class ProjectModule implements Module {
     }
 
     public void configure(Binder binder) {
-        binder.bind(ProjectLoader.class).to(DataChannelProjectLoader.class);
         binder.bind(ProjectSaver.class).to(FileProjectSaver.class);
         binder.bind(ProjectValidator.class).to(DefaultProjectValidator.class);
-        binder.bind(ConfigurationNodeParentGetter.class).to(DefaultConfigurationNodeParentGetter.class);
+        binder.bind(ProjectNodeParentGetter.class).to(DefaultProjectNodeParentGetter.class);
         binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);
 
         binder.bind(ProjectUpgrader.class).to(DefaultProjectUpgrader.class);

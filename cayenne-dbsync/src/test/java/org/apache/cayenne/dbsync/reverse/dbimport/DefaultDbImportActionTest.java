@@ -18,10 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.dbsync.reverse.dbimport;
 
-import org.apache.cayenne.configuration.DataChannelDescriptorLoader;
+import org.apache.cayenne.configuration.ProjectLoader;
 import org.apache.cayenne.configuration.DataMapLoader;
 import org.apache.cayenne.dbsync.reverse.configuration.DbAdapterFactory;
-import org.apache.cayenne.configuration.xml.DataChannelMetaData;
+import org.apache.cayenne.configuration.xml.ProjectMetaData;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.DbSyncModule;
 import org.apache.cayenne.dbsync.filter.NamePatternMatcher;
@@ -45,7 +45,7 @@ import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.project.FileProjectSaver;
-import org.apache.cayenne.project.Project;
+import org.apache.cayenne.configuration.ProjectNode;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.URLResource;
 import org.apache.cayenne.util.Util;
@@ -123,11 +123,11 @@ public class DefaultDbImportActionTest {
         final boolean[] haveWeTriedToSave = {false};
         DefaultDbImportAction action = buildDbImportAction(new FileProjectSaver(Collections.emptyList()) {
             @Override
-            public void save(Project project) {
+            public void save(ProjectNode rootNode) {
                 haveWeTriedToSave[0] = true;
 
                 // Validation phase
-                assertTrue(project.getRootNode() instanceof DataMap);
+                assertTrue(rootNode instanceof DataMap);
             }
         }, null, dbLoader);
 
@@ -170,11 +170,11 @@ public class DefaultDbImportActionTest {
         DefaultDbImportAction action = buildDbImportAction(
             new FileProjectSaver(Collections.emptyList()) {
                 @Override
-                public void save(Project project) {
+                public void save(ProjectNode node) {
                     haveWeTriedToSave[0] = true;
 
                     // Validation phase
-                    DataMap rootNode = (DataMap) project.getRootNode();
+                    DataMap rootNode = (DataMap) node;
                     assertEquals(1, rootNode.getObjEntities().size());
                     assertEquals(1, rootNode.getDbEntityMap().size());
 
@@ -226,7 +226,7 @@ public class DefaultDbImportActionTest {
         };
 
         FileProjectSaver projectSaver = mock(FileProjectSaver.class);
-        doNothing().when(projectSaver).save(any(Project.class));
+        doNothing().when(projectSaver).save(any(ProjectNode.class));
 
         DataMapLoader mapLoader = mock(DataMapLoader.class);
         when(mapLoader.load(any(Resource.class))).thenReturn(new DataMapBuilder().with(
@@ -239,7 +239,7 @@ public class DefaultDbImportActionTest {
         action.execute(config);
 
         // no changes - we still
-        verify(projectSaver, never()).save(any(Project.class));
+        verify(projectSaver, never()).save(any(ProjectNode.class));
         verify(mapLoader, times(1)).load(any(Resource.class));
     }
 
@@ -252,7 +252,7 @@ public class DefaultDbImportActionTest {
         when(params.createDataSource()).thenReturn(mock(DataSource.class));
 
         FileProjectSaver projectSaver = mock(FileProjectSaver.class);
-        doNothing().when(projectSaver).save(any(Project.class));
+        doNothing().when(projectSaver).save(any(ProjectNode.class));
 
         DataMapLoader mapLoader = mock(DataMapLoader.class);
         when(mapLoader.load(any(Resource.class))).thenReturn(null);
@@ -261,7 +261,7 @@ public class DefaultDbImportActionTest {
 
         assertThrows(SQLException.class, () -> action.execute(params));
 
-        verify(projectSaver, never()).save(any(Project.class));
+        verify(projectSaver, never()).save(any(ProjectNode.class));
         verify(mapLoader, never()).load(any(Resource.class));
     }
 
@@ -277,13 +277,13 @@ public class DefaultDbImportActionTest {
         DbAdapterFactory adapterFactory = mock(DbAdapterFactory.class);
         when(adapterFactory.createAdapter(any(), any())).thenReturn(dbAdapter);
 
-        DataChannelMetaData metaData = mock(DataChannelMetaData.class);
+        ProjectMetaData metaData = mock(ProjectMetaData.class);
         MergerTokenFactoryProvider mergerTokenFactoryProvider = mock(MergerTokenFactoryProvider.class);
         when(mergerTokenFactoryProvider.get(any())).thenReturn(new DefaultMergerTokenFactory());
 
-        DataChannelDescriptorLoader dataChannelDescriptorLoader = mock(DataChannelDescriptorLoader.class);
+        ProjectLoader projectLoader = mock(ProjectLoader.class);
 
-        return new DefaultDbImportAction(log, projectSaver, adapterFactory, mapLoader, mergerTokenFactoryProvider, dataChannelDescriptorLoader, metaData) {
+        return new DefaultDbImportAction(log, projectSaver, adapterFactory, mapLoader, mergerTokenFactoryProvider, projectLoader, metaData) {
 
             protected DbLoader createDbLoader(DbAdapter adapter,
                                                Connection connection,

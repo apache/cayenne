@@ -19,14 +19,12 @@
 
 package org.apache.cayenne.modeler.ui.action;
 
-import org.apache.cayenne.configuration.ConfigurationTree;
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.event.display.DomainDisplayEvent;
+import org.apache.cayenne.modeler.event.display.ProjectDisplayEvent;
 import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.ui.MainFrame;
-import org.apache.cayenne.project.Project;
 
 import javax.swing.*;
 import java.awt.*;
@@ -58,17 +56,15 @@ public class NewProjectAction extends AppAction {
             return;
         }
 
-        DataChannelDescriptor dataChannelDescriptor = new DataChannelDescriptor();
+        Project project = new Project();
 
-        dataChannelDescriptor.setName(NameBuilder
-                .of(dataChannelDescriptor, null)
+        project.setName(NameBuilder
+                .of(project, null)
                 .build());
-
-        Project project = new Project(new ConfigurationTree<>(dataChannelDescriptor));
 
         controller.onProjectOpened(project, null);
 
-        // select default domain
-        getProjectSession().displayDomain(new DomainDisplayEvent(this, dataChannelDescriptor));
+        // select the new project
+        getProjectSession().displayProject(new ProjectDisplayEvent(this, project));
     }
 }

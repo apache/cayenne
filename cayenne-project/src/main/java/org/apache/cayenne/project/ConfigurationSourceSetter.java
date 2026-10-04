@@ -18,19 +18,19 @@
  ****************************************************************/
 package org.apache.cayenne.project;
 
-import org.apache.cayenne.configuration.BaseConfigurationNodeVisitor;
+import org.apache.cayenne.configuration.BaseProjectNodeVisitor;
 import org.apache.cayenne.configuration.ConfigurationNameMapper;
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.resource.Resource;
 
 /**
- * Updates ConfigurationNode's configuration sources.
+ * Updates ProjectNode's configuration sources.
  *
  * @since 3.1
  */
-class ConfigurationSourceSetter extends BaseConfigurationNodeVisitor<Void> {
+class ConfigurationSourceSetter extends BaseProjectNodeVisitor<Void> {
 
     private final ConfigurationNameMapper configurationNameMapper;
     private Resource configurationSource;
@@ -46,7 +46,7 @@ class ConfigurationSourceSetter extends BaseConfigurationNodeVisitor<Void> {
     }
 
     @Override
-    public Void visitDataChannelDescriptor(DataChannelDescriptor node) {
+    public Void visitProject(Project node) {
         node.setConfigurationSource(configurationSource);
         return null;
     }

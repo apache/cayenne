@@ -21,7 +21,8 @@ package org.apache.cayenne.mcp.tools.dbimport;
 import io.modelcontextprotocol.json.McpJsonMapper;
 import io.modelcontextprotocol.server.McpServerFeatures;
 import io.modelcontextprotocol.spec.McpSchema;
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.Project;
+import org.apache.cayenne.configuration.ProjectLoader;
 import org.apache.cayenne.dbsync.DbSyncModule;
 import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
 import org.apache.cayenne.dbsync.reverse.dbimport.DbImportConfiguration;
@@ -43,8 +44,6 @@ import org.apache.cayenne.mcp.tools.dbimport.protocol.DbImportResolved;
 import org.apache.cayenne.mcp.tools.dbimport.protocol.DbImportRunResult;
 import org.apache.cayenne.mcp.tools.dbimport.protocol.DbImportSummary;
 import org.apache.cayenne.mcp.tools.dbimport.protocol.DbImportValidation;
-import org.apache.cayenne.project.Project;
-import org.apache.cayenne.project.ProjectLoader;
 import org.apache.cayenne.project.ProjectModule;
 import org.apache.cayenne.project.extension.validation.ValidationExtension;
 import org.apache.cayenne.resource.URLResource;
@@ -167,7 +166,7 @@ public class DbImportRunTool {
             // TODO: loading the project here, and then again within InstrumentedDbImportAction
             project = injector
                     .getInstance(ProjectLoader.class)
-                    .loadProject(new URLResource(projectFile.toUri().toURL()));
+                    .load(new URLResource(projectFile.toUri().toURL()));
         } catch (Exception e) {
             return validationFailed(DbImportErrorCode.project_parse_failed,
                     "Cayenne project loader rejected the descriptor: %s".formatted(e.getMessage()),
@@ -175,10 +174,9 @@ public class DbImportRunTool {
         }
 
         // Step 3 — DataMap present?
-        DataChannelDescriptor descriptor = (DataChannelDescriptor) project.getRootNode();
-        DataMap dataMap = descriptor.getDataMap(dataMapName);
+        DataMap dataMap = project.getDataMap(dataMapName);
         if (dataMap == null) {
-            String available = descriptor.getDataMaps().stream()
+            String available = project.getDataMaps().stream()
                     .map(DataMap::getName)
                     .sorted()
                     .collect(Collectors.joining("', '", "'", "'"));

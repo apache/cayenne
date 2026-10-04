@@ -21,7 +21,6 @@ package org.apache.cayenne.modeler.ui.project.editor.objentity.relinfo;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
-import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
@@ -333,7 +332,7 @@ public class ObjRelationshipInfoDialog extends ProjectDialog implements TreeSele
 
         ObjRelationshipDisplayEvent rde = new ObjRelationshipDisplayEvent(
                 src,
-                (DataChannelDescriptor) session.project().getRootNode(),
+                session.project(),
                 session.getSelectedDataMap(),
                 relationship.getSourceEntity(),
                 relationship);

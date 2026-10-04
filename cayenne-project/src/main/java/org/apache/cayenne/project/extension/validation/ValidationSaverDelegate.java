@@ -18,8 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.project.extension.validation;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.configuration.xml.DataChannelMetaData;
+import org.apache.cayenne.configuration.Project;
+import org.apache.cayenne.configuration.xml.ProjectMetaData;
 import org.apache.cayenne.project.extension.BaseSaverDelegate;
 import org.apache.cayenne.project.validation.Inspection;
 import org.apache.cayenne.project.validation.ValidationConfig;
@@ -29,19 +29,19 @@ import java.util.Set;
 
 public class ValidationSaverDelegate extends BaseSaverDelegate {
 
-    private final DataChannelMetaData metaData;
+    private final ProjectMetaData metaData;
 
-    ValidationSaverDelegate(DataChannelMetaData metaData) {
+    ValidationSaverDelegate(ProjectMetaData metaData) {
         this.metaData = metaData;
     }
 
     @Override
-    public Void visitDataChannelDescriptor(DataChannelDescriptor channelDescriptor) {
-        return printValidationConfig(channelDescriptor);
+    public Void visitProject(Project project) {
+        return printValidationConfig(project);
     }
 
-    private Void printValidationConfig(DataChannelDescriptor dataChannelDescriptor) {
-        ValidationConfig validationConfig = ValidationConfig.fromMetadata(metaData, dataChannelDescriptor);
+    private Void printValidationConfig(Project project) {
+        ValidationConfig validationConfig = ValidationConfig.fromMetadata(metaData, project);
         Set<Inspection> disabledInspections = EnumSet.allOf(Inspection.class);
         disabledInspections.removeAll(validationConfig.getEnabledInspections());
         // deprecated inspections are no longer performed; drop them on save instead of round-tripping them

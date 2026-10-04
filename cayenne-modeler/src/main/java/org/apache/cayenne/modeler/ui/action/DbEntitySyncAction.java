@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.modeler.ui.action;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.dbsync.merge.context.EntityMergeSupport;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -78,7 +77,7 @@ public class DbEntitySyncAction extends AppAction {
             }
 
             DbEntitySyncUndoableEdit undoableEdit = new DbEntitySyncUndoableEdit(session,
-                    (DataChannelDescriptor) session.project().getRootNode(), session.getSelectedDataMap());
+                    session.project(), session.getSelectedDataMap());
 
             // filter out inherited entities, as we need to add attributes only to the roots
             filterInheritedEntities(entities);

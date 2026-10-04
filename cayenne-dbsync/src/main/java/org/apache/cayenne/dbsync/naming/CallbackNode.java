@@ -18,20 +18,20 @@
  */
 package org.apache.cayenne.dbsync.naming;
 
-import org.apache.cayenne.configuration.ConfigurationNode;
-import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
+import org.apache.cayenne.configuration.ProjectNode;
+import org.apache.cayenne.configuration.ProjectNodeVisitor;
 
 /**
  * A pseudo-node representing an {@link org.apache.cayenne.map.ObjEntity} callback method. Callback methods are not
- * {@link ConfigurationNode}s in the model, so this stand-in lets them flow through the {@link NameBuilder} naming
+ * {@link ProjectNode}s in the model, so this stand-in lets them flow through the {@link NameBuilder} naming
  * algorithm like any other node.
  *
  * @since 5.0
  */
-public class CallbackNode implements ConfigurationNode {
+public class CallbackNode implements ProjectNode {
 
     @Override
-    public <T> T acceptVisitor(ConfigurationNodeVisitor<T> visitor) {
+    public <T> T acceptVisitor(ProjectNodeVisitor<T> visitor) {
         return null;
     }
 }

@@ -21,9 +21,9 @@ package org.apache.cayenne.map;
 
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.configuration.ConfigurationNode;
-import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.ProjectNode;
+import org.apache.cayenne.configuration.ProjectNodeVisitor;
+import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.util.ToStringBuilder;
 import org.apache.cayenne.util.Util;
@@ -47,7 +47,7 @@ import static java.util.Collections.emptyList;
  * tables, ObjEntities - mapping persistent Java classes, Procedures - mapping
  * database stored procedures.
  */
-public class DataMap implements ConfigurationNode, XMLSerializable, MappingNamespace, Comparable<DataMap> {
+public class DataMap implements ProjectNode, XMLSerializable, MappingNamespace, Comparable<DataMap> {
 
 	/**
 	 * Defines the name of the property for default DB catalog.
@@ -120,7 +120,7 @@ public class DataMap implements ConfigurationNode, XMLSerializable, MappingNames
 	/**
 	 * @since 3.1
 	 */
-	protected DataChannelDescriptor dataChannelDescriptor;
+	protected Project project;
 
 	/**
 	 * Creates a new unnamed DataMap.
@@ -149,21 +149,21 @@ public class DataMap implements ConfigurationNode, XMLSerializable, MappingNames
 	/**
 	 * @since 3.1
 	 */
-	public DataChannelDescriptor getDataChannelDescriptor() {
-		return dataChannelDescriptor;
+	public Project getProject() {
+		return project;
 	}
 
 	/**
 	 * @since 3.1
 	 */
-	public void setDataChannelDescriptor(DataChannelDescriptor dataChannelDescriptor) {
-		this.dataChannelDescriptor = dataChannelDescriptor;
+	public void setProject(Project project) {
+		this.project = project;
 	}
 
 	/**
 	 * @since 3.1
 	 */
-	public <T> T acceptVisitor(ConfigurationNodeVisitor<T> visitor) {
+	public <T> T acceptVisitor(ProjectNodeVisitor<T> visitor) {
 		return visitor.visitDataMap(this);
 	}
 
@@ -231,7 +231,7 @@ public class DataMap implements ConfigurationNode, XMLSerializable, MappingNames
 	 * 
 	 * @since 1.1
 	 */
-	public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
+	public void encodeAsXML(XMLEncoder encoder, ProjectNodeVisitor delegate) {
 		encoder.start("dataMap")
 				.attribute("xmlns", SCHEMA_XSD)
 				.attribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance", true)
@@ -261,7 +261,7 @@ public class DataMap implements ConfigurationNode, XMLSerializable, MappingNames
 	}
 
 	// stores relationships for the map of entities
-	private void encodeDbRelationshipsAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
+	private void encodeDbRelationshipsAsXML(XMLEncoder encoder, ProjectNodeVisitor delegate) {
 		for (DbEntity entity : new TreeMap<>(getDbEntityMap()).values()) {
 			entity.getRelationships().stream()
 					.filter(r -> !r.isRuntime())
@@ -271,7 +271,7 @@ public class DataMap implements ConfigurationNode, XMLSerializable, MappingNames
 	}
 
 	// stores relationships for the map of entities
-	private void encodeObjRelationshipsAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
+	private void encodeObjRelationshipsAsXML(XMLEncoder encoder, ProjectNodeVisitor delegate) {
 		for (ObjEntity entity : new TreeMap<>(getObjEntityMap()).values()) {
 			entity.getDeclaredRelationships().stream()
 					.filter(r -> !r.isRuntime())

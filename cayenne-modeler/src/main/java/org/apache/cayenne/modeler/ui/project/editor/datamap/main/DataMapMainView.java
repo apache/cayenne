@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.ui.project.editor.datamap.main;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.event.model.DataMapEvent;
@@ -268,11 +268,11 @@ public class DataMapMainView extends ProjectPanel {
 
         DataMap map = session.getSelectedDataMap();
 
-        // search for matching map name across domains, as currently they have to be
+        // search for matching map name across the project, as currently they have to be
         // unique globally
-        DataChannelDescriptor dataChannelDescriptor = (DataChannelDescriptor) session.project().getRootNode();
+        Project project = session.project();
 
-        DataMap matchingMap = dataChannelDescriptor.getDataMap(newName);
+        DataMap matchingMap = project.getDataMap(newName);
 
         if (matchingMap != null && !matchingMap.equals(map)) {
 
@@ -286,7 +286,7 @@ public class DataMapMainView extends ProjectPanel {
             return;
         }
 
-        // completely new name, set new name for domain
+        // completely new name, set new name for the map
         DataMapEvent e = DataMapEvent.ofChange(this, map, oldName);
         app.getPrefsManager().stageDataMapRename(map, newName);
         map.setName(newName);

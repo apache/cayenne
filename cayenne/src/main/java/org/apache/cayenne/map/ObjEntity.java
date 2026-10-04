@@ -21,8 +21,8 @@ package org.apache.cayenne.map;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.GenericPersistentObject;
-import org.apache.cayenne.configuration.ConfigurationNode;
-import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
+import org.apache.cayenne.configuration.ProjectNode;
+import org.apache.cayenne.configuration.ProjectNodeVisitor;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
@@ -55,7 +55,7 @@ import java.util.function.Function;
  * DbEntity layer.
  */
 public class ObjEntity extends Entity<ObjEntity, ObjAttribute, ObjRelationship>
-        implements ConfigurationNode {
+        implements ProjectNode {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ObjEntity.class);
 
@@ -100,7 +100,7 @@ public class ObjEntity extends Entity<ObjEntity, ObjAttribute, ObjRelationship>
      * @since 3.1
      */
     @Override
-    public <T> T acceptVisitor(ConfigurationNodeVisitor<T> visitor) {
+    public <T> T acceptVisitor(ProjectNodeVisitor<T> visitor) {
         return visitor.visitObjEntity(this);
     }
 
@@ -110,7 +110,7 @@ public class ObjEntity extends Entity<ObjEntity, ObjAttribute, ObjRelationship>
      * @since 1.1
      */
     @Override
-    public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
+    public void encodeAsXML(XMLEncoder encoder, ProjectNodeVisitor delegate) {
         encoder.start("objEntity").attribute("name", getName());
 
         // additionally validate that super entity exists

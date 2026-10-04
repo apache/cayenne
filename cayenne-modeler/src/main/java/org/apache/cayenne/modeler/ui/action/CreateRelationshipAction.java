@@ -19,8 +19,8 @@
 
 package org.apache.cayenne.modeler.ui.action;
 
-import org.apache.cayenne.configuration.ConfigurationNode;
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.ProjectNode;
+import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.Entity;
@@ -50,8 +50,8 @@ public class CreateRelationshipAction extends AppAction {
 
         session.fireObjRelationshipEvent(ObjRelationshipEvent.ofAdd(src, rel, objEntity));
 
-        DataChannelDescriptor domain = (DataChannelDescriptor) session.project().getRootNode();
-        ObjRelationshipDisplayEvent rde = new ObjRelationshipDisplayEvent(src, domain, session.getSelectedDataMap(), objEntity, rel);
+        Project project = session.project();
+        ObjRelationshipDisplayEvent rde = new ObjRelationshipDisplayEvent(src, project, session.getSelectedDataMap(), objEntity, rel);
 
         session.displayObjRelationship(rde);
     }
@@ -63,8 +63,8 @@ public class CreateRelationshipAction extends AppAction {
 
         session.fireDbRelationshipEvent(DbRelationshipEvent.ofAdd(src, rel, dbEntity));
 
-        DataChannelDescriptor domain = (DataChannelDescriptor) session.project().getRootNode();
-        DbRelationshipDisplayEvent rde = new DbRelationshipDisplayEvent(src, domain, session.getSelectedDataMap(), dbEntity, rel);
+        Project project = session.project();
+        DbRelationshipDisplayEvent rde = new DbRelationshipDisplayEvent(src, project, session.getSelectedDataMap(), dbEntity, rel);
 
         session.displayDbRelationship(rde);
     }
@@ -122,7 +122,7 @@ public class CreateRelationshipAction extends AppAction {
      * Returns <code>true</code> if path contains an Entity object.
      */
     @Override
-    public boolean enableForPath(ConfigurationNode object) {
+    public boolean enableForPath(ProjectNode object) {
         if (object == null) {
             return false;
         }

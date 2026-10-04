@@ -37,7 +37,7 @@ class SQLTemplateValidator extends BaseQueryValidator<SQLTemplateDescriptor> {
     }
 
     @Override
-    protected ConfigurationNodeValidator<SQLTemplateDescriptor>.Performer<SQLTemplateDescriptor> validateQuery(
+    protected ProjectNodeValidator<SQLTemplateDescriptor>.Performer<SQLTemplateDescriptor> validateQuery(
             SQLTemplateDescriptor query, ValidationResult validationResult) {
         return super.validateQuery(query, validationResult)
                 .performIfEnabled(Inspection.SQL_TEMPLATE_NO_ROOT, this::checkForRoot)

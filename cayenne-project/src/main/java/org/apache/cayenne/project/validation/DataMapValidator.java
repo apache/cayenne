@@ -18,14 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne.project.validation;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationResult;
 
 import java.util.function.Supplier;
 
-class DataMapValidator extends ConfigurationNodeValidator<DataMap> {
+class DataMapValidator extends ProjectNodeValidator<DataMap> {
 
     /**
      * @param configSupplier the config defining the behavior of this validator.
@@ -52,13 +52,13 @@ class DataMapValidator extends ConfigurationNodeValidator<DataMap> {
 
     private void checkForNameDuplicates(DataMap map, ValidationResult validationResult) {
         String name = map.getName();
-        DataChannelDescriptor domain = map.getDataChannelDescriptor();
-        if (domain == null || Util.isEmptyString(name)) {
+        Project project = map.getProject();
+        if (project == null || Util.isEmptyString(name)) {
             return;
         }
 
         // check for duplicate names in the parent context
-        for (DataMap otherMap : domain.getDataMaps()) {
+        for (DataMap otherMap : project.getDataMaps()) {
             if (otherMap == map) {
                 continue;
             }

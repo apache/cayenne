@@ -45,9 +45,9 @@ public class EmbeddableAttributeErrorMsg extends ValidationDisplayHandler {
 
     @Override
     public void displayField(ProjectSession session, JFrame frame) {
-        session.displayEmbeddable(new EmbeddableDisplayEvent(frame, domain, map, embeddable));
+        session.displayEmbeddable(new EmbeddableDisplayEvent(frame, project, map, embeddable));
         session.displayEmbeddableAttribute(new EmbeddableAttributeDisplayEvent(
-                frame, domain, map, embeddable, embeddableAttribute));
+                frame, project, map, embeddable, embeddableAttribute));
     }
 
 }

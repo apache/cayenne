@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.upgrade;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.resource.URLResource;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
@@ -166,9 +166,9 @@ public class UpgradeHandler_V14Test extends BaseUpgradeHandlerTest {
 
     @Test
     public void modelUpgrade() {
-        DataChannelDescriptor descriptor = mock(DataChannelDescriptor.class);
-        handler.processModel(descriptor);
-        verifyNoInteractions(descriptor);
+        Project project = mock(Project.class);
+        handler.processModel(project);
+        verifyNoInteractions(project);
     }
 
     private void assertNoHyphenatedNames(Document document) {

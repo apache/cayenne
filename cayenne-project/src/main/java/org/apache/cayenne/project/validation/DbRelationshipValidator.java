@@ -31,7 +31,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
 
-class DbRelationshipValidator extends ConfigurationNodeValidator<DbRelationship> {
+class DbRelationshipValidator extends ProjectNodeValidator<DbRelationship> {
 
     /**
      * @param configSupplier the config defining the behavior of this validator.

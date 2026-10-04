@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.modeler.ui.action;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
@@ -59,13 +59,13 @@ public abstract class BaseViewEntityAction extends AppAction {
         ProjectView view = app.getFrame().getProjectView();
         view.getProjectTreeView().getSelectionModel().setSelectionPath(path);
 
-        DataChannelDescriptor domain = (DataChannelDescriptor) getProjectSession().project().getRootNode();
+        Project project = getProjectSession().project();
         if (entity instanceof DbEntity) {
             getProjectSession().displayDbEntity(new DbEntityDisplayEvent(
-                    view.getProjectTreeView(), domain, entity.getDataMap(), (DbEntity) entity));
+                    view.getProjectTreeView(), project, entity.getDataMap(), (DbEntity) entity));
         } else if (entity instanceof ObjEntity) {
             getProjectSession().displayObjEntity(new ObjEntityDisplayEvent(
-                    view.getProjectTreeView(), domain, entity.getDataMap(), (ObjEntity) entity));
+                    view.getProjectTreeView(), project, entity.getDataMap(), (ObjEntity) entity));
         }
     }
 
@@ -73,9 +73,9 @@ public abstract class BaseViewEntityAction extends AppAction {
 
         ProjectView view = app.getFrame().getProjectView();
 
-        DataChannelDescriptor domain = (DataChannelDescriptor) getCurrentProject().getRootNode();
+        Project project = getCurrentProject();
 
-        Object[] path = new Object[]{domain, entity.getDataMap(), entity};
+        Object[] path = new Object[]{project, entity.getDataMap(), entity};
 
         Object[] mutableTreeNodes = new Object[path.length];
         mutableTreeNodes[0] = ((ProjectTreeModel) view.getProjectTreeView().getModel())

@@ -43,7 +43,7 @@ class SelectQueryValidator extends BaseQueryValidator<SelectQueryDescriptor> {
 
     @Override
     public void validate(SelectQueryDescriptor node, ValidationResult validationResult) {
-        ConfigurationNodeValidator<SelectQueryDescriptor>.Performer<SelectQueryDescriptor> performer =
+        ProjectNodeValidator<SelectQueryDescriptor>.Performer<SelectQueryDescriptor> performer =
                 validateQuery(node, validationResult);
 
         performer.performIfEnabled(Inspection.SELECT_QUERY_NO_ROOT, this::checkForRoot);

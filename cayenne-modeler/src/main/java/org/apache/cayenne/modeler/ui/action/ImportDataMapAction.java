@@ -20,8 +20,8 @@
 package org.apache.cayenne.modeler.ui.action;
 
 import org.apache.cayenne.configuration.ConfigurationNameMapper;
-import org.apache.cayenne.configuration.ConfigurationNode;
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.ProjectNode;
+import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.configuration.DataMapLoader;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.map.DataMap;
@@ -76,13 +76,13 @@ public class ImportDataMapAction extends AppAction {
             DataMapLoader loader = app.getDataMapLoader();
             newMap = loader.load(new URLResource(url));
 
-            ConfigurationNode root = getProjectSession().project().getRootNode();
+            ProjectNode root = getProjectSession().project();
             newMap.setName(NameBuilder
                     .of(newMap, root)
                     .preferredName(newMap.getName())
                     .build());
 
-            Resource baseResource = ((DataChannelDescriptor) root).getConfigurationSource();
+            Resource baseResource = ((Project) root).getConfigurationSource();
 
             if (baseResource != null) {
                 Resource dataMapResource = baseResource.getRelativeResource(nameMapper.configurationLocation(newMap));

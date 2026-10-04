@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.project.extension;
 
-import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
+import org.apache.cayenne.configuration.ProjectNodeVisitor;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.util.XMLEncoder;
 
@@ -29,7 +29,7 @@ import org.apache.cayenne.util.XMLEncoder;
  *
  * @since 4.1
  */
-public interface SaverDelegate extends ConfigurationNodeVisitor<Void> {
+public interface SaverDelegate extends ProjectNodeVisitor<Void> {
 
     /**
      * @param encoder provided by caller

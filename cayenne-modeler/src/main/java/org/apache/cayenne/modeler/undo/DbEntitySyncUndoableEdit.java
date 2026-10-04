@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.undo;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.ObjAttribute;
@@ -43,13 +43,13 @@ public class DbEntitySyncUndoableEdit extends CompoundEdit {
     }
 
     private final ProjectSession session;
-    private DataChannelDescriptor domain;
+    private Project project;
     private DataMap map;
 
-    public DbEntitySyncUndoableEdit(ProjectSession session, DataChannelDescriptor domain, DataMap map) {
+    public DbEntitySyncUndoableEdit(ProjectSession session, Project project, DataMap map) {
         super();
         this.session = session;
-        this.domain = domain;
+        this.project = project;
         this.map = map;
     }
 
@@ -66,7 +66,7 @@ public class DbEntitySyncUndoableEdit extends CompoundEdit {
         }
 
         public void objAttributeAdded(ObjAttribute attr) {
-            addEdit(new CreateObjAttributeUndoableEdit(session, domain, map, entity, attr));
+            addEdit(new CreateObjAttributeUndoableEdit(session, project, map, entity, attr));
         }
     }
 

@@ -20,12 +20,12 @@
 
 package org.apache.cayenne.modeler.toolkit;
 
-import org.apache.cayenne.configuration.ConfigurationNode;
+import org.apache.cayenne.configuration.ProjectNode;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.apache.cayenne.modeler.ui.errors.ErrorDialog;
-import org.apache.cayenne.project.Project;
+import org.apache.cayenne.configuration.Project;
 import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -132,7 +132,7 @@ public abstract class AppAction extends AbstractAction {
      * path" - a path on the project tree to a currently selected object. Default
      * implementation simply returns <code>false</code>.
      */
-    public boolean enableForPath(ConfigurationNode object) {
+    public boolean enableForPath(ProjectNode object) {
         return false;
     }
 

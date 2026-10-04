@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.undo;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.ui.action.CreateQueryAction;
 import org.apache.cayenne.modeler.ui.action.RemoveAction;
@@ -30,13 +30,13 @@ import org.apache.cayenne.map.QueryDescriptor;
 
 public class CreateQueryUndoableEdit extends CayenneUndoableEdit {
 
-    private DataChannelDescriptor domain;
+    private Project project;
     private DataMap map;
     private QueryDescriptor query;
 
-    public CreateQueryUndoableEdit(ProjectSession session, DataChannelDescriptor domain, DataMap map, QueryDescriptor query) {
+    public CreateQueryUndoableEdit(ProjectSession session, Project project, DataMap map, QueryDescriptor query) {
         super(session);
-        this.domain = domain;
+        this.project = project;
         this.map = map;
         this.query = query;
     }
@@ -44,7 +44,7 @@ public class CreateQueryUndoableEdit extends CayenneUndoableEdit {
     @Override
     public void redo() throws CannotRedoException {
         CreateQueryAction action = globalActions.getAction(CreateQueryAction.class);
-        action.createQuery(domain, map, query);
+        action.createQuery(project, map, query);
     }
 
     @Override

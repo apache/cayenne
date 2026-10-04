@@ -19,8 +19,8 @@
 
 package org.apache.cayenne.modeler.project;
 
-import org.apache.cayenne.configuration.ConfigurationNode;
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.ProjectNode;
+import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -41,16 +41,18 @@ import org.apache.cayenne.modeler.pref.adapters.ProjectPrefs;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.callbacks.CallbackType;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.callbacks.ObjCallbackMethod;
-import org.apache.cayenne.project.ConfigurationNodeParentGetter;
-import org.apache.cayenne.project.Project;
+import org.apache.cayenne.project.ProjectNodeParentGetter;
 
 import javax.swing.event.EventListenerList;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.EventListener;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 
 // TODO: deal with imports from "org.apache.cayenne.modeler.ui.project.editor.objentity.callbacks" package
@@ -72,6 +74,7 @@ public class ProjectSession {
     private EventListenerList listeners;
     private boolean dirty;
     private Project project;
+    private Set<URL> unusedResources;
     private State state;
     private EntityResolver entityResolver;
     private ProjectFileChangeTracker fileChangeTracker;
@@ -89,13 +92,21 @@ public class ProjectSession {
         return project;
     }
 
+    /**
+     * Returns a mutable set of locations of the project files that are no longer used (e.g. the files of the
+     * removed DataMaps), and should be deleted when the project is saved.
+     */
+    public Set<URL> unusedResources() {
+        return unusedResources;
+    }
+
     public EntityResolver entityResolver() {
         return entityResolver;
     }
 
     public void updateEntityResolver() {
 
-        Collection<DataMap> dataMaps = ((DataChannelDescriptor) project.getRootNode()).getDataMaps();
+        Collection<DataMap> dataMaps = project.getDataMaps();
 
         for (DataMap dataMap : dataMaps) {
             entityResolver.addDataMap(dataMap);
@@ -119,15 +130,15 @@ public class ProjectSession {
             return getSelectedProcedure();
         } else if (getSelectedDataMap() != null) {
             return getSelectedDataMap();
-        } else if (getSelectedDataDomain() != null) {
-            return getSelectedDataDomain();
+        } else if (getSelectedProject() != null) {
+            return getSelectedProject();
         } else if (getSelectedPaths() != null) { // multiple objects
-            ConfigurationNode[] paths = getSelectedPaths();
+            ProjectNode[] paths = getSelectedPaths();
 
-            ConfigurationNodeParentGetter parentGetter = app.getConfigurationNodeParentGetter();
+            ProjectNodeParentGetter parentGetter = app.getProjectNodeParentGetter();
             Object parent = parentGetter.getParent(paths[0]);
 
-            List<ConfigurationNode> result = new ArrayList<>(Arrays.asList(paths));
+            List<ProjectNode> result = new ArrayList<>(Arrays.asList(paths));
 
             /*
              * Here we sort the list of objects to minimize the risk that
@@ -137,7 +148,7 @@ public class ProjectSession {
              */
             result.sort(parent instanceof DataMap
                     ? ProjectComparators.forDataMapChildren()
-                    : ProjectComparators.forDataDomainChildren());
+                    : ProjectComparators.forProjectChildren());
 
             return result;
         }
@@ -148,6 +159,7 @@ public class ProjectSession {
     public void projectOpened(Project project) {
 
         this.project = project;
+        this.unusedResources = new HashSet<>();
 
         this.navigationHistory = new ProjectNavigationHistory();
         this.state = new State();
@@ -182,6 +194,7 @@ public class ProjectSession {
         app.getPrefsManager().resetTransientState();
 
         this.project = null;
+        this.unusedResources = null;
         this.entityResolver = null;
 
         if (fileChangeTracker != null) {
@@ -213,8 +226,8 @@ public class ProjectSession {
     }
 
 
-    public DataChannelDescriptor getSelectedDataDomain() {
-        return state.dataDomain;
+    public Project getSelectedProject() {
+        return state.project;
     }
 
     public DataMap getSelectedDataMap() {
@@ -266,24 +279,24 @@ public class ProjectSession {
         return state.procedureParameters;
     }
 
-    public ConfigurationNode[] getSelectedPaths() {
+    public ProjectNode[] getSelectedPaths() {
         return state.paths;
     }
 
-    public ConfigurationNode getSelectedParentPath() {
+    public ProjectNode getSelectedParentPath() {
         return state.parentPath;
     }
 
-    public void addDomainDisplayListener(DomainDisplayListener listener) {
-        listeners.add(DomainDisplayListener.class, listener);
+    public void addProjectDisplayListener(ProjectDisplayListener listener) {
+        listeners.add(ProjectDisplayListener.class, listener);
     }
 
-    public void addDomainListener(DomainListener listener) {
-        listeners.add(DomainListener.class, listener);
+    public void addProjectListener(ProjectListener listener) {
+        listeners.add(ProjectListener.class, listener);
     }
 
-    public void removeDomainListener(DomainListener listener) {
-        listeners.remove(DomainListener.class, listener);
+    public void removeProjectListener(ProjectListener listener) {
+        listeners.remove(ProjectListener.class, listener);
     }
 
     public void addValidationConfigDisplayListener(ValidationConfigDisplayListener listener) {
@@ -422,45 +435,45 @@ public class ProjectSession {
         listeners.add(MultipleObjectsDisplayListener.class, listener);
     }
 
-    public void displayDomain(DomainDisplayEvent e) {
-        boolean changed = e.getDomain() != state.dataDomain || (
+    public void displayProject(ProjectDisplayEvent e) {
+        boolean changed = e.getProject() != state.project || (
                 state.dataMap != null || state.dbEntity != null || state.objEntity != null || state.procedure != null || state.query != null || state.embeddable != null
         );
 
         if (changed) {
             state = new State();
-            state.dataDomain = e.getDomain();
+            state.project = e.getProject();
             navigationHistory.recordEvent(e);
 
-            for (DomainDisplayListener listener : listeners.getListeners(DomainDisplayListener.class)) {
-                listener.domainSelected(e);
+            for (ProjectDisplayListener listener : listeners.getListeners(ProjectDisplayListener.class)) {
+                listener.projectSelected(e);
             }
 
-            if (e.getDomain() == null) {
+            if (e.getProject() == null) {
                 app.getActionManager().projectOpened();
             } else {
-                app.getActionManager().domainSelected();
+                app.getActionManager().projectSelected();
             }
         }
     }
 
 
     /**
-     * Informs all listeners of the DomainEvent. Does not send the event to its
+     * Informs all listeners of the ProjectEvent. Does not send the event to its
      * originator.
      */
-    public void fireDomainEvent(DomainEvent e) {
+    public void fireProjectEvent(ProjectEvent e) {
         setDirty(true);
 
         if (e.getType() == ModelEvent.Type.REMOVE) {
             navigationHistory.forgetObject(e);
         }
 
-        for (DomainListener listener : listeners.getListeners(DomainListener.class)) {
+        for (ProjectListener listener : listeners.getListeners(ProjectListener.class)) {
             if (Objects.requireNonNull(e.getType()) == ModelEvent.Type.CHANGE) {
-                listener.domainChanged(e);
+                listener.projectChanged(e);
             } else {
-                throw new IllegalArgumentException("Invalid DomainEvent type: " + e.getType());
+                throw new IllegalArgumentException("Invalid ProjectEvent type: " + e.getType());
             }
         }
     }
@@ -472,7 +485,7 @@ public class ProjectSession {
 
         if (changed) {
             state = new State();
-            state.dataDomain = e.getDomain();
+            state.project = e.getProject();
             state.dataMap = e.getDataMap();
 
             navigationHistory.recordEvent(e);
@@ -663,7 +676,7 @@ public class ProjectSession {
 
         if (changed) {
             state = new State();
-            state.dataDomain = e.getDomain();
+            state.project = e.getProject();
             state.dataMap = e.getDataMap();
             state.objEntity = e.getEntity();
 
@@ -684,7 +697,7 @@ public class ProjectSession {
 
         if (changed) {
             state = new State();
-            state.dataDomain = e.getDomain();
+            state.project = e.getProject();
             state.dataMap = e.getDataMap();
             state.embeddable = e.getEmbeddable();
             navigationHistory.recordEvent(e);
@@ -704,7 +717,7 @@ public class ProjectSession {
 
         if (changed) {
             state = new State();
-            state.dataDomain = e.getDomain();
+            state.project = e.getProject();
             state.dataMap = e.getDataMap();
             state.query = e.getQuery();
             navigationHistory.recordEvent(e);
@@ -720,7 +733,7 @@ public class ProjectSession {
 
         if (changed) {
             state = new State();
-            state.dataDomain = e.getDomain();
+            state.project = e.getProject();
             state.dataMap = e.getDataMap();
             state.procedure = e.getProcedure();
             navigationHistory.recordEvent(e);
@@ -741,7 +754,7 @@ public class ProjectSession {
         if (changed) {
             if (state.procedure != e.getProcedure()) {
                 state = new State();
-                state.dataDomain = e.getDomain();
+                state.project = e.getProject();
                 state.dataMap = e.getDataMap();
                 state.procedure = e.getProcedure();
             }
@@ -758,7 +771,7 @@ public class ProjectSession {
 
         if (changed) {
             state = new State();
-            state.dataDomain = e.getDomain();
+            state.project = e.getProject();
             state.dataMap = e.getDataMap();
             state.dbEntity = e.getEntity();
             navigationHistory.recordEvent(e);
@@ -802,7 +815,7 @@ public class ProjectSession {
         if (changed) {
             if (e.getEntity() != state.dbEntity) {
                 state = new State();
-                state.dataDomain = e.getDomain();
+                state.project = e.getProject();
                 state.dataMap = e.getDataMap();
                 state.dbEntity = e.getEntity();
             }
@@ -844,7 +857,7 @@ public class ProjectSession {
         if (changed) {
             if (e.getEntity() != state.objEntity) {
                 state = new State();
-                state.dataDomain = e.getDomain();
+                state.project = e.getProject();
                 state.dataMap = e.getDataMap();
                 state.objEntity = e.getEntity();
             }
@@ -863,7 +876,7 @@ public class ProjectSession {
         if (changed) {
             if (ev.getEmbeddable() != state.embeddable) {
                 state = new State();
-                state.dataDomain = ev.getDomain();
+                state.project = ev.getProject();
                 state.dataMap = ev.getDataMap();
                 state.embeddable = ev.getEmbeddable();
             }
@@ -905,7 +918,7 @@ public class ProjectSession {
         if (changed) {
             if (e.getEntity() != state.dbEntity) {
                 state = new State();
-                state.dataDomain = e.getDomain();
+                state.project = e.getProject();
                 state.dataMap = e.getDataMap();
                 state.dbEntity = e.getEntity();
             }
@@ -957,7 +970,7 @@ public class ProjectSession {
         if (changed) {
             if (e.getEntity() != state.objEntity) {
                 state = new State();
-                state.dataDomain = e.getDomain();
+                state.project = e.getProject();
                 state.dataMap = e.getDataMap();
                 state.objEntity = e.getEntity();
             }
@@ -1105,7 +1118,7 @@ public class ProjectSession {
 
     static class State {
 
-        DataChannelDescriptor dataDomain;
+        Project project;
         DataMap dataMap;
         ObjEntity objEntity;
         DbEntity dbEntity;
@@ -1121,8 +1134,8 @@ public class ProjectSession {
         Procedure procedure;
         ProcedureParameter[] procedureParameters;
         QueryDescriptor query;
-        ConfigurationNode[] paths;
-        ConfigurationNode parentPath;
+        ProjectNode[] paths;
+        ProjectNode parentPath;
         CallbackType callbackType;
         ObjCallbackMethod[] callbackMethods;
 

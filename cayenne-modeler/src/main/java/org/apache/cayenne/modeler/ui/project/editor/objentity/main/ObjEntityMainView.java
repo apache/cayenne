@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.ui.project.editor.objentity.main;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
@@ -215,10 +215,10 @@ public class ObjEntityMainView extends ProjectPanel implements ObjEntityDisplayL
 
                 // fire both ObjEntityEvent and ObjEntityDisplayEvent;
                 // the latter is to update attribute and relationship display
-                DataChannelDescriptor domain = (DataChannelDescriptor) session.project().getRootNode();
+                Project project = session.project();
                 DataMap map = session.getSelectedDataMap();
                 session.fireObjEntityEvent(ObjEntityEvent.ofChange(this, entity));
-                session.displayObjEntity(new ObjEntityDisplayEvent(this, domain, map, entity));
+                session.displayObjEntity(new ObjEntityDisplayEvent(this, project, map, entity));
             }
         });
 
@@ -226,8 +226,8 @@ public class ObjEntityMainView extends ProjectPanel implements ObjEntityDisplayL
             // Jump to DbEntity of the current ObjEntity
             DbEntity entity = session.getSelectedObjEntity().getDbEntity();
             if (entity != null) {
-                DataChannelDescriptor dom = (DataChannelDescriptor) session.project().getRootNode();
-                session.displayDbEntity(new DbEntityDisplayEvent(this, dom, entity.getDataMap(), entity));
+                Project project = session.project();
+                session.displayDbEntity(new DbEntityDisplayEvent(this, project, entity.getDataMap(), entity));
             }
         });
 
@@ -402,7 +402,7 @@ public class ObjEntityMainView extends ProjectPanel implements ObjEntityDisplayL
 
         ObjEntityDisplayEvent ede = new ObjEntityDisplayEvent(
                 this,
-                (DataChannelDescriptor) session.project().getRootNode(),
+                session.project(),
                 session.getSelectedDataMap(),
                 session.getSelectedObjEntity());
         session.displayObjEntity(ede);

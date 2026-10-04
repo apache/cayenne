@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.undo;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
@@ -32,15 +32,15 @@ import org.apache.cayenne.modeler.ui.action.RemoveAttributeAction;
 
 public class CreateObjAttributeUndoableEdit extends CayenneUndoableEdit {
 
-    private final DataChannelDescriptor domain;
+    private final Project project;
     private final DataMap dataMap;
     private final ObjEntity objEntity;
     private final ObjAttribute attribute;
 
-    public CreateObjAttributeUndoableEdit(ProjectSession session, DataChannelDescriptor domain, DataMap map,
+    public CreateObjAttributeUndoableEdit(ProjectSession session, Project project, DataMap map,
             ObjEntity objEntity, ObjAttribute attribute) {
         super(session);
-        this.domain = domain;
+        this.project = project;
         this.dataMap = map;
         this.objEntity = objEntity;
         this.attribute = attribute;
@@ -61,6 +61,6 @@ public class CreateObjAttributeUndoableEdit extends CayenneUndoableEdit {
     public void undo() throws CannotUndoException {
         RemoveAttributeAction action = globalActions.getAction(RemoveAttributeAction.class);
         action.removeObjAttributes(objEntity, new ObjAttribute[] {attribute});
-        session.displayObjEntity(new ObjEntityDisplayEvent(this, domain, dataMap, objEntity));
+        session.displayObjEntity(new ObjEntityDisplayEvent(this, project, dataMap, objEntity));
     }
 }

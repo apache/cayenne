@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.modeler.ui.project.editor.procedure;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
@@ -214,7 +213,7 @@ public class ProcedureParameterTab extends ProjectPanel implements ProcedurePara
 
         ProcedureParameterDisplayEvent ppde = new ProcedureParameterDisplayEvent(
                 this,
-                (DataChannelDescriptor) session.project().getRootNode(),
+                session.project(),
                 session.getSelectedDataMap(),
                 session.getSelectedProcedure(),
                 parameters);

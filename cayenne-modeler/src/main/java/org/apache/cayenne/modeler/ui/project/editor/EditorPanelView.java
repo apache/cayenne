@@ -23,7 +23,7 @@ import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.modeler.event.display.QueryDisplayEvent;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.toolkit.ProjectPanel;
-import org.apache.cayenne.modeler.ui.project.editor.datadomain.DataDomainView;
+import org.apache.cayenne.modeler.ui.project.editor.project.ProjectEditorView;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.DataMapView;
 import org.apache.cayenne.modeler.ui.project.editor.dbentity.DbEntityView;
 import org.apache.cayenne.modeler.ui.project.editor.embeddable.EmbeddableView;
@@ -45,7 +45,7 @@ import org.apache.cayenne.map.ProcedureQueryDescriptor;
 public class EditorPanelView extends ProjectPanel {
 
     private static final String EMPTY_VIEW = "Empty";
-    private static final String DOMAIN_VIEW = "Domain";
+    private static final String PROJECT_VIEW = "Project";
     private static final String DATA_MAP_VIEW = "DataMap";
     private static final String OBJ_VIEW = "ObjView";
     private static final String DB_VIEW = "DbView";
@@ -60,7 +60,7 @@ public class EditorPanelView extends ProjectPanel {
     private final DbEntityView dbDetailView;
     private final ObjEntityView objDetailView;
     private final EmbeddableView embeddableView;
-    private final DataDomainView dataDomainView;
+    private final ProjectEditorView projectEditorView;
     private final DataMapView dataMapView;
     private final ProcedureTabbedView procedureView;
     private final SQLTemplateTabbedView sqlTemplateView;
@@ -69,7 +69,7 @@ public class EditorPanelView extends ProjectPanel {
         super(session);
 
         this.detailLayout = new CardLayout();
-        this.dataDomainView = new DataDomainView(session);
+        this.projectEditorView = new ProjectEditorView(session);
         this.dataMapView = new DataMapView(session);
         this.procedureView = new ProcedureTabbedView(session);
         this.sqlTemplateView = new SQLTemplateTabbedView(session);
@@ -88,7 +88,7 @@ public class EditorPanelView extends ProjectPanel {
         // those that are not wrapped usually have their own scrollers
         // in subpanels...
         add(new JPanel(), EMPTY_VIEW);
-        add(dataDomainView, DOMAIN_VIEW);
+        add(projectEditorView, PROJECT_VIEW);
         add(dataMapView, DATA_MAP_VIEW);
         add(procedureView, PROCEDURE_VIEW);
         add(new SelectQueryTabbedView(session), SELECT_QUERY_VIEW);
@@ -100,7 +100,7 @@ public class EditorPanelView extends ProjectPanel {
     }
 
     private void initBindings() {
-        session.addDomainDisplayListener(e -> detailLayout.show(this, e.getDomain() == null ? EMPTY_VIEW : DOMAIN_VIEW));
+        session.addProjectDisplayListener(e -> detailLayout.show(this, e.getProject() == null ? EMPTY_VIEW : PROJECT_VIEW));
         session.addDataMapDisplayListener(e -> detailLayout.show(this, e.getDataMap() == null ? EMPTY_VIEW : DATA_MAP_VIEW));
         session.addObjEntityDisplayListener(e -> detailLayout.show(this, e.getEntity() == null ? EMPTY_VIEW : OBJ_VIEW));
         session.addDbEntityDisplayListener(e -> detailLayout.show(this, e.getEntity() == null ? EMPTY_VIEW : DB_VIEW));
@@ -130,8 +130,8 @@ public class EditorPanelView extends ProjectPanel {
         return objDetailView;
     }
 
-    public DataDomainView getDataDomainView() {
-        return dataDomainView;
+    public ProjectEditorView getProjectEditorView() {
+        return projectEditorView;
     }
 
     public DataMapView getDataMapView() {

@@ -21,8 +21,8 @@ package org.apache.cayenne.project.extension.info;
 
 import java.util.Map;
 
-import org.apache.cayenne.configuration.ConfigurationNode;
-import org.apache.cayenne.configuration.xml.DataChannelMetaData;
+import org.apache.cayenne.configuration.ProjectNode;
+import org.apache.cayenne.configuration.xml.ProjectMetaData;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -43,13 +43,13 @@ import org.apache.cayenne.util.Util;
  */
 class InfoSaverDelegate extends BaseSaverDelegate {
 
-    private DataChannelMetaData metaData;
+    private ProjectMetaData metaData;
 
-    InfoSaverDelegate(DataChannelMetaData metaData) {
+    InfoSaverDelegate(ProjectMetaData metaData) {
         this.metaData = metaData;
     }
 
-    private Void printComment(ConfigurationNode entity) {
+    private Void printComment(ProjectNode entity) {
         ObjectInfo info = metaData.get(entity, ObjectInfo.class);
         if(info == null) {
             return null;

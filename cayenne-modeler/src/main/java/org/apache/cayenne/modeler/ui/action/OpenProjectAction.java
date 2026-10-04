@@ -25,7 +25,7 @@ import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.toolkit.filechooser.FileFilters;
 import org.apache.cayenne.modeler.ui.MainFrame;
 import org.apache.cayenne.modeler.ui.errors.ErrorDialog;
-import org.apache.cayenne.project.Project;
+import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.project.upgrade.PostUpgradeState;
 import org.apache.cayenne.project.upgrade.PreUpgradeState;
 import org.apache.cayenne.project.upgrade.ProjectUpgrader;
@@ -190,7 +190,7 @@ public class OpenProjectAction extends AppAction {
     }
 
     private Project openProjectResource(Resource resource, MainFrame controller, String mcpHandshakeNonce) {
-        Project project = app.getProjectLoader().loadProject(resource);
+        Project project = app.getProjectLoader().load(resource);
         controller.onProjectOpened(project, mcpHandshakeNonce);
         return project;
     }

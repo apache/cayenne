@@ -19,8 +19,8 @@
 
 package org.apache.cayenne.modeler.ui.action;
 
-import org.apache.cayenne.configuration.ConfigurationNode;
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.ProjectNode;
+import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.CallbackMap;
 import org.apache.cayenne.map.DataMap;
@@ -72,12 +72,10 @@ import javax.swing.undo.UndoableEdit;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collection;
 
 /**
- * Removes currently selected object from the project. This can be Domain,
+ * Removes currently selected object from the project. This can be Project,
  * Entity, Attribute or Relationship.
  */
 public class RemoveAction extends AppAction {
@@ -168,11 +166,11 @@ public class RemoveAction extends AppAction {
         } else if (session.getSelectedPaths() != null) { // multiple deletion
             if (dialog.shouldDelete("selected objects")) {
 
-                ConfigurationNode[] paths = session.getSelectedPaths();
-                ConfigurationNode parentPath = session.getSelectedParentPath();
+                ProjectNode[] paths = session.getSelectedPaths();
+                ProjectNode parentPath = session.getSelectedParentPath();
 
                 CompoundEdit compoundEdit = new RemoveCompoundUndoableEdit();
-                for (ConfigurationNode path : paths) {
+                for (ProjectNode path : paths) {
                     compoundEdit.addEdit(removeLastPathComponent(path, parentPath));
                 }
                 compoundEdit.end();
@@ -320,14 +318,12 @@ ObjRelationshipEvent e = ObjRelationshipEvent.ofRemove(app.getFrame(), rel, enti
 
 	public void removeDataMap(DataMap map) {
         ProjectSession session = getProjectSession();
-        DataChannelDescriptor domain = (DataChannelDescriptor) session.project().getRootNode();
+        Project project = session.project();
         DataMapEvent e = DataMapEvent.ofRemove(app.getFrame(), map);
 
-        domain.getDataMaps().remove(map);
+        project.getDataMaps().remove(map);
         if (map.getConfigurationSource() != null) {
-            URL mapURL = map.getConfigurationSource().getURL();
-            Collection<URL> unusedResources = getCurrentProject().getUnusedResources();
-            unusedResources.add(mapURL);
+            session.unusedResources().add(map.getConfigurationSource().getURL());
         }
 
         session.fireDataMapEvent(e);
@@ -405,8 +401,8 @@ ObjRelationshipEvent e = ObjRelationshipEvent.ofRemove(app.getFrame(), rel, enti
      * Returns <code>true</code> if last object in the path contains a removable object.
      */
     @Override
-    public boolean enableForPath(ConfigurationNode object) {
-        return (object instanceof DataChannelDescriptor)
+    public boolean enableForPath(ProjectNode object) {
+        return (object instanceof Project)
                 || (object instanceof DataMap)
                 || (object instanceof Entity)
                 || (object instanceof Attribute)
@@ -421,7 +417,7 @@ ObjRelationshipEvent e = ObjRelationshipEvent.ofRemove(app.getFrame(), rel, enti
     /**
      * Removes an object, depending on its type
      */
-    private UndoableEdit removeLastPathComponent(ConfigurationNode object, ConfigurationNode parentObject) {
+    private UndoableEdit removeLastPathComponent(ProjectNode object, ProjectNode parentObject) {
 
         UndoableEdit undo = null;
 

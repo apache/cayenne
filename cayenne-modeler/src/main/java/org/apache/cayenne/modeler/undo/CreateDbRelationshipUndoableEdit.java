@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.undo;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.modeler.event.display.DbEntityDisplayEvent;
@@ -56,8 +56,8 @@ public class CreateDbRelationshipUndoableEdit extends CayenneUndoableEdit {
     @Override
     public void undo() throws CannotUndoException {
         RemoveRelationshipAction action = globalActions.getAction(RemoveRelationshipAction.class);
-        DataChannelDescriptor domain = (DataChannelDescriptor) session.project().getRootNode();
+        Project project = session.project();
         action.removeDbRelationships(dbEntity, relationships);
-        session.displayDbEntity(new DbEntityDisplayEvent(this, domain, dbEntity.getDataMap(), dbEntity));
+        session.displayDbEntity(new DbEntityDisplayEvent(this, project, dbEntity.getDataMap(), dbEntity));
     }
 }

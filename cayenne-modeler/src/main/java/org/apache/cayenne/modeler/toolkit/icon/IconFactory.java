@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.modeler.toolkit.icon;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
@@ -46,7 +46,7 @@ public class IconFactory {
     private static final JComponent DUMMY_PANEL = new JPanel();
     private static final RGBImageFilter DISABLED_FILTER = new DisabledFilter();
 
-    private static final Icon domainIcon = IconFactory.buildIcon("icon-dom.png");
+    private static final Icon projectIcon = IconFactory.buildIcon("icon-dom.png");
     private static final Icon mapIcon = IconFactory.buildIcon("icon-datamap.png");
     private static final Icon dbEntityIcon = IconFactory.buildIcon("icon-dbentity.png");
     private static final Icon objEntityIcon = IconFactory.buildIcon("icon-objentity.png");
@@ -82,8 +82,8 @@ public class IconFactory {
             return null;
         }
 
-        if (object instanceof DataChannelDescriptor) {
-            return domainIcon;
+        if (object instanceof Project) {
+            return projectIcon;
         } else if (object instanceof DataMap) {
             return mapIcon;
         } else if (object instanceof DbEntity) {

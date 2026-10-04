@@ -43,6 +43,7 @@ CAY-3038 Remove EJBQLQuery
 CAY-3039 Refactor Expressions to be independent from the parser syntax
 CAY-3040 Descriptive XML tags for mapped queries
 CAY-3041 Unify XML style across XSDs
+CAY-3042 Rename "domain" to "project" in the Modeler and XSD
 
 Bug Fixes:
 

@@ -1,0 +1,102 @@
+/*****************************************************************
+ *   Licensed to the Apache Software Foundation (ASF) under one
+ *  or more contributor license agreements.  See the NOTICE file
+ *  distributed with this work for additional information
+ *  regarding copyright ownership.  The ASF licenses this file
+ *  to you under the Apache License, Version 2.0 (the
+ *  "License"); you may not use this file except in compliance
+ *  with the License.  You may obtain a copy of the License at
+ *
+ *    https://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing,
+ *  software distributed under the License is distributed on an
+ *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *  KIND, either express or implied.  See the License for the
+ *  specific language governing permissions and limitations
+ *  under the License.
+ ****************************************************************/
+
+package org.apache.cayenne.modeler.ui.project.editor.project.cgen;
+
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.configuration.xml.ProjectMetaData;
+import org.apache.cayenne.gen.CgenConfigList;
+import org.apache.cayenne.gen.CgenConfiguration;
+import org.apache.cayenne.gen.ClassGenerationAction;
+import org.apache.cayenne.gen.ClassGenerationActionFactory;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.modeler.event.display.DataMapDisplayEvent;
+import org.apache.cayenne.modeler.project.CgenOps;
+import org.apache.cayenne.modeler.project.ProjectSession;
+import org.apache.cayenne.modeler.ui.project.editor.project.ProjectGeneratorsTab;
+import org.apache.cayenne.tools.ToolsInjectorBuilder;
+import org.slf4j.helpers.NOPLogger;
+
+import javax.swing.JOptionPane;
+import java.util.Set;
+
+public class ProjectCgenTab extends ProjectGeneratorsTab<CgenConfiguration> {
+
+    public ProjectCgenTab(ProjectSession session) {
+        super(session, CgenConfiguration.class, true,
+                "icon-gen_java.png", "Run class generation on selected datamaps.");
+    }
+
+    @Override
+    public void runGenerators(Set<DataMap> dataMaps) {
+        ProjectMetaData metaData = app.getMetaData();
+        if (dataMaps.isEmpty()) {
+            showEmptyMessage();
+            return;
+        }
+        boolean generationFail = false;
+        ClassGenerationActionFactory actionFactory = new ToolsInjectorBuilder()
+                .addModule(binder -> binder.bind(ProjectMetaData.class).toInstance(metaData))
+                .create()
+                .getInstance(ClassGenerationActionFactory.class);
+
+        for (DataMap dataMap : dataMaps) {
+            try {
+                CgenConfigList cgenConfigList = metaData.get(dataMap, CgenConfigList.class);
+                if (cgenConfigList == null) {
+                    cgenConfigList = new CgenConfigList();
+                    cgenConfigList.add(CgenOps.createDefaultCgenConfiguration(dataMap, session));
+                }
+                for (CgenConfiguration cgenConfiguration : cgenConfigList.getAll()) {
+                    ClassGenerationAction action = actionFactory.createAction(cgenConfiguration,
+                            NOPLogger.NOP_LOGGER);
+                    action.prepareArtifacts();
+                    action.execute();
+                }
+            } catch (CayenneRuntimeException e) {
+                LOGGER.error("Error generating classes", e);
+                generationFail = true;
+                showErrorMessage(e.getUnlabeledMessage());
+            } catch (Exception e) {
+                LOGGER.error("Error generating classes", e);
+                generationFail = true;
+                showErrorMessage(e.getMessage());
+            }
+        }
+        if (!generationFail) {
+            showSuccessMessage();
+        }
+    }
+
+    @Override
+    public void showConfig(DataMap dataMap) {
+        if (dataMap != null) {
+            DataMapDisplayEvent event = new DataMapDisplayEvent(this, dataMap.getProject(), dataMap);
+            getController().displayDataMap(event);
+        }
+    }
+
+    private void showSuccessMessage() {
+        JOptionPane.showMessageDialog(this, "Class generation finished");
+    }
+
+    private void showErrorMessage(String msg) {
+        JOptionPane.showMessageDialog(this, "Error generating classes - " + msg);
+    }
+}

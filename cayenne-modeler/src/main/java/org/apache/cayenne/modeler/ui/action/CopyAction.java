@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.ui.action;
 
-import org.apache.cayenne.configuration.ConfigurationNode;
+import org.apache.cayenne.configuration.ProjectNode;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -101,7 +101,7 @@ public class CopyAction extends AppAction {
      * Returns <code>true</code> if last object in the path contains a removable object.
      */
     @Override
-    public boolean enableForPath(ConfigurationNode object) {
+    public boolean enableForPath(ProjectNode object) {
         if (object == null) {
             return false;
         }

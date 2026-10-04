@@ -43,7 +43,7 @@ public class EmbeddableErrorMsg extends ValidationDisplayHandler {
     public void displayField(ProjectSession session, JFrame frame) {
         EmbeddableDisplayEvent event = new EmbeddableDisplayEvent(
                 frame,
-                domain,
+                project,
                 map,
                 embeddable);
         session.displayEmbeddable(event);

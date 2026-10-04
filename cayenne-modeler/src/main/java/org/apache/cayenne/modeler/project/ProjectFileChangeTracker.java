@@ -19,12 +19,11 @@
 package org.apache.cayenne.modeler.project;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.ui.action.OpenProjectAction;
 import org.apache.cayenne.modeler.ui.action.SaveAction;
 import org.apache.cayenne.modeler.ui.filedeleted.FileDeletedDialog;
-import org.apache.cayenne.project.Project;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,11 +69,11 @@ class ProjectFileChangeTracker extends Thread {
         Project project = session.project();
 
         // check if project exists and has been saved at least once.
-        if (project != null && project.getConfigurationResource() != null) {
+        if (project != null && project.getConfigurationSource() != null) {
             try {
-                addFile(project.getConfigurationResource().getURL().toURI());
+                addFile(project.getConfigurationSource().getURL().toURI());
 
-                for (DataMap dm : ((DataChannelDescriptor) project.getRootNode()).getDataMaps()) {
+                for (DataMap dm : project.getDataMaps()) {
                     if (dm.getConfigurationSource() != null) {
                         // if DataMap is in separate file, monitor it
                         addFile(dm.getConfigurationSource().getURL().toURI());
@@ -99,10 +98,10 @@ class ProjectFileChangeTracker extends Thread {
                 if (session.project() != null) {
                     File fileDirectory;
                     try {
-                        fileDirectory = new File(session.project().getConfigurationResource().getURL().toURI());
+                        fileDirectory = new File(session.project().getConfigurationSource().getURL().toURI());
                     } catch (URISyntaxException e) {
                         throw new CayenneRuntimeException("Unable to open project %s",
-                                e, session.project().getConfigurationResource().getURL());
+                                e, session.project().getConfigurationSource().getURL());
                     }
                     session.app()
                             .getActionManager()

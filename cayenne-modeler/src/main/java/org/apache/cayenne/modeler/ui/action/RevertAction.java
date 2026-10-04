@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.ui.action;
 
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.toolkit.AppAction;
-import org.apache.cayenne.project.Project;
+import org.apache.cayenne.configuration.Project;
 
 import java.awt.event.ActionEvent;
 import java.io.File;
@@ -40,13 +40,12 @@ public class RevertAction extends AppAction {
             return;
         }
 
-        boolean isNew = project.getConfigurationResource() == null;
+        boolean isNew = project.getConfigurationSource() == null;
 
         // close ... don't use OpenProjectAction close method as it will ask for save, we don't want that here
         app.getFrame().onProjectClosed();
 
-        File fileDirectory = new File(project
-                .getConfigurationResource()
+        File fileDirectory = new File(project.getConfigurationSource()
                 .getURL()
                 .getPath());
 

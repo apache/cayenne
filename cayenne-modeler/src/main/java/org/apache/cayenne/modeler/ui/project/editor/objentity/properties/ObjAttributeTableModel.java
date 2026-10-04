@@ -20,7 +20,6 @@
 package org.apache.cayenne.modeler.ui.project.editor.objentity.properties;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.di.DIRuntimeException;
 import org.apache.cayenne.exp.ExpressionException;
@@ -252,7 +251,7 @@ public class ObjAttributeTableModel extends CMTableModel<ObjAttribute> {
 
         session.displayObjEntity(new ObjEntityDisplayEvent(
                 this,
-                (DataChannelDescriptor) session.project().getRootNode(),
+                session.project(),
                 session.getSelectedDataMap(),
                 session.getSelectedObjEntity()));
 
@@ -263,7 +262,7 @@ public class ObjAttributeTableModel extends CMTableModel<ObjAttribute> {
 
         session.displayObjAttribute(new ObjAttributeDisplayEvent(
                 this,
-                (DataChannelDescriptor) session.project().getRootNode(),
+                session.project(),
                 session.getSelectedDataMap(),
                 session.getSelectedObjEntity(),
                 attributeNew));

@@ -18,13 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.project.validation;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationResult;
 
 import java.util.function.Supplier;
 
-class DataChannelValidator extends ConfigurationNodeValidator<DataChannelDescriptor> {
+class DataChannelValidator extends ProjectNodeValidator<Project> {
 
     /**
      * @param configSupplier the config defining the behavior of this validator.
@@ -35,15 +35,15 @@ class DataChannelValidator extends ConfigurationNodeValidator<DataChannelDescrip
     }
 
     @Override
-    public void validate(DataChannelDescriptor node, ValidationResult validationResult) {
+    public void validate(Project node, ValidationResult validationResult) {
         on(node, validationResult)
                 .performIfEnabled(Inspection.PROJECT_NO_NAME, this::checkForName);
     }
 
-    private void checkForName(DataChannelDescriptor domain, ValidationResult validationResult) {
-        String name = domain.getName();
+    private void checkForName(Project project, ValidationResult validationResult) {
+        String name = project.getName();
         if (Util.isEmptyString(name)) {
-            addFailure(validationResult, domain, "Unnamed project");
+            addFailure(validationResult, project, "Unnamed project");
         }
     }
 }

@@ -18,8 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.ui.action;
 
-import org.apache.cayenne.configuration.ConfigurationNode;
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.ProjectNode;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
@@ -46,7 +45,7 @@ public class CreateEmbeddableAction extends AppAction {
                 dataMap);
         EmbeddableDisplayEvent displayEvent = new EmbeddableDisplayEvent(
                 src,
-                (DataChannelDescriptor) session.project().getRootNode(),
+                session.project(),
                 dataMap,
                 embeddable,
                 true);
@@ -85,7 +84,7 @@ public class CreateEmbeddableAction extends AppAction {
      * Returns <code>true</code> if path contains a DataMap object.
      */
     @Override
-    public boolean enableForPath(ConfigurationNode object) {
+    public boolean enableForPath(ProjectNode object) {
         if (object == null) {
             return false;
         }

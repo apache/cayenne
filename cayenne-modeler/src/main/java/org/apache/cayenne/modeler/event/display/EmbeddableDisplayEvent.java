@@ -18,35 +18,35 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.event.display;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 
 public class EmbeddableDisplayEvent extends DisplayEvent {
 
-    private final DataChannelDescriptor domain;
+    private final Project project;
     private final DataMap dataMap;
     private final Embeddable embeddable;
     private final boolean mainTabFocus;
 
-    public EmbeddableDisplayEvent(Object src, DataChannelDescriptor domain, DataMap dataMap, Embeddable embeddable) {
-        this(src, domain, dataMap, embeddable, false);
+    public EmbeddableDisplayEvent(Object src, Project project, DataMap dataMap, Embeddable embeddable) {
+        this(src, project, dataMap, embeddable, false);
     }
 
     public EmbeddableDisplayEvent(Object src,
-                                  DataChannelDescriptor domain,
+                                  Project project,
                                   DataMap dataMap,
                                   Embeddable embeddable,
                                   boolean mainTabFocus) {
         super(src);
-        this.domain = domain;
+        this.project = project;
         this.dataMap = dataMap;
         this.embeddable = embeddable;
         this.mainTabFocus = mainTabFocus;
     }
 
-    public DataChannelDescriptor getDomain() {
-        return domain;
+    public Project getProject() {
+        return project;
     }
 
     public DataMap getDataMap() {

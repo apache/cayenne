@@ -21,8 +21,9 @@ package org.apache.cayenne.mcp.tools.cgen;
 import io.modelcontextprotocol.json.McpJsonMapper;
 import io.modelcontextprotocol.server.McpServerFeatures;
 import io.modelcontextprotocol.spec.McpSchema;
-import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.configuration.xml.DataChannelMetaData;
+import org.apache.cayenne.configuration.Project;
+import org.apache.cayenne.configuration.ProjectLoader;
+import org.apache.cayenne.configuration.xml.ProjectMetaData;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.gen.CgenConfigList;
 import org.apache.cayenne.gen.CgenConfiguration;
@@ -38,8 +39,6 @@ import org.apache.cayenne.mcp.tools.cgen.protocol.CgenResolvedConfig;
 import org.apache.cayenne.mcp.tools.cgen.protocol.CgenRunResult;
 import org.apache.cayenne.mcp.tools.cgen.protocol.CgenSummary;
 import org.apache.cayenne.mcp.tools.cgen.protocol.CgenValidation;
-import org.apache.cayenne.project.Project;
-import org.apache.cayenne.project.ProjectLoader;
 import org.apache.cayenne.project.ProjectModule;
 import org.apache.cayenne.resource.URLResource;
 import org.apache.cayenne.tools.ToolsInjectorBuilder;
@@ -137,7 +136,7 @@ public class CgenRunTool {
         Project project;
         try {
             ProjectLoader loader = injector.getInstance(ProjectLoader.class);
-            project = loader.loadProject(new URLResource(projectFile.toUri().toURL()));
+            project = loader.load(new URLResource(projectFile.toUri().toURL()));
         } catch (Exception e) {
             return validationFailed(CgenErrorCode.project_parse_failed,
                     "Cayenne project loader rejected the descriptor: " + e.getMessage(),
@@ -145,10 +144,9 @@ public class CgenRunTool {
         }
 
         // Step 3 — DataMap present?
-        DataChannelDescriptor descriptor = (DataChannelDescriptor) project.getRootNode();
-        DataMap dataMap = descriptor.getDataMap(dataMapName);
+        DataMap dataMap = project.getDataMap(dataMapName);
         if (dataMap == null) {
-            String available = descriptor.getDataMaps().stream()
+            String available = project.getDataMaps().stream()
                     .map(DataMap::getName)
                     .sorted()
                     .collect(Collectors.joining("', '", "'", "'"));
@@ -161,7 +159,7 @@ public class CgenRunTool {
         // Step 4 — cgen configuration: use the <cgen> block stored in the DataMap, or, if there is none,
         // synthesize a default. This mirrors CayenneModeler and the Maven/Gradle plugins, all of which
         // fall back to a default config rather than failing — a missing <cgen> block is not an error.
-        DataChannelMetaData metaData = injector.getInstance(DataChannelMetaData.class);
+        ProjectMetaData metaData = injector.getInstance(ProjectMetaData.class);
         CgenConfigList configList = metaData.get(dataMap, CgenConfigList.class);
         boolean usedDefaultConfig = configList == null || configList.getAll().isEmpty();
         CgenConfiguration cgenConfig = usedDefaultConfig

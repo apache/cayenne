@@ -54,20 +54,20 @@ import org.apache.cayenne.commitlog.meta.CommitLogEntityFactory;
 import org.apache.cayenne.commitlog.meta.IncludeAllCommitLogEntityFactory;
 import org.apache.cayenne.configuration.ConfigurationNameMapper;
 import org.apache.cayenne.configuration.Constants;
-import org.apache.cayenne.configuration.DataChannelDescriptorLoader;
-import org.apache.cayenne.configuration.DataChannelDescriptorMerger;
+import org.apache.cayenne.configuration.ProjectLoader;
+import org.apache.cayenne.configuration.ProjectMerger;
 import org.apache.cayenne.configuration.DataMapLoader;
 import org.apache.cayenne.configuration.DefaultConfigurationNameMapper;
-import org.apache.cayenne.configuration.DefaultDataChannelDescriptorMerger;
+import org.apache.cayenne.configuration.DefaultProjectMerger;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
 import org.apache.cayenne.configuration.ObjectContextFactory;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.configuration.upgrade.ConfigurationUpgrader;
-import org.apache.cayenne.configuration.xml.DataChannelMetaData;
+import org.apache.cayenne.configuration.xml.ProjectMetaData;
 import org.apache.cayenne.configuration.xml.DefaultHandlerFactory;
 import org.apache.cayenne.configuration.xml.HandlerFactory;
-import org.apache.cayenne.configuration.xml.NoopDataChannelMetaData;
-import org.apache.cayenne.configuration.xml.XMLDataChannelDescriptorLoader;
+import org.apache.cayenne.configuration.xml.NoopProjectMetaData;
+import org.apache.cayenne.configuration.xml.XMLProjectLoader;
 import org.apache.cayenne.configuration.xml.XMLDataMapLoader;
 import org.apache.cayenne.configuration.xml.XMLReaderProvider;
 import org.apache.cayenne.dba.db2.DB2Sniffer;
@@ -385,8 +385,8 @@ public class CoreModule implements Module {
         binder.bind(TransactionFactory.class).to(DefaultTransactionFactory.class);
 
         // a service to load project XML descriptors
-        binder.bind(DataChannelDescriptorLoader.class).to(XMLDataChannelDescriptorLoader.class);
-        binder.bind(DataChannelDescriptorMerger.class).to(DefaultDataChannelDescriptorMerger.class);
+        binder.bind(ProjectLoader.class).to(XMLProjectLoader.class);
+        binder.bind(ProjectMerger.class).to(DefaultProjectMerger.class);
 
         // a service to load DataMap XML descriptors
         binder.bind(DataMapLoader.class).to(XMLDataMapLoader.class);
@@ -418,7 +418,7 @@ public class CoreModule implements Module {
         binder.bind(TemplateContextFactory.class).to(DefaultTemplateContextFactory.class);
 
         binder.bind(HandlerFactory.class).to(DefaultHandlerFactory.class);
-        binder.bind(DataChannelMetaData.class).to(NoopDataChannelMetaData.class);
+        binder.bind(ProjectMetaData.class).to(NoopProjectMetaData.class);
         binder.bind(XMLReader.class).toProviderInstance(new XMLReaderProvider(false)).withoutScope();
 
         binder.bind(DataDomainFlushActionFactory.class).to(DefaultDataDomainFlushActionFactory.class);

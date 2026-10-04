@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.ui.project.editor.embeddable.attributes;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.EmbeddableAttribute;
@@ -145,7 +144,7 @@ public class EmbeddableAttributesView extends ProjectPanel implements
 
         EmbeddableAttributeDisplayEvent ev = new EmbeddableAttributeDisplayEvent(
                 this,
-                (DataChannelDescriptor) session.project().getRootNode(),
+                session.project(),
                 session.getSelectedDataMap(),
                 session.getSelectedEmbeddable(),
                 attrs);

@@ -18,21 +18,21 @@
  ****************************************************************/
 package org.apache.cayenne.project;
 
-import org.apache.cayenne.configuration.BaseConfigurationNodeVisitor;
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.BaseProjectNodeVisitor;
+import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.resource.Resource;
 
 /**
- * A ConfigurationNode visitor that extracts "configurationSource" from the nodes.
+ * A ProjectNode visitor that extracts "configurationSource" from the nodes.
  * 
  * @since 3.1
  */
-class ConfigurationSourceGetter extends BaseConfigurationNodeVisitor<Resource> {
+class ConfigurationSourceGetter extends BaseProjectNodeVisitor<Resource> {
 
     @Override
-    public Resource visitDataChannelDescriptor(DataChannelDescriptor descriptor) {
-        return descriptor.getConfigurationSource();
+    public Resource visitProject(Project project) {
+        return project.getConfigurationSource();
     }
 
     @Override

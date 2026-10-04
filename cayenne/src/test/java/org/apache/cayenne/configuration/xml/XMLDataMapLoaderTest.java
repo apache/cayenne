@@ -60,7 +60,7 @@ public class XMLDataMapLoaderTest {
             binder.bind(ConfigurationUpgrader.class).to(ConfigurationUpgrader.class);
             binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);
             binder.bind(HandlerFactory.class).to(DefaultHandlerFactory.class);
-            binder.bind(DataChannelMetaData.class).to(NoopDataChannelMetaData.class);
+            binder.bind(ProjectMetaData.class).to(NoopProjectMetaData.class);
             binder.bind(XMLReader.class).toProviderInstance(new XMLReaderProvider(false)).withoutScope();
         };
 

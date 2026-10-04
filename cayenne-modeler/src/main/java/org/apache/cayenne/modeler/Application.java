@@ -20,10 +20,11 @@
 package org.apache.cayenne.modeler;
 
 import org.apache.cayenne.configuration.ConfigurationNameMapper;
+import org.apache.cayenne.configuration.ProjectLoader;
 import org.apache.cayenne.configuration.DataMapLoader;
 import org.apache.cayenne.dbsync.reverse.configuration.DbAdapterFactory;
 import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
-import org.apache.cayenne.configuration.xml.DataChannelMetaData;
+import org.apache.cayenne.configuration.xml.ProjectMetaData;
 import org.apache.cayenne.dbsync.DbSyncModule;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
 import org.apache.cayenne.di.DIBootstrap;
@@ -46,8 +47,7 @@ import org.apache.cayenne.modeler.ui.MainFrame;
 import org.apache.cayenne.modeler.ui.action.OpenProjectAction;
 import org.apache.cayenne.modeler.ui.logconsole.LogConsole;
 import org.apache.cayenne.modeler.undo.CayenneUndoManager;
-import org.apache.cayenne.project.ConfigurationNodeParentGetter;
-import org.apache.cayenne.project.ProjectLoader;
+import org.apache.cayenne.project.ProjectNodeParentGetter;
 import org.apache.cayenne.project.ProjectModule;
 import org.apache.cayenne.project.ProjectSaver;
 import org.apache.cayenne.project.upgrade.ProjectUpgrader;
@@ -146,16 +146,16 @@ public class Application {
         return fileChooserFactory.create(parent, title);
     }
 
-    public ConfigurationNodeParentGetter getConfigurationNodeParentGetter() {
-        return injector.getInstance(ConfigurationNodeParentGetter.class);
+    public ProjectNodeParentGetter getProjectNodeParentGetter() {
+        return injector.getInstance(ProjectNodeParentGetter.class);
     }
 
     public DbAdapterFactory getDbAdapterFactory() {
         return injector.getInstance(DbAdapterFactory.class);
     }
 
-    public DataChannelMetaData getMetaData() {
-        return injector.getInstance(DataChannelMetaData.class);
+    public ProjectMetaData getMetaData() {
+        return injector.getInstance(ProjectMetaData.class);
     }
 
     public MergerTokenFactoryProvider getMergerTokenFactoryProvider() {
@@ -183,7 +183,7 @@ public class Application {
         this.actionManager = new GlobalActions(
                 this,
                 injector.getInstance(ConfigurationNameMapper.class),
-                injector.getInstance(ConfigurationNodeParentGetter.class));
+                injector.getInstance(ProjectNodeParentGetter.class));
 
         this.logConsole = new LogConsole(this);
         ModelerLogFactory.setAppender(logConsole);

@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.modeler.toolkit.tree;
 
-import org.apache.cayenne.configuration.ConfigurationNode;
+import org.apache.cayenne.configuration.ProjectNode;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.Relationship;
@@ -40,7 +40,7 @@ import java.util.Map;
  */
 public class EntityTreeModel implements TreeModel {
     protected Entity<?,?,?> root;
-    protected Map<Object, ConfigurationNode[]> sortedChildren;
+    protected Map<Object, ProjectNode[]> sortedChildren;
 
     /**
      * Filter for checking attributes and relationships
@@ -79,7 +79,7 @@ public class EntityTreeModel implements TreeModel {
 
         // wonder if linear search will be faster, considering that
         // this comparator uses reflection?
-        return Arrays.binarySearch(sortedChildren(node), (ConfigurationNode)child, ProjectComparators.forNamedObjects());
+        return Arrays.binarySearch(sortedChildren(node), (ProjectNode)child, ProjectComparators.forNamedObjects());
     }
 
     public void addTreeModelListener(TreeModelListener listener) {
@@ -91,36 +91,36 @@ public class EntityTreeModel implements TreeModel {
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private ConfigurationNode[] sortedChildren(Object node) {
+    private ProjectNode[] sortedChildren(Object node) {
         Entity entity = entityForNonLeafNode(node);
 
         // may happen in incomplete relationships
         if (entity == null) {
-            return new ConfigurationNode[0];
+            return new ProjectNode[0];
         }
 
-        ConfigurationNode[] sortedForNode = sortedChildren.get(node);
+        ProjectNode[] sortedForNode = sortedChildren.get(node);
 
         if (sortedForNode == null) {
             Collection<Attribute<?,?,?>> attributes = entity.getAttributes();
             Collection<Relationship<?,?,?>> relationships = entity.getRelationships();
 
-            List<ConfigurationNode> nodes = new ArrayList<>();
+            List<ProjectNode> nodes = new ArrayList<>();
 
             // combine two collections in an array
             for (Attribute<?,?,?> attr : attributes) {
                 if (filter == null || filter.attributeMatch(node, attr)) {
-                    nodes.add((ConfigurationNode)attr);
+                    nodes.add((ProjectNode)attr);
                 }
             }
 
             for (Relationship<?,?,?> rel : relationships) {
                 if (filter == null || filter.relationshipMatch(node, rel)) {
-                    nodes.add((ConfigurationNode)rel);
+                    nodes.add((ProjectNode)rel);
                 }
             }
 
-            sortedForNode = nodes.toArray(new ConfigurationNode[0]);
+            sortedForNode = nodes.toArray(new ProjectNode[0]);
 
             Arrays.sort(sortedForNode, ProjectComparators.forEntityChildren());
             sortedChildren.put(node, sortedForNode);

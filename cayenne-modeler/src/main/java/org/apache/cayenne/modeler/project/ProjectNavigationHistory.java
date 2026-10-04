@@ -22,7 +22,7 @@ package org.apache.cayenne.modeler.project;
 import org.apache.cayenne.modeler.event.display.DataMapDisplayEvent;
 import org.apache.cayenne.modeler.event.display.DbEntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.DisplayEvent;
-import org.apache.cayenne.modeler.event.display.DomainDisplayEvent;
+import org.apache.cayenne.modeler.event.display.ProjectDisplayEvent;
 import org.apache.cayenne.modeler.event.display.EmbeddableDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ObjEntityDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ProcedureDisplayEvent;
@@ -30,7 +30,7 @@ import org.apache.cayenne.modeler.event.display.QueryDisplayEvent;
 import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
 import org.apache.cayenne.modeler.event.model.DbEntityEvent;
 import org.apache.cayenne.modeler.event.model.DataMapEvent;
-import org.apache.cayenne.modeler.event.model.DomainEvent;
+import org.apache.cayenne.modeler.event.model.ProjectEvent;
 import org.apache.cayenne.modeler.event.model.EmbeddableEvent;
 import org.apache.cayenne.modeler.event.model.ProcedureEvent;
 import org.apache.cayenne.modeler.event.model.QueryEvent;
@@ -106,8 +106,8 @@ public class ProjectNavigationHistory {
             session.displayQuery(qe);
         } else if (e instanceof DataMapDisplayEvent dme) {
             session.displayDataMap(dme);
-        } else if (e instanceof DomainDisplayEvent doe) {
-            session.displayDomain(doe);
+        } else if (e instanceof ProjectDisplayEvent doe) {
+            session.displayProject(doe);
         }
     }
 
@@ -141,8 +141,8 @@ public class ProjectNavigationHistory {
                     if (((DataMapEvent) e).getDataMap() == ((DataMapDisplayEvent) de).getDataMap()) {
                         it.remove();
                     }
-                } else if (e instanceof DomainEvent && de instanceof DomainDisplayEvent) {
-                    if (((DomainEvent) e).getDomain() == ((DomainDisplayEvent) de).getDomain()) {
+                } else if (e instanceof ProjectEvent && de instanceof ProjectDisplayEvent) {
+                    if (((ProjectEvent) e).getProject() == ((ProjectDisplayEvent) de).getProject()) {
                         it.remove();
                     }
                 }

@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.modeler.toolkit.checkbox;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.ui.project.ProjectView;
@@ -66,8 +66,8 @@ public class CMCheckBoxUndoableEdit extends AbstractUndoableEdit {
 
         EditorPanelView editor = projectView.getEditorPanel();
 
-        if (targetObject instanceof DataChannelDescriptor) {
-            tabbedPane = editor.getDataDomainView();
+        if (targetObject instanceof Project) {
+            tabbedPane = editor.getProjectEditorView();
         }
 
         if (targetObject instanceof DataMap) {

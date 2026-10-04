@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.modeler.ui.action;
 
-import org.apache.cayenne.configuration.ConfigurationNode;
+import org.apache.cayenne.configuration.ProjectNode;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.log.ModelerLogFactory;
 import org.apache.cayenne.modeler.toolkit.AppAction;
@@ -54,7 +54,7 @@ public class ExitAction extends AppAction {
      * Always returns true.
      */
     @Override
-    public boolean enableForPath(ConfigurationNode object) {
+    public boolean enableForPath(ProjectNode object) {
         return true;
     }
 }

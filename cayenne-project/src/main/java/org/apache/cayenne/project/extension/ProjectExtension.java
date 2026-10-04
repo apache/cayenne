@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.project.extension;
 
-import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
+import org.apache.cayenne.configuration.ProjectNodeVisitor;
 
 /**
  * <p>DataMap XML file extension mechanics.</p>
@@ -48,7 +48,7 @@ public interface ProjectExtension {
     SaverDelegate createSaverDelegate();
 
 
-    ConfigurationNodeVisitor<String> createNamingDelegate();
+    ProjectNodeVisitor<String> createNamingDelegate();
 
     /**
      * Controls the relative position of this extension's XML elements within a saved file.

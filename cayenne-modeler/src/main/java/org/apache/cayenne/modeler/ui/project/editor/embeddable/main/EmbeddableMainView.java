@@ -20,7 +20,7 @@ package org.apache.cayenne.modeler.ui.project.editor.embeddable.main;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjAttribute;
@@ -107,9 +107,9 @@ public class EmbeddableMainView extends ProjectPanel implements EmbeddableDispla
         else if (embeddable.getDataMap().getEmbeddable(newClassName) == null) {
 
             // if newClassName dupliucates in other DataMaps
-            DataChannelDescriptor domain = (DataChannelDescriptor) session.project().getRootNode();
-            if (domain != null) {
-                for (DataMap nextMap : domain.getDataMaps()) {
+            Project project = session.project();
+            if (project != null) {
+                for (DataMap nextMap : project.getDataMaps()) {
                     if (nextMap == embeddable.getDataMap()) {
                         continue;
                     }
@@ -132,7 +132,7 @@ public class EmbeddableMainView extends ProjectPanel implements EmbeddableDispla
 
             session.fireEmbeddableEvent(e, session.getSelectedDataMap());
 
-            Iterator it = ((DataChannelDescriptor) session.project().getRootNode()).getDataMaps().iterator();
+            Iterator it = session.project().getDataMaps().iterator();
             while (it.hasNext()) {
                 DataMap dataMap = (DataMap) it.next();
                 Iterator<ObjEntity> ent = dataMap.getObjEntities().stream()

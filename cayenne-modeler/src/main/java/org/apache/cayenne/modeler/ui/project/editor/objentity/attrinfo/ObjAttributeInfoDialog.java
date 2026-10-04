@@ -22,7 +22,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
@@ -622,14 +622,14 @@ public class ObjAttributeInfoDialog extends ProjectDialog implements TreeSelecti
 
         session.fireObjEntityEvent(ObjEntityEvent.ofChange(this, model.getEntity()));
 
-        DataChannelDescriptor domain = (DataChannelDescriptor) session.project().getRootNode();
-        ObjEntityDisplayEvent event = new ObjEntityDisplayEvent(this, domain,
+        Project project = session.project();
+        ObjEntityDisplayEvent event = new ObjEntityDisplayEvent(this, project,
                 session.getSelectedDataMap(), session.getSelectedObjEntity());
         session.displayObjEntity(event);
 
         session.fireObjAttributeEvent(ObjAttributeEvent.ofChange(this, attributeSaved, model.getEntity()));
 
-        ObjAttributeDisplayEvent eventAttr = new ObjAttributeDisplayEvent(this, domain,
+        ObjAttributeDisplayEvent eventAttr = new ObjAttributeDisplayEvent(this, project,
                 session.getSelectedDataMap(), session.getSelectedObjEntity(), attributeSaved);
         session.displayObjAttribute(eventAttr);
     }

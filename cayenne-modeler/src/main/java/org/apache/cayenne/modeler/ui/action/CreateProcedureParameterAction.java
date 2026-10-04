@@ -19,8 +19,7 @@
 
 package org.apache.cayenne.modeler.ui.action;
 
-import org.apache.cayenne.configuration.ConfigurationNode;
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.ProjectNode;
 import org.apache.cayenne.modeler.event.model.ProcedureParameterEvent;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.map.Procedure;
@@ -50,7 +49,7 @@ public class CreateProcedureParameterAction extends AppAction {
         session.fireProcedureParameterEvent(ProcedureParameterEvent.ofAdd(src, parameter));
 
         session.displayProcedureParameter(new ProcedureParameterDisplayEvent(src,
-                (DataChannelDescriptor) session.project().getRootNode(),
+                session.project(),
                 session.getSelectedDataMap(),
                 procedure,
                 parameter));
@@ -77,7 +76,7 @@ public class CreateProcedureParameterAction extends AppAction {
 
             app.getUndoManager().addEdit(
                     new CreateProcedureParameterUndoableEdit(session,
-                            (DataChannelDescriptor) session.project().getRootNode(), session.getSelectedDataMap(),
+                            session.project(), session.getSelectedDataMap(),
                             procedure, parameter
                     )
             );
@@ -93,7 +92,7 @@ public class CreateProcedureParameterAction extends AppAction {
      * Returns <code>true</code> if path contains a Procedure object.
      */
     @Override
-    public boolean enableForPath(ConfigurationNode object) {
+    public boolean enableForPath(ProjectNode object) {
         if (object == null) {
             return false;
         }

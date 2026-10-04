@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.ui.action;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.dbsync.model.DetectedDbEntity;
 import org.apache.cayenne.dbsync.reverse.dbload.DbRelationshipDetected;
 import org.apache.cayenne.map.Attribute;
@@ -135,30 +135,30 @@ public class FindAction extends AppAction {
      */
     public static void jumpToResult(FindAction.SearchResultEntry searchResultEntry, Application application) {
         ProjectSession session = application.getFrame().getProjectSession();
-        DataChannelDescriptor domain = (DataChannelDescriptor) session.project().getRootNode();
+        Project project = session.project();
         ProjectView projectView = application.getFrame().getProjectView();
 
         if (searchResultEntry.getObject() instanceof Entity) {
-            jumpToEntityResult((Entity<?, ?, ?>) searchResultEntry.getObject(), projectView, domain, session);
+            jumpToEntityResult((Entity<?, ?, ?>) searchResultEntry.getObject(), projectView, project, session);
         } else if (searchResultEntry.getObject() instanceof QueryDescriptor) {
-            jumpToQueryResult((QueryDescriptor) searchResultEntry.getObject(), projectView, domain, session);
+            jumpToQueryResult((QueryDescriptor) searchResultEntry.getObject(), projectView, project, session);
         } else if (searchResultEntry.getObject() instanceof Embeddable) {
-            jumpToEmbeddableResult((Embeddable) searchResultEntry.getObject(), projectView, domain, session);
+            jumpToEmbeddableResult((Embeddable) searchResultEntry.getObject(), projectView, project, session);
         } else if (searchResultEntry.getObject() instanceof EmbeddableAttribute) {
-            jumpToEmbeddableAttributeResult((EmbeddableAttribute) searchResultEntry.getObject(), projectView, domain, session);
+            jumpToEmbeddableAttributeResult((EmbeddableAttribute) searchResultEntry.getObject(), projectView, project, session);
         } else if (searchResultEntry.getObject() instanceof Attribute || searchResultEntry.getObject() instanceof Relationship) {
-            jumpToAttributeResult(searchResultEntry, projectView, domain, session);
+            jumpToAttributeResult(searchResultEntry, projectView, project, session);
         } else if (searchResultEntry.getObject() instanceof Procedure) {
-            jumpToProcedureResult((Procedure) searchResultEntry.getObject(), projectView, domain, session);
+            jumpToProcedureResult((Procedure) searchResultEntry.getObject(), projectView, project, session);
         } else if (searchResultEntry.getObject() instanceof ProcedureParameter) {
-            jumpToProcedureResult((ProcedureParameter) searchResultEntry.getObject(), projectView, domain, session);
+            jumpToProcedureResult((ProcedureParameter) searchResultEntry.getObject(), projectView, project, session);
         }
     }
 
     private List<SearchResultEntry> search(String searchStr) {
         Pattern pattern = Pattern.compile(searchStr, Pattern.CASE_INSENSITIVE);
         List<SearchResultEntry> result = new ArrayList<>();
-        for (DataMap dataMap : ((DataChannelDescriptor) getProjectSession().project().getRootNode()).getDataMaps()) {
+        for (DataMap dataMap : getProjectSession().project().getDataMaps()) {
             searchInQueryDescriptors(pattern, result, dataMap);
             searchInEmbeddables(pattern, result, dataMap);
             searchInDbEntities(pattern, result, dataMap);
@@ -258,7 +258,7 @@ public class FindAction extends AppAction {
         return pattern.matcher(entityName).find();
     }
 
-    private static void jumpToAttributeResult(SearchResultEntry searchResultEntry, ProjectView projectView, DataChannelDescriptor domain,
+    private static void jumpToAttributeResult(SearchResultEntry searchResultEntry, ProjectView projectView, Project project,
                                               ProjectSession session) {
         DataMap map;
         Entity<?, ?, ?> entity;
@@ -273,25 +273,25 @@ public class FindAction extends AppAction {
 
         if (searchResultEntry.getObject() instanceof DbAttribute) {
             DbAttributeDisplayEvent event = new DbAttributeDisplayEvent(
-                    projectView.getProjectTreeView(), domain, map, (DbEntity) entity,
+                    projectView.getProjectTreeView(), project, map, (DbEntity) entity,
                     (DbAttribute) searchResultEntry.getObject());
             session.displayDbAttribute(event);
             projectView.getEditorPanel().getDbDetailView().repaint();
         } else if (searchResultEntry.getObject() instanceof ObjAttribute) {
             ObjAttributeDisplayEvent event = new ObjAttributeDisplayEvent(
-                    projectView.getProjectTreeView(), domain, map, (ObjEntity) entity,
+                    projectView.getProjectTreeView(), project, map, (ObjEntity) entity,
                     (ObjAttribute) searchResultEntry.getObject());
             session.displayObjAttribute(event);
             projectView.getEditorPanel().getObjDetailView().repaint();
         } else if (searchResultEntry.getObject() instanceof DbRelationship) {
             DbRelationshipDisplayEvent event = new DbRelationshipDisplayEvent(
-                    projectView.getProjectTreeView(), domain, map, (DbEntity) entity,
+                    projectView.getProjectTreeView(), project, map, (DbEntity) entity,
                     (DbRelationship) searchResultEntry.getObject());
             session.displayDbRelationship(event);
             projectView.getEditorPanel().getDbDetailView().repaint();
         } else if (searchResultEntry.getObject() instanceof ObjRelationship) {
             ObjRelationshipDisplayEvent event = new ObjRelationshipDisplayEvent(
-                    projectView.getProjectTreeView(), domain, map, (ObjEntity) entity,
+                    projectView.getProjectTreeView(), project, map, (ObjEntity) entity,
                     (ObjRelationship) searchResultEntry.getObject());
             session.displayObjRelationship(event);
             projectView.getEditorPanel().getObjDetailView().repaint();
@@ -301,65 +301,65 @@ public class FindAction extends AppAction {
     private static void jumpToEmbeddableAttributeResult(
             EmbeddableAttribute attribute,
             ProjectView projectView,
-            DataChannelDescriptor domain,
+            Project project,
             ProjectSession session) {
 
         Embeddable embeddable = attribute.getEmbeddable();
         DataMap map = embeddable.getDataMap();
         buildAndSelectTreePath(map, embeddable, projectView);
         EmbeddableAttributeDisplayEvent event = new EmbeddableAttributeDisplayEvent(
-                projectView.getProjectTreeView(), domain, map, embeddable, attribute);
+                projectView.getProjectTreeView(), project, map, embeddable, attribute);
         session.displayEmbeddableAttribute(event);
         projectView.getEditorPanel().getEmbeddableView().repaint();
     }
 
-    private static void jumpToEmbeddableResult(Embeddable embeddable, ProjectView projectView, DataChannelDescriptor domain,
+    private static void jumpToEmbeddableResult(Embeddable embeddable, ProjectView projectView, Project project,
                                                ProjectSession session) {
         DataMap map = embeddable.getDataMap();
         buildAndSelectTreePath(map, embeddable, projectView);
         EmbeddableDisplayEvent event = new EmbeddableDisplayEvent(
-                projectView.getProjectTreeView(), domain, map, embeddable, true);
+                projectView.getProjectTreeView(), project, map, embeddable, true);
         session.displayEmbeddable(event);
     }
 
-    private static void jumpToQueryResult(QueryDescriptor queryDescriptor, ProjectView projectView, DataChannelDescriptor domain, ProjectSession session) {
+    private static void jumpToQueryResult(QueryDescriptor queryDescriptor, ProjectView projectView, Project project, ProjectSession session) {
         DataMap map = queryDescriptor.getDataMap();
         buildAndSelectTreePath(map, queryDescriptor, projectView);
-        QueryDisplayEvent event = new QueryDisplayEvent(projectView.getProjectTreeView(), domain, map, queryDescriptor);
+        QueryDisplayEvent event = new QueryDisplayEvent(projectView.getProjectTreeView(), project, map, queryDescriptor);
         session.displayQuery(event);
     }
 
-    private static void jumpToEntityResult(Entity<?, ?, ?> entity, ProjectView projectView, DataChannelDescriptor domain, ProjectSession session) {
+    private static void jumpToEntityResult(Entity<?, ?, ?> entity, ProjectView projectView, Project project, ProjectSession session) {
         DataMap map = entity.getDataMap();
         buildAndSelectTreePath(map, entity, projectView);
 
         if (entity instanceof ObjEntity oe) {
             ObjEntityDisplayEvent event = new ObjEntityDisplayEvent(
-                    projectView.getProjectTreeView(), domain, map, oe, true, false);
+                    projectView.getProjectTreeView(), project, map, oe, true, false);
             session.displayObjEntity(event);
         } else if (entity instanceof DbEntity de) {
             DbEntityDisplayEvent event = new DbEntityDisplayEvent(
-                    projectView.getProjectTreeView(), domain, map, de, true, false);
+                    projectView.getProjectTreeView(), project, map, de, true, false);
             session.displayDbEntity(event);
         }
     }
 
-    private static void jumpToProcedureResult(Procedure procedure, ProjectView projectView, DataChannelDescriptor domain,
+    private static void jumpToProcedureResult(Procedure procedure, ProjectView projectView, Project project,
                                               ProjectSession session) {
         DataMap map = procedure.getDataMap();
         buildAndSelectTreePath(map, procedure, projectView);
-        ProcedureDisplayEvent event = new ProcedureDisplayEvent(projectView.getProjectTreeView(), domain, map, procedure);
+        ProcedureDisplayEvent event = new ProcedureDisplayEvent(projectView.getProjectTreeView(), project, map, procedure);
         session.displayProcedure(event);
         projectView.getEditorPanel().getProcedureView().repaint();
     }
 
-    private static void jumpToProcedureResult(ProcedureParameter parameter, ProjectView projectView, DataChannelDescriptor domain,
+    private static void jumpToProcedureResult(ProcedureParameter parameter, ProjectView projectView, Project project,
                                               ProjectSession session) {
         Procedure procedure = parameter.getProcedure();
         DataMap map = procedure.getDataMap();
         buildAndSelectTreePath(map, procedure, projectView);
         ProcedureParameterDisplayEvent event =
-                new ProcedureParameterDisplayEvent(projectView.getProjectTreeView(), domain, map, procedure, parameter);
+                new ProcedureParameterDisplayEvent(projectView.getProjectTreeView(), project, map, procedure, parameter);
         session.displayProcedureParameter(event);
         projectView.getEditorPanel().getProcedureView().repaint();
     }

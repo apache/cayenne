@@ -19,9 +19,9 @@
 
 package org.apache.cayenne.modeler.ui.action;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.modeler.event.model.DomainEvent;
-import org.apache.cayenne.configuration.xml.DataChannelMetaData;
+import org.apache.cayenne.configuration.Project;
+import org.apache.cayenne.modeler.event.model.ProjectEvent;
+import org.apache.cayenne.configuration.xml.ProjectMetaData;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.undo.CayenneUndoManager;
@@ -54,17 +54,17 @@ public class UpdateValidationConfigAction extends AppAction {
 
     @Override
     public void performAction(ActionEvent e) {
-        DataChannelMetaData metaData = app.getMetaData();
-        DataChannelDescriptor dataChannel = ((DataChannelDescriptor) app.getFrame().getProjectSession().project().getRootNode());
+        ProjectMetaData metaData = app.getMetaData();
+        Project project = app.getFrame().getProjectSession().project();
         ValidationConfig config = (ValidationConfig) getValue(CONFIG_PARAM);
-        ValidationConfig oldConfig = ValidationConfig.fromMetadata(metaData, dataChannel);
-        metaData.add(dataChannel, config);
+        ValidationConfig oldConfig = ValidationConfig.fromMetadata(metaData, project);
+        metaData.add(project, config);
 
         if (undoable) {
             CayenneUndoManager undoManager = app.getUndoManager();
             undoManager.addEdit(new UpdateValidationConfigUndoableEdit(getProjectSession(), oldConfig, config));
         }
-        getProjectSession().fireDomainEvent(DomainEvent.ofChange(e.getSource(), dataChannel));
+        getProjectSession().fireProjectEvent(ProjectEvent.ofChange(e.getSource(), project));
     }
 
     public UpdateValidationConfigAction putConfig(ValidationConfig config) {

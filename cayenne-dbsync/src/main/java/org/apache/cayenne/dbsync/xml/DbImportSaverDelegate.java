@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.dbsync.xml;
 
-import org.apache.cayenne.configuration.xml.DataChannelMetaData;
+import org.apache.cayenne.configuration.xml.ProjectMetaData;
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.project.extension.BaseSaverDelegate;
@@ -29,9 +29,9 @@ import org.apache.cayenne.project.extension.BaseSaverDelegate;
  */
 class DbImportSaverDelegate extends BaseSaverDelegate {
 
-    private DataChannelMetaData metaData;
+    private ProjectMetaData metaData;
 
-    DbImportSaverDelegate(DataChannelMetaData metaData) {
+    DbImportSaverDelegate(ProjectMetaData metaData) {
         this.metaData = metaData;
     }
 

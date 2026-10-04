@@ -18,9 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.project.validation;
 
-import org.apache.cayenne.configuration.ConfigurationNode;
-import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.ProjectNode;
+import org.apache.cayenne.configuration.ProjectNodeVisitor;
+import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -47,7 +47,7 @@ import java.util.function.Supplier;
  */
 public class DefaultProjectValidator implements ProjectValidator {
 
-    protected final Map<Class<? extends ConfigurationNode>, ConfigurationNodeValidator<?>> validators;
+    protected final Map<Class<? extends ProjectNode>, ProjectNodeValidator<?>> validators;
     protected ValidationConfig defaultConfig;
 
     protected DefaultProjectValidator(Supplier<ValidationConfig> configSupplier) {
@@ -59,14 +59,14 @@ public class DefaultProjectValidator implements ProjectValidator {
         validators = prepareValidators(() -> defaultConfig);
     }
 
-    public ValidationResult validate(ConfigurationNode node) {
+    public ValidationResult validate(ProjectNode node) {
         return node.acceptVisitor(new ValidationVisitor());
     }
 
-    private static Map<Class<? extends ConfigurationNode>, ConfigurationNodeValidator<?>> prepareValidators(
+    private static Map<Class<? extends ProjectNode>, ProjectNodeValidator<?>> prepareValidators(
             Supplier<ValidationConfig> configSupplier) {
-        Map<Class<? extends ConfigurationNode>, ConfigurationNodeValidator<?>> validators = new HashMap<>();
-        validators.put(DataChannelDescriptor.class, new DataChannelValidator(configSupplier));
+        Map<Class<? extends ProjectNode>, ProjectNodeValidator<?>> validators = new HashMap<>();
+        validators.put(Project.class, new DataChannelValidator(configSupplier));
         validators.put(DataMap.class, new DataMapValidator(configSupplier));
         validators.put(ObjEntity.class, new ObjEntityValidator(configSupplier));
         validators.put(ObjAttribute.class, new ObjAttributeValidator(configSupplier));
@@ -85,11 +85,11 @@ public class DefaultProjectValidator implements ProjectValidator {
     }
 
     @SuppressWarnings("unchecked")
-    protected <T extends ConfigurationNode> ConfigurationNodeValidator<T> getValidator(Class<T> node) {
-        return (ConfigurationNodeValidator<T>) validators.get(node);
+    protected <T extends ProjectNode> ProjectNodeValidator<T> getValidator(Class<T> node) {
+        return (ProjectNodeValidator<T>) validators.get(node);
     }
 
-    class ValidationVisitor implements ConfigurationNodeVisitor<ValidationResult> {
+    class ValidationVisitor implements ProjectNodeVisitor<ValidationResult> {
 
         private final ValidationResult validationResult;
 
@@ -97,10 +97,10 @@ public class DefaultProjectValidator implements ProjectValidator {
             validationResult = new ValidationResult();
         }
 
-        public ValidationResult visitDataChannelDescriptor(DataChannelDescriptor channelDescriptor) {
-            getValidator(DataChannelDescriptor.class).validate(channelDescriptor, validationResult);
+        public ValidationResult visitProject(Project project) {
+            getValidator(Project.class).validate(project, validationResult);
 
-            for (DataMap map : channelDescriptor.getDataMaps()) {
+            for (DataMap map : project.getDataMaps()) {
                 visitDataMap(map);
             }
 

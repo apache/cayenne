@@ -31,7 +31,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.function.Supplier;
 
-class ObjRelationshipValidator extends ConfigurationNodeValidator<ObjRelationship> {
+class ObjRelationshipValidator extends ProjectNodeValidator<ObjRelationship> {
 
     /**
      * @param configSupplier the config defining the behavior of this validator.

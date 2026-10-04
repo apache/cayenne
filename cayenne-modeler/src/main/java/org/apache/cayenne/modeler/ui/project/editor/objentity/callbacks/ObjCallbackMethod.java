@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.ui.project.editor.objentity.callbacks;
 
-import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
+import org.apache.cayenne.configuration.ProjectNodeVisitor;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
 
@@ -33,7 +33,7 @@ public class ObjCallbackMethod implements XMLSerializable {
 	}
 
 	@Override
-	public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
+	public void encodeAsXML(XMLEncoder encoder, ProjectNodeVisitor delegate) {
 
         encoder.start( encodeCallbackTypeForXML(callbackType)).attribute( name, getName()).end();
 	}

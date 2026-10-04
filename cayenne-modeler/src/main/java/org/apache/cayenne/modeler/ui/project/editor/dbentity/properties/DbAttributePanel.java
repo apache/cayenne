@@ -231,7 +231,7 @@ public class DbAttributePanel extends ProjectPanel implements DbEntityDisplayLis
 
         session.displayDbAttribute(new DbAttributeDisplayEvent(
                 this,
-                session.getSelectedDataDomain(),
+                session.getSelectedProject(),
                 session.getSelectedDataMap(),
                 session.getSelectedDbEntity(),
                 attrs));

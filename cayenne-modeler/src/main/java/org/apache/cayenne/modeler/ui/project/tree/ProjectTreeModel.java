@@ -19,14 +19,14 @@
 
 package org.apache.cayenne.modeler.ui.project.tree;
 
-import org.apache.cayenne.configuration.ConfigurationNode;
+import org.apache.cayenne.configuration.ProjectNode;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.QueryDescriptor;
-import org.apache.cayenne.project.Project;
+import org.apache.cayenne.configuration.Project;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
@@ -46,14 +46,14 @@ public class ProjectTreeModel extends DefaultTreeModel {
 	 * Constructor for ProjectTreeModel.
 	 */
 	public ProjectTreeModel(Project project) {
-		super(ProjectTreeFactory.wrapProjectNode(project.getRootNode()));
+		super(ProjectTreeFactory.wrapProjectNode(project));
 	}
 
 	/**
 	 * Re-inserts a tree node to preserve the correct ordering of items. Assumes
 	 * that the tree is already ordered, except for one node.
 	 */
-	public void positionNode(MutableTreeNode parent, DefaultMutableTreeNode treeNode, Comparator<ConfigurationNode> comparator) {
+	public void positionNode(MutableTreeNode parent, DefaultMutableTreeNode treeNode, Comparator<ProjectNode> comparator) {
 
 		if (treeNode == null) {
 			return;
@@ -66,7 +66,7 @@ public class ProjectTreeModel extends DefaultTreeModel {
 			}
 		}
 
-		ConfigurationNode object = (ConfigurationNode)treeNode.getUserObject();
+		ProjectNode object = (ProjectNode)treeNode.getUserObject();
 
 		if (parent != null) {
 			int len = parent.getChildCount();
@@ -87,7 +87,7 @@ public class ProjectTreeModel extends DefaultTreeModel {
 				}
 
 				// ObjEntities go before DbEntities
-				if (comparator.compare(object, (ConfigurationNode)node.getUserObject()) <= 0) {
+				if (comparator.compare(object, (ProjectNode)node.getUserObject()) <= 0) {
 					ins = i;
 				}
 			}

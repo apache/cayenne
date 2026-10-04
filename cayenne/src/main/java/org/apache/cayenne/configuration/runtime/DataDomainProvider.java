@@ -29,11 +29,10 @@ import org.apache.cayenne.access.flush.DataDomainFlushActionFactory;
 import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.cache.NestedQueryCache;
 import org.apache.cayenne.cache.QueryCache;
-import org.apache.cayenne.configuration.ConfigurationTree;
 import org.apache.cayenne.configuration.Constants;
-import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.configuration.DataChannelDescriptorLoader;
-import org.apache.cayenne.configuration.DataChannelDescriptorMerger;
+import org.apache.cayenne.configuration.Project;
+import org.apache.cayenne.configuration.ProjectLoader;
+import org.apache.cayenne.configuration.ProjectMerger;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptors;
 import org.apache.cayenne.configuration.RuntimeProperties;
@@ -64,7 +63,7 @@ import java.util.stream.Collectors;
 /**
  * A {@link DataChannel} provider that provides a single instance of DataDomain
  * configured per configuration supplied via injected
- * {@link DataChannelDescriptorLoader}.
+ * {@link ProjectLoader}.
  *
  * @since 3.1
  */
@@ -81,10 +80,10 @@ public class DataDomainProvider implements Provider<DataDomain> {
     protected ResourceLocator resourceLocator;
 
     @Inject
-    protected DataChannelDescriptorMerger descriptorMerger;
+    protected ProjectMerger descriptorMerger;
 
     @Inject
-    protected DataChannelDescriptorLoader loader;
+    protected ProjectLoader loader;
 
     /**
      * @since 4.1
@@ -140,23 +139,23 @@ public class DataDomainProvider implements Provider<DataDomain> {
     @Override
     public DataDomain get() {
 
-        DataChannelDescriptor descriptor = loadDescriptor();
-        EntityResolver entityResolver = createEntityResolver(descriptor);
+        Project project = loadDescriptor();
+        EntityResolver entityResolver = createEntityResolver(project);
         EntitySorter entitySorter = entitySorterFactory.createEntitySorter(entityResolver);
 
-        Map<String, String> properties = descriptor.getProperties();
+        Map<String, String> properties = project.getProperties();
         boolean validatingOnCommit = "true".equals(
                 properties.getOrDefault(VALIDATING_OBJECTS_ON_COMMIT_PROPERTY, VALIDATING_OBJECTS_ON_COMMIT_DEFAULT));
 
         DataDomain domain = new DataDomain(
-                descriptor.getName(),
+                project.getName(),
                 transactionManager,
                 transactionFactory,
                 flushActionFactory,
                 objectFactory,
                 eventManager,
                 new NestedQueryCache(queryCache),
-                createSharedSnapshotCache(descriptor),
+                createSharedSnapshotCache(project),
                 runtimeProperties.getInt(Constants.MAX_ID_QUALIFIER_SIZE_PROPERTY, -1),
                 validatingOnCommit,
                 entityResolver,
@@ -226,22 +225,22 @@ public class DataDomainProvider implements Provider<DataDomain> {
      *
      * @since 5.0
      */
-    protected DataRowStore createSharedSnapshotCache(DataChannelDescriptor descriptor) {
+    protected DataRowStore createSharedSnapshotCache(Project project) {
 
-        String sharedCache = descriptor.getProperties()
+        String sharedCache = project.getProperties()
                 .getOrDefault(SHARED_CACHE_ENABLED_PROPERTY, SHARED_CACHE_ENABLED_DEFAULT);
 
         return "true".equals(sharedCache)
-                ? injector.getInstance(DataRowStoreFactory.class).createDataRowStore(descriptor.getName())
+                ? injector.getInstance(DataRowStoreFactory.class).createDataRowStore(project.getName())
                 : null;
     }
 
-    protected EntityResolver createEntityResolver(DataChannelDescriptor descriptor) {
+    protected EntityResolver createEntityResolver(Project project) {
 
         EntityResolver entityResolver = new EntityResolver();
 
         // must go through "addDataMap" - unlike the Collection constructor, it sets the map namespace
-        for (DataMap dataMap : descriptor.getDataMaps()) {
+        for (DataMap dataMap : project.getDataMaps()) {
             entityResolver.addDataMap(dataMap);
         }
 
@@ -256,24 +255,24 @@ public class DataDomainProvider implements Provider<DataDomain> {
     /**
      * @since 4.0
      */
-    protected DataChannelDescriptor loadDescriptor() {
-        DataChannelDescriptor descriptor = locations.isEmpty() ? new DataChannelDescriptor() : loadDescriptorFromConfigs();
+    protected Project loadDescriptor() {
+        Project project = locations.isEmpty() ? new Project() : loadDescriptorFromConfigs();
 
         String nameOverride = runtimeProperties.get(Constants.DOMAIN_NAME_PROPERTY);
         if (nameOverride != null) {
-            descriptor.setName(nameOverride);
+            project.setName(nameOverride);
         }
 
-        return descriptor;
+        return project;
     }
 
-    private DataChannelDescriptor loadDescriptorFromConfigs() {
+    private Project loadDescriptorFromConfigs() {
 
         long t0 = System.currentTimeMillis();
 
         LOGGER.debug("starting configuration loading: {}", locations);
 
-        DataChannelDescriptor[] descriptors = new DataChannelDescriptor[locations.size()];
+        Project[] descriptors = new Project[locations.size()];
 
         for (int i = 0; i < locations.size(); i++) {
 
@@ -294,12 +293,7 @@ public class DataDomainProvider implements Provider<DataDomain> {
                         configurationResource.getURL());
             }
 
-            ConfigurationTree<DataChannelDescriptor> tree = loader.load(configurationResource);
-            if (!tree.getLoadFailures().isEmpty()) {
-                throw new DataDomainLoadException(tree, "Error loading DataChannelDescriptor");
-            }
-
-            descriptors[i] = tree.getRootNode();
+            descriptors[i] = loader.load(configurationResource);
         }
 
         long t1 = System.currentTimeMillis();

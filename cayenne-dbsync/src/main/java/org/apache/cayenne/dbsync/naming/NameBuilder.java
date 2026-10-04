@@ -18,8 +18,8 @@
  */
 package org.apache.cayenne.dbsync.naming;
 
-import org.apache.cayenne.configuration.ConfigurationNode;
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.ProjectNode;
+import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -49,16 +49,16 @@ public class NameBuilder {
      * Creates a builder for naming the given node under the given parent. The parent may be null for a top-level
      * node (such as a project root) that has no siblings to clash with.
      */
-    public static NameBuilder of(ConfigurationNode node, ConfigurationNode parent) {
+    public static NameBuilder of(ProjectNode node, ProjectNode parent) {
         return new NameBuilder(node, parent);
     }
 
-    private final ConfigurationNode nodeToName;
-    private final ConfigurationNode parent;
+    private final ProjectNode nodeToName;
+    private final ProjectNode parent;
     private String dupesPattern;
     private String preferredName;
 
-    private NameBuilder(ConfigurationNode nodeToName, ConfigurationNode parent) {
+    private NameBuilder(ProjectNode nodeToName, ProjectNode parent) {
         this.nodeToName = Objects.requireNonNull(nodeToName);
         this.parent = parent;
         this.dupesPattern = "%s%d";
@@ -83,9 +83,9 @@ public class NameBuilder {
         return deduplicate(nodeToName, normalizedBaseName);
     }
 
-    private static String defaultBaseName(ConfigurationNode node) {
+    private static String defaultBaseName(ProjectNode node) {
         return switch (node) {
-            case DataChannelDescriptor ignored -> "project";
+            case Project ignored -> "project";
             case DataMap ignored -> "datamap";
             case ObjEntity ignored -> "ObjEntity";
             case DbEntity ignored -> "db_entity";
@@ -103,7 +103,7 @@ public class NameBuilder {
         };
     }
 
-    private static String normalize(ConfigurationNode node, String baseName) {
+    private static String normalize(ProjectNode node, String baseName) {
         return switch (node) {
             case ObjEntity ignored -> NameUtil.capitalize(baseName);
             case Embeddable ignored -> NameUtil.capitalize(baseName);
@@ -115,15 +115,15 @@ public class NameBuilder {
         };
     }
 
-    private String deduplicate(ConfigurationNode node, String baseName) {
+    private String deduplicate(ProjectNode node, String baseName) {
 
-        // a top-level node (e.g. a DataChannelDescriptor or a project-level DataMap) has no siblings to clash with
+        // a top-level node (e.g. a Project or a project-level DataMap) has no siblings to clash with
         if (parent == null) {
             return baseName;
         }
 
         Predicate<String> nameChecker = switch (node) {
-            case DataMap ignored -> name -> ((DataChannelDescriptor) parent).getDataMap(name) != null;
+            case DataMap ignored -> name -> ((Project) parent).getDataMap(name) != null;
             case ObjEntity ignored -> name -> ((DataMap) parent).getObjEntity(name) != null;
             case DbEntity ignored -> name -> ((DataMap) parent).getDbEntity(name) != null;
             case Embeddable ignored -> this::embeddableExists;

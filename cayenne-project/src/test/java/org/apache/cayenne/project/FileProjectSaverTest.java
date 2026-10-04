@@ -19,9 +19,8 @@
 package org.apache.cayenne.project;
 
 import org.apache.cayenne.configuration.ConfigurationNameMapper;
-import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
-import org.apache.cayenne.configuration.ConfigurationTree;
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.ProjectNodeVisitor;
+import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.configuration.DefaultConfigurationNameMapper;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
@@ -71,7 +70,7 @@ public class FileProjectSaverTest {
     @Test
     public void saveAs_Sorted() throws Exception {
 
-        DataChannelDescriptor rootNode = new DataChannelDescriptor();
+        Project rootNode = new Project();
         rootNode.setName("test");
 
         // add maps in reverse alpha order. Check that they are saved in alpha order
@@ -79,9 +78,7 @@ public class FileProjectSaverTest {
         rootNode.getDataMaps().add(new DataMap("B"));
         rootNode.getDataMaps().add(new DataMap("A"));
 
-        Project project = new Project(new ConfigurationTree<DataChannelDescriptor>(rootNode));
-
-        saver.saveAs(project, new URLResource(tempDir.toURI().toURL()));
+        saver.saveAs(rootNode, new URLResource(tempDir.toURI().toURL()));
 
         File target = new File(tempDir, "cayenne-test.xml");
         assertTrue(target.isFile());
@@ -126,7 +123,7 @@ public class FileProjectSaverTest {
         return new ProjectExtension() {
             @Override public LoaderDelegate createLoaderDelegate() { return null; }
             @Override public SaverDelegate createSaverDelegate() { return new BaseSaverDelegate(); }
-            @Override public ConfigurationNodeVisitor<String> createNamingDelegate() { return null; }
+            @Override public ProjectNodeVisitor<String> createNamingDelegate() { return null; }
             @Override public int order() { return order; }
         };
     }
@@ -144,9 +141,7 @@ public class FileProjectSaverTest {
         String mapFilePath = subDir.toURI() + "../" + mapFileName + ".map.xml";
         DataMap testDataMap = new DataMap(mapFileName);
         testDataMap.setConfigurationSource(new URLResource(new URL(mapFilePath)));
-        Project project = new Project(new ConfigurationTree<DataMap>(testDataMap));
-
-        saver.save(project);
+        saver.save(testDataMap);
 
         File target = new File(tempDir, mapFileName + ".map.xml");
         assertTrue(target.isFile());

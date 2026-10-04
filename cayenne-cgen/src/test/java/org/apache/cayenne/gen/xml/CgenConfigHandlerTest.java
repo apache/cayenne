@@ -20,7 +20,7 @@
 package org.apache.cayenne.gen.xml;
 
 import org.apache.cayenne.configuration.DataMapLoader;
-import org.apache.cayenne.configuration.xml.DataChannelMetaData;
+import org.apache.cayenne.configuration.xml.ProjectMetaData;
 import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.gen.CgenConfigList;
@@ -66,7 +66,7 @@ public class CgenConfigHandlerTest {
         DataMap dataMap = injector.getInstance(DataMapLoader.class)
                 .load(new URLResource(mapFile.toUri().toURL()));
 
-        CgenConfigList configurations = injector.getInstance(DataChannelMetaData.class)
+        CgenConfigList configurations = injector.getInstance(ProjectMetaData.class)
                 .get(dataMap, CgenConfigList.class);
         assertNotNull(configurations, "no cgen configuration was loaded");
 

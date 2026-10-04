@@ -19,8 +19,8 @@
 
 package org.apache.cayenne.modeler.ui.action;
 
-import org.apache.cayenne.configuration.ConfigurationNode;
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.ProjectNode;
+import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
@@ -39,13 +39,13 @@ public class CreateDataMapAction extends AppAction {
     
     public static void onMapCreated(Object src, ProjectSession session, DataMap map) {
 
-        DataChannelDescriptor domain = (DataChannelDescriptor) session.project().getRootNode();
-        map.setDataChannelDescriptor(domain);
-        domain.getDataMaps().add(map);
+        Project project = session.project();
+        map.setProject(project);
+        project.getDataMaps().add(map);
 
         session.fireDataMapEvent(DataMapEvent.ofAdd(src, map));
 
-        DataMapDisplayEvent displayEvent = new DataMapDisplayEvent(src, domain, map, true);
+        DataMapDisplayEvent displayEvent = new DataMapDisplayEvent(src, project, map, true);
         session.displayDataMap(displayEvent);
     }
 
@@ -60,26 +60,25 @@ public class CreateDataMapAction extends AppAction {
 
     public void performAction(ActionEvent e) {
 
-        DataChannelDescriptor dataChannelDescriptor = (DataChannelDescriptor) getProjectSession()
-                .project()
-                .getRootNode();
+        Project project = getProjectSession()
+                .project();
 
         DataMap map = new DataMap();
-        map.setName(NameBuilder.of(map, dataChannelDescriptor).build());
+        map.setName(NameBuilder.of(map, project).build());
         onMapCreated(this, getProjectSession(), map);
 
-        app.getUndoManager().addEdit(new CreateDataMapUndoableEdit(getProjectSession(), dataChannelDescriptor, map));
+        app.getUndoManager().addEdit(new CreateDataMapUndoableEdit(getProjectSession(), project, map));
     }
 
     /**
      * Returns <code>true</code> if path contains a DataDomain object.
      */
     @Override
-    public boolean enableForPath(ConfigurationNode object) {
+    public boolean enableForPath(ProjectNode object) {
         if (object == null) {
             return false;
         }
 
-        return object instanceof DataChannelDescriptor;
+        return object instanceof Project;
     }
 }

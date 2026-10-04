@@ -20,8 +20,8 @@ package org.apache.cayenne.project;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.ConfigurationNameMapper;
-import org.apache.cayenne.configuration.ConfigurationNode;
-import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
+import org.apache.cayenne.configuration.ProjectNode;
+import org.apache.cayenne.configuration.ProjectNodeVisitor;
 import org.apache.cayenne.configuration.upgrade.UpgradeHandler;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
@@ -44,6 +44,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -56,8 +57,8 @@ public class FileProjectSaver implements ProjectSaver {
     @Inject
     protected ConfigurationNameMapper nameMapper;
 
-    protected ConfigurationNodeVisitor<Resource> resourceGetter;
-    protected ConfigurationNodeVisitor<Collection<ConfigurationNode>> saveableNodesGetter;
+    protected ProjectNodeVisitor<Resource> resourceGetter;
+    protected ProjectNodeVisitor<Collection<ProjectNode>> saveableNodesGetter;
     protected String fileEncoding;
 
     protected Collection<ProjectExtension> extensions;
@@ -86,25 +87,28 @@ public class FileProjectSaver implements ProjectSaver {
     }
 
     @Override
-    public void save(Project project) {
-        save(project, project.getConfigurationResource(), true);
+    public void save(ProjectNode rootNode, Collection<URL> unusedResources) {
+        save(rootNode, rootNode.acceptVisitor(resourceGetter), unusedResources);
     }
 
     @Override
-    public void saveAs(Project project, Resource baseDirectory) {
+    public void saveAs(ProjectNode rootNode, Resource baseDirectory) {
         if (baseDirectory == null) {
             throw new NullPointerException("Null 'baseDirectory'");
         }
-        save(project, baseDirectory, false);
+        save(rootNode, baseDirectory, null);
     }
 
-    void save(Project project, Resource baseResource, boolean deleteOldResources) {
-        Collection<ConfigurationNode> nodes = project.getRootNode().acceptVisitor(saveableNodesGetter);
+    /**
+     * @param unusedResources the old resources to delete, or null if no old resources should be deleted
+     */
+    void save(ProjectNode rootNode, Resource baseResource, Collection<URL> unusedResources) {
+        Collection<ProjectNode> nodes = rootNode.acceptVisitor(saveableNodesGetter);
         Collection<SaveUnit> units = new ArrayList<>(nodes.size());
 
         delegate.setBaseDirectory(baseResource);
 
-        for (ConfigurationNode node : nodes) {
+        for (ProjectNode node : nodes) {
             String targetLocation = nameMapper.configurationLocation(node);
 
             if (node instanceof DataMap) {
@@ -116,7 +120,7 @@ public class FileProjectSaver implements ProjectSaver {
             units.add(createSaveUnit(node, targetResource, null));
 
             for (ProjectExtension extension : extensions) {
-                ConfigurationNodeVisitor<String> namingDelegate = extension.createNamingDelegate();
+                ProjectNodeVisitor<String> namingDelegate = extension.createNamingDelegate();
                 SaverDelegate unitSaverDelegate = extension.createSaverDelegate();
                 String fileName = node.acceptVisitor(namingDelegate);
                 if (fileName != null) {
@@ -137,25 +141,21 @@ public class FileProjectSaver implements ProjectSaver {
         }
 
         try {
-            if (deleteOldResources) {
+            if (unusedResources != null) {
                 clearRenamedFiles(units);
 
-                Collection<URL> unusedResources = project.getUnusedResources();
+                Collection<URL> toDelete = new HashSet<>(unusedResources);
                 for (SaveUnit unit : units) {
-                    unusedResources.remove(unit.sourceConfiguration.getURL());
+                    toDelete.remove(unit.sourceConfiguration.getURL());
                 }
-                deleteUnusedFiles(unusedResources);
+                deleteUnusedFiles(toDelete);
             }
         } catch (IOException ex) {
             throw new CayenneRuntimeException(ex);
         }
-
-        // I guess we should reset projects state regardless of the value of
-        // 'deleteOldResources'
-        project.getUnusedResources().clear();
     }
 
-    SaveUnit createSaveUnit(ConfigurationNode node, Resource targetResource, SaverDelegate delegate) {
+    SaveUnit createSaveUnit(ProjectNode node, Resource targetResource, SaverDelegate delegate) {
 
         SaveUnit unit = new SaveUnit();
         unit.node = node;
@@ -239,7 +239,7 @@ public class FileProjectSaver implements ProjectSaver {
     }
 
     void saveToTempFile(SaveUnit unit, PrintWriter printWriter) {
-        ConfigurationNodeVisitor<?> visitor;
+        ProjectNodeVisitor<?> visitor;
         if (unit.delegate == null) {
             visitor = new ConfigurationSaver(printWriter, delegate);
         } else {
@@ -370,7 +370,7 @@ public class FileProjectSaver implements ProjectSaver {
 
     static class SaveUnit {
 
-        private ConfigurationNode node;
+        private ProjectNode node;
         private SaverDelegate delegate;
 
         // source can be an abstract resource, but target is always a file...

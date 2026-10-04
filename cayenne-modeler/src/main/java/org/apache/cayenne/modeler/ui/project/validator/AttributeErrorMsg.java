@@ -61,11 +61,11 @@ public class AttributeErrorMsg extends ValidationDisplayHandler {
         // must first display entity, and then switch to attribute display ..
         // so fire twice
         if (entity instanceof ObjEntity oe) {
-            session.displayObjEntity(new ObjEntityDisplayEvent(frame, domain, map, oe));
-            session.displayObjAttribute(new ObjAttributeDisplayEvent(frame, domain, map, oe, (ObjAttribute) attribute));
+            session.displayObjEntity(new ObjEntityDisplayEvent(frame, project, map, oe));
+            session.displayObjAttribute(new ObjAttributeDisplayEvent(frame, project, map, oe, (ObjAttribute) attribute));
         } else if (entity instanceof DbEntity de) {
-            session.displayDbEntity(new DbEntityDisplayEvent(frame, domain, map, de));
-            session.displayDbAttribute(new DbAttributeDisplayEvent(frame, domain, map, de, (DbAttribute) attribute));
+            session.displayDbEntity(new DbEntityDisplayEvent(frame, project, map, de));
+            session.displayDbAttribute(new DbAttributeDisplayEvent(frame, project, map, de, (DbAttribute) attribute));
         }
     }
 }

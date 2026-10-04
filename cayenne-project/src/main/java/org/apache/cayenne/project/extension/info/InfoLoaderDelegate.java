@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.project.extension.info;
 
-import org.apache.cayenne.configuration.xml.DataChannelMetaData;
+import org.apache.cayenne.configuration.xml.ProjectMetaData;
 import org.apache.cayenne.configuration.xml.NamespaceAwareNestedTagHandler;
 import org.apache.cayenne.project.extension.LoaderDelegate;
 
@@ -28,9 +28,9 @@ import org.apache.cayenne.project.extension.LoaderDelegate;
  */
 class InfoLoaderDelegate implements LoaderDelegate {
 
-    private DataChannelMetaData metaData;
+    private ProjectMetaData metaData;
 
-    InfoLoaderDelegate(DataChannelMetaData metaData) {
+    InfoLoaderDelegate(ProjectMetaData metaData) {
         this.metaData = metaData;
     }
 

@@ -29,13 +29,13 @@ public interface ConfigurationNameMapper {
 	 * Returns the name of a configuration resource based on a naming convention
 	 * for a given node type.
 	 */
-	String configurationLocation(ConfigurationNode node);
+	String configurationLocation(ProjectNode node);
 
 	/**
 	 * Returns the name of a configuration resource based on a naming convention
 	 * for a given node type.
 	 */
-	String configurationLocation(Class<? extends ConfigurationNode> type, String nodeName);
+	String configurationLocation(Class<? extends ProjectNode> type, String nodeName);
 
 	/**
 	 * Returns a node name for a given configuration type and a configuration
@@ -43,5 +43,5 @@ public interface ConfigurationNameMapper {
 	 * {@link #configurationLocation(Class, String)} . May return null if the
 	 * resource name is not following the expected naming format.
 	 */
-	String configurationNodeName(Class<? extends ConfigurationNode> type, Resource resource);
+	String projectNodeName(Class<? extends ProjectNode> type, Resource resource);
 }

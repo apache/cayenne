@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.gen.xml;
 
-import org.apache.cayenne.configuration.xml.DataChannelMetaData;
+import org.apache.cayenne.configuration.xml.ProjectMetaData;
 import org.apache.cayenne.configuration.xml.NamespaceAwareNestedTagHandler;
 
 import org.apache.cayenne.project.extension.LoaderDelegate;
@@ -28,9 +28,9 @@ import org.apache.cayenne.project.extension.LoaderDelegate;
  */
 public class CgenLoaderDelegate implements LoaderDelegate {
 
-    private DataChannelMetaData metaData;
+    private ProjectMetaData metaData;
 
-    CgenLoaderDelegate(DataChannelMetaData metaData){
+    CgenLoaderDelegate(ProjectMetaData metaData){
         this.metaData = metaData;
     }
 

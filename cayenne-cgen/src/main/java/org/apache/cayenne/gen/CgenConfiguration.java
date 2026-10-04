@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.gen;
 
-import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
+import org.apache.cayenne.configuration.ProjectNodeVisitor;
 import org.apache.cayenne.gen.internal.Utils;
 import org.apache.cayenne.gen.xml.CgenExtension;
 import org.apache.cayenne.map.DataMap;
@@ -514,7 +514,7 @@ public class CgenConfiguration implements XMLSerializable {
     }
 
     @Override
-    public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor<?> delegate) {
+    public void encodeAsXML(XMLEncoder encoder, ProjectNodeVisitor<?> delegate) {
         encoder.start("cgen")
                 .attribute("xmlns", CgenExtension.NAMESPACE)
                 .simpleTag("name", this.name)

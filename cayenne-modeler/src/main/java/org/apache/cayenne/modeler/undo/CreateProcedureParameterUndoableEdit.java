@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.modeler.undo;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
@@ -33,16 +33,16 @@ import javax.swing.undo.CannotUndoException;
 
 public class CreateProcedureParameterUndoableEdit extends CayenneUndoableEdit {
 
-    private DataChannelDescriptor domain;
+    private Project project;
     private DataMap dataMap;
     private Procedure procedure;
     private ProcedureParameter parameter;
 
     public CreateProcedureParameterUndoableEdit(ProjectSession session,
-            DataChannelDescriptor dataDomain, DataMap dataMap, Procedure procedure, ProcedureParameter parameter) {
+            Project project, DataMap dataMap, Procedure procedure, ProcedureParameter parameter) {
 
         super(session);
-        this.domain = dataDomain;
+        this.project = project;
         this.dataMap = dataMap;
         this.procedure = procedure;
         this.parameter = parameter;
@@ -57,7 +57,7 @@ public class CreateProcedureParameterUndoableEdit extends CayenneUndoableEdit {
                     parameter
             });
 
-            session.displayProcedure(new ProcedureDisplayEvent(this, domain, dataMap, procedure));
+            session.displayProcedure(new ProcedureDisplayEvent(this, project, dataMap, procedure));
         }
     }
 

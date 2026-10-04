@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.map;
 
-import org.apache.cayenne.configuration.BaseConfigurationNodeVisitor;
+import org.apache.cayenne.configuration.BaseProjectNodeVisitor;
 import org.apache.cayenne.util.XMLEncoder;
 import org.junit.jupiter.api.Test;
 
@@ -86,7 +86,7 @@ public class DbRelationshipTest {
         return out.toString();
     }
 
-    private static class EncoderDummyVisitor extends BaseConfigurationNodeVisitor<Object> {
+    private static class EncoderDummyVisitor extends BaseProjectNodeVisitor<Object> {
 
         @Override
         public Object visitDbRelationship(DbRelationship relationship) {

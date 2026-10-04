@@ -22,9 +22,12 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.event.model.DataMapEvent;
 import org.apache.cayenne.modeler.project.ProjectSession;
-import org.apache.cayenne.project.Project;
+import org.apache.cayenne.configuration.ProjectNode;
 import org.apache.cayenne.project.ProjectSaver;
 import org.apache.cayenne.resource.Resource;
+
+import java.net.URL;
+import java.util.Collection;
 
 public class DbImportProjectSaver implements ProjectSaver {
 
@@ -41,15 +44,15 @@ public class DbImportProjectSaver implements ProjectSaver {
     }
 
     @Override
-    public void save(Project project) {
+    public void save(ProjectNode rootNode, Collection<URL> unusedResources) {
 
-        DataMap dataMap = (DataMap) project.getRootNode();
+        DataMap dataMap = (DataMap) rootNode;
         session.fireDataMapEvent(DataMapEvent.ofRemove(session.app().getFrame(), dataMap));
         session.fireDataMapEvent(DataMapEvent.ofAdd(session.app().getFrame(), dataMap));
     }
 
     @Override
-    public void saveAs(Project project, Resource baseDirectory) {
-        save(project);
+    public void saveAs(ProjectNode rootNode, Resource baseDirectory) {
+        save(rootNode);
     }
 }

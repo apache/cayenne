@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.modeler.event.display;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
@@ -27,25 +27,25 @@ import org.apache.cayenne.map.ProcedureParameter;
 
 public class ProcedureParameterDisplayEvent extends DisplayEvent {
 
-    private final DataChannelDescriptor domain;
+    private final Project project;
     private final DataMap dataMap;
     private final Procedure procedure;
     private final ProcedureParameter[] procedureParameters;
 
     public ProcedureParameterDisplayEvent(Object src,
-                                          DataChannelDescriptor domain,
+                                          Project project,
                                           DataMap dataMap,
                                           Procedure procedure,
                                           ProcedureParameter... procedureParameters) {
         super(src);
-        this.domain = domain;
+        this.project = project;
         this.dataMap = dataMap;
         this.procedure = procedure;
         this.procedureParameters = procedureParameters;
     }
 
-    public DataChannelDescriptor getDomain() {
-        return domain;
+    public Project getProject() {
+        return project;
     }
 
     public DataMap getDataMap() {

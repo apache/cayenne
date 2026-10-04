@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.dbsync.xml;
 
-import org.apache.cayenne.configuration.xml.DataChannelMetaData;
+import org.apache.cayenne.configuration.xml.ProjectMetaData;
 import org.apache.cayenne.configuration.xml.NamespaceAwareNestedTagHandler;
 import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeColumn;
 import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeProcedure;
@@ -61,9 +61,9 @@ class ConfigHandler extends NamespaceAwareNestedTagHandler {
     private static final String TRUE = "true";
 
     private ReverseEngineering configuration;
-    private DataChannelMetaData metaData;
+    private ProjectMetaData metaData;
 
-    ConfigHandler(NamespaceAwareNestedTagHandler parentHandler, DataChannelMetaData metaData) {
+    ConfigHandler(NamespaceAwareNestedTagHandler parentHandler, ProjectMetaData metaData) {
         super(parentHandler);
         this.metaData = metaData;
         this.targetNamespace = DbImportExtension.NAMESPACE;

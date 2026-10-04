@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.modeler.ui.project.editor.dbentity.properties;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjRelationship;
@@ -195,8 +195,8 @@ public class DbRelationshipTableModel extends CMTableModel<DbRelationship> {
 
     void updateDependentObjRelationships(DbRelationship relationship) {
 
-        DataChannelDescriptor domain = (DataChannelDescriptor) session.project().getRootNode();
-        for (ObjRelationship objRelationship : DbRelationshipOps.objRelationshipsUsingDbRelationship(domain, relationship)) {
+        Project project = session.project();
+        for (ObjRelationship objRelationship : DbRelationshipOps.objRelationshipsUsingDbRelationship(project, relationship)) {
             objRelationship.recalculateToManyValue();
         }
     }

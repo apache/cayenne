@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.undo;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
@@ -54,7 +54,7 @@ public class RemoveUndoableEdit extends CayenneUndoableEdit {
     private QueryDescriptor query;
     private Procedure procedure;
 
-    private DataChannelDescriptor domain;
+    private Project project;
 
     private Embeddable embeddable;
 
@@ -62,16 +62,16 @@ public class RemoveUndoableEdit extends CayenneUndoableEdit {
     private final Map<ObjEntity, List<ObjRelationship>> objRelationshipMap = new HashMap<>();
 
     private enum REMOVE_MODE {
-        OBJECT_ENTITY, DB_ENTITY, QUERY, PROCEDURE, MAP_FROM_DOMAIN, DOMAIN, EMBEDDABLE
+        OBJECT_ENTITY, DB_ENTITY, QUERY, PROCEDURE, MAP_FROM_PROJECT, PROJECT, EMBEDDABLE
     }
 
     private final REMOVE_MODE mode;
 
     public RemoveUndoableEdit(ProjectSession session, DataMap map) {
         super(session);
-        this.domain = (DataChannelDescriptor) session.project().getRootNode();
+        this.project = session.project();
         this.map = map;
-        this.mode = REMOVE_MODE.MAP_FROM_DOMAIN;
+        this.mode = REMOVE_MODE.MAP_FROM_PROJECT;
     }
 
     public RemoveUndoableEdit(ProjectSession session, DataMap map, ObjEntity objEntity) {
@@ -142,9 +142,9 @@ public class RemoveUndoableEdit extends CayenneUndoableEdit {
                 return "Remove Query";
             case PROCEDURE:
                 return "Remove Procedure";
-            case MAP_FROM_DOMAIN:
+            case MAP_FROM_PROJECT:
                 return "Remove DataMap";
-            case DOMAIN:
+            case PROJECT:
                 return "Remove Project";
             case EMBEDDABLE:
                 return "Remove Embeddable";
@@ -171,7 +171,7 @@ public class RemoveUndoableEdit extends CayenneUndoableEdit {
             case PROCEDURE:
                 action.removeProcedure(map, procedure);
                 break;
-            case MAP_FROM_DOMAIN:
+            case MAP_FROM_PROJECT:
                 action.removeDataMap(map);
                 break;
             case EMBEDDABLE:
@@ -209,9 +209,9 @@ public class RemoveUndoableEdit extends CayenneUndoableEdit {
                 break;
             }
             case QUERY: {
-                this.domain = (DataChannelDescriptor) session.project().getRootNode();
+                this.project = session.project();
                 CreateQueryAction action = globalActions.getAction(CreateQueryAction.class);
-                action.createQuery(domain, map, query);
+                action.createQuery(project, map, query);
                 break;
             }
             case PROCEDURE: {
@@ -219,7 +219,7 @@ public class RemoveUndoableEdit extends CayenneUndoableEdit {
                 action.createProcedure(map, procedure);
                 break;
             }
-            case MAP_FROM_DOMAIN: {
+            case MAP_FROM_PROJECT: {
                 CreateDataMapAction.onMapCreated(this, session, map);
                 break;
             }

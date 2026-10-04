@@ -18,16 +18,16 @@
  ****************************************************************/
 package org.apache.cayenne.project.extension.validation;
 
-import org.apache.cayenne.configuration.xml.DataChannelMetaData;
+import org.apache.cayenne.configuration.xml.ProjectMetaData;
 import org.apache.cayenne.configuration.xml.NamespaceAwareNestedTagHandler;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.project.extension.LoaderDelegate;
 
 public class ValidationLoaderDelegate implements LoaderDelegate {
 
-    private final DataChannelMetaData metaData;
+    private final ProjectMetaData metaData;
 
-    ValidationLoaderDelegate(@Inject DataChannelMetaData metaData) {
+    ValidationLoaderDelegate(@Inject ProjectMetaData metaData) {
         this.metaData = metaData;
     }
 

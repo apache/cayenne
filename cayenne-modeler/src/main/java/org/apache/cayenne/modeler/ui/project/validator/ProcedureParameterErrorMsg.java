@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.ui.project.validator;
 
 import javax.swing.JFrame;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
@@ -40,9 +40,8 @@ public class ProcedureParameterErrorMsg extends ValidationDisplayHandler {
     public void displayField(ProjectSession session, JFrame frame) {
         Object object = super.validationFailure.getSource();
 
-        DataChannelDescriptor domain = (DataChannelDescriptor) session
-                .project()
-                .getRootNode();
+        Project project = session
+                .project();
 
         ProcedureParameter procedureParameter = (ProcedureParameter) object;
         Procedure procedure = procedureParameter.getProcedure();
@@ -55,7 +54,7 @@ public class ProcedureParameterErrorMsg extends ValidationDisplayHandler {
         // (E.g. DbAttributeErrorMsg)
         ProcedureDisplayEvent procedureEvent = new ProcedureDisplayEvent(
                 frame,
-                domain,
+                project,
                 map,
                 procedure,
                 true);
@@ -64,7 +63,7 @@ public class ProcedureParameterErrorMsg extends ValidationDisplayHandler {
         // now show the failed parameter
         ProcedureParameterDisplayEvent event = new ProcedureParameterDisplayEvent(
                 frame,
-                domain,
+                project,
                 map,
                 procedure,
                 procedureParameter);

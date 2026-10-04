@@ -19,8 +19,8 @@
 
 package org.apache.cayenne.modeler.ui.action;
 
-import org.apache.cayenne.configuration.ConfigurationNode;
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.ProjectNode;
+import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.map.Attribute;
@@ -54,9 +54,9 @@ public class CreateAttributeAction extends AppAction {
 
         session.fireEmbeddableAttributeEvent(EmbeddableAttributeEvent.ofAdd(src, attr, embeddable));
 
-        DataChannelDescriptor domain = (DataChannelDescriptor) session.project().getRootNode();
+        Project project = session.project();
         EmbeddableAttributeDisplayEvent e = new EmbeddableAttributeDisplayEvent(
-                src, domain, session.getSelectedDataMap(), embeddable, attr);
+                src, project, session.getSelectedDataMap(), embeddable, attr);
 
         session.displayEmbeddableAttribute(e);
     }
@@ -69,9 +69,9 @@ public class CreateAttributeAction extends AppAction {
 
         session.fireObjAttributeEvent(ObjAttributeEvent.ofAdd(src, attr, objEntity));
 
-        DataChannelDescriptor domain = (DataChannelDescriptor) session.project().getRootNode();
+        Project project = session.project();
 
-        ObjAttributeDisplayEvent ade = new ObjAttributeDisplayEvent(src, domain, map, objEntity, attr);
+        ObjAttributeDisplayEvent ade = new ObjAttributeDisplayEvent(src, project, map, objEntity, attr);
 
         session.displayObjAttribute(ade);
     }
@@ -83,8 +83,8 @@ public class CreateAttributeAction extends AppAction {
                                      DbAttribute attr) {
         session.fireDbAttributeEvent(DbAttributeEvent.ofAdd(src, attr, dbEntity));
 
-        DataChannelDescriptor domain = (DataChannelDescriptor) session.project().getRootNode();
-        DbAttributeDisplayEvent ade = new DbAttributeDisplayEvent(src, domain, map, dbEntity, attr);
+        Project project = session.project();
+        DbAttributeDisplayEvent ade = new DbAttributeDisplayEvent(src, project, map, dbEntity, attr);
 
         session.displayDbAttribute(ade);
     }
@@ -129,7 +129,7 @@ public class CreateAttributeAction extends AppAction {
             createObjAttribute(session.getSelectedDataMap(), objEntity, attr);
 
             app.getUndoManager().addEdit(
-                    new CreateObjAttributeUndoableEdit(session, (DataChannelDescriptor) session.project().getRootNode(),
+                    new CreateObjAttributeUndoableEdit(session, session.project(),
                             session.getSelectedDataMap(), objEntity, attr));
         } else if (getProjectSession().getSelectedDbEntity() != null) {
             DbEntity dbEntity = getProjectSession().getSelectedDbEntity();
@@ -142,7 +142,7 @@ public class CreateAttributeAction extends AppAction {
             createDbAttribute(session.getSelectedDataMap(), dbEntity, attr);
 
             app.getUndoManager().addEdit(
-                    new CreateDbAttributeUndoableEdit(session, (DataChannelDescriptor) session.project().getRootNode(),
+                    new CreateDbAttributeUndoableEdit(session, session.project(),
                             session.getSelectedDataMap(), dbEntity, attr));
         }
     }
@@ -166,7 +166,7 @@ public class CreateAttributeAction extends AppAction {
      * Returns <code>true</code> if path contains an Entity object.
      */
     @Override
-    public boolean enableForPath(ConfigurationNode object) {
+    public boolean enableForPath(ProjectNode object) {
         if (object == null) {
             return false;
         }

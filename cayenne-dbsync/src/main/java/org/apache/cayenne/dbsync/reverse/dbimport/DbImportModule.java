@@ -23,8 +23,8 @@ import org.apache.cayenne.configuration.ConfigurationNameMapper;
 import org.apache.cayenne.configuration.DataMapLoader;
 import org.apache.cayenne.configuration.DefaultConfigurationNameMapper;
 import org.apache.cayenne.configuration.upgrade.ConfigurationUpgrader;
-import org.apache.cayenne.configuration.xml.DataChannelMetaData;
-import org.apache.cayenne.configuration.xml.DefaultDataChannelMetaData;
+import org.apache.cayenne.configuration.xml.ProjectMetaData;
+import org.apache.cayenne.configuration.xml.DefaultProjectMetaData;
 import org.apache.cayenne.configuration.xml.DefaultHandlerFactory;
 import org.apache.cayenne.configuration.xml.HandlerFactory;
 import org.apache.cayenne.configuration.xml.XMLDataMapLoader;
@@ -53,7 +53,7 @@ public class DbImportModule implements Module {
         binder.bind(DataMapLoader.class).to(XMLDataMapLoader.class);
         binder.bind(ConfigurationUpgrader.class).to(ConfigurationUpgrader.class);
         binder.bind(HandlerFactory.class).to(DefaultHandlerFactory.class);
-        binder.bind(DataChannelMetaData.class).to(DefaultDataChannelMetaData.class);
+        binder.bind(ProjectMetaData.class).to(DefaultProjectMetaData.class);
         binder.bind(HandlerFactory.class).to(ExtensionAwareHandlerFactory.class);
 
         ProjectModule.extend(binder)

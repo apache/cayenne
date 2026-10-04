@@ -19,7 +19,7 @@
 package org.apache.cayenne.gen.xml;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.configuration.xml.DataChannelMetaData;
+import org.apache.cayenne.configuration.xml.ProjectMetaData;
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.CgenConfigList;
 import org.apache.cayenne.gen.internal.Utils;
@@ -37,9 +37,9 @@ import java.nio.file.Paths;
  */
 public class CgenSaverDelegate extends BaseSaverDelegate {
 
-    private DataChannelMetaData metaData;
+    private ProjectMetaData metaData;
 
-    CgenSaverDelegate(DataChannelMetaData metaData) {
+    CgenSaverDelegate(ProjectMetaData metaData) {
         this.metaData = metaData;
     }
 

@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.configuration.upgrade;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.configuration.xml.XMLReaderProvider;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.URLResource;
@@ -130,11 +130,11 @@ public class ConfigurationUpgraderTest {
 
     @Test
     public void upgradeModel() {
-        DataChannelDescriptor descriptor = mock(DataChannelDescriptor.class);
+        Project project = mock(Project.class);
 
         // none of the current handlers has a model-level step
-        upgrader.upgradeModel("9", descriptor);
-        verifyNoInteractions(descriptor);
+        upgrader.upgradeModel("9", project);
+        verifyNoInteractions(project);
     }
 
     private Resource getResourceForVersion(String version) {

@@ -20,7 +20,7 @@ package org.apache.cayenne.gen.xml;
 
 import java.nio.file.Paths;
 
-import org.apache.cayenne.configuration.xml.DataChannelMetaData;
+import org.apache.cayenne.configuration.xml.ProjectMetaData;
 import org.apache.cayenne.configuration.xml.NamespaceAwareNestedTagHandler;
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.CgenConfigList;
@@ -58,10 +58,10 @@ public class CgenConfigHandler extends NamespaceAwareNestedTagHandler {
 
     public static final String TRUE = "true";
 
-    private DataChannelMetaData metaData;
+    private ProjectMetaData metaData;
     private CgenConfiguration configuration;
 
-    CgenConfigHandler(NamespaceAwareNestedTagHandler parentHandler, DataChannelMetaData metaData) {
+    CgenConfigHandler(NamespaceAwareNestedTagHandler parentHandler, ProjectMetaData metaData) {
         super(parentHandler);
         this.metaData = metaData;
         this.targetNamespace = CgenExtension.NAMESPACE;

@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.dbsync.naming;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -41,22 +41,22 @@ public class NameBuilderTest {
 
     @Test
     public void build_Root() {
-        assertEquals("project", NameBuilder.of(new DataChannelDescriptor(), null).build());
+        assertEquals("project", NameBuilder.of(new Project(), null).build());
     }
 
     @Test
-    public void build_DataChannelDescriptorContext() {
-        DataChannelDescriptor descriptor = new DataChannelDescriptor();
+    public void build_ProjectContext() {
+        Project project = new Project();
 
         DataMap m0 = new DataMap();
-        m0.setName(NameBuilder.of(m0, descriptor).build());
+        m0.setName(NameBuilder.of(m0, project).build());
         assertEquals("datamap", m0.getName());
-        descriptor.getDataMaps().add(m0);
+        project.getDataMaps().add(m0);
 
         DataMap m1 = new DataMap();
-        m1.setName(NameBuilder.of(m1, descriptor).build());
+        m1.setName(NameBuilder.of(m1, project).build());
         assertEquals("datamap1", m1.getName());
-        descriptor.getDataMaps().add(m1);
+        project.getDataMaps().add(m1);
     }
 
 

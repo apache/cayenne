@@ -27,8 +27,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
-import org.apache.cayenne.configuration.EmptyConfigurationNodeVisitor;
+import org.apache.cayenne.configuration.ProjectNodeVisitor;
+import org.apache.cayenne.configuration.EmptyProjectNodeVisitor;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
@@ -442,7 +442,7 @@ public class Ordering implements Comparator<Object>, XMLSerializable {
 	 * @since 1.1
 	 */
 	@Override
-	public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
+	public void encodeAsXML(XMLEncoder encoder, ProjectNodeVisitor delegate) {
 		encoder.start("ordering")
 				.attribute("descending", isDescending())
 				.attribute("ignore-case", isCaseInsensitive())
@@ -455,7 +455,7 @@ public class Ordering implements Comparator<Object>, XMLSerializable {
 		StringWriter buffer = new StringWriter();
 		PrintWriter pw = new PrintWriter(buffer);
 		XMLEncoder encoder = new XMLEncoder(pw);
-		encodeAsXML(encoder, new EmptyConfigurationNodeVisitor());
+		encodeAsXML(encoder, new EmptyProjectNodeVisitor());
 		pw.close();
 		buffer.flush();
 		return buffer.toString();

@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.query;
 
-import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
+import org.apache.cayenne.configuration.ProjectNodeVisitor;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.exp.path.CayennePathSegment;
 import org.apache.cayenne.util.Util;
@@ -101,7 +101,7 @@ public class PrefetchTreeNode implements XMLSerializable {
 	}
 
 	@Override
-	public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
+	public void encodeAsXML(XMLEncoder encoder, ProjectNodeVisitor delegate) {
 		traverse(new XMLEncoderOperation(encoder));
 	}
 

@@ -32,20 +32,20 @@ public class DefaultConfigurationNameMapper implements ConfigurationNameMapper {
 
 	private static final String DATA_MAP_SUFFIX = ".map.xml";
 
-	protected ConfigurationNodeVisitor<String> nameMapper;
+	protected ProjectNodeVisitor<String> nameMapper;
 
 	public DefaultConfigurationNameMapper() {
 		nameMapper = new NameMapper();
 	}
 
 	@Override
-	public String configurationLocation(ConfigurationNode node) {
+	public String configurationLocation(ProjectNode node) {
 		return node.acceptVisitor(nameMapper);
 	}
 
 	@Override
-	public String configurationLocation(Class<? extends ConfigurationNode> type, String name) {
-		if (DataChannelDescriptor.class.isAssignableFrom(type)) {
+	public String configurationLocation(Class<? extends ProjectNode> type, String name) {
+		if (Project.class.isAssignableFrom(type)) {
 			return getDataChannelName(name);
 		} else if (DataMap.class.isAssignableFrom(type)) {
 			return getDataMapName(name);
@@ -55,7 +55,7 @@ public class DefaultConfigurationNameMapper implements ConfigurationNameMapper {
 	}
 
 	@Override
-	public String configurationNodeName(Class<? extends ConfigurationNode> type, Resource resource) {
+	public String projectNodeName(Class<? extends ProjectNode> type, Resource resource) {
 
 		String path = resource.getURL().getPath();
 		if (path == null || path.length() == 0) {
@@ -73,9 +73,9 @@ public class DefaultConfigurationNameMapper implements ConfigurationNameMapper {
 
 		}
 
-		if (DataChannelDescriptor.class.isAssignableFrom(type)) {
+		if (Project.class.isAssignableFrom(type)) {
 			if (!path.startsWith(CAYENNE_PREFIX) || !path.endsWith(CAYENNE_SUFFIX)) {
-				// DataChannelDescriptor should always have name
+				// Project should always have name
 				return DEFAULT_NAME;
 			}
 
@@ -92,7 +92,7 @@ public class DefaultConfigurationNameMapper implements ConfigurationNameMapper {
 
 	protected String getDataChannelName(String name) {
 		if (name == null) {
-			throw new NullPointerException("Null DataChannelDescriptor name");
+			throw new NullPointerException("Null Project name");
 		}
 
 		return CAYENNE_PREFIX + name + CAYENNE_SUFFIX;
@@ -106,11 +106,11 @@ public class DefaultConfigurationNameMapper implements ConfigurationNameMapper {
 		return name + DATA_MAP_SUFFIX;
 	}
 
-	final class NameMapper extends BaseConfigurationNodeVisitor<String> {
+	final class NameMapper extends BaseProjectNodeVisitor<String> {
 
 		@Override
-		public String visitDataChannelDescriptor(DataChannelDescriptor descriptor) {
-			return getDataChannelName(descriptor.getName());
+		public String visitProject(Project project) {
+			return getDataChannelName(project.getName());
 		}
 
 		@Override

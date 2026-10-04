@@ -23,8 +23,8 @@ import java.util.Collections;
 import java.util.Iterator;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.configuration.ConfigurationNode;
-import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
+import org.apache.cayenne.configuration.ProjectNode;
+import org.apache.cayenne.configuration.ProjectNodeVisitor;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.Util;
@@ -33,7 +33,7 @@ import org.apache.cayenne.util.XMLEncoder;
 /**
  * An ObjAttribute is a mapping descriptor of a Java class property.
  */
-public class ObjAttribute extends Attribute<ObjEntity, ObjAttribute, ObjRelationship> implements ConfigurationNode {
+public class ObjAttribute extends Attribute<ObjEntity, ObjAttribute, ObjRelationship> implements ProjectNode {
 
     protected String type;
     protected boolean usedForLocking;
@@ -80,7 +80,7 @@ public class ObjAttribute extends Attribute<ObjEntity, ObjAttribute, ObjRelation
     /**
      * @since 3.1
      */
-    public <T> T acceptVisitor(ConfigurationNodeVisitor<T> visitor) {
+    public <T> T acceptVisitor(ProjectNodeVisitor<T> visitor) {
         return visitor.visitObjAttribute(this);
     }
 
@@ -114,7 +114,7 @@ public class ObjAttribute extends Attribute<ObjEntity, ObjAttribute, ObjRelation
      * @since 1.1
      */
     @Override
-    public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor<?> delegate) {
+    public void encodeAsXML(XMLEncoder encoder, ProjectNodeVisitor<?> delegate) {
         encoder.start("objAttribute")
                 .attribute("name", getName())
                 .attribute("type", getType())

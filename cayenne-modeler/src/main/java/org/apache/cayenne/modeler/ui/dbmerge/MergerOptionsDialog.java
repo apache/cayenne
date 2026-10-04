@@ -55,7 +55,6 @@ import org.apache.cayenne.modeler.toolkit.ProjectDialog;
 import org.apache.cayenne.modeler.toolkit.border.TopBorder;
 import org.apache.cayenne.modeler.toolkit.text.CMTextArea;
 import org.apache.cayenne.modeler.ui.validation.ValidationDialog;
-import org.apache.cayenne.project.Project;
 import org.apache.cayenne.validation.ValidationResult;
 import org.slf4j.LoggerFactory;
 
@@ -343,8 +342,6 @@ public class MergerOptionsDialog extends ProjectDialog {
         }
 
         // mark the model as unsaved
-        Project project = app.getFrame().getProjectSession().project();
-        project.setModified(true);
         session.setDirty(true);
         session.fireDataMapEvent(DataMapEvent.ofRemove(app.getFrame(), dataMap));
         session.fireDataMapEvent(DataMapEvent.ofAdd(app.getFrame(), dataMap));

@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.ui.action;
 
-import org.apache.cayenne.configuration.ConfigurationNode;
+import org.apache.cayenne.configuration.ProjectNode;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.toolkit.AppAction;
 
@@ -65,7 +65,7 @@ public class CutAction extends AppAction {
      * Returns <code>true</code> if last object in the path contains a removable object.
      */
     @Override
-    public boolean enableForPath(ConfigurationNode object) {
+    public boolean enableForPath(ProjectNode object) {
         return app.getActionManager().getAction(CopyAction.class).enableForPath(
                 object);
     }

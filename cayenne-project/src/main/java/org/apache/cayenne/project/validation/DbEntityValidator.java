@@ -25,7 +25,7 @@ import org.apache.cayenne.validation.ValidationResult;
 
 import java.util.function.Supplier;
 
-class DbEntityValidator extends ConfigurationNodeValidator<DbEntity> {
+class DbEntityValidator extends ProjectNodeValidator<DbEntity> {
 
     /**
      * @param configSupplier the config defining the behavior of this validator.

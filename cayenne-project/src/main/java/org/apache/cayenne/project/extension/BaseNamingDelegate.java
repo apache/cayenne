@@ -19,8 +19,8 @@
 
 package org.apache.cayenne.project.extension;
 
-import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.ProjectNodeVisitor;
+import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -37,10 +37,10 @@ import org.apache.cayenne.map.QueryDescriptor;
 /**
  * @since 4.1
  */
-public class BaseNamingDelegate implements ConfigurationNodeVisitor<String> {
+public class BaseNamingDelegate implements ProjectNodeVisitor<String> {
 
     @Override
-    public String visitDataChannelDescriptor(DataChannelDescriptor channelDescriptor) {
+    public String visitProject(Project project) {
         return null;
     }
 

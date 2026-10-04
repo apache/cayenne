@@ -18,8 +18,7 @@
  */
 package org.apache.cayenne.modeler.ui.action;
 
-import org.apache.cayenne.configuration.ConfigurationNode;
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.ProjectNode;
 import org.apache.cayenne.dbsync.filter.NamePatternMatcher;
 import org.apache.cayenne.dbsync.merge.context.EntityMergeSupport;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
@@ -47,7 +46,7 @@ public class CreateObjEntityAction extends AppAction {
         session.fireObjEntityEvent(ObjEntityEvent.ofAdd(src, entity));
         ObjEntityDisplayEvent displayEvent = new ObjEntityDisplayEvent(
                 src,
-                (DataChannelDescriptor) session.project().getRootNode(),
+                session.project(),
                 dataMap,
                 entity,
                 true,
@@ -120,7 +119,7 @@ public class CreateObjEntityAction extends AppAction {
      * Returns <code>true</code> if path contains a DataMap object.
      */
     @Override
-    public boolean enableForPath(ConfigurationNode object) {
+    public boolean enableForPath(ProjectNode object) {
         if (object == null) {
             return false;
         }

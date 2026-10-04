@@ -23,7 +23,7 @@ import org.apache.cayenne.modeler.event.model.DbEntityEvent;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbKeyGenerator;
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.modeler.event.display.DbEntityDisplayEvent;
 import org.apache.cayenne.modeler.project.ProjectSession;
 
@@ -78,8 +78,8 @@ public class ChangePKGeneratorUndoableEdit extends CayenneUndoableEdit {
 
     private void fireEvents() {
         session.fireDbEntityEvent(DbEntityEvent.ofChange(this, dbEntity));
-        DataChannelDescriptor domain = (DataChannelDescriptor) session.project().getRootNode();
-        session.displayDbEntity(new DbEntityDisplayEvent(this, domain, dbEntity.getDataMap(), dbEntity));
+        Project project = session.project();
+        session.displayDbEntity(new DbEntityDisplayEvent(this, project, dbEntity.getDataMap(), dbEntity));
     }
 
     public boolean hasRealChange() {

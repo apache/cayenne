@@ -19,8 +19,7 @@
 
 package org.apache.cayenne.modeler.ui.action;
 
-import org.apache.cayenne.configuration.ConfigurationNode;
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.ProjectNode;
 import org.apache.cayenne.dba.db2.DB2Adapter;
 import org.apache.cayenne.dba.derby.DerbyAdapter;
 import org.apache.cayenne.dba.firebird.FirebirdAdapter;
@@ -210,13 +209,12 @@ public class ImportEOModelAction extends AppAction {
 
             session.displayDataMap(new DataMapDisplayEvent(
                     app.getFrame(),
-                    (DataChannelDescriptor) session
-                            .project()
-                            .getRootNode(),
+                    session
+                            .project(),
                     map));
         } else {
             // fix DataMap name, as there maybe a map with the same name already
-            ConfigurationNode root = session.project().getRootNode();
+            ProjectNode root = session.project();
             map.setName(NameBuilder
                     .of(map, root)
                     .preferredName(map.getName())

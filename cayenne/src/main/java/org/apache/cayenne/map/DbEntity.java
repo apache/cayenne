@@ -32,8 +32,8 @@ import java.util.function.Function;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
-import org.apache.cayenne.configuration.ConfigurationNode;
-import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
+import org.apache.cayenne.configuration.ProjectNode;
+import org.apache.cayenne.configuration.ProjectNodeVisitor;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.ExpressionFactory;
@@ -49,7 +49,7 @@ import java.util.Objects;
  * table.
  */
 public class DbEntity extends Entity<DbEntity, DbAttribute, DbRelationship>
-        implements ConfigurationNode {
+        implements ProjectNode {
 
     protected String catalog;
     protected String schema;
@@ -95,7 +95,7 @@ public class DbEntity extends Entity<DbEntity, DbAttribute, DbRelationship>
      * @since 3.1
      */
     @Override
-    public <T> T acceptVisitor(ConfigurationNodeVisitor<T> visitor) {
+    public <T> T acceptVisitor(ProjectNodeVisitor<T> visitor) {
         return visitor.visitDbEntity(this);
     }
 
@@ -105,7 +105,7 @@ public class DbEntity extends Entity<DbEntity, DbAttribute, DbRelationship>
      * @since 1.1
      */
     @Override
-    public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
+    public void encodeAsXML(XMLEncoder encoder, ProjectNodeVisitor delegate) {
         encoder.start("dbEntity").attribute("name", getName());
 
         if (getSchema() != null && getSchema().trim().length() > 0) {

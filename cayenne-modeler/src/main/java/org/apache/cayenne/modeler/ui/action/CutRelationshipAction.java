@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.ui.action;
 
-import org.apache.cayenne.configuration.ConfigurationNode;
+import org.apache.cayenne.configuration.ProjectNode;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.modeler.Application;
 
@@ -49,7 +49,7 @@ public class CutRelationshipAction extends CutAction implements MultipleObjectsA
      * attribute.
      */
     @Override
-    public boolean enableForPath(ConfigurationNode object) {
+    public boolean enableForPath(ProjectNode object) {
         if (object == null) {
             return false;
         }

@@ -18,8 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.service.validator;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.configuration.xml.DataChannelMetaData;
+import org.apache.cayenne.configuration.Project;
+import org.apache.cayenne.configuration.xml.ProjectMetaData;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.project.validation.DefaultProjectValidator;
 import org.apache.cayenne.project.validation.ValidationConfig;
@@ -28,9 +28,9 @@ public class ConfigurableProjectValidator extends DefaultProjectValidator {
 
     public ConfigurableProjectValidator(Application application) {
         super(() -> {
-            DataChannelMetaData metaData = application.getMetaData();
-            DataChannelDescriptor dataChannel = (DataChannelDescriptor) application.getFrame().getProjectSession().project().getRootNode();
-            return ValidationConfig.fromMetadata(metaData, dataChannel);
+            ProjectMetaData metaData = application.getMetaData();
+            Project project = application.getFrame().getProjectSession().project();
+            return ValidationConfig.fromMetadata(metaData, project);
         });
     }
 }

@@ -18,12 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.undo;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.ui.action.CreateDataMapAction;
 import org.apache.cayenne.modeler.ui.action.RemoveAction;
 import org.apache.cayenne.modeler.project.ProjectSession;
-import org.apache.cayenne.modeler.event.display.DomainDisplayEvent;
+import org.apache.cayenne.modeler.event.display.ProjectDisplayEvent;
 
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
@@ -35,12 +35,12 @@ public class CreateDataMapUndoableEdit extends CayenneUndoableEdit {
         return "Create DataMap";
     }
 
-    private DataChannelDescriptor domain;
+    private Project project;
     private DataMap map;
 
-    public CreateDataMapUndoableEdit(ProjectSession session, DataChannelDescriptor domain, DataMap map) {
+    public CreateDataMapUndoableEdit(ProjectSession session, Project project, DataMap map) {
         super(session);
-        this.domain = domain;
+        this.project = project;
         this.map = map;
     }
 
@@ -53,7 +53,7 @@ public class CreateDataMapUndoableEdit extends CayenneUndoableEdit {
     public void undo() throws CannotUndoException {
         RemoveAction action = globalActions.getAction(RemoveAction.class);
 
-        session.displayDomain(new DomainDisplayEvent(this, domain));
+        session.displayProject(new ProjectDisplayEvent(this, project));
 
         action.removeDataMap(map);
     }

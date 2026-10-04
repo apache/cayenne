@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.map;
 
-import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
+import org.apache.cayenne.configuration.ProjectNodeVisitor;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.ToStringBuilder;
 import org.apache.cayenne.util.XMLEncoder;
@@ -55,7 +55,7 @@ public abstract class Attribute<E extends Entity<E, A, R>, A extends Attribute<E
     }
 
     @Override
-    public abstract void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor<?> delegate);
+    public abstract void encodeAsXML(XMLEncoder encoder, ProjectNodeVisitor<?> delegate);
 
     /**
      * Returns parent entity that holds this attribute.

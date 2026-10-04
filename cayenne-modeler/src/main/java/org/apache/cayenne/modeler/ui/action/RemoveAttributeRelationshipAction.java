@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.ui.action;
 
-import org.apache.cayenne.configuration.ConfigurationNode;
+import org.apache.cayenne.configuration.ProjectNode;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.editor.dbentity.properties.DbAttributePanel;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.properties.ObjAttributePanel;
@@ -53,7 +53,7 @@ public class RemoveAttributeRelationshipAction extends RemoveAction implements M
     }
 
     @Override
-    public boolean enableForPath(ConfigurationNode object) {
+    public boolean enableForPath(ProjectNode object) {
         if (currentSelectedPanel instanceof ObjAttributePanel || currentSelectedPanel instanceof DbAttributePanel) {
             return removeAttributeAction.enableForPath(object);
         } else {

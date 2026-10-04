@@ -18,7 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.project;
 
+import org.apache.cayenne.configuration.ProjectNode;
 import org.apache.cayenne.resource.Resource;
+
+import java.net.URL;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Defines API of a project saver.
@@ -33,17 +38,28 @@ public interface ProjectSaver {
     String getSupportedVersion();
 
     /**
-     * Saves project in the location of its current configuration sources. Since resource
-     * names are determined using a naming convention based on the project node names, if
-     * any of the nodes were renamed, the old locations will be deleted. After saving,
-     * resets configuration sources of all project objects to the new Resources.
+     * Saves the project or a standalone DataMap defined by the root node in the location of its current
+     * configuration sources. Since resource names are determined using a naming convention based on the project
+     * node names, if any of the nodes were renamed, the old locations will be deleted. After saving, resets
+     * configuration sources of all project objects to the new Resources.
      */
-    void save(Project project);
+    default void save(ProjectNode rootNode) {
+        save(rootNode, List.of());
+    }
+
+    /**
+     * Saves the project the same way as {@link #save(ProjectNode)}, and then deletes the files at the
+     * "unusedResources" locations (e.g. the files of the DataMaps removed from the project), except for those
+     * that were just saved.
+     *
+     * @since 5.0
+     */
+    void save(ProjectNode rootNode, Collection<URL> unusedResources);
 
     /**
      * Saves project in a location defined by the 'baseDirectory' Resource. Does not
      * delete the old resource locations. After saving, resets configuration sources of
      * all project objects to the new Resources.
      */
-    void saveAs(Project project, Resource baseDirectory);
+    void saveAs(ProjectNode rootNode, Resource baseDirectory);
 }

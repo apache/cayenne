@@ -27,7 +27,7 @@ import org.apache.cayenne.validation.ValidationResult;
 import java.util.Map;
 import java.util.function.Supplier;
 
-class ObjAttributeValidator extends ConfigurationNodeValidator<ObjAttribute> {
+class ObjAttributeValidator extends ProjectNodeValidator<ObjAttribute> {
 
     /**
      * @param configSupplier the config defining the behavior of this validator.

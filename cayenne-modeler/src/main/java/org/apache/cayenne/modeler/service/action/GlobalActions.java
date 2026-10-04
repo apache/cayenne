@@ -19,11 +19,11 @@
 package org.apache.cayenne.modeler.service.action;
 
 import org.apache.cayenne.configuration.ConfigurationNameMapper;
-import org.apache.cayenne.configuration.ConfigurationNode;
+import org.apache.cayenne.configuration.ProjectNode;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.ui.action.*;
-import org.apache.cayenne.project.ConfigurationNodeParentGetter;
+import org.apache.cayenne.project.ProjectNodeParentGetter;
 
 import javax.swing.*;
 import java.util.Arrays;
@@ -41,7 +41,7 @@ public class GlobalActions {
 
     private final Set<String> specialActions;
     private final Set<String> projectActions;
-    private final Set<String> domainActions;
+    private final Set<String> projectRootActions;
     private final Set<String> dataMapActions;
     private final Set<String> objEntityActions;
     private final Set<String> dbEntityActions;
@@ -50,12 +50,12 @@ public class GlobalActions {
     private final Set<String> multipleObjectsActions;
 
     private final Map<String, Action> actionMap;
-    private final ConfigurationNodeParentGetter nodeParentGetter;
+    private final ProjectNodeParentGetter nodeParentGetter;
 
     public GlobalActions(
             Application application,
             ConfigurationNameMapper nameMapper,
-            ConfigurationNodeParentGetter nodeParentGetter) {
+            ProjectNodeParentGetter nodeParentGetter) {
 
         this.nodeParentGetter = nodeParentGetter;
 
@@ -76,8 +76,8 @@ public class GlobalActions {
                 NavigateBackwardAction.class.getName(),
                 NavigateForwardAction.class.getName()));
 
-        domainActions = new HashSet<>(projectActions);
-        domainActions.addAll(Arrays.asList(
+        projectRootActions = new HashSet<>(projectActions);
+        projectRootActions.addAll(Arrays.asList(
                 ImportDataMapAction.class.getName(),
                 CreateDataMapAction.class.getName(),
                 ImportEOModelAction.class.getName(),
@@ -89,7 +89,7 @@ public class GlobalActions {
                 DisableValidationInspectionAction.class.getName()
         ));
 
-        dataMapActions = new HashSet<>(domainActions);
+        dataMapActions = new HashSet<>(projectRootActions);
         dataMapActions.addAll(Arrays.asList(
                 CreateEmbeddableAction.class.getName(),
                 CreateObjEntityAction.class.getName(),
@@ -238,8 +238,8 @@ public class GlobalActions {
         updateActions("");
     }
 
-    public void domainSelected() {
-        processActionsState(domainActions);
+    public void projectSelected() {
+        processActionsState(projectRootActions);
         updateActions("Project");
     }
 
@@ -276,7 +276,7 @@ public class GlobalActions {
     /**
      * Invoked when several objects were selected in ProjectTree at time
      */
-    public void objectsSelected(ConfigurationNode[] objects) {
+    public void objectsSelected(ProjectNode[] objects) {
         processActionsState(multipleObjectsActions);
 
         updateActions("Selected Objects");

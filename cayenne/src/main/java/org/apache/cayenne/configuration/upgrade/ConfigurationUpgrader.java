@@ -20,7 +20,7 @@
 package org.apache.cayenne.configuration.upgrade;
 
 import org.apache.cayenne.ConfigurationException;
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.resource.Resource;
@@ -159,9 +159,9 @@ public class ConfigurationUpgrader {
     /**
      * Applies the model-level part of the upgrade from the given version to a descriptor loaded from the upgraded XML.
      */
-    public void upgradeModel(String fromVersion, DataChannelDescriptor descriptor) {
+    public void upgradeModel(String fromVersion, Project project) {
         for (UpgradeHandler handler : handlersForVersion(fromVersion)) {
-            handler.processModel(descriptor);
+            handler.processModel(project);
         }
     }
 

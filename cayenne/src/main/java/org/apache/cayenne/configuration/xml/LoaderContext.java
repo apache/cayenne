@@ -22,8 +22,8 @@ package org.apache.cayenne.configuration.xml;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.configuration.DataChannelDescriptorLoader;
+import org.apache.cayenne.configuration.Project;
+import org.apache.cayenne.configuration.ProjectLoader;
 import org.apache.cayenne.map.DataMap;
 import org.xml.sax.XMLReader;
 
@@ -34,7 +34,7 @@ public class LoaderContext {
 
     Collection<DataMapLoaderListener> dataMapListeners;
 
-    Collection<DataChannelLoaderListener> dataChannelListeners;
+    Collection<ProjectLoaderListener> projectListeners;
 
     private XMLReader xmlReader;
 
@@ -44,7 +44,7 @@ public class LoaderContext {
         this.xmlReader = reader;
         this.factory = factory;
         dataMapListeners = new ArrayList<>();
-        dataChannelListeners = new ArrayList<>();
+        projectListeners = new ArrayList<>();
     }
 
     public HandlerFactory getFactory() {
@@ -65,13 +65,13 @@ public class LoaderContext {
         }
     }
 
-    public void addDataChannelListener(DataChannelLoaderListener listener) {
-        dataChannelListeners.add(listener);
+    public void addProjectListener(ProjectLoaderListener listener) {
+        projectListeners.add(listener);
     }
 
-    public void dataChannelLoaded(DataChannelDescriptor descriptor) {
-        for(DataChannelLoaderListener listener : dataChannelListeners) {
-            listener.onDataChannelLoaded(descriptor);
+    public void projectLoaded(Project project) {
+        for(ProjectLoaderListener listener : projectListeners) {
+            listener.onProjectLoaded(project);
         }
     }
 

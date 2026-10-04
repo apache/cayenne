@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.ui.project.querytype;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.QueryDescriptor;
@@ -48,7 +48,7 @@ import org.apache.cayenne.map.SQLTemplateDescriptor;
 public class QueryTypeDialog extends ProjectDialog {
 
     private final DataMap dataMap;
-    private final DataChannelDescriptor domain;
+    private final Project project;
 
     private final JRadioButton objectSelect;
     private final JRadioButton sqlSelect;
@@ -59,7 +59,7 @@ public class QueryTypeDialog extends ProjectDialog {
     public QueryTypeDialog(ProjectSession session, Window owner) {
         super(session, owner, "Select New Query Type", ModalityType.APPLICATION_MODAL);
         this.dataMap = session.getSelectedDataMap();
-        this.domain = (DataChannelDescriptor) session.project().getRootNode();
+        this.project = session.project();
 
         this.objectSelect = new JRadioButton("ObjectSelect");
         this.sqlSelect = new JRadioButton("SQLTemplate");
@@ -85,7 +85,7 @@ public class QueryTypeDialog extends ProjectDialog {
     public static void fireQueryEvent(Object src, ProjectSession session, DataMap dataMap, QueryDescriptor query) {
         session.fireQueryEvent(QueryEvent.ofAdd(src, query, dataMap));
         session.displayQuery(new QueryDisplayEvent(src,
-                (DataChannelDescriptor) session.project().getRootNode(),
+                session.project(),
                 dataMap, query));
     }
 
@@ -119,7 +119,7 @@ public class QueryTypeDialog extends ProjectDialog {
 
         dataMap.addQueryDescriptor(query);
 
-        app.getUndoManager().addEdit(new CreateQueryUndoableEdit(session, domain, dataMap, query));
+        app.getUndoManager().addEdit(new CreateQueryUndoableEdit(session, project, dataMap, query));
 
         fireQueryEvent(this, session, dataMap, query);
         dispose();

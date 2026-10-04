@@ -20,8 +20,8 @@
 package org.apache.cayenne.map;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.configuration.ConfigurationNode;
-import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
+import org.apache.cayenne.configuration.ProjectNode;
+import org.apache.cayenne.configuration.ProjectNodeVisitor;
 import org.apache.cayenne.util.XMLEncoder;
 
 import java.util.ArrayList;
@@ -37,7 +37,7 @@ import java.util.function.Function;
  * A DbRelationship is a descriptor of a database inter-table relationship based
  * on one or more primary key/foreign key pairs.
  */
-public class DbRelationship extends Relationship<DbEntity, DbAttribute, DbRelationship> implements ConfigurationNode {
+public class DbRelationship extends Relationship<DbEntity, DbAttribute, DbRelationship> implements ProjectNode {
 
     // The columns through which the join is implemented.
     protected List<DbJoin> joins = new ArrayList<>(2);
@@ -59,7 +59,7 @@ public class DbRelationship extends Relationship<DbEntity, DbAttribute, DbRelati
     /**
      * @since 3.1
      */
-    public <T> T acceptVisitor(ConfigurationNodeVisitor<T> visitor) {
+    public <T> T acceptVisitor(ProjectNodeVisitor<T> visitor) {
         return visitor.visitDbRelationship(this);
     }
 
@@ -68,7 +68,7 @@ public class DbRelationship extends Relationship<DbEntity, DbAttribute, DbRelati
      * 
      * @since 1.1
      */
-    public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
+    public void encodeAsXML(XMLEncoder encoder, ProjectNodeVisitor delegate) {
         encoder.start("dbRelationship")
                 .attribute("name", getName())
                 .attribute("source", getSourceEntity().getName());

@@ -30,7 +30,7 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.toolkit.table.CMTable;
 import org.apache.cayenne.modeler.toolkit.table.TableSizer;
 import org.apache.cayenne.modeler.toolkit.AppPanel;
-import org.apache.cayenne.project.Project;
+import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.project.validation.ProjectValidator;
 import org.apache.cayenne.validation.ValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
@@ -105,7 +105,7 @@ public class TableSelectorPanel extends AppPanel {
 
         Project project = app.getFrame().getProjectSession().project();
         ProjectValidator projectValidator = app.getProjectValidator();
-        ValidationResult validationResult = projectValidator.validate(project.getRootNode());
+        ValidationResult validationResult = projectValidator.validate(project);
 
         for (ValidationFailure problem : validationResult.getFailures()) {
             DbEntity failedEntity = null;

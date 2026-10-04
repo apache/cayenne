@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.configuration.upgrade;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.Project;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
@@ -122,7 +122,7 @@ public sealed interface UpgradeHandler permits
      * using this method will make upgrade process not future proof and
      * will require refactoring if model should change.
      */
-    default void processModel(DataChannelDescriptor dataChannelDescriptor) {
+    default void processModel(Project project) {
     }
 
     /**

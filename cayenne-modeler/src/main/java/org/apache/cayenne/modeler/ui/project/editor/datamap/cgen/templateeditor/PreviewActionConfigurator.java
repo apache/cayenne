@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.templateeditor;
 
-import org.apache.cayenne.configuration.xml.DataChannelMetaData;
+import org.apache.cayenne.configuration.xml.ProjectMetaData;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Key;
 import org.apache.cayenne.gen.ArtifactsGenerationMode;
@@ -55,9 +55,9 @@ public class PreviewActionConfigurator {
     }
 
     private Injector getInjector() {
-        DataChannelMetaData metaData = editor.app().getMetaData();
+        ProjectMetaData metaData = editor.app().getMetaData();
         return new ToolsInjectorBuilder()
-                .addModule(binder -> binder.bind(DataChannelMetaData.class).toInstance(metaData))
+                .addModule(binder -> binder.bind(ProjectMetaData.class).toInstance(metaData))
                 .addModule(binder -> binder.bind(ClassGenerationActionFactory.class).to(PreviewClassGenerationFactory.class))
                 .addModule(binder -> binder.bind(TPL_EDITOR_WRITER).to(StringWriter.class))
                 .create();

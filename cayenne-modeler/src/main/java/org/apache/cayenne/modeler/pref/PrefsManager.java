@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.pref;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.pref.migration.toV5._1_DbConnectorsMigration;
 import org.apache.cayenne.modeler.pref.migration.toV5._2_ClasspathMigration;
@@ -29,7 +29,6 @@ import org.apache.cayenne.modeler.pref.migration.toV5._6_ProjectSplitPaneMigrati
 import org.apache.cayenne.modeler.pref.migration.toV5._7_EntityTablePrefsMigration;
 import org.apache.cayenne.modeler.pref.migration.toV5._8_RemoveRedundantPathIndexMigration;
 import org.apache.cayenne.configuration.ConfigurationNameMapper;
-import org.apache.cayenne.project.Project;
 import org.apache.cayenne.resource.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -141,11 +140,8 @@ public class PrefsManager {
         }
         reconcileProject(project);
 
-        DataChannelDescriptor descriptor = (DataChannelDescriptor) project.getRootNode();
-        if (descriptor != null) {
-            for (DataMap map : descriptor.getDataMaps()) {
-                reconcileDataMap(map);
-            }
+        for (DataMap map : project.getDataMaps()) {
+            reconcileDataMap(map);
         }
 
         resetTransientState();
@@ -167,17 +163,17 @@ public class PrefsManager {
     }
 
     /**
-     * Records a pending project rename (domain name change) so that {@link #commitProject(Project)} can migrate project
+     * Records a pending project rename (project name change) so that {@link #commitProject(Project)} can migrate project
      * preferences from the old node to the new one.
      */
-    public void stageProjectRename(Project project, String newDomainName) {
+    public void stageProjectRename(Project project, String newProjectName) {
         String oldPath = projectPath(project);
         if (oldPath == null) {
             return;
         }
         int slash = oldPath.lastIndexOf('/');
         String dir = slash >= 0 ? oldPath.substring(0, slash + 1) : "";
-        String newPath = dir + nameMapper.configurationLocation(DataChannelDescriptor.class, newDomainName);
+        String newPath = dir + nameMapper.configurationLocation(Project.class, newProjectName);
         stagingProject.put(PreferenceNodeIds.idForPath(newPath), oldPath);
     }
 
@@ -338,7 +334,7 @@ public class PrefsManager {
             return null;
         }
 
-        Resource resource = project.getConfigurationResource();
+        Resource resource = project.getConfigurationSource();
         return resource == null ? null : resource.getURL().getPath();
     }
 

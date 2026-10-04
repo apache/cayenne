@@ -36,7 +36,7 @@ class ProcedureQueryValidator extends BaseQueryValidator<ProcedureQueryDescripto
     }
 
     @Override
-    protected ConfigurationNodeValidator<ProcedureQueryDescriptor>.Performer<ProcedureQueryDescriptor> validateQuery(
+    protected ProjectNodeValidator<ProcedureQueryDescriptor>.Performer<ProcedureQueryDescriptor> validateQuery(
             ProcedureQueryDescriptor query, ValidationResult validationResult) {
         return super.validateQuery(query, validationResult)
                 .performIfEnabled(Inspection.PROCEDURE_QUERY_NO_ROOT, this::checkForRoot)

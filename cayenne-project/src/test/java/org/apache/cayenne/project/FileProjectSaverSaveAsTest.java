@@ -1,0 +1,147 @@
+/*****************************************************************
+ *   Licensed to the Apache Software Foundation (ASF) under one
+ *  or more contributor license agreements.  See the NOTICE file
+ *  distributed with this work for additional information
+ *  regarding copyright ownership.  The ASF licenses this file
+ *  to you under the Apache License, Version 2.0 (the
+ *  "License"); you may not use this file except in compliance
+ *  with the License.  You may obtain a copy of the License at
+ *
+ *    https://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing,
+ *  software distributed under the License is distributed on an
+ *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *  KIND, either express or implied.  See the License for the
+ *  specific language governing permissions and limitations
+ *  under the License.
+ ****************************************************************/
+package org.apache.cayenne.project;
+
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.configuration.ConfigurationNameMapper;
+import org.apache.cayenne.configuration.Project;
+import org.apache.cayenne.configuration.ProjectLoader;
+import org.apache.cayenne.configuration.DataMapLoader;
+import org.apache.cayenne.configuration.DefaultConfigurationNameMapper;
+import org.apache.cayenne.configuration.upgrade.ConfigurationUpgrader;
+import org.apache.cayenne.configuration.xml.ProjectMetaData;
+import org.apache.cayenne.configuration.xml.DefaultHandlerFactory;
+import org.apache.cayenne.configuration.xml.HandlerFactory;
+import org.apache.cayenne.configuration.xml.NoopProjectMetaData;
+import org.apache.cayenne.configuration.xml.XMLProjectLoader;
+import org.apache.cayenne.configuration.xml.XMLDataMapLoader;
+import org.apache.cayenne.configuration.xml.XMLReaderProvider;
+import org.apache.cayenne.di.AdhocObjectFactory;
+import org.apache.cayenne.di.ClassLoaderManager;
+import org.apache.cayenne.di.DIBootstrap;
+import org.apache.cayenne.di.Injector;
+import org.apache.cayenne.di.Module;
+import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
+import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
+import org.apache.cayenne.project.extension.ProjectExtension;
+import org.apache.cayenne.resource.Resource;
+import org.apache.cayenne.resource.URLResource;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+import org.xml.sax.XMLReader;
+
+import java.io.File;
+import java.io.PrintWriter;
+import java.net.URL;
+import java.util.Collections;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+public class FileProjectSaverSaveAsTest {
+
+    @TempDir
+    public File tempDir;
+
+    @Test
+    public void saveAs() throws Exception {
+
+        FileProjectSaver saver = new FileProjectSaver(Collections.<ProjectExtension>emptyList());
+
+        Module testModule = binder -> {
+            binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
+            binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
+
+            binder.bind(DataMapLoader.class).to(XMLDataMapLoader.class);
+            binder.bind(ConfigurationUpgrader.class).to(ConfigurationUpgrader.class);
+            binder.bind(ProjectLoader.class).to(XMLProjectLoader.class);
+            binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);
+            binder.bind(HandlerFactory.class).to(DefaultHandlerFactory.class);
+            binder.bind(ProjectMetaData.class).to(NoopProjectMetaData.class);
+            binder.bind(XMLReader.class).toProviderInstance(new XMLReaderProvider(false)).withoutScope();
+        };
+
+        Injector injector = DIBootstrap.createInjector(testModule);
+        injector.injectMembers(saver);
+
+        String testConfigName = "PROJECT2";
+        String baseUrl = getClass().getPackage().getName().replace('.', '/');
+        URL url = getClass().getClassLoader().getResource(
+                baseUrl + "/cayenne-" + testConfigName + ".xml");
+
+        Resource source = new URLResource(url);
+        Project project = injector.getInstance(ProjectLoader.class).load(source);
+
+        saver.saveAs(project, new URLResource(tempDir.toURI().toURL()));
+
+        File rootFile = new File(tempDir, "cayenne-PROJECT2.xml");
+        assertTrue(rootFile.exists());
+        assertTrue(rootFile.length() > 0);
+
+        File map1File = new File(tempDir, "testProjectMap2_1.map.xml");
+        assertTrue(map1File.exists());
+        assertTrue(map1File.length() > 0);
+
+        File map2File = new File(tempDir, "testProjectMap2_2.map.xml");
+        assertTrue(map2File.exists());
+        assertTrue(map2File.length() > 0);
+    }
+
+    @Test
+    public void saveAs_RecoverFromSaveError() throws Exception {
+
+        FileProjectSaver saver = new FileProjectSaver(Collections.<ProjectExtension>emptyList()) {
+
+            @Override
+            void saveToTempFile(SaveUnit unit, PrintWriter printWriter) {
+                throw new CayenneRuntimeException("Test Exception");
+            }
+        };
+
+        Module testModule = binder -> {
+            binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
+            binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
+            binder.bind(DataMapLoader.class).to(XMLDataMapLoader.class);
+            binder.bind(ConfigurationUpgrader.class).to(ConfigurationUpgrader.class);
+            binder.bind(ProjectLoader.class).to(XMLProjectLoader.class);
+            binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);
+            binder.bind(HandlerFactory.class).to(DefaultHandlerFactory.class);
+            binder.bind(ProjectMetaData.class).to(NoopProjectMetaData.class);
+            binder.bind(XMLReader.class).toProviderInstance(new XMLReaderProvider(false)).withoutScope();
+        };
+
+        Injector injector = DIBootstrap.createInjector(testModule);
+        injector.injectMembers(saver);
+
+        String testConfigName = "PROJECT2";
+        String baseUrl = getClass().getPackage().getName().replace('.', '/');
+        URL url = getClass().getClassLoader().getResource(
+                baseUrl + "/cayenne-" + testConfigName + ".xml");
+
+        Resource source = new URLResource(url);
+        Project project = injector.getInstance(ProjectLoader.class).load(source);
+
+        assertEquals(0, tempDir.list().length);
+
+        assertThrows(CayenneRuntimeException.class,
+                () -> saver.saveAs(project, new URLResource(tempDir.toURI().toURL())));
+
+        assertEquals(0, tempDir.list().length);
+    }
+
+}

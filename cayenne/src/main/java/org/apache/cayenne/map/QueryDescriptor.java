@@ -18,8 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.map;
 
-import org.apache.cayenne.configuration.ConfigurationNode;
-import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
+import org.apache.cayenne.configuration.ProjectNode;
+import org.apache.cayenne.configuration.ProjectNodeVisitor;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.QueryMetadata;
@@ -33,7 +33,7 @@ import java.util.Map;
  *
  * @since 4.0
  */
-public abstract class QueryDescriptor implements ConfigurationNode, XMLSerializable {
+public abstract class QueryDescriptor implements ProjectNode, XMLSerializable {
 
     /**
      * @since 4.1
@@ -202,7 +202,7 @@ public abstract class QueryDescriptor implements ConfigurationNode, XMLSerializa
     public abstract Query buildQuery(Map<String, ?> parameters);
 
     @Override
-    public <T> T acceptVisitor(ConfigurationNodeVisitor<T> visitor) {
+    public <T> T acceptVisitor(ProjectNodeVisitor<T> visitor) {
         return visitor.visitQuery(this);
     }
 

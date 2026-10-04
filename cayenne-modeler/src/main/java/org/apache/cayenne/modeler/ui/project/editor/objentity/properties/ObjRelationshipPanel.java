@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.ui.project.editor.objentity.properties;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.map.DeleteRule;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
@@ -185,10 +185,10 @@ public class ObjRelationshipPanel extends ProjectPanel implements ObjEntityDispl
             return;
         }
 
-        DataChannelDescriptor domain = (DataChannelDescriptor) session.project().getRootNode();
+        Project project = session.project();
         session.displayObjEntity(new ObjEntityDisplayEvent(
                 app.getFrame().getProjectView().getProjectTreeView(),
-                domain,
+                project,
                 target.getDataMap(),
                 target));
     }
@@ -486,7 +486,7 @@ public class ObjRelationshipPanel extends ProjectPanel implements ObjEntityDispl
 
         session.displayObjRelationship(new ObjRelationshipDisplayEvent(
                 this,
-                session.getSelectedDataDomain(),
+                session.getSelectedProject(),
                 session.getSelectedDataMap(),
                 session.getSelectedObjEntity(),
                 rels));

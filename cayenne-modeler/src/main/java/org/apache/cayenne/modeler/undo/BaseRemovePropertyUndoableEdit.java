@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.modeler.undo;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;
@@ -48,7 +47,7 @@ public abstract class BaseRemovePropertyUndoableEdit extends CayenneUndoableEdit
     protected void focusEmbeddable() {
         session.displayEmbeddable(new EmbeddableDisplayEvent(
                 this,
-                (DataChannelDescriptor) session.project().getRootNode(),
+                session.project(),
                 embeddable.getDataMap(),
                 embeddable));
     }

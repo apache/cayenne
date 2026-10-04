@@ -18,8 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.gen.xml;
 
-import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
-import org.apache.cayenne.configuration.xml.DataChannelMetaData;
+import org.apache.cayenne.configuration.ProjectNodeVisitor;
+import org.apache.cayenne.configuration.xml.ProjectMetaData;
 import org.apache.cayenne.configuration.upgrade.UpgradeHandler;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.project.extension.BaseNamingDelegate;
@@ -36,7 +36,7 @@ public class CgenExtension implements ProjectExtension {
             + UpgradeHandler.CURRENT_VERSION + "/cgen";
 
     @Inject
-    private DataChannelMetaData metaData;
+    private ProjectMetaData metaData;
 
     @Override
     public LoaderDelegate createLoaderDelegate() {
@@ -49,7 +49,7 @@ public class CgenExtension implements ProjectExtension {
     }
 
     @Override
-    public ConfigurationNodeVisitor<String> createNamingDelegate() {
+    public ProjectNodeVisitor<String> createNamingDelegate() {
         return new BaseNamingDelegate();
     }
 

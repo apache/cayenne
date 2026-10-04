@@ -18,8 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.ui.project.editor.datamap.cgen;
 
-import org.apache.cayenne.configuration.BaseConfigurationNodeVisitor;
-import org.apache.cayenne.configuration.ConfigurationNode;
+import org.apache.cayenne.configuration.BaseProjectNodeVisitor;
+import org.apache.cayenne.configuration.ProjectNode;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.EmbeddableAttribute;
@@ -39,10 +39,10 @@ import java.util.Collection;
  */
 class CgenValidator {
 
-    ValidationResult getValidationResult(Collection<? extends ConfigurationNode> classes) {
+    ValidationResult getValidationResult(Collection<? extends ProjectNode> classes) {
         ValidationResult validationResult = new ValidationResult();
-        for (ConfigurationNode configurationNode : classes) {
-            configurationNode.acceptVisitor(new BaseConfigurationNodeVisitor<Void>() {
+        for (ProjectNode projectNode : classes) {
+            projectNode.acceptVisitor(new BaseProjectNodeVisitor<Void>() {
                 @Override
                 public Void visitObjEntity(ObjEntity entity) {
                     validateEntity(validationResult, entity);

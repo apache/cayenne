@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.ui.action;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.project.validation.Inspection;
 import org.apache.cayenne.project.validation.ValidationConfig;
@@ -39,8 +39,8 @@ public class DisableValidationInspectionAction extends UpdateValidationConfigAct
     @Override
     public void performAction(ActionEvent e) {
         Inspection inspection = (Inspection) getValue(INSPECTION_PARAM);
-        DataChannelDescriptor dataChannel = (DataChannelDescriptor) app.getFrame().getProjectSession().project().getRootNode();
-        ValidationConfig config = ValidationConfig.fromMetadata(app.getMetaData(), dataChannel);
+        Project project = app.getFrame().getProjectSession().project();
+        ValidationConfig config = ValidationConfig.fromMetadata(app.getMetaData(), project);
 
         EnumSet<Inspection> enabledInspections = EnumSet.copyOf(config.getEnabledInspections());
         enabledInspections.remove(inspection);

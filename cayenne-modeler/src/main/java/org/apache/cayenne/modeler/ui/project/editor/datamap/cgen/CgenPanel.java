@@ -23,10 +23,10 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.configuration.BaseConfigurationNodeVisitor;
-import org.apache.cayenne.configuration.ConfigurationNode;
-import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
-import org.apache.cayenne.configuration.xml.DataChannelMetaData;
+import org.apache.cayenne.configuration.BaseProjectNodeVisitor;
+import org.apache.cayenne.configuration.ProjectNode;
+import org.apache.cayenne.configuration.ProjectNodeVisitor;
+import org.apache.cayenne.configuration.xml.ProjectMetaData;
 import org.apache.cayenne.gen.CgenConfigList;
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.ClassGenerationAction;
@@ -75,7 +75,7 @@ public class CgenPanel extends ProjectPanel implements ObjEntityListener, Embedd
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CgenPanel.class);
 
-    private final Set<ConfigurationNode> classes;
+    private final Set<ProjectNode> classes;
     private final SelectionModel selectionModel;
     private final CgenArtifactSelectorPanel classesSelector;
     private final CgenConfigPanel cgenConfigPanel;
@@ -97,7 +97,7 @@ public class CgenPanel extends ProjectPanel implements ObjEntityListener, Embedd
         super(session);
 
         this.classes = new TreeSet<>(
-                Comparator.comparing((ConfigurationNode o) -> o.acceptVisitor(TYPE_GETTER))
+                Comparator.comparing((ProjectNode o) -> o.acceptVisitor(TYPE_GETTER))
                         .thenComparing(o -> o.acceptVisitor(NAME_GETTER))
         );
         this.selectionModel = new SelectionModel();
@@ -192,10 +192,10 @@ public class CgenPanel extends ProjectPanel implements ObjEntityListener, Embedd
         this.initFromModel = initFromModel;
     }
 
-    public boolean updateSelection(Predicate<ConfigurationNode> predicate) {
+    public boolean updateSelection(Predicate<ProjectNode> predicate) {
         boolean modified = selectionModel.updateSelection(predicate, classes);
 
-        for (ConfigurationNode classObj : classes) {
+        for (ProjectNode classObj : classes) {
             if (classObj instanceof DataMap) {
                 boolean selected = predicate.test(classObj);
                 updateArtifactGenerationMode(selected);
@@ -366,7 +366,7 @@ public class CgenPanel extends ProjectPanel implements ObjEntityListener, Embedd
 
     private void generateAction() {
         ClassGenerationAction generator = new ToolsInjectorBuilder()
-                .addModule(binder -> binder.bind(DataChannelMetaData.class).toInstance(app.getMetaData()))
+                .addModule(binder -> binder.bind(ProjectMetaData.class).toInstance(app.getMetaData()))
                 .create()
                 .getInstance(ClassGenerationActionFactory.class)
                 .createAction(configuration, NOPLogger.NOP_LOGGER);
@@ -575,7 +575,7 @@ public class CgenPanel extends ProjectPanel implements ObjEntityListener, Embedd
         }
     }
 
-    private final Predicate<ConfigurationNode> defaultPredicate = o -> o.acceptVisitor(new BaseConfigurationNodeVisitor<Boolean>() {
+    private final Predicate<ProjectNode> defaultPredicate = o -> o.acceptVisitor(new BaseProjectNodeVisitor<Boolean>() {
         @Override
         public Boolean visitDataMap(DataMap dataMap) {
             return false;
@@ -592,7 +592,7 @@ public class CgenPanel extends ProjectPanel implements ObjEntityListener, Embedd
         }
     });
 
-    private static final ConfigurationNodeVisitor<Integer> TYPE_GETTER = new BaseConfigurationNodeVisitor<>() {
+    private static final ProjectNodeVisitor<Integer> TYPE_GETTER = new BaseProjectNodeVisitor<>() {
         @Override
         public Integer visitDataMap(DataMap dataMap) { return 10; }
         @Override
@@ -601,7 +601,7 @@ public class CgenPanel extends ProjectPanel implements ObjEntityListener, Embedd
         public Integer visitEmbeddable(Embeddable embeddable) { return 30; }
     };
 
-    private static final ConfigurationNodeVisitor<String> NAME_GETTER = new BaseConfigurationNodeVisitor<>() {
+    private static final ProjectNodeVisitor<String> NAME_GETTER = new BaseProjectNodeVisitor<>() {
         @Override
         public String visitDataMap(DataMap dataMap) { return dataMap.getName(); }
         @Override

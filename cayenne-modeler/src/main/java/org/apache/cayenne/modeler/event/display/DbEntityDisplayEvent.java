@@ -19,38 +19,38 @@
 
 package org.apache.cayenne.modeler.event.display;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 
 public class DbEntityDisplayEvent extends DisplayEvent {
 
-    private final DataChannelDescriptor domain;
+    private final Project project;
     private final DataMap dataMap;
     private final DbEntity entity;
     private final boolean mainTabFocus;
     private final boolean unselectAttributes;
 
-    public DbEntityDisplayEvent(Object src, DataChannelDescriptor domain, DataMap dataMap, DbEntity entity) {
-        this(src, domain, dataMap, entity, false, false);
+    public DbEntityDisplayEvent(Object src, Project project, DataMap dataMap, DbEntity entity) {
+        this(src, project, dataMap, entity, false, false);
     }
 
     public DbEntityDisplayEvent(Object src,
-                                DataChannelDescriptor domain,
+                                Project project,
                                 DataMap dataMap,
                                 DbEntity entity,
                                 boolean mainTabFocus,
                                 boolean unselectAttributes) {
         super(src);
-        this.domain = domain;
+        this.project = project;
         this.dataMap = dataMap;
         this.entity = entity;
         this.mainTabFocus = mainTabFocus;
         this.unselectAttributes = unselectAttributes;
     }
 
-    public DataChannelDescriptor getDomain() {
-        return domain;
+    public Project getProject() {
+        return project;
     }
 
     public DataMap getDataMap() {

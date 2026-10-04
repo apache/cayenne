@@ -18,13 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.mcp.project;
 
-import org.apache.cayenne.configuration.DataChannelDescriptorLoader;
+import org.apache.cayenne.configuration.ProjectLoader;
 import org.apache.cayenne.configuration.DataMapLoader;
 import org.apache.cayenne.configuration.upgrade.ConfigurationUpgrader;
-import org.apache.cayenne.configuration.xml.DataChannelMetaData;
-import org.apache.cayenne.configuration.xml.DefaultDataChannelMetaData;
+import org.apache.cayenne.configuration.xml.ProjectMetaData;
+import org.apache.cayenne.configuration.xml.DefaultProjectMetaData;
 import org.apache.cayenne.configuration.xml.HandlerFactory;
-import org.apache.cayenne.configuration.xml.XMLDataChannelDescriptorLoader;
+import org.apache.cayenne.configuration.xml.XMLProjectLoader;
 import org.apache.cayenne.configuration.xml.XMLDataMapLoader;
 import org.apache.cayenne.configuration.xml.XMLReaderProvider;
 import org.apache.cayenne.di.Binder;
@@ -46,9 +46,9 @@ public class McpProjectLoaderModule implements Module {
 
     @Override
     public void configure(Binder binder) {
-        binder.bind(DataChannelDescriptorLoader.class).to(XMLDataChannelDescriptorLoader.class);
+        binder.bind(ProjectLoader.class).to(XMLProjectLoader.class);
         binder.bind(HandlerFactory.class).to(ExtensionAwareHandlerFactory.class);
-        binder.bind(DataChannelMetaData.class).to(DefaultDataChannelMetaData.class);
+        binder.bind(ProjectMetaData.class).to(DefaultProjectMetaData.class);
         binder.bind(DataMapLoader.class).to(XMLDataMapLoader.class);
         binder.bind(ConfigurationUpgrader.class).to(ConfigurationUpgrader.class);
         binder.bind(ResourceLocator.class).to(ClassLoaderResourceLocator.class);

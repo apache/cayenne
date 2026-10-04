@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.modeler.ui.action;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.modeler.event.model.QueryEvent;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.QueryDescriptor;
@@ -51,18 +51,18 @@ public class CreateQueryAction extends AppAction {
         new QueryTypeDialog(getProjectSession(), app.getFrame()).open();
     }
     
-    public void createQuery(DataChannelDescriptor domain, DataMap dataMap, QueryDescriptor query) {
+    public void createQuery(Project project, DataMap dataMap, QueryDescriptor query) {
         dataMap.addQueryDescriptor(query);
         // notify listeners
-        fireQueryEvent(this, getProjectSession(), domain, dataMap, query);
+        fireQueryEvent(this, getProjectSession(), project, dataMap, query);
     }
      
     /**
      * Fires events when a query was added
      */
-    public static void fireQueryEvent(Object src, ProjectSession session, DataChannelDescriptor domain,
+    public static void fireQueryEvent(Object src, ProjectSession session, Project project,
             DataMap dataMap, QueryDescriptor query) {
         session.fireQueryEvent(QueryEvent.ofAdd(src, query, dataMap));
-        session.displayQuery(new QueryDisplayEvent(src, domain, dataMap, query));
+        session.displayQuery(new QueryDisplayEvent(src, project, dataMap, query));
     }
 }

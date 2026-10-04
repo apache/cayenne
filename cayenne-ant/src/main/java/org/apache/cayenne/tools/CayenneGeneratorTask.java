@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.tools;
 
-import org.apache.cayenne.configuration.xml.DataChannelMetaData;
+import org.apache.cayenne.configuration.xml.ProjectMetaData;
 import org.apache.cayenne.dbsync.filter.NamePatternMatcher;
 import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
 import org.apache.cayenne.di.Injector;
@@ -154,7 +154,7 @@ public class CayenneGeneratorTask extends CayenneTask {
     }
 
     List<CgenConfiguration> buildConfigurations(DataMap dataMap) {
-        CgenConfigList cgenConfigList = injector.getInstance(DataChannelMetaData.class).get(dataMap, CgenConfigList.class);
+        CgenConfigList cgenConfigList = injector.getInstance(ProjectMetaData.class).get(dataMap, CgenConfigList.class);
         if (hasConfig()) {
             logger.info("Using cgen config from pom.xml");
             return Collections.singletonList(cgenConfigFromPom(dataMap));

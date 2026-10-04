@@ -19,8 +19,8 @@
 
 package org.apache.cayenne.project.extension.info;
 
-import org.apache.cayenne.configuration.ConfigurationNode;
-import org.apache.cayenne.configuration.xml.DataChannelMetaData;
+import org.apache.cayenne.configuration.ProjectNode;
+import org.apache.cayenne.configuration.xml.ProjectMetaData;
 import org.apache.cayenne.configuration.xml.DataMapHandler;
 import org.apache.cayenne.configuration.xml.DbEntityHandler;
 import org.apache.cayenne.configuration.xml.DbRelationshipHandler;
@@ -45,9 +45,9 @@ class PropertyHandler extends NamespaceAwareNestedTagHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PropertyHandler.class);
 
-    private DataChannelMetaData metaData;
+    private ProjectMetaData metaData;
 
-    PropertyHandler(NamespaceAwareNestedTagHandler parentHandler, DataChannelMetaData metaData) {
+    PropertyHandler(NamespaceAwareNestedTagHandler parentHandler, ProjectMetaData metaData) {
         super(parentHandler);
         setTargetNamespace(InfoExtension.NAMESPACE);
         this.metaData = metaData;
@@ -57,7 +57,7 @@ class PropertyHandler extends NamespaceAwareNestedTagHandler {
     protected boolean processElement(String namespaceURI, String localName, Attributes attributes) throws SAXException {
         switch (localName) {
             case PROPERTY_TAG:
-                ConfigurationNode parentObject = getParentObject();
+                ProjectNode parentObject = getParentObject();
                 String name = attributes.getValue("name");
                 if(parentObject != null) {
                     ObjectInfo info = metaData.get(parentObject, ObjectInfo.class);
@@ -81,7 +81,7 @@ class PropertyHandler extends NamespaceAwareNestedTagHandler {
         return super.createChildTagHandler(namespaceURI, localName, qName, attributes);
     }
 
-    private ConfigurationNode getParentObject() {
+    private ProjectNode getParentObject() {
         if(parentHandler instanceof DataMapHandler) {
             return ((DataMapHandler) parentHandler).getDataMap();
         } else if(parentHandler instanceof DbEntityHandler) {

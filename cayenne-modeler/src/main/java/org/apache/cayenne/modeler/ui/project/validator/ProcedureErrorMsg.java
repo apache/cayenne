@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.ui.project.validator;
 
 import javax.swing.JFrame;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.modeler.project.ProjectSession;
@@ -38,16 +38,15 @@ public class ProcedureErrorMsg extends ValidationDisplayHandler {
     public void displayField(ProjectSession session, JFrame frame) {
         Object object = super.validationFailure.getSource();
 
-        DataChannelDescriptor domain = (DataChannelDescriptor) session
-                .project()
-                .getRootNode();
+        Project project = session
+                .project();
 
         Procedure procedure = (Procedure) object;
         DataMap map = procedure.getDataMap();
 
         ProcedureDisplayEvent event = new ProcedureDisplayEvent(
                 frame,
-                domain,
+                project,
                 map,
                 procedure,
                 true);

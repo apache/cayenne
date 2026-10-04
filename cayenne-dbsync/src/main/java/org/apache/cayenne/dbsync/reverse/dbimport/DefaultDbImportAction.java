@@ -30,13 +30,11 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.configuration.ConfigurationNode;
-import org.apache.cayenne.configuration.ConfigurationTree;
-import org.apache.cayenne.configuration.DataChannelDescriptor;
-import org.apache.cayenne.configuration.DataChannelDescriptorLoader;
+import org.apache.cayenne.configuration.ProjectNode;
+import org.apache.cayenne.configuration.Project;
+import org.apache.cayenne.configuration.ProjectLoader;
 import org.apache.cayenne.configuration.DataMapLoader;
-import org.apache.cayenne.configuration.xml.DataChannelMetaData;
+import org.apache.cayenne.configuration.xml.ProjectMetaData;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.merge.DataMapMerger;
 import org.apache.cayenne.dbsync.reverse.configuration.DbAdapterFactory;
@@ -59,7 +57,6 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.ProjectSaver;
 import org.apache.cayenne.resource.URLResource;
 import org.apache.cayenne.validation.SimpleValidationFailure;
@@ -82,8 +79,8 @@ public class DefaultDbImportAction implements DbImportAction {
     private final DbAdapterFactory adapterFactory;
     private final DataMapLoader mapLoader;
     private final MergerTokenFactoryProvider mergerTokenFactoryProvider;
-    private final DataChannelDescriptorLoader dataChannelDescriptorLoader;
-    private final DataChannelMetaData metaData;
+    private final ProjectLoader projectLoader;
+    private final ProjectMetaData metaData;
     private boolean hasChanges;
     private Collection<MergerToken> tokens;
     private DataMap loadedDataMap;
@@ -93,15 +90,15 @@ public class DefaultDbImportAction implements DbImportAction {
                                  @Inject DbAdapterFactory adapterFactory,
                                  @Inject DataMapLoader mapLoader,
                                  @Inject MergerTokenFactoryProvider mergerTokenFactoryProvider,
-                                 @Inject DataChannelDescriptorLoader dataChannelDescriptorLoader,
-                                 @Inject DataChannelMetaData metaData) {
+                                 @Inject ProjectLoader projectLoader,
+                                 @Inject ProjectMetaData metaData) {
         this.logger = logger;
         this.projectSaver = projectSaver;
         this.adapterFactory = adapterFactory;
         this.mapLoader = mapLoader;
         this.mergerTokenFactoryProvider = mergerTokenFactoryProvider;
         this.metaData = metaData;
-        this.dataChannelDescriptorLoader = dataChannelDescriptorLoader;
+        this.projectLoader = projectLoader;
     }
 
     protected static List<MergerToken> sort(List<MergerToken> reverse) {
@@ -447,41 +444,35 @@ public class DefaultDbImportAction implements DbImportAction {
      * This can create DataMap and/or Project files.
      */
     protected void saveLoaded(DataMap dataMap, DbImportConfiguration config) throws MalformedURLException {
-        ConfigurationTree<ConfigurationNode> projectRoot;
+        ProjectNode projectRoot;
         if(config.getCayenneProject() == null) {
             // Old version of cdbimport, no Cayenne project, need to save only DataMap
-            projectRoot = new ConfigurationTree<>(dataMap);
+            projectRoot = dataMap;
         } else {
             // Cayenne project is present
-            DataChannelDescriptor dataChannelDescriptor;
+            Project project;
             if(config.getCayenneProject().exists()) {
                 // Cayenne project file exists, need to read it and push DataMap inside
                 URLResource configurationResource = new URLResource(config.getCayenneProject().toURI().toURL());
-                ConfigurationTree<DataChannelDescriptor> configurationTree = dataChannelDescriptorLoader.load(configurationResource);
-                if(!configurationTree.getLoadFailures().isEmpty()) {
-                    throw new CayenneRuntimeException("Unable to load cayenne project %s, %s", config.getCayenneProject(),
-                            configurationTree.getLoadFailures().iterator().next().getDescription());
-                }
-                dataChannelDescriptor = configurationTree.getRootNode();
+                project = projectLoader.load(configurationResource);
                 // remove old copy of DataMap if it's there
-                DataMap oldDataMap = dataChannelDescriptor.getDataMap(dataMap.getName());
+                DataMap oldDataMap = project.getDataMap(dataMap.getName());
                 if(oldDataMap != null) {
-                    dataChannelDescriptor.getDataMaps().remove(oldDataMap);
+                    project.getDataMaps().remove(oldDataMap);
                 }
             } else {
                 // No project file yet, can simply create empty project with resulting DataMap
-                dataChannelDescriptor = new DataChannelDescriptor();
-                dataChannelDescriptor.setName(getProjectNameFromFileName(config.getCayenneProject().getName()));
-                dataChannelDescriptor.setConfigurationSource(new URLResource(config.getCayenneProject().toURI().toURL()));
+                project = new Project();
+                project.setName(getProjectNameFromFileName(config.getCayenneProject().getName()));
+                project.setConfigurationSource(new URLResource(config.getCayenneProject().toURI().toURL()));
                 logger.info("Project file does not exist. New project will be saved into '{}", config.getCayenneProject().getAbsolutePath());
             }
 
-            dataChannelDescriptor.getDataMaps().add(dataMap);
-            projectRoot = new ConfigurationTree<>(dataChannelDescriptor);
+            project.getDataMaps().add(dataMap);
+            projectRoot = project;
         }
 
-        Project project = new Project(projectRoot);
-        projectSaver.save(project);
+        projectSaver.save(projectRoot);
 
         logger.info("");
         logger.info("All changes saved.");

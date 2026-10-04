@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.ui.action;
 
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.event.model.ProjectAfterSaveEvent;
-import org.apache.cayenne.project.Project;
+import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.project.ProjectSaver;
 
 import javax.swing.*;
@@ -51,17 +51,18 @@ public class SaveAction extends SaveAsAction {
     @Override
     protected boolean saveAll() throws Exception {
         Project p = getCurrentProject();
-        if (p == null || p.getConfigurationResource() == null) {
+        if (p == null || p.getConfigurationSource() == null) {
             return super.saveAll();
         }
 
-        File oldProjectFile = new File(p.getConfigurationResource().getURL().toURI());
+        File oldProjectFile = new File(p.getConfigurationSource().getURL().toURI());
 
         getProjectSession().pauseFileChangeTracking();
         ProjectSaver saver = app.getProjectSaver();
-        saver.save(p);
+        saver.save(p, getProjectSession().unusedResources());
+        getProjectSession().unusedResources().clear();
 
-        File newProjectFile = new File(p.getConfigurationResource().getURL().toURI());
+        File newProjectFile = new File(p.getConfigurationSource().getURL().toURI());
         app.getFrame().changePathInLastProjListAction(oldProjectFile, newProjectFile);
         app.getFrame().fireRecentFileListChanged();
 

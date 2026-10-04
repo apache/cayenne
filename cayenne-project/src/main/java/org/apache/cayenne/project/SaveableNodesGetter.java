@@ -18,9 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.project;
 
-import org.apache.cayenne.configuration.BaseConfigurationNodeVisitor;
-import org.apache.cayenne.configuration.ConfigurationNode;
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.BaseProjectNodeVisitor;
+import org.apache.cayenne.configuration.ProjectNode;
+import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.map.DataMap;
 
 import java.util.ArrayList;
@@ -30,20 +30,20 @@ import java.util.Collections;
 /**
  * @since 3.1
  */
-class SaveableNodesGetter extends BaseConfigurationNodeVisitor<Collection<ConfigurationNode>> {
+class SaveableNodesGetter extends BaseProjectNodeVisitor<Collection<ProjectNode>> {
 
     @Override
-    public Collection<ConfigurationNode> visitDataChannelDescriptor(DataChannelDescriptor descriptor) {
+    public Collection<ProjectNode> visitProject(Project project) {
 
-        Collection<ConfigurationNode> nodes = new ArrayList<>();
-        nodes.add(descriptor);
-        nodes.addAll(descriptor.getDataMaps());
+        Collection<ProjectNode> nodes = new ArrayList<>();
+        nodes.add(project);
+        nodes.addAll(project.getDataMaps());
 
         return nodes;
     }
 
     @Override
-    public Collection<ConfigurationNode> visitDataMap(DataMap dataMap) {
+    public Collection<ProjectNode> visitDataMap(DataMap dataMap) {
         return Collections.singletonList(dataMap);
     }
 }

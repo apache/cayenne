@@ -24,7 +24,6 @@ import org.apache.cayenne.modeler.ui.project.editor.EditorForm;
 import org.apache.cayenne.modeler.ui.project.editor.query.ExistingSelectionProcessor;
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
-import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.event.display.ProcedureDisplayEvent;
@@ -115,7 +114,7 @@ public class ProcedureTab extends ProjectPanel implements ProcedureDisplayListen
 
     public void processExistingSelection(EventObject e) {
         ProcedureDisplayEvent pde = new ProcedureDisplayEvent(this,
-                (DataChannelDescriptor) session.project().getRootNode(),
+                session.project(),
                 session.getSelectedDataMap(),
                 session.getSelectedProcedure());
         session.displayProcedure(pde);

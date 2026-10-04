@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.modeler.project;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjAttribute;
@@ -33,11 +33,11 @@ import java.util.List;
 public class DbRelationshipOps {
 
     public static Collection<ObjRelationship> objRelationshipsUsingDbRelationship(
-            DataChannelDescriptor domain,
+            Project project,
             DbRelationship relationship) {
         List<ObjRelationship> objRelationships = new ArrayList<>();
-        if (domain != null) {
-            for (DataMap map : domain.getDataMaps()) {
+        if (project != null) {
+            for (DataMap map : project.getDataMaps()) {
                 for (ObjEntity entity : map.getObjEntities()) {
                     for (ObjRelationship objRelationship : entity.getRelationships()) {
                         if (objRelationship.getDbRelationships().contains(relationship)) {
@@ -51,12 +51,12 @@ public class DbRelationshipOps {
     }
 
     public static Collection<ObjAttribute> objAttributesUsingDbRelationship(
-            DataChannelDescriptor domain,
+            Project project,
             DbRelationship relationship) {
 
         List<ObjAttribute> attributes = new ArrayList<>();
-        if (domain != null) {
-            for (DataMap map : domain.getDataMaps()) {
+        if (project != null) {
+            for (DataMap map : project.getDataMaps()) {
                 for (ObjEntity entity : map.getObjEntities()) {
                     for (ObjAttribute objAttribute : entity.getAttributes()) {
                         if (objAttribute.isFlattened()) {

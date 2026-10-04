@@ -26,8 +26,8 @@ import java.util.List;
 import java.util.ListIterator;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.configuration.ConfigurationNode;
-import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
+import org.apache.cayenne.configuration.ProjectNode;
+import org.apache.cayenne.configuration.ProjectNodeVisitor;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.DbPathExp;
@@ -42,7 +42,7 @@ import java.util.Objects;
  * Describes an association between two Java classes mapped as source and target
  * ObjEntity. Maps to a path of DbRelationships.
  */
-public class ObjRelationship extends Relationship<ObjEntity, ObjAttribute, ObjRelationship> implements ConfigurationNode {
+public class ObjRelationship extends Relationship<ObjEntity, ObjAttribute, ObjRelationship> implements ProjectNode {
 
     /**
      * Denotes a default type of to-many relationship collection which is a Java
@@ -98,7 +98,7 @@ public class ObjRelationship extends Relationship<ObjEntity, ObjAttribute, ObjRe
     /**
      * @since 3.1
      */
-    public <T> T acceptVisitor(ConfigurationNodeVisitor<T> visitor) {
+    public <T> T acceptVisitor(ProjectNodeVisitor<T> visitor) {
         return visitor.visitObjRelationship(this);
     }
 
@@ -108,7 +108,7 @@ public class ObjRelationship extends Relationship<ObjEntity, ObjAttribute, ObjRe
      * @since 1.1
      */
     @Override
-    public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor<?> delegate) {
+    public void encodeAsXML(XMLEncoder encoder, ProjectNodeVisitor<?> delegate) {
         ObjEntity source = getSourceEntity();
         if (source == null) {
             return;

@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.modeler.ui.action;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.dbsync.merge.context.EntityMergeSupport;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.Application;
@@ -83,7 +82,7 @@ public class ObjEntitySyncAction extends AppAction {
                         .fireObjEntityEvent(ObjEntityEvent.ofChange(this, entity));
                 session.displayObjEntity(new ObjEntityDisplayEvent(
                         this,
-                        (DataChannelDescriptor) session.project().getRootNode(),
+                        session.project(),
                         entity.getDataMap(),
                         entity));
             }

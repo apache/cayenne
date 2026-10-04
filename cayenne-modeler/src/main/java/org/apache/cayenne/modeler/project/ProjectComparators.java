@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.modeler.project;
 
-import org.apache.cayenne.configuration.ConfigurationNode;
+import org.apache.cayenne.configuration.ProjectNode;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
@@ -38,17 +38,17 @@ import java.util.Comparator;
  */
 public class ProjectComparators {
 
-    private static final Comparator<ConfigurationNode> dataDomainChildren = new DataDomainChildrenComparator();
-    private static final Comparator<ConfigurationNode> dataMapChildren = new DataMapChildrenComparator();
-    private static final Comparator<ConfigurationNode> entityChildren = new EntityChildrenComparator();
-    private static final Comparator<ConfigurationNode> namedObjects = new NamedObjectComparator();
+    private static final Comparator<ProjectNode> projectChildren = new ProjectChildrenComparator();
+    private static final Comparator<ProjectNode> dataMapChildren = new DataMapChildrenComparator();
+    private static final Comparator<ProjectNode> entityChildren = new EntityChildrenComparator();
+    private static final Comparator<ProjectNode> namedObjects = new NamedObjectComparator();
 
     /**
      * Returns a comparator to order DataMap objects of mixed types. Objects of the same
      * type are ordered based on "name" property.
      */
-    public static Comparator<ConfigurationNode> forDataDomainChildren() {
-        return dataDomainChildren;
+    public static Comparator<ProjectNode> forProjectChildren() {
+        return projectChildren;
     }
 
     /**
@@ -57,7 +57,7 @@ public class ProjectComparators {
      * based on the following precedence: DataMap, ObjEntity, DbEntity, Procedure and
      * Query.
      */
-    public static Comparator<ConfigurationNode> forDataMapChildren() {
+    public static Comparator<ProjectNode> forDataMapChildren() {
         return dataMapChildren;
     }
 
@@ -67,20 +67,20 @@ public class ProjectComparators {
      * Objects of different types are ordered based on the following precedence:
      * Attribute, Relationship.
      */
-    public static Comparator<ConfigurationNode> forEntityChildren() {
+    public static Comparator<ProjectNode> forEntityChildren() {
         return entityChildren;
     }
 
     /**
      * Returns a comparator to order java beans according to their "name" property.
      */
-    public static Comparator<ConfigurationNode> forNamedObjects() {
+    public static Comparator<ProjectNode> forNamedObjects() {
         return namedObjects;
     }
 
-    static class NamedObjectComparator implements Comparator<ConfigurationNode> {
+    static class NamedObjectComparator implements Comparator<ProjectNode> {
 
-        public int compare(ConfigurationNode o1, ConfigurationNode o2) {
+        public int compare(ProjectNode o1, ProjectNode o2) {
 
             String name1 = Renderers.asString(o1);
             String name2 = Renderers.asString(o2);
@@ -95,9 +95,9 @@ public class ProjectComparators {
         }
     }
 
-    final static class DataDomainChildrenComparator extends NamedObjectComparator {
+    final static class ProjectChildrenComparator extends NamedObjectComparator {
 
-        public int compare(ConfigurationNode o1, ConfigurationNode o2) {
+        public int compare(ProjectNode o1, ProjectNode o2) {
             int delta = getClassWeight(o1) - getClassWeight(o2);
             if (delta != 0) {
                 return delta;
@@ -106,7 +106,7 @@ public class ProjectComparators {
             }
         }
 
-        private static int getClassWeight(ConfigurationNode o) {
+        private static int getClassWeight(ProjectNode o) {
             if (o instanceof DataMap) {
                 return 1;
             } else {
@@ -118,7 +118,7 @@ public class ProjectComparators {
 
     final static class DataMapChildrenComparator extends NamedObjectComparator {
 
-        public int compare(ConfigurationNode o1, ConfigurationNode o2) {
+        public int compare(ProjectNode o1, ProjectNode o2) {
             int delta = getClassWeight(o1) - getClassWeight(o2);
             if (delta != 0) {
                 return delta;
@@ -127,7 +127,7 @@ public class ProjectComparators {
             }
         }
 
-        private static int getClassWeight(ConfigurationNode o) {
+        private static int getClassWeight(ProjectNode o) {
             if (o instanceof DataMap) {
                 return 1;
             } else if (o instanceof ObjEntity) {
@@ -149,7 +149,7 @@ public class ProjectComparators {
 
     final static class EntityChildrenComparator extends NamedObjectComparator {
 
-        public int compare(ConfigurationNode o1, ConfigurationNode o2) {
+        public int compare(ProjectNode o1, ProjectNode o2) {
             int delta = getClassWeight(o1) - getClassWeight(o2);
             if (delta != 0) {
                 return delta;
@@ -158,7 +158,7 @@ public class ProjectComparators {
             }
         }
 
-        private static int getClassWeight(ConfigurationNode o) {
+        private static int getClassWeight(ProjectNode o) {
             if (o instanceof Entity) {
                 return 1;
             } else if (o instanceof Attribute) {

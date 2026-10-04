@@ -20,17 +20,17 @@
 package org.apache.cayenne.modeler.ui.action;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.configuration.ConfigurationNode;
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.ProjectNode;
+import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.event.model.ProjectBeforeSaveEvent;
 import org.apache.cayenne.modeler.event.model.ProjectAfterSaveEvent;
 import org.apache.cayenne.modeler.pref.PrefsManager;
 import org.apache.cayenne.modeler.pref.adapters.RecentProjectsPrefs;
+import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.ui.project.overwrite.OverwriteDialog;
-import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.ProjectSaver;
 import org.apache.cayenne.project.validation.ProjectValidator;
 import org.apache.cayenne.resource.URLResource;
@@ -88,18 +88,16 @@ public class SaveAsAction extends AppAction {
 
         PrefsManager repo = app.getPrefsManager();
         repo.stageProjectMove(p, projectDir);
-        DataChannelDescriptor descriptor = (DataChannelDescriptor) p.getRootNode();
-        if (descriptor != null) {
-            for (DataMap map : descriptor.getDataMaps()) {
-                repo.stageDataMapMove(map, projectDir);
-            }
+        for (DataMap map : p.getDataMaps()) {
+            repo.stageDataMapMove(map, projectDir);
         }
 
         URLResource res = new URLResource(projectDir.toURI().toURL());
         ProjectSaver saver = app.getProjectSaver();
         saver.saveAs(p, res);
+        getProjectSession().unusedResources().clear();
 
-        File file = new File(p.getConfigurationResource().getURL().toURI());
+        File file = new File(p.getConfigurationSource().getURL().toURI());
         app.getFrame().addToLastProjListAction(file);
         app.getFrame().fireRecentFileListChanged();
 
@@ -120,7 +118,7 @@ public class SaveAsAction extends AppAction {
     public void performAction() {
 
         ProjectValidator projectValidator = app.getProjectValidator();
-        ValidationResult validationResult = projectValidator.validate(getCurrentProject().getRootNode());
+        ValidationResult validationResult = projectValidator.validate(getCurrentProject());
 
         getProjectSession().fireProjectBeforeSaveEvent(new ProjectBeforeSaveEvent(SaveAsAction.class));
 
@@ -142,17 +140,17 @@ public class SaveAsAction extends AppAction {
     }
 
     /**
-     * Returns <code>true</code> if path contains a Project object and the
+     * Returns <code>true</code> if there is an open project and the
      * project is modified.
      */
     @Override
-    public boolean enableForPath(ConfigurationNode object) {
+    public boolean enableForPath(ProjectNode object) {
         if (object == null) {
             return false;
         }
 
-        Project project = app.getFrame().getProjectSession().project();
-        return project != null && project.isModified();
+        ProjectSession session = app.getFrame().getProjectSession();
+        return session.project() != null && session.isDirty();
     }
 
     private File newProjectDir(Project p) {
@@ -161,8 +159,8 @@ public class SaveAsAction extends AppAction {
         }
 
         StringBuilder nameProject = new StringBuilder("cayenne");
-        if (((DataChannelDescriptor) p.getRootNode()).getName() != null) {
-            nameProject.append("-").append(((DataChannelDescriptor) p.getRootNode()).getName());
+        if (p.getName() != null) {
+            nameProject.append("-").append(p.getName());
         }
         nameProject.append(".xml");
 

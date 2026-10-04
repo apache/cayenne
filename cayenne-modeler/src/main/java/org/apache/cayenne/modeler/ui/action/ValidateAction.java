@@ -59,8 +59,7 @@ public class ValidateAction extends AppAction {
     public void performAction(ActionEvent e) {
 
         ProjectValidator projectValidator = app.getProjectValidator();
-        ValidationResult validationResult = projectValidator.validate(getCurrentProject()
-                .getRootNode());
+        ValidationResult validationResult = projectValidator.validate(getCurrentProject());
 
         if (!validationResult.getFailures().isEmpty()) {
             showFailures(validationResult.getFailures());

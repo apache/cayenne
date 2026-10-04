@@ -18,9 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.ui.project.tree;
 
-import org.apache.cayenne.configuration.BaseConfigurationNodeVisitor;
-import org.apache.cayenne.configuration.ConfigurationNode;
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.BaseProjectNodeVisitor;
+import org.apache.cayenne.configuration.ProjectNode;
+import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.project.ProjectComparators;
 
@@ -36,12 +36,12 @@ import java.util.List;
  */
 class ProjectTreeFactory {
 
-    public static DefaultMutableTreeNode wrapProjectNode(ConfigurationNode node) {
+    public static DefaultMutableTreeNode wrapProjectNode(ProjectNode node) {
         return node.acceptVisitor(new TreeWrapper());
     }
 
     private static class TreeWrapper extends
-            BaseConfigurationNodeVisitor<DefaultMutableTreeNode> {
+            BaseProjectNodeVisitor<DefaultMutableTreeNode> {
 
         private LinkedList<DefaultMutableTreeNode> stack;
 
@@ -84,12 +84,12 @@ class ProjectTreeFactory {
             return stack.removeLast();
         }
 
-        public DefaultMutableTreeNode visitDataChannelDescriptor(
-                DataChannelDescriptor channelDescriptor) {
+        public DefaultMutableTreeNode visitProject(
+                Project project) {
 
-            pushNode(channelDescriptor);
+            pushNode(project);
 
-            for (DataMap map : sort(channelDescriptor.getDataMaps())) {
+            for (DataMap map : sort(project.getDataMaps())) {
                 map.acceptVisitor(this);
             }
 

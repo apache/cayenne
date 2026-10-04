@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.modeler.editor.templateeditor;
 
-import org.apache.cayenne.configuration.xml.DefaultDataChannelMetaData;
+import org.apache.cayenne.configuration.xml.DefaultProjectMetaData;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.TemplateType;
 import org.apache.cayenne.map.DataMap;
@@ -58,7 +58,7 @@ public class PreviewActionConfiguratorTest {
         this.editor = mock(TemplateEditor.class);
 
         Mockito.when(editor.app()).thenReturn(application);
-        Mockito.when(application.getMetaData()).thenReturn(new DefaultDataChannelMetaData());
+        Mockito.when(application.getMetaData()).thenReturn(new DefaultProjectMetaData());
         Mockito.when(editor.getCurrentDataMap()).thenReturn(dataMap);
 
     }

@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.modeler.ui.action;
 
-import org.apache.cayenne.configuration.ConfigurationNode;
+import org.apache.cayenne.configuration.ProjectNode;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjEntity;
@@ -57,7 +57,7 @@ public class RemoveRelationshipAction extends RemoveAction implements MultipleOb
 	 * Returns <code>true</code> if last object in the path contains a removable relationship.
 	 */
 	@Override
-	public boolean enableForPath(ConfigurationNode object) {
+	public boolean enableForPath(ProjectNode object) {
 		if (object == null) {
 			return false;
 		}

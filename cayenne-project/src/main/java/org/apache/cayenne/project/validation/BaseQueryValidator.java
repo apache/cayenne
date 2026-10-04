@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.project.validation;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.util.Util;
@@ -29,7 +29,7 @@ import java.util.function.Supplier;
 /**
  * Base validation for all query types
  */
-abstract class BaseQueryValidator<T extends QueryDescriptor> extends ConfigurationNodeValidator<T> {
+abstract class BaseQueryValidator<T extends QueryDescriptor> extends ProjectNodeValidator<T> {
 
     /**
      * @param configSupplier the config defining the behavior of this validator.
@@ -73,13 +73,13 @@ abstract class BaseQueryValidator<T extends QueryDescriptor> extends Configurati
             return;
         }
 
-        DataChannelDescriptor domain = query.getDataMap().getDataChannelDescriptor();
-        if (domain == null) {
+        Project project = query.getDataMap().getProject();
+        if (project == null) {
             return;
         }
 
         // check for duplicate names in sibling contexts
-        for (DataMap nextMap : domain.getDataMaps()) {
+        for (DataMap nextMap : project.getDataMaps()) {
             if (nextMap == map) {
                 continue;
             }

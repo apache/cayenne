@@ -23,8 +23,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.cayenne.configuration.ConfigurationNode;
-import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
+import org.apache.cayenne.configuration.ProjectNode;
+import org.apache.cayenne.configuration.ProjectNodeVisitor;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
 
@@ -37,7 +37,7 @@ import org.apache.cayenne.util.XMLSerializable;
  * 
  * @since 3.0
  */
-public class Embeddable implements ConfigurationNode, XMLSerializable {
+public class Embeddable implements ProjectNode, XMLSerializable {
 
 	protected String className;
 	protected Map<String, EmbeddableAttribute> attributes;
@@ -55,7 +55,7 @@ public class Embeddable implements ConfigurationNode, XMLSerializable {
 	/**
 	 * @since 3.1
 	 */
-	public <T> T acceptVisitor(ConfigurationNodeVisitor<T> visitor) {
+	public <T> T acceptVisitor(ProjectNodeVisitor<T> visitor) {
 		return visitor.visitEmbeddable(this);
 	}
 
@@ -140,7 +140,7 @@ public class Embeddable implements ConfigurationNode, XMLSerializable {
 	 * {@link XMLSerializable} implementation that generates XML for embeddable.
 	 */
 	@Override
-	public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
+	public void encodeAsXML(XMLEncoder encoder, ProjectNodeVisitor delegate) {
 		encoder.start("embeddable")
 				.attribute("className", getClassName())
 				.nested(attributes, delegate);

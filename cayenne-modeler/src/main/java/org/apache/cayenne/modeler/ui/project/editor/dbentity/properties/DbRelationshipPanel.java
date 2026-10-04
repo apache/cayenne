@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.ui.project.editor.dbentity.properties;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.EntityResolver;
@@ -163,10 +163,10 @@ public class DbRelationshipPanel extends ProjectPanel implements DbEntityDisplay
             return;
         }
 
-        DataChannelDescriptor domain = (DataChannelDescriptor) session.project().getRootNode();
+        Project project = session.project();
         session.displayDbEntity(new DbEntityDisplayEvent(
                 app.getFrame().getProjectView().getProjectTreeView(),
-                domain,
+                project,
                 target.getDataMap(),
                 target));
     }
@@ -363,7 +363,7 @@ public class DbRelationshipPanel extends ProjectPanel implements DbEntityDisplay
 
         session.displayDbRelationship(new DbRelationshipDisplayEvent(
                 this,
-                session.getSelectedDataDomain(),
+                session.getSelectedProject(),
                 session.getSelectedDataMap(),
                 session.getSelectedDbEntity(),
                 rels));

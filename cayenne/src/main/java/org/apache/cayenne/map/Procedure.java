@@ -23,8 +23,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.cayenne.configuration.ConfigurationNode;
-import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
+import org.apache.cayenne.configuration.ProjectNode;
+import org.apache.cayenne.configuration.ProjectNodeVisitor;
 import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
@@ -32,7 +32,7 @@ import org.apache.cayenne.util.XMLSerializable;
 /**
  * A mapping descriptor for a database stored procedure.
  */
-public class Procedure implements ConfigurationNode, CayenneMapEntry, XMLSerializable {
+public class Procedure implements ProjectNode, CayenneMapEntry, XMLSerializable {
 
     protected String name;
     protected DataMap dataMap;
@@ -58,7 +58,7 @@ public class Procedure implements ConfigurationNode, CayenneMapEntry, XMLSeriali
     /**
      * @since 3.1
      */
-    public <T> T acceptVisitor(ConfigurationNodeVisitor<T> visitor) {
+    public <T> T acceptVisitor(ProjectNodeVisitor<T> visitor) {
         return visitor.visitProcedure(this);
     }
 
@@ -88,7 +88,7 @@ public class Procedure implements ConfigurationNode, CayenneMapEntry, XMLSeriali
      * @since 1.1
      */
     @Override
-    public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
+    public void encodeAsXML(XMLEncoder encoder, ProjectNodeVisitor delegate) {
         encoder.start("procedure")
                 .attribute("name", getName())
                 .attribute("schema", getSchema())

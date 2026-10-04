@@ -19,32 +19,32 @@
 
 package org.apache.cayenne.modeler.event.display;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.Project;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 
 public class DbRelationshipDisplayEvent extends DisplayEvent {
 
-    private final DataChannelDescriptor domain;
+    private final Project project;
     private final DataMap dataMap;
     private final DbEntity entity;
     private final DbRelationship[] relationships;
 
     public DbRelationshipDisplayEvent(Object src,
-                                      DataChannelDescriptor domain,
+                                      Project project,
                                       DataMap dataMap,
                                       DbEntity entity,
                                       DbRelationship... relationships) {
         super(src);
-        this.domain = domain;
+        this.project = project;
         this.dataMap = dataMap;
         this.entity = entity;
         this.relationships = relationships;
     }
 
-    public DataChannelDescriptor getDomain() {
-        return domain;
+    public Project getProject() {
+        return project;
     }
 
     public DataMap getDataMap() {

@@ -18,14 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.modeler;
 
-import org.apache.cayenne.configuration.DataChannelDescriptor;
+import org.apache.cayenne.configuration.Project;
+import org.apache.cayenne.configuration.ProjectLoader;
 import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.modeler.platform.UIInitializer;
 import org.apache.cayenne.modeler.service.validator.ConfigurableProjectValidator;
-import org.apache.cayenne.project.Project;
-import org.apache.cayenne.project.ProjectLoader;
 import org.apache.cayenne.project.ProjectModule;
 import org.apache.cayenne.project.validation.Inspection;
 import org.apache.cayenne.project.validation.ValidationConfig;
@@ -74,11 +73,8 @@ public class CayenneModelerValidationIT {
                 new UIInitializer() {
                 },
                 CliArgs.parse(new String[0]));
-        ProjectLoader projectLoader = injector.getInstance(ProjectLoader.class);
-        Project project = projectLoader.loadProject(projectResource);
-
-        DataChannelDescriptor dataChannel = (DataChannelDescriptor) project.getRootNode();
-        ValidationConfig config = ValidationConfig.fromMetadata(application.getMetaData(), dataChannel);
+        Project project = injector.getInstance(ProjectLoader.class).load(projectResource);
+        ValidationConfig config = ValidationConfig.fromMetadata(application.getMetaData(), project);
 
         assertNotNull(config);
         assertEquals(EnumSet.complementOf(EnumSet.of(

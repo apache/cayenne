@@ -18,8 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.project.extension.validation;
 
-import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
-import org.apache.cayenne.configuration.xml.DataChannelMetaData;
+import org.apache.cayenne.configuration.ProjectNodeVisitor;
+import org.apache.cayenne.configuration.xml.ProjectMetaData;
 import org.apache.cayenne.configuration.upgrade.UpgradeHandler;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.project.extension.BaseNamingDelegate;
@@ -33,7 +33,7 @@ public class ValidationExtension implements ProjectExtension {
             + UpgradeHandler.CURRENT_VERSION + "/validation";
 
     @Inject
-    protected DataChannelMetaData metadata;
+    protected ProjectMetaData metadata;
 
     @Override
     public LoaderDelegate createLoaderDelegate() {
@@ -46,7 +46,7 @@ public class ValidationExtension implements ProjectExtension {
     }
 
     @Override
-    public ConfigurationNodeVisitor<String> createNamingDelegate() {
+    public ProjectNodeVisitor<String> createNamingDelegate() {
         return new BaseNamingDelegate();
     }
 

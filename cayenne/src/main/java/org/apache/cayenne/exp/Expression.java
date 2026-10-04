@@ -30,7 +30,7 @@ import java.util.function.Function;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.configuration.ConfigurationNodeVisitor;
+import org.apache.cayenne.configuration.ProjectNodeVisitor;
 import org.apache.cayenne.util.ConversionUtil;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
@@ -603,7 +603,7 @@ public abstract sealed class Expression implements XMLSerializable permits Aggre
 	 * @since 1.1
 	 */
 	@Override
-	public void encodeAsXML(XMLEncoder encoder, ConfigurationNodeVisitor delegate) {
+	public void encodeAsXML(XMLEncoder encoder, ProjectNodeVisitor delegate) {
 		StringBuilder sb = new StringBuilder();
 		try {
 			appendAsString(sb);
