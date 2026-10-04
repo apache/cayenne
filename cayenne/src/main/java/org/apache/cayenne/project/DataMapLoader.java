@@ -29,5 +29,5 @@ import org.apache.cayenne.resource.Resource;
  */
 public interface DataMapLoader {
 
-    DataMap load(Resource configurationResource) throws CayenneRuntimeException;
+    DataMap load(Resource source) throws CayenneRuntimeException;
 }

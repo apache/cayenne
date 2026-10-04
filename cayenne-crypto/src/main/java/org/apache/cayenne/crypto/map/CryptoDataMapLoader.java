@@ -54,8 +54,8 @@ public class CryptoDataMapLoader implements DataMapLoader {
 	}
 	
 	@Override
-	public DataMap load(Resource configurationResource) throws CayenneRuntimeException {
-		DataMap result = delegate.load(configurationResource);
+	public DataMap load(Resource source) throws CayenneRuntimeException {
+		DataMap result = delegate.load(source);
 		
 		for (ObjEntity entity : result.getObjEntities()) {
 			if (entity.getLockType() == ObjEntity.LOCK_TYPE_OPTIMISTIC) {

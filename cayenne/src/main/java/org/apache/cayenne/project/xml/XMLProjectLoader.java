@@ -60,22 +60,22 @@ public class XMLProjectLoader implements ProjectLoader {
     protected ProjectFileUpgrader upgrader;
 
     @Override
-    public Project load(Resource configurationResource) throws ConfigurationException {
+    public Project load(Resource source) throws ConfigurationException {
 
-        if (configurationResource == null) {
+        if (source == null) {
             throw new NullPointerException("Null configurationResource");
         }
 
-        URL configurationURL = configurationResource.getURL();
+        URL configurationURL = source.getURL();
 
         LOGGER.info("Loading XML configuration resource from {}", configurationURL);
 
         try (InputStream in = configurationURL.openStream()) {
             InputSource input = new InputSource(in);
             input.setSystemId(configurationURL.toString());
-            return parse(configurationResource, input);
+            return parse(source, input);
         } catch (UnsupportedVersionException e) {
-            return upgradeAndLoad(configurationResource, e.getVersion());
+            return upgradeAndLoad(source, e.getVersion());
         } catch (Exception e) {
             throw new ConfigurationException("Error loading configuration from %s", e, configurationURL);
         }

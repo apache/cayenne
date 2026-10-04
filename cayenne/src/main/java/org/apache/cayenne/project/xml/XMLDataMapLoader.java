@@ -50,17 +50,17 @@ public class XMLDataMapLoader implements DataMapLoader {
     @Inject
     protected ProjectFileUpgrader upgrader;
 
-    public DataMap load(Resource configurationResource) throws CayenneRuntimeException {
+    public DataMap load(Resource source) throws CayenneRuntimeException {
 
-        URL configurationURL = configurationResource.getURL();
+        URL configurationURL = source.getURL();
         DataMap map;
 
         try (InputStream in = configurationURL.openStream()) {
             InputSource input = new InputSource(in);
             input.setSystemId(configurationURL.toString());
-            map = parse(configurationResource, input);
+            map = parse(source, input);
         } catch (UnsupportedVersionException e) {
-            map = upgradeAndLoad(configurationResource, e.getVersion());
+            map = upgradeAndLoad(source, e.getVersion());
         } catch (Exception e) {
             throw new CayenneRuntimeException("Error loading configuration from %s", e, configurationURL);
         }

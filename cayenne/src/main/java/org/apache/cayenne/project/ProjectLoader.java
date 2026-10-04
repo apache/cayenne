@@ -22,15 +22,14 @@ import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.resource.Resource;
 
 /**
- * An object that can load a named {@link Project} from some configuration source.
+ * A loader of projects.
  * 
  * @since 5.0
  */
 public interface ProjectLoader {
 
     /**
-     * Loads a Project from some configuration resource, usually an XML file
-     * found on classpath.
+     * Loads a Project from some resource, usually an XML file found on classpath.
      */
-    Project load(Resource configurationResource) throws ConfigurationException;
+    Project load(Resource source) throws ConfigurationException;
 }
