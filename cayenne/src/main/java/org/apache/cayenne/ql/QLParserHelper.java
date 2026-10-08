@@ -22,6 +22,7 @@ package org.apache.cayenne.ql;
 import org.apache.cayenne.exp.EnumRef;
 import org.apache.cayenne.exp.ListExp;
 import org.apache.cayenne.exp.PathExp;
+import org.apache.cayenne.exp.path.CayennePath;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -48,8 +49,8 @@ class QLParserHelper {
         for (int i = 0; i < pathSegments.length; i++) {
             if (pathSegments[i].contains("#")) {
                 String[] splitSegment = pathSegments[i].split("#");
-                if(splitSegment[1].endsWith("+")) {
-                    splitSegment[0] += '+';
+                if(splitSegment[1].charAt(splitSegment[1].length() - 1) == CayennePath.OUTER_JOIN_INDICATOR) {
+                    splitSegment[0] += CayennePath.OUTER_JOIN_INDICATOR;
                     splitSegment[1] = splitSegment[1].substring(0, splitSegment[1].length() - 1);
                 }
                 String previousAlias = aliasMap.putIfAbsent(splitSegment[1], splitSegment[0]);

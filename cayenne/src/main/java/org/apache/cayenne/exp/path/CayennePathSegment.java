@@ -86,7 +86,7 @@ public class CayennePathSegment implements CharSequence {
         if (!outer) {
             return segment;
         }
-        return segment + "+";
+        return segment + CayennePath.OUTER_JOIN_INDICATOR;
     }
 
     @Override

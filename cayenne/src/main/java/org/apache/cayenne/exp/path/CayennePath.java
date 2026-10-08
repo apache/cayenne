@@ -62,6 +62,11 @@ public interface CayennePath extends Iterable<CayennePathSegment> {
     CayennePath EMPTY_PATH = new EmptyCayennePath(NO_MARKER);
 
     /**
+     * A suffix of a path segment indicating that an OUTER JOIN should be used when resolving that segment.
+     */
+    char OUTER_JOIN_INDICATOR = '+';
+
+    /**
      * Create path from a given String
      * <p>
      * This method will return {@link #EMPTY_PATH}

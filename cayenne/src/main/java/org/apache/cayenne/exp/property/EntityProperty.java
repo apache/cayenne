@@ -19,12 +19,6 @@
 
 package org.apache.cayenne.exp.property;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
@@ -32,6 +26,13 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.PathExp;
 import org.apache.cayenne.exp.path.CayennePath;
+import org.apache.cayenne.exp.path.CayennePathSegment;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Property that represents to-one relationships.
@@ -255,14 +256,19 @@ public class EntityProperty<E extends Persistent> extends BaseProperty<E> implem
      */
     @Override
     public EntityProperty<E> outer() {
-        return getName().endsWith("+")
-                ? this
-                : PropertyFactory.createEntity(getName() + "+", getType());
+        CayennePathSegment last = getPath().last();
+        if (last.isOuterJoin()) {
+            return this;
+        } else {
+            CayennePath outerPath = getPath().parent().dot(last.outer());
+            return PropertyFactory.createEntity(outerPath, getType());
+        }
     }
 
     /**
      * @return property that will be translated relative to parent query
      */
+    @Override
     public EntityProperty<E> enclosing() {
         return PropertyFactory.createEntity(ExpressionFactory.enclosingObjectExp(getExpression()), getType());
     }

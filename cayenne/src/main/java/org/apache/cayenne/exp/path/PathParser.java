@@ -71,7 +71,7 @@ class PathParser {
     }
 
     static CayennePathSegment parseSegment(String segment, int start, int end) {
-        if(segment.charAt(end - 1) == '+') {
+        if(segment.charAt(end - 1) == CayennePath.OUTER_JOIN_INDICATOR) {
             return new CayennePathSegment(segment.substring(start, end - 1), true);
         } else {
             return new CayennePathSegment(segment.substring(start, end), false);
@@ -80,7 +80,7 @@ class PathParser {
 
     static CayennePathSegment parseSegment(String segment) {
         boolean outer = false;
-        if(segment.length() > 1 && segment.charAt(segment.length() - 1) == '+') {
+        if(segment.length() > 1 && segment.charAt(segment.length() - 1) == CayennePath.OUTER_JOIN_INDICATOR) {
             segment = segment.substring(0, segment.length() - 1);
             outer = true;
         }
