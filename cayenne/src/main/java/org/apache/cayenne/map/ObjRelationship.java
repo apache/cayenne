@@ -21,18 +21,15 @@ package org.apache.cayenne.map;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.project.ProjectNode;
 import org.apache.cayenne.project.ProjectNodeVisitor;
-import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.ExpressionException;
-import org.apache.cayenne.exp.DbPathExp;
 import org.apache.cayenne.exp.path.CayennePath;
-import org.apache.cayenne.util.CayenneMapEntry;
+import org.apache.cayenne.exp.path.CayennePathSegment;
 import org.apache.cayenne.util.ToStringBuilder;
 import org.apache.cayenne.util.XMLEncoder;
 
@@ -593,15 +590,30 @@ public class ObjRelationship extends Relationship<ObjEntity, ObjAttribute, ObjRe
         }
 
         CayennePath validPath = CayennePath.EMPTY_PATH;
-        try {
-            for (PathComponent<DbAttribute, DbRelationship> pathComponent
-                    : dbEntity.resolvePath(ExpressionFactory.dbPathExp(path), Collections.emptyMap())) {
-                validPath = validPath.dot(pathComponent.getName());
-            }
-        } catch (ExpressionException ignored) {
+        for (DbRelationship relationship : resolveLeadingDbRelationships(dbEntity, path)) {
+            validPath = validPath.dot(relationship.getName());
         }
 
         return validPath.value();
+    }
+
+    /**
+     * Resolves the leading DbRelationships of the path, stopping at the first segment that is not a relationship of
+     * the current entity.
+     */
+    private static List<DbRelationship> resolveLeadingDbRelationships(DbEntity dbEntity, CayennePath path) {
+        List<DbRelationship> relationships = new ArrayList<>(path.length());
+        DbEntity entity = dbEntity;
+        for (CayennePathSegment segment : path) {
+            DbRelationship relationship = entity != null ? entity.getRelationship(segment.value()) : null;
+            if (relationship == null) {
+                break;
+            }
+            relationships.add(relationship);
+            entity = relationship.getTargetEntity();
+        }
+
+        return relationships;
     }
 
     /**
@@ -618,18 +630,21 @@ public class ObjRelationship extends Relationship<ObjEntity, ObjAttribute, ObjRe
                 throw new CayenneRuntimeException("Can't resolve DbRelationships, null source ObjEntity");
             }
 
-            try {
-                // add new relationships from path
-                Iterator<CayenneMapEntry> it = entity.resolvePathComponents(ExpressionFactory.dbPathExp(dbRelationshipPath));
-
-                while (it.hasNext()) {
-                    DbRelationship relationship = (DbRelationship) it.next();
-
-                    dbRelationships.add(relationship);
-                }
-            } catch (ExpressionException ex) {
+            DbEntity dbEntity = entity.getDbEntity();
+            if (dbEntity == null) {
                 if (!stripInvalid) {
-                    throw ex;
+                    throw new ExpressionException("Can't resolve DB_PATH '%s', DbEntity is not set.",
+                            dbRelationshipPath.value());
+                }
+            } else {
+                // add new relationships from path
+                List<DbRelationship> resolved = resolveLeadingDbRelationships(dbEntity, dbRelationshipPath);
+                dbRelationships.addAll(resolved);
+                if (resolved.size() < dbRelationshipPath.length() && !stripInvalid) {
+                    throw new ExpressionException("Can't resolve path component: [%s.%s].",
+                            dbRelationshipPath.value(), null,
+                            resolved.isEmpty() ? dbEntity.getName() : resolved.getLast().getTargetEntityName(),
+                            dbRelationshipPath.segments().get(resolved.size()).value());
                 }
             }
         }

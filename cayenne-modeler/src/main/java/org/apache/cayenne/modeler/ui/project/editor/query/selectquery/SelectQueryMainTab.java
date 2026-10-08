@@ -22,6 +22,7 @@ package org.apache.cayenne.modeler.ui.project.editor.query.selectquery;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
+import org.apache.cayenne.exp.DbPathExp;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.PathExp;
@@ -40,14 +41,12 @@ import org.apache.cayenne.modeler.ui.project.editor.query.BaseQueryMainTab;
 import org.apache.cayenne.modeler.ui.project.editor.query.ObjectQueryPropertiesPanel;
 import org.apache.cayenne.modeler.project.ProjectComparators;
 import org.apache.cayenne.projecttools.extension.info.ObjectInfo;
-import org.apache.cayenne.util.CayenneMapEntry;
 import java.util.Objects;
 import org.apache.cayenne.validation.ValidationException;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.Arrays;
-import java.util.Iterator;
 
 /**
  * A tabbed pane that contains editors for various SelectQuery parts.
@@ -243,16 +242,20 @@ public class SelectQueryMainTab extends BaseQueryMainTab {
      */
     static void checkExpression(Entity<?,?,?> root, Expression ex) throws ValidationException {
         try {
-            if (ex instanceof PathExp) {
+            if (ex instanceof PathExp pathExp) {
                 /*
                  * Try to iterate through path, if some attributes are not present,
                  * exception will be raised
                  */
 
-                Iterator<CayenneMapEntry> path = root.resolvePathComponents(ex);
-                while (path.hasNext()) {
-                    path.next();
+                Entity<?, ?, ?> pathRoot = pathExp instanceof DbPathExp && root instanceof ObjEntity objEntity
+                        ? objEntity.getDbEntity()
+                        : root;
+                if (pathRoot == null) {
+                    throw new ValidationException("Can't resolve DB path '" + pathExp + "', DbEntity is not set.");
                 }
+
+                pathRoot.resolvePath(pathExp.getExpandedPath());
             }
 
             if (ex != null) {

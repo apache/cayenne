@@ -19,12 +19,11 @@
 
 package org.apache.cayenne.exp;
 
-import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.Entity;
-import org.apache.cayenne.map.PathComponent;
 import org.apache.cayenne.util.CayenneMapEntry;
 
 /**
@@ -91,6 +90,14 @@ public abstract sealed class PathExp extends Expression permits DbIdPathExp, DbP
 		return path;
 	}
 
+	/**
+	 * Returns the path with {@link #getPathAliases() aliases} expanded, so that each segment is a name of an attribute
+	 * or a relationship. This is the form that {@link Entity#resolvePath(CayennePath)} expects.
+	 */
+	public CayennePath getExpandedPath() {
+		return path.expandAliases(getPathAliases());
+	}
+
 	@Override
 	public Map<String, String> getPathAliases() {
 		return pathAliases != null ? pathAliases : super.getPathAliases();
@@ -104,20 +111,8 @@ public abstract sealed class PathExp extends Expression permits DbIdPathExp, DbP
 	 * Helper method to evaluate path expression with Cayenne Entity.
 	 */
 	protected CayenneMapEntry evaluateEntityNode(Entity<?,?,?> entity) {
-		Iterator<? extends PathComponent<?, ?>> path = entity.resolvePath(this, getPathAliases()).iterator();
-		PathComponent<?, ?> next = null;
-		while (path.hasNext()) {
-			next = path.next();
-		}
-
-		if(next == null) {
-			return null;
-		}
-
-		if(next.getRelationship() != null) {
-			return next.getRelationship();
-		}
-		return next.getAttribute();
+		List<CayenneMapEntry> components = entity.resolvePath(getExpandedPath());
+		return components.isEmpty() ? null : components.getLast();
 	}
 
 	@Override

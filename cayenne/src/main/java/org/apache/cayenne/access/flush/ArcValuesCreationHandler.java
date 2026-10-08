@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.access.flush;
 
-import java.util.Iterator;
+import java.util.List;
 
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.access.flush.operation.DbRowOp;
@@ -111,16 +111,17 @@ class ArcValuesCreationHandler implements GraphChangeHandler {
         ObjectId srcId = id;
         ObjectId targetId = null;
 
-        Iterator<CayenneMapEntry> dbPathIterator = entity.resolvePathComponents(dbPath);
-        while(dbPathIterator.hasNext()) {
-            CayenneMapEntry entry = dbPathIterator.next();
+        List<CayenneMapEntry> dbPathComponents = entity.resolvePath(dbPath);
+        for(int i = 0; i < dbPathComponents.size(); i++) {
+            CayenneMapEntry entry = dbPathComponents.get(i);
+            boolean last = i == dbPathComponents.size() - 1;
             flattenedPath = flattenedPath.dot(entry.getName());
             if(entry instanceof DbRelationship relationship) {
                 // intermediate db entity to be inserted
                 DbEntity target = relationship.getTargetEntity();
                 // if ID is present, just use it, otherwise create new
                 // if this is the last segment, and it's a relationship, use known target id from arc creation
-                if(!dbPathIterator.hasNext()) {
+                if(last) {
                     targetId = finalTargetId;
                 } else {
                     if(!relationship.isToMany()) {
@@ -147,7 +148,7 @@ class ArcValuesCreationHandler implements GraphChangeHandler {
                                 .getValues()
                                 .addFlattenedId(flattenedPath, targetId);
                     }
-                } else if(dbPathIterator.hasNext()) {
+                } else if(!last) {
                     // should update existing DB row
                     factory.getOrCreate(target, targetId, add ? DbRowOpType.UPDATE : defaultType);
                 }

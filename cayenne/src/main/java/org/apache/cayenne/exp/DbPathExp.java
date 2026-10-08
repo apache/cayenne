@@ -20,8 +20,8 @@
 package org.apache.cayenne.exp;
 
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.Cayenne;
@@ -86,15 +86,13 @@ public final class DbPathExp extends PathExp {
 	}
 
 	private Map<?, ?> toMap_AttachedObject_MultiStepPath(ObjectContext context, Persistent persistent) {
-		Iterator<CayenneMapEntry> pathComponents = Cayenne.getObjEntity(persistent)
+		List<CayenneMapEntry> pathComponents = Cayenne.getObjEntity(persistent)
 				.getDbEntity()
-				.resolvePathComponents(this);
+				.resolvePath(path);
 		LinkedList<DbRelationship> reversedPathComponents = new LinkedList<>();
 
-		while (pathComponents.hasNext()) {
-			CayenneMapEntry component = pathComponents.next();
-			if (component instanceof DbRelationship) {
-				DbRelationship rel = (DbRelationship) component;
+		for (CayenneMapEntry component : pathComponents) {
+			if (component instanceof DbRelationship rel) {
 				DbRelationship reverseRelationship = rel.getReverseRelationship();
 				if (reverseRelationship == null) {
 					reverseRelationship = rel.createReverseRelationship();

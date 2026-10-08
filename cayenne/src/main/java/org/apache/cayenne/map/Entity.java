@@ -28,10 +28,11 @@ import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.ToStringBuilder;
 import org.apache.cayenne.util.XMLSerializable;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -299,125 +300,79 @@ public abstract class Entity<E extends Entity<E, A, R>, A extends Attribute<E, A
     public abstract Expression translateToRelatedEntity(Expression expression, CayennePath relationshipPath);
 
     /**
-     * Convenience method returning the last component in the path iterator. If the last
-     * component is an alias, it is fully resolved down to the last ObjRelationship.
-     * 
-     * @since 3.0
+     * Resolves the path against this entity into a list of Attributes and Relationships, one per path segment. An
+     * invalid path results in an ExpressionException.
+     *
+     * @since 5.0
      */
-    public PathComponent<A, R> lastPathComponent(
-            Expression path,
-            Map<String, String> aliasMap) {
-
-        for (PathComponent<A, R> component : resolvePath(path, aliasMap)) {
-            if (component.isLast()) {
-                // resolve aliases if needed
-                return lastPathComponent(component);
-            }
-        }
-
-        return null;
-    }
-
-    private PathComponent<A, R> lastPathComponent(PathComponent<A, R> component) {
-        
-        if (!component.isAlias()) {
-            return component;
-        }
-
-        for (PathComponent<A, R> subcomponent : component.getAliasedPath()) {
-            if (subcomponent.isLast()) {
-                return lastPathComponent(subcomponent);
-            }
-        }
-
-        throw new IllegalStateException("Invalid last path component: " + component.getName());
+    public List<CayenneMapEntry> resolvePath(String path) throws ExpressionException {
+        return resolvePath(CayennePath.of(path));
     }
 
     /**
-     * Returns an Iterable over the path components with elements represented as
-     * {@link PathComponent} instances, encapsulating a relationship, an attribute or a
-     * subpath alias. An optional "aliasMap" parameter is used to resolve subpaths from
-     * aliases.
-     * <p>
-     * This method is lazy: if path is invalid and can not be resolved from this entity,
-     * this method will still return an Iterator, but an attempt to read the first invalid
-     * path component will result in ExpressionException.
-     * </p>
-     * 
-     * @since 3.0
+     * Resolves the path against this entity into a list of Attributes and Relationships, one per path segment.
+     * Aliases are not resolved here: expand them first with {@link CayennePath#expandAliases(Map)}. An invalid
+     * path results in an ExpressionException.
+     *
+     * @since 5.0
      */
-    public abstract Iterable<PathComponent<A, R>> resolvePath(
-            Expression pathExp,
-            Map<String, String> aliasMap);
+    public List<CayenneMapEntry> resolvePath(CayennePath path) throws ExpressionException {
+        List<CayennePathSegment> segments = path.segments();
+        int last = segments.size() - 1;
+        List<CayenneMapEntry> components = new ArrayList<>(segments.size());
 
-    /**
-     * Processes expression <code>pathExp</code> and returns an Iterator of path
-     * components that contains a sequence of Attributes and Relationships. Note that if
-     * path is invalid and can not be resolved from this entity, this method will still
-     * return an Iterator, but an attempt to read the first invalid path component will
-     * result in ExpressionException.
-     */
-    public abstract Iterator<CayenneMapEntry> resolvePathComponents(Expression pathExp) throws ExpressionException;
+        Entity<E, A, R> entity = this;
+        EmbeddedAttribute embeddedAttribute = null;
 
-    /**
-     * Returns an Iterator over the path components that contains a sequence of Attributes
-     * and Relationships. Note that if path is invalid and can not be resolved from this
-     * entity, this method will still return an Iterator, but an attempt to read the first
-     * invalid path component will result in ExpressionException.
-     */
-    public Iterator<CayenneMapEntry> resolvePathComponents(String path) throws ExpressionException {
-        return new PathIterator(CayennePath.of(path));
-    }
+        for (int i = 0; i <= last; i++) {
+            String name = segments.get(i).value();
 
-    public Iterator<CayenneMapEntry> resolvePathComponents(CayennePath path) throws ExpressionException {
-        return new PathIterator(path);
-    }
-
-    /**
-     * An iterator resolving mapping components represented by the path string.
-     * This entity is assumed to be the root of the path.
-     */
-    final class PathIterator implements Iterator<CayenneMapEntry> {
-        private final CayennePath path;
-        private final Iterator<CayennePathSegment> iterator;
-        private Entity<E, A, R> currentEntity;
-
-        PathIterator(CayennePath path) {
-            this.currentEntity = Entity.this;
-            this.path = path;
-            this.iterator = path.iterator();
-        }
-
-        @Override
-        public boolean hasNext() {
-            return iterator.hasNext();
-        }
-
-        @Override
-        public CayenneMapEntry next() {
-            CayennePathSegment nextSegment = iterator.next();
-            // see if this is an attribute
-            A attr = currentEntity.getAttribute(nextSegment.value());
-            if (attr != null) {
-                // do a sanity check...
-                if (iterator.hasNext()) {
-                    throw new ExpressionException("Attribute must be the last component of the path: '%s'.",
-                            path, null, nextSegment.value());
+            if (embeddedAttribute != null) {
+                ObjAttribute attribute = embeddedAttribute.getAttribute(name);
+                if (attribute == null) {
+                    throw cantResolve(path, entity, name);
                 }
-                return attr;
+                if (i < last) {
+                    throw attributeNotLast(path, name);
+                }
+                components.add(attribute);
+                break;
             }
 
-            R rel = currentEntity.getRelationship(nextSegment.value());
-            if (rel != null) {
-                currentEntity = rel.getTargetEntity();
-                if (currentEntity != null || !iterator.hasNext()) { //otherwise an exception will be thrown
-                    return rel;
-                }
+            if (entity == null) {
+                throw cantResolve(path, null, name);
             }
-            
-            String entityName = (currentEntity != null) ? currentEntity.getName() : "(?)";
-            throw new ExpressionException("Can't resolve path component: [%s.%s].", path, null, entityName, nextSegment.value());
+
+            A attribute = entity.getAttribute(name);
+            if (attribute != null) {
+                if (attribute instanceof EmbeddedAttribute embedded) {
+                    embeddedAttribute = embedded;
+                } else if (i < last) {
+                    throw attributeNotLast(path, name);
+                }
+                components.add(attribute);
+                continue;
+            }
+
+            R relationship = entity.getRelationship(name);
+            if (relationship == null) {
+                throw cantResolve(path, entity, name);
+            }
+            components.add(relationship);
+            entity = relationship.getTargetEntity();
         }
+
+        return components;
+    }
+
+    private static ExpressionException attributeNotLast(CayennePath path, String name) {
+        return new ExpressionException("Attribute must be the last component of the path: '%s'.",
+                path.value(), null, name);
+    }
+
+    private static ExpressionException cantResolve(CayennePath path, Entity<?, ?, ?> entity, String name) {
+        String entityName = entity != null ? entity.getName() : "(?)";
+        return new ExpressionException("Can't resolve path component: [%s.%s].", path.value(), null, entityName, name);
     }
 
     final MappingNamespace getNonNullNamespace() {

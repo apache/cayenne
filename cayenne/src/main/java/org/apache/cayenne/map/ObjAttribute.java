@@ -275,7 +275,7 @@ public class ObjAttribute extends Attribute<ObjEntity, ObjAttribute, ObjRelation
             return Collections.<CayenneMapEntry>singleton(attribute).iterator();
         }
 
-        return dbEnt.resolvePathComponents(dbAttributePath);
+        return dbEnt.resolvePath(dbAttributePath).iterator();
     }
 
     /**

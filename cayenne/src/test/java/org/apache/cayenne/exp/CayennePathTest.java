@@ -23,7 +23,10 @@ import org.apache.cayenne.exp.path.CayennePath;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Map;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 public class CayennePathTest {
 
@@ -78,4 +81,21 @@ public class CayennePathTest {
         assertEquals("a.bc.defg.edad", paths[3].toString());
     }
 
+
+    @Test
+    public void expandAliases() {
+        Map<String, String> aliases = Map.of("a", "x+.y", "b", "z");
+
+        assertEquals(CayennePath.of("x+.y.c"), CayennePath.of("a.c").expandAliases(aliases));
+        assertEquals(CayennePath.of("c.x+.y"), CayennePath.of("c.a").expandAliases(aliases));
+        assertEquals(CayennePath.of("x+.y.z"), CayennePath.of("a.b").expandAliases(aliases));
+        assertEquals(CayennePath.of("x+.y"), CayennePath.of("a").expandAliases(aliases));
+        assertEquals(CayennePath.of("c+.d"), CayennePath.of("c+.d").expandAliases(aliases));
+        assertSame(paths[1], paths[1].expandAliases(Map.of("q", "z")));
+        assertSame(paths[2], paths[2].expandAliases(Map.of()));
+
+        CayennePath prefetch = CayennePath.of("a.c", CayennePath.PREFETCH_MARKER);
+        assertEquals(CayennePath.PREFETCH_MARKER, prefetch.expandAliases(aliases).marker());
+        assertEquals("x+.y.c", prefetch.expandAliases(aliases).value());
+    }
 }

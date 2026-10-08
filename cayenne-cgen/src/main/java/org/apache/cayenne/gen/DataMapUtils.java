@@ -27,7 +27,6 @@ import org.apache.cayenne.exp.ObjPathExp;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.map.PathComponent;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.SelectQueryDescriptor;
 import org.apache.cayenne.query.Ordering;
@@ -37,7 +36,6 @@ import org.apache.cayenne.util.Util;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -108,14 +106,11 @@ public class DataMapUtils {
 		for (Ordering ordering : query.getOrderings()) {
 			// validate paths in ordering
 			String path = ordering.getSortSpecString();
-			Iterator<CayenneMapEntry> it = ((ObjEntity) query.getRoot()).resolvePathComponents(path);
-			while (it.hasNext()) {
-				try {
-					it.next();
-				} catch (ExpressionException e) {
-					// if we have wrong path in orderings return false.
-					return false;
-				}
+			try {
+				((ObjEntity) query.getRoot()).resolvePath(path);
+			} catch (ExpressionException e) {
+				// if we have wrong path in orderings return false.
+				return false;
 			}
 		}
 
@@ -176,20 +171,15 @@ public class DataMapUtils {
 					types.putAll(getParameterNames((Expression) operand, root));
 				}
 
-				if (operand instanceof ObjPathExp) {
-					PathComponent<ObjAttribute, ObjRelationship> component = ((ObjEntity) root)
-							.lastPathComponent((ObjPathExp) operand, Collections.emptyMap());
-					ObjAttribute attribute = component.getAttribute();
-					if (attribute != null) {
-						typeName = attribute.getType();
-					} else {
-						ObjRelationship relationship = component.getRelationship();
-						if (relationship != null) {
-							typeName = relationship.getTargetEntity().getClassName();
-						} else {
-							typeName = "Object";
-						}
-					}
+				if (operand instanceof ObjPathExp pathExp) {
+					CayenneMapEntry component = ((ObjEntity) root)
+							.resolvePath(pathExp.getExpandedPath())
+							.getLast();
+					typeName = switch (component) {
+						case ObjAttribute attribute -> attribute.getType();
+						case ObjRelationship relationship -> relationship.getTargetEntity().getClassName();
+						default -> "Object";
+					};
 				}
 
 				if (operand instanceof ListExp) {

@@ -23,10 +23,11 @@ import org.apache.cayenne.GenericPersistentObject;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.exp.ObjPathExp;
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
+import org.apache.cayenne.util.CayenneMapEntry;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -36,6 +37,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -112,31 +114,35 @@ public class ObjEntityIT {
     }
 
     @Test
-    public void lastPathComponent() {
+    public void resolvePathLast() {
         ObjEntity artistE = env.runtime().getDataDomain().getEntityResolver().getObjEntity("Artist");
 
         Map<String, String> aliases = new HashMap<>();
         aliases.put("a", "paintingArray.toGallery");
 
-        PathComponent<ObjAttribute, ObjRelationship> lastAttribute = artistE.lastPathComponent(
-                ExpressionFactory.exp("paintingArray.paintingTitle"), aliases);
-        assertTrue(lastAttribute.getAttribute() != null);
-        assertEquals("paintingTitle", lastAttribute.getAttribute().getName());
+        CayenneMapEntry lastAttribute = artistE
+                .resolvePath(CayennePath.of("paintingArray.paintingTitle").expandAliases(aliases))
+                .getLast();
+        assertInstanceOf(ObjAttribute.class, lastAttribute);
+        assertEquals("paintingTitle", lastAttribute.getName());
 
-        PathComponent<ObjAttribute, ObjRelationship> lastRelationship = artistE.lastPathComponent(
-                ExpressionFactory.exp("paintingArray.toGallery"), aliases);
-        assertTrue(lastRelationship.getRelationship() != null);
-        assertEquals("toGallery", lastRelationship.getRelationship().getName());
+        CayenneMapEntry lastRelationship = artistE
+                .resolvePath(CayennePath.of("paintingArray.toGallery").expandAliases(aliases))
+                .getLast();
+        assertInstanceOf(ObjRelationship.class, lastRelationship);
+        assertEquals("toGallery", lastRelationship.getName());
 
-        PathComponent<ObjAttribute, ObjRelationship> lastLeftJoinRelationship = artistE.lastPathComponent(
-                ExpressionFactory.pathExp("paintingArray+.toGallery+"), aliases);
-        assertTrue(lastLeftJoinRelationship.getRelationship() != null);
-        assertEquals("toGallery", lastLeftJoinRelationship.getRelationship().getName());
+        CayenneMapEntry lastLeftJoinRelationship = artistE
+                .resolvePath(CayennePath.of("paintingArray+.toGallery+").expandAliases(aliases))
+                .getLast();
+        assertInstanceOf(ObjRelationship.class, lastLeftJoinRelationship);
+        assertEquals("toGallery", lastLeftJoinRelationship.getName());
 
-        PathComponent<ObjAttribute, ObjRelationship> lastAliasedRelationship = artistE.lastPathComponent(
-                ExpressionFactory.pathExp("a"), aliases);
-        assertTrue(lastAliasedRelationship.getRelationship() != null);
-        assertEquals("toGallery", lastAliasedRelationship.getRelationship().getName());
+        CayenneMapEntry lastAliasedRelationship = artistE
+                .resolvePath(CayennePath.of("a").expandAliases(aliases))
+                .getLast();
+        assertInstanceOf(ObjRelationship.class, lastAliasedRelationship);
+        assertEquals("toGallery", lastAliasedRelationship.getName());
     }
 
     @Test

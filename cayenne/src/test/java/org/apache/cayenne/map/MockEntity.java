@@ -19,14 +19,10 @@
 
 package org.apache.cayenne.map;
 
-import java.util.Iterator;
-import java.util.Map;
 
 import org.apache.cayenne.project.ProjectNodeVisitor;
 import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.path.CayennePath;
-import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.XMLEncoder;
 
 public class MockEntity extends Entity<MockEntity, MockAttribute, MockRelationship> {
@@ -43,16 +39,6 @@ public class MockEntity extends Entity<MockEntity, MockAttribute, MockRelationsh
     public Expression translateToRelatedEntity(
             Expression expression,
             CayennePath relationshipPath) {
-        return null;
-    }
-
-    @Override
-    public Iterator<CayenneMapEntry> resolvePathComponents(Expression pathExp) throws ExpressionException {
-        return null;
-    }
-    
-    @Override
-    public Iterable<PathComponent<MockAttribute, MockRelationship>> resolvePath(Expression pathExp, Map<String, String> joinAliases) {
         return null;
     }
 

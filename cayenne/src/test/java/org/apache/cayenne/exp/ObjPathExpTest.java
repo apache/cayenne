@@ -20,9 +20,11 @@ package org.apache.cayenne.exp;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
+import java.util.Map;
 
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -86,4 +88,14 @@ public class ObjPathExpTest {
 		assertEquals(-3, node.evaluate(b2));
 	}
 
+
+    @Test
+    public void getExpandedPath() {
+        ObjPathExp exp = new ObjPathExp("a.c");
+        assertSame(exp.getPath(), exp.getExpandedPath());
+
+        exp.setPathAliases(Map.of("a", "x+.y"));
+        assertEquals(CayennePath.of("x+.y.c"), exp.getExpandedPath());
+        assertEquals(CayennePath.of("a.c"), exp.getPath());
+    }
 }

@@ -21,6 +21,7 @@ package org.apache.cayenne.exp.path;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -302,6 +303,41 @@ public interface CayennePath extends Iterable<CayennePathSegment> {
             return this;
         }
         return of(segments().subList(0, end), marker());
+    }
+
+    /**
+     * Returns this path with every segment that is a key in "aliases" replaced by the segments of the aliased path.
+     * An aliased path is parsed with {@link #of(String)}, so it may have several segments and outer join markers.
+     * Aliases are not expanded recursively. Returns this path if none of its segments is an alias.
+     *
+     * @param aliases map of alias names to aliased paths
+     * @return path with aliases expanded
+     * @since 5.0
+     */
+    default CayennePath expandAliases(Map<String, String> aliases) {
+        if (aliases.isEmpty() || isEmpty()) {
+            return this;
+        }
+
+        List<CayennePathSegment> segments = segments();
+        List<CayennePathSegment> expanded = null;
+        for (int i = 0; i < segments.size(); i++) {
+            CayennePathSegment segment = segments.get(i);
+            String aliased = aliases.get(segment.value());
+            if (aliased == null) {
+                if (expanded != null) {
+                    expanded.add(segment);
+                }
+                continue;
+            }
+
+            if (expanded == null) {
+                expanded = new ArrayList<>(segments.subList(0, i));
+            }
+            expanded.addAll(of(aliased).segments());
+        }
+
+        return expanded == null ? this : of(expanded, marker());
     }
 
     /**

@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.query;
 
-import java.util.Iterator;
+import java.util.List;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.exp.Expression;
@@ -70,14 +70,8 @@ class FluentSelectPrefetchRouterAction implements PrefetchProcessor {
         CayennePath prefetchPath = node.getPath();
 
         // find last relationship
-        Iterator<CayenneMapEntry> it = classDescriptor.getEntity().resolvePathComponents(prefetchPath);
-
-        ObjRelationship relationship = null;
-        while (it.hasNext()) {
-            relationship = (ObjRelationship) it.next();
-        }
-
-        if (relationship == null) {
+        List<CayenneMapEntry> components = classDescriptor.getEntity().resolvePath(prefetchPath);
+        if (components.isEmpty() || !(components.getLast() instanceof ObjRelationship relationship)) {
             throw new CayenneRuntimeException("Invalid prefetch '%s' for entity '%s'"
                     , prefetchPath, classDescriptor.getEntity().getName());
         }

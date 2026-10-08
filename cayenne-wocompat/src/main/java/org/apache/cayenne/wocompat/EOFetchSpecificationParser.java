@@ -31,11 +31,11 @@ import org.apache.cayenne.exp.LessExp;
 import org.apache.cayenne.exp.LessOrEqualExp;
 import org.apache.cayenne.exp.GreaterExp;
 import org.apache.cayenne.exp.GreaterOrEqualExp;
+import org.apache.cayenne.exp.path.CayennePath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -243,7 +243,7 @@ class EOFetchSpecificationParser {
 
 		Expression keyExp = ExpressionFactory.exp(key);
 		try {
-			entity.lastPathComponent(keyExp, Collections.emptyMap());
+			entity.resolvePath(CayennePath.of(key));
 		} catch (ExpressionException e) {
 			try {
 				keyExp = entity.translateToDbPath(keyExp);

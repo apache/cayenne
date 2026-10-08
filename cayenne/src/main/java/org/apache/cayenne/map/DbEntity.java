@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +34,6 @@ import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.project.ProjectNode;
 import org.apache.cayenne.project.ProjectNodeVisitor;
 import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.exp.DbPathExp;
@@ -447,31 +445,6 @@ public class DbEntity extends Entity<DbEntity, DbAttribute, DbRelationship>
     }
 
     /**
-     * Returns an Iterable instance over expression path components based on
-     * this entity.
-     *
-     * @since 3.0
-     */
-    @Override
-    public Iterable<PathComponent<DbAttribute, DbRelationship>> resolvePath(Expression pathExp, Map<String, String> aliasMap) {
-
-        if (pathExp instanceof DbPathExp) {
-            return () -> new PathComponentIterator<>(DbEntity.this, (CayennePath) pathExp.getOperand(0), aliasMap);
-        }
-
-        throw new ExpressionException("Invalid expression type: '" + pathExp.expName() + "',  DB_PATH is expected.");
-    }
-
-    @Override
-    public Iterator<CayenneMapEntry> resolvePathComponents(Expression pathExp) throws ExpressionException {
-        if (!(pathExp instanceof DbPathExp)) {
-            throw new ExpressionException("Invalid expression type: '" + pathExp.expName() + "',  DB_PATH is expected.");
-        }
-
-        return new PathIterator((CayennePath) pathExp.getOperand(0));
-    }
-
-    /**
      * Set the primary key generator for this entity. If null is passed, nothing
      * is changed.
      */
@@ -572,11 +545,9 @@ public class DbEntity extends Entity<DbEntity, DbAttribute, DbRelationship>
         RelationshipPathConverter(CayennePath relationshipPath) {
             this.relationshipPath = relationshipPath;
 
-            Iterator<CayenneMapEntry> relationshipIt = resolvePathComponents(relationshipPath);
-            while (relationshipIt.hasNext()) {
+            for (CayenneMapEntry component : resolvePath(relationshipPath)) {
                 // relationship path components must be DbRelationships
-                DbRelationship nextDBR = (DbRelationship) relationshipIt.next();
-                if (nextDBR.isToMany()) {
+                if (((DbRelationship) component).isToMany()) {
                     toMany = true;
                     break;
                 }
@@ -598,18 +569,11 @@ public class DbEntity extends Entity<DbEntity, DbAttribute, DbRelationship>
             return ExpressionFactory.dbPathExp(converted);
         }
 
-        private PathComponentIterator<DbEntity, DbAttribute, DbRelationship> createPathIterator(CayennePath path) {
-            return new PathComponentIterator<>(DbEntity.this, path, Collections.emptyMap());
-            // TODO: do we need aliases here?
-        }
-
         CayennePath translatePath(CayennePath path) {
             CayennePath finalPath = CayennePath.EMPTY_PATH;
-            PathComponentIterator<DbEntity, DbAttribute, DbRelationship> pathIt = createPathIterator(relationshipPath);
-            while (pathIt.hasNext()) {
+            for (CayenneMapEntry component : resolvePath(relationshipPath)) {
                 // relationship path components must be DbRelationships
-                DbRelationship lastDBR = pathIt.next().getRelationship();
-                if(lastDBR != null) {
+                if (component instanceof DbRelationship lastDBR) {
                     finalPath = prependReversedPath(finalPath, lastDBR);
                 }
             }

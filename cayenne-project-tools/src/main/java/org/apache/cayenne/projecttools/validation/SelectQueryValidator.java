@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.projecttools.validation;
 
-import java.util.Iterator;
 import java.util.function.Supplier;
 
 import org.apache.cayenne.exp.Expression;
@@ -28,7 +27,6 @@ import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.SelectQueryDescriptor;
 import org.apache.cayenne.query.Ordering;
-import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.validation.ValidationResult;
 
 class SelectQueryValidator extends BaseQueryValidator<SelectQueryDescriptor> {
@@ -79,13 +77,10 @@ class SelectQueryValidator extends BaseQueryValidator<SelectQueryDescriptor> {
 
         // validate paths in ordering
         String path = ordering.getSortSpecString();
-        Iterator<CayenneMapEntry> it = root.resolvePathComponents(path);
-        while (it.hasNext()) {
-            try {
-                it.next();
-            } catch (ExpressionException e) {
-                addFailure(validationResult, query, "Invalid ordering path: '%s'", path);
-            }
+        try {
+            root.resolvePath(path);
+        } catch (ExpressionException e) {
+            addFailure(validationResult, query, "Invalid ordering path: '%s'", path);
         }
     }
 

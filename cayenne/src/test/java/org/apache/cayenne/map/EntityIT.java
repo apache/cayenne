@@ -19,8 +19,8 @@
 
 package org.apache.cayenne.map;
 
-import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.ExpressionException;
+import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.apache.cayenne.util.CayenneMapEntry;
@@ -28,7 +28,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.Collection;
-import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -37,8 +38,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import org.apache.cayenne.exp.InExp;
-import org.apache.cayenne.exp.ObjPathExp;
 
 public class EntityIT {
 
@@ -112,45 +111,38 @@ public class EntityIT {
     }
 
     @Test
-    public void resolveBadObjPath1() {
-        // test invalid expression path
-        Expression pathExpr = new ObjPathExp();
-        pathExpr.setOperand(0, "invalid.invalid");
-
-        // itertator should be returned, but when trying to read 1st component,
-        // it should throw an exception....
+    public void resolveBadObjPath() {
         ObjEntity galleryEnt = env.runtime().getDataDomain().getEntityResolver().getObjEntity("Gallery");
-        Iterator<CayenneMapEntry> it = galleryEnt.resolvePathComponents(pathExpr);
-        assertTrue(it.hasNext());
-
-        assertThrows(Exception.class, it::next);
+        assertThrows(ExpressionException.class,
+                () -> galleryEnt.resolvePath(CayennePath.of("invalid.invalid")));
     }
 
     @Test
-    public void resolveBadObjPath2() {
-        // test invalid expression type
-        Expression badPathExpr = new InExp();
-        badPathExpr.setOperand(0, "a.b.c");
+    public void resolveAttributeNotLast() {
         ObjEntity galleryEnt = env.runtime().getDataDomain().getEntityResolver().getObjEntity("Gallery");
+        assertThrows(ExpressionException.class,
+                () -> galleryEnt.resolvePath(CayennePath.of("galleryName.paintingArray")));
+    }
 
-        assertThrows(Exception.class, () -> galleryEnt.resolvePathComponents(badPathExpr));
+    @Test
+    public void resolveObjPathExpandedAlias() {
+        ObjEntity artistEnt = env.runtime().getDataDomain().getEntityResolver().getObjEntity("Artist");
+        List<CayenneMapEntry> components = artistEnt.resolvePath(
+                CayennePath.of("a.paintingTitle").expandAliases(Map.of("a", "paintingArray")));
+
+        assertEquals(2, components.size());
+        assertSame(artistEnt.getRelationship("paintingArray"), components.get(0));
+        assertSame(artistEnt.getDataMap().getObjEntity("Painting").getAttribute("paintingTitle"), components.get(1));
     }
 
     @Test
     public void resolveObjPath1() {
-        Expression pathExpr = new ObjPathExp();
-        pathExpr.setOperand(0, "galleryName");
-
         ObjEntity galleryEnt = env.runtime().getDataDomain().getEntityResolver().getObjEntity("Gallery");
-        Iterator<CayenneMapEntry> it = galleryEnt.resolvePathComponents(pathExpr);
+        List<CayenneMapEntry> components = galleryEnt.resolvePath(CayennePath.of("galleryName"));
 
-        // iterator must contain a single ObjAttribute
-        assertNotNull(it);
-        assertTrue(it.hasNext());
-        ObjAttribute next = (ObjAttribute) it.next();
-        assertNotNull(next);
-        assertFalse(it.hasNext());
-        assertSame(galleryEnt.getAttribute("galleryName"), next);
+        // must contain a single ObjAttribute
+        assertEquals(1, components.size());
+        assertSame(galleryEnt.getAttribute("galleryName"), components.get(0));
     }
 
     @Test
