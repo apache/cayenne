@@ -47,18 +47,12 @@ public class SetProperty<V extends Persistent> extends CollectionProperty<V, Set
         super(path, expression, Set.class, entityType);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public SetProperty<V> alias(String alias) {
         PathExp exp = PropertyUtils.createPathExp(this.getPath(), alias, getExpression().getPathAliases());
         return PropertyFactory.createSet(exp.getPath(), exp, this.getEntityType());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public SetProperty<V> outer() {
         CayennePathSegment last = getPath().last();

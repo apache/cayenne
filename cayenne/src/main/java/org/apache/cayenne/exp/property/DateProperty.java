@@ -118,9 +118,6 @@ public class DateProperty<E> extends BaseProperty<E> implements ComparableProper
         return PropertyFactory.createNumeric(FunctionExpressionFactory.secondExp(getExpression()), Integer.class);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public DateProperty<E> alias(String alias) {
         return PropertyFactory.createDate(alias, this.getExpression(), this.getType());

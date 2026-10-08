@@ -51,18 +51,12 @@ public class ListProperty<V extends Persistent> extends CollectionProperty<V, Li
         super(path, expression, List.class, entityType);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ListProperty<V> alias(String alias) {
         PathExp exp = PropertyUtils.createPathExp(this.getPath(), alias, getExpression().getPathAliases());
         return PropertyFactory.createList(exp.getPath(), exp, this.getEntityType());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public ListProperty<V> outer() {
         CayennePathSegment last = getPath().last();

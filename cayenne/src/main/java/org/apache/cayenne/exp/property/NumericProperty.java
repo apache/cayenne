@@ -68,16 +68,10 @@ public class NumericProperty<E extends Number> extends BaseProperty<E> implement
         return PropertyFactory.createNumeric(FunctionExpressionFactory.sumExp(getExpression()), getType());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public NumericProperty<E> max() {
         return PropertyFactory.createNumeric(FunctionExpressionFactory.maxExp(getExpression()), getType());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public NumericProperty<E> min() {
         return PropertyFactory.createNumeric(FunctionExpressionFactory.minExp(getExpression()), getType());
     }
@@ -177,9 +171,6 @@ public class NumericProperty<E extends Number> extends BaseProperty<E> implement
         return PropertyFactory.createNumeric(new NegateExp(getExpression()), getType());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public NumericProperty<E> alias(String alias) {
         return PropertyFactory.createNumeric(alias, this.getExpression(), this.getType());

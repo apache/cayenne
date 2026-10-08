@@ -285,18 +285,12 @@ public class MapProperty<K, V extends Persistent> extends BaseProperty<Map<K, V>
         return ExpressionFactory.notInExp(getExpression(), ids);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public MapProperty<K, V> alias(String alias) {
         PathExp exp = PropertyUtils.createPathExp(this.getPath(), alias, getExpression().getPathAliases());
         return PropertyFactory.createMap(exp.getPath(), exp, this.getKeyType(), this.getEntityType());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public MapProperty<K, V> outer() {
         CayennePathSegment last = getPath().last();

@@ -242,18 +242,12 @@ public class EntityProperty<E extends Persistent> extends BaseProperty<E> implem
         return result;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public EntityProperty<E> alias(String alias) {
         PathExp exp = PropertyUtils.createPathExp(this.getPath(), alias, getExpression().getPathAliases());
         return PropertyFactory.createEntity(exp.getPath(), exp, this.getType());
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public EntityProperty<E> outer() {
         CayennePathSegment last = getPath().last();
