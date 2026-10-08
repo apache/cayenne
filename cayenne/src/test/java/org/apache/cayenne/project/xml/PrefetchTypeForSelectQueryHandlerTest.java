@@ -34,7 +34,7 @@ public class PrefetchTypeForSelectQueryHandlerTest extends BaseHandlerTest{
         parse("objectQuery", new HandlerFactory() {
             @Override
             public NamespaceAwareNestedTagHandler createHandler(NamespaceAwareNestedTagHandler parent) {
-                return new QueryDescriptorHandler(parent, map);
+                return new SelectQueryDescriptorHandler(parent, map);
             }
         });
 

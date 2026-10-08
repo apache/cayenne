@@ -16,88 +16,30 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
 package org.apache.cayenne.project.xml;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.QueryDescriptor;
-import org.apache.cayenne.map.QueryDescriptorLoader;
 import org.apache.cayenne.query.CapsStrategy;
-import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.QueryCacheStrategy;
-import org.apache.cayenne.util.Util;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
-import org.apache.cayenne.map.SelectQueryDescriptor;
-import org.apache.cayenne.map.SQLTemplateDescriptor;
-import org.apache.cayenne.map.ProcedureQueryDescriptor;
-import java.util.function.Supplier;
-
 
 /**
+ * A base of the handlers of the query tags of a DataMap. A subclass per query type reads its own tag into the
+ * matching {@link QueryDescriptor}. The base reads the attributes common to all the query tags.
+ *
  * @since 4.1
  */
-public class QueryDescriptorHandler extends NamespaceAwareNestedTagHandler {
+public abstract class QueryDescriptorHandler extends NamespaceAwareNestedTagHandler {
 
-    static final String OBJECT_QUERY_TAG = "objectQuery";
-    static final String SQL_QUERY_TAG = "sqlQuery";
-    static final String PROCEDURE_QUERY_TAG = "procedureQuery";
-    private static final String QUERY_SQL_TAG = "sql";
-    private static final String QUERY_QL_TAG = "ql";
-    private static final String QUERY_PREFETCH_TAG = "prefetch";
-    private static final String QUERY_CACHE_GROUP_TAG = "cacheGroup";
+    static final String CACHE_GROUP_TAG = "cacheGroup";
 
-    private DataMap map;
+    protected final DataMap map;
 
-    private QueryDescriptorLoader queryBuilder;
-    private QueryDescriptor descriptor;
-
-    private String sqlKey;
-    private int semantics;
-
-    public QueryDescriptorHandler(NamespaceAwareNestedTagHandler parentHandler, DataMap map) {
+    protected QueryDescriptorHandler(NamespaceAwareNestedTagHandler parentHandler, DataMap map) {
         super(parentHandler);
         this.map = map;
-    }
-
-    @Override
-    protected boolean processElement(String namespaceURI, String localName, Attributes attributes) throws SAXException {
-
-        return switch (localName) {
-            case OBJECT_QUERY_TAG -> {
-                addQueryDescriptor(SelectQueryDescriptor::new, attributes);
-                yield true;
-            }
-            case SQL_QUERY_TAG -> {
-                addQueryDescriptor(SQLTemplateDescriptor::new, attributes);
-                yield true;
-            }
-            case PROCEDURE_QUERY_TAG -> {
-                addQueryDescriptor(ProcedureQueryDescriptor::new, attributes);
-                yield true;
-            }
-            case QUERY_SQL_TAG -> {
-                this.sqlKey = attributes.getValue("adapterClass");
-                yield true;
-            }
-            case QUERY_PREFETCH_TAG -> {
-                createPrefetchSemantics(attributes);
-                yield true;
-            }
-            case QUERY_QL_TAG, QUERY_CACHE_GROUP_TAG -> true;
-            default -> false;
-        };
-    }
-
-    @Override
-    protected boolean processCharData(String localName, String data) {
-        switch (localName) {
-            case QUERY_SQL_TAG -> queryBuilder.addSql(data, sqlKey);
-            case QUERY_QL_TAG -> queryBuilder.setSelect(data);
-            case QUERY_PREFETCH_TAG -> addPrefetchWithSemantics(data);
-            case QUERY_CACHE_GROUP_TAG -> queryBuilder.setCacheGroup(data);
-        }
-        return true;
     }
 
     @Override
@@ -105,73 +47,66 @@ public class QueryDescriptorHandler extends NamespaceAwareNestedTagHandler {
         map.addQueryDescriptor(getQueryDescriptor());
     }
 
-    private void addQueryDescriptor(Supplier<? extends QueryDescriptor> type, Attributes attributes) throws SAXException {
+    /**
+     * Returns the descriptor of the query being read, or null before the query tag is processed.
+     */
+    public abstract QueryDescriptor getQueryDescriptor();
+
+    /**
+     * Reads the attributes common to all the query tags into a descriptor.
+     */
+    protected void loadQuerySettings(QueryDescriptor descriptor, Attributes attributes) throws SAXException {
         String name = attributes.getValue("name");
-        if (null == name) {
-            throw new SAXException("QueryDescriptorHandler::addQueryDescriptor() - no query name.");
+        if (name == null) {
+            throw new SAXException("Query has no name");
         }
 
-        queryBuilder = new QueryDescriptorLoader();
-        queryBuilder.setName(name);
-
-        queryBuilder.setQueryType(type);
-
-        String rootName = attributes.getValue("rootName");
-        queryBuilder.setRoot(map, attributes.getValue("root"), rootName);
-
-        // TODO: Andrus, 2/13/2006 'result-type' is only used in ProcedureQuery
-        // and is deprecated in 1.2
-        String resultEntity = attributes.getValue("resultEntity");
-        if (!Util.isEmptyString(resultEntity)) {
-            queryBuilder.setResultEntity(resultEntity);
-        }
+        descriptor.setName(name);
+        descriptor.setDataMap(map);
 
         String cacheStrategy = attributes.getValue("cacheStrategy");
         if (cacheStrategy != null) {
-            queryBuilder.setCacheStrategy(QueryCacheStrategy.safeValueOf(cacheStrategy));
+            descriptor.setCacheStrategy(QueryCacheStrategy.safeValueOf(cacheStrategy));
         }
 
-        String columnNameCapitalization = attributes.getValue("columnNameCapitalization");
-        if (columnNameCapitalization != null) {
-            queryBuilder.setColumnNameCapitalization(CapsStrategy.valueOf(columnNameCapitalization.toUpperCase()));
-        }
-
-        queryBuilder.setFetchingDataRows("true".equals(attributes.getValue("dataRows")));
-        queryBuilder.setFetchLimit(intAttribute(attributes, "fetchLimit"));
-        queryBuilder.setFetchOffset(intAttribute(attributes, "fetchOffset"));
-        queryBuilder.setPageSize(intAttribute(attributes, "pageSize"));
-        queryBuilder.setStatementFetchSize(intAttribute(attributes, "statementFetchSize"));
+        descriptor.setFetchingDataRows("true".equals(attributes.getValue("dataRows")));
+        descriptor.setPageSize(intAttribute(attributes, "pageSize"));
+        descriptor.setStatementFetchSize(intAttribute(attributes, "statementFetchSize"));
     }
 
-    private int intAttribute(Attributes attributes, String name) {
+    /**
+     * Resolves the root of a query from its "root" and "rootName" attributes. Falls back to the DataMap when the root
+     * type is not set, or the named root is not found.
+     */
+    protected Object resolveRoot(Attributes attributes) {
+        String rootType = attributes.getValue("root");
+        String rootName = attributes.getValue("rootName");
+        if (rootType == null || rootName == null) {
+            return map;
+        }
+
+        Object root = switch (rootType) {
+            case QueryDescriptor.OBJ_ENTITY_ROOT -> map.getObjEntity(rootName);
+            case QueryDescriptor.DB_ENTITY_ROOT -> map.getDbEntity(rootName);
+            case QueryDescriptor.PROCEDURE_ROOT -> map.getProcedure(rootName);
+            // the root is kept as an ObjEntity, since creating a Class requires the knowledge of the ClassLoader
+            case QueryDescriptor.JAVA_CLASS_ROOT -> map.getObjEntityForJavaClass(rootName);
+            default -> null;
+        };
+
+        return root != null ? root : map;
+    }
+
+    protected static int intAttribute(Attributes attributes, String name) {
         String value = attributes.getValue(name);
         return value != null ? Integer.parseInt(value) : 0;
     }
 
-    private void createPrefetchSemantics(Attributes attributes) {
-        semantics = convertPrefetchType(attributes.getValue("type"));
-    }
-
-    private void addPrefetchWithSemantics(String path) {
-        queryBuilder.addPrefetch(path, semantics);
-    }
-
-    public QueryDescriptor getQueryDescriptor() {
-        if(queryBuilder == null) {
-            return null;
-        }
-        if(descriptor == null) {
-            descriptor = queryBuilder.buildQueryDescriptor();
-        }
-        return descriptor;
-    }
-
-    private int convertPrefetchType(String type) {
-        return switch (type) {
-            case "joint" -> PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS;
-            case "disjoint" -> PrefetchTreeNode.DISJOINT_PREFETCH_SEMANTICS;
-            case "disjointById" -> PrefetchTreeNode.DISJOINT_BY_ID_PREFETCH_SEMANTICS;
-            case null, default -> PrefetchTreeNode.UNDEFINED_SEMANTICS;
-        };
+    /**
+     * Reads the "columnNameCapitalization" attribute of a SQL or a procedure query, returning null if it is not set.
+     */
+    protected static CapsStrategy columnNameCapitalization(Attributes attributes) {
+        String value = attributes.getValue("columnNameCapitalization");
+        return value != null ? CapsStrategy.valueOf(value.toUpperCase()) : null;
     }
 }

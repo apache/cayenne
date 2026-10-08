@@ -20,6 +20,7 @@
 package org.apache.cayenne.project.xml;
 
 import java.io.InputStream;
+import java.io.StringReader;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
@@ -30,13 +31,27 @@ import org.xml.sax.helpers.DefaultHandler;
 
 public abstract class BaseHandlerTest {
 
+    /**
+     * Parses the XML resource named after the test class.
+     */
     protected void parse(String tag, HandlerFactory factory) throws Exception {
         try(InputStream in = BaseHandlerTest.class.getResource(getClass().getSimpleName() + ".xml").openStream()) {
-            XMLReader parser = new XMLReaderProvider(false).get();
-            DefaultHandler handler = new TestRootHandler(parser, tag, factory);
-            parser.setContentHandler(handler);
-            parser.parse(new InputSource(in));
+            parse(tag, new InputSource(in), factory);
         }
+    }
+
+    /**
+     * Parses an XML document passed as a String.
+     */
+    protected void parse(String tag, String xml, HandlerFactory factory) throws Exception {
+        parse(tag, new InputSource(new StringReader(xml)), factory);
+    }
+
+    private void parse(String tag, InputSource source, HandlerFactory factory) throws Exception {
+        XMLReader parser = new XMLReaderProvider(false).get();
+        DefaultHandler handler = new TestRootHandler(parser, tag, factory);
+        parser.setContentHandler(handler);
+        parser.parse(source);
     }
 
     public interface HandlerFactory {

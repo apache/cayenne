@@ -20,7 +20,6 @@
 package org.apache.cayenne.projecttools.extension.info;
 
 import org.apache.cayenne.project.ProjectNode;
-import org.apache.cayenne.project.xml.ProjectMetaData;
 import org.apache.cayenne.project.xml.DataMapHandler;
 import org.apache.cayenne.project.xml.DbEntityHandler;
 import org.apache.cayenne.project.xml.DbRelationshipHandler;
@@ -29,12 +28,12 @@ import org.apache.cayenne.project.xml.NamespaceAwareNestedTagHandler;
 import org.apache.cayenne.project.xml.ObjEntityHandler;
 import org.apache.cayenne.project.xml.ObjRelationshipHandler;
 import org.apache.cayenne.project.xml.ProcedureHandler;
+import org.apache.cayenne.project.xml.ProjectMetaData;
 import org.apache.cayenne.project.xml.QueryDescriptorHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
-import org.xml.sax.SAXException;
 
 /**
  * @since 4.1
@@ -45,7 +44,7 @@ class PropertyHandler extends NamespaceAwareNestedTagHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PropertyHandler.class);
 
-    private ProjectMetaData metaData;
+    private final ProjectMetaData metaData;
 
     PropertyHandler(NamespaceAwareNestedTagHandler parentHandler, ProjectMetaData metaData) {
         super(parentHandler);
@@ -54,7 +53,7 @@ class PropertyHandler extends NamespaceAwareNestedTagHandler {
     }
 
     @Override
-    protected boolean processElement(String namespaceURI, String localName, Attributes attributes) throws SAXException {
+    protected boolean processElement(String namespaceURI, String localName, Attributes attributes) {
         switch (localName) {
             case PROPERTY_TAG:
                 ProjectNode parentObject = getParentObject();
@@ -82,32 +81,26 @@ class PropertyHandler extends NamespaceAwareNestedTagHandler {
     }
 
     private ProjectNode getParentObject() {
-        if(parentHandler instanceof DataMapHandler) {
-            return ((DataMapHandler) parentHandler).getDataMap();
-        } else if(parentHandler instanceof DbEntityHandler) {
-            return ((DbEntityHandler) parentHandler).getEntity();
-        } else if(parentHandler instanceof ObjEntityHandler) {
-            return ((ObjEntityHandler) parentHandler).getEntity();
-        } else if(parentHandler instanceof EmbeddableHandler) {
-            return ((EmbeddableHandler) parentHandler).getEmbeddable();
-        } else if(parentHandler instanceof QueryDescriptorHandler) {
-            return ((QueryDescriptorHandler) parentHandler).getQueryDescriptor();
-        } else if(parentHandler instanceof ProcedureHandler) {
-            return ((ProcedureHandler) parentHandler).getProcedure();
-        } else if(parentHandler instanceof DbRelationshipHandler) {
-            return ((DbRelationshipHandler) parentHandler).getDbRelationship();
-        } else if(parentHandler instanceof ObjRelationshipHandler) {
-            return ((ObjRelationshipHandler) parentHandler).getObjRelationship();
-        }
+        return switch (parentHandler) {
+            case DataMapHandler handler -> handler.getDataMap();
+            case DbEntityHandler handler -> handler.getEntity();
+            case ObjEntityHandler handler -> handler.getEntity();
+            case EmbeddableHandler handler -> handler.getEmbeddable();
+            case QueryDescriptorHandler handler -> handler.getQueryDescriptor();
+            case ProcedureHandler handler -> handler.getProcedure();
+            case DbRelationshipHandler handler -> handler.getDbRelationship();
+            case ObjRelationshipHandler handler -> handler.getObjRelationship();
+            // a property of an attribute is nested in the attribute tag, which is read by the entity handler
+            case NamespaceAwareNestedTagHandler handler -> getLastAttribute(handler.getParentHandler());
+            default -> null;
+        };
+    }
 
-        if(parentHandler instanceof NamespaceAwareNestedTagHandler) {
-            ContentHandler parentParentHandler = ((NamespaceAwareNestedTagHandler) parentHandler).getParentHandler();
-            if(parentParentHandler instanceof DbEntityHandler) {
-                return ((DbEntityHandler) parentParentHandler).getLastAttribute();
-            } else if(parentParentHandler instanceof ObjEntityHandler) {
-                return ((ObjEntityHandler) parentParentHandler).getLastAttribute();
-            }
-        }
-        return null;
+    private ProjectNode getLastAttribute(ContentHandler entityHandler) {
+        return switch (entityHandler) {
+            case DbEntityHandler handler -> handler.getLastAttribute();
+            case ObjEntityHandler handler -> handler.getLastAttribute();
+            default -> null;
+        };
     }
 }

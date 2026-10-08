@@ -34,7 +34,7 @@ public class PrefetchTypeForSqlTemplateHandlerTest extends BaseHandlerTest {
         parse("sqlQuery", new HandlerFactory() {
             @Override
             public NamespaceAwareNestedTagHandler createHandler(NamespaceAwareNestedTagHandler parent) {
-                return new QueryDescriptorHandler(parent, map);
+                return new SQLTemplateDescriptorHandler(parent, map);
             }
         });
 
