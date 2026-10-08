@@ -26,7 +26,6 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.project.ProjectNode;
 import org.apache.cayenne.project.ProjectNodeVisitor;
 import org.apache.cayenne.exp.path.CayennePath;
-import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
 
@@ -195,8 +194,8 @@ public class ObjAttribute extends Attribute<ObjEntity, ObjAttribute, ObjRelation
      * Returns a DbAttribute mapped by this ObjAttribute.
      */
     public DbAttribute getDbAttribute() {
-        Iterator<CayenneMapEntry> pathIterator = getDbPathIterator(getEntity());
-        CayenneMapEntry o = null;
+        Iterator<Object> pathIterator = getDbPathIterator(getEntity());
+        Object o = null;
         while (pathIterator.hasNext()) {
             o = pathIterator.next();
         }
@@ -210,8 +209,8 @@ public class ObjAttribute extends Attribute<ObjEntity, ObjAttribute, ObjRelation
         if (entity != null) {
             ObjEntity parent = entity.getSuperEntity();
             if (parent != null) {
-                Iterator<CayenneMapEntry> pathIterator = getDbPathIterator(parent);
-                CayenneMapEntry o = null;
+                Iterator<Object> pathIterator = getDbPathIterator(parent);
+                Object o = null;
                 while (pathIterator.hasNext()) {
                     o = pathIterator.next();
                 }
@@ -245,11 +244,11 @@ public class ObjAttribute extends Attribute<ObjEntity, ObjAttribute, ObjRelation
         return superEntity.getAttribute(getName()) != null;
     }
 
-    public Iterator<CayenneMapEntry> getDbPathIterator() {
+    public Iterator<Object> getDbPathIterator() {
         return getDbPathIterator(getEntity());
     }
 
-    public Iterator<CayenneMapEntry> getDbPathIterator(ObjEntity entity) {
+    public Iterator<Object> getDbPathIterator(ObjEntity entity) {
         if (dbAttributePath == null) {
             return Collections.emptyIterator();
         }
@@ -272,7 +271,7 @@ public class ObjAttribute extends Attribute<ObjEntity, ObjAttribute, ObjRelation
             if (attribute == null) {
                 return Collections.emptyIterator();
             }
-            return Collections.<CayenneMapEntry>singleton(attribute).iterator();
+            return Collections.<Object>singleton(attribute).iterator();
         }
 
         return dbEnt.resolvePath(dbAttributePath).iterator();
@@ -352,20 +351,20 @@ public class ObjAttribute extends Attribute<ObjEntity, ObjAttribute, ObjRelation
     public void updateDbAttributePath() {
 
         if (isFlattened()) {
-            StringBuilder newDbAttributePath = new StringBuilder();
+            CayennePath newDbAttributePath = CayennePath.EMPTY_PATH;
 
-            Iterator<CayenneMapEntry> dbPathIterator = getDbPathIterator();
-
+            Iterator<Object> dbPathIterator = getDbPathIterator();
             while (dbPathIterator.hasNext()) {
-                CayenneMapEntry next = dbPathIterator.next();
-
-                newDbAttributePath.append(next.getName());
-                if (next instanceof DbRelationship) {
-                    newDbAttributePath.append('.');
-                }
+                String name = switch (dbPathIterator.next()) {
+                    case DbRelationship relationship -> relationship.getName();
+                    case DbAttribute attribute -> attribute.getName();
+                    default -> throw new CayenneRuntimeException("Unexpected DB path component in '%s'",
+                            dbAttributePath);
+                };
+                newDbAttributePath = newDbAttributePath.dot(name);
             }
 
-            setDbAttributePath(newDbAttributePath.toString());
+            setDbAttributePath(newDbAttributePath);
         }
     }
 

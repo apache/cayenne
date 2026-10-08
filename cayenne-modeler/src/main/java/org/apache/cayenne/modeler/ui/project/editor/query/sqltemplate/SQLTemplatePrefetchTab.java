@@ -36,7 +36,7 @@ import org.apache.cayenne.modeler.toolkit.columnview.ColumnViewPanel;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.apache.cayenne.modeler.pref.adapters.SplitPanePrefs;
 import org.apache.cayenne.modeler.toolkit.table.CMTable;
-import org.apache.cayenne.util.CayenneMapEntry;
+import org.apache.cayenne.modeler.toolkit.Renderers;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultCellEditor;
@@ -247,12 +247,10 @@ public class SQLTemplatePrefetchTab extends ProjectPanel {
         StringBuilder buffer = new StringBuilder();
 
         // attribute or relationships
-        CayenneMapEntry first = (CayenneMapEntry) path[1];
-        buffer.append(first.getName());
+        buffer.append(Renderers.asString(path[1]));
 
         for (int i = 2; i < path.length; i++) {
-            CayenneMapEntry pathEntry = (CayenneMapEntry) path[i];
-            buffer.append(".").append(pathEntry.getName());
+            buffer.append(".").append(Renderers.asString(path[i]));
         }
 
         return buffer.toString();

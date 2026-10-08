@@ -20,7 +20,6 @@
 package org.apache.cayenne.map;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.ToStringBuilder;
 import org.apache.cayenne.util.XMLSerializable;
 
@@ -30,7 +29,7 @@ import org.apache.cayenne.util.XMLSerializable;
  * notion of source and target entity. This makes DataMap a "digraph".
  */
 public abstract class Relationship<E extends Entity<E, A, R>, A extends Attribute<E, A, R>, R extends Relationship<E, A, R>>
-        implements CayenneMapEntry, XMLSerializable {
+        implements XMLSerializable {
 
     protected String name;
     protected E sourceEntity;
@@ -122,18 +121,7 @@ public abstract class Relationship<E extends Entity<E, A, R>, A extends Attribut
         return toMany;
     }
 
-    public Object getParent() {
-        return getSourceEntity();
-    }
 
-    @SuppressWarnings("unchecked")
-    public void setParent(Object parent) {
-        if (parent != null && !(parent instanceof Entity)) {
-            throw new IllegalArgumentException("Expected null or Entity, got: " + parent);
-        }
-
-        setSourceEntity((E) parent);
-    }
 
     /**
      * Returns guaranteed non-null MappingNamespace of this relationship. If it happens to

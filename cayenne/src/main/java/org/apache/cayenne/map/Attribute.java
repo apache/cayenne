@@ -20,7 +20,6 @@
 package org.apache.cayenne.map;
 
 import org.apache.cayenne.project.ProjectNodeVisitor;
-import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.ToStringBuilder;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
@@ -28,10 +27,11 @@ import org.apache.cayenne.util.XMLSerializable;
 /**
  * Defines a property descriptor that is a part of an Entity. Two examples of things that
  * are described by attributes are Java class properties and database table columns.
- * 
  */
-public abstract class Attribute<E extends Entity<E, A, R>, A extends Attribute<E, A, R>, R extends Relationship<E, A, R>>
-        implements CayenneMapEntry, XMLSerializable {
+public abstract class Attribute<
+        E extends Entity<E, A, R>,
+        A extends Attribute<E, A, R>,
+        R extends Relationship<E, A, R>> implements XMLSerializable {
 
     protected String name;
     protected Entity<E, A, R> entity;
@@ -79,16 +79,5 @@ public abstract class Attribute<E extends Entity<E, A, R>, A extends Attribute<E
         this.name = name;
     }
 
-    public Object getParent() {
-        return getEntity();
-    }
 
-    @SuppressWarnings("unchecked")
-    public void setParent(Object parent) {
-        if (parent != null && !(parent instanceof Entity)) {
-            throw new IllegalArgumentException("Expected null or Entity, got: " + parent);
-        }
-
-        setEntity((Entity<E, A, R>) parent);
-    }
 }

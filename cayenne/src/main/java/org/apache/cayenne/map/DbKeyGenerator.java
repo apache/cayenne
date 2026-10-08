@@ -21,7 +21,6 @@
 package org.apache.cayenne.map;
 
 import org.apache.cayenne.project.ProjectNodeVisitor;
-import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
 
@@ -32,7 +31,7 @@ import org.apache.cayenne.util.XMLSerializable;
  * 
  */
 
-public class DbKeyGenerator implements CayenneMapEntry, XMLSerializable {
+public class DbKeyGenerator implements XMLSerializable {
 
     public static final String ORACLE_TYPE = "ORACLE";
     public static final String NAMED_SEQUENCE_TABLE_TYPE = "NAMED_SEQUENCE_TABLE";
@@ -58,18 +57,7 @@ public class DbKeyGenerator implements CayenneMapEntry, XMLSerializable {
         this.name = name;
     }
 
-    public Object getParent() {
-        return getDbEntity();
-    }
 
-    public void setParent(Object parent) {
-        if (parent != null && !(parent instanceof DbEntity)) {
-            throw new IllegalArgumentException("Expected null or DbEntity, got: "
-                    + parent);
-        }
-
-        setDbEntity((DbEntity) parent);
-    }
 
     /**
      * Prints itself as XML to the provided XMLEncoder.

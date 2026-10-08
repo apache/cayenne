@@ -28,7 +28,6 @@ import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.reflect.ClassDescriptor;
-import org.apache.cayenne.util.CayenneMapEntry;
 
 /**
  * Preprocessor and router of SelectQuery prefetches.
@@ -70,7 +69,7 @@ class FluentSelectPrefetchRouterAction implements PrefetchProcessor {
         CayennePath prefetchPath = node.getPath();
 
         // find last relationship
-        List<CayenneMapEntry> components = classDescriptor.getEntity().resolvePath(prefetchPath);
+        List<Object> components = classDescriptor.getEntity().resolvePath(prefetchPath);
         if (components.isEmpty() || !(components.getLast() instanceof ObjRelationship relationship)) {
             throw new CayenneRuntimeException("Invalid prefetch '%s' for entity '%s'"
                     , prefetchPath, classDescriptor.getEntity().getName());

@@ -25,11 +25,9 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.MappingNamespace;
 import org.apache.cayenne.map.ObjAttribute;
-import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.toolkit.Renderers;
 import org.apache.cayenne.modeler.toolkit.tree.EntityTreeAttributeRelationshipFilter;
 import org.apache.cayenne.modeler.toolkit.tree.EntityTreeModel;
-import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.Util;
 
 import java.util.function.Supplier;
@@ -147,8 +145,8 @@ class DbAttributePathComboBoxEditor extends PathChooserComboBoxCellEditor<ObjAtt
         DbEntity firstEntity = null;
         if (attribute.getDbAttribute() == null) {
 
-            if (attribute.getParent() instanceof ObjEntity) {
-                DbEntity dbEnt = ((ObjEntity) attribute.getParent()).getDbEntity();
+            if (attribute.getEntity() != null) {
+                DbEntity dbEnt = attribute.getEntity().getDbEntity();
 
                 if (dbEnt != null) {
                     Collection<DbAttribute> attributes = dbEnt.getAttributes();
@@ -176,7 +174,7 @@ class DbAttributePathComboBoxEditor extends PathChooserComboBoxCellEditor<ObjAtt
     }
 
     private DbEntity getFirstEntity(ObjAttribute attribute) {
-        Iterator<CayenneMapEntry> it = attribute.getDbPathIterator();
+        Iterator<Object> it = attribute.getDbPathIterator();
         DbEntity firstEnt = attribute.getDbAttribute().getEntity();
         boolean setEnt = false;
 

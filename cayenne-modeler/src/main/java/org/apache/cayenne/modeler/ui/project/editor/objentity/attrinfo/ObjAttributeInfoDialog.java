@@ -30,7 +30,6 @@ import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.map.EmbeddedAttribute;
 import org.apache.cayenne.map.ObjAttribute;
-import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.modeler.event.display.ObjAttributeDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ObjEntityDisplayEvent;
 import org.apache.cayenne.modeler.event.model.ObjAttributeEvent;
@@ -48,7 +47,6 @@ import org.apache.cayenne.modeler.ui.project.editor.objentity.properties.ObjAttr
 import org.apache.cayenne.modeler.toolkit.tree.EntityTreeAttributeRelationshipFilter;
 import org.apache.cayenne.modeler.toolkit.tree.EntityTreeModel;
 import org.apache.cayenne.projecttools.extension.info.ObjectInfo;
-import org.apache.cayenne.util.CayenneMapEntry;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
@@ -311,8 +309,8 @@ public class ObjAttributeInfoDialog extends ProjectDialog implements TreeSelecti
         if (pathBrowser.getModel() == null) {
             DbEntity firstEntity = null;
             if (attribute.getDbAttribute() == null) {
-                if (attribute.getParent() instanceof ObjEntity) {
-                    DbEntity dbEnt = ((ObjEntity) attribute.getParent()).getDbEntity();
+                if (attribute.getEntity() != null) {
+                    DbEntity dbEnt = attribute.getEntity().getDbEntity();
                     if (dbEnt != null) {
                         Collection<DbAttribute> attrib = dbEnt.getAttributes();
                         Collection<DbRelationship> rel = dbEnt.getRelationships();
@@ -381,7 +379,7 @@ public class ObjAttributeInfoDialog extends ProjectDialog implements TreeSelecti
             saveButton.setEnabled(true);
         } else {
             boolean isAttributeLast = false;
-            Iterator<CayenneMapEntry> it = attribute.getDbPathIterator();
+            Iterator<Object> it = attribute.getDbPathIterator();
             while (it.hasNext()) {
                 Object obj = it.next();
                 if (obj instanceof DbAttribute && !it.hasNext()) {
@@ -654,7 +652,7 @@ public class ObjAttributeInfoDialog extends ProjectDialog implements TreeSelecti
     }
 
     private DbEntity getFirstEntity() {
-        Iterator<CayenneMapEntry> it = attribute.getDbPathIterator();
+        Iterator<Object> it = attribute.getDbPathIterator();
         DbEntity firstEnt = attribute.getDbAttribute().getEntity();
         boolean setEnt = false;
 
@@ -679,11 +677,11 @@ public class ObjAttributeInfoDialog extends ProjectDialog implements TreeSelecti
      * Selects path in browser
      */
     private void setSelectionPath() {
-        List<CayenneMapEntry> list = new ArrayList<>();
+        List<Object> list = new ArrayList<>();
         boolean isAttributeLast = false;
-        Iterator<CayenneMapEntry> it = attribute.getDbPathIterator();
+        Iterator<Object> it = attribute.getDbPathIterator();
         while (it.hasNext()) {
-            CayenneMapEntry obj = it.next();
+            Object obj = it.next();
             list.add(obj);
             if (obj instanceof DbAttribute && !it.hasNext()) {
                 isAttributeLast = true;
@@ -712,7 +710,6 @@ public class ObjAttributeInfoDialog extends ProjectDialog implements TreeSelecti
         attributeSaved.setDbAttributePath(attribute.getDbAttributePath());
         attributeSaved.setName(attribute.getName());
         attributeSaved.setEntity(attribute.getEntity());
-        attributeSaved.setParent(attribute.getParent());
         attributeSaved.setType(attribute.getType());
         attributeSaved.setUsedForLocking(attribute.isUsedForLocking());
         attributeSaved.setLazy(attribute.isLazy());

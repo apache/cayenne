@@ -39,7 +39,6 @@ import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.util.CayenneMapEntry;
 
 /**
  * Graph handler that collects information about arc changes into
@@ -111,11 +110,11 @@ class ArcValuesCreationHandler implements GraphChangeHandler {
         ObjectId srcId = id;
         ObjectId targetId = null;
 
-        List<CayenneMapEntry> dbPathComponents = entity.resolvePath(dbPath);
+        List<Object> dbPathComponents = entity.resolvePath(dbPath);
         for(int i = 0; i < dbPathComponents.size(); i++) {
-            CayenneMapEntry entry = dbPathComponents.get(i);
+            Object entry = dbPathComponents.get(i);
             boolean last = i == dbPathComponents.size() - 1;
-            flattenedPath = flattenedPath.dot(entry.getName());
+            flattenedPath = flattenedPath.dot(CayennePath.segmentOf(dbPath.segments().get(i).value()));
             if(entry instanceof DbRelationship relationship) {
                 // intermediate db entity to be inserted
                 DbEntity target = relationship.getTargetEntity();

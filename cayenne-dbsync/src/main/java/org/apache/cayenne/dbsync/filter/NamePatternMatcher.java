@@ -19,11 +19,9 @@
 
 package org.apache.cayenne.dbsync.filter;
 
-import org.apache.cayenne.util.CayenneMapEntry;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;

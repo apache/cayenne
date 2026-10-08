@@ -52,7 +52,6 @@ import org.apache.cayenne.modeler.event.display.ProcedureParameterDisplayEvent;
 import org.apache.cayenne.modeler.event.display.QueryDisplayEvent;
 import org.apache.cayenne.modeler.pref.PrefsAdapter;
 import org.apache.cayenne.modeler.project.ProjectSession;
-import org.apache.cayenne.util.CayenneMapEntry;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -196,7 +195,7 @@ public final class ProjectPrefs extends PrefsAdapter {
                 break;
             case embeddableAttributes:
                 saveEmbeddablePath(session);
-                prefs.put(EMBEDDABLE_ATTRS_KEY, joinEmbeddableAttributeNames(session.getSelectedEmbeddableAttributes()));
+                prefs.put(EMBEDDABLE_ATTRS_KEY, joinNames(session.getSelectedEmbeddableAttributes()));
                 break;
             case procedure:
                 saveProcedurePath(session);
@@ -632,46 +631,33 @@ public final class ProjectPrefs extends PrefsAdapter {
 
     // -------------------- name formatting --------------------
 
-    private static String joinNames(CayenneMapEntry[] entries) {
+    private static String joinNames(ProjectNode[] entries) {
         if (entries == null) {
             return "";
         }
         StringBuilder sb = new StringBuilder();
-        for (CayenneMapEntry entry : entries) {
+        for (ProjectNode entry : entries) {
             if (entry == null) {
                 continue;
             }
-            sb.append(entry.getName()).append(",");
-        }
-        return sb.toString();
-    }
-
-    private static String joinEmbeddableAttributeNames(EmbeddableAttribute[] entries) {
-        if (entries == null) {
-            return "";
-        }
-        StringBuilder sb = new StringBuilder();
-        for (EmbeddableAttribute entry : entries) {
-            if (entry == null) {
-                continue;
-            }
-            sb.append(entry.getName()).append(",");
+            sb.append(nameOf(entry)).append(",");
         }
         return sb.toString();
     }
 
     private static String nameOf(ProjectNode object) {
-        if (object instanceof CayenneMapEntry cme) {
-            return cme.getName();
-        } else if (object instanceof Project project) {
-            return project.getName();
-        } else if (object instanceof DataMap dm) {
-            return dm.getName();
-        } else if (object instanceof Embeddable e) {
-            return e.getClassName();
-        } else if (object instanceof QueryDescriptor qd) {
-            return qd.getName();
-        }
-        return "";
+        return switch (object) {
+            case Entity<?, ?, ?> e -> e.getName();
+            case Attribute<?, ?, ?> a -> a.getName();
+            case Relationship<?, ?, ?> r -> r.getName();
+            case Procedure p -> p.getName();
+            case ProcedureParameter p -> p.getName();
+            case Project project -> project.getName();
+            case DataMap dm -> dm.getName();
+            case Embeddable e -> e.getClassName();
+            case EmbeddableAttribute ea -> ea.getName();
+            case QueryDescriptor qd -> qd.getName();
+            default -> "";
+        };
     }
 }

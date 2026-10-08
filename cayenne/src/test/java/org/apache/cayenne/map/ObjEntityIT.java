@@ -27,7 +27,6 @@ import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
-import org.apache.cayenne.util.CayenneMapEntry;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -120,29 +119,27 @@ public class ObjEntityIT {
         Map<String, String> aliases = new HashMap<>();
         aliases.put("a", "paintingArray.toGallery");
 
-        CayenneMapEntry lastAttribute = artistE
+        ObjEntity paintingE = artistE.getDataMap().getObjEntity("Painting");
+
+        Object lastAttribute = artistE
                 .resolvePath(CayennePath.of("paintingArray.paintingTitle").expandAliases(aliases))
                 .getLast();
-        assertInstanceOf(ObjAttribute.class, lastAttribute);
-        assertEquals("paintingTitle", lastAttribute.getName());
+        assertSame(paintingE.getAttribute("paintingTitle"), lastAttribute);
 
-        CayenneMapEntry lastRelationship = artistE
+        Object lastRelationship = artistE
                 .resolvePath(CayennePath.of("paintingArray.toGallery").expandAliases(aliases))
                 .getLast();
-        assertInstanceOf(ObjRelationship.class, lastRelationship);
-        assertEquals("toGallery", lastRelationship.getName());
+        assertSame(paintingE.getRelationship("toGallery"), lastRelationship);
 
-        CayenneMapEntry lastLeftJoinRelationship = artistE
+        Object lastLeftJoinRelationship = artistE
                 .resolvePath(CayennePath.of("paintingArray+.toGallery+").expandAliases(aliases))
                 .getLast();
-        assertInstanceOf(ObjRelationship.class, lastLeftJoinRelationship);
-        assertEquals("toGallery", lastLeftJoinRelationship.getName());
+        assertSame(paintingE.getRelationship("toGallery"), lastLeftJoinRelationship);
 
-        CayenneMapEntry lastAliasedRelationship = artistE
+        Object lastAliasedRelationship = artistE
                 .resolvePath(CayennePath.of("a").expandAliases(aliases))
                 .getLast();
-        assertInstanceOf(ObjRelationship.class, lastAliasedRelationship);
-        assertEquals("toGallery", lastAliasedRelationship.getName());
+        assertSame(paintingE.getRelationship("toGallery"), lastAliasedRelationship);
     }
 
     @Test

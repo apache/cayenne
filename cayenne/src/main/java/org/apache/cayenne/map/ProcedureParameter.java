@@ -22,15 +22,13 @@ package org.apache.cayenne.map;
 import org.apache.cayenne.project.ProjectNode;
 import org.apache.cayenne.project.ProjectNodeVisitor;
 import org.apache.cayenne.dba.TypesMapping;
-import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
 
 /**
  * A descriptor for the Procedure parameter.
  */
-public class ProcedureParameter implements ProjectNode, CayenneMapEntry,
-        XMLSerializable {
+public class ProcedureParameter implements ProjectNode, XMLSerializable {
 
     public static final int IN_OUT_PARAMETER = 3;
     public static final int IN_PARAMETER = 1;
@@ -76,17 +74,7 @@ public class ProcedureParameter implements ProjectNode, CayenneMapEntry,
         this.name = name;
     }
 
-    public Object getParent() {
-        return getProcedure();
-    }
 
-    public void setParent(Object parent) {
-        if (parent != null && !(parent instanceof Procedure)) {
-            throw new IllegalArgumentException("Expected null or Procedure, got: " + parent);
-        }
-
-        setProcedure((Procedure) parent);
-    }
 
     /**
      * Prints itself as XML to the provided PrintWriter.

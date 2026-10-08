@@ -171,8 +171,8 @@ public class CreateAttributeAction extends AppAction {
             return false;
         }
 
-        if (object instanceof Attribute) {
-            return ((Attribute<?,?,?>) object).getParent() instanceof Entity;
+        if (object instanceof Attribute<?, ?, ?> attribute) {
+            return attribute.getEntity() != null;
         }
 
         return false;

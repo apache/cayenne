@@ -26,7 +26,6 @@ import java.util.Map;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.commons.CompositeCollection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -152,15 +151,17 @@ class MappingCache implements MappingNamespace {
      * @param dst map with already added entities
      * @param srcMap source DataMap
      */
-    private void checkNameDuplicates(Map<String, ? extends CayenneMapEntry> src,
-                                     Map<String, ? extends CayenneMapEntry> dst,
-                                     DataMap srcMap) {
-        for(CayenneMapEntry entry : src.values()) {
-            CayenneMapEntry duplicate = dst.get(entry.getName());
+    private void checkNameDuplicates(Map<String, ?> src, Map<String, ?> dst, DataMap srcMap) {
+        for(String name : src.keySet()) {
+            Object duplicate = dst.get(name);
             if(duplicate != null) {
-                DataMap parent = (DataMap) duplicate.getParent();
+                DataMap parent = switch (duplicate) {
+                    case Entity<?, ?, ?> entity -> entity.getDataMap();
+                    case Procedure procedure -> procedure.getDataMap();
+                    default -> null;
+                };
                 LOGGER.warn("Found duplicated name {} in datamaps {} and {}",
-                        entry.getName(), srcMap.getName(), parent.getName());
+                        name, srcMap.getName(), parent != null ? parent.getName() : null);
             }
         }
     }

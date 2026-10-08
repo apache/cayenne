@@ -112,7 +112,7 @@ public class ObjEntitySingleTableInheritanceTest {
         entity1.setSuperEntityName("e2");
         assertNotNull(entity1.getAttribute("a2"));
         assertEquals("a2", entity1.getAttribute("a2").getName());
-        assertSame(entity1, entity1.getAttribute("a2").getParent());
+        assertSame(entity1, entity1.getAttribute("a2").getEntity());
         assertNull(entity1.getAttribute("a3"));
 
         entity2.setSuperEntityName("e3");

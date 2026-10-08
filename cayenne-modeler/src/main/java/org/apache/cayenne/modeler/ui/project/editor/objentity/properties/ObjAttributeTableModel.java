@@ -240,7 +240,6 @@ public class ObjAttributeTableModel extends CMTableModel<ObjAttribute> {
         ObjEntity entity = attribute.getEntity();
         attributeNew.setName(attribute.getName());
         attributeNew.setEntity(entity);
-        attributeNew.setParent(attribute.getParent());
         attributeNew.setType(attribute.getType());
         attributeNew.setUsedForLocking(attribute.isUsedForLocking());
         attributeNew.setLazy(attribute.isLazy());

@@ -24,7 +24,6 @@ import java.util.Map;
 
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.Entity;
-import org.apache.cayenne.util.CayenneMapEntry;
 
 /**
  * Generic path expression.
@@ -110,8 +109,8 @@ public abstract sealed class PathExp extends Expression permits DbIdPathExp, DbP
 	/**
 	 * Helper method to evaluate path expression with Cayenne Entity.
 	 */
-	protected CayenneMapEntry evaluateEntityNode(Entity<?,?,?> entity) {
-		List<CayenneMapEntry> components = entity.resolvePath(getExpandedPath());
+	protected Object evaluateEntityNode(Entity<?,?,?> entity) {
+		List<Object> components = entity.resolvePath(getExpandedPath());
 		return components.isEmpty() ? null : components.getLast();
 	}
 

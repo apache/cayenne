@@ -19,13 +19,16 @@
 
 package org.apache.cayenne.modeler.toolkit;
 
+import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Entity;
+import org.apache.cayenne.map.Procedure;
+import org.apache.cayenne.map.ProcedureParameter;
+import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.map.MappingNamespace;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.reflect.PropertyUtils;
-import org.apache.cayenne.util.CayenneMapEntry;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -78,33 +81,34 @@ public final class Renderers {
     }
 
     /**
-     * Converts non-String Object used in renderers (currently CayenneMapEntry instances only) to String
+     * Converts a non-String Object used in renderers (mapping nodes, DataMaps) to String
      */
     public static String asString(Object obj, MappingNamespace namespace) {
-        if (obj instanceof CayenneMapEntry mapObject) {
-            String label = mapObject.getName();
-
-            if (mapObject instanceof Entity<?, ?, ?> entity) {
-
-                DataMap dataMap = entity.getDataMap();
-                if (dataMap != null && dataMap != namespace) {
-                    label += " (" + dataMap.getName() + ")";
-                }
+        if (obj instanceof Entity<?, ?, ?> entity) {
+            String label = entity.getName();
+            DataMap dataMap = entity.getDataMap();
+            if (dataMap != null && dataMap != namespace) {
+                label += " (" + dataMap.getName() + ")";
             }
-
             return label;
         } else if (obj instanceof DataMap dm) {
             return dm.getName();
+        }
+
+        String name = mapNodeName(obj);
+        if (name != null) {
+            return name;
         }
 
         return obj == null ? null : String.valueOf(obj);
     }
 
     public static String asString(Object object) {
+        String name = mapNodeName(object);
         if (object == null) {
             return null;
-        } else if (object instanceof CayenneMapEntry cme) {
-            return cme.getName();
+        } else if (name != null) {
+            return name;
         } else if (object instanceof String s) {
             return s;
         } else {
@@ -115,6 +119,21 @@ public final class Renderers {
                 return null;
             }
         }
+    }
+
+    /**
+     * Returns the name of a mapping node: an entity, attribute, relationship, procedure or procedure parameter.
+     * Returns null for anything else.
+     */
+    private static String mapNodeName(Object object) {
+        return switch (object) {
+            case Entity<?, ?, ?> e -> e.getName();
+            case Attribute<?, ?, ?> a -> a.getName();
+            case Relationship<?, ?, ?> r -> r.getName();
+            case Procedure p -> p.getName();
+            case ProcedureParameter p -> p.getName();
+            case null, default -> null;
+        };
     }
 
     final static class EntityRenderer extends DefaultListCellRenderer {

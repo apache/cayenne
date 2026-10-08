@@ -23,7 +23,6 @@ import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
-import org.apache.cayenne.util.CayenneMapEntry;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -127,7 +126,7 @@ public class EntityIT {
     @Test
     public void resolveObjPathExpandedAlias() {
         ObjEntity artistEnt = env.runtime().getDataDomain().getEntityResolver().getObjEntity("Artist");
-        List<CayenneMapEntry> components = artistEnt.resolvePath(
+        List<Object> components = artistEnt.resolvePath(
                 CayennePath.of("a.paintingTitle").expandAliases(Map.of("a", "paintingArray")));
 
         assertEquals(2, components.size());
@@ -138,7 +137,7 @@ public class EntityIT {
     @Test
     public void resolveObjPath1() {
         ObjEntity galleryEnt = env.runtime().getDataDomain().getEntityResolver().getObjEntity("Gallery");
-        List<CayenneMapEntry> components = galleryEnt.resolvePath(CayennePath.of("galleryName"));
+        List<Object> components = galleryEnt.resolvePath(CayennePath.of("galleryName"));
 
         // must contain a single ObjAttribute
         assertEquals(1, components.size());

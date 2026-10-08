@@ -55,7 +55,7 @@ public class DefaultProjectNodeParentGetter implements ProjectNodeParentGetter {
 
         @Override
         public ProjectNode visitDbAttribute(DbAttribute attribute) {
-            return (ProjectNode) attribute.getParent();
+            return attribute.getEntity();
         }
 
         @Override
@@ -65,7 +65,7 @@ public class DefaultProjectNodeParentGetter implements ProjectNodeParentGetter {
 
         @Override
         public ProjectNode visitDbRelationship(DbRelationship relationship) {
-            return (ProjectNode) relationship.getParent();
+            return relationship.getSourceEntity();
         }
 
         @Override
@@ -80,27 +80,27 @@ public class DefaultProjectNodeParentGetter implements ProjectNodeParentGetter {
 
         @Override
         public ProjectNode visitObjAttribute(ObjAttribute attribute) {
-            return (ProjectNode) attribute.getParent();
+            return attribute.getEntity();
         }
 
         @Override
         public ProjectNode visitObjEntity(ObjEntity entity) {
-            return (ProjectNode) entity.getParent();
+            return entity.getDataMap();
         }
 
         @Override
         public ProjectNode visitObjRelationship(ObjRelationship relationship) {
-            return (ProjectNode) relationship.getParent();
+            return relationship.getSourceEntity();
         }
 
         @Override
         public ProjectNode visitProcedure(Procedure procedure) {
-            return (ProjectNode) procedure.getParent();
+            return procedure.getDataMap();
         }
 
         @Override
         public ProjectNode visitProcedureParameter(ProcedureParameter parameter) {
-            return (ProjectNode) parameter.getParent();
+            return parameter.getProcedure();
         }
 
         @Override

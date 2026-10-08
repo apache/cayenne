@@ -24,7 +24,6 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.exp.path.CayennePathSegment;
-import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.ToStringBuilder;
 import org.apache.cayenne.util.XMLSerializable;
 
@@ -36,12 +35,13 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * An Entity is an abstract descriptor for an entity mapping concept. Entity can represent
- * either a descriptor of database table or a persistent object.
- * 
+ * An abstract descriptor for an entity mapping concept. Entity can represent either a descriptor of database table or
+ * a persistent object.
  */
-public abstract class Entity<E extends Entity<E, A, R>, A extends Attribute<E, A, R>, R extends Relationship<E, A, R>>
-        implements CayenneMapEntry, XMLSerializable {
+public abstract class Entity<
+        E extends Entity<E, A, R>,
+        A extends Attribute<E, A, R>,
+        R extends Relationship<E, A, R>> implements XMLSerializable {
 
     public static final String PATH_SEPARATOR = ".";
 
@@ -91,17 +91,6 @@ public abstract class Entity<E extends Entity<E, A, R>, A extends Attribute<E, A
         this.name = name;
     }
 
-    public Object getParent() {
-        return getDataMap();
-    }
-
-    public void setParent(Object parent) {
-        if (parent != null && !(parent instanceof DataMap)) {
-            throw new IllegalArgumentException("Expected null or DataMap, got: " + parent);
-        }
-
-        setDataMap((DataMap) parent);
-    }
 
     /**
      * @return parent DataMap of this entity.
@@ -223,7 +212,7 @@ public abstract class Entity<E extends Entity<E, A, R>, A extends Attribute<E, A
     }
 
     /**
-     *  Removes a relationship named <code>attrName</code>.
+     * Removes a relationship named <code>attrName</code>.
      */
     public void removeRelationship(String relName) {
         relationships.remove(relName);
@@ -244,7 +233,7 @@ public abstract class Entity<E extends Entity<E, A, R>, A extends Attribute<E, A
      * Returns a relationship that has a specified entity as a target. If there is more
      * than one relationship for the same target, it is unpredictable which one will be
      * returned.
-     * 
+     *
      * @since 1.1
      */
     public R getAnyRelationship(E targetEntity) {
@@ -284,7 +273,7 @@ public abstract class Entity<E extends Entity<E, A, R>, A extends Attribute<E, A
     /**
      * Translates Expression rooted in this entity to an analogous expression rooted in
      * related entity.
-     * 
+     *
      * @since 1.1
      */
     public Expression translateToRelatedEntity(Expression expression, String relationshipPath) {
@@ -305,7 +294,7 @@ public abstract class Entity<E extends Entity<E, A, R>, A extends Attribute<E, A
      *
      * @since 5.0
      */
-    public List<CayenneMapEntry> resolvePath(String path) throws ExpressionException {
+    public List<Object> resolvePath(String path) throws ExpressionException {
         return resolvePath(CayennePath.of(path));
     }
 
@@ -316,10 +305,10 @@ public abstract class Entity<E extends Entity<E, A, R>, A extends Attribute<E, A
      *
      * @since 5.0
      */
-    public List<CayenneMapEntry> resolvePath(CayennePath path) throws ExpressionException {
+    public List<Object> resolvePath(CayennePath path) throws ExpressionException {
         List<CayennePathSegment> segments = path.segments();
         int last = segments.size() - 1;
-        List<CayenneMapEntry> components = new ArrayList<>(segments.size());
+        List<Object> components = new ArrayList<>(segments.size());
 
         Entity<E, A, R> entity = this;
         EmbeddedAttribute embeddedAttribute = null;

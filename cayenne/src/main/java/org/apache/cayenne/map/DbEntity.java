@@ -19,35 +19,31 @@
 
 package org.apache.cayenne.map;
 
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.exp.DbPathExp;
+import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.path.CayennePath;
+import org.apache.cayenne.project.ProjectNode;
+import org.apache.cayenne.project.ProjectNodeVisitor;
+import org.apache.cayenne.util.XMLEncoder;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 import java.util.function.Function;
-
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.ObjectId;
-import org.apache.cayenne.project.ProjectNode;
-import org.apache.cayenne.project.ProjectNodeVisitor;
-import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.exp.path.CayennePath;
-import org.apache.cayenne.exp.DbPathExp;
-import org.apache.cayenne.util.CayenneMapEntry;
-import org.apache.cayenne.util.XMLEncoder;
-
-import java.util.Objects;
 
 /**
  * A DbEntity is a mapping descriptor that defines a structure of a database
  * table.
  */
-public class DbEntity extends Entity<DbEntity, DbAttribute, DbRelationship>
-        implements ProjectNode {
+public class DbEntity extends Entity<DbEntity, DbAttribute, DbRelationship> implements ProjectNode {
 
     protected String catalog;
     protected String schema;
@@ -545,7 +541,7 @@ public class DbEntity extends Entity<DbEntity, DbAttribute, DbRelationship>
         RelationshipPathConverter(CayennePath relationshipPath) {
             this.relationshipPath = relationshipPath;
 
-            for (CayenneMapEntry component : resolvePath(relationshipPath)) {
+            for (Object component : resolvePath(relationshipPath)) {
                 // relationship path components must be DbRelationships
                 if (((DbRelationship) component).isToMany()) {
                     toMany = true;
@@ -571,7 +567,7 @@ public class DbEntity extends Entity<DbEntity, DbAttribute, DbRelationship>
 
         CayennePath translatePath(CayennePath path) {
             CayennePath finalPath = CayennePath.EMPTY_PATH;
-            for (CayenneMapEntry component : resolvePath(relationshipPath)) {
+            for (Object component : resolvePath(relationshipPath)) {
                 // relationship path components must be DbRelationships
                 if (component instanceof DbRelationship lastDBR) {
                     finalPath = prependReversedPath(finalPath, lastDBR);

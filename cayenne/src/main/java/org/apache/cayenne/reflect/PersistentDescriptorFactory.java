@@ -42,7 +42,6 @@ import org.apache.cayenne.map.EntityInheritanceTree;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.util.CayenneMapEntry;
 
 /**
  * A convenience superclass for {@link ClassDescriptorFactory} implementors.
@@ -378,10 +377,10 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
                     return true;
                 }
 
-                Iterator<CayenneMapEntry> it = property.getAttribute().getDbPathIterator();
+                Iterator<Object> it = property.getAttribute().getDbPathIterator();
                 CayennePath path = CayennePath.EMPTY_PATH;
                 while(it.hasNext()) {
-                    CayenneMapEntry next = it.next();
+                    Object next = it.next();
                     if(next instanceof DbRelationship) {
                         DbRelationship rel = (DbRelationship)next;
                         // When deleting an ObjEntity that has flattened attributes we also delete the target

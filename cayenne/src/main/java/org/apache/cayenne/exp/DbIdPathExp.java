@@ -34,7 +34,6 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.util.CayenneMapEntry;
 
 /**
  * @since 5.0
@@ -93,7 +92,7 @@ public final class DbIdPathExp extends PathExp {
     }
 
     @Override
-    protected CayenneMapEntry evaluateEntityNode(Entity<?,?,?> entity) {
+    protected Object evaluateEntityNode(Entity<?,?,?> entity) {
         CayennePath objPath = path.parent();
         String id = path.last().value();
 
@@ -104,7 +103,7 @@ public final class DbIdPathExp extends PathExp {
         ObjEntity objEntity = (ObjEntity)entity;
 
         if(objPath != null) {
-            CayenneMapEntry entry = new ObjPathExp(objPath).evaluateEntityNode(objEntity);
+            Object entry = new ObjPathExp(objPath).evaluateEntityNode(objEntity);
             if(!(entry instanceof ObjRelationship)) {
                 throw new CayenneRuntimeException("Unable to evaluate DBID path %s, relationship expected", path);
             }

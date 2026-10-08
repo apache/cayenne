@@ -30,7 +30,6 @@ import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.SelectQueryDescriptor;
 import org.apache.cayenne.query.Ordering;
-import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.Util;
 
 import java.util.Collection;
@@ -172,7 +171,7 @@ public class DataMapUtils {
 				}
 
 				if (operand instanceof ObjPathExp pathExp) {
-					CayenneMapEntry component = ((ObjEntity) root)
+					Object component = ((ObjEntity) root)
 							.resolvePath(pathExp.getExpandedPath())
 							.getLast();
 					typeName = switch (component) {

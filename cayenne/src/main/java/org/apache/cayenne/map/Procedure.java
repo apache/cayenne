@@ -25,14 +25,13 @@ import java.util.List;
 
 import org.apache.cayenne.project.ProjectNode;
 import org.apache.cayenne.project.ProjectNodeVisitor;
-import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
 
 /**
  * A mapping descriptor for a database stored procedure.
  */
-public class Procedure implements ProjectNode, CayenneMapEntry, XMLSerializable {
+public class Procedure implements ProjectNode, XMLSerializable {
 
     protected String name;
     protected DataMap dataMap;
@@ -70,17 +69,7 @@ public class Procedure implements ProjectNode, CayenneMapEntry, XMLSerializable 
         this.name = name;
     }
 
-    public Object getParent() {
-        return getDataMap();
-    }
 
-    public void setParent(Object parent) {
-        if (parent != null && !(parent instanceof DataMap)) {
-            throw new IllegalArgumentException("Expected null or DataMap, got: " + parent);
-        }
-
-        setDataMap((DataMap) parent);
-    }
 
     /**
      * Prints itself as XML to the provided XMLEncoder.

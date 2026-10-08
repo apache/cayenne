@@ -89,8 +89,8 @@ public class CreateEmbeddableAction extends AppAction {
             return false;
         }
 
-        if (object instanceof ObjEntity) {
-            return ((ObjEntity) object).getParent() != null && ((ObjEntity) object).getParent() instanceof DataMap;
+        if (object instanceof ObjEntity entity) {
+            return entity.getDataMap() != null;
         }
 
         return false;

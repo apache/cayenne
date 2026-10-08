@@ -29,7 +29,6 @@ import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.exp.FullObjectExp;
 import org.apache.cayenne.exp.ObjPathExp;
-import org.apache.cayenne.util.CayenneMapEntry;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
 import org.slf4j.Logger;
@@ -39,7 +38,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -52,8 +50,7 @@ import java.util.function.Function;
  * the information about the Java class itself, as well as its mapping to the
  * DbEntity layer.
  */
-public class ObjEntity extends Entity<ObjEntity, ObjAttribute, ObjRelationship>
-        implements ProjectNode {
+public class ObjEntity extends Entity<ObjEntity, ObjAttribute, ObjRelationship> implements ProjectNode {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ObjEntity.class);
 
@@ -854,18 +851,23 @@ public class ObjEntity extends Entity<ObjEntity, ObjAttribute, ObjRelationship>
             CayennePath dbPath = CayennePath.EMPTY_PATH;
 
             // the resolver yields one component per segment of the path it is given
-            List<CayenneMapEntry> components = resolvePath(objPath);
+            List<Object> components = resolvePath(objPath);
             for (int i = 0; i < components.size(); i++) {
-                CayenneMapEntry component = components.get(i);
-                Iterator<? extends CayenneMapEntry> dbSubpath = switch (component) {
-                    case ObjAttribute attribute -> attribute.getDbPathIterator();
-                    case ObjRelationship relationship -> relationship.getDbRelationships().iterator();
-                    default -> throw new CayenneRuntimeException("Unknown path component: %s", component);
-                };
-
+                Object component = components.get(i);
                 boolean outer = objPath.segments().get(i).isOuterJoin();
-                while (dbSubpath.hasNext()) {
-                    dbPath = dbPath.dot(CayennePath.segmentOf(dbSubpath.next().getName(), outer));
+                switch (component) {
+                    case ObjRelationship relationship -> {
+                        for (DbRelationship dbRelationship : relationship.getDbRelationships()) {
+                            dbPath = dbPath.dot(CayennePath.segmentOf(dbRelationship.getName(), outer));
+                        }
+                    }
+                    case ObjAttribute attribute -> {
+                        CayennePath attributePath = attribute.getDbAttributePath();
+                        if (attributePath != null) {
+                            dbPath = dbPath.dot(attributePath);
+                        }
+                    }
+                    default -> throw new CayenneRuntimeException("Unknown path component: %s", component);
                 }
             }
 

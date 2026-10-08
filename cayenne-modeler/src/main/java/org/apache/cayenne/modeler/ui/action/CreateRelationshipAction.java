@@ -127,8 +127,8 @@ public class CreateRelationshipAction extends AppAction {
             return false;
         }
 
-        if (object instanceof Relationship) {
-            return ((Relationship<?,?,?>) object).getParent() instanceof Entity;
+        if (object instanceof Relationship<?, ?, ?> relationship) {
+            return relationship.getSourceEntity() != null;
         }
 
         return false;

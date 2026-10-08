@@ -33,7 +33,7 @@ import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.toolkit.tree.EntityTreeModel;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.SortOrder;
-import org.apache.cayenne.util.CayenneMapEntry;
+import org.apache.cayenne.modeler.toolkit.Renderers;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
@@ -209,12 +209,10 @@ public class SelectQueryOrderingTab extends ProjectPanel {
         StringBuilder buffer = new StringBuilder();
 
         // attribute or relationships
-        CayenneMapEntry first = (CayenneMapEntry) path[1];
-        buffer.append(first.getName());
+        buffer.append(Renderers.asString(path[1]));
 
         for (int i = 2; i < path.length; i++) {
-            CayenneMapEntry pathEntry = (CayenneMapEntry) path[i];
-            buffer.append(".").append(pathEntry.getName());
+            buffer.append(".").append(Renderers.asString(path[i]));
         }
 
         return buffer.toString();

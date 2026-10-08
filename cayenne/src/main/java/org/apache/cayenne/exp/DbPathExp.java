@@ -35,7 +35,6 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.util.CayenneMapEntry;
 
 /**
  * Path expression traversing DB relationships and attributes.
@@ -86,12 +85,12 @@ public final class DbPathExp extends PathExp {
 	}
 
 	private Map<?, ?> toMap_AttachedObject_MultiStepPath(ObjectContext context, Persistent persistent) {
-		List<CayenneMapEntry> pathComponents = Cayenne.getObjEntity(persistent)
+		List<Object> pathComponents = Cayenne.getObjEntity(persistent)
 				.getDbEntity()
 				.resolvePath(path);
 		LinkedList<DbRelationship> reversedPathComponents = new LinkedList<>();
 
-		for (CayenneMapEntry component : pathComponents) {
+		for (Object component : pathComponents) {
 			if (component instanceof DbRelationship rel) {
 				DbRelationship reverseRelationship = rel.getReverseRelationship();
 				if (reverseRelationship == null) {
@@ -163,7 +162,7 @@ public final class DbPathExp extends PathExp {
 	 * Helper method to evaluate path expression with Cayenne Entity.
 	 */
 	@Override
-	protected CayenneMapEntry evaluateEntityNode(Entity<?,?,?> entity) {
+	protected Object evaluateEntityNode(Entity<?,?,?> entity) {
 		if(entity instanceof ObjEntity) {
 			entity = ((ObjEntity) entity).getDbEntity();
 		}
