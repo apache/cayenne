@@ -131,7 +131,7 @@ public class ProcedureQueryDescriptor extends QueryDescriptor {
     }
 
     @Override
-    public void encodeAsXML(XMLEncoder encoder, ProjectNodeVisitor delegate) {
+    public void encodeAsXML(XMLEncoder encoder, ProjectNodeVisitor<?> delegate) {
         encoder.start("procedureQuery")
                 .attribute("name", getName())
                 .attribute("root", QueryDescriptor.PROCEDURE_ROOT);

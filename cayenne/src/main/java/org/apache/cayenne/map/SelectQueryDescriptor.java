@@ -229,13 +229,13 @@ public class SelectQueryDescriptor extends QueryDescriptor {
     private String rootEntityName() {
         return switch (root) {
             case ObjEntity entity -> entity.getName();
-            case String name -> name;
+            case String n -> n;
             case null, default -> null;
         };
     }
 
     @Override
-    public void encodeAsXML(XMLEncoder encoder, ProjectNodeVisitor delegate) {
+    public void encodeAsXML(XMLEncoder encoder, ProjectNodeVisitor<?> delegate) {
         // the root, qualifier, orderings, prefetches, limit, offset and distinct are all clauses of the query String,
         // the rest of the properties are stored separately
         encoder.start("objectQuery")

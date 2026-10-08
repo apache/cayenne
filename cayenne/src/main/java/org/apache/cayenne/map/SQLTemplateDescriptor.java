@@ -164,7 +164,7 @@ public class SQLTemplateDescriptor extends QueryDescriptor {
     }
 
     @Override
-    public void encodeAsXML(XMLEncoder encoder, ProjectNodeVisitor delegate) {
+    public void encodeAsXML(XMLEncoder encoder, ProjectNodeVisitor<?> delegate) {
         encoder.start("sqlQuery").attribute("name", getName());
 
         String rootString = null;
@@ -216,7 +216,7 @@ public class SQLTemplateDescriptor extends QueryDescriptor {
                 String value = adapterSql.get(key);
                 if (key != null && value != null) {
                     String sql = value.trim();
-                    if (sql.length() > 0) {
+                    if (!sql.isEmpty()) {
                         encoder.start("sql")
                                 .attribute("adapterClass", key)
                                 .cdata(sql, true)
