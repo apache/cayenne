@@ -144,7 +144,8 @@ public class DataMap implements ProjectNode, XMLSerializable, MappingNamespace, 
      *
      * @since 1.1
      */
-    public void encodeAsXML(XMLEncoder encoder, ProjectNodeVisitor delegate) {
+    @Override
+    public void encodeAsXML(XMLEncoder encoder, ProjectNodeVisitor<?>delegate) {
         encoder.start("dataMap")
                 .attribute("xmlns", SCHEMA_XSD)
                 .attribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance", true)
@@ -172,7 +173,7 @@ public class DataMap implements ProjectNode, XMLSerializable, MappingNamespace, 
     }
 
     // stores relationships for the map of entities
-    private void encodeDbRelationshipsAsXML(XMLEncoder encoder, ProjectNodeVisitor delegate) {
+    private void encodeDbRelationshipsAsXML(XMLEncoder encoder, ProjectNodeVisitor<?> delegate) {
         for (DbEntity entity : new TreeMap<>(getDbEntityMap()).values()) {
             entity.getRelationships().stream()
                     .filter(r -> !r.isRuntime())
@@ -182,7 +183,7 @@ public class DataMap implements ProjectNode, XMLSerializable, MappingNamespace, 
     }
 
     // stores relationships for the map of entities
-    private void encodeObjRelationshipsAsXML(XMLEncoder encoder, ProjectNodeVisitor delegate) {
+    private void encodeObjRelationshipsAsXML(XMLEncoder encoder, ProjectNodeVisitor<?> delegate) {
         for (ObjEntity entity : new TreeMap<>(getObjEntityMap()).values()) {
             entity.getDeclaredRelationships().stream()
                     .filter(r -> !r.isRuntime())

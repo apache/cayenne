@@ -52,7 +52,7 @@ public class EmbeddableAttribute implements ProjectNode, XMLSerializable {
     }
 
     @Override
-    public void encodeAsXML(XMLEncoder encoder, ProjectNodeVisitor delegate) {
+    public void encodeAsXML(XMLEncoder encoder, ProjectNodeVisitor<?> delegate) {
         encoder.start("embeddableAttribute")
                 .attribute("name", getName())
                 .attribute("type", getType())

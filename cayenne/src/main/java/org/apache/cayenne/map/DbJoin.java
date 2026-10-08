@@ -95,7 +95,7 @@ public class DbJoin implements XMLSerializable {
      * Prints itself as XML to the provided XMLEncoder.
      */
     @Override
-    public void encodeAsXML(XMLEncoder encoder, ProjectNodeVisitor delegate) {
+    public void encodeAsXML(XMLEncoder encoder, ProjectNodeVisitor<?> delegate) {
         encoder.start("dbAttributePair")
                 .attribute("source", getSourceName())
                 .attribute("target", getTargetName())

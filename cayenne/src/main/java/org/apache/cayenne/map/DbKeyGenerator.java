@@ -77,7 +77,7 @@ public class DbKeyGenerator implements CayenneMapEntry, XMLSerializable {
      * @since 1.1
      */
     @Override
-    public void encodeAsXML(XMLEncoder encoder, ProjectNodeVisitor delegate) {
+    public void encodeAsXML(XMLEncoder encoder, ProjectNodeVisitor<?> delegate) {
         if (getGeneratorType() == null) {
             return;
         }
@@ -132,7 +132,7 @@ public class DbKeyGenerator implements CayenneMapEntry, XMLSerializable {
         this.generatorName = generatorName;
         if (this.generatorName != null) {
             this.generatorName = this.generatorName.trim();
-            if (this.generatorName.length() == 0) {
+            if (this.generatorName.isEmpty()) {
                 this.generatorName = null;
             }
         }

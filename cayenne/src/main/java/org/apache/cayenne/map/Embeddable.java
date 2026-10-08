@@ -18,15 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.map;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.cayenne.project.ProjectNode;
 import org.apache.cayenne.project.ProjectNodeVisitor;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A mapping descriptor of an embeddable class. Embeddable is a persistent class
@@ -140,7 +140,7 @@ public class Embeddable implements ProjectNode, XMLSerializable {
 	 * {@link XMLSerializable} implementation that generates XML for embeddable.
 	 */
 	@Override
-	public void encodeAsXML(XMLEncoder encoder, ProjectNodeVisitor delegate) {
+	public void encodeAsXML(XMLEncoder encoder, ProjectNodeVisitor<?> delegate) {
 		encoder.start("embeddable")
 				.attribute("className", getClassName())
 				.nested(attributes, delegate);
