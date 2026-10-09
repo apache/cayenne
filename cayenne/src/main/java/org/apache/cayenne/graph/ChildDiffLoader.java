@@ -156,7 +156,7 @@ public class ChildDiffLoader implements GraphChangeHandler {
 				public boolean visitToMany(ToManyProperty property) {
 					// connect reverse arc if the relationship is marked as
 					// "runtime"
-					ArcProperty reverseArc = property.getComplimentaryReverseArc();
+					ArcProperty reverseArc = property.getComplementaryReverseArc();
 					boolean autoConnectReverse = reverseArc != null && reverseArc.getRelationship().isRuntime();
 
 					property.addTarget(source, target, autoConnectReverse);
@@ -199,7 +199,7 @@ public class ChildDiffLoader implements GraphChangeHandler {
 				public boolean visitToMany(ToManyProperty property) {
 					// connect reverse arc if the relationship is marked as
 					// "runtime"
-					ArcProperty reverseArc = property.getComplimentaryReverseArc();
+					ArcProperty reverseArc = property.getComplementaryReverseArc();
 					boolean autoConnectReverse = reverseArc != null && reverseArc.getRelationship().isRuntime();
 
 					Persistent target = findObject(targetId);

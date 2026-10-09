@@ -37,9 +37,9 @@ public class ArcId {
 
     public ArcId(ArcProperty property) {
         this.forwardArc = property.getName();
-        this.reverseArc = property.getComplimentaryReverseArc() == null
-                ? DbPathExp.DB_PREFIX + property.getComplimentaryReverseDbRelationshipPath()
-                : property.getComplimentaryReverseArc().getName();
+        this.reverseArc = property.getComplementaryReverseArc() == null
+                ? DbPathExp.DB_PREFIX + property.getComplementaryReverseDbRelationshipPath()
+                : property.getComplementaryReverseArc().getName();
     }
 
     public ArcId(String forwardArc, String reverseArc) {

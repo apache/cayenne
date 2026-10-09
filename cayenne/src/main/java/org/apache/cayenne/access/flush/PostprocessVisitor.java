@@ -86,7 +86,7 @@ class PostprocessVisitor implements DbRowOpVisitor<Void> {
         // update Map reverse relationships
         ClassDescriptor descriptor = context.getEntityResolver().getClassDescriptor(dbRow.getChangeId().getEntityName());
         for (ArcProperty arc : descriptor.getMapArcProperties()) {
-            ToManyMapProperty reverseArc = (ToManyMapProperty) arc.getComplimentaryReverseArc();
+            ToManyMapProperty reverseArc = (ToManyMapProperty) arc.getComplementaryReverseArc();
 
             // must resolve faults... hopefully for to-one this will not cause extra fetches...
             Object source = arc.readProperty(dbRow.getObject());

@@ -235,11 +235,11 @@ public class ObjectDiff extends NodeDiff {
                             otherDiffs.remove(oldOp);
                         }
                     }
-                } else if (property.getComplimentaryReverseArc() == null) {
+                } else if (property.getComplementaryReverseArc() == null) {
 
                     // register complementary arc diff
                     ArcId arc = arcId.getReverseId();
-                    //new ArcId(DbPathExp.DB_PREFIX + property.getComplimentaryReverseDbRelationshipPath(), property.getName());
+                    //new ArcId(DbPathExp.DB_PREFIX + property.getComplementaryReverseDbRelationshipPath(), property.getName());
                     ArcOperation complementaryOp = new ArcOperation(targetId, arcDiff.getNodeId(), arc, arcDiff.isDelete());
                     parent.registerDiff(targetId, complementaryOp);
                 }

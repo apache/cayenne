@@ -189,7 +189,7 @@ class DataContextDeleteAction {
 
     private void nullifyRelationship(Persistent object, ArcProperty property, Collection<Persistent> relatedObjects) {
 
-        ArcProperty reverseArc = property.getComplimentaryReverseArc();
+        ArcProperty reverseArc = property.getComplementaryReverseArc();
         if (reverseArc != null) {
             unsetReverseArc(reverseArc, object, relatedObjects);
             return;

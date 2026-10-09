@@ -180,7 +180,7 @@ public interface ClassDescriptor {
      * I.e. for each ArcProperty in returned collection, the following is true:
      * 
      * <pre>
-     * arc.getComplimentaryReverseArc() instanceof ToManyMapProperty
+     * arc.getComplementaryReverseArc() instanceof ToManyMapProperty
      * </pre>
      * 
      * @since 3.1

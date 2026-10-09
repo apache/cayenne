@@ -48,13 +48,14 @@ class PersistentObjectToOneProperty extends PersistentObjectBaseProperty impleme
         this.fault = fault;
     }
 
-    public ArcProperty getComplimentaryReverseArc() {
+    @Override
+    public ArcProperty getComplementaryReverseArc() {
         return reverseName != null ? (ArcProperty) targetDescriptor
                 .getProperty(reverseName) : null;
     }
     
     @Override
-    public String getComplimentaryReverseDbRelationshipPath() {
+    public String getComplementaryReverseDbRelationshipPath() {
         if (reverseDbPath == null) {
             reverseDbPath = relationship.getReverseDbRelationshipPath().value();
         }

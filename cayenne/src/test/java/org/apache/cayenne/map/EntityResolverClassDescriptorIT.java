@@ -94,9 +94,9 @@ public class EntityResolverClassDescriptorIT {
         ClassDescriptor target = ((ArcProperty) p).getTargetDescriptor();
         assertNotNull(target);
         assertSame(resolver.getClassDescriptor("MtTable2"), target);
-        assertNotNull(((ArcProperty) p).getComplimentaryReverseArc());
+        assertNotNull(((ArcProperty) p).getComplementaryReverseArc());
         assertEquals(MtTable2.TABLE1.getName(), ((ArcProperty) p)
-                .getComplimentaryReverseArc()
+                .getComplementaryReverseArc()
                 .getName());
     }
 }

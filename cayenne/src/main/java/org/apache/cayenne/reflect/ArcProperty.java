@@ -39,16 +39,34 @@ public interface ArcProperty extends PropertyDescriptor {
     /**
      * Returns a path over reverse DbRelationships for this arc's
      * ObjRelationship.
-     * 
-     * @since 4.0
+     *
+     * @since 5.0
      */
-    String getComplimentaryReverseDbRelationshipPath();
+    String getComplementaryReverseDbRelationshipPath();
 
     /**
      * Returns a complementary reverse ArcProperty or null if no reverse arc
      * exists.
+     *
+     * @since 5.0
      */
-    ArcProperty getComplimentaryReverseArc();
+    ArcProperty getComplementaryReverseArc();
+
+    /**
+     * @deprecated misspelled, use {@link #getComplementaryReverseDbRelationshipPath()}
+     */
+    @Deprecated(since = "5.0", forRemoval = true)
+    default String getComplimentaryReverseDbRelationshipPath() {
+        return getComplementaryReverseDbRelationshipPath();
+    }
+
+    /**
+     * @deprecated misspelled, use {@link #getComplementaryReverseArc()}
+     */
+    @Deprecated(since = "5.0", forRemoval = true)
+    default ArcProperty getComplimentaryReverseArc() {
+        return getComplementaryReverseArc();
+    }
 
     /**
      * Returns a ClassDescriptor for the type of graph nodes pointed to by this

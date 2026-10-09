@@ -48,7 +48,7 @@ class PersistentObjectToManyProperty extends PersistentObjectBaseProperty implem
     }
 
     @Override
-    public ArcProperty getComplimentaryReverseArc() {
+    public ArcProperty getComplementaryReverseArc() {
         return reverseName != null ? (ArcProperty) targetDescriptor.getProperty(reverseName) : null;
     }
 
@@ -58,7 +58,7 @@ class PersistentObjectToManyProperty extends PersistentObjectBaseProperty implem
     }
 
     @Override
-    public String getComplimentaryReverseDbRelationshipPath() {
+    public String getComplementaryReverseDbRelationshipPath() {
         if (reverseDbPath == null) {
             reverseDbPath = relationship.getReverseDbRelationshipPath().value();
         }
