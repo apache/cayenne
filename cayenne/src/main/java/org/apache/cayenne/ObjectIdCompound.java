@@ -19,6 +19,8 @@
 
 package org.apache.cayenne;
 
+import org.apache.cayenne.util.Util;
+
 import java.util.Objects;
 
 import java.util.Arrays;
@@ -131,28 +133,12 @@ class ObjectIdCompound implements ObjectId {
             if (entryValue == null
                     && (id.objectIdKeys.get(entryKey) != null || !id.objectIdKeys.containsKey(entryKey))) {
                 return false;
-            } else if (!valueEquals(entryValue, id.objectIdKeys.get(entryKey))) {
+            } else if (!Util.idValueEquals(entryValue, id.objectIdKeys.get(entryKey))) {
                 return false;
             }
         }
 
         return true;
-    }
-
-    private boolean valueEquals(Object o1, Object o2) {
-        if (o1 == o2) {
-            return true;
-        }
-
-        if (o2 == null) {
-            return false;
-        }
-
-        if (o1 instanceof Number n1) {
-            return o2 instanceof Number n2 && n1.longValue() == n2.longValue();
-        }
-
-        return Objects.deepEquals(o1, o2);
     }
 
     @Override

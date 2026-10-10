@@ -19,11 +19,14 @@
 
 package org.apache.cayenne.access;
 
+import org.apache.cayenne.Fault;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
+import org.apache.cayenne.testdo.testmap.PaintingInfo;
+import org.apache.cayenne.testdo.testmap.ROArtist;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,11 +52,13 @@ public class DataContextRefreshingIT {
     protected DataContext context;
     protected TableHelper tArtist;
     protected TableHelper tPainting;
+    protected TableHelper tPaintingInfo;
 
     @BeforeEach
     public void setUp() throws Exception {
         context = env.context();
         tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
+        tPaintingInfo = env.table("PAINTING_INFO", "PAINTING_ID", "TEXT_REVIEW");
 
         tPainting = env.table("PAINTING").setColumns(
                 "PAINTING_ID",
@@ -172,6 +177,81 @@ public class DataContextRefreshingIT {
                 .get(0);
         assertNotNull(painting);
         assertEquals("artist2", painting.getToArtist().getArtistName());
+    }
+
+    @Test
+    public void refetchRootKeepsUnchangedToOne() throws Exception {
+        createSingleArtistAndPaintingDataSet();
+
+        Painting painting = ObjectSelect.query(Painting.class).selectFirst(context);
+        Artist artist = painting.getToArtist();
+        assertNotNull(artist);
+
+        // select without prefetch: the FK did not change, so the resolved target must survive the refresh
+        painting = ObjectSelect.query(Painting.class).selectFirst(context);
+        assertSame(artist, painting.readPropertyDirectly(Painting.TO_ARTIST.getName()));
+    }
+
+    @Test
+    public void invalidateRootRefaultsUnchangedToOne() throws Exception {
+        createSingleArtistAndPaintingDataSet();
+
+        Painting painting = ObjectSelect.query(Painting.class).selectFirst(context);
+        Artist artist = painting.getToArtist();
+        assertNotNull(artist);
+
+        // unlike a plain refetch, invalidation forgets the arcs even when the FK did not change
+        context.invalidateObjects(painting);
+        painting = ObjectSelect.query(Painting.class).selectFirst(context);
+        assertEquals(PersistenceState.COMMITTED, painting.getPersistenceState());
+        assertInstanceOf(Fault.class, painting.readPropertyDirectly(Painting.TO_ARTIST.getName()));
+        assertSame(artist, painting.getToArtist());
+    }
+
+    @Test
+    public void refetchRootRefaultsToDependentPkToOne() throws Exception {
+        createSingleArtistAndPaintingDataSet();
+        tPaintingInfo.insert(4, "review");
+
+        Painting painting = ObjectSelect.query(Painting.class).selectFirst(context);
+        PaintingInfo info = painting.getToPaintingInfo();
+        assertNotNull(info);
+
+        // the source row says nothing about the presence of a dependent row, so the arc must be refaulted
+        painting = ObjectSelect.query(Painting.class).selectFirst(context);
+        assertInstanceOf(Fault.class, painting.readPropertyDirectly(Painting.TO_PAINTING_INFO.getName()));
+    }
+
+    @Test
+    public void refetchReadOnlyRootKeepsToMany() throws Exception {
+        createSingleArtistAndPaintingDataSet();
+
+        ROArtist artist = ObjectSelect.query(ROArtist.class)
+                .prefetch(ROArtist.PAINTING_ARRAY.disjoint())
+                .selectFirst(context);
+        ToManyHolder<?> paintings = (ToManyHolder<?>) artist.readPropertyDirectly(ROArtist.PAINTING_ARRAY.getName());
+        assertFalse(paintings.isFault());
+
+        // select without prefetch: a COMMITTED object keeps its to-many lists, read-only or not
+        artist = ObjectSelect.query(ROArtist.class).selectFirst(context);
+        assertSame(paintings, artist.readPropertyDirectly(ROArtist.PAINTING_ARRAY.getName()));
+        assertFalse(paintings.isFault());
+    }
+
+    @Test
+    public void invalidateReadOnlyRootRefaultsToMany() throws Exception {
+        createSingleArtistAndPaintingDataSet();
+
+        ROArtist artist = ObjectSelect.query(ROArtist.class)
+                .prefetch(ROArtist.PAINTING_ARRAY.disjoint())
+                .selectFirst(context);
+        ToManyHolder<?> paintings = (ToManyHolder<?>) artist.readPropertyDirectly(ROArtist.PAINTING_ARRAY.getName());
+        assertFalse(paintings.isFault());
+
+        context.invalidateObjects(artist);
+        artist = ObjectSelect.query(ROArtist.class).selectFirst(context);
+        paintings = (ToManyHolder<?>) artist.readPropertyDirectly(ROArtist.PAINTING_ARRAY.getName());
+        assertTrue(paintings.isFault());
     }
 
     @Test

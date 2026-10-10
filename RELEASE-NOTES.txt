@@ -68,6 +68,7 @@ CAY-3032 ColumnSelect: an entity column over a to-many relationship filters out 
 CAY-3033 Selects with subqueries produce conflicting cache keys
 CAY-3044 Paginated query with a joint to-many prefetch returns duplicate ids and unresolved Integer elements
 CAY-3045 Race condition: ClassCastException resolving a to-one fault concurrently on a shared DataContext
+CAY-3046 Refreshing an object from a snapshot discards to-ones, causing fault resolution on a shared DataContext
 
 ----------------------------------
 Release: 5.0-M3

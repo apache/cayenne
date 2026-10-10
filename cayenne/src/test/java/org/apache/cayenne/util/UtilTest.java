@@ -26,6 +26,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.Map;
 
@@ -33,6 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -357,5 +359,25 @@ public class UtilTest {
 
         // no exception of the requested type in the chain, so behaves like the plain unwind
         assertSame(root, Util.unwindException(wrapper, SQLException.class));
+    }
+
+    @Test
+    public void idValueEquals() {
+        assertTrue(Util.idValueEquals(null, null));
+        assertFalse(Util.idValueEquals(null, 5));
+        assertFalse(Util.idValueEquals(5, null));
+
+        // numbers compare by long value regardless of type
+        assertTrue(Util.idValueEquals(5, 5L));
+        assertTrue(Util.idValueEquals(5L, BigDecimal.valueOf(5)));
+        assertFalse(Util.idValueEquals(5, 6L));
+        assertFalse(Util.idValueEquals(5, "5"));
+
+        assertTrue(Util.idValueEquals("a", "a"));
+        assertFalse(Util.idValueEquals("a", "b"));
+
+        // arrays compare by content
+        assertTrue(Util.idValueEquals(new byte[]{1, 2}, new byte[]{1, 2}));
+        assertFalse(Util.idValueEquals(new byte[]{1, 2}, new byte[]{2, 1}));
     }
 }

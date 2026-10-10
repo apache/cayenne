@@ -33,7 +33,9 @@ import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.PropertyVisitor;
 import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
+import org.apache.cayenne.util.Util;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -57,27 +59,30 @@ class DataRowUtils {
 
         int state = object.getPersistenceState();
 
-        if (state == PersistenceState.HOLLOW || descriptor.getEntity().isReadOnly()) {
+        if (state == PersistenceState.HOLLOW) {
             refreshObjectWithSnapshot(descriptor, object, snapshot, true);
-        } else if (state != PersistenceState.COMMITTED) {
+        } else if (state != PersistenceState.COMMITTED && !descriptor.getEntity().isReadOnly()) {
             forceMergeWithSnapshot(context, descriptor, object, snapshot);
         } else {
-            // do not invalidate to-many relationships, since they might have just been prefetched...
+            // do not invalidate relationships: to-many lists might have just been prefetched, and a to-one target
+            // whose FK did not change is still valid
             refreshObjectWithSnapshot(descriptor, object, snapshot, false);
         }
     }
 
     /**
      * Replaces all object attribute values with snapshot values. Sets object state to
-     * COMMITTED, unless the snapshot is partial in which case the state is set to HOLLOW
+     * COMMITTED, unless the snapshot is partial in which case the state is set to HOLLOW.
+     * With 'invalidateRelationships' all relationships are turned into faults. Otherwise to-many relationships
+     * are left alone, and a resolved to-one target is kept when the snapshot FK still points to it.
      */
     static void refreshObjectWithSnapshot(
             ClassDescriptor descriptor,
-            final Persistent object,
-            final DataRow snapshot,
-            final boolean invalidateToManyRelationships) {
+            Persistent object,
+            DataRow snapshot,
+            boolean invalidateRelationships) {
 
-        final boolean[] isPartialSnapshot = new boolean[1];
+        boolean[] isPartialSnapshot = new boolean[1];
 
         descriptor.visitProperties(new PropertyVisitor() {
 
@@ -105,7 +110,7 @@ class DataRowUtils {
             public boolean visitToMany(ToManyProperty property) {
                 // "to many" relationships have no information to collect from
                 // snapshot
-                if (invalidateToManyRelationships) {
+                if (invalidateRelationships) {
                     property.invalidate(object);
                 }
 
@@ -113,7 +118,11 @@ class DataRowUtils {
             }
 
             public boolean visitToOne(ToOneProperty property) {
-                property.invalidate(object);
+                if (invalidateRelationships) {
+                    property.invalidate(object);
+                } else {
+                    refreshToOne(property, object, snapshot);
+                }
                 return true;
             }
         });
@@ -121,6 +130,58 @@ class DataRowUtils {
         object.setPersistenceState(isPartialSnapshot[0]
                 ? PersistenceState.HOLLOW
                 : PersistenceState.COMMITTED);
+    }
+
+    /**
+     * Keeps a resolved to-one target when the snapshot FK still points to it, otherwise replaces it with a fault.
+     * Replacing an unchanged target with a fault would be pointless: the fault resolves from the cached snapshot to
+     * the very same object. It is also harmful on a shared DataContext, where other threads would observe the
+     * transient fault and have to resolve it, each contending for the ObjectStore lock.
+     */
+    private static void refreshToOne(ToOneProperty property, Persistent object, DataRow snapshot) {
+        Object current = property.readPropertyDirectly(object);
+        if (property.isFaultValue(current)) {
+            return;
+        }
+
+        ObjRelationship relationship = property.getRelationship();
+
+        // only an FK to the target PK lets the source snapshot tell whether the arc changed. A flattened or a
+        // to-dependent-PK relationship is defined by the target rows, so it is invalidated as before
+        if (relationship.isSourceIndependentFromTargetChange()) {
+            property.invalidate(object);
+            return;
+        }
+
+        // the FK is compared with the current target id join by join, without building an intermediate id
+        Map<String, Object> currentPk = current != null ? ((Persistent) current).getObjectId().getIdSnapshot() : null;
+        List<DbJoin> joins = relationship.getDbRelationships().getFirst().getJoins();
+        int nullFks = 0;
+
+        for (DbJoin join : joins) {
+            String fkName = join.getSourceName();
+            Object fk = snapshot.get(fkName);
+            if (fk == null) {
+                if (!snapshot.containsKey(fkName)) {
+                    // partial snapshot
+                    property.invalidate(object);
+                    return;
+                }
+                nullFks++;
+            } else if (currentPk == null || !Util.idValueEquals(fk, currentPk.get(join.getTargetName()))) {
+                property.invalidate(object);
+                return;
+            }
+        }
+
+        if (nullFks == joins.size()) {
+            if (current != null) {
+                property.writePropertyDirectly(object, current, null);
+            }
+        } else if (nullFks > 0) {
+            // a multi-column FK that is only partially null is inconclusive
+            property.invalidate(object);
+        }
     }
 
     static void forceMergeWithSnapshot(

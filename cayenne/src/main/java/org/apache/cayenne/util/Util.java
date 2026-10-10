@@ -203,6 +203,24 @@ public class Util {
     }
 
     /**
+     * Compares two primary or foreign key values the way {@link org.apache.cayenne.ObjectId} compares them: numbers
+     * by their long value regardless of the numeric type, arrays by content, and nulls safely.
+     *
+     * @since 5.0
+     */
+    public static boolean idValueEquals(Object o1, Object o2) {
+        if (o1 == o2) {
+            return true;
+        }
+
+        if (o1 instanceof Number n1) {
+            return o2 instanceof Number n2 && n1.longValue() == n2.longValue();
+        }
+
+        return Objects.deepEquals(o1, o2);
+    }
+
+    /**
      * Compares two objects similar to "Object.equals(Object)". Unlike
      * Object.equals(..), this method doesn't throw an exception if any of the
      * two objects is null.
