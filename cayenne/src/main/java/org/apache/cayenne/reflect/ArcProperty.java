@@ -78,13 +78,26 @@ public interface ArcProperty extends PropertyDescriptor {
     ClassDescriptor getTargetDescriptor();
 
     /**
-     * Returns whether a target node connected to a given object is an
-     * unresolved fault.
-     * 
-     * @param source
-     *            an object that is a source object of the relationship.
+     * Returns whether a target node connected to a given object is an unresolved fault.
+     *
+     * @param source an object that is a source object of the relationship.
+     * @deprecated in favor of {@link #isFaultValue(Object)}, that lets the caller check and use a single read of the
+     * property.
      */
-    boolean isFault(Object source);
+    @Deprecated(since = "5.0", forRemoval = true)
+    default boolean isFault(Object source) {
+        return isFaultValue(readPropertyDirectly(source));
+    }
+
+    /**
+     * Returns whether a value of this property, as returned by {@link #readPropertyDirectly(Object)}, is an unresolved
+     * fault. Unlike {@link #isFault(Object)}, this lets the caller decide on a single read of the property, which
+     * matters when another thread may resolve the fault between two reads of the same object.
+     *
+     * @param value a value of this property read from a source object.
+     * @since 5.0
+     */
+    boolean isFaultValue(Object value);
 
     /**
      * Turns a property of an object into a fault.

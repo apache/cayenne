@@ -67,6 +67,7 @@ CAY-3031 Expression parameter names may conflict with function names
 CAY-3032 ColumnSelect: an entity column over a to-many relationship filters out root rows with no related objects
 CAY-3033 Selects with subqueries produce conflicting cache keys
 CAY-3044 Paginated query with a joint to-many prefetch returns duplicate ids and unresolved Integer elements
+CAY-3045 Race condition: ClassCastException resolving a to-one fault concurrently on a shared DataContext
 
 ----------------------------------
 Release: 5.0-M3

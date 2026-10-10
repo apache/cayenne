@@ -19,7 +19,9 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.Cayenne;
+import org.apache.cayenne.Fault;
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -31,10 +33,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class DataContextResolveRelationshipIT {
 
@@ -168,5 +173,84 @@ public class DataContextResolveRelationshipIT {
             assertSame(child, related.getFirst().getObjectContext());
             assertEquals("p1", ((Painting) related.getFirst()).getPaintingTitle());
         });
+    }
+
+    // see https://issues.apache.org/jira/browse/CAY-3045
+    @Test
+    public void toOneFaultResolvedConcurrently() throws Exception {
+        Artist a = context.newObject(Artist.class);
+        a.setArtistName("a1");
+
+        // using custom subclass of Painting to ensure the test is deterministic
+        HandoffPainting p = new HandoffPainting();
+
+        // the subclass is not mapped, so the entity has to be named explicitly
+        p.setObjectId(ObjectId.of("Painting"));
+
+        p.setPaintingTitle("p1");
+        p.setToArtist(a);
+        context.commitChanges();
+
+        // turn the committed object's to-one back into a fault
+        context.invalidateObjects(p);
+        p.getPaintingTitle();
+        assertTrue(p.readPropertyDirectly(Painting.TO_ARTIST.getName()) instanceof Fault);
+
+        p.readerThread = Thread.currentThread();
+        Thread resolver = new Thread(() -> {
+            p.await(p.faultRead);
+            p.getToArtist();
+            p.resolved.countDown();
+        }, "to-one-resolver");
+        resolver.start();
+
+        try {
+            List<?> related = context.resolveRelationship(p.getObjectId(), Painting.TO_ARTIST.getName(), false);
+            assertEquals(1, related.size());
+            assertSame(a, related.getFirst());
+        } finally {
+            // unblock the other thread on a failure, so that it doesn't hang the test
+            p.faultRead.countDown();
+            resolver.join(TimeUnit.SECONDS.toMillis(10));
+        }
+
+        assertTrue(p.handedOff, "Reader thread never reached the to-one property");
+        assertSame(a, p.getToArtist());
+    }
+
+    /**
+     * Pauses the first read of the "toArtist" property on the designated reader thread, until another thread
+     * signals that it has resolved the fault.
+     */
+    static class HandoffPainting extends Painting {
+
+        final CountDownLatch faultRead = new CountDownLatch(1);
+        final CountDownLatch resolved = new CountDownLatch(1);
+        volatile Thread readerThread;
+        volatile boolean handedOff;
+
+        @Override
+        public Object readPropertyDirectly(String propName) {
+            Object value = super.readPropertyDirectly(propName);
+
+            if (Thread.currentThread() == readerThread && !handedOff && TO_ARTIST.getName().equals(propName)) {
+                handedOff = true;
+                faultRead.countDown();
+                await(resolved);
+            }
+
+            return value;
+        }
+
+        void await(CountDownLatch latch) {
+            try {
+                if (!latch.await(10, TimeUnit.SECONDS)) {
+                    fail("Timed out waiting for the other thread");
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new RuntimeException(e);
+            }
+        }
     }
 }

@@ -235,11 +235,12 @@ class DataRowUtils {
             return false;
         }
 
-        if (property.isFault(object)) {
+        Object value = property.readPropertyDirectly(object);
+        if (property.isFaultValue(value)) {
             return false;
         }
 
-        Persistent toOneTarget = (Persistent) property.readPropertyDirectly(object);
+        Persistent toOneTarget = (Persistent) value;
         ObjectId currentId = (toOneTarget != null) ? toOneTarget.getObjectId() : null;
 
         // if ObjectId is temporary, target is definitely modified...

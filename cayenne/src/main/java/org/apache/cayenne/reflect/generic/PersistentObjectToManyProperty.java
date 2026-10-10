@@ -102,8 +102,7 @@ class PersistentObjectToManyProperty extends PersistentObjectBaseProperty implem
     }
 
     @Override
-    public boolean isFault(Object source) {
-        Object value = readPropertyDirectly(source);
+    public boolean isFaultValue(Object value) {
         return value instanceof Fault || value instanceof ToManyHolder<?> holder && holder.isFault();
     }
 

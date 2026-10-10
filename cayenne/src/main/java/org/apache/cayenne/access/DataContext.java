@@ -668,8 +668,10 @@ public class DataContext implements ObjectContext {
                     relationshipName, sourceId.getEntityName(), sourceId);
         }
 
+        // decide on a single read of the property: another thread may be resolving the same fault concurrently,
+        // replacing it with the target object between two reads
         Object related = arc.readPropertyDirectly(source);
-        if (arc.isFault(source)) {
+        if (arc.isFaultValue(related)) {
 
             // a NEW object is unknown to the parent channels, so its unresolved relationship must be empty
             if (source.getPersistenceState() == PersistenceState.NEW) {

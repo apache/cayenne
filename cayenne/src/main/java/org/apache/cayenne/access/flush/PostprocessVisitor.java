@@ -90,8 +90,11 @@ class PostprocessVisitor implements DbRowOpVisitor<Void> {
 
             // must resolve faults... hopefully for to-one this will not cause extra fetches...
             Object source = arc.readProperty(dbRow.getObject());
-            if (source != null && !reverseArc.isFault(source)) {
-                remapTarget(reverseArc, source, dbRow.getObject());
+            if (source != null) {
+                Object map = reverseArc.readPropertyDirectly(source);
+                if (!reverseArc.isFaultValue(map)) {
+                    remapTarget(reverseArc, map, dbRow.getObject());
+                }
             }
         }
     }
@@ -116,9 +119,9 @@ class PostprocessVisitor implements DbRowOpVisitor<Void> {
         return updatedSnapshots == null ? Collections.emptyMap() : updatedSnapshots;
     }
 
-    private void remapTarget(ToManyMapProperty property, Object source, Object target) {
+    private void remapTarget(ToManyMapProperty property, Object resolvedMap, Object target) {
         @SuppressWarnings("unchecked")
-        Map<Object, Object> map = (Map<Object, Object>) property.readProperty(source);
+        Map<Object, Object> map = (Map<Object, Object>) resolvedMap;
         Object newKey = property.getMapKey(target);
         Object currentValue = map.get(newKey);
 

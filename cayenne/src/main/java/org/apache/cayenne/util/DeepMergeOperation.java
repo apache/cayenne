@@ -90,14 +90,14 @@ public class DeepMergeOperation {
 
             public boolean visitToOne(ToOneProperty property) {
 
-                if (!property.isFault(peerInParentContext)) {
-                    Persistent destinationSource = (Persistent) property.readProperty(peerInParentContext);
+                Object sourceValue = property.readPropertyDirectly(peerInParentContext);
+                if (!property.isFaultValue(sourceValue)) {
+                    Persistent destinationSource = (Persistent) sourceValue;
                     Object destinationTarget = destinationSource != null
                             ? merge(destinationSource, property.getTargetDescriptor(), seen)
                             : null;
-                    Object oldTarget = property.isFault(target)
-                            ? null
-                            : property.readProperty(target);
+                    Object targetValue = property.readPropertyDirectly(target);
+                    Object oldTarget = property.isFaultValue(targetValue) ? null : targetValue;
                     property.writePropertyDirectly(target, oldTarget, destinationTarget);
                 }
 
@@ -105,8 +105,8 @@ public class DeepMergeOperation {
             }
 
             public boolean visitToMany(ToManyProperty property) {
-                if (!property.isFault(peerInParentContext)) {
-                    Object value = property.readProperty(peerInParentContext);
+                Object value = property.readPropertyDirectly(peerInParentContext);
+                if (!property.isFaultValue(value)) {
                     Object targetValue;
 
                     if (property instanceof ToManyMapProperty) {

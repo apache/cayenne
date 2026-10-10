@@ -98,8 +98,9 @@ class PersistentObjectToOneProperty extends PersistentObjectBaseProperty impleme
         return visitor.visitToOne(this);
     }
 
-    public boolean isFault(Object object) {
-        return readPropertyDirectly(object) instanceof Fault;
+    @Override
+    public boolean isFaultValue(Object value) {
+        return value instanceof Fault;
     }
 
     public void invalidate(Object object) {
