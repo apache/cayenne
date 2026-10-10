@@ -76,6 +76,12 @@ class PrefetchNodeStage implements TranslationStage {
             return;
         }
 
+        // a paginated query only selects root ids; a joint to-many prefetch would multiply the id rows by the number
+        // of joined children. Prefetches are applied later to the per-page fetch queries (see IncrementalFaultList).
+        if(queryMetadata.getPageSize() > 0) {
+            return;
+        }
+
         ObjEntity objEntity = queryMetadata.getObjEntity();
         boolean warnPrefetchWithLimit = false;
 

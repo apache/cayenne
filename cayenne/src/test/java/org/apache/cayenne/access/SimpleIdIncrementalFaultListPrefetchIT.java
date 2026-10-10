@@ -32,6 +32,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -74,6 +75,44 @@ public class SimpleIdIncrementalFaultListPrefetchIT {
         tPaining.insert(33005, "P_artist15", 33005, 5000);
         tPaining.insert(33006, "P_artist16", 33006, 11000);
         tPaining.insert(33007, "P_artist21", 33007, 21000);
+    }
+
+    protected void createArtistsWithThreePaintingsEachDataSet() throws Exception {
+        createArtistsDataSet();
+
+        int paintingId = 33001;
+        for (int artistId = 33001; artistId <= 33007; artistId++) {
+            for (int i = 1; i <= 3; i++) {
+                tPaining.insert(paintingId++, "P_" + artistId + "_" + i, artistId, 1000 * i);
+            }
+        }
+    }
+
+    @Test
+    public void jointToManyPrefetchListSize() throws Exception {
+        createArtistsWithThreePaintingsEachDataSet();
+
+        List<Artist> result = ObjectSelect.query(Artist.class)
+                .orderBy(Artist.ARTIST_NAME.asc())
+                .prefetch(Artist.PAINTING_ARRAY.joint())
+                .pageSize(3)
+                .select(env.context());
+
+        assertInstanceOf(IncrementalFaultList.class, result);
+        assertEquals(7, result.size());
+
+        // resolves pages as it goes; before the fix the duplicate ids were never replaced and iteration
+        // failed with a ClassCastException from Integer to Artist
+        List<String> names = new ArrayList<>();
+        for (Artist a : result) {
+            names.add(a.getArtistName());
+            List<Painting> paintings = a.getPaintingArray();
+            assertFalse(((ToManyHolder) paintings).isFault());
+            assertEquals(3, paintings.size());
+        }
+
+        assertEquals(List.of("artist11", "artist12", "artist13", "artist14", "artist15", "artist16", "artist21"),
+                names);
     }
 
     @Test
