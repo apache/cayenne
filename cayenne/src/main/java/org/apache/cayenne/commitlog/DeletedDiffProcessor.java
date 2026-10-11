@@ -32,6 +32,8 @@ import org.apache.cayenne.reflect.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Map;
+
 
 class DeletedDiffProcessor implements GraphChangeHandler {
 
@@ -95,11 +97,9 @@ class DeletedDiffProcessor implements GraphChangeHandler {
 
                 DbRelationship dbRelationship = property.getRelationship().getDbRelationships().get(0);
 
-                ObjectId value = row.createTargetObjectId(
-                        property.getTargetDescriptor().getEntity().getName(),
-                        dbRelationship);
-
-                if (value != null) {
+                Map<String, Object> targetPk = dbRelationship.targetPkSnapshotWithSrcSnapshot(row);
+                if (targetPk != null) {
+                    ObjectId value = ObjectId.of(property.getTargetDescriptor().getEntity().getName(), targetPk);
                     objectChangeSet.toOneRelationshipDisconnected(property.getName(), value);
                 }
 				return true;

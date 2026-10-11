@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.map;
 
-import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.exp.Expression;
 
@@ -27,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A tree structure representing inheritance hierarchy of an ObjEntity and its
@@ -80,7 +80,7 @@ public class EntityInheritanceTree {
      * Returns the deepest possible entity in the inheritance hierarchy that can be used
      * to create objects from a given DataRow.
      */
-    public ObjEntity entityMatchingRow(DataRow row) {
+    public ObjEntity entityMatchingRow(Map<String, ?> row) {
         // match depth first
         if (subentities != null) {
             for (EntityInheritanceTree child : subentities) {

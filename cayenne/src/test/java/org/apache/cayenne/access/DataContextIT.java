@@ -551,7 +551,7 @@ public class DataContextIT {
 	@Test
 	public void invalidateObjects_Vararg() throws Exception {
 
-		DataRow row = new DataRow(10, SnapshotVersion.next());
+		DataRow row = new DataRow("Artist", new HashMap<>(10), SnapshotVersion.next());
 		row.put("ARTIST_ID", 1);
 		row.put("ARTIST_NAME", "ArtistXYZ");
 		row.put("DATE_OF_BIRTH", new Date());
@@ -574,7 +574,7 @@ public class DataContextIT {
 	@Test
 	public void invalidateObjects() throws Exception {
 
-		DataRow row = new DataRow(10, SnapshotVersion.next());
+		DataRow row = new DataRow("Artist", new HashMap<>(10), SnapshotVersion.next());
 		row.put("ARTIST_ID", 1);
 		row.put("ARTIST_NAME", "ArtistXYZ");
 		row.put("DATE_OF_BIRTH", new Date());

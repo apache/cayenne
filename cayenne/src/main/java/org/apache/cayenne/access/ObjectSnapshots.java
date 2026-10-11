@@ -38,6 +38,7 @@ import org.apache.cayenne.reflect.PropertyVisitor;
 import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -71,7 +72,7 @@ public final class ObjectSnapshots {
         private final DataContextObjectStore objectStore;
         private final Persistent object;
         private final long version;
-        private DataRow snapshot;
+        private final HashMap<String, Object> values = new HashMap<>(10);
 
         Builder(EntityResolver resolver, DataContextObjectStore objectStore, Persistent object, long version) {
             this.resolver = resolver;
@@ -87,9 +88,7 @@ public final class ObjectSnapshots {
             }
 
             ObjEntity entity = resolver.getObjEntity(object);
-            final ClassDescriptor descriptor = resolver.getClassDescriptor(entity.getName());
-            snapshot = new DataRow(10, version);
-            snapshot.setEntityName(entity.getName());
+            ClassDescriptor descriptor = resolver.getClassDescriptor(entity.getName());
 
             descriptor.visitProperties(this);
 
@@ -103,8 +102,8 @@ public final class ObjectSnapshots {
                 // put only those that do not exist in the map
                 for (Map.Entry<String, Object> entry : thisIdParts.entrySet()) {
                     String nextKey = entry.getKey();
-                    if (!snapshot.containsKey(nextKey)) {
-                        snapshot.put(nextKey, entry.getValue());
+                    if (!values.containsKey(nextKey)) {
+                        values.put(nextKey, entry.getValue());
                     }
                 }
             }
@@ -114,19 +113,19 @@ public final class ObjectSnapshots {
                 ObjectId flattenedId = objectStore.getFlattenedId(object.getObjectId(), path);
                 if (flattenedId != null) {
                     for (Map.Entry<String, Object> idEntry : flattenedId.getIdSnapshot().entrySet()) {
-                        snapshot.putIfAbsent(path.dot(idEntry.getKey()).value(), idEntry.getValue());
+                        values.putIfAbsent(path.dot(idEntry.getKey()).value(), idEntry.getValue());
                     }
                 }
             }
 
-            return snapshot;
+            return new DataRow(entity.getName(), values, version);
         }
 
         @Override
         public boolean visitAttribute(AttributeProperty property) {
             ObjAttribute objAttr = property.getAttribute();
             // processing compound attributes correctly
-            snapshot.put(objAttr.getDbAttributePath().value(), property.readPropertyDirectly(object));
+            values.put(objAttr.getDbAttributePath().value(), property.readPropertyDirectly(object));
             return true;
         }
 
@@ -161,7 +160,7 @@ public final class ObjectSnapshots {
                 DbRelationship dbRel = rel.getDbRelationships().getFirst();
                 for (DbJoin join : dbRel.getJoins()) {
                     String key = join.getSourceName();
-                    snapshot.put(key, storedSnapshot.get(key));
+                    values.put(key, storedSnapshot.get(key));
                 }
 
                 return true;
@@ -178,7 +177,7 @@ public final class ObjectSnapshots {
 
             DbRelationship dbRel = rel.getDbRelationships().getFirst();
             Map<String, Object> fk = dbRel.srcFkSnapshotWithTargetSnapshot(idParts);
-            snapshot.putAll(fk);
+            values.putAll(fk);
             return true;
         }
     }

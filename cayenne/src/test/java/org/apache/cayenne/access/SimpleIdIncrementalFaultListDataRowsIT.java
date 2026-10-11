@@ -29,6 +29,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -116,7 +117,7 @@ public class SimpleIdIncrementalFaultListDataRowsIT {
         DataRow row = artists.getFirst();
         assertEquals(19, list.indexOf(row));
 
-        DataRow clone = new DataRow(row, SnapshotVersion.next());
+        DataRow clone = new DataRow(row.getEntityName(), new HashMap<>(row), SnapshotVersion.next());
         assertEquals(19, list.indexOf(clone));
 
         row.remove("ARTIST_ID");

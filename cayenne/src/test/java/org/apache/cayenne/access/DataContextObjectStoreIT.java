@@ -32,6 +32,7 @@ import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
+import java.util.HashMap;
 import java.util.Collections;
 import java.util.Date;
 
@@ -71,7 +72,7 @@ public class DataContextObjectStoreIT {
     @Test
     public void objectsUnregistered() throws Exception {
 
-        DataRow row = new DataRow(10, SnapshotVersion.next());
+        DataRow row = new DataRow("Artist", new HashMap<>(10), SnapshotVersion.next());
         row.put("ARTIST_ID", 1);
         row.put("ARTIST_NAME", "ArtistXYZ");
         row.put("DATE_OF_BIRTH", new Date());

@@ -422,17 +422,17 @@ public class DataRowStore {
      * snapshots of the same entity. The diff represents the newer row, so it carries that row's version.
      */
     private static DataRow diff(DataRow oldSnapshot, DataRow newSnapshot) {
-        DataRow diff = null;
+        HashMap<String, Object> diff = null;
         for (Map.Entry<String, Object> entry : oldSnapshot.entrySet()) {
             Object newValue = newSnapshot.get(entry.getKey());
             if (!Objects.deepEquals(entry.getValue(), newValue)) {
                 if (diff == null) {
-                    diff = new DataRow(oldSnapshot.size(), newSnapshot.getVersion());
+                    diff = new HashMap<>(oldSnapshot.size());
                 }
                 diff.put(entry.getKey(), newValue);
             }
         }
-        return diff;
+        return diff != null ? new DataRow(newSnapshot.getEntityName(), diff, newSnapshot.getVersion()) : null;
     }
 
     private void processUpdateDiffs(Map<ObjectId, DataRow> diffs) {
@@ -449,7 +449,7 @@ public class DataRowStore {
                     continue;
                 }
 
-                DataRow newSnapshot = new DataRow(oldSnapshot, version);
+                DataRow newSnapshot = new DataRow(oldSnapshot.getEntityName(), new HashMap<>(oldSnapshot), version);
                 newSnapshot.putAll(entry.getValue());
                 snapshots.put(key, newSnapshot);
             }

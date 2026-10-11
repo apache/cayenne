@@ -18,12 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.map;
 
-import org.apache.cayenne.DataRow;
-import org.apache.cayenne.access.SnapshotVersion;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -47,15 +46,13 @@ public class EntityInheritanceTreeTest {
         // no inheritance
         EntityInheritanceTree t1 = new EntityInheritanceTree(entity);
 
-        DataRow row11 = new DataRow(5, SnapshotVersion.next());
-        row11.put("x", 1);
+        Map<String, Object> row11 = Map.of("x", 1);
         assertSame(entity, t1.entityMatchingRow(row11));
 
         entity.setDeclaredQualifier(ExpressionFactory.matchDbExp("x", 2));
         assertNull(t1.entityMatchingRow(row11));
 
-        DataRow row12 = new DataRow(5, SnapshotVersion.next());
-        row12.put("x", 2);
+        Map<String, Object> row12 = Map.of("x", 2);
         assertSame(entity, t1.entityMatchingRow(row12));
 
     }
@@ -82,14 +79,11 @@ public class EntityInheritanceTreeTest {
         EntityResolver resolver = new EntityResolver(Collections.singleton(dataMap));
         EntityInheritanceTree t1 = resolver.getInheritanceTree("E1");
 
-        DataRow row11 = new DataRow(5, SnapshotVersion.next());
-        row11.put("x", 1);
+        Map<String, Object> row11 = Map.of("x", 1);
 
-        DataRow row12 = new DataRow(5, SnapshotVersion.next());
-        row12.put("x", 2);
+        Map<String, Object> row12 = Map.of("x", 2);
 
-        DataRow row13 = new DataRow(5, SnapshotVersion.next());
-        row13.put("x", 3);
+        Map<String, Object> row13 = Map.of("x", 3);
 
         assertSame(subEntity, t1.entityMatchingRow(row11));
         assertSame(entity, t1.entityMatchingRow(row12));
@@ -134,14 +128,11 @@ public class EntityInheritanceTreeTest {
         EntityInheritanceTree treeA = resolver.getInheritanceTree("A");
         EntityInheritanceTree treeC = resolver.getInheritanceTree("AC");
 
-        DataRow row11 = new DataRow(5, SnapshotVersion.next());
-        row11.put("type", 0);
+        Map<String, Object> row11 = Map.of("type", 0);
 
-        DataRow row12 = new DataRow(5, SnapshotVersion.next());
-        row12.put("type", 1);
+        Map<String, Object> row12 = Map.of("type", 1);
 
-        DataRow row13 = new DataRow(5, SnapshotVersion.next());
-        row13.put("type", 2);
+        Map<String, Object> row13 = Map.of("type", 2);
 
         assertSame(subEntityB, treeA.entityMatchingRow(row11));
         assertSame(subEntityD, treeA.entityMatchingRow(row12));

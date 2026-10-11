@@ -285,11 +285,14 @@ public class AshwoodEntitySorter implements EntitySorter {
 			return null;
 		}
 
-		ObjectId id = snapshot.createTargetObjectId(targetEntityName, finalRel);
+		Map<String, Object> targetPk = finalRel.targetPkSnapshotWithSrcSnapshot(snapshot);
+		if (targetPk == null) {
+			return null;
+		}
 
 		// not using 'localObject', looking up in context instead, as within the sorter
 		// we only care about objects participating in transaction, so no need to create hollow objects
-		return (id != null) ? context.getObjectStore().getObject(id) : null;
+		return context.getObjectStore().getObject(ObjectId.of(targetEntityName, targetPk));
 	}
 
 	@Override

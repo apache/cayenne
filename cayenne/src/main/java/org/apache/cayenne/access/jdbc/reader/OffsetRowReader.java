@@ -26,6 +26,8 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
 import java.sql.ResultSet;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A {@link RowReader} that materializes a contiguous run of result-set columns starting at a given offset.
@@ -33,10 +35,10 @@ import java.sql.ResultSet;
 class OffsetRowReader implements RowReader<DataRow> {
 
     protected final String entityName;
-    private final RSColumn[] columns;
-    private final int offset;
     private final int mapCapacity;
     private final long version;
+    private final RSColumn[] columns;
+    private final int offset;
 
     // possible inheritance
     static OffsetRowReader of(RSColumn[] columns, int offset, ClassDescriptor cd, long version) {
@@ -62,30 +64,33 @@ class OffsetRowReader implements RowReader<DataRow> {
 
     @Override
     public DataRow readRow(ResultSet resultSet) {
-        DataRow dataRow = new DataRow(mapCapacity, version);
+        HashMap<String, Object> values = new HashMap<>(mapCapacity);
+        readColumns(resultSet, values);
+        return new DataRow(entityName(values), values, version);
+    }
+
+    /**
+     * Returns the entity name of a row with the given values.
+     */
+    protected String entityName(Map<String, Object> values) {
+        return entityName;
+    }
+
+    private void readColumns(ResultSet resultSet, Map<String, Object> target) {
         int w = columns.length;
 
         try {
-
             for (int i = 0; i < w; i++) {
                 RSColumn column = columns[i];
                 // jdbc column indexes start from 1, not 0 unlike everywhere else
                 Object val = column.reader().materializeObject(resultSet, offset + i + 1, column.rsType());
-                dataRow.put(column.dataRowName(), val);
+                target.put(column.dataRowName(), val);
             }
-
-            dataRow.setEntityName(resolveEntityName(dataRow));
-
-            return dataRow;
         } catch (CayenneRuntimeException ex) {
             throw ex;
         } catch (Exception ex) {
             throw new CayenneRuntimeException("Exception materializing column.", ex);
         }
-    }
-
-    protected String resolveEntityName(DataRow dataRow) {
-        return entityName;
     }
 
     private static class InheritanceAwareOffsetRowReader extends OffsetRowReader {
@@ -104,8 +109,8 @@ class OffsetRowReader implements RowReader<DataRow> {
         }
 
         @Override
-        protected String resolveEntityName(DataRow dataRow) {
-            ObjEntity entity = entityInheritanceTree.entityMatchingRow(dataRow);
+        protected String entityName(Map<String, Object> values) {
+            ObjEntity entity = entityInheritanceTree.entityMatchingRow(values);
             return entity != null ? entity.getName() : entityName;
         }
     }

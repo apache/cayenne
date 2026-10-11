@@ -35,6 +35,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.math.BigDecimal;
 import java.sql.Types;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -344,7 +345,7 @@ public class ProcedureCallIT {
      * An ugly hack - converting row keys to uppercase ... Tracked via CAY-148.
      */
     private DataRow uppercaseConverter(DataRow row) {
-        DataRow converted = new DataRow(row.size(), SnapshotVersion.next());
+        DataRow converted = new DataRow(row.getEntityName(), new HashMap<>(row.size()), SnapshotVersion.next());
 
         for (Map.Entry<String, Object> entry : row.entrySet()) {
             converted.put(entry.getKey().toUpperCase(), entry.getValue());

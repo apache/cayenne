@@ -19,11 +19,14 @@
 
 package org.apache.cayenne;
 
-import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.util.ToStringBuilder;
 
+import java.io.Serializable;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.BiConsumer;
 
 /**
  * DataRow a map that holds values retrieved from the database for a given query row.
@@ -37,30 +40,33 @@ import java.util.Map;
  *
  * @since 1.1
  */
-public class DataRow extends HashMap<String, Object> {
+public class DataRow implements Map<String, Object>, Serializable {
 
+    private final HashMap<String, Object> values;
     protected final long version;
+    protected final String entityName;
     protected long replacesVersion = Persistent.DEFAULT_VERSION;
-    protected String entityName;
 
     /**
-     * Creates a row with the given values and the given snapshot version. The entity name is not copied.
+     * Creates a row over the given values, with the given entity name and snapshot version. The map is not copied:
+     * the row takes ownership of it, and the caller must not use the map after this call. To create a row from a map
+     * that stays in use, including another row, pass a copy.
      *
      * @since 5.0
      */
-    public DataRow(Map<String, ?> map, long version) {
-        super(map);
+    public DataRow(String entityName, HashMap<String, Object> values, long version) {
+        this.values = values;
+        this.entityName = entityName;
         this.version = version;
     }
 
     /**
-     * Creates an empty row with the given snapshot version.
+     * Returns the name of the ObjEntity this row is a snapshot of, or null if the row is not mapped to an entity.
      *
-     * @since 5.0
+     * @since 3.0
      */
-    public DataRow(int initialCapacity, long version) {
-        super(initialCapacity);
-        this.version = version;
+    public String getEntityName() {
+        return entityName;
     }
 
     /**
@@ -82,39 +88,93 @@ public class DataRow extends HashMap<String, Object> {
         this.replacesVersion = replacesVersion;
     }
 
-    /**
-     * Returns an ObjectId of an object on the other side of the to-one relationship, for
-     * this DataRow representing a source of relationship. Returns null if snapshot FK
-     * columns indicate a null to-one relationship.
-     */
-    public ObjectId createTargetObjectId(String entityName, DbRelationship relationship) {
+    @Override
+    public int size() {
+        return values.size();
+    }
 
-        if (relationship.isToMany()) {
-            throw new CayenneRuntimeException("Only 'to one' can have a target ObjectId.");
-        }
+    @Override
+    public boolean isEmpty() {
+        return values.isEmpty();
+    }
 
-        Map<String, Object> target = relationship.targetPkSnapshotWithSrcSnapshot(this);
-        return (target != null) ? ObjectId.of(entityName, target) : null;
+    @Override
+    public boolean containsKey(Object key) {
+        return values.containsKey(key);
+    }
+
+    @Override
+    public boolean containsValue(Object value) {
+        return values.containsValue(value);
+    }
+
+    @Override
+    public Object get(Object key) {
+        return values.get(key);
+    }
+
+    @Override
+    public Object getOrDefault(Object key, Object defaultValue) {
+        return values.getOrDefault(key, defaultValue);
+    }
+
+    @Override
+    public Object put(String key, Object value) {
+        return values.put(key, value);
+    }
+
+    @Override
+    public Object remove(Object key) {
+        return values.remove(key);
+    }
+
+    @Override
+    public void putAll(Map<? extends String, ?> m) {
+        values.putAll(m);
+    }
+
+    @Override
+    public void clear() {
+        values.clear();
+    }
+
+    @Override
+    public Set<String> keySet() {
+        return values.keySet();
+    }
+
+    @Override
+    public Collection<Object> values() {
+        return values.values();
+    }
+
+    @Override
+    public Set<Entry<String, Object>> entrySet() {
+        return values.entrySet();
+    }
+
+    @Override
+    public void forEach(BiConsumer<? super String, ? super Object> action) {
+        values.forEach(action);
     }
 
     /**
-     * @since 3.0
+     * Rows are equal to any Map with the same entries, regardless of the version and the entity name.
      */
-    public String getEntityName() {
-        return entityName;
+    @Override
+    public boolean equals(Object o) {
+        return values.equals(o);
     }
 
-    /**
-     * @since 3.0
-     */
-    public void setEntityName(String entityName) {
-        this.entityName = entityName;
+    @Override
+    public int hashCode() {
+        return values.hashCode();
     }
 
     @Override
     public String toString() {
         return new ToStringBuilder(this)
-                .append("values", super.toString())
+                .append("values", values)
                 .append(" version", version)
                 .append(" replaces", replacesVersion).toString();
     }

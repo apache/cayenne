@@ -241,10 +241,10 @@ class DataRowUtils {
 
                         // must check before creating ObjectId because of partial snapshots
                         if (hasFK(dbRelationship, snapshot)) {
-                            ObjectId id = snapshot.createTargetObjectId(
-                                    relationship.getTargetEntityName(),
-                                    dbRelationship
-                            );
+                            Map<String, Object> targetPk = dbRelationship.targetPkSnapshotWithSrcSnapshot(snapshot);
+                            ObjectId id = targetPk != null
+                                    ? ObjectId.of(relationship.getTargetEntityName(), targetPk)
+                                    : null;
 
                             if (diff == null
                                     || !diff.containsArcSnapshot(relationship.getName())

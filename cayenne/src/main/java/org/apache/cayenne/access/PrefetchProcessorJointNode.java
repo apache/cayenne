@@ -134,18 +134,17 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
      * version.
      */
     DataRow rowFromFlatRow(DataRow flatRow) {
-        DataRow row = new DataRow(rowCapacity, flatRow.getVersion());
+        HashMap<String, Object> values = new HashMap<>(rowCapacity);
 
         // extract subset of flat row columns, recasting to the target keys
         for (RSColumn column : columns) {
-            row.put(column.rsName(), flatRow.get(column.dataRowName()));
+            values.put(column.rsName(), flatRow.get(column.dataRowName()));
         }
 
         // since JDBC row reader won't inject JOINED entity name, we have to detect it here...
         ClassDescriptor descriptor = resolver.getDescriptor();
-        ObjEntity entity = descriptor.getEntityInheritanceTree().entityMatchingRow(row);
-        row.setEntityName(entity == null ? null : entity.getName());
-        return row;
+        ObjEntity entity = descriptor.getEntityInheritanceTree().entityMatchingRow(values);
+        return new DataRow(entity == null ? null : entity.getName(), values, flatRow.getVersion());
     }
 
     /**

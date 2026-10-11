@@ -23,6 +23,7 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.event.MockEventManager;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -45,11 +46,11 @@ public class MockDataRowStore extends DataRowStore {
     }
 
     public void putSnapshot(ObjectId id, Map<String, ?> snapshot) {
-        snapshots.put(id, new DataRow(snapshot, SnapshotVersion.next()));
+        snapshots.put(id, new DataRow(id.getEntityName(), new HashMap<>(snapshot), SnapshotVersion.next()));
     }
 
     public void putEmptySnapshot(ObjectId id) {
-        snapshots.put(id, new DataRow(2, SnapshotVersion.next()));
+        snapshots.put(id, new DataRow(id.getEntityName(), new HashMap<>(2), SnapshotVersion.next()));
     }
 
 }

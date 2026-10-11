@@ -27,6 +27,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.HashMap;
+
 public class SnapshotVersionTest {
 
     @Test
@@ -35,7 +37,7 @@ public class SnapshotVersionTest {
         long v2 = SnapshotVersion.next();
         assertNotEquals(SnapshotVersion.NONE, v1);
         assertTrue(v2 > v1);
-        assertTrue(new DataRow(10, SnapshotVersion.next()).getVersion() > v2);
+        assertTrue(new DataRow("E", new HashMap<>(10), SnapshotVersion.next()).getVersion() > v2);
     }
 
     @Test

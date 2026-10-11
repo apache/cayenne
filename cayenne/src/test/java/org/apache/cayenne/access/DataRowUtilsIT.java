@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.access;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.cayenne.DataRow;
@@ -83,7 +84,7 @@ public class DataRowUtilsIT {
                 .get(0);
         a1.setArtistName(n1);
 
-        DataRow s2 = new DataRow(2, SnapshotVersion.next());
+        DataRow s2 = new DataRow("Artist", new HashMap<>(2), SnapshotVersion.next());
         s2.put("ARTIST_NAME", n2);
         s2.put("DATE_OF_BIRTH", new java.util.Date());
 

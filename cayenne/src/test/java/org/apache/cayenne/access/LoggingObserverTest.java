@@ -31,6 +31,7 @@ import org.apache.cayenne.access.translator.TranslatedStatement;
 import org.apache.cayenne.log.SQLLogger;
 import org.junit.jupiter.api.Test;
 
+import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -194,9 +195,9 @@ public class LoggingObserverTest {
         CapturingLogger logger = new CapturingLogger();
         LoggingObserver observer = observer(logger);
 
-        DataRow row1 = new DataRow(1, SnapshotVersion.next());
+        DataRow row1 = new DataRow("Artist", new HashMap<>(1), SnapshotVersion.next());
         row1.put("ARTIST_ID", 1L);
-        DataRow row2 = new DataRow(1, SnapshotVersion.next());
+        DataRow row2 = new DataRow("Artist", new HashMap<>(1), SnapshotVersion.next());
         row2.put("ARTIST_ID", 2L);
 
         observer.nextStatement(null, batch());

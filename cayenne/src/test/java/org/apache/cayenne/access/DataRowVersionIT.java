@@ -30,6 +30,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
+import java.util.HashMap;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -168,8 +169,7 @@ public class DataRowVersionIT {
 
         // a row with the cached row's version is a row of the same statement: it carries the same data, so the
         // cache keeps what it has even if asked to refresh and even if the new row differs
-        DataRow sameStatement = new DataRow(cached, cached.getVersion());
-        sameStatement.setEntityName(cached.getEntityName());
+        DataRow sameStatement = new DataRow(cached.getEntityName(), new HashMap<>(cached), cached.getVersion());
         sameStatement.put("ARTIST_NAME", "tampered");
 
         cache.snapshotsUpdatedForObjects(List.of(a), List.of(sameStatement), true);

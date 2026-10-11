@@ -80,15 +80,15 @@ public class DataRowStoreIT {
 
         ObjectId key1 = ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 1);
         Map<ObjectId, DataRow> diff1 = new HashMap<>();
-        diff1.put(key1, new DataRow(1, SnapshotVersion.next()));
+        diff1.put(key1, new DataRow("Artist", new HashMap<>(1), SnapshotVersion.next()));
 
         ObjectId key2 = ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 2);
         Map<ObjectId, DataRow> diff2 = new HashMap<>();
-        diff2.put(key2, new DataRow(1, SnapshotVersion.next()));
+        diff2.put(key2, new DataRow("Artist", new HashMap<>(1), SnapshotVersion.next()));
 
         ObjectId key3 = ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 3);
         Map<ObjectId, DataRow> diff3 = new HashMap<>();
-        diff3.put(key3, new DataRow(1, SnapshotVersion.next()));
+        diff3.put(key3, new DataRow("Artist", new HashMap<>(1), SnapshotVersion.next()));
 
         cache.processSnapshotChanges(
                 this,
@@ -132,19 +132,21 @@ public class DataRowStoreIT {
             eventManager.addListener(events, SnapshotEvent.class, List::add, cache.getSnapshotEventSubject());
 
             ObjectId key = ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 1);
-            DataRow old = new DataRow(Map.of("ARTIST_ID", 1, "ARTIST_NAME", "a", "DATE_OF_BIRTH", "d"),
+            DataRow old = new DataRow("Artist",
+                    new HashMap<>(Map.of("ARTIST_ID", 1, "ARTIST_NAME", "a", "DATE_OF_BIRTH", "d")),
                     SnapshotVersion.next());
             cache.processSnapshotChanges(this, Map.of(key, old), Collections.emptyList(), Collections.emptyList(),
                     Collections.emptyList());
             assertTrue(events.isEmpty(), "a new snapshot is not an update");
 
-            DataRow same = new DataRow(old, SnapshotVersion.next());
+            DataRow same = new DataRow("Artist", new HashMap<>(old), SnapshotVersion.next());
             same.setReplacesVersion(old.getVersion());
             cache.processSnapshotChanges(this, Map.of(key, same), Collections.emptyList(), Collections.emptyList(),
                     Collections.emptyList());
             assertTrue(events.isEmpty(), "an unchanged snapshot is not broadcast");
 
-            DataRow changed = new DataRow(Map.of("ARTIST_ID", 1, "ARTIST_NAME", "b", "DATE_OF_BIRTH", "d"),
+            DataRow changed = new DataRow("Artist",
+                    new HashMap<>(Map.of("ARTIST_ID", 1, "ARTIST_NAME", "b", "DATE_OF_BIRTH", "d")),
                     SnapshotVersion.next());
             changed.setReplacesVersion(same.getVersion());
             cache.processSnapshotChanges(this, Map.of(key, changed), Collections.emptyList(),

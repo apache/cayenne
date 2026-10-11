@@ -24,6 +24,8 @@ import org.apache.cayenne.access.jdbc.RSColumn;
 
 import java.sql.ResultSet;
 
+import java.util.HashMap;
+
 /**
  * A {@link RowReader} that materializes a DataRow from a set of columns read at explicit, possibly non-contiguous,
  * result-set positions. Unlike {@link OffsetRowReader}, each column carries its own position, so the columns need not
@@ -51,17 +53,16 @@ class IndexRowReader implements RowReader<DataRow> {
 
     @Override
     public DataRow readRow(ResultSet resultSet) {
-        DataRow dataRow = new DataRow(mapCapacity, version);
+        HashMap<String, Object> values = new HashMap<>(mapCapacity);
 
         try {
             for (int i = 0; i < columns.length; i++) {
                 RSColumn column = columns[i];
                 Object val = column.reader().materializeObject(resultSet, jdbcIndexes[i], column.rsType());
-                dataRow.put(column.dataRowName(), val);
+                values.put(column.dataRowName(), val);
             }
 
-            dataRow.setEntityName(entityName);
-            return dataRow;
+            return new DataRow(entityName, values, version);
         } catch (CayenneRuntimeException ex) {
             throw ex;
         } catch (Exception ex) {

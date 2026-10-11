@@ -41,6 +41,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.sql.Types;
+import java.util.HashMap;
 import java.util.Date;
 import java.util.List;
 
@@ -203,7 +204,7 @@ public class DataContextExtrasIT {
     @Test
     public void idObjectFromDataRow() {
 
-        DataRow row = new DataRow(10, SnapshotVersion.next());
+        DataRow row = new DataRow("Artist", new HashMap<>(10), SnapshotVersion.next());
         row.put("ARTIST_ID", 100000);
         Persistent obj = context.objectFromDataRow(Artist.class, row);
         assertNotNull(obj);
@@ -216,7 +217,7 @@ public class DataContextExtrasIT {
     @Test
     public void partialObjectFromDataRow() {
 
-        DataRow row = new DataRow(10, SnapshotVersion.next());
+        DataRow row = new DataRow("Artist", new HashMap<>(10), SnapshotVersion.next());
         row.put("ARTIST_ID", 100001);
         row.put("ARTIST_NAME", "ArtistXYZ");
         Persistent obj = context.objectFromDataRow(Artist.class, row);
@@ -229,7 +230,7 @@ public class DataContextExtrasIT {
     @Test
     public void fullObjectFromDataRow() {
 
-        DataRow row = new DataRow(10, SnapshotVersion.next());
+        DataRow row = new DataRow("Artist", new HashMap<>(10), SnapshotVersion.next());
         row.put("ARTIST_ID", 123456);
         row.put("ARTIST_NAME", "ArtistXYZ");
         row.put("DATE_OF_BIRTH", new Date());

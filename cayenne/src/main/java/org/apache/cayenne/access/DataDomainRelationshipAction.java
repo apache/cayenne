@@ -37,6 +37,7 @@ import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Resolves a relationship at the root of the DataChannel stack. Derives the related object from the snapshot cache
@@ -113,13 +114,13 @@ class DataDomainRelationshipAction {
             return null;
         }
 
-        ObjectId targetId = sourceRow.createTargetObjectId(relationship.getTargetEntityName(), dbRelationship);
-
-        // null id means that FK is null...
-        if (targetId == null) {
+        // null PK means that FK is null...
+        Map<String, Object> targetPk = dbRelationship.targetPkSnapshotWithSrcSnapshot(sourceRow);
+        if (targetPk == null) {
             return new ArrayList<>(1);
         }
 
+        ObjectId targetId = ObjectId.of(relationship.getTargetEntityName(), targetPk);
         DataRow targetRow = objectStore.getCachedSnapshot(targetId);
         if (targetRow != null) {
             return objectsFromCachedRows(arc, List.of(targetRow));
