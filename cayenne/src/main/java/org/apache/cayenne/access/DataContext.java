@@ -53,7 +53,6 @@ import org.apache.cayenne.reflect.PropertyDescriptor;
 import org.apache.cayenne.reflect.PropertyVisitor;
 import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
-import org.apache.cayenne.util.ShallowMergeOperation;
 import org.apache.cayenne.util.Util;
 
 import java.util.ArrayList;

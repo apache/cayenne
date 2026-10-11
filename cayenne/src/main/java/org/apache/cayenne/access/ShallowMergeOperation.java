@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.util;
+package org.apache.cayenne.access;
 
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
@@ -31,7 +31,7 @@ import org.apache.cayenne.reflect.ClassDescriptor;
  * 
  * @since 3.1
  */
-public class ShallowMergeOperation {
+class ShallowMergeOperation {
 
     private final ObjectContext context;
 
