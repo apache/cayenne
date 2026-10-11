@@ -442,7 +442,7 @@ public class DataContextObjectStore implements ObjectStore {
         for (ObjectId candidateId : inheritanceTree.polymorphicIds(oid)) {
             Persistent parentObject = parentStore.getObject(candidateId);
             if (parentObject != null) {
-                return parent.currentSnapshot(parentObject);
+                return ObjectSnapshots.snapshot(parent, parentObject, DataRow.nextVersion());
             }
         }
 

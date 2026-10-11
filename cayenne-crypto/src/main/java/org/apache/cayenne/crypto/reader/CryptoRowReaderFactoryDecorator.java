@@ -72,14 +72,15 @@ public class CryptoRowReaderFactoryDecorator extends DefaultRowReaderFactory {
     }
 
     @Override
-    protected RowReader<?> entitySegmentReader(RSColumn[] columns, QueryMetadata metadata, EntityResultSegment segment) {
-        RowReader<?> reader = super.entitySegmentReader(columns, metadata, segment);
+    protected RowReader<?> entitySegmentReader(RSColumn[] columns, QueryMetadata metadata, EntityResultSegment segment,
+                                               long version) {
+        RowReader<?> reader = super.entitySegmentReader(columns, metadata, segment, version);
         return new DecoratedEntityRowReader(columns, reader, segment);
     }
 
     @Override
-    protected RowReader<?> noSegmentReader(RSColumn[] columns, QueryMetadata metadata) {
-        RowReader<?> reader = super.noSegmentReader(columns, metadata);
+    protected RowReader<?> noSegmentReader(RSColumn[] columns, QueryMetadata metadata, long version) {
+        RowReader<?> reader = super.noSegmentReader(columns, metadata, version);
         return new DecoratedFullRowReader(columns, reader);
     }
 

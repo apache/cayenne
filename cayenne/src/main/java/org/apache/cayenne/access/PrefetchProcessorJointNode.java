@@ -130,10 +130,11 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
     }
 
     /**
-     * Returns a DataRow from the flat row.
+     * Returns a DataRow from the flat row. It is a part of the same statement result, so it has the flat row's
+     * version.
      */
     DataRow rowFromFlatRow(DataRow flatRow) {
-        DataRow row = new DataRow(rowCapacity);
+        DataRow row = new DataRow(rowCapacity, flatRow.getVersion());
 
         // extract subset of flat row columns, recasting to the target keys
         for (RSColumn column : columns) {

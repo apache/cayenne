@@ -19,6 +19,7 @@
 package org.apache.cayenne.access.jdbc.reader;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DbAttribute;
@@ -35,6 +36,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
+ * Creates row readers for one executed statement. The readers of one {@link #rowReader} call share a snapshot
+ * version, taken when the call is made, i.e. after the statement has executed, so all DataRows read from one result
+ * set carry the same version.
+ *
  * @since 4.0
  */
 public class DefaultRowReaderFactory implements RowReaderFactory {
@@ -43,32 +48,36 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
     public RowReader<?> rowReader(RSColumn[] columns, ResultSegments segments, QueryMetadata metadata,
                                   DbAdapter adapter) {
 
+        long version = DataRow.nextVersion();
+
         if (segments == null || segments.segments().isEmpty()) {
-            return noSegmentReader(columns, metadata);
+            return noSegmentReader(columns, metadata, version);
         }
 
         if (!segments.array()) {
-            return segmentReader(segments.segments().getFirst(), columns, metadata);
+            return segmentReader(segments.segments().getFirst(), columns, metadata, version);
         }
 
         int w = segments.segments().size();
         RowReader<?>[] readers = new RowReader[w];
         for (int i = 0; i < w; i++) {
-            readers[i] = segmentReader(segments.segments().get(i), columns, metadata);
+            readers[i] = segmentReader(segments.segments().get(i), columns, metadata, version);
         }
 
         return new CompoundRowReader(readers);
     }
 
-    private RowReader<?> segmentReader(ResultSegment segment, RSColumn[] columns, QueryMetadata metadata) {
+    private RowReader<?> segmentReader(ResultSegment segment, RSColumn[] columns, QueryMetadata metadata,
+                                       long version) {
         return switch (segment) {
-            case EntityResultSegment ers -> entitySegmentReader(columns, metadata, ers);
-            case EmbeddableResultSegment ers -> embeddableSegmentReader(columns, ers);
+            case EntityResultSegment ers -> entitySegmentReader(columns, metadata, ers, version);
+            case EmbeddableResultSegment ers -> embeddableSegmentReader(columns, ers, version);
             case ScalarResultSegment srs -> scalarSegmentReader(columns, metadata, srs);
         };
     }
 
-    private RowReader<?> embeddableSegmentReader(RSColumn[] columns, EmbeddableResultSegment segment) {
+    private RowReader<?> embeddableSegmentReader(RSColumn[] columns, EmbeddableResultSegment segment,
+                                                 long version) {
         int startIndex = segment.columnOffset();
         int segmentWidth = segment.fields().size();
 
@@ -87,7 +96,7 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
         }
 
         // an embeddable segment carries no entity - no entity name, no inheritance
-        return OffsetRowReader.of(relabeled, startIndex);
+        return OffsetRowReader.of(relabeled, startIndex, version);
     }
 
     protected RowReader<?> scalarSegmentReader(RSColumn[] columns, QueryMetadata metadata, ScalarResultSegment segment) {
@@ -99,7 +108,12 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
                 columns[scalarIndex].rsType());
     }
 
-    protected RowReader<?> entitySegmentReader(RSColumn[] columns, QueryMetadata metadata, EntityResultSegment segment) {
+    /**
+     * @param version the snapshot version of the rows the reader produces
+     * @since 5.0
+     */
+    protected RowReader<?> entitySegmentReader(RSColumn[] columns, QueryMetadata metadata,
+                                               EntityResultSegment segment, long version) {
 
         // For a paginated query only the root PK is read into the IncrementalFaultList - locate the PK columns within
         // this segment by their DbAttribute (see idReader).
@@ -109,7 +123,8 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
                     segment.columnOffset(),
                     segment.columnOffset() + columns.length,
                     objEntity.getDbEntity(),
-                    objEntity.getName());
+                    objEntity.getName(),
+                    version);
         }
 
         int startIndex = segment.columnOffset();
@@ -136,19 +151,24 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
                     column.attribute());
         }
 
-        return OffsetRowReader.of(relabeled, startIndex, segment.classDescriptor());
+        return OffsetRowReader.of(relabeled, startIndex, segment.classDescriptor(), version);
     }
 
-    protected RowReader<?> noSegmentReader(RSColumn[] columns, QueryMetadata metadata) {
+    /**
+     * @param version the snapshot version of the rows the reader produces
+     * @since 5.0
+     */
+    protected RowReader<?> noSegmentReader(RSColumn[] columns, QueryMetadata metadata, long version) {
         if (metadata.getPageSize() > 0) {
             ObjEntity objEntity = metadata.getObjEntity();
             return idReader(columns, 0, columns.length, metadata.getDbEntity(),
-                    objEntity != null ? objEntity.getName() : null);
+                    objEntity != null ? objEntity.getName() : null, version);
         }
-        return FullRowReader.of(columns, metadata);
+        return FullRowReader.of(columns, metadata, version);
     }
 
-    private RowReader<?> idReader(RSColumn[] columns, int from, int to, DbEntity dbEntity, String entityName) {
+    private RowReader<?> idReader(RSColumn[] columns, int from, int to, DbEntity dbEntity, String entityName,
+                                  long version) {
         if (dbEntity == null) {
             throw new CayenneRuntimeException("Null root DbEntity, can't index PK");
         }
@@ -190,7 +210,7 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
 
         return pkLen == 1
                 ? new ScalarRowReader<>(pkColumns[0].reader(), pkIndexes[0], pkColumns[0].rsType())
-                : IndexRowReader.of(pkColumns, pkIndexes, entityName);
+                : IndexRowReader.of(pkColumns, pkIndexes, entityName, version);
     }
 
 }

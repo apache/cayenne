@@ -151,13 +151,19 @@ public class DataRowStore {
                 DataRow newSnapshot = snapshots.get(i);
 
                 if (cachedSnapshot != null) {
+                    // the same version means the same statement, so the same data: it is already in the cache
+                    if (cachedSnapshot.getVersion() == newSnapshot.getVersion()) {
+                        object.setSnapshotVersion(cachedSnapshot.getVersion());
+                        continue;
+                    }
+
                     // use old snapshot if no changes occurred
                     if (cachedSnapshot.equals(newSnapshot)) {
                         object.setSnapshotVersion(cachedSnapshot.getVersion());
                         continue;
-                    } else {
-                        newSnapshot.setReplacesVersion(cachedSnapshot.getVersion());
                     }
+
+                    newSnapshot.setReplacesVersion(cachedSnapshot.getVersion());
                 }
 
                 if (modified == null) {

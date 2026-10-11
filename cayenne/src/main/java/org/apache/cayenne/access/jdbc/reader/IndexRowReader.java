@@ -35,21 +35,23 @@ class IndexRowReader implements RowReader<DataRow> {
     private final int[] jdbcIndexes;
     private final String entityName;
     private final int mapCapacity;
+    private final long version;
 
-    static RowReader<DataRow> of(RSColumn[] columns, int[] jdbcIndexes, String entityName) {
-        return new IndexRowReader(columns, jdbcIndexes, entityName);
+    static RowReader<DataRow> of(RSColumn[] columns, int[] jdbcIndexes, String entityName, long version) {
+        return new IndexRowReader(columns, jdbcIndexes, entityName, version);
     }
 
-    private IndexRowReader(RSColumn[] columns, int[] jdbcIndexes, String entityName) {
+    private IndexRowReader(RSColumn[] columns, int[] jdbcIndexes, String entityName, long version) {
         this.columns = columns;
         this.jdbcIndexes = jdbcIndexes;
         this.entityName = entityName;
+        this.version = version;
         this.mapCapacity = (int) Math.ceil(columns.length / 0.75);
     }
 
     @Override
     public DataRow readRow(ResultSet resultSet) {
-        DataRow dataRow = new DataRow(mapCapacity);
+        DataRow dataRow = new DataRow(mapCapacity, version);
 
         try {
             for (int i = 0; i < columns.length; i++) {

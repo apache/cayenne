@@ -376,12 +376,11 @@ public class DataContext implements ObjectContext {
      * </p>
      *
      * @param object persistent object to create snapshot for
-     * @return current snapshot of the persistent object
+     * @return current snapshot of the persistent object, with a snapshot version of its own
      * @since 1.1
      */
     public DataRow currentSnapshot(final Persistent object) {
-        return new DataContextSnapshotBuilder(getEntityResolver(), objectStore, object)
-                .build();
+        return ObjectSnapshots.snapshot(this, object, DataRow.nextVersion());
     }
 
     @Override

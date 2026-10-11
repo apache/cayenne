@@ -35,30 +35,33 @@ class FullRowReader implements RowReader<DataRow> {
 
     private final RSColumn[] columns;
     private final int mapCapacity;
+    private final long version;
     protected final String entityName;
 
-    static RowReader<DataRow> of(RSColumn[] columns, QueryMetadata queryMetadata) {
+    static RowReader<DataRow> of(RSColumn[] columns, QueryMetadata queryMetadata, long version) {
 
         ObjEntity objEntity = queryMetadata.getObjEntity();
         String entityName = objEntity != null ? objEntity.getName() : null;
 
         ClassDescriptor classDescriptor = queryMetadata.getClassDescriptor();
         if (classDescriptor != null && classDescriptor.hasSubclasses()) {
-            return new InheritanceAwareRowReader(columns, entityName, classDescriptor.getEntityInheritanceTree());
+            return new InheritanceAwareRowReader(columns, entityName, classDescriptor.getEntityInheritanceTree(),
+                    version);
         }
 
-        return new FullRowReader(columns, entityName);
+        return new FullRowReader(columns, entityName, version);
     }
 
-    private FullRowReader(RSColumn[] columns, String entityName) {
+    private FullRowReader(RSColumn[] columns, String entityName, long version) {
         this.columns = columns;
         this.entityName = entityName;
+        this.version = version;
         this.mapCapacity = (int) Math.ceil(columns.length / 0.75);
     }
 
     @Override
     public DataRow readRow(ResultSet resultSet) {
-        DataRow dataRow = new DataRow(mapCapacity);
+        DataRow dataRow = new DataRow(mapCapacity, version);
         int w = columns.length;
 
         try {
@@ -88,8 +91,9 @@ class FullRowReader implements RowReader<DataRow> {
 
         private final EntityInheritanceTree entityInheritanceTree;
 
-        private InheritanceAwareRowReader(RSColumn[] columns, String entityName, EntityInheritanceTree entityInheritanceTree) {
-            super(columns, entityName);
+        private InheritanceAwareRowReader(RSColumn[] columns, String entityName,
+                                          EntityInheritanceTree entityInheritanceTree, long version) {
+            super(columns, entityName, version);
             this.entityInheritanceTree = entityInheritanceTree;
         }
 

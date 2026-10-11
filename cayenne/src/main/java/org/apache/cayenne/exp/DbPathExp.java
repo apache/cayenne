@@ -29,6 +29,7 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.access.ObjectSnapshots;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
@@ -120,8 +121,8 @@ public final class DbPathExp extends PathExp {
 		ObjectId oid = persistent.getObjectId();
 
 		// TODO: snapshotting API should not be limited to DataContext...
-		if (context instanceof DataContext) {
-			return ((DataContext) context).currentSnapshot(persistent);
+		if (context instanceof DataContext dataContext) {
+			return ObjectSnapshots.snapshot(dataContext, persistent, DataRow.nextVersion());
 		}
 
 		if (oid != null) {

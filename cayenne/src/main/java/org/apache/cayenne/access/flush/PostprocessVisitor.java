@@ -30,6 +30,7 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.access.ObjectSnapshots;
 import org.apache.cayenne.access.flush.operation.DbRowOp;
 import org.apache.cayenne.access.flush.operation.DbRowOpVisitor;
 import org.apache.cayenne.access.flush.operation.DeleteDbRowOp;
@@ -46,11 +47,14 @@ import org.apache.cayenne.reflect.ToManyMapProperty;
 class PostprocessVisitor implements DbRowOpVisitor<Void> {
 
     private final DataContext context;
+    // one snapshot version for every object of this commit
+    private final long version;
     private Map<ObjectId, DataRow> updatedSnapshots;
     private Collection<ObjectId> deletedIds;
 
     PostprocessVisitor(DataContext context) {
         this.context = context;
+        this.version = DataRow.nextVersion();
     }
 
     @Override
@@ -70,7 +74,7 @@ class PostprocessVisitor implements DbRowOpVisitor<Void> {
             return;
         }
 
-        DataRow dataRow = context.currentSnapshot(dbRow.getObject());
+        DataRow dataRow = ObjectSnapshots.snapshot(context, dbRow.getObject(), version);
 
         if (dbRow.getObject() != null) {
             Persistent persistent = dbRow.getObject();

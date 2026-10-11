@@ -201,7 +201,8 @@ public interface Persistent {
             boolean setReverse);
 
     /**
-     * Returns a version of a DataRow snapshot that was used to create this object.
+     * Returns the version of the DataRow snapshot that was used to create this object, or that this object was
+     * last committed as. All objects read by one SQL statement, and all objects of one commit, share a version.
      *
      * @since 1.1
      */

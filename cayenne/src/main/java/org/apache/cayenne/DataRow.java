@@ -31,7 +31,13 @@ import java.util.concurrent.atomic.AtomicLong;
  * DataRow a map that holds values retrieved from the database for a given query row.
  * DataRows are used to cache raw database data and as a reference point for tracking
  * PersistentObject changes.
- * 
+ * <p>
+ * Every DataRow carries a snapshot version. Versions come from one JVM-wide counter, so a version taken later is
+ * greater than any version taken before, and a version identifies the unit of work that produced the row: all rows
+ * read by one SQL statement share a version, as do all snapshots of one commit. Two rows of the same ObjectId with
+ * the same version therefore hold the same data. A row created without an explicit version gets a version of its
+ * own.
+ *
  * @since 1.1
  */
 public class DataRow extends HashMap<String, Object> {
@@ -39,7 +45,7 @@ public class DataRow extends HashMap<String, Object> {
     // make sure the starting value is different from Persistent default version value
     private static final AtomicLong currentVersion = new AtomicLong(Persistent.DEFAULT_VERSION + 1);
 
-    protected long version = currentVersion.getAndIncrement();
+    protected final long version;
     protected long replacesVersion = Persistent.DEFAULT_VERSION;
 
     /**
@@ -47,14 +53,54 @@ public class DataRow extends HashMap<String, Object> {
      */
     protected String entityName;
 
+    /**
+     * Returns a new snapshot version, greater than any version returned before. Rows produced by one unit of work
+     * (a SQL statement result, a commit) are created with the one version taken for that unit of work.
+     *
+     * @since 5.0
+     */
+    public static long nextVersion() {
+        return currentVersion.getAndIncrement();
+    }
+
+    /**
+     * Creates a row with the given values and a version of its own.
+     */
     public DataRow(Map<String, ?> map) {
-        super(map);
+        this(map, nextVersion());
     }
 
+    /**
+     * Creates an empty row with a version of its own.
+     */
     public DataRow(int initialCapacity) {
-        super(initialCapacity);
+        this(initialCapacity, nextVersion());
     }
 
+    /**
+     * Creates a row with the given values and the given snapshot version. The entity name is not copied.
+     *
+     * @since 5.0
+     */
+    public DataRow(Map<String, ?> map, long version) {
+        super(map);
+        this.version = version;
+    }
+
+    /**
+     * Creates an empty row with the given snapshot version.
+     *
+     * @since 5.0
+     */
+    public DataRow(int initialCapacity, long version) {
+        super(initialCapacity);
+        this.version = version;
+    }
+
+    /**
+     * Returns the snapshot version of this row: the version of the unit of work (a SQL statement result, a commit)
+     * that produced it.
+     */
     public long getVersion() {
         return version;
     }
@@ -100,7 +146,8 @@ public class DataRow extends HashMap<String, Object> {
 
             if (!Objects.deepEquals(currentValue, rowValue)) {
                 if (diff == null) {
-                    diff = new DataRow(this.size());
+                    // the diff represents the newer row, so it carries that row's version
+                    diff = new DataRow(this.size(), row.getVersion());
                 }
                 diff.put(key, rowValue);
             }

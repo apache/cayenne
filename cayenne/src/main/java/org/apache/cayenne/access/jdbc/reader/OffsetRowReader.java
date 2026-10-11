@@ -36,30 +36,33 @@ class OffsetRowReader implements RowReader<DataRow> {
     private final RSColumn[] columns;
     private final int offset;
     private final int mapCapacity;
+    private final long version;
 
     // possible inheritance
-    static OffsetRowReader of(RSColumn[] columns, int offset, ClassDescriptor cd) {
+    static OffsetRowReader of(RSColumn[] columns, int offset, ClassDescriptor cd, long version) {
         String entityName = cd != null ? cd.getEntity().getName() : null;
         return cd != null && cd.hasSubclasses()
-                ? new InheritanceAwareOffsetRowReader(columns, offset, entityName, cd.getEntityInheritanceTree())
-                : new OffsetRowReader(columns, offset, entityName);
+                ? new InheritanceAwareOffsetRowReader(columns, offset, entityName, cd.getEntityInheritanceTree(),
+                        version)
+                : new OffsetRowReader(columns, offset, entityName, version);
     }
 
     // no entity name, no inheritance
-    static OffsetRowReader of(RSColumn[] columns, int offset) {
-        return new OffsetRowReader(columns, offset, null);
+    static OffsetRowReader of(RSColumn[] columns, int offset, long version) {
+        return new OffsetRowReader(columns, offset, null, version);
     }
 
-    private OffsetRowReader(RSColumn[] columns, int offset, String entityName) {
+    private OffsetRowReader(RSColumn[] columns, int offset, String entityName, long version) {
         this.columns = columns;
         this.offset = offset;
         this.entityName = entityName;
+        this.version = version;
         this.mapCapacity = (int) Math.ceil(columns.length / 0.75);
     }
 
     @Override
     public DataRow readRow(ResultSet resultSet) {
-        DataRow dataRow = new DataRow(mapCapacity);
+        DataRow dataRow = new DataRow(mapCapacity, version);
         int w = columns.length;
 
         try {
@@ -93,9 +96,10 @@ class OffsetRowReader implements RowReader<DataRow> {
                 RSColumn[] columns,
                 int startIndex,
                 String entityName,
-                EntityInheritanceTree entityInheritanceTree) {
+                EntityInheritanceTree entityInheritanceTree,
+                long version) {
 
-            super(columns, startIndex, entityName);
+            super(columns, startIndex, entityName, version);
             this.entityInheritanceTree = entityInheritanceTree;
         }
 
