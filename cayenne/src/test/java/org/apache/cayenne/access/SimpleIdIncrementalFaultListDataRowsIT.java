@@ -116,7 +116,7 @@ public class SimpleIdIncrementalFaultListDataRowsIT {
         DataRow row = artists.getFirst();
         assertEquals(19, list.indexOf(row));
 
-        DataRow clone = new DataRow(row);
+        DataRow clone = new DataRow(row, SnapshotVersion.next());
         assertEquals(19, list.indexOf(clone));
 
         row.remove("ARTIST_ID");

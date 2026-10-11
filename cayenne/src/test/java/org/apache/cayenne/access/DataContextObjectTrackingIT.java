@@ -88,7 +88,7 @@ public class DataContextObjectTrackingIT {
     @Test
     public void unregisterObject() {
 
-        DataRow row = new DataRow(10);
+        DataRow row = new DataRow(10, SnapshotVersion.next());
         row.put("ARTIST_ID", 1);
         row.put("ARTIST_NAME", "ArtistXYZ");
         row.put("DATE_OF_BIRTH", new Date());
@@ -111,7 +111,7 @@ public class DataContextObjectTrackingIT {
     @Test
     public void invalidateObjects_Vararg() {
 
-        DataRow row = new DataRow(10);
+        DataRow row = new DataRow(10, SnapshotVersion.next());
         row.put("ARTIST_ID", 1);
         row.put("ARTIST_NAME", "ArtistXYZ");
         row.put("DATE_OF_BIRTH", new Date());

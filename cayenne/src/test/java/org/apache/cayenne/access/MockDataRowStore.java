@@ -45,11 +45,11 @@ public class MockDataRowStore extends DataRowStore {
     }
 
     public void putSnapshot(ObjectId id, Map<String, ?> snapshot) {
-        snapshots.put(id, new DataRow(snapshot));
+        snapshots.put(id, new DataRow(snapshot, SnapshotVersion.next()));
     }
 
     public void putEmptySnapshot(ObjectId id) {
-        snapshots.put(id, new DataRow(2));
+        snapshots.put(id, new DataRow(2, SnapshotVersion.next()));
     }
 
 }

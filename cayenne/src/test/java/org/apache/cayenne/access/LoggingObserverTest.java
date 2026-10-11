@@ -194,9 +194,9 @@ public class LoggingObserverTest {
         CapturingLogger logger = new CapturingLogger();
         LoggingObserver observer = observer(logger);
 
-        DataRow row1 = new DataRow(1);
+        DataRow row1 = new DataRow(1, SnapshotVersion.next());
         row1.put("ARTIST_ID", 1L);
-        DataRow row2 = new DataRow(1);
+        DataRow row2 = new DataRow(1, SnapshotVersion.next());
         row2.put("ARTIST_ID", 2L);
 
         observer.nextStatement(null, batch());

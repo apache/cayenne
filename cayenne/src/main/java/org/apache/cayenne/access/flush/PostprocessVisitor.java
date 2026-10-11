@@ -31,6 +31,7 @@ import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.ObjectSnapshots;
+import org.apache.cayenne.access.SnapshotVersion;
 import org.apache.cayenne.access.flush.operation.DbRowOp;
 import org.apache.cayenne.access.flush.operation.DbRowOpVisitor;
 import org.apache.cayenne.access.flush.operation.DeleteDbRowOp;
@@ -54,7 +55,7 @@ class PostprocessVisitor implements DbRowOpVisitor<Void> {
 
     PostprocessVisitor(DataContext context) {
         this.context = context;
-        this.version = DataRow.nextVersion();
+        this.version = SnapshotVersion.next();
     }
 
     @Override

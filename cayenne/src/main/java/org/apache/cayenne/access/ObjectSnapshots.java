@@ -52,8 +52,7 @@ public final class ObjectSnapshots {
 
     /**
      * Returns a {@link DataRow} reflecting the current, possibly uncommitted, state of an object registered in the
-     * given context, with the given snapshot version. Snapshots that belong to one unit of work, such as all objects
-     * of one commit, are built with one version; a one-off snapshot takes {@link DataRow#nextVersion()}.
+     * given context, with the given snapshot version.
      * <p>
      * <strong>Warning:</strong> the snapshot is partial if the object, or a related object that propagates its key
      * to it, has a temporary id. Do not use it where a DataRow has to represent the complete object state.

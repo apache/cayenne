@@ -338,7 +338,7 @@ public class NestedDataContextReadIT {
 
         DataContext childContext = (DataContext) runtime.newContext(context);
 
-        DataRow row = new DataRow(8);
+        DataRow row = new DataRow(8, SnapshotVersion.next());
         row.put("ARTIST_ID", 5L);
         row.put("ARTIST_NAME", "A");
         row.put("DATE_OF_BIRTH", new Date());

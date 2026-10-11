@@ -71,7 +71,7 @@ public class DataContextObjectStoreIT {
     @Test
     public void objectsUnregistered() throws Exception {
 
-        DataRow row = new DataRow(10);
+        DataRow row = new DataRow(10, SnapshotVersion.next());
         row.put("ARTIST_ID", 1);
         row.put("ARTIST_NAME", "ArtistXYZ");
         row.put("DATE_OF_BIRTH", new Date());

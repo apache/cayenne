@@ -220,7 +220,7 @@ public class DataContextQueryCachingIT {
         List<Object> rows = new ArrayList<>(len);
 
         for (int i = 0; i < len; i++) {
-            DataRow a = new DataRow(3);
+            DataRow a = new DataRow(3, SnapshotVersion.next());
             a.put("ARTIST_ID", i + 1);
             a.put("ARTIST_NAME", "A-" + (i + 1));
             rows.add(a);

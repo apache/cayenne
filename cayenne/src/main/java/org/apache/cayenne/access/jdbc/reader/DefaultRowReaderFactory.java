@@ -20,6 +20,7 @@ package org.apache.cayenne.access.jdbc.reader;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.access.SnapshotVersion;
 import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DbAttribute;
@@ -48,7 +49,7 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
     public RowReader<?> rowReader(RSColumn[] columns, ResultSegments segments, QueryMetadata metadata,
                                   DbAdapter adapter) {
 
-        long version = DataRow.nextVersion();
+        long version = SnapshotVersion.next();
 
         if (segments == null || segments.segments().isEmpty()) {
             return noSegmentReader(columns, metadata, version);

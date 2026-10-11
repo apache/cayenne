@@ -21,14 +21,18 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.access.event.SnapshotEvent;
+import org.apache.cayenne.event.DefaultEventManager;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -76,15 +80,15 @@ public class DataRowStoreIT {
 
         ObjectId key1 = ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 1);
         Map<ObjectId, DataRow> diff1 = new HashMap<>();
-        diff1.put(key1, new DataRow(1));
+        diff1.put(key1, new DataRow(1, SnapshotVersion.next()));
 
         ObjectId key2 = ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 2);
         Map<ObjectId, DataRow> diff2 = new HashMap<>();
-        diff2.put(key2, new DataRow(1));
+        diff2.put(key2, new DataRow(1, SnapshotVersion.next()));
 
         ObjectId key3 = ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 3);
         Map<ObjectId, DataRow> diff3 = new HashMap<>();
-        diff3.put(key3, new DataRow(1));
+        diff3.put(key3, new DataRow(1, SnapshotVersion.next()));
 
         cache.processSnapshotChanges(
                 this,
@@ -113,5 +117,45 @@ public class DataRowStoreIT {
         assertNotNull(cache.getCachedSnapshot(key2));
         assertNotNull(cache.getCachedSnapshot(key3));
         assertNull(cache.getCachedSnapshot(key1));
+    }
+
+    /**
+     * An updated snapshot that replaces the cached one is broadcast as a diff: only the changed keys, with the new
+     * values and the new snapshot's version. An unchanged snapshot is not broadcast at all.
+     */
+    @Test
+    public void updatedSnapshotDiff() {
+        DefaultEventManager eventManager = new DefaultEventManager();
+        try {
+            cache = new DataRowStore("cacheXYZ", 10, eventManager);
+            List<SnapshotEvent> events = new ArrayList<>();
+            eventManager.addListener(events, SnapshotEvent.class, List::add, cache.getSnapshotEventSubject());
+
+            ObjectId key = ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 1);
+            DataRow old = new DataRow(Map.of("ARTIST_ID", 1, "ARTIST_NAME", "a", "DATE_OF_BIRTH", "d"),
+                    SnapshotVersion.next());
+            cache.processSnapshotChanges(this, Map.of(key, old), Collections.emptyList(), Collections.emptyList(),
+                    Collections.emptyList());
+            assertTrue(events.isEmpty(), "a new snapshot is not an update");
+
+            DataRow same = new DataRow(old, SnapshotVersion.next());
+            same.setReplacesVersion(old.getVersion());
+            cache.processSnapshotChanges(this, Map.of(key, same), Collections.emptyList(), Collections.emptyList(),
+                    Collections.emptyList());
+            assertTrue(events.isEmpty(), "an unchanged snapshot is not broadcast");
+
+            DataRow changed = new DataRow(Map.of("ARTIST_ID", 1, "ARTIST_NAME", "b", "DATE_OF_BIRTH", "d"),
+                    SnapshotVersion.next());
+            changed.setReplacesVersion(same.getVersion());
+            cache.processSnapshotChanges(this, Map.of(key, changed), Collections.emptyList(),
+                    Collections.emptyList(), Collections.emptyList());
+            assertEquals(1, events.size());
+
+            DataRow diff = events.getFirst().getModifiedDiffs().get(key);
+            assertEquals(Map.of("ARTIST_NAME", "b"), diff);
+            assertEquals(changed.getVersion(), diff.getVersion());
+        } finally {
+            eventManager.shutdown();
+        }
     }
 }

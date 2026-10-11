@@ -21,6 +21,7 @@ package org.apache.cayenne.query;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.OutParametersResult;
 import org.apache.cayenne.QueryResult;
+import org.apache.cayenne.access.SnapshotVersion;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.log.NoopSQLLogger;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -343,7 +344,7 @@ public class ProcedureCallIT {
      * An ugly hack - converting row keys to uppercase ... Tracked via CAY-148.
      */
     private DataRow uppercaseConverter(DataRow row) {
-        DataRow converted = new DataRow(row.size());
+        DataRow converted = new DataRow(row.size(), SnapshotVersion.next());
 
         for (Map.Entry<String, Object> entry : row.entrySet()) {
             converted.put(entry.getKey().toUpperCase(), entry.getValue());

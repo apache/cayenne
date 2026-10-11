@@ -37,6 +37,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentMap;
 
 /**
@@ -399,7 +400,7 @@ public class DataRowStore {
                         continue;
                     }
 
-                    DataRow diff = oldSnapshot.createDiff(newSnapshot);
+                    DataRow diff = diff(oldSnapshot, newSnapshot);
 
                     if (diff != null) {
                         if (diffs == null) {
@@ -415,9 +416,31 @@ public class DataRowStore {
         return diffs;
     }
 
+    /**
+     * Returns a row of the keys of {@code oldSnapshot} whose values differ in {@code newSnapshot}, with the values of
+     * {@code newSnapshot}, or null if there are no differences. Key sets are assumed compatible, i.e. both rows are
+     * snapshots of the same entity. The diff represents the newer row, so it carries that row's version.
+     */
+    private static DataRow diff(DataRow oldSnapshot, DataRow newSnapshot) {
+        DataRow diff = null;
+        for (Map.Entry<String, Object> entry : oldSnapshot.entrySet()) {
+            Object newValue = newSnapshot.get(entry.getKey());
+            if (!Objects.deepEquals(entry.getValue(), newValue)) {
+                if (diff == null) {
+                    diff = new DataRow(oldSnapshot.size(), newSnapshot.getVersion());
+                }
+                diff.put(entry.getKey(), newValue);
+            }
+        }
+        return diff;
+    }
+
     private void processUpdateDiffs(Map<ObjectId, DataRow> diffs) {
         // apply snapshot diffs
         if (!diffs.isEmpty()) {
+            // the diffs come from another JVM, so their versions are not comparable with the local ones: the merged
+            // snapshots take the version of this event
+            long version = SnapshotVersion.next();
             for (Map.Entry<ObjectId, DataRow> entry : diffs.entrySet()) {
                 ObjectId key = entry.getKey();
                 DataRow oldSnapshot = snapshots.remove(key);
@@ -426,7 +449,8 @@ public class DataRowStore {
                     continue;
                 }
 
-                DataRow newSnapshot = oldSnapshot.applyDiff(entry.getValue());
+                DataRow newSnapshot = new DataRow(oldSnapshot, version);
+                newSnapshot.putAll(entry.getValue());
                 snapshots.put(key, newSnapshot);
             }
         }
