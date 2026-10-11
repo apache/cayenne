@@ -24,9 +24,8 @@ import java.util.List;
 
 /**
  * A registry of persistent objects managed by an {@link ObjectContext}, keyed by {@link ObjectId}. Also tracks the
- * committed state of those objects as {@link DataRow} snapshots.
- * <p>
- * Users rarely need to access the store directly, as ObjectContext serves as a facade for most of its operations.
+ * committed state of those objects as {@link DataRow} snapshots. Users rarely need to access the store directly, as
+ * ObjectContext serves as a facade for most of its operations.
  *
  * @since 5.0
  */

@@ -86,27 +86,15 @@ class ObjectResolver {
 				: new NoInheritanceStrategy();
 	}
 
-	PrefetchProcessorNode synchronizedRootResultNodeFromDataRows(List<? extends DataRow> rows) {
+	PrefetchProcessorNode rootResultNodeFromDataRows(List<? extends DataRow> rows) {
 		PrefetchProcessorNode rootNode = new PrefetchProcessorNode(null, null);
-		rootNode.setObjects(synchronizedObjectsFromDataRows(rows));
+		rootNode.setObjects(objectsFromDataRows(rows));
 		return rootNode;
 	}
 
 	/**
-	 * Properly synchronized version of 'objectsFromDataRows'.
-	 */
-	List<Persistent> synchronizedObjectsFromDataRows(List<? extends DataRow> rows) {
-		synchronized (context.getObjectStore()) {
-			return objectsFromDataRows(rows);
-		}
-	}
-
-	/**
-	 * Converts rows to objects.
-	 * <p>
-	 * Synchronization note. This method requires EXTERNAL synchronization on
-	 * ObjectStore and DataRowStore.
-	 * </p>
+	 * Converts rows to objects. Each object is merged under its own lock, so concurrent resolvers can run in
+	 * parallel, and a row never overwrites an object that already reflects a newer snapshot.
 	 */
 	List<Persistent> objectsFromDataRows(List<? extends DataRow> rows) {
 		if (rows == null || rows.isEmpty()) {
@@ -148,21 +136,54 @@ class ObjectResolver {
 		// resolve additional Object IDs for flattened attributes
 		resolveAdditionalIds(row, object, classDescriptor);
 
-		// deal with object state
+		DataContextObjectStore store = context.getObjectStore();
+
+		// a merge into a MODIFIED or DELETED object may record changes, so it needs the changes lock, taken before
+		// the object lock. The state is peeked at without a lock to pick the locks, and is checked again under them
+		if (!isDirty(object)) {
+			boolean merged = store.withObjectLock(anId, () -> {
+				if (isDirty(object)) {
+					return false;
+				}
+				merge(object, row, classDescriptor);
+				return true;
+			});
+
+			if (merged) {
+				return object;
+			}
+		}
+
+		return store.withChangesLock(() -> store.withObjectLock(anId, () -> {
+			merge(object, row, classDescriptor);
+			return object;
+		}));
+	}
+
+	private static boolean isDirty(Persistent object) {
 		int state = object.getPersistenceState();
-		switch (state) {
+		return state == PersistenceState.MODIFIED || state == PersistenceState.DELETED;
+	}
+
+	/**
+	 * Merges the row into the object under the object lock held by the caller, unless the object already reflects a
+	 * newer snapshot than the row.
+	 */
+	private void merge(Persistent object, DataRow row, ClassDescriptor classDescriptor) {
+		switch (object.getPersistenceState()) {
 		case PersistenceState.COMMITTED:
 		case PersistenceState.MODIFIED:
 		case PersistenceState.DELETED:
 			// process the above only if refresh is requested...
-			if (refreshObjects) {
+			if (refreshObjects && row.getVersion() >= object.getSnapshotVersion()) {
 				DataRowUtils.mergeObjectWithSnapshot(context, classDescriptor, object, row);
-                object.setSnapshotVersion(row.getVersion());
-            }
+				object.setSnapshotVersion(row.getVersion());
+			}
 			break;
 		case PersistenceState.HOLLOW:
+			// a HOLLOW object has no state to protect, so any snapshot is better than none
 			if (!refreshObjects) {
-				DataRow cachedRow = cache.getCachedSnapshot(anId);
+				DataRow cachedRow = cache.getCachedSnapshot(object.getObjectId());
 				if (cachedRow != null) {
 					row = cachedRow;
 				}
@@ -173,8 +194,6 @@ class ObjectResolver {
 		default:
 			break;
 		}
-
-		return object;
 	}
 
     private void resolveAdditionalIds(DataRow row, Persistent object, ClassDescriptor classDescriptor) {

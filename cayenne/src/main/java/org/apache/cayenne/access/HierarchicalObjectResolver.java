@@ -70,9 +70,11 @@ class HierarchicalObjectResolver {
     }
 
     /**
-     * Properly synchronized object resolution
+     * Resolves the rows of the prefetch tree to an object tree. Every object merge and every relationship write
+     * happens under the lock of the object written, with the snapshot version check that keeps the result of an older
+     * statement from overwriting a newer one, so no lock is held across the tree.
      */
-    PrefetchProcessorNode synchronizedRootResultNodeFromDataRows(
+    PrefetchProcessorNode rootResultNodeFromDataRows(
             PrefetchTreeNode tree,
             List<DataRow> mainResultRows,
             Map<CayennePath, List<?>> extraResultsByPath) {
@@ -82,15 +84,12 @@ class HierarchicalObjectResolver {
         // prepare data for disjoint by id prefetches
         decoratedTree.traverse(new DisjointByIdProcessor());
 
-        // resolve objects under global lock to keep object graph consistent
-        synchronized (context.getObjectStore()) {
-            // do a single path for disjoint prefetches, joint subtrees will be processed at
-            // each disjoint node that is a parent of joint prefetches.
-            decoratedTree.traverse(new DisjointProcessor());
+        // do a single path for disjoint prefetches, joint subtrees will be processed at
+        // each disjoint node that is a parent of joint prefetches.
+        decoratedTree.traverse(new DisjointProcessor());
 
-            // connect related objects
-            decoratedTree.traverse(new PostProcessor());
-        }
+        // connect related objects
+        decoratedTree.traverse(new PostProcessor());
 
         return decoratedTree;
     }

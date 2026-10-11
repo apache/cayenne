@@ -78,7 +78,7 @@ class DataDomainIdQueryAction {
         // resolver picks the right one from the snapshot
         ClassDescriptor descriptor = domain.getEntityResolver().getClassDescriptor(id.getEntityName());
         List<Persistent> objects = new ObjectResolver(context, descriptor, false)
-                .synchronizedObjectsFromDataRows(List.of(row));
+                .objectsFromDataRows(List.of(row));
 
         LifecycleCallbackRegistry callbackRegistry = domain.getEntityResolver().getCallbackRegistry();
         if (!callbackRegistry.isEmpty(LifecycleEvent.POST_LOAD)) {

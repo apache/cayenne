@@ -23,5 +23,8 @@ import org.apache.cayenne.Persistent;
 
 interface ParentAttachmentStrategy {
 
+    /**
+     * Links a child object resolved from the row to its parent object(s).
+     */
     void linkToParent(DataRow row, Persistent object);
 }

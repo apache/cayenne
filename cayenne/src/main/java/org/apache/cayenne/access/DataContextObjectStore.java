@@ -23,6 +23,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.ObjectStore;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.ObjectDiff.ArcOperation;
@@ -33,7 +34,6 @@ import org.apache.cayenne.graph.ArcId;
 import org.apache.cayenne.graph.ChildDiffLoader;
 import org.apache.cayenne.graph.GraphChangeHandler;
 import org.apache.cayenne.graph.GraphDiff;
-import org.apache.cayenne.ObjectStore;
 import org.apache.cayenne.graph.NodeCreateOperation;
 import org.apache.cayenne.graph.NodeDeleteOperation;
 import org.apache.cayenne.graph.NodeDiff;
@@ -49,36 +49,50 @@ import org.apache.cayenne.reflect.ToOneProperty;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Supplier;
 
 /**
- * {@link ObjectStore} of a {@link DataContext}. Stores objects using their ObjectId as a key and keeps their
- * committed snapshots in sync with the shared {@link DataRowStore}.
+ * The default {@link ObjectStore} implementation. Exposes a few locks for the callers to provide concurrency:
+ * per-object {@link #withObjectLock(ObjectId, Supplier) object lock} and broader {@link #withChangesLock(Supplier) changes lock} used by commits, etc. To prevent
+ * deadlocks, the changes lock is always taken before any object lock.
  *
  * @since 5.0
  */
 public class DataContextObjectStore implements ObjectStore {
 
+    // the number of monitors guarding object property updates on read. Updates of different objects contend only when
+    // the objects happen to share a monitor, and only for the duration of an in-memory merge. The threads that can be
+    // merging at the same instant are bounded by the cores, so the count follows them: 4x the cores, up to 64, as a
+    // power of two.
+    private static final int OBJECT_LOCK_STRIPES = Math.min(
+            64,
+            Integer.highestOneBit(Runtime.getRuntime().availableProcessors() * 4 * 2 - 1));
+
     protected final DataContext context;
     protected final DataRowStore dataRowCache;
     protected final Map<ObjectId, Persistent> objectMap;
 
-    protected Map<ObjectId, ObjectDiff> changes;
+    private final ReentrantLock changesLock;
+    protected volatile Map<ObjectId, ObjectDiff> changes;
 
     /**
      * Presence of path in this map is used to separate insert from update case of flattened records.
      */
-    protected Map<ObjectId, Map<CayennePath, ObjectId>> trackedFlattenedPaths;
+    protected final Map<ObjectId, Map<CayennePath, ObjectId>> trackedFlattenedPaths;
     private Collection<GraphDiff> lifecycleEventInducedChanges;
     private final ChangeRecorder changeRecorder;
 
+    // created on the first write, as not every context sees one
+    private volatile Object[] locks;
+
     // a sequential id used to tag GraphDiffs so that they can later be sorted in the
-    // original creation order
+    // original creation order. Guarded by the changes lock
     int currentDiffId;
 
     public DataContextObjectStore(
@@ -90,18 +104,19 @@ public class DataContextObjectStore implements ObjectStore {
         this.context = Objects.requireNonNull(context);
         this.dataRowCache = dataRowCache;
         this.changeRecorder = new ChangeRecorder();
+        this.changesLock = new ReentrantLock();
 
         this.objectMap = Objects.requireNonNull(objectMap, "Object map is null.");
         if (objectMap instanceof ReferenceMap<ObjectId, Persistent> referenceMap) {
             referenceMap.setKeyCleanupCallback(this::onObjectKeyCleanup);
         }
 
-        this.changes = new HashMap<>();
+        this.changes = new ConcurrentHashMap<>();
+        this.trackedFlattenedPaths = new ConcurrentHashMap<>();
 
         if (syncWithSnapshotCache && dataRowCache != null && dataRowCache.getEventManager() != null) {
-            // setting itself as non-blocking listener,
-            // since event sending thread will likely be locking sender's
-            // ObjectStore and snapshot cache itself.
+            // setting itself as non-blocking listener, since the event sending thread is likely in the middle of a
+            // query or a commit on the sender's context, and should not wait for the listeners
             dataRowCache.getEventManager().addNonBlockingListener(
                     this,
                     SnapshotEvent.class,
@@ -135,59 +150,105 @@ public class DataContextObjectStore implements ObjectStore {
     }
 
     /**
-     * Registers object change.
+     * Runs the action under the lock guarding the uncommitted changes, returning its result. A commit holds the lock
+     * for its whole duration, so that no changes are recorded while the ones being committed are read. The lock is
+     * reentrant. It is always taken before an object lock, never while holding one.
      */
-    synchronized ObjectDiff registerDiff(ObjectId id, NodeDiff diff) {
-
-        if (diff != null) {
-            diff.setDiffId(++currentDiffId);
+    public <T> T withChangesLock(Supplier<T> action) {
+        changesLock.lock();
+        try {
+            return action.get();
+        } finally {
+            changesLock.unlock();
         }
+    }
 
-        ObjectDiff objectDiff = changes.get(id);
+    /**
+     * Returns the monitor guarding writes to the state of the object with the id: attribute and relationship values,
+     * persistence state and snapshot version. Every writer of object state synchronizes on it for the duration of a
+     * write, so that concurrent writes do not interleave and other writers never see an object half-written. Readers
+     * do not synchronize. A monitor may be shared by several ids, so a writer must not hold more than one at a time,
+     * and must not perform blocking operations, such as queries, while holding it.
+     */
+    public <T> T withObjectLock(ObjectId id, Supplier<T> action) {
+        synchronized (objectLock(id)) {
+            return action.get();
+        }
+    }
 
-        if (objectDiff == null) {
-
-            Persistent object = objectMap.get(id);
-            if (object == null) {
-                throw new CayenneRuntimeException("No object is registered in context with Id %s", id);
-            }
-
-            if (object.getPersistenceState() == PersistenceState.COMMITTED) {
-                object.setPersistenceState(PersistenceState.MODIFIED);
-
-                // TODO: andrus 3/23/2006 snapshot versions are obsolete, but there is no
-                // replacement yet, so we still need to handle them...
-                DataRow snapshot = getCachedSnapshot(id);
-
-                if (snapshot != null
-                        && snapshot.getVersion() != object.getSnapshotVersion()) {
-                    DataContextDelegate delegate = context.nonNullDelegate();
-                    if (delegate.shouldMergeChanges(object, snapshot)) {
-                        ClassDescriptor descriptor = context
-                                .getEntityResolver()
-                                .getClassDescriptor(
-                                        id.getEntityName());
-                        DataRowUtils.forceMergeWithSnapshot(
-                                context,
-                                descriptor,
-                                object,
-                                snapshot);
-                        object.setSnapshotVersion(snapshot.getVersion());
-                        delegate.finishedMergeChanges(object);
+    private Object objectLock(ObjectId id) {
+        Object[] locks = this.locks;
+        if (locks == null) {
+            synchronized (this) {
+                locks = this.locks;
+                if (locks == null) {
+                    locks = new Object[OBJECT_LOCK_STRIPES];
+                    for (int i = 0; i < OBJECT_LOCK_STRIPES; i++) {
+                        locks[i] = new Object();
                     }
+                    this.locks = locks;
                 }
             }
-
-            objectDiff = new ObjectDiff(object);
-            objectDiff.setDiffId(++currentDiffId);
-            changes.put(id, objectDiff);
         }
 
-        if (diff != null) {
-            objectDiff.addDiff(diff, this);
-        }
+        int h = id.hashCode();
+        return locks[(h ^ (h >>> 16)) & (OBJECT_LOCK_STRIPES - 1)];
+    }
 
-        return objectDiff;
+    /**
+     * Registers object change.
+     */
+    ObjectDiff registerDiff(ObjectId id, NodeDiff diff) {
+
+        return withChangesLock(() -> {
+            if (diff != null) {
+                diff.setDiffId(++currentDiffId);
+            }
+
+            ObjectDiff objectDiff = changes.get(id);
+
+            if (objectDiff == null) {
+
+                Persistent object = objectMap.get(id);
+                if (object == null) {
+                    throw new CayenneRuntimeException("No object is registered in context with Id %s", id);
+                }
+
+                // the state transition and the baseline of the object taken by ObjectDiff are done under the object
+                // lock, so that a concurrent merge of a newer snapshot does not interleave with them
+                objectDiff = withObjectLock(id, () -> {
+                    if (object.getPersistenceState() == PersistenceState.COMMITTED) {
+                        object.setPersistenceState(PersistenceState.MODIFIED);
+
+                        // the object may lag behind the cached snapshot, as a snapshot from a newer statement is cached
+                        // without refreshing the objects that are not part of its result
+                        DataRow snapshot = getCachedSnapshot(id);
+                        if (snapshot != null && snapshot.getVersion() > object.getSnapshotVersion()) {
+                            DataContextDelegate delegate = context.nonNullDelegate();
+                            if (delegate.shouldMergeChanges(object, snapshot)) {
+                                ClassDescriptor descriptor = context
+                                        .getEntityResolver()
+                                        .getClassDescriptor(id.getEntityName());
+                                DataRowUtils.forceMergeWithSnapshot(context, descriptor, object, snapshot);
+                                object.setSnapshotVersion(snapshot.getVersion());
+                                delegate.finishedMergeChanges(object);
+                            }
+                        }
+                    }
+
+                    return new ObjectDiff(object);
+                });
+
+                objectDiff.setDiffId(++currentDiffId);
+                changes.put(id, objectDiff);
+            }
+
+            if (diff != null) {
+                objectDiff.addDiff(diff, this);
+            }
+
+            return objectDiff;
+        });
     }
 
     /**
@@ -208,18 +269,27 @@ public class DataContextObjectStore implements ObjectStore {
      * Turns registered objects with the given ids HOLLOW, discarding their uncommitted changes. Ids of unregistered
      * or NEW objects are ignored. Does not touch the snapshot cache.
      */
-    synchronized void objectsInvalidated(Collection<ObjectId> ids) {
-        for (ObjectId id : ids) {
-            Persistent object = objectMap.get(id);
+    void objectsInvalidated(Collection<ObjectId> ids) {
+        withChangesLock(() -> {
+            for (ObjectId id : ids) {
+                Persistent object = objectMap.get(id);
 
-            // NEW objects have nothing to refetch. HOLLOW objects are still processed, as they may have pending changes
-            if (object == null || object.getPersistenceState() == PersistenceState.NEW) {
-                continue;
+                // NEW objects have nothing to refetch. HOLLOW objects are still processed, as they may have pending
+                // changes
+                if (object == null || object.getPersistenceState() == PersistenceState.NEW) {
+                    continue;
+                }
+
+                changes.remove(id);
+                withObjectLock(id, () -> {
+                    if (object.getPersistenceState() != PersistenceState.NEW) {
+                        object.setPersistenceState(PersistenceState.HOLLOW);
+                    }
+                    return null;
+                });
             }
-
-            changes.remove(id);
-            object.setPersistenceState(PersistenceState.HOLLOW);
-        }
+            return null;
+        });
     }
 
     /**
@@ -229,27 +299,36 @@ public class DataContextObjectStore implements ObjectStore {
      */
     // this method is exactly the same as "objectsInvalidated", only additionally it
     // throws out registered objects
-    public synchronized void objectsUnregistered(Collection<? extends Persistent> objects) {
+    public void objectsUnregistered(Collection<? extends Persistent> objects) {
         if (objects.isEmpty()) {
             return;
         }
 
-        Collection<ObjectId> ids = new ArrayList<>(objects.size());
+        Collection<ObjectId> ids = withChangesLock(() -> {
+            Collection<ObjectId> unregistered = new ArrayList<>(objects.size());
+            for (Persistent object : objects) {
+                ObjectId id = object.getObjectId();
 
-        for (Persistent object : objects) {
-            ObjectId id = object.getObjectId();
+                // remove object but not snapshot
+                if (id != null) {
+                    objectMap.remove(id);
+                    changes.remove(id);
+                    trackedFlattenedPaths.remove(id);
 
-            // remove object but not snapshot
-            objectMap.remove(id);
-            changes.remove(id);
-            if (id != null && trackedFlattenedPaths != null) {
-                trackedFlattenedPaths.remove(id);
+                    withObjectLock(id, () -> {
+                        object.setObjectContext(null);
+                        object.setPersistenceState(PersistenceState.TRANSIENT);
+                        return null;
+                    });
+                } else {
+                    object.setObjectContext(null);
+                    object.setPersistenceState(PersistenceState.TRANSIENT);
+                }
+
+                unregistered.add(id);
             }
-            ids.add(id);
-
-            object.setObjectContext(null);
-            object.setPersistenceState(PersistenceState.TRANSIENT);
-        }
+            return unregistered;
+        });
 
         // TODO, andrus 3/28/2006 - DRC is null in nested contexts... implement
         // propagation of unregister operation through the stack ... or do the opposite
@@ -268,30 +347,32 @@ public class DataContextObjectStore implements ObjectStore {
     /**
      * Reverts changes to all stored uncomitted objects.
      */
-    public synchronized void objectsRolledBack() {
-        Iterator<Persistent> it = getObjectIterator();
-
-        // collect candidates
-        while (it.hasNext()) {
-            Persistent object = it.next();
-            int objectState = object.getPersistenceState();
-            switch (objectState) {
-                case PersistenceState.NEW -> {
-                    it.remove();
-                    object.setObjectContext(null);
-                    object.setObjectId(null);
-                    object.setPersistenceState(PersistenceState.TRANSIENT);
-                }
-                // deleted is only a persistence state, so rolling back sets state to committed
-                case PersistenceState.DELETED, PersistenceState.MODIFIED ->
-                        object.setPersistenceState(PersistenceState.HOLLOW);
-                default -> { /* Transient, committed and hollow need no handling */ }
+    public void objectsRolledBack() {
+        withChangesLock(() -> {
+            for (Persistent object : registeredObjects()) {
+                ObjectId id = object.getObjectId();
+                withObjectLock(id, () -> {
+                    switch (object.getPersistenceState()) {
+                        case PersistenceState.NEW -> {
+                            objectMap.remove(id);
+                            object.setObjectContext(null);
+                            object.setObjectId(null);
+                            object.setPersistenceState(PersistenceState.TRANSIENT);
+                        }
+                        // deleted is only a persistence state, so rolling back sets state to committed
+                        case PersistenceState.DELETED, PersistenceState.MODIFIED ->
+                                object.setPersistenceState(PersistenceState.HOLLOW);
+                        default -> { /* Transient, committed and hollow need no handling */ }
+                    }
+                    return null;
+                });
             }
-        }
 
-        // reset changes ... using new HashMap to allow event listeners to analyze the
-        // original changes map after the rollback
-        this.changes = new HashMap<>();
+            // reset changes ... using a new map to allow event listeners to analyze the
+            // original changes map after the rollback
+            this.changes = new ConcurrentHashMap<>();
+            return null;
+        });
     }
 
     /**
@@ -309,56 +390,66 @@ public class DataContextObjectStore implements ObjectStore {
     }
 
     void postprocessAfterPhantomCommit() {
+        withChangesLock(() -> {
+            for (ObjectId id : changes.keySet()) {
 
-        for (ObjectId id : changes.keySet()) {
+                Persistent object = objectMap.get(id);
 
-            Persistent object = objectMap.get(id);
+                // assume that no new or deleted objects are present (as otherwise commit
+                // wouldn't have been phantom).
+                withObjectLock(id, () -> {
+                    object.setPersistenceState(PersistenceState.COMMITTED);
+                    return null;
+                });
+            }
 
-            // assume that no new or deleted objects are present (as otherwise commit
-            // wouldn't have been phantom).
-            object.setPersistenceState(PersistenceState.COMMITTED);
-        }
-
-        // clear caches
-        this.changes.clear();
+            // clear caches
+            this.changes.clear();
+            return null;
+        });
     }
 
     /**
-     * Internal unsynchronized method to process objects state after commit.
+     * Processes objects state after commit. Normally runs on the committing thread, that already holds the changes
+     * lock for the duration of the commit.
      */
     public void postprocessAfterCommit(GraphDiff parentChanges) {
 
-        // scan through changed objects, set persistence state to committed
-        for (ObjectId id : changes.keySet()) {
-            Persistent object = objectMap.get(id);
+        withChangesLock(() -> {
+            // scan through changed objects, set persistence state to committed
+            for (ObjectId id : changes.keySet()) {
+                Persistent object = objectMap.get(id);
 
-            switch (object.getPersistenceState()) {
-                case PersistenceState.DELETED -> {
-                    objectMap.remove(id);
-                    if (trackedFlattenedPaths != null) {
-                        trackedFlattenedPaths.remove(id);
+                withObjectLock(id, () -> {
+                    switch (object.getPersistenceState()) {
+                        case PersistenceState.DELETED -> {
+                            objectMap.remove(id);
+                            trackedFlattenedPaths.remove(id);
+                            object.setObjectContext(null);
+                            object.setPersistenceState(PersistenceState.TRANSIENT);
+                        }
+                        case PersistenceState.NEW, PersistenceState.MODIFIED ->
+                                object.setPersistenceState(PersistenceState.COMMITTED);
                     }
-                    object.setObjectContext(null);
-                    object.setPersistenceState(PersistenceState.TRANSIENT);
-                }
-                case PersistenceState.NEW, PersistenceState.MODIFIED ->
-                        object.setPersistenceState(PersistenceState.COMMITTED);
+                    return null;
+                });
             }
-        }
 
-        // re-register changed object ids
-        if (!parentChanges.isNoop()) {
-            parentChanges.apply(new GraphChangeHandler() {
-                @Override
-                public void nodeIdChanged(ObjectId id, ObjectId newId) {
-                    processIdChange(id, newId);
-                }
-            });
-        }
+            // re-register changed object ids
+            if (!parentChanges.isNoop()) {
+                parentChanges.apply(new GraphChangeHandler() {
+                    @Override
+                    public void nodeIdChanged(ObjectId id, ObjectId newId) {
+                        processIdChange(id, newId);
+                    }
+                });
+            }
 
-        // create new instance of changes map so that event listeners who stored the
-        // original diff don't get affected
-        this.changes = new HashMap<>();
+            // create new instance of changes map so that event listeners who stored the
+            // original diff don't get affected
+            this.changes = new ConcurrentHashMap<>();
+            return null;
+        });
     }
 
     /**
@@ -392,7 +483,7 @@ public class DataContextObjectStore implements ObjectStore {
      * @since 1.2
      */
     @Override
-    public synchronized DataRow getSnapshot(ObjectId oid) {
+    public DataRow getSnapshot(ObjectId oid) {
 
         if (dataRowCache == null) {
             return parentContextSnapshot(oid, true);
@@ -438,8 +529,9 @@ public class DataContextObjectStore implements ObjectStore {
         for (ObjectId candidateId : inheritanceTree.polymorphicIds(oid)) {
             Persistent parentObject = parentStore.getObject(candidateId);
             if (parentObject != null) {
-                // the parent's current state is the child's snapshot; it is not cached, so it is no operation
-                return ObjectSnapshots.snapshot(parent, parentObject, SnapshotVersion.NONE);
+                // the parent's current state is the child's snapshot, and it is as new as the parent object. Child
+                // objects take their versions from the parent objects, so the snapshot merges into them
+                return ObjectSnapshots.snapshot(parent, parentObject, parentObject.getSnapshotVersion());
             }
         }
 
@@ -449,7 +541,7 @@ public class DataContextObjectStore implements ObjectStore {
     /**
      * Returns an iterator over the registered objects.
      */
-    public synchronized Iterator<Persistent> getObjectIterator() {
+    public Iterator<Persistent> getObjectIterator() {
         return objectMap.values().iterator();
     }
 
@@ -461,7 +553,7 @@ public class DataContextObjectStore implements ObjectStore {
      * modified. Phantom modifications are only detected and discarded during commit.
      */
     @Override
-    public synchronized boolean hasChanges() {
+    public boolean hasChanges() {
         return !changes.isEmpty();
     }
 
@@ -470,7 +562,7 @@ public class DataContextObjectStore implements ObjectStore {
      * Collection is returned by copy.
      */
     @Override
-    public synchronized List<Persistent> objectsInState(int state) {
+    public List<Persistent> objectsInState(int state) {
         List<Persistent> filteredObjects = new ArrayList<>();
 
         for (Persistent object : objectMap.values()) {
@@ -497,7 +589,7 @@ public class DataContextObjectStore implements ObjectStore {
         }
     }
 
-    synchronized void processSnapshotEvent(SnapshotEvent event) {
+    void processSnapshotEvent(SnapshotEvent event) {
 
         Map<ObjectId, DataRow> modifiedDiffs = event.getModifiedDiffs();
         if (modifiedDiffs != null && !modifiedDiffs.isEmpty()) {
@@ -528,60 +620,69 @@ public class DataContextObjectStore implements ObjectStore {
     }
 
     void processIdChange(ObjectId id, ObjectId newId) {
-        Persistent object = objectMap.remove(id);
+        withChangesLock(() -> {
+            Persistent object = objectMap.remove(id);
 
-        if (object != null) {
-            object.setObjectId(newId);
-            objectMap.put(newId, object);
+            if (object != null) {
+                withObjectLock(id, () -> {
+                    object.setObjectId(newId);
+                    return null;
+                });
+                objectMap.put(newId, object);
 
-            ObjectDiff change = changes.remove(id);
-            if (change != null) {
-                changes.put(newId, change);
+                ObjectDiff change = changes.remove(id);
+                if (change != null) {
+                    changes.put(newId, change);
+                }
             }
-        }
 
-        if (trackedFlattenedPaths != null) {
             Map<CayennePath, ObjectId> paths = trackedFlattenedPaths.remove(id);
             if (paths != null) {
                 trackedFlattenedPaths.put(newId, paths);
             }
-        }
+            return null;
+        });
     }
 
-    /**
-     * Requires external synchronization.
-     */
     void processDeletedID(ObjectId id) {
 
-        // access object map directly - the method should be called in a synchronized context...
         Persistent object = objectMap.get(id);
+        if (object == null) {
+            return;
+        }
 
-        if (object != null) {
-            DataContextDelegate delegate;
+        DataContextDelegate delegate = context.nonNullDelegate();
 
-            switch (object.getPersistenceState()) {
-                case PersistenceState.COMMITTED, PersistenceState.HOLLOW, PersistenceState.DELETED -> {
-                    delegate = context.nonNullDelegate();
-                    if (delegate.shouldProcessDelete(object)) {
-                        objectMap.remove(id);
-                        changes.remove(id);
-                        if (trackedFlattenedPaths != null) {
-                            trackedFlattenedPaths.remove(id);
-                        }
+        switch (object.getPersistenceState()) {
+            case PersistenceState.COMMITTED, PersistenceState.HOLLOW, PersistenceState.DELETED -> {
+                if (delegate.shouldProcessDelete(object)) {
+                    objectMap.remove(id);
+                    changes.remove(id);
+                    trackedFlattenedPaths.remove(id);
+
+                    withObjectLock(id, () -> {
                         // setting DataContext to null will also set state to transient
                         object.setObjectContext(null);
-                        delegate.finishedProcessDelete(object);
-                    }
+                        return null;
+                    });
+                    delegate.finishedProcessDelete(object);
                 }
-                case PersistenceState.MODIFIED -> {
-                    delegate = context.nonNullDelegate();
-                    if (delegate.shouldProcessDelete(object)) {
-                        object.setPersistenceState(PersistenceState.NEW);
+            }
+            case PersistenceState.MODIFIED -> {
+                if (delegate.shouldProcessDelete(object)) {
+                    // the object is re-inserted on commit, so it becomes NEW. Recording that takes the changes lock,
+                    // so it is taken before the object lock
+                    withChangesLock(() -> {
+                        withObjectLock(id, () -> {
+                            object.setPersistenceState(PersistenceState.NEW);
+                            return null;
+                        });
                         changes.remove(id);
                         registerObject(id, object);
                         changeRecorder.nodeCreated(id);
-                        delegate.finishedProcessDelete(object);
-                    }
+                        return null;
+                    });
+                    delegate.finishedProcessDelete(object);
                 }
             }
         }
@@ -597,16 +698,23 @@ public class DataContextObjectStore implements ObjectStore {
                 }
 
                 switch (object.getPersistenceState()) {
-                    case PersistenceState.COMMITTED -> object.setPersistenceState(PersistenceState.HOLLOW);
+                    case PersistenceState.COMMITTED -> {
+                        withObjectLock(oid, () -> {
+                            if (object.getPersistenceState() == PersistenceState.COMMITTED) {
+                                object.setPersistenceState(PersistenceState.HOLLOW);
+                            }
+                            return null;
+                        });
+                    }
                     case PersistenceState.MODIFIED -> {
-                        DataContext context = (DataContext) object.getObjectContext();
-                        DataRow diff = getSnapshot(oid);
+                        // the snapshot was just invalidated, so this is a fetch, done before any lock is taken
+                        DataRow snapshot = getSnapshot(oid);
                         DataContextDelegate delegate = context.nonNullDelegate();
-                        if (delegate.shouldMergeChanges(object, diff)) {
+                        if (snapshot != null && delegate.shouldMergeChanges(object, snapshot)) {
                             ClassDescriptor descriptor = context
                                     .getEntityResolver()
                                     .getClassDescriptor(oid.getEntityName());
-                            DataRowUtils.forceMergeWithSnapshot(context, descriptor, object, diff);
+                            mergeDirty(object, descriptor, snapshot);
                             delegate.finishedMergeChanges(object);
                         }
                     }
@@ -617,13 +725,10 @@ public class DataContextObjectStore implements ObjectStore {
     }
 
     /**
-     * Requires external synchronization.
-     *
      * @since 1.1
      */
     void processIndirectlyModifiedIDs(Collection<ObjectId> indirectlyModifiedIDs) {
         for (ObjectId oid : indirectlyModifiedIDs) {
-            // access object map directly - the method should be called in a synchronized context...
             final Persistent object = objectMap.get(oid);
 
             if (object == null || object.getPersistenceState() != PersistenceState.COMMITTED) {
@@ -641,28 +746,32 @@ public class DataContextObjectStore implements ObjectStore {
                 ClassDescriptor descriptor = context
                         .getEntityResolver()
                         .getClassDescriptor(oid.getEntityName());
-                descriptor.visitProperties(new PropertyVisitor() {
 
-                    @Override
-                    public boolean visitToMany(ToManyProperty property) {
-                        property.invalidate(object);
-                        return true;
-                    }
+                withObjectLock(oid, () -> {
+                    descriptor.visitProperties(new PropertyVisitor() {
 
-                    @Override
-                    public boolean visitToOne(ToOneProperty property) {
-                        if (property
-                                .getRelationship()
-                                .isSourceIndependentFromTargetChange()) {
+                        @Override
+                        public boolean visitToMany(ToManyProperty property) {
                             property.invalidate(object);
+                            return true;
                         }
-                        return true;
-                    }
 
-                    @Override
-                    public boolean visitAttribute(AttributeProperty property) {
-                        return true;
-                    }
+                        @Override
+                        public boolean visitToOne(ToOneProperty property) {
+                            if (property
+                                    .getRelationship()
+                                    .isSourceIndependentFromTargetChange()) {
+                                property.invalidate(object);
+                            }
+                            return true;
+                        }
+
+                        @Override
+                        public boolean visitAttribute(AttributeProperty property) {
+                            return true;
+                        }
+                    });
+                    return null;
                 });
 
                 delegate.finishedProcessDelete(object);
@@ -671,85 +780,118 @@ public class DataContextObjectStore implements ObjectStore {
     }
 
     /**
-     * Requires external synchronization.
-     *
      * @since 1.1
      */
     void processUpdatedSnapshot(ObjectId id, DataRow diff) {
 
-        // access object map directly - the method should be called in a synchronized context...
         Persistent object = objectMap.get(id);
 
         // no object, or HOLLOW object require no processing
-        if (object != null) {
+        if (object == null) {
+            return;
+        }
 
-            int state = object.getPersistenceState();
-            if (state != PersistenceState.HOLLOW) {
+        switch (object.getPersistenceState()) {
+            case PersistenceState.COMMITTED -> {
+                // consult delegate if it exists
+                DataContextDelegate delegate = context.nonNullDelegate();
+                if (delegate.shouldMergeChanges(object, diff)) {
+                    ClassDescriptor descriptor = context
+                            .getEntityResolver()
+                            .getClassDescriptor(id.getEntityName());
 
-                // perform same steps as resolveHollow()
-                if (state == PersistenceState.COMMITTED) {
-                    // consult delegate if it exists
-                    DataContextDelegate delegate = context.nonNullDelegate();
-                    if (delegate.shouldMergeChanges(object, diff)) {
-                        ClassDescriptor descriptor = context
-                                .getEntityResolver()
-                                .getClassDescriptor(id.getEntityName());
+                    // TODO: andrus, 5/26/2006 - call to 'getSnapshot' is expensive,
+                    // however my attempts to merge the 'diff' instead of snapshot
+                    // via 'refreshObjectWithSnapshot' resulted in even worse performance.
+                    // This sounds counterintuitive (Not sure if this is some HotSpot related glitch)...
+                    // still keeping the old algorithm here until we switch from snapshot events
+                    // to GraphEvents and all this code becomes obsolete.
 
-                        // TODO: andrus, 5/26/2006 - call to 'getSnapshot' is expensive,
-                        // however my attempts to merge the 'diff' instead of snapshot
-                        // via 'refreshObjectWithSnapshot' resulted in even worse performance.
-                        // This sounds counterintuitive (Not sure if this is some HotSpot related glitch)...
-                        // still keeping the old algorithm here until we switch from snapshot events
-                        // to GraphEvents and all this code becomes obsolete.
-                        DataRow snapshot = getSnapshot(object.getObjectId());
-
-                        DataRowUtils.refreshObjectWithSnapshot(
-                                descriptor,
-                                object,
-                                snapshot,
-                                true);
-                        delegate.finishedMergeChanges(object);
+                    // the snapshot may need a fetch, so it is taken before the object lock
+                    DataRow snapshot = getSnapshot(id);
+                    if (snapshot != null) {
+                        withObjectLock(id, () -> {
+                            // the object may have been modified since the state check above. A MODIFIED object merges
+                            // the cached snapshot when its first change is recorded, so there's nothing to do for it
+                            if (object.getPersistenceState() == PersistenceState.COMMITTED
+                                    && snapshot.getVersion() >= object.getSnapshotVersion()) {
+                                DataRowUtils.refreshObjectWithSnapshot(descriptor, object, snapshot, true);
+                                object.setSnapshotVersion(snapshot.getVersion());
+                            }
+                            return null;
+                        });
                     }
+                    delegate.finishedMergeChanges(object);
                 }
-                // merge modified and deleted
-                else if (state == PersistenceState.DELETED
-                        || state == PersistenceState.MODIFIED) {
-
-                    // consult delegate if it exists
-                    DataContextDelegate delegate = context.nonNullDelegate();
-                    if (delegate.shouldMergeChanges(object, diff)) {
-                        ClassDescriptor descriptor = context
-                                .getEntityResolver()
-                                .getClassDescriptor(id.getEntityName());
-                        DataRowUtils.forceMergeWithSnapshot(
-                                context,
-                                descriptor,
-                                object,
-                                diff);
-                        delegate.finishedMergeChanges(object);
-                    }
+            }
+            // merge modified and deleted
+            case PersistenceState.DELETED, PersistenceState.MODIFIED -> {
+                // consult delegate if it exists
+                DataContextDelegate delegate = context.nonNullDelegate();
+                if (delegate.shouldMergeChanges(object, diff)) {
+                    ClassDescriptor descriptor = context
+                            .getEntityResolver()
+                            .getClassDescriptor(id.getEntityName());
+                    mergeDirty(object, descriptor, diff);
+                    delegate.finishedMergeChanges(object);
                 }
             }
         }
     }
 
+    /**
+     * Merges a snapshot into a MODIFIED or DELETED object, leaving the uncommitted changes in place. Such a merge may
+     * record changes to the object, so it takes the changes lock before the object lock. The snapshot is only merged
+     * if it is not older than the one the object already reflects.
+     */
+    private void mergeDirty(Persistent object, ClassDescriptor descriptor, DataRow snapshot) {
+        withChangesLock(() -> withObjectLock(object.getObjectId(), () -> {
+            int state = object.getPersistenceState();
+            if ((state == PersistenceState.MODIFIED || state == PersistenceState.DELETED)
+                    && snapshot.getVersion() >= object.getSnapshotVersion()) {
+                DataRowUtils.forceMergeWithSnapshot(context, descriptor, object, snapshot);
+                object.setSnapshotVersion(snapshot.getVersion());
+            }
+            return null;
+        }));
+    }
+
     @Override
-    public synchronized Persistent getObject(ObjectId id) {
+    public Persistent getObject(ObjectId id) {
         return objectMap.get(id);
     }
 
     @Override
-    public synchronized Collection<Persistent> registeredObjects() {
+    public Collection<Persistent> registeredObjects() {
         return new ArrayList<>(objectMap.values());
     }
 
     @Override
-    public synchronized void registerObject(ObjectId id, Persistent nodeObject) {
+    public void registerObject(ObjectId id, Persistent nodeObject) {
         objectMap.put(id, nodeObject);
     }
 
+    /**
+     * Returns the object registered under the id, or, if there is none, creates a HOLLOW object of the id's entity,
+     * registers and returns it. Registration is atomic, so concurrent callers get the same object for an id
+     * (CAY-845), and the object is fully initialized before it becomes visible to other threads.
+     */
+    Persistent getOrCreateObject(ObjectId id) {
+        return objectMap.computeIfAbsent(id, this::createHollowObject);
+    }
+
+    private Persistent createHollowObject(ObjectId id) {
+        ClassDescriptor descriptor = context.getEntityResolver().getClassDescriptor(id.getEntityName());
+        Persistent object = (Persistent) descriptor.createObject();
+
+        object.setObjectContext(context);
+        object.setObjectId(id);
+        object.setPersistenceState(PersistenceState.HOLLOW);
+        return object;
+    }
+
     @Override
-    public synchronized Persistent unregisterObject(ObjectId id) {
+    public Persistent unregisterObject(ObjectId id) {
         Persistent object = objectMap.get(id);
         if (object != null) {
             objectsUnregistered(Collections.singleton(object));
@@ -763,28 +905,16 @@ public class DataContextObjectStore implements ObjectStore {
     }
 
     public ObjectId getFlattenedId(ObjectId objectId, CayennePath path) {
-        if (trackedFlattenedPaths == null) {
-            return null;
-        }
-
         return trackedFlattenedPaths
                 .getOrDefault(objectId, Collections.emptyMap()).get(path);
     }
 
     public Collection<ObjectId> getFlattenedIds(ObjectId objectId) {
-        if (trackedFlattenedPaths == null) {
-            return Collections.emptyList();
-        }
-
         return trackedFlattenedPaths
                 .getOrDefault(objectId, Collections.emptyMap()).values();
     }
 
     public Map<CayennePath, ObjectId> getFlattenedPathIdMap(ObjectId objectId) {
-        if (trackedFlattenedPaths == null) {
-            return Collections.emptyMap();
-        }
-
         return trackedFlattenedPaths
                 .getOrDefault(objectId, Collections.emptyMap());
     }
@@ -795,9 +925,6 @@ public class DataContextObjectStore implements ObjectStore {
      * @since 4.1
      */
     public void markFlattenedPath(ObjectId objectId, CayennePath path, ObjectId id) {
-        if (trackedFlattenedPaths == null) {
-            trackedFlattenedPaths = new ConcurrentHashMap<>();
-        }
         trackedFlattenedPaths
                 .computeIfAbsent(objectId, o -> new ConcurrentHashMap<>())
                 .put(path, id);
@@ -808,9 +935,7 @@ public class DataContextObjectStore implements ObjectStore {
      * @since 4.2.2
      */
     void onObjectKeyCleanup(Object key) {
-        if (trackedFlattenedPaths != null) {
-            trackedFlattenedPaths.remove(key);
-        }
+        trackedFlattenedPaths.remove(key);
     }
 
     static class SnapshotEventDecorator implements GraphDiff {

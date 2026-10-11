@@ -338,30 +338,12 @@ public class DataContext implements ObjectContext {
 
         ObjectId id = objectFromAnotherContext.getObjectId();
 
-        // first look for the ID in the local ObjectStore
-        synchronized (objectStore) {
-            @SuppressWarnings("unchecked")
-            T localObject = (T) objectStore.getObject(id);
-            if (localObject != null) {
-                return localObject;
-            }
-
-            // create a hollow object, optimistically assuming that the ID we got from
-            // 'objectFromAnotherContext' is a valid ID either in the parent context or in the DB.
-            // This essentially defers possible FaultFailureExceptions.
-
-            ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(id.getEntityName());
-            @SuppressWarnings("unchecked")
-            T persistent = (T) descriptor.createObject();
-
-            persistent.setObjectContext(this);
-            persistent.setObjectId(id);
-            persistent.setPersistenceState(PersistenceState.HOLLOW);
-
-            objectStore.registerObject(id, persistent);
-
-            return persistent;
-        }
+        // reuse the object registered in the local ObjectStore, or create a hollow object, optimistically assuming
+        // that the ID we got from 'objectFromAnotherContext' is a valid ID either in the parent context or in the DB.
+        // This essentially defers possible FaultFailureExceptions.
+        @SuppressWarnings("unchecked")
+        T localObject = (T) findOrCreateObject(id);
+        return localObject;
     }
 
     /**
@@ -441,7 +423,7 @@ public class DataContext implements ObjectContext {
             return objects;
         }
 
-        return new ObjectResolver(this, descriptor, true).synchronizedObjectsFromDataRows(dataRows);
+        return new ObjectResolver(this, descriptor, true).objectsFromDataRows(dataRows);
     }
 
     /**
@@ -583,10 +565,8 @@ public class DataContext implements ObjectContext {
         object.setObjectContext(this);
         object.setPersistenceState(PersistenceState.NEW);
 
-        synchronized (objectStore) {
-            objectStore.registerObject(object.getObjectId(), object);
-            objectStore.changeRecorder().nodeCreated(object.getObjectId());
-        }
+        objectStore.registerObject(object.getObjectId(), object);
+        objectStore.changeRecorder().nodeCreated(object.getObjectId());
 
         entityResolver.getClassDescriptor(object.getObjectId().getEntityName()).injectDiscriminatorValues(object);
         entityResolver.getCallbackRegistry().performCallbacks(LifecycleEvent.POST_ADD, object);
@@ -781,11 +761,11 @@ public class DataContext implements ObjectContext {
 
         int syncType = cascade ? DataChannel.FLUSH_CASCADE_SYNC : DataChannel.FLUSH_NOCASCADE_SYNC;
 
-        GraphDiff parentChanges = null;
+        // prevent multiple commits occurring simultaneously, and changes being recorded while the ones being committed
+        // are read. The lock is held across the whole sync, including the database I/O
+        return objectStore.withChangesLock(() -> {
 
-        // prevent multiple commits occurring simultaneously
-        synchronized (objectStore) {
-
+            GraphDiff parentChanges = null;
             ObjectStoreGraphDiff changes = objectStore.getChanges();
             boolean noop = isValidatingObjectsOnCommit() ? changes.validateAndCheckNoop() : changes.isNoop();
 
@@ -837,8 +817,7 @@ public class DataContext implements ObjectContext {
             }
 
             return diff;
-        }
-
+        });
     }
 
     /**
@@ -1043,27 +1022,7 @@ public class DataContext implements ObjectContext {
             throw new IllegalArgumentException("Null ObjectId");
         }
 
-        // have to synchronize almost the entire method to prevent multiple threads from
-        // messing up Persistent objects per CAY-845. Originally only parts of "else" were synchronized,
-        // but we had to expand the lock scope to ensure consistent behavior.
-        synchronized (objectStore) {
-            Persistent cachedObject = objectStore.getObject(id);
-            if (cachedObject != null) {
-                return cachedObject;
-            }
-
-            // create and register a hollow object
-            ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(id.getEntityName());
-            Persistent localObject = (Persistent) descriptor.createObject();
-
-            localObject.setObjectContext(this);
-            localObject.setObjectId(id);
-
-            objectStore.registerObject(id, localObject);
-            localObject.setPersistenceState(PersistenceState.HOLLOW);
-
-            return localObject;
-        }
+        return objectStore.getOrCreateObject(id);
     }
 
     /**

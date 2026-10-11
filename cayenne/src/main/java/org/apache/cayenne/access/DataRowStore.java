@@ -152,18 +152,14 @@ public class DataRowStore {
                 DataRow newSnapshot = snapshots.get(i);
 
                 if (cachedSnapshot != null) {
-                    // the same version means the same statement, so the same data: it is already in the cache
-                    if (cachedSnapshot.getVersion() == newSnapshot.getVersion()) {
-                        object.setSnapshotVersion(cachedSnapshot.getVersion());
+                    // the cached snapshot came from a later statement, so it is the one to keep. The same version
+                    // means the same statement, so the same data: it is already in the cache
+                    if (cachedSnapshot.getVersion() >= newSnapshot.getVersion()) {
                         continue;
                     }
 
-                    // use old snapshot if no changes occurred
-                    if (cachedSnapshot.equals(newSnapshot)) {
-                        object.setSnapshotVersion(cachedSnapshot.getVersion());
-                        continue;
-                    }
-
+                    // a newer snapshot replaces the cached one even if the data did not change, so that the cache
+                    // carries the version of the object merged from it. No event is sent for an unchanged snapshot
                     newSnapshot.setReplacesVersion(cachedSnapshot.getVersion());
                 }
 
@@ -368,39 +364,29 @@ public class DataRowStore {
             for (Map.Entry<ObjectId, DataRow> entry : updatedSnapshots.entrySet()) {
                 ObjectId key = entry.getKey();
                 DataRow newSnapshot = entry.getValue();
-                DataRow oldSnapshot = snapshots.put(key, newSnapshot);
 
-                // generate diff for the updated event, if this not a new
-                // snapshot
-
-                // The following cases should be handled here:
-
-                // 1. There is no previously cached snapshot for a given id.
-                // 2. There was a previously cached snapshot for a given id,
-                // but it expired from cache and was removed. Currently
-                // handled as (1); what are the consequences of that?
-                // 3. There is a previously cached snapshot and it has the
-                // *same version* as the "replacesVersion" property of the
-                // new snapshot.
-                // 4. There is a previously cached snapshot and it has a
-                // *different version* from "replacesVersion" property of
-                // the new snapshot. It means that we don't know how to merge
-                // the two (we don't even know which one is newer due to
-                // multithreading). Just throw out this snapshot....
-
-                if (oldSnapshot != null) {
-                    // case 4 above... have to throw out the snapshot since
-                    // no good options exist to tell how to merge the two.
-                    if (oldSnapshot.getVersion() != newSnapshot.getReplacesVersion()) {
-
-                        LOGGER.debug("snapshot version changed, don't know what to do... Old: {}, New: {}",
-                                oldSnapshot, newSnapshot);
-
-                        forgetSnapshot(key);
-                        continue;
+                // A snapshot of a later operation replaces the cached one. A snapshot of an earlier operation arriving
+                // late is dropped, as the cache already holds a newer state: another context may have read or
+                // committed the row since. The versions are compared atomically with the replacement, as snapshots of
+                // the same row may be updated concurrently.
+                DataRow[] replaced = new DataRow[1];
+                DataRow stored = snapshots.merge(key, newSnapshot, (cached, candidate) -> {
+                    if (cached.getVersion() >= candidate.getVersion()) {
+                        return cached;
                     }
+                    replaced[0] = cached;
+                    return candidate;
+                });
 
-                    DataRow diff = diff(oldSnapshot, newSnapshot);
+                if (stored != newSnapshot) {
+                    LOGGER.debug("snapshot is older than the cached one, ignoring it. Cached: {}, New: {}",
+                            stored, newSnapshot);
+                    continue;
+                }
+
+                // generate diff for the updated event, if this not a new snapshot
+                if (replaced[0] != null) {
+                    DataRow diff = diff(replaced[0], newSnapshot);
 
                     if (diff != null) {
                         if (diffs == null) {

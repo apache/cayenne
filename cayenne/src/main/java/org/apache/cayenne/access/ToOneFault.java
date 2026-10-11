@@ -56,15 +56,17 @@ public class ToOneFault extends Fault {
 
         ObjectContext context = sourceObject.getObjectContext();
         if ((state == PersistenceState.MODIFIED || state == PersistenceState.DELETED)
-                && context instanceof DataContext) {
+                && context instanceof DataContext dataContext) {
 
-            ObjectDiff diff = ((DataContext) context)
-                    .getObjectStore()
-                    .getChangesByObjectId()
-                    .get(sourceObject.getObjectId());
+            DataContextObjectStore store = dataContext.getObjectStore();
+            ObjectDiff diff = store.getChangesByObjectId().get(sourceObject.getObjectId());
 
             if (diff != null) {
-                diff.updateArcSnapshot(relationshipName, (Persistent) target);
+                // the diff is read by the merges of this object, that run under the object lock
+                store.withObjectLock(sourceObject.getObjectId(), () -> {
+                    diff.updateArcSnapshot(relationshipName, (Persistent) target);
+                    return null;
+                });
             }
         }
 

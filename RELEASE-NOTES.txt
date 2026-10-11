@@ -46,6 +46,7 @@ CAY-3041 Unify XML style across XSDs
 CAY-3042 Rename "domain" to "project" in the Modeler and XSD
 CAY-3043 project.xsd, dataMap.xsd: replace "property" with top tag attributes
 CAY-3047 Per-statement "snapshotVersion"
+CAY-3048 Per-object locking in the ObjectStore
 
 Bug Fixes:
 

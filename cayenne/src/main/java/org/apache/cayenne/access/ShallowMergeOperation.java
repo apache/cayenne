@@ -18,11 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
-import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.ObjectStore;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**
@@ -33,9 +31,9 @@ import org.apache.cayenne.reflect.ClassDescriptor;
  */
 class ShallowMergeOperation {
 
-    private final ObjectContext context;
+    private final DataContext context;
 
-    public ShallowMergeOperation(ObjectContext context) {
+    public ShallowMergeOperation(DataContext context) {
         this.context = context;
     }
 
@@ -54,42 +52,32 @@ class ShallowMergeOperation {
         ClassDescriptor descriptor = context.getEntityResolver().getClassDescriptor(
                 id.getEntityName());
 
-        ObjectStore objectStore = context.getObjectStore();
+        DataContextObjectStore objectStore = context.getObjectStore();
 
-        // have to synchronize almost the entire method to prevent multiple threads from
-        // messing up Persistent objects per CAY-845.
-        synchronized (objectStore) {
-            T object = (T) objectStore.getObject(id);
+        // a new object starts HOLLOW, and is merged below if the peer has state to merge
+        T object = (T) objectStore.getOrCreateObject(id);
 
-            // merge into an existing object
-            if (object == null) {
-                object = (T) descriptor.createObject();
-                object.setObjectContext(context);
-                object.setObjectId(id);
+        // TODO: Andrus, 1/24/2006 implement smart merge for modified objects...
+        if (peerState != PersistenceState.HOLLOW) {
+            objectStore.withObjectLock(id, () -> {
+                int state = object.getPersistenceState();
 
-                if (peerState == PersistenceState.HOLLOW) {
-                    object.setPersistenceState(PersistenceState.HOLLOW);
+                // the peer's snapshot version is carried over, so that a newer merge is not undone by an older one
+                if (state != PersistenceState.MODIFIED
+                        && state != PersistenceState.DELETED
+                        && peerInParentContext.getSnapshotVersion() >= object.getSnapshotVersion()) {
+
+                    descriptor.shallowMerge(peerInParentContext, object);
+                    object.setSnapshotVersion(peerInParentContext.getSnapshotVersion());
+
+                    if (object.getPersistenceState() == PersistenceState.HOLLOW) {
+                        object.setPersistenceState(PersistenceState.COMMITTED);
+                    }
                 }
-                else {
-                    object.setPersistenceState(PersistenceState.COMMITTED);
-                }
-
-                objectStore.registerObject(id, object);
-            }
-
-            // TODO: Andrus, 1/24/2006 implement smart merge for modified objects...
-            if (peerState != PersistenceState.HOLLOW
-                    && object.getPersistenceState() != PersistenceState.MODIFIED
-                    && object.getPersistenceState() != PersistenceState.DELETED) {
-
-                descriptor.shallowMerge(peerInParentContext, object);
-
-                if (object.getPersistenceState() == PersistenceState.HOLLOW) {
-                    object.setPersistenceState(PersistenceState.COMMITTED);
-                }
-            }
-
-            return object;
+                return null;
+            });
         }
+
+        return object;
     }
 }

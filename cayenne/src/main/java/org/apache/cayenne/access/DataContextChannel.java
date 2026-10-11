@@ -71,14 +71,14 @@ public record DataContextChannel(DataContext context) implements DataChannel {
 
     @Override
     public List<QueryResult> onQuery(ObjectContext childContext, Query query, boolean iteratedResult) {
-        checkChildContext(childContext);
+        DataContext child = checkChildContext(childContext);
 
         List<QueryResult> response = context.onQuery(query, iteratedResult, true);
         QueryMetadata metadata = query.getMetaData(getEntityResolver());
 
         return metadata.isFetchingDataRows()
                 ? response
-                : transferObjectsToChildContext(childContext, response, metadata);
+                : transferObjectsToChildContext(child, response, metadata);
     }
 
     @Override
@@ -90,18 +90,18 @@ public record DataContextChannel(DataContext context) implements DataChannel {
 
     @Override
     public Persistent onIdQuery(ObjectContext childContext, ObjectId id) {
-        checkChildContext(childContext);
+        DataContext child = checkChildContext(childContext);
 
         Persistent object = context.objectForPK(id);
-        return object != null ? new ShallowMergeOperation(childContext).merge(object) : null;
+        return object != null ? new ShallowMergeOperation(child).merge(object) : null;
     }
 
     @Override
     public List<Persistent> onRelationshipQuery(ObjectContext childContext, ObjectId sourceId, String relationshipName) {
-        checkChildContext(childContext);
+        DataContext child = checkChildContext(childContext);
 
         List<? extends Persistent> related = context.resolveRelationship(sourceId, relationshipName, true);
-        ShallowMergeOperation merger = new ShallowMergeOperation(childContext);
+        ShallowMergeOperation merger = new ShallowMergeOperation(child);
         List<Persistent> childObjects = new ArrayList<>(related.size());
         for (Persistent object : related) {
             childObjects.add(merger.merge(object));
@@ -141,7 +141,10 @@ public record DataContextChannel(DataContext context) implements DataChannel {
         }
     }
 
-    private void checkChildContext(ObjectContext childContext) {
+    /**
+     * Checks that the originating context is a nested DataContext of this channel's context, and returns it as such.
+     */
+    private DataContext checkChildContext(ObjectContext childContext) {
         if (childContext == null) {
             throw new IllegalArgumentException("Originating context must be a child of " + context + ", not null");
         }
@@ -150,10 +153,17 @@ public record DataContextChannel(DataContext context) implements DataChannel {
             throw new IllegalArgumentException("Originating context must be a child of " + context
                     + ", not the context itself");
         }
+
+        if (!(childContext instanceof DataContext child)) {
+            throw new IllegalArgumentException("Originating context must be a DataContext, not "
+                    + childContext.getClass().getName());
+        }
+
+        return child;
     }
 
     private List<QueryResult> transferObjectsToChildContext(
-            ObjectContext childContext,
+            DataContext childContext,
             List<QueryResult> response,
             QueryMetadata metadata) {
 

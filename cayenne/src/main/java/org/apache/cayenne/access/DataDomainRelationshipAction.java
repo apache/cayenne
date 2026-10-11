@@ -160,7 +160,7 @@ class DataDomainRelationshipAction {
     private List<Persistent> objectsFromCachedRows(ArcProperty arc, List<DataRow> rows) {
 
         List<Persistent> objects = new ObjectResolver(context, arc.getTargetDescriptor(), false)
-                .synchronizedObjectsFromDataRows(rows);
+                .objectsFromDataRows(rows);
 
         LifecycleCallbackRegistry callbackRegistry = domain.getEntityResolver().getCallbackRegistry();
         if (!callbackRegistry.isEmpty(LifecycleEvent.POST_LOAD)) {

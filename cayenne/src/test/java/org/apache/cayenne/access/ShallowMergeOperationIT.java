@@ -61,7 +61,7 @@ public class ShallowMergeOperationIT {
     @Test
     public void merge_Relationship() {
 
-        ObjectContext childContext = runtime.newContext(context);
+        DataContext childContext = (DataContext) runtime.newContext(context);
         final ShallowMergeOperation op = new ShallowMergeOperation(childContext);
 
         Artist _new = context.newObject(Artist.class);
@@ -83,7 +83,7 @@ public class ShallowMergeOperationIT {
     public void merge_NoOverride() throws Exception {
         createArtistsDataSet();
 
-        ObjectContext childContext = runtime.newContext(context);
+        DataContext childContext = (DataContext) runtime.newContext(context);
         final ShallowMergeOperation op = new ShallowMergeOperation(childContext);
 
         int modifiedId = 33003;
@@ -112,7 +112,7 @@ public class ShallowMergeOperationIT {
     public void merge_PersistenceStates() throws Exception {
         createArtistsDataSet();
 
-        final ObjectContext childContext = runtime.newContext(context);
+        final DataContext childContext = (DataContext) runtime.newContext(context);
         final ShallowMergeOperation op = new ShallowMergeOperation(childContext);
 
         final Artist _new = context.newObject(Artist.class);

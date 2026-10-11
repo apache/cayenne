@@ -83,8 +83,10 @@ class ResultScanParentAttachmentStrategy implements ParentAttachmentStrategy {
 
         List<Persistent> parents = partitionByChild.get(key);
         if (parents != null) {
+            // the FK is in the parent row, so the association is as old as the parent rows
+            long version = parentNode.rowsVersion();
             for (Persistent parent : parents) {
-                node.linkToParent(object, parent);
+                node.linkToParent(object, parent, version);
             }
         }
     }

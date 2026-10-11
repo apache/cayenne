@@ -35,6 +35,7 @@ import org.apache.cayenne.graph.CompoundDiff;
 import org.apache.cayenne.graph.NodeIdChangeOperation;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.reflect.AttributeProperty;
+import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**
  * @since 4.2
@@ -97,16 +98,20 @@ class ReplacementIdVisitor implements DbRowOpVisitor<Void> {
 
         ObjectId replacementId = id.createReplacementId();
         if (object.getObjectId() == id && !replacementId.getEntityName().startsWith(DbPathExp.DB_PREFIX)) {
-            object.setObjectId(replacementId);
-            // update meaningful PKs
-            for (AttributeProperty property: resolver.getClassDescriptor(replacementId.getEntityName()).getIdProperties()) {
-                if(property.getAttribute() != null) {
-                    Object value = replacement.get(property.getAttribute().getDbAttributeName());
-                    if (value != null) {
-                        property.writePropertyDirectly(object, null, value);
+            store.withObjectLock(id, () -> {
+                object.setObjectId(replacementId);
+                // update meaningful PKs
+                ClassDescriptor descriptor = resolver.getClassDescriptor(replacementId.getEntityName());
+                for (AttributeProperty property : descriptor.getIdProperties()) {
+                    if (property.getAttribute() != null) {
+                        Object value = replacement.get(property.getAttribute().getDbAttributeName());
+                        if (value != null) {
+                            property.writePropertyDirectly(object, null, value);
+                        }
                     }
                 }
-            }
+                return null;
+            });
             result.add(new NodeIdChangeOperation(id, replacementId));
         }
     }

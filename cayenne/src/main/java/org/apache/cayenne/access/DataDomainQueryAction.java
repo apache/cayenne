@@ -524,14 +524,14 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
             // to avoid clobbering newer in-memory state
             boolean refresh = metadata.isRefreshingObjects() && !shouldSkipRefresh();
             return new ObjectResolver(context, descriptor, refresh)
-                    .synchronizedRootResultNodeFromDataRows(normalizedRows);
+                    .rootResultNodeFromDataRows(normalizedRows);
         } else {
             // When results come from cache (not a refresh operation), wrap metadata to prevent refreshing objects
             QueryMetadata effectiveMetadata = shouldSkipRefresh() && metadata.isRefreshingObjects()
                     ? nonRefreshingMetadata(metadata)
                     : metadata;
             return new HierarchicalObjectResolver(context, effectiveMetadata)
-                    .synchronizedRootResultNodeFromDataRows(prefetchTree, normalizedRows, prefetchResultsByPath);
+                    .rootResultNodeFromDataRows(prefetchTree, normalizedRows, prefetchResultsByPath);
         }
     }
 
@@ -732,11 +732,11 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
 
             if (prefetchTree == null) {
                 return new ObjectResolver(context, descriptor, metadata.isRefreshingObjects())
-                        .synchronizedRootResultNodeFromDataRows(rowsColumn);
+                        .rootResultNodeFromDataRows(rowsColumn);
             } else {
                 HierarchicalObjectResolver resolver
                         = new HierarchicalObjectResolver(context, metadata, descriptor, true);
-                return resolver.synchronizedRootResultNodeFromDataRows(prefetchTree, rowsColumn, prefetchResultsByPath);
+                return resolver.rootResultNodeFromDataRows(prefetchTree, rowsColumn, prefetchResultsByPath);
             }
         }
 

@@ -31,6 +31,8 @@ class StackLookupParentAttachmentStrategy implements ParentAttachmentStrategy {
 
     public void linkToParent(DataRow row, Persistent object) {
         PrefetchProcessorNode parent = (PrefetchProcessorNode) node.getParent();
-        node.linkToParent(object, parent.getLastResolved());
+
+        // the child and the parent are parts of the same flat row
+        node.linkToParent(object, parent.getLastResolved(), row.getVersion());
     }
 }

@@ -19,15 +19,10 @@
 
 package org.apache.cayenne.access;
 
-import org.apache.cayenne.ObjectId;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.Fault;
+import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.graph.ArcId;
@@ -36,6 +31,11 @@ import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.reflect.ArcProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
 import org.apache.cayenne.util.ToStringBuilder;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A specialized PrefetchTreeNode used for disjoint prefetch resolving.
@@ -50,11 +50,14 @@ class PrefetchProcessorNode extends PrefetchTreeNode {
     ArcProperty incoming;
     ObjectResolver resolver;
 
-    Map<Persistent, List<Persistent>> partitionByParent;
+    Map<Persistent, Partition> partitionByParent;
     boolean jointChildren;
 
     private Persistent lastResolved;
     private ParentAttachmentStrategy parentAttachmentStrategy;
+
+    private boolean rowsVersionResolved;
+    private long rowsVersion;
 
     PrefetchProcessorNode(PrefetchProcessorNode parent, String segmentPath) {
         super(parent, segmentPath);
@@ -71,29 +74,70 @@ class PrefetchProcessorNode extends PrefetchTreeNode {
     }
 
     /**
+     * Returns the snapshot version of the relationship data of this node: the version of the oldest statement among
+     * its rows, or the parent node's version if this node has no rows. A relationship is written to a parent object
+     * only if the object does not already reflect a newer snapshot than the relationship data.
+     */
+    long rowsVersion() {
+        if (!rowsVersionResolved) {
+            rowsVersionResolved = true;
+
+            List<DataRow> rows = dataRows;
+            if ((rows == null || rows.isEmpty()) && this instanceof PrefetchProcessorJointNode jointNode) {
+                rows = jointNode.getResolvedRows();
+            }
+
+            if (rows != null && !rows.isEmpty()) {
+                long version = Long.MAX_VALUE;
+                for (DataRow row : rows) {
+                    version = Math.min(version, row.getVersion());
+                }
+                rowsVersion = version;
+            } else if (parent != null) {
+                rowsVersion = ((PrefetchProcessorNode) parent).rowsVersion();
+            } else {
+                rowsVersion = SnapshotVersion.NONE;
+            }
+        }
+
+        return rowsVersion;
+    }
+
+    /**
      * Creates a temporary association between child and parent objects. Permanent
      * relationship is set using the information created here, by calling
-     * 'connectToParents'.
+     * 'connectToParents'. The version is that of the snapshot the association was read from.
      */
-    void linkToParent(Persistent object, Persistent parent) {
+    void linkToParent(Persistent object, Persistent parent, long version) {
         if (parent != null && parent.getPersistenceState() != PersistenceState.HOLLOW) {
             // if a relationship is to-one (i.e. flattened to-one), can connect right away....
             // write directly to prevent changing persistence state.
             if (incoming instanceof ToOneProperty) {
-                if(relationshipNotModified(parent, incoming)) {
-                    incoming.writePropertyDirectly(parent, null, object);
-                }
+                store().withObjectLock(parent.getObjectId(), () -> {
+                    if (parent.getPersistenceState() != PersistenceState.HOLLOW
+                            && version >= parent.getSnapshotVersion()
+                            && relationshipNotModified(parent, incoming)) {
+                        incoming.writePropertyDirectly(parent, null, object);
+                    }
+                    return null;
+                });
             } else {
-                List<Persistent> peers = partitionByParent.computeIfAbsent(parent, p -> new ArrayList<>());
-                if (peers.contains(object)) {
+                Partition partition = partitionByParent.computeIfAbsent(parent, p -> new Partition());
+                if (partition.objects.contains(object)) {
                     // checking for duplicates is needed in case of nested joint prefetches
                     // when there is more than one row with the same combination of adjacent
                     // parent and child...
                     return;
                 }
-                peers.add(object);
+                partition.objects.add(object);
+                partition.version = Math.min(partition.version, version);
             }
         }
+    }
+
+    // every node of a tree belongs to the one context being resolved
+    private DataContextObjectStore store() {
+        return resolver.context.getObjectStore();
     }
 
     boolean relationshipNotModified(Persistent object, ArcProperty property) {
@@ -101,8 +145,7 @@ class PrefetchProcessorNode extends PrefetchTreeNode {
             return true;
         }
 
-        ObjectDiff diff = ((DataContext)object.getObjectContext())
-                .getObjectStore().getChangesByObjectId().get(object.getObjectId());
+        ObjectDiff diff = store().getChangesByObjectId().get(object.getObjectId());
         // check that there are no pending changes for that property
         if(diff == null) {
             return true;
@@ -126,7 +169,7 @@ class PrefetchProcessorNode extends PrefetchTreeNode {
             // use different strategy
 
             PrefetchProcessorNode parent = (PrefetchProcessorNode) getParent();
-            boolean parentObjectsExist = parent.getObjects() != null && parent.getObjects().size() > 0;
+            boolean parentObjectsExist = parent.getObjects() != null && !parent.getObjects().isEmpty();
             if (incoming.getRelationship().isToMany()) {
                 if (parentObjectsExist) {
                     connectToNodeParents(parent.getObjects());
@@ -144,10 +187,17 @@ class PrefetchProcessorNode extends PrefetchTreeNode {
     }
 
     private void clearNullRelationships(List<Persistent> parentObjects) {
+        // an unresolved to-one means a null FK in the parent row, so the parent rows version applies
+        long version = ((PrefetchProcessorNode) parent).rowsVersion();
+
         for (Persistent object : parentObjects) {
-            if (incoming.readPropertyDirectly(object) instanceof Fault) {
-                incoming.writePropertyDirectly(object, null, null);
-            }
+            store().withObjectLock(object.getObjectId(), () -> {
+                if (version >= object.getSnapshotVersion()
+                        && incoming.readPropertyDirectly(object) instanceof Fault) {
+                    incoming.writePropertyDirectly(object, null, null);
+                }
+                return null;
+            });
         }
     }
 
@@ -158,23 +208,32 @@ class PrefetchProcessorNode extends PrefetchTreeNode {
     }
 
     private void connectToFaultedParents() {
-        for (Map.Entry<Persistent, List<Persistent>> entry : partitionByParent.entrySet()) {
+        for (Map.Entry<Persistent, Partition> entry : partitionByParent.entrySet()) {
             connect(entry.getKey(), entry.getValue());
         }
     }
 
-    private void connect(Persistent object, List<Persistent> related) {
-        if (incoming.getRelationship().isToMany()) {
-            if(relationshipNotModified(object, incoming)) {
-                @SuppressWarnings("unchecked")
-                ToManyHolder<Persistent> toMany =
-                        (ToManyHolder<Persistent>) incoming.readProperty(object);
-                toMany.resolveWith(related != null ? related : new ArrayList<>(1));
-            }
-        } else {
+    private void connect(Persistent object, Partition partition) {
+        if (!incoming.getRelationship().isToMany()) {
             // this should've been handled elsewhere
             throw new CayenneRuntimeException("To-one relationship wasn't handled properly: %s", incoming.getName());
         }
+
+        // an empty list is the result of this node's rows too, so it carries their version
+        List<Persistent> related = partition != null ? partition.objects : new ArrayList<>(1);
+        long version = partition != null ? partition.version : rowsVersion();
+
+        store().withObjectLock(object.getObjectId(), () -> {
+            // a HOLLOW parent would need a fetch to get a list to resolve, so it is left to resolve lazily
+            if (object.getPersistenceState() != PersistenceState.HOLLOW
+                    && version >= object.getSnapshotVersion()
+                    && relationshipNotModified(object, incoming)) {
+                @SuppressWarnings("unchecked")
+                ToManyHolder<Persistent> toMany = (ToManyHolder<Persistent>) incoming.readProperty(object);
+                toMany.resolveWith(related);
+            }
+            return null;
+        });
     }
 
     List<DataRow> getDataRows() {
@@ -271,5 +330,13 @@ class PrefetchProcessorNode extends PrefetchTreeNode {
                 hasArcDiff = true;
             }
         }
+    }
+
+    /**
+     * Objects linked to one parent, and the version of the oldest snapshot the links were read from.
+     */
+    static final class Partition {
+        final List<Persistent> objects = new ArrayList<>();
+        long version = Long.MAX_VALUE;
     }
 }

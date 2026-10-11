@@ -28,8 +28,8 @@ import org.apache.cayenne.cache.NestedQueryCache;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.di.Inject;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @since 3.1
@@ -89,7 +89,10 @@ public class DataContextFactory implements ObjectContextFactory {
 
     /**
      * Creates a map of registered objects for a new ObjectStore, holding the objects with the kind of references
-     * selected by {@link RuntimeProperties#OBJECT_RETAIN_STRATEGY_PROPERTY}: weak (the default), soft or hard.
+     * selected by {@link RuntimeProperties#OBJECT_RETAIN_STRATEGY_PROPERTY}: weak (the default), soft or hard. The
+     * store is accessed concurrently, so the map must be thread-safe, with an atomic
+     * {@link Map#computeIfAbsent(Object, java.util.function.Function)} that lets the store register an object under
+     * an id exactly once.
      */
     protected Map<ObjectId, Persistent> createObjectMap() {
         String strategy = runtimeProperties.get(RuntimeProperties.OBJECT_RETAIN_STRATEGY_PROPERTY);
@@ -97,7 +100,7 @@ public class DataContextFactory implements ObjectContextFactory {
         return switch (strategy == null ? "weak" : strategy) {
             case "weak" -> ReferenceMap.weakValues();
             case "soft" -> ReferenceMap.softValues();
-            case "hard" -> new HashMap<>();
+            case "hard" -> new ConcurrentHashMap<>();
             default -> throw new CayenneRuntimeException("Unsupported retain strategy %s", strategy);
         };
     }

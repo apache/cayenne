@@ -124,9 +124,7 @@ class DataContextMergeHandler implements GraphChangeHandler {
                 SnapshotEvent decoratedEvent = snapshotEventDecorator.getEvent();
                 context.getObjectStore().processSnapshotEvent(decoratedEvent);
             } else {
-                synchronized (context.getObjectStore()) {
-                    diff.apply(this);
-                }
+                diff.apply(this);
             }
 
             // repost channel change event for our own children
@@ -140,17 +138,15 @@ class DataContextMergeHandler implements GraphChangeHandler {
         if (shouldProcessEvent(event)) {
 
             // per CAY-1737 event dispatches from parent context to children are
-            // non-blocking, this causes issues like CAY-1749. so we must
-            // synchronize ObjectStore updates here.
+            // non-blocking, this causes issues like CAY-1749. so the ObjectStore updates below are done under
+            // the object locks.
 
             // TODO: we can get here if a peer context is committed (ok) or
             // if our context was committed (not ok, since parent changes are
             // already applied in the commit thread) .. figure out an alt
             // filtering mechanism to avoid the duplicate object processing
 
-            synchronized (context.getObjectStore()) {
-                event.getDiff().apply(this);
-            }
+            event.getDiff().apply(this);
 
             // repost as change event for our own children
             context.fireDataChannelChanged(event.getPostedBy(), event.getDiff());
@@ -171,11 +167,11 @@ class DataContextMergeHandler implements GraphChangeHandler {
 
     @Override
     public void nodeRemoved(ObjectId id) {
-        DataContextObjectStore os = context.getObjectStore();
-        synchronized (os) {
-            os.processDeletedID(id);
-        }
+        context.getObjectStore().processDeletedID(id);
     }
+
+    // The changes applied below come from a commit of a peer or a child context, that carries no snapshot version, so
+    // they are applied unconditionally, under the object lock
 
     @Override
     public void nodePropertyChanged(
@@ -184,14 +180,18 @@ class DataContextMergeHandler implements GraphChangeHandler {
             Object oldValue,
             Object newValue) {
 
-        Persistent object = context.getObjectStore().getObject(id);
+        DataContextObjectStore store = context.getObjectStore();
+        Persistent object = store.getObject(id);
         if (object != null && object.getPersistenceState() != PersistenceState.HOLLOW) {
 
-            // do not override local changes....
             PropertyDescriptor p = propertyForId(id, property);
-            if (p.equals(p.readPropertyDirectly(object), oldValue)) {
-                p.writePropertyDirectly(object, oldValue, newValue);
-            }
+            store.withObjectLock(id, () -> {
+                // do not override local changes....
+                if (p.equals(p.readPropertyDirectly(object), oldValue)) {
+                    p.writePropertyDirectly(object, oldValue, newValue);
+                }
+                return null;
+            });
         }
     }
 
@@ -208,34 +208,38 @@ class DataContextMergeHandler implements GraphChangeHandler {
     // works the same for add and remove as long as we don't get too smart per TODO below.
     private void arcChanged(ObjectId id, Object arcId) {
 
-        final Persistent source = context.getObjectStore().getObject(id);
+        DataContextObjectStore store = context.getObjectStore();
+        final Persistent source = store.getObject(id);
         if (source != null && source.getPersistenceState() != PersistenceState.HOLLOW) {
 
-            final int state = source.getPersistenceState();
-
             PropertyDescriptor p = propertyForId(id, arcId.toString());
-            p.visit(new PropertyVisitor() {
+            store.withObjectLock(id, () -> {
+                int state = source.getPersistenceState();
 
-                public boolean visitAttribute(AttributeProperty property) {
-                    return false;
-                }
+                p.visit(new PropertyVisitor() {
 
-                public boolean visitToMany(ToManyProperty property) {
-                    if (state == PersistenceState.COMMITTED) {
-                        property.invalidate(source);
+                    public boolean visitAttribute(AttributeProperty property) {
+                        return false;
                     }
 
-                    return false;
-                }
+                    public boolean visitToMany(ToManyProperty property) {
+                        if (state == PersistenceState.COMMITTED) {
+                            property.invalidate(source);
+                        }
 
-                public boolean visitToOne(ToOneProperty property) {
-                    if (state == PersistenceState.COMMITTED) {
-                        property.invalidate(source);
+                        return false;
                     }
-                    // TODO: andrus, 11/25/2006 - handle replacement of clean properties
-                    // of dirty objects. See DataRowUtils for details.
-                    return false;
-                }
+
+                    public boolean visitToOne(ToOneProperty property) {
+                        if (state == PersistenceState.COMMITTED) {
+                            property.invalidate(source);
+                        }
+                        // TODO: andrus, 11/25/2006 - handle replacement of clean properties
+                        // of dirty objects. See DataRowUtils for details.
+                        return false;
+                    }
+                });
+                return null;
             });
         }
     }
