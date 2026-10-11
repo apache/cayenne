@@ -43,9 +43,10 @@ import java.util.function.BiConsumer;
 public class DataRow implements Map<String, Object>, Serializable {
 
     private final HashMap<String, Object> values;
-    protected final long version;
-    protected final String entityName;
-    protected long replacesVersion = Persistent.DEFAULT_VERSION;
+    private final long version;
+    private final String entityName;
+    
+    private long replacesVersion;
 
     /**
      * Creates a row over the given values, with the given entity name and snapshot version. The map is not copied:
@@ -58,6 +59,7 @@ public class DataRow implements Map<String, Object>, Serializable {
         this.values = values;
         this.entityName = entityName;
         this.version = version;
+        this.replacesVersion = Persistent.DEFAULT_VERSION;
     }
 
     /**
