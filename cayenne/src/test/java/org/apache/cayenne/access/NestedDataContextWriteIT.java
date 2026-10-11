@@ -392,9 +392,7 @@ public class NestedDataContextWriteIT {
             assertEquals(PersistenceState.MODIFIED, parentModifiedToMany
                     .getPersistenceState());
 
-            // here query is expected, as the parent was hollow and its to-many
-            // relationship
-            // is unresolved
+            // no query is expected: the parent list was resolved in the parent when the child resolved its own
             List<?> paintings = parentModifiedToMany.getPaintingArray();
             assertEquals(2, paintings.size());
         });

@@ -678,12 +678,16 @@ public class DataContext implements ObjectContext {
                 return new ArrayList<>(1);
             }
 
-            if (!resolveToMany || !(related instanceof ToManyHolder)) {
+            if (!resolveToMany || !(arc instanceof ToManyProperty)) {
                 return null;
             }
+
+            // a to-many fault is replaced with its holder, without a fetch yet
+            related = arc.readProperty(source);
         }
 
-        // copying a to-many holder iterates it, resolving it if it is still a fault
+        // copying a to-many holder iterates it, resolving it in this context if it is still a fault, so that the
+        // resolved objects are shared with the child contexts
         return switch (related) {
             case null -> new ArrayList<>(1);
             // to-many List or Set
@@ -1045,18 +1049,7 @@ public class DataContext implements ObjectContext {
         // but we had to expand the lock scope to ensure consistent behavior.
         synchronized (objectStore) {
             Persistent cachedObject = objectStore.getObject(id);
-
-            // return an existing object
             if (cachedObject != null) {
-
-                int state = cachedObject.getPersistenceState();
-
-                // TODO: Andrus, 1/24/2006 implement smart merge for modified objects...
-                if (state != PersistenceState.MODIFIED && state != PersistenceState.DELETED) {
-                    ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(id.getEntityName());
-                    descriptor.injectValueHolders(cachedObject);
-                }
-
                 return cachedObject;
             }
 
