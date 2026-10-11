@@ -21,8 +21,6 @@ package org.apache.cayenne;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataRowStoreFactory;
 import org.apache.cayenne.access.DefaultDataRowStoreFactory;
-import org.apache.cayenne.access.DefaultObjectMapRetainStrategy;
-import org.apache.cayenne.access.ObjectMapRetainStrategy;
 import org.apache.cayenne.access.flush.DataDomainFlushActionFactory;
 import org.apache.cayenne.access.flush.DefaultDataDomainFlushActionFactory;
 import org.apache.cayenne.access.flush.operation.DbRowOpSorter;
@@ -451,10 +449,6 @@ public class CoreModule implements Module {
         binder.bind(Key.get(BatchTranslator.class, BatchTranslator.DELETE)).to(DeleteBatchTranslator.class);
         binder.bind(SelectTranslator.class).to(DbAdapterDelegatedSelectTranslator.class);
         binder.bind(ProcedureTranslator.class).to(DbAdapterDelegatedProcedureTranslator.class);
-
-        // a default ObjectMapRetainStrategy used to create objects map for
-        // ObjectStore
-        binder.bind(ObjectMapRetainStrategy.class).to(DefaultObjectMapRetainStrategy.class);
 
         binder.bind(TransactionManager.class).to(DefaultTransactionManager.class);
         binder.bind(RowReaderFactory.class).to(DefaultRowReaderFactory.class);

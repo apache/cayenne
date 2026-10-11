@@ -18,12 +18,18 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.Persistent;
+import org.apache.cayenne.RuntimeProperties;
 import org.apache.cayenne.cache.NestedQueryCache;
 import org.apache.cayenne.cache.QueryCache;
-import org.apache.cayenne.RuntimeProperties;
 import org.apache.cayenne.di.Inject;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @since 3.1
@@ -32,9 +38,6 @@ public class DataContextFactory implements ObjectContextFactory {
 
     @Inject
     protected DataRowStoreFactory dataRowStoreFactory;
-
-    @Inject
-    protected ObjectMapRetainStrategy retainStrategy;
 
     @Inject
     protected RuntimeProperties runtimeProperties;
@@ -79,8 +82,23 @@ public class DataContextFactory implements ObjectContextFactory {
     protected DataContext.Builder newBuilder(DataChannel parent) {
         boolean sync = runtimeProperties.getBoolean(RuntimeProperties.CONTEXTS_SYNC_PROPERTY, false);
         return DataContext.builder(parent)
-                .objectMap(retainStrategy.createObjectMap())
+                .objectMap(createObjectMap())
                 .syncWithSnapshotCache(sync)
                 .queryCache(new NestedQueryCache(queryCache));
+    }
+
+    /**
+     * Creates a map of registered objects for a new ObjectStore, holding the objects with the kind of references
+     * selected by {@link RuntimeProperties#OBJECT_RETAIN_STRATEGY_PROPERTY}: weak (the default), soft or hard.
+     */
+    protected Map<ObjectId, Persistent> createObjectMap() {
+        String strategy = runtimeProperties.get(RuntimeProperties.OBJECT_RETAIN_STRATEGY_PROPERTY);
+
+        return switch (strategy == null ? "weak" : strategy) {
+            case "weak" -> ReferenceMap.weakValues();
+            case "soft" -> ReferenceMap.softValues();
+            case "hard" -> new HashMap<>();
+            default -> throw new CayenneRuntimeException("Unsupported retain strategy %s", strategy);
+        };
     }
 }

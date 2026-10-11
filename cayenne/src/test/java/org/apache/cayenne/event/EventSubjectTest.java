@@ -23,7 +23,6 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class EventSubjectTest {
@@ -33,13 +32,6 @@ public class EventSubjectTest {
         assertThrows(IllegalArgumentException.class, () -> EventSubject.getSubject(null, "Subject"));
         assertThrows(IllegalArgumentException.class, () -> EventSubject.getSubject(Object.class, null));
         assertThrows(IllegalArgumentException.class, () -> EventSubject.getSubject(Object.class, ""));
-    }
-
-    @Test
-    public void identicalSubject() {
-        EventSubject s1 = EventSubject.getSubject(EventSubjectTest.class, "MySubject");
-        EventSubject s2 = EventSubject.getSubject(EventSubjectTest.class, "MySubject");
-        assertSame(s1, s2);
     }
 
     @Test

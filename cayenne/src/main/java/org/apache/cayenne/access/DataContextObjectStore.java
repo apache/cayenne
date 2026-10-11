@@ -45,8 +45,6 @@ import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.PropertyVisitor;
 import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
-import org.apache.cayenne.util.SoftValueMap;
-import org.apache.cayenne.util.WeakValueMap;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -94,10 +92,8 @@ public class DataContextObjectStore implements ObjectStore {
         this.changeRecorder = new ChangeRecorder();
 
         this.objectMap = Objects.requireNonNull(objectMap, "Object map is null.");
-        if (objectMap instanceof SoftValueMap<ObjectId, Persistent> softValueMap) {
-            softValueMap.setKeyCleanupCallback(this::onObjectKeyCleanup);
-        } else if (objectMap instanceof WeakValueMap<ObjectId, Persistent> weakValueMap) {
-            weakValueMap.setKeyCleanupCallback(this::onObjectKeyCleanup);
+        if (objectMap instanceof ReferenceMap<ObjectId, Persistent> referenceMap) {
+            referenceMap.setKeyCleanupCallback(this::onObjectKeyCleanup);
         }
 
         this.changes = new HashMap<>();

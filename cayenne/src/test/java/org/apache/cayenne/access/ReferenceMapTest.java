@@ -17,26 +17,28 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.util;
+package org.apache.cayenne.access;
 
-import java.util.ConcurrentModificationException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * As WeakValueMap and SoftValueMap share almost all code from their super class
- * only one test is present for both of them.
- */
-public class WeakValueMapTest {
+public class ReferenceMapTest {
 
     @Test
     public void emptyConstructor() {
-        Map<String, Integer> map = new WeakValueMap<>();
+        Map<String, Integer> map = ReferenceMap.weakValues();
 
         assertTrue(map.isEmpty());
         assertEquals(0, map.size());
@@ -51,29 +53,14 @@ public class WeakValueMapTest {
     }
 
     @Test
-    public void capacityConstructor() {
-        Map<String, Integer> map = new WeakValueMap<>(42);
-
-        assertTrue(map.isEmpty());
-        assertEquals(0, map.size());
-        assertFalse(map.containsKey("nonexistent_key1"));
-        assertFalse(map.containsValue(42));
-        assertNull(map.get("nonexistent_key2"));
-        assertEquals(Integer.valueOf(42), map.getOrDefault("nonexistent_key2", 42));
-
-        assertEquals(0, map.values().size());
-        assertEquals(0, map.keySet().size());
-        assertEquals(0, map.entrySet().size());
-    }
-
-    @Test
-    public void mapConstructor() {
+    public void putAll() {
         Map<String, Integer> data = new HashMap<>();
         data.put("key_1", 123);
         data.put("key_2", 42);
         data.put("key_3", 543);
 
-        Map<String, Integer> map = new WeakValueMap<>(data);
+        Map<String, Integer> map = ReferenceMap.weakValues();
+        map.putAll(data);
 
         assertFalse(map.isEmpty());
         assertEquals(data.size(), map.size());
@@ -101,7 +88,8 @@ public class WeakValueMapTest {
         data.put("key_2", 42);
         data.put("key_3", 543);
 
-        Map<String, Integer> map = new WeakValueMap<>(data);
+        Map<String, Integer> map = ReferenceMap.weakValues();
+        map.putAll(data);
 
         map.put("key_4", 44);
         assertEquals(Integer.valueOf(44), map.get("key_4"));
@@ -118,7 +106,7 @@ public class WeakValueMapTest {
 
     @Test
     public void entrySetUpdateValue() {
-        Map<String, Integer> map = new WeakValueMap<>();
+        Map<String, Integer> map = ReferenceMap.weakValues();
         map.put("key_1", 123);
         map.put("key_2", 42);
         map.put("key_3", 543);
@@ -139,7 +127,7 @@ public class WeakValueMapTest {
 
     @Test
     public void equalsAndHashCode() throws Exception {
-        Map<String, Integer> map1 = new WeakValueMap<>();
+        Map<String, Integer> map1 = ReferenceMap.weakValues();
         map1.put("key_1", 123);
         map1.put("key_2", 42);
         map1.put("key_3", 543);
@@ -156,7 +144,7 @@ public class WeakValueMapTest {
 
     @Test
     public void entrySetValue() {
-        Map<String, Integer> map = new WeakValueMap<>(3);
+        Map<String, Integer> map = ReferenceMap.weakValues();
         map.put("key_1", 123);
         map.put("key_2", 42);
         map.put("key_3", 543);
@@ -182,41 +170,104 @@ public class WeakValueMapTest {
 
     @Test
     public void concurrentModification() {
-        Map<String, Integer> map = new WeakValueMap<>(3);
+        Map<String, Integer> map = ReferenceMap.weakValues();
         map.put("key_1", 123);
         map.put("key_2", 42);
         map.put("key_3", 543);
         map.put("key_4", 321);
         assertEquals(4, map.size());
 
-        assertThrows(ConcurrentModificationException.class, () -> {
-            for(Map.Entry<String, Integer> entry : map.entrySet()) {
-                if("key_2".equals(entry.getKey())) {
-                    map.remove("key_2");
-                }
+        // the map is concurrent, so a removal during iteration is allowed
+        for (Map.Entry<String, Integer> entry : map.entrySet()) {
+            if ("key_2".equals(entry.getKey())) {
+                map.remove("key_2");
             }
-        });
+        }
+
+        assertEquals(3, map.size());
+        assertFalse(map.containsKey("key_2"));
     }
 
     @Test
-    public void unsupportedEntryIteratorRemoval() {
-        Map<String, Integer> map = new WeakValueMap<>(3);
+    public void entryIteratorRemoval() {
+        Map<String, Integer> map = ReferenceMap.weakValues();
         map.put("key_1", 123);
         map.put("key_2", 42);
         map.put("key_3", 543);
         assertEquals(3, map.size());
 
-        assertThrows(UnsupportedOperationException.class, () -> {
-            Iterator<Map.Entry<String, Integer>> iterator = map.entrySet().iterator();
-            while(iterator.hasNext()) {
+        Iterator<Map.Entry<String, Integer>> iterator = map.entrySet().iterator();
+        assertThrows(IllegalStateException.class, iterator::remove);
+
+        while (iterator.hasNext()) {
+            if (iterator.next().getValue() == 42) {
                 iterator.remove();
             }
-        });
+        }
+
+        assertEquals(2, map.size());
+        assertFalse(map.containsKey("key_2"));
+        assertEquals(Integer.valueOf(123), map.get("key_1"));
+        assertEquals(Integer.valueOf(543), map.get("key_3"));
+    }
+
+    @Test
+    public void computeIfAbsent() {
+        Map<String, Integer> map = ReferenceMap.weakValues();
+        map.put("key_1", 123);
+
+        assertEquals(Integer.valueOf(123), map.computeIfAbsent("key_1", k -> fail("Value is present")));
+        assertEquals(Integer.valueOf(42), map.computeIfAbsent("key_2", k -> 42));
+        assertEquals(Integer.valueOf(42), map.get("key_2"));
+
+        assertNull(map.computeIfAbsent("key_3", k -> null));
+        assertFalse(map.containsKey("key_3"));
+        assertEquals(2, map.size());
+    }
+
+    @Test
+    public void computeIfAbsentConcurrently() throws Exception {
+        Map<String, Object> map = ReferenceMap.weakValues();
+
+        // every thread computes the same key; all must get the same instance, and the function must run once
+        int threads = 8;
+        AtomicInteger computations = new AtomicInteger();
+        CountDownLatch start = new CountDownLatch(1);
+        ExecutorService executor = Executors.newFixedThreadPool(threads);
+        try {
+            List<Future<Object>> results = new ArrayList<>();
+            for (int i = 0; i < threads; i++) {
+                results.add(executor.submit(() -> {
+                    start.await();
+                    return map.computeIfAbsent("key", k -> {
+                        computations.incrementAndGet();
+                        return new Object();
+                    });
+                }));
+            }
+            start.countDown();
+
+            Object first = results.getFirst().get();
+            for (Future<Object> result : results) {
+                assertSame(first, result.get());
+            }
+            assertEquals(1, computations.get());
+        } finally {
+            executor.shutdownNow();
+        }
+    }
+
+    @Test
+    public void softValues() {
+        Map<String, Integer> map = ReferenceMap.softValues();
+        map.put("key_1", 123);
+        assertEquals(Integer.valueOf(123), map.get("key_1"));
+        assertEquals(1, map.size());
     }
 
     @Test
     public void putNullValue() {
-        Map<Object, Object> map = new WeakValueMap<>();
+        Map<Object, Object> map = ReferenceMap.weakValues();
         assertThrows(NullPointerException.class, () -> map.put("1", null));
     }
 
@@ -225,7 +276,7 @@ public class WeakValueMapTest {
         Map<Object, Object> values = new HashMap<>();
         values.put("123", null);
 
-        Map<Object, Object> map = new WeakValueMap<>();
+        Map<Object, Object> map = ReferenceMap.weakValues();
         assertThrows(NullPointerException.class, () -> map.putAll(values));
     }
 

@@ -55,7 +55,6 @@ import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
 import org.apache.cayenne.util.ShallowMergeOperation;
 import org.apache.cayenne.util.Util;
-import org.apache.cayenne.util.WeakValueMap;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1241,7 +1240,7 @@ public class DataContext implements ObjectContext {
             return new DataContext(
                     channel,
                     snapshotCache,
-                    objectMap != null ? objectMap : new WeakValueMap<>(),
+                    objectMap != null ? objectMap : ReferenceMap.weakValues(),
                     syncWithSnapshotCache,
                     usingSharedSnapshotCache != null ? usingSharedSnapshotCache : isDomainSharedCache(),
                     validatingObjectsOnCommit,

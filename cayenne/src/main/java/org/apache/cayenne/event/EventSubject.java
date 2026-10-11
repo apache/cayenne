@@ -19,10 +19,7 @@
 
 package org.apache.cayenne.event;
 
-import java.util.Map;
-
 import java.util.Objects;
-import org.apache.cayenne.util.WeakValueMap;
 
 /**
  * This class encapsulates the String that is used to identify the <em>subject</em> that
@@ -37,9 +34,6 @@ import org.apache.cayenne.util.WeakValueMap;
  * 
  */
 public class EventSubject {
-
-    // a Map that will allow the values to be GC'ed
-    private static final Map<String, EventSubject> _registeredSubjects = new WeakValueMap<>();
 
     // Subject identifier in the form "com.foo.bar/SubjectName"
     private String _fullyQualifiedSubjectName;
@@ -61,18 +55,8 @@ public class EventSubject {
             throw new IllegalArgumentException("Subject name must not be null or empty.");
         }
 
-        String fullSubjectName = subjectOwner.getName() + "/" + subjectName;
-
-        EventSubject newSubject;
-        synchronized (_registeredSubjects) {
-            newSubject = _registeredSubjects.get(fullSubjectName);
-            if(newSubject == null) {
-                newSubject = new EventSubject(fullSubjectName);
-                _registeredSubjects.put(fullSubjectName, newSubject);
-            }
-        }
-
-        return newSubject;
+        // subjects are compared by name, so there is no need to intern the instances
+        return new EventSubject(subjectOwner.getName() + "/" + subjectName);
     }
 
     /**
