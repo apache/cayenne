@@ -41,10 +41,6 @@ public class DataRow extends HashMap<String, Object> {
 
     protected final long version;
     protected long replacesVersion = Persistent.DEFAULT_VERSION;
-
-    /**
-     * @since 3.0
-     */
     protected String entityName;
 
     /**
@@ -101,13 +97,6 @@ public class DataRow extends HashMap<String, Object> {
         return (target != null) ? ObjectId.of(entityName, target) : null;
     }
 
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this).append("values", super.toString()).append(
-                " version",
-                version).append(" replaces", replacesVersion).toString();
-    }
-
     /**
      * @since 3.0
      */
@@ -121,4 +110,13 @@ public class DataRow extends HashMap<String, Object> {
     public void setEntityName(String entityName) {
         this.entityName = entityName;
     }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+                .append("values", super.toString())
+                .append(" version", version)
+                .append(" replaces", replacesVersion).toString();
+    }
+
 }
