@@ -125,7 +125,7 @@ public final class ObjectSnapshots {
                 }
             }
 
-            return new DataRow(entity.getName(), values, version);
+            return DataRow.of(entity.getName(), values, version);
         }
 
         private void addAttribute(AttributeProperty property) {

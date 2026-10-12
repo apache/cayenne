@@ -32,7 +32,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-import java.util.HashMap;
+import java.util.Map;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -221,9 +221,9 @@ public class DataContextQueryCachingIT {
         List<Object> rows = new ArrayList<>(len);
 
         for (int i = 0; i < len; i++) {
-            DataRow a = new DataRow("Artist", new HashMap<>(3), SnapshotVersion.next());
-            a.put("ARTIST_ID", i + 1);
-            a.put("ARTIST_NAME", "A-" + (i + 1));
+            DataRow a = DataRow.of("Artist", Map.of(
+                    "ARTIST_ID", i + 1,
+                    "ARTIST_NAME", "A-" + (i + 1)), SnapshotVersion.next());
             rows.add(a);
         }
 

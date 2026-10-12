@@ -56,18 +56,88 @@ class DataRowUtils {
             ClassDescriptor descriptor,
             Persistent object,
             DataRow snapshot) {
+        mergeObjectWithSnapshot(context, descriptor, object, snapshot, null);
+    }
+
+    /**
+     * Merges changes reflected in snapshot map to the object. Changes made to attributes
+     * and to-one relationships will be merged. In case an object is already modified,
+     * modified properties will not be overwritten.
+     *
+     * @param plan the positions of the descriptor's columns in the snapshot, or null to look them up by name. A plan
+     *             of another layout than the snapshot's is ignored
+     */
+    static void mergeObjectWithSnapshot(
+            DataContext context,
+            ClassDescriptor descriptor,
+            Persistent object,
+            DataRow snapshot,
+            MergePlan plan) {
 
         int state = object.getPersistenceState();
 
+        if (plan != null && plan.layout != snapshot.getLayout()) {
+            plan = null;
+        }
+
         if (state == PersistenceState.HOLLOW) {
-            refreshObjectWithSnapshot(descriptor, object, snapshot, true);
+            refreshObjectWithSnapshot(descriptor, object, snapshot, true, plan);
         } else if (state != PersistenceState.COMMITTED && !descriptor.getEntity().isReadOnly()) {
             forceMergeWithSnapshot(context, descriptor, object, snapshot);
         } else {
             // do not invalidate relationships: to-many lists might have just been prefetched, and a to-one target
             // whose FK did not change is still valid
-            refreshObjectWithSnapshot(descriptor, object, snapshot, false);
+            refreshObjectWithSnapshot(descriptor, object, snapshot, false, plan);
         }
+    }
+
+    private static void refreshObjectWithSnapshot(
+            ClassDescriptor descriptor,
+            Persistent object,
+            DataRow snapshot,
+            boolean invalidateRelationships,
+            MergePlan plan) {
+
+        if (plan == null) {
+            refreshObjectWithSnapshot(descriptor, object, snapshot, invalidateRelationships);
+            return;
+        }
+
+        boolean isPartialSnapshot = false;
+
+        AttributeProperty[] attributes = plan.attributes;
+        int[] attributeIndexes = plan.attributeIndexes;
+        for (int i = 0; i < attributes.length; i++) {
+            AttributeProperty property = attributes[i];
+            int index = attributeIndexes[i];
+            if (index >= 0) {
+                property.writePropertyDirectly(object, null, snapshot.valueAt(index));
+            } else if (property.getAttribute().isLazy()) {
+                property.writePropertyDirectly(object, null, new AttributeFault(property));
+            } else {
+                property.writePropertyDirectly(object, null, null);
+                isPartialSnapshot = true;
+            }
+        }
+
+        if (invalidateRelationships) {
+            // "to many" relationships have no information to collect from snapshot
+            for (ToManyProperty property : plan.toManys) {
+                property.invalidate(object);
+            }
+            for (ToOneProperty property : plan.toOnes) {
+                property.invalidate(object);
+            }
+        } else {
+            ToOneProperty[] toOnes = plan.toOnes;
+            for (int i = 0; i < toOnes.length; i++) {
+                refreshToOne(toOnes[i], object, snapshot, plan.toOneFkIndexes[i], plan.toOneTargetNames[i]);
+            }
+        }
+
+        object.setPersistenceState(isPartialSnapshot
+                ? PersistenceState.HOLLOW
+                : PersistenceState.COMMITTED);
     }
 
     /**
@@ -169,7 +239,54 @@ class DataRowUtils {
             }
         }
 
-        if (nullFks == joins.size()) {
+        refreshToOne(property, object, current, nullFks, joins.size());
+    }
+
+    /**
+     * The same as {@link #refreshToOne(ToOneProperty, Persistent, DataRow)}, with the FK columns read by position.
+     *
+     * @param fkIndexes   the positions of the FK columns, join by join, or null when the FK does not define the arc
+     * @param targetNames the target PK column of each join
+     */
+    private static void refreshToOne(ToOneProperty property, Persistent object, DataRow snapshot, int[] fkIndexes,
+                                     String[] targetNames) {
+        Object current = property.readPropertyDirectly(object);
+        if (property.isFaultValue(current)) {
+            return;
+        }
+
+        if (fkIndexes == null) {
+            property.invalidate(object);
+            return;
+        }
+
+        Map<String, Object> currentPk = current != null ? ((Persistent) current).getObjectId().getIdSnapshot() : null;
+        int nullFks = 0;
+
+        for (int i = 0; i < fkIndexes.length; i++) {
+            if (fkIndexes[i] < 0) {
+                // partial snapshot
+                property.invalidate(object);
+                return;
+            }
+            Object fk = snapshot.valueAt(fkIndexes[i]);
+            if (fk == null) {
+                nullFks++;
+            } else if (currentPk == null || !Util.idValueEquals(fk, currentPk.get(targetNames[i]))) {
+                property.invalidate(object);
+                return;
+            }
+        }
+
+        refreshToOne(property, object, current, nullFks, fkIndexes.length);
+    }
+
+    /**
+     * Settles a to-one whose non-null FK columns all point to the current target.
+     */
+    private static void refreshToOne(ToOneProperty property, Persistent object, Object current, int nullFks,
+                                     int joins) {
+        if (nullFks == joins) {
             if (current != null) {
                 property.writePropertyDirectly(object, current, null);
             }

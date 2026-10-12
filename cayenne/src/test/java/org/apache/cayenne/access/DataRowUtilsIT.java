@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.access;
 
-import java.util.HashMap;
+import java.util.Map;
 import java.util.List;
 
 import org.apache.cayenne.DataRow;
@@ -84,9 +84,9 @@ public class DataRowUtilsIT {
                 .get(0);
         a1.setArtistName(n1);
 
-        DataRow s2 = new DataRow("Artist", new HashMap<>(2), SnapshotVersion.next());
-        s2.put("ARTIST_NAME", n2);
-        s2.put("DATE_OF_BIRTH", new java.util.Date());
+        DataRow s2 = DataRow.of("Artist", Map.of(
+                "ARTIST_NAME", n2,
+                "DATE_OF_BIRTH", new java.util.Date()), SnapshotVersion.next());
 
         ClassDescriptor d = context.getEntityResolver().getClassDescriptor("Artist");
         DataRowUtils.mergeObjectWithSnapshot(context, d, a1, s2);

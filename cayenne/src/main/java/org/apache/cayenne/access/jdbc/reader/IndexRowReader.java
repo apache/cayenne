@@ -16,15 +16,15 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+
 package org.apache.cayenne.access.jdbc.reader;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.RowLayout;
 import org.apache.cayenne.access.jdbc.RSColumn;
 
 import java.sql.ResultSet;
-
-import java.util.HashMap;
 
 /**
  * A {@link RowReader} that materializes a DataRow from a set of columns read at explicit, possibly non-contiguous,
@@ -34,9 +34,9 @@ import java.util.HashMap;
 class IndexRowReader implements RowReader<DataRow> {
 
     private final RSColumn[] columns;
+    private final RowLayout layout;
     private final int[] jdbcIndexes;
     private final String entityName;
-    private final int mapCapacity;
     private final long version;
 
     static RowReader<DataRow> of(RSColumn[] columns, int[] jdbcIndexes, String entityName, long version) {
@@ -45,24 +45,21 @@ class IndexRowReader implements RowReader<DataRow> {
 
     private IndexRowReader(RSColumn[] columns, int[] jdbcIndexes, String entityName, long version) {
         this.columns = columns;
+        this.layout = FullRowReader.layout(columns);
         this.jdbcIndexes = jdbcIndexes;
         this.entityName = entityName;
         this.version = version;
-        this.mapCapacity = (int) Math.ceil(columns.length / 0.75);
     }
 
     @Override
     public DataRow readRow(ResultSet resultSet) {
-        HashMap<String, Object> values = new HashMap<>(mapCapacity);
-
+        Object[] values = new Object[columns.length];
         try {
             for (int i = 0; i < columns.length; i++) {
                 RSColumn column = columns[i];
-                Object val = column.reader().materializeObject(resultSet, jdbcIndexes[i], column.rsType());
-                values.put(column.dataRowName(), val);
+                values[i] = column.reader().materializeObject(resultSet, jdbcIndexes[i], column.rsType());
             }
-
-            return new DataRow(entityName, values, version);
+            return DataRow.of(entityName, layout, values, version);
         } catch (CayenneRuntimeException ex) {
             throw ex;
         } catch (Exception ex) {

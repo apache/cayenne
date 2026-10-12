@@ -69,8 +69,8 @@ public class PrefetchProcessorTreeBuilderIT {
 
         final ClassDescriptor descriptor = resolver.getClassDescriptor("Artist");
         List<DataRow> dataRows = new ArrayList<>();
-        dataRows.add(new DataRow("Artist", new HashMap<>(4), SnapshotVersion.next()));
-        dataRows.add(new DataRow("Artist", new HashMap<>(4), SnapshotVersion.next()));
+        dataRows.add(DataRow.of("Artist", new HashMap<>(4), SnapshotVersion.next()));
+        dataRows.add(DataRow.of("Artist", new HashMap<>(4), SnapshotVersion.next()));
 
         QueryMetadata metadata = new MockQueryMetadata() {
 

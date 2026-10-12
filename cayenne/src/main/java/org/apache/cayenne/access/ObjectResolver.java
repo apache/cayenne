@@ -25,6 +25,7 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.RowLayout;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -57,6 +58,11 @@ class ObjectResolver {
 	boolean refreshObjects;
 	DataRowStore cache;
 	DescriptorResolutionStrategy descriptorResolutionStrategy;
+
+	// the plan of the rows being converted, for the root descriptor, and per subclass descriptor when there is
+	// inheritance. Rebuilt when rows of another layout come along
+	private MergePlan plan;
+	private Map<ClassDescriptor, MergePlan> subclassPlans;
 
 	ObjectResolver(DataContext context, ClassDescriptor descriptor, boolean refresh) {
 
@@ -115,14 +121,83 @@ class ObjectResolver {
 	Persistent objectFromDataRow(DataRow row) {
 		// determine entity to use
 		ClassDescriptor classDescriptor = descriptorResolutionStrategy.descriptorForRow(row);
-
-		// not using DataRow.createObjectId for performance reasons -
-		// ObjectResolver has all needed metadata already cached.
-		ObjectId anId = createObjectId(row, classDescriptor.getEntity(), CayennePath.EMPTY_PATH);
-		return objectFromDataRow(row, anId, classDescriptor);
+		MergePlan plan = planFor(row, classDescriptor);
+		ObjectId anId = createObjectId(row, classDescriptor, plan);
+		return objectFromDataRow(row, anId, classDescriptor, plan);
 	}
 
-	Persistent objectFromDataRow(DataRow row, ObjectId anId, ClassDescriptor classDescriptor) {
+	/**
+	 * Returns the plan of the columns of the given descriptor in rows of the given row's layout, or null if the row
+	 * has no layout, in which case the columns are looked up by name.
+	 */
+	MergePlan planFor(DataRow row, ClassDescriptor classDescriptor) {
+		RowLayout layout = row.getLayout();
+		if (layout == null) {
+			return null;
+		}
+
+		if (classDescriptor == descriptor) {
+			if (plan == null || plan.layout != layout) {
+				plan = MergePlan.of(layout, classDescriptor);
+			}
+			return plan;
+		}
+
+		if (subclassPlans == null) {
+			subclassPlans = new HashMap<>();
+		}
+		MergePlan subclassPlan = subclassPlans.get(classDescriptor);
+		if (subclassPlan == null || subclassPlan.layout != layout) {
+			subclassPlan = MergePlan.of(layout, classDescriptor);
+			subclassPlans.put(classDescriptor, subclassPlan);
+		}
+		return subclassPlan;
+	}
+
+	/**
+	 * Returns the id of the row's object, or null if the row has a null PK, which is possible when processing left
+	 * outer joint prefetches.
+	 *
+	 * @param plan the plan of the descriptor's columns in the row, as returned by {@link #planFor(DataRow,
+	 *             ClassDescriptor)}, or null to look the PK columns up by name
+	 */
+	ObjectId createObjectId(DataRow row, ClassDescriptor classDescriptor, MergePlan plan) {
+		if (plan == null) {
+			// not using DataRow.createObjectId for performance reasons -
+			// ObjectResolver has all needed metadata already cached.
+			return createObjectId(row, classDescriptor.getEntity(), CayennePath.EMPTY_PATH);
+		}
+
+		String name = classDescriptor.getEntity().getName();
+		int[] pkIndexes = plan.pkIndexes;
+
+		if (pkIndexes.length == 1) {
+			if (pkIndexes[0] < 0) {
+				throw new CayenneRuntimeException("No PK column '%s' found in data row.", plan.pkNames[0]);
+			}
+			Object val = row.valueAt(pkIndexes[0]);
+			return val != null ? ObjectId.of(name, plan.pkNames[0], val) : null;
+		}
+
+		Map<String, Object> idMap = new HashMap<>(pkIndexes.length * 2);
+		for (int i = 0; i < pkIndexes.length; i++) {
+			if (pkIndexes[i] < 0) {
+				throw new CayenneRuntimeException("No PK column '%s' found in data row.", plan.pkNames[i]);
+			}
+			Object val = row.valueAt(pkIndexes[i]);
+			if (val == null) {
+				return null;
+			}
+			idMap.put(plan.pkNames[i], val);
+		}
+		return ObjectId.of(name, idMap);
+	}
+
+	/**
+	 * @param plan the plan of the descriptor's columns in the row, as returned by {@link #planFor(DataRow,
+	 *             ClassDescriptor)}, or null to look the columns up by name
+	 */
+	Persistent objectFromDataRow(DataRow row, ObjectId anId, ClassDescriptor classDescriptor, MergePlan plan) {
 
 		// this condition is valid - see comments on 'createObjectId' for
 		// details
@@ -145,7 +220,7 @@ class ObjectResolver {
 				if (isDirty(object)) {
 					return false;
 				}
-				merge(object, row, classDescriptor);
+				merge(object, row, classDescriptor, plan);
 				return true;
 			});
 
@@ -155,7 +230,7 @@ class ObjectResolver {
 		}
 
 		return store.withChangesLock(() -> store.withObjectLock(anId, () -> {
-			merge(object, row, classDescriptor);
+			merge(object, row, classDescriptor, plan);
 			return object;
 		}));
 	}
@@ -169,14 +244,14 @@ class ObjectResolver {
 	 * Merges the row into the object under the object lock held by the caller, unless the object already reflects a
 	 * newer snapshot than the row.
 	 */
-	private void merge(Persistent object, DataRow row, ClassDescriptor classDescriptor) {
+	private void merge(Persistent object, DataRow row, ClassDescriptor classDescriptor, MergePlan plan) {
 		switch (object.getPersistenceState()) {
 		case PersistenceState.COMMITTED:
 		case PersistenceState.MODIFIED:
 		case PersistenceState.DELETED:
 			// process the above only if refresh is requested...
 			if (refreshObjects && row.getVersion() >= object.getSnapshotVersion()) {
-				DataRowUtils.mergeObjectWithSnapshot(context, classDescriptor, object, row);
+				DataRowUtils.mergeObjectWithSnapshot(context, classDescriptor, object, row, plan);
 				object.setSnapshotVersion(row.getVersion());
 			}
 			break;
@@ -185,10 +260,11 @@ class ObjectResolver {
 			if (!refreshObjects) {
 				DataRow cachedRow = cache.getCachedSnapshot(object.getObjectId());
 				if (cachedRow != null) {
+					// the cached row may be of another layout, which the merge detects and looks the columns up by name
 					row = cachedRow;
 				}
 			}
-			DataRowUtils.mergeObjectWithSnapshot(context, classDescriptor, object, row);
+			DataRowUtils.mergeObjectWithSnapshot(context, classDescriptor, object, row, plan);
 			object.setSnapshotVersion(row.getVersion());
 			break;
 		default:

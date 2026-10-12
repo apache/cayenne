@@ -37,7 +37,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
-import java.util.HashMap;
+import java.util.Map;
 import java.util.Date;
 import java.util.List;
 
@@ -339,10 +339,10 @@ public class NestedDataContextReadIT {
 
         DataContext childContext = (DataContext) runtime.newContext(context);
 
-        DataRow row = new DataRow("Artist", new HashMap<>(8), SnapshotVersion.next());
-        row.put("ARTIST_ID", 5L);
-        row.put("ARTIST_NAME", "A");
-        row.put("DATE_OF_BIRTH", new Date());
+        DataRow row = DataRow.of("Artist", Map.of(
+                "ARTIST_ID", 5L,
+                "ARTIST_NAME", "A",
+                "DATE_OF_BIRTH", new Date()), SnapshotVersion.next());
 
         Artist artist = childContext.objectFromDataRow(Artist.class, row);
         assertNotNull(artist);

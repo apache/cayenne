@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.transformer;
 
+import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.access.jdbc.PSBatchParameter;
 import org.apache.cayenne.crypto.map.ColumnMapper;
@@ -30,7 +31,6 @@ import org.apache.cayenne.map.DbAttribute;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @since 4.0
@@ -51,7 +51,7 @@ public class DefaultTransformerFactory implements TransformerFactory {
     @Override
     public MapTransformer decryptor(RSColumn[] columns, Object sampleRow) {
 
-        if (!(sampleRow instanceof Map)) {
+        if (!(sampleRow instanceof DataRow)) {
             return null;
         }
 

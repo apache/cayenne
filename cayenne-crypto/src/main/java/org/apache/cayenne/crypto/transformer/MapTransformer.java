@@ -18,12 +18,18 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.transformer;
 
-import java.util.Map;
+import org.apache.cayenne.DataRow;
 
 /**
  * @since 4.0
  */
 public interface MapTransformer {
 
-    void transform(Map<String, Object> map);
+    /**
+     * Returns a row with the given row's encrypted values decrypted. Rows are immutable, so the result is a new row
+     * unless there is nothing to decrypt.
+     *
+     * @since 5.0
+     */
+    DataRow transform(DataRow row);
 }

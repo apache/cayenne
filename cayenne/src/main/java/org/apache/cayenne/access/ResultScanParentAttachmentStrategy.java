@@ -38,6 +38,10 @@ class ResultScanParentAttachmentStrategy implements ParentAttachmentStrategy {
     private final DbJoin[] joins;
     private final PrefetchProcessorNode node;
 
+    // the join columns in the child rows and in the parent rows
+    private final RowColumns targetColumns;
+    private final RowColumns sourceColumns;
+
     // TODO: the ivar below makes this strategy STATEFUL and non-reusable. If we need a
     // stateless version down the line, will need to move this to the
     // PrefetchProcessorNode.
@@ -62,6 +66,15 @@ class ResultScanParentAttachmentStrategy implements ParentAttachmentStrategy {
         }
 
         joins = dbRelationships.get(0).getJoins().toArray(new DbJoin[0]);
+
+        String[] targetNames = new String[joins.length];
+        String[] sourceNames = new String[joins.length];
+        for (int i = 0; i < joins.length; i++) {
+            targetNames[i] = joins[i].getTargetName();
+            sourceNames[i] = joins[i].getSourceName();
+        }
+        targetColumns = new RowColumns(targetNames);
+        sourceColumns = new RowColumns(sourceNames);
     }
 
     public void linkToParent(DataRow row, Persistent object) {
@@ -73,12 +86,12 @@ class ResultScanParentAttachmentStrategy implements ParentAttachmentStrategy {
         Object key;
         if (joins.length > 1) {
             List<Object> values = new ArrayList<>(joins.length);
-            for (DbJoin join : joins) {
-                values.add(row.get(join.getTargetName()));
+            for (int i = 0; i < joins.length; i++) {
+                values.add(targetColumns.get(row, i));
             }
             key = values;
         } else {
-            key = row.get(joins[0].getTargetName());
+            key = targetColumns.get(row, 0);
         }
 
         List<Persistent> parents = partitionByChild.get(key);
@@ -119,12 +132,12 @@ class ResultScanParentAttachmentStrategy implements ParentAttachmentStrategy {
             Object key;
             if (joins.length > 1) {
                 List<Object> values = new ArrayList<>(joins.length);
-                for (DbJoin join : joins) {
-                    values.add(row.get(join.getSourceName()));
+                for (int j = 0; j < joins.length; j++) {
+                    values.add(sourceColumns.get(row, j));
                 }
                 key = values;
             } else {
-                key = row.get(joins[0].getSourceName());
+                key = sourceColumns.get(row, 0);
             }
 
             List<Persistent> parents = partitionByChild.computeIfAbsent(key, k -> new ArrayList<>());

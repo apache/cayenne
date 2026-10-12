@@ -117,11 +117,10 @@ public class SimpleIdIncrementalFaultListDataRowsIT {
         DataRow row = artists.getFirst();
         assertEquals(19, list.indexOf(row));
 
-        DataRow clone = new DataRow(row.getEntityName(), new HashMap<>(row), SnapshotVersion.next());
+        DataRow clone = DataRow.of(row.getEntityName(), new HashMap<>(row), SnapshotVersion.next());
         assertEquals(19, list.indexOf(clone));
 
-        row.remove("ARTIST_ID");
-        assertEquals(-1, list.indexOf(row));
+        assertEquals(-1, list.indexOf(without(row, "ARTIST_ID")));
     }
 
     @Test
@@ -137,8 +136,7 @@ public class SimpleIdIncrementalFaultListDataRowsIT {
         DataRow row = artists.get(0);
         assertEquals(1, list.indexOf(row));
 
-        row.remove("ARTIST_NAME");
-        assertEquals(-1, list.indexOf(row));
+        assertEquals(-1, list.indexOf(without(row, "ARTIST_NAME")));
     }
 
     @Test
@@ -154,8 +152,7 @@ public class SimpleIdIncrementalFaultListDataRowsIT {
         DataRow row = artists.get(0);
         assertEquals(2, list.lastIndexOf(row));
 
-        row.remove("ARTIST_NAME");
-        assertEquals(-1, list.lastIndexOf(row));
+        assertEquals(-1, list.lastIndexOf(without(row, "ARTIST_NAME")));
     }
 
     @Test
@@ -167,8 +164,7 @@ public class SimpleIdIncrementalFaultListDataRowsIT {
         DataRow row = artists.get(0);
         assertEquals(19, list.lastIndexOf(row));
 
-        row.remove("ARTIST_ID");
-        assertEquals(-1, list.lastIndexOf(row));
+        assertEquals(-1, list.lastIndexOf(without(row, "ARTIST_ID")));
     }
 
     @Test
@@ -201,5 +197,10 @@ public class SimpleIdIncrementalFaultListDataRowsIT {
 
             counter++;
         }
+    }
+    private static DataRow without(DataRow row, String key) {
+        HashMap<String, Object> values = new HashMap<>(row);
+        values.remove(key);
+        return DataRow.of(row.getEntityName(), values, row.getVersion());
     }
 }

@@ -22,6 +22,7 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.RowLayout;
 import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
@@ -45,6 +46,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 
 /**
@@ -56,9 +58,15 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
 
     RSColumn[] columns;
     int[] idIndices;
-    int rowCapacity;
     Map<Map, Persistent> resolved;
     List<DataRow> resolvedRows;
+
+    // the layout of this node's rows, keyed by the columns' result set names
+    private RowLayout rowLayout;
+
+    // the positions of this node's columns in the flat rows, resolved for the layout of the last flat row seen
+    private RowLayout flatLayout;
+    private int[] flatIndexes;
 
     PrefetchProcessorJointNode(PrefetchProcessorNode parent, String segmentPath) {
         super(parent, segmentPath);
@@ -103,12 +111,34 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
         // this is reasonable to expect...
 
         Map<String, Object> id = new TreeMap<>();
+        int[] indexes = flatRow.getLayout() != null ? flatIndexes(flatRow) : null;
         for (int idIndex : idIndices) {
-            Object value = flatRow.get(columns[idIndex].dataRowName());
-            id.put(columns[idIndex].rsName(), value);
+            RSColumn column = columns[idIndex];
+            Object value = indexes != null ? valueAt(flatRow, indexes[idIndex]) : flatRow.get(column.dataRowName());
+            id.put(column.rsName(), value);
         }
 
         return id;
+    }
+
+    /**
+     * Returns the positions of this node's columns in the given flat row, which has a layout.
+     */
+    private int[] flatIndexes(DataRow flatRow) {
+        RowLayout layout = flatRow.getLayout();
+        if (layout != flatLayout) {
+            int[] indexes = new int[columns.length];
+            for (int i = 0; i < columns.length; i++) {
+                indexes[i] = layout.indexOf(columns[i].dataRowName());
+            }
+            flatIndexes = indexes;
+            flatLayout = layout;
+        }
+        return flatIndexes;
+    }
+
+    private static Object valueAt(DataRow row, int index) {
+        return index < 0 ? null : row.valueAt(index);
     }
 
     /**
@@ -132,17 +162,26 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
      * version.
      */
     DataRow rowFromFlatRow(DataRow flatRow) {
-        HashMap<String, Object> values = new HashMap<>(rowCapacity);
-
         // extract subset of flat row columns, recasting to the target keys
-        for (RSColumn column : columns) {
-            values.put(column.rsName(), flatRow.get(column.dataRowName()));
+        Object[] values = new Object[columns.length];
+        if (flatRow.getLayout() != null) {
+            int[] indexes = flatIndexes(flatRow);
+            for (int i = 0; i < columns.length; i++) {
+                values[i] = valueAt(flatRow, indexes[i]);
+            }
+        } else {
+            for (int i = 0; i < columns.length; i++) {
+                values[i] = flatRow.get(columns[i].dataRowName());
+            }
         }
+
+        DataRow row = DataRow.of(resolver.getEntity().getName(), rowLayout, values, flatRow.getVersion());
 
         // since JDBC row reader won't inject JOINED entity name, we have to detect it here...
         ClassDescriptor descriptor = resolver.getDescriptor();
-        ObjEntity entity = descriptor.getEntityInheritanceTree().entityMatchingRow(values);
-        return new DataRow(entity == null ? null : entity.getName(), values, flatRow.getVersion());
+        ObjEntity entity = descriptor.getEntityInheritanceTree().entityMatchingRow(row);
+        String entityName = entity == null ? null : entity.getName();
+        return Objects.equals(entityName, row.getEntityName()) ? row : row.withEntityName(entityName);
     }
 
     /**
@@ -232,9 +271,14 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
         }
 
         int size = targetSource.size();
-        this.rowCapacity = (int) Math.ceil(size / 0.75);
         this.columns = new RSColumn[size];
         targetSource.values().toArray(columns);
+
+        String[] names = new String[size];
+        for (int i = 0; i < size; i++) {
+            names[i] = columns[i].rsName();
+        }
+        this.rowLayout = new RowLayout(names);
     }
 
     private RSColumn appendColumn(

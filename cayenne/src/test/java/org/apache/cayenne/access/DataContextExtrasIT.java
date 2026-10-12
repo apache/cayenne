@@ -41,7 +41,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.sql.Types;
-import java.util.HashMap;
+import java.util.Map;
 import java.util.Date;
 import java.util.List;
 
@@ -204,8 +204,7 @@ public class DataContextExtrasIT {
     @Test
     public void idObjectFromDataRow() {
 
-        DataRow row = new DataRow("Artist", new HashMap<>(10), SnapshotVersion.next());
-        row.put("ARTIST_ID", 100000);
+        DataRow row = DataRow.of("Artist", Map.of("ARTIST_ID", 100000), SnapshotVersion.next());
         Persistent obj = context.objectFromDataRow(Artist.class, row);
         assertNotNull(obj);
         assertTrue(context.getObjectStore().registeredObjects().contains(obj));
@@ -217,9 +216,9 @@ public class DataContextExtrasIT {
     @Test
     public void partialObjectFromDataRow() {
 
-        DataRow row = new DataRow("Artist", new HashMap<>(10), SnapshotVersion.next());
-        row.put("ARTIST_ID", 100001);
-        row.put("ARTIST_NAME", "ArtistXYZ");
+        DataRow row = DataRow.of("Artist", Map.of(
+                "ARTIST_ID", 100001,
+                "ARTIST_NAME", "ArtistXYZ"), SnapshotVersion.next());
         Persistent obj = context.objectFromDataRow(Artist.class, row);
         assertNotNull(obj);
         assertTrue(context.getObjectStore().registeredObjects().contains(obj));
@@ -230,10 +229,10 @@ public class DataContextExtrasIT {
     @Test
     public void fullObjectFromDataRow() {
 
-        DataRow row = new DataRow("Artist", new HashMap<>(10), SnapshotVersion.next());
-        row.put("ARTIST_ID", 123456);
-        row.put("ARTIST_NAME", "ArtistXYZ");
-        row.put("DATE_OF_BIRTH", new Date());
+        DataRow row = DataRow.of("Artist", Map.of(
+                "ARTIST_ID", 123456,
+                "ARTIST_NAME", "ArtistXYZ",
+                "DATE_OF_BIRTH", new Date()), SnapshotVersion.next());
         Artist obj = context.objectFromDataRow(Artist.class, row);
 
         assertTrue(context.getObjectStore().registeredObjects().contains(obj));

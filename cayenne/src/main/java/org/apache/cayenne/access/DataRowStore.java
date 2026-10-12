@@ -24,6 +24,7 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.RowLayout;
 import org.apache.cayenne.access.event.SnapshotEvent;
 import org.apache.cayenne.event.EventBridge;
 import org.apache.cayenne.event.EventManager;
@@ -410,16 +411,38 @@ public class DataRowStore {
      */
     private static DataRow diff(DataRow oldSnapshot, DataRow newSnapshot) {
         HashMap<String, Object> diff = null;
-        for (Map.Entry<String, Object> entry : oldSnapshot.entrySet()) {
-            Object newValue = newSnapshot.get(entry.getKey());
-            if (!Objects.deepEquals(entry.getValue(), newValue)) {
-                if (diff == null) {
-                    diff = new HashMap<>(oldSnapshot.size());
+
+        RowLayout layout = oldSnapshot.getLayout();
+        if (layout != null) {
+            // the old row is an array row: walk its columns by position instead of through entrySet(), which would
+            // allocate an entry per column. The new row is normally read by a later statement, so it has a layout of
+            // its own, and its values are looked up by name. The layouts are the same object only when both rows came
+            // from the same reader, and then the new row can be read by position too
+            boolean sameLayout = layout == newSnapshot.getLayout();
+            int size = layout.size();
+            for (int i = 0; i < size; i++) {
+                String name = layout.nameAt(i);
+                Object newValue = sameLayout ? newSnapshot.valueAt(i) : newSnapshot.get(name);
+                if (!Objects.deepEquals(oldSnapshot.valueAt(i), newValue)) {
+                    if (diff == null) {
+                        diff = new HashMap<>(size);
+                    }
+                    diff.put(name, newValue);
                 }
-                diff.put(entry.getKey(), newValue);
+            }
+        } else {
+            for (Map.Entry<String, Object> entry : oldSnapshot.entrySet()) {
+                Object newValue = newSnapshot.get(entry.getKey());
+                if (!Objects.deepEquals(entry.getValue(), newValue)) {
+                    if (diff == null) {
+                        diff = new HashMap<>(oldSnapshot.size());
+                    }
+                    diff.put(entry.getKey(), newValue);
+                }
             }
         }
-        return diff != null ? new DataRow(newSnapshot.getEntityName(), diff, newSnapshot.getVersion()) : null;
+
+        return diff != null ? DataRow.of(newSnapshot.getEntityName(), diff, newSnapshot.getVersion()) : null;
     }
 
     private void processUpdateDiffs(Map<ObjectId, DataRow> diffs) {
@@ -436,9 +459,7 @@ public class DataRowStore {
                     continue;
                 }
 
-                DataRow newSnapshot = new DataRow(oldSnapshot.getEntityName(), new HashMap<>(oldSnapshot), version);
-                newSnapshot.putAll(entry.getValue());
-                snapshots.put(key, newSnapshot);
+                snapshots.put(key, oldSnapshot.merged(entry.getValue(), version));
             }
         }
     }

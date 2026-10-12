@@ -37,7 +37,7 @@ public class SnapshotVersionTest {
         long v2 = SnapshotVersion.next();
         assertNotEquals(SnapshotVersion.NONE, v1);
         assertTrue(v2 > v1);
-        assertTrue(new DataRow("E", new HashMap<>(10), SnapshotVersion.next()).getVersion() > v2);
+        assertTrue(DataRow.of("E", new HashMap<>(10), SnapshotVersion.next()).getVersion() > v2);
     }
 
     @Test

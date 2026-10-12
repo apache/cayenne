@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.reader;
 
+import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.access.jdbc.reader.DefaultRowReaderFactory;
 import org.apache.cayenne.access.jdbc.reader.RowReader;
@@ -40,7 +41,6 @@ import org.apache.cayenne.query.ResultSegments;
 import org.apache.cayenne.query.ScalarResultSegment;
 
 import java.sql.ResultSet;
-import java.util.Map;
 
 public class CryptoRowReaderFactoryDecorator extends DefaultRowReaderFactory {
 
@@ -163,16 +163,8 @@ public class CryptoRowReaderFactoryDecorator extends DefaultRowReaderFactory {
         @Override
         public Object readRow(ResultSet resultSet) {
             Object row = delegateReader.readRow(resultSet);
-
             ensureDecryptorCompiled(row);
-
-            if (decryptor != null) {
-                @SuppressWarnings("unchecked")
-                Map<String, Object> map = (Map<String, Object>) row;
-                decryptor.transform(map);
-            }
-
-            return row;
+            return decryptor != null && row instanceof DataRow dataRow ? decryptor.transform(dataRow) : row;
         }
     }
 

@@ -22,7 +22,6 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
 import java.util.ArrayList;
@@ -53,12 +52,10 @@ class HierarchicalObjectResolverNode extends PrefetchObjectResolver {
             // determine entity to use
             ClassDescriptor classDescriptor = descriptorResolutionStrategy.descriptorForRow(row);
 
-            // not using DataRow.createObjectId for performance reasons -
-            // ObjectResolver
-            // has all needed metadata already cached.
-            ObjectId anId = createObjectId(row, classDescriptor.getEntity(), CayennePath.EMPTY_PATH);
+            MergePlan plan = planFor(row, classDescriptor);
+            ObjectId anId = createObjectId(row, classDescriptor, plan);
 
-            Persistent object = objectFromDataRow(row, anId, classDescriptor);
+            Persistent object = objectFromDataRow(row, anId, classDescriptor, plan);
             if (object == null) {
                 throw new CayenneRuntimeException("Can't build Object from row: %s", row);
             }

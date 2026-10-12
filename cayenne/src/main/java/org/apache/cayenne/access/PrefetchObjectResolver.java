@@ -39,14 +39,14 @@ class PrefetchObjectResolver extends ObjectResolver {
     }
 
     @Override
-    Persistent objectFromDataRow(DataRow row, ObjectId anId, ClassDescriptor classDescriptor) {
+    Persistent objectFromDataRow(DataRow row, ObjectId anId, ClassDescriptor classDescriptor, MergePlan plan) {
         // skip processing of objects that were already processed in this
         // transaction, either by this node or by some other node...
         // added per CAY-1695 ..
 
         Persistent object = seen.get(anId);
         if (object == null) {
-            object = super.objectFromDataRow(row, anId, classDescriptor);
+            object = super.objectFromDataRow(row, anId, classDescriptor, plan);
             seen.put(anId, object);
         }
 

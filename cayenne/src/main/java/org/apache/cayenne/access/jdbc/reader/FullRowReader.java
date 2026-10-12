@@ -16,10 +16,12 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+
 package org.apache.cayenne.access.jdbc.reader;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.RowLayout;
 import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.map.EntityInheritanceTree;
 import org.apache.cayenne.map.ObjEntity;
@@ -27,8 +29,7 @@ import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
 import java.sql.ResultSet;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Objects;
 
 /**
  * @since 3.0
@@ -36,7 +37,7 @@ import java.util.Map;
 class FullRowReader implements RowReader<DataRow> {
 
     private final RSColumn[] columns;
-    private final int mapCapacity;
+    private final RowLayout layout;
     private final long version;
     protected final String entityName;
 
@@ -54,36 +55,46 @@ class FullRowReader implements RowReader<DataRow> {
         return new FullRowReader(columns, entityName, version);
     }
 
+    /**
+     * Returns a layout of the columns' DataRow names, in column order.
+     */
+    static RowLayout layout(RSColumn[] columns) {
+        String[] names = new String[columns.length];
+        for (int i = 0; i < columns.length; i++) {
+            names[i] = columns[i].dataRowName();
+        }
+        return new RowLayout(names);
+    }
+
     private FullRowReader(RSColumn[] columns, String entityName, long version) {
         this.columns = columns;
+        this.layout = layout(columns);
         this.entityName = entityName;
         this.version = version;
-        this.mapCapacity = (int) Math.ceil(columns.length / 0.75);
     }
 
     @Override
     public DataRow readRow(ResultSet resultSet) {
-        HashMap<String, Object> values = new HashMap<>(mapCapacity);
+        Object[] values = new Object[columns.length];
         readColumns(resultSet, values);
-        return new DataRow(entityName(values), values, version);
+        return row(DataRow.of(entityName, layout, values, version));
     }
 
     /**
-     * Returns the entity name of a row with the given values.
+     * Returns the row to return for the given row read with the default entity name.
      */
-    protected String entityName(Map<String, Object> values) {
-        return entityName;
+    protected DataRow row(DataRow row) {
+        return row;
     }
 
-    private void readColumns(ResultSet resultSet, Map<String, Object> target) {
+    private void readColumns(ResultSet resultSet, Object[] target) {
         int w = columns.length;
 
         try {
             for (int i = 0; i < w; i++) {
                 RSColumn column = columns[i];
                 // jdbc column indexes start from 1, not 0 unlike everywhere else
-                Object val = column.reader().materializeObject(resultSet, i + 1, column.rsType());
-                target.put(column.dataRowName(), val);
+                target[i] = column.reader().materializeObject(resultSet, i + 1, column.rsType());
             }
         } catch (CayenneRuntimeException ex) {
             throw ex;
@@ -103,9 +114,18 @@ class FullRowReader implements RowReader<DataRow> {
         }
 
         @Override
-        protected String entityName(Map<String, Object> values) {
-            ObjEntity entity = entityInheritanceTree.entityMatchingRow(values);
-            return entity != null ? entity.getName() : entityName;
+        protected DataRow row(DataRow row) {
+            return withMatchingEntity(row, entityInheritanceTree, entityName);
         }
+    }
+
+    /**
+     * Returns the row with the name of the entity of the inheritance tree that the row matches, which is the given
+     * row when that is its entity already or no entity matches.
+     */
+    static DataRow withMatchingEntity(DataRow row, EntityInheritanceTree tree, String defaultEntityName) {
+        ObjEntity entity = tree.entityMatchingRow(row);
+        String entityName = entity != null ? entity.getName() : defaultEntityName;
+        return Objects.equals(entityName, row.getEntityName()) ? row : row.withEntityName(entityName);
     }
 }

@@ -243,7 +243,7 @@ public class DataContextConcurrentResolveIT {
     private static DataRow copy(DataRow row, String title, long version) {
         HashMap<String, Object> values = new HashMap<>(row);
         values.put("PAINTING_TITLE", title);
-        return new DataRow(row.getEntityName(), values, version);
+        return DataRow.of(row.getEntityName(), values, version);
     }
 
     @Test

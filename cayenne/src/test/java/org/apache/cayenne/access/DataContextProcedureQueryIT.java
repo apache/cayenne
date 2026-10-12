@@ -427,7 +427,7 @@ public class DataContextProcedureQueryIT  {
      * An ugly hack - converting row keys to uppercase ... Tracked via CAY-148.
      */
     protected DataRow uppercaseConverter(DataRow row) {
-        DataRow converted = new DataRow(row.getEntityName(), new HashMap<>(row.size()), SnapshotVersion.next());
+        DataRow converted = DataRow.of(row.getEntityName(), new HashMap<>(row.size()), SnapshotVersion.next());
 
         for (Entry<String, Object> entry : row.entrySet()) {
             converted.put(entry.getKey().toString().toUpperCase(), entry.getValue());

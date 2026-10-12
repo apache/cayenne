@@ -18,19 +18,30 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.transformer;
 
+import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.cayenne.DataRow;
+import org.apache.cayenne.RowLayout;
 import org.apache.cayenne.crypto.transformer.bytes.BytesDecryptor;
 import org.apache.cayenne.crypto.transformer.value.ValueDecryptor;
 
 /**
+ * Decrypts the encrypted columns of a row. A row with a {@link RowLayout} is decrypted by position, with the column
+ * positions resolved once per layout, i.e. once per result set, as the transformer is created per row reader. Not
+ * thread-safe.
+ *
  * @since 4.0
  */
 public class DefaultMapTransformer implements MapTransformer {
 
-    private String[] mapKeys;
-    private ValueDecryptor[] transformers;
-    private BytesDecryptor bytesDecryptor;
+    private final String[] mapKeys;
+    private final ValueDecryptor[] transformers;
+    private final BytesDecryptor bytesDecryptor;
+
+    // the positions of mapKeys in the layout of the last row seen, -1 for a key the layout does not have
+    private RowLayout layout;
+    private int[] indexes;
 
     public DefaultMapTransformer(String[] mapKeys, ValueDecryptor[] transformers, BytesDecryptor bytesDecryptor) {
         this.mapKeys = mapKeys;
@@ -39,17 +50,61 @@ public class DefaultMapTransformer implements MapTransformer {
     }
 
     @Override
-    public void transform(Map<String, Object> map) {
+    public DataRow transform(DataRow row) {
+        RowLayout rowLayout = row.getLayout();
+        return rowLayout != null ? transformByPosition(row, rowLayout) : transformByName(row);
+    }
 
-        int len = mapKeys.length;
+    private DataRow transformByPosition(DataRow row, RowLayout rowLayout) {
+        int[] indexes = indexes(rowLayout);
 
-        for (int i = 0; i < len; i++) {
-            Object value = map.get(mapKeys[i]);
+        // the values are copied on the first encrypted non-null value, so a row with nothing to decrypt is returned
+        // as is
+        Object[] values = null;
+        for (int i = 0; i < indexes.length; i++) {
+            int index = indexes[i];
+            if (index < 0) {
+                continue;
+            }
 
+            Object value = row.valueAt(index);
             if (value != null) {
-                Object transformed = transformers[i].decrypt(bytesDecryptor, value);
-                map.put(mapKeys[i], transformed);
+                if (values == null) {
+                    values = new Object[rowLayout.size()];
+                    for (int j = 0; j < values.length; j++) {
+                        values[j] = row.valueAt(j);
+                    }
+                }
+                values[index] = transformers[i].decrypt(bytesDecryptor, value);
             }
         }
+
+        return values != null ? DataRow.of(row.getEntityName(), rowLayout, values, row.getVersion()) : row;
+    }
+
+    private int[] indexes(RowLayout rowLayout) {
+        if (rowLayout != layout) {
+            int[] resolved = new int[mapKeys.length];
+            for (int i = 0; i < mapKeys.length; i++) {
+                resolved[i] = rowLayout.indexOf(mapKeys[i]);
+            }
+            indexes = resolved;
+            layout = rowLayout;
+        }
+        return indexes;
+    }
+
+    private DataRow transformByName(DataRow row) {
+        Map<String, Object> decrypted = null;
+        for (int i = 0; i < mapKeys.length; i++) {
+            Object value = row.get(mapKeys[i]);
+            if (value != null) {
+                if (decrypted == null) {
+                    decrypted = new HashMap<>();
+                }
+                decrypted.put(mapKeys[i], transformers[i].decrypt(bytesDecryptor, value));
+            }
+        }
+        return decrypted != null ? row.merged(decrypted, row.getVersion()) : row;
     }
 }
