@@ -104,30 +104,28 @@ public class DbImportRunTool {
                                                                PrefsLocator prefsLocator) {
         DbImportRunTool tool = new DbImportRunTool(prefsLocator);
 
-        McpSchema.Tool descriptor = new McpSchema.Tool(
-                NAME,
-                null,
-                """
+        McpSchema.Tool descriptor = McpSchema.Tool.builder(
+                        NAME,
+                        Map.of(
+                                "type", "object",
+                                "properties", Map.of(
+                                        "projectPath", Map.of(
+                                                "type", "string",
+                                                "description", "Absolute path to the top-level Cayenne project descriptor (cayenne-*.xml), not a DataMap file"),
+                                        "dataMap", Map.of(
+                                                "type", "string",
+                                                "description", "Name of the target DataMap as it appears in the <map name='...'> element of the project descriptor")
+                                ),
+                                "required", List.of("projectPath", "dataMap")
+                        ))
+                .description("""
                         Run Cayenne dbimport for a named DataMap. Reads JDBC connection from the \
                         DBConnector stored for this DataMap in CayenneModeler preferences. If the \
                         DataMap has a <reverse-engineering> block its filters are applied; otherwise \
                         the full database schema is imported. Returns token-count summary and \
                         resolved connection metadata; actual schema changes are written to the \
-                        DataMap XML on disk.""",
-                Map.of(
-                        "type", "object",
-                        "properties", Map.of(
-                                "projectPath", Map.of(
-                                        "type", "string",
-                                        "description", "Absolute path to the top-level Cayenne project descriptor (cayenne-*.xml), not a DataMap file"),
-                                "dataMap", Map.of(
-                                        "type", "string",
-                                        "description", "Name of the target DataMap as it appears in the <map name='...'> element of the project descriptor")
-                        ),
-                        "required", List.of("projectPath", "dataMap")
-                ),
-                null, null, null
-        );
+                        DataMap XML on disk.""")
+                .build();
 
         return new McpServerFeatures.SyncToolSpecification(descriptor, (exchange, request) -> {
             Map<String, Object> args = request.arguments();
@@ -146,7 +144,7 @@ public class DbImportRunTool {
             }
 
             return McpSchema.CallToolResult.builder()
-                    .content(List.of(new McpSchema.TextContent(json)))
+                    .content(List.of(McpSchema.TextContent.builder(json).build()))
                     .isError(false)
                     .build();
         });

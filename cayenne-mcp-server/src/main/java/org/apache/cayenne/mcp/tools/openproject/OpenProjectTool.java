@@ -72,23 +72,21 @@ public class OpenProjectTool {
     public static McpServerFeatures.SyncToolSpecification spec(McpJsonMapper jsonMapper, PrefsLocator prefsLocator) {
         OpenProjectTool tool = new OpenProjectTool(prefsLocator);
 
-        McpSchema.Tool descriptor = new McpSchema.Tool(
-                NAME,
-                null,
-                """
+        McpSchema.Tool descriptor = McpSchema.Tool.builder(
+                        NAME,
+                        Map.of(
+                                "type", "object",
+                                "properties", Map.of(
+                                        "projectPath", Map.of(
+                                                "type", "string",
+                                                "description", "Absolute path to the top-level Cayenne project descriptor (cayenne-*.xml)")
+                                ),
+                                "required", List.of("projectPath")
+                        ))
+                .description("""
                         Launch CayenneModeler with the given project file. Non-blocking; waits for \
-                        the Modeler to report a startup handshake before returning.""",
-                Map.of(
-                        "type", "object",
-                        "properties", Map.of(
-                                "projectPath", Map.of(
-                                        "type", "string",
-                                        "description", "Absolute path to the top-level Cayenne project descriptor (cayenne-*.xml)")
-                        ),
-                        "required", List.of("projectPath")
-                ),
-                null, null, null
-        );
+                        the Modeler to report a startup handshake before returning.""")
+                .build();
 
         return new McpServerFeatures.SyncToolSpecification(descriptor, (exchange, request) -> {
             Map<String, Object> args = request.arguments();
@@ -106,7 +104,7 @@ public class OpenProjectTool {
             }
 
             return McpSchema.CallToolResult.builder()
-                    .content(List.of(new McpSchema.TextContent(json)))
+                    .content(List.of(McpSchema.TextContent.builder(json).build()))
                     .isError(false)
                     .build();
         });

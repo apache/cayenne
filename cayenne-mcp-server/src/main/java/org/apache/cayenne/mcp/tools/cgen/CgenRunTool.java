@@ -75,26 +75,24 @@ public class CgenRunTool {
     public static McpServerFeatures.SyncToolSpecification spec(McpJsonMapper jsonMapper) {
         CgenRunTool tool = new CgenRunTool();
 
-        McpSchema.Tool descriptor = new McpSchema.Tool(
-                NAME,
-                null,
-                """
+        McpSchema.Tool descriptor = McpSchema.Tool.builder(
+                        NAME,
+                        Map.of(
+                                "type", "object",
+                                "properties", Map.of(
+                                        "projectPath", Map.of(
+                                                "type", "string",
+                                                "description", "Absolute path to the top-level Cayenne project descriptor (cayenne-*.xml), not a DataMap file"),
+                                        "dataMap", Map.of(
+                                                "type", "string",
+                                                "description", "Name of the target DataMap as it appears in the <map name='...'> element of the project descriptor")
+                                ),
+                                "required", List.of("projectPath", "dataMap")
+                        ))
+                .description("""
                         Run Cayenne class generator (cgen) for a named DataMap. Returns a JSON report of what was \
-                        written, what was already up-to-date, and any errors.""",
-                Map.of(
-                        "type", "object",
-                        "properties", Map.of(
-                                "projectPath", Map.of(
-                                        "type", "string",
-                                        "description", "Absolute path to the top-level Cayenne project descriptor (cayenne-*.xml), not a DataMap file"),
-                                "dataMap", Map.of(
-                                        "type", "string",
-                                        "description", "Name of the target DataMap as it appears in the <map name='...'> element of the project descriptor")
-                        ),
-                        "required", List.of("projectPath", "dataMap")
-                ),
-                null, null, null
-        );
+                        written, what was already up-to-date, and any errors.""")
+                .build();
 
         return new McpServerFeatures.SyncToolSpecification(descriptor, (exchange, request) -> {
             Map<String, Object> args = request.arguments();
@@ -113,7 +111,7 @@ public class CgenRunTool {
             }
 
             return McpSchema.CallToolResult.builder()
-                    .content(List.of(new McpSchema.TextContent(json)))
+                    .content(List.of(McpSchema.TextContent.builder(json).build()))
                     .isError(false)
                     .build();
         });
