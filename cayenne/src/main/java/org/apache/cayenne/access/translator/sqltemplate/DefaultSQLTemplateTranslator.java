@@ -28,7 +28,7 @@ import org.apache.cayenne.access.translator.sqltemplate.parser.Node;
 import org.apache.cayenne.access.translator.sqltemplate.parser.ParseException;
 import org.apache.cayenne.access.translator.sqltemplate.parser.SQLTemplateParser;
 import org.apache.cayenne.access.translator.sqltemplate.parser.TokenMgrError;
-import org.apache.cayenne.util.concurrentlinkedhashmap.ConcurrentLinkedHashMap;
+import org.apache.cayenne.util.ClockMap;
 
 import java.io.ByteArrayInputStream;
 import java.util.HashMap;
@@ -41,13 +41,13 @@ import java.util.Map;
  */
 public class DefaultSQLTemplateTranslator implements SQLTemplateTranslator {
 
-    private final ConcurrentLinkedHashMap<String, Node> templateCache;
+    private final ClockMap<String, Node> templateCache;
     private final TemplateParserPool parserPool;
     private final TemplateContextFactory contextFactory;
 
     public DefaultSQLTemplateTranslator(@Inject TemplateContextFactory contextFactory) {
         this.contextFactory = contextFactory;
-        this.templateCache = new ConcurrentLinkedHashMap.Builder<String, Node>().maximumWeightedCapacity(100).build();
+        this.templateCache = new ClockMap<>(100);
         this.parserPool = new TemplateParserPool();
     }
 

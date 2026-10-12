@@ -15,9 +15,6 @@ originally developed at The ObjectStyle Group and donated to the ASF by its auth
 * This software includes Ashwood graph library developed by Andriy Shapochka.
 (http://objectstyle.org/ashwood/)
 
-* This software includes concurrentlinkedhashmap library developed by Google Inc.
-(http://code.google.com/p/concurrentlinkedhashmap/)
-
 #if($binary == "true")
 GUI TOOLS
 

@@ -37,7 +37,6 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -70,7 +69,8 @@ public class DataRowStoreIT {
     }
 
     /**
-     * Tests LRU cache behavior.
+     * The cache is bounded: an insert past the maximum size evicts a snapshot. Which one is up to the eviction policy,
+     * which only approximates LRU.
      */
     @Test
     public void maxSize() throws Exception {
@@ -106,7 +106,7 @@ public class DataRowStoreIT {
                 Collections.<ObjectId>emptyList());
         assertEquals(2, cache.size());
 
-        // this addition must overflow the cache, and throw out the first item
+        // this addition must overflow the cache, and throw out one of the items
         cache.processSnapshotChanges(
                 this,
                 diff3,
@@ -114,9 +114,14 @@ public class DataRowStoreIT {
                 Collections.<ObjectId>emptyList(),
                 Collections.<ObjectId>emptyList());
         assertEquals(2, cache.size());
-        assertNotNull(cache.getCachedSnapshot(key2));
-        assertNotNull(cache.getCachedSnapshot(key3));
-        assertNull(cache.getCachedSnapshot(key1));
+
+        int cached = 0;
+        for (ObjectId key : List.of(key1, key2, key3)) {
+            if (cache.getCachedSnapshot(key) != null) {
+                cached++;
+            }
+        }
+        assertEquals(2, cached);
     }
 
     /**

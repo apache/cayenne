@@ -28,7 +28,7 @@ import org.apache.cayenne.access.event.SnapshotEvent;
 import org.apache.cayenne.event.EventBridge;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.event.EventSubject;
-import org.apache.cayenne.util.concurrentlinkedhashmap.ConcurrentLinkedHashMap;
+import org.apache.cayenne.util.ClockMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,8 +74,8 @@ public class DataRowStore {
 
     /**
      * @param name         DataRowStore name. Used to identify this DataRowStore in events, etc. Can't be null.
-     * @param maxSize      max number of cached snapshots. The cache is LRU, evicting the oldest snapshots past
-     *                     this size.
+     * @param maxSize      max number of cached snapshots. Past this size the cache evicts the snapshots least
+     *                     recently read.
      * @param eventManager EventManager that should be used for posting and receiving events.
      * @since 5.0
      */
@@ -89,9 +89,7 @@ public class DataRowStore {
         this.eventManager = eventManager;
         this.maxSize = maxSize;
 
-        this.snapshots = new ConcurrentLinkedHashMap.Builder<ObjectId, DataRow>()
-                .maximumWeightedCapacity(maxSize)
-                .build();
+        this.snapshots = new ClockMap<>(maxSize);
     }
 
     private EventSubject createSubject() {

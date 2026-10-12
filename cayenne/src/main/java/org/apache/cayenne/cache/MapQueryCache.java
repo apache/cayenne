@@ -20,15 +20,15 @@ package org.apache.cayenne.cache;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.query.QueryMetadata;
-import org.apache.cayenne.util.concurrentlinkedhashmap.ConcurrentLinkedHashMap;
+import org.apache.cayenne.util.ClockMap;
 
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * A default implementation of the {@link QueryCache} interface that stores data in a
- * non-expiring LRUMap.
+ * A default implementation of the {@link QueryCache} interface that stores data in non-expiring bounded maps, one
+ * per cache group, evicting the entries least recently used.
  * 
  * @since 3.0
  */
@@ -154,7 +154,7 @@ public class MapQueryCache implements QueryCache {
             return map;
         }
 
-        map = new ConcurrentLinkedHashMap.Builder<String, List<?>>().maximumWeightedCapacity(maxSize).build();
+        map = new ClockMap<>(maxSize);
         cacheGroups.put(cacheName, map);
         return map;
     }
