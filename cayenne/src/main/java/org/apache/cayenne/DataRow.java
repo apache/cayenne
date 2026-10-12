@@ -45,8 +45,6 @@ public class DataRow implements Map<String, Object>, Serializable {
     private final HashMap<String, Object> values;
     private final long version;
     private final String entityName;
-    
-    private long replacesVersion;
 
     /**
      * Creates a row over the given values, with the given entity name and snapshot version. The map is not copied:
@@ -59,7 +57,6 @@ public class DataRow implements Map<String, Object>, Serializable {
         this.values = values;
         this.entityName = entityName;
         this.version = version;
-        this.replacesVersion = Persistent.DEFAULT_VERSION;
     }
 
     /**
@@ -77,17 +74,6 @@ public class DataRow implements Map<String, Object>, Serializable {
      */
     public long getVersion() {
         return version;
-    }
-
-    public long getReplacesVersion() {
-        return replacesVersion;
-    }
-
-    /**
-     * Sets the version of DataRow replaced by this one in the store.
-     */
-    public void setReplacesVersion(long replacesVersion) {
-        this.replacesVersion = replacesVersion;
     }
 
     @Override
@@ -177,8 +163,7 @@ public class DataRow implements Map<String, Object>, Serializable {
     public String toString() {
         return new ToStringBuilder(this)
                 .append("values", values)
-                .append(" version", version)
-                .append(" replaces", replacesVersion).toString();
+                .append(" version", version).toString();
     }
 
 }

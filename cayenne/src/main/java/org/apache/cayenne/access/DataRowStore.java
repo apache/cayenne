@@ -162,8 +162,6 @@ public class DataRowStore {
                     if (cachedSnapshot.equals(newSnapshot)) {
                         continue;
                     }
-
-                    newSnapshot.setReplacesVersion(cachedSnapshot.getVersion());
                 }
 
                 if (modified == null) {

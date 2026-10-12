@@ -80,7 +80,6 @@ class PostprocessVisitor implements DbRowOpVisitor<Void> {
         if (dbRow.getObject() != null) {
             Persistent persistent = dbRow.getObject();
             context.getObjectStore().withObjectLock(persistent.getObjectId(), () -> {
-                dataRow.setReplacesVersion(persistent.getSnapshotVersion());
                 persistent.setSnapshotVersion(dataRow.getVersion());
                 return null;
             });

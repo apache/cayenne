@@ -145,7 +145,6 @@ public class DataRowStoreIT {
             assertTrue(events.isEmpty(), "a new snapshot is not an update");
 
             DataRow same = new DataRow("Artist", new HashMap<>(old), SnapshotVersion.next());
-            same.setReplacesVersion(old.getVersion());
             cache.processSnapshotChanges(this, Map.of(key, same), Collections.emptyList(), Collections.emptyList(),
                     Collections.emptyList());
             assertTrue(events.isEmpty(), "an unchanged snapshot is not broadcast");
@@ -153,7 +152,6 @@ public class DataRowStoreIT {
             DataRow changed = new DataRow("Artist",
                     new HashMap<>(Map.of("ARTIST_ID", 1, "ARTIST_NAME", "b", "DATE_OF_BIRTH", "d")),
                     SnapshotVersion.next());
-            changed.setReplacesVersion(same.getVersion());
             cache.processSnapshotChanges(this, Map.of(key, changed), Collections.emptyList(),
                     Collections.emptyList(), Collections.emptyList());
             assertEquals(1, events.size());
