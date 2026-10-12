@@ -158,8 +158,13 @@ public class DataRowStore {
                         continue;
                     }
 
-                    // a newer snapshot replaces the cached one even if the data did not change, so that the cache
-                    // carries the version of the object merged from it. No event is sent for an unchanged snapshot
+                    // the same data from a later statement: nothing to store and nothing to announce. The cached
+                    // version thus tracks the last statement that changed the data, not the last one that read it,
+                    // which keeps a cache hit free of a map write and an LRU reorder
+                    if (cachedSnapshot.equals(newSnapshot)) {
+                        continue;
+                    }
+
                     newSnapshot.setReplacesVersion(cachedSnapshot.getVersion());
                 }
 

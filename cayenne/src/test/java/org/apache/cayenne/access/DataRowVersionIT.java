@@ -176,4 +176,32 @@ public class DataRowVersionIT {
         assertSame(cached, cache.getCachedSnapshot(a.getObjectId()));
         assertEquals(cached.getVersion(), a.getSnapshotVersion());
     }
+
+    @Test
+    public void equalRowOfLaterStatementKeepsCachedRow() {
+        Artist a = ObjectSelect.query(Artist.class).where(Artist.ARTIST_NAME.eq("a1")).selectOne(context);
+        DataRowStore cache = context.getObjectStore().getDataRowCache();
+        DataRow cached = cache.getCachedSnapshot(a.getObjectId());
+
+        // a later statement that read the same data leaves the cache alone: the cached row keeps its version, as it
+        // tracks the last change of the data, not the last read
+        ObjectSelect.query(Artist.class).where(Artist.ARTIST_NAME.eq("a1")).selectOne(context);
+        assertSame(cached, cache.getCachedSnapshot(a.getObjectId()));
+        assertTrue(a.getSnapshotVersion() > cached.getVersion(), "object reflects the later statement");
+    }
+
+    @Test
+    public void changedRowOfLaterStatementReplacesCachedRow() throws Exception {
+        Artist a = ObjectSelect.query(Artist.class).where(Artist.ARTIST_NAME.eq("a1")).selectOne(context);
+        DataRowStore cache = context.getObjectStore().getDataRowCache();
+        DataRow cached = cache.getCachedSnapshot(a.getObjectId());
+
+        tArtist.update().set("ARTIST_NAME", "a1+").where("ARTIST_ID", 1).execute();
+        ObjectSelect.query(Artist.class).where(Artist.ARTIST_NAME.eq("a1+")).selectOne(context);
+
+        DataRow replaced = cache.getCachedSnapshot(a.getObjectId());
+        assertEquals("a1+", replaced.get("ARTIST_NAME"));
+        assertTrue(replaced.getVersion() > cached.getVersion(), cached.getVersion() + " -> " + replaced.getVersion());
+        assertEquals(replaced.getVersion(), a.getSnapshotVersion());
+    }
 }

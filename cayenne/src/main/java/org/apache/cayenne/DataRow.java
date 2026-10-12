@@ -36,7 +36,7 @@ import java.util.function.BiConsumer;
  * Every DataRow carries a {@link org.apache.cayenne.access.SnapshotVersion snapshot version}, the version of the
  * operation that produced the row. All rows read by one SQL statement share a version, as do all snapshots of one
  * commit, and an operation that runs later has a greater version. Two rows of the same ObjectId with the same version
- * therefore hold the same data.
+ * therefore hold the same data. A cached row keeps its version though while later statements read the same data.
  *
  * @since 1.1
  */
