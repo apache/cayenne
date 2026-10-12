@@ -34,8 +34,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.reflect.AttributeProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
-import org.apache.cayenne.reflect.PropertyVisitor;
-import org.apache.cayenne.reflect.ToManyProperty;
+import org.apache.cayenne.reflect.PropertyDescriptor;
 import org.apache.cayenne.reflect.ToOneProperty;
 
 import java.util.HashMap;
@@ -66,7 +65,7 @@ public final class ObjectSnapshots {
         return new Builder(context.getEntityResolver(), context.getObjectStore(), object, version).build();
     }
 
-    private static final class Builder implements PropertyVisitor {
+    private static final class Builder {
 
         private final EntityResolver resolver;
         private final DataContextObjectStore objectStore;
@@ -90,7 +89,15 @@ public final class ObjectSnapshots {
             ObjEntity entity = resolver.getObjEntity(object);
             ClassDescriptor descriptor = resolver.getClassDescriptor(entity.getName());
 
-            descriptor.visitProperties(this);
+            // to-many relationships contribute nothing to the snapshot
+            for (PropertyDescriptor property : descriptor.getProperties()) {
+                switch (property) {
+                    case AttributeProperty attribute -> addAttribute(attribute);
+                    case ToOneProperty toOne -> addToOne(toOne);
+                    default -> {
+                    }
+                }
+            }
 
             // process object id map
             // we should ignore any object id values if a corresponding attribute
@@ -121,32 +128,23 @@ public final class ObjectSnapshots {
             return new DataRow(entity.getName(), values, version);
         }
 
-        @Override
-        public boolean visitAttribute(AttributeProperty property) {
+        private void addAttribute(AttributeProperty property) {
             ObjAttribute objAttr = property.getAttribute();
             // processing compound attributes correctly
             values.put(objAttr.getDbAttributePath().value(), property.readPropertyDirectly(object));
-            return true;
         }
 
-        @Override
-        public boolean visitToMany(ToManyProperty property) {
-            // do nothing
-            return true;
-        }
-
-        @Override
-        public boolean visitToOne(ToOneProperty property) {
+        private void addToOne(ToOneProperty property) {
             ObjRelationship rel = property.getRelationship();
 
             // if target doesn't propagate its key value, skip it
             if (rel.isSourceIndependentFromTargetChange()) {
-                return true;
+                return;
             }
 
             Object targetObject = property.readPropertyDirectly(object);
             if (targetObject == null) {
-                return true;
+                return;
             }
 
             // if target is Fault, get id attributes from stored snapshot to avoid unneeded fault triggering
@@ -163,7 +161,7 @@ public final class ObjectSnapshots {
                     values.put(key, storedSnapshot.get(key));
                 }
 
-                return true;
+                return;
             }
 
             // target is resolved, and we have an FK->PK to it, so extract it from target...
@@ -172,13 +170,12 @@ public final class ObjectSnapshots {
 
             // this may happen in uncommitted objects - see the warning in the JavaDoc of this method.
             if (idParts.isEmpty()) {
-                return true;
+                return;
             }
 
             DbRelationship dbRel = rel.getDbRelationships().getFirst();
             Map<String, Object> fk = dbRel.srcFkSnapshotWithTargetSnapshot(idParts);
             values.putAll(fk);
-            return true;
         }
     }
 }

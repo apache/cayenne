@@ -24,7 +24,11 @@ package org.apache.cayenne.reflect;
  * operations that should be performed differently on different properties.
  * 
  * @since 3.0
+ * @deprecated iterate over {@link ClassDescriptor#getProperties()}, {@link ClassDescriptor#getDeclaredProperties()}
+ * or {@link ClassDescriptor#getAllProperties()} and switch on the property type ({@link AttributeProperty},
+ * {@link ToOneProperty}, {@link ToManyProperty}) instead.
  */
+@Deprecated(since = "5.0", forRemoval = true)
 public interface PropertyVisitor {
 
     boolean visitAttribute(AttributeProperty property);

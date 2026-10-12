@@ -348,81 +348,66 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
         ClassDescriptor superDescriptor = descriptor.getSuperclassDescriptor();
         if (superDescriptor != null) {
 
-            superDescriptor.visitProperties(new PropertyVisitor() {
-
-                public boolean visitAttribute(AttributeProperty property) {
-                    // decorate super property to return an overridden attribute
-                    descriptor.addSuperProperty(new AttributePropertyDecorator(descriptor, property));
-                    return true;
-                }
-
-                public boolean visitToMany(ToManyProperty property) {
-                    descriptor.addSuperProperty(property);
-                    return true;
-                }
-
-                public boolean visitToOne(ToOneProperty property) {
-                    descriptor.addSuperProperty(property);
-                    return true;
-                }
-            });
+            for (PropertyDescriptor property : superDescriptor.getProperties()) {
+                // decorate super attribute to return an overridden attribute
+                descriptor.addSuperProperty(property instanceof AttributeProperty attribute
+                        ? new AttributePropertyDecorator(descriptor, attribute)
+                        : property);
+            }
         }
     }
 
     protected void indexAdditionalDbEntities(final PersistentDescriptor descriptor) {
-        descriptor.visitProperties(new PropertyVisitor() {
-            @Override
-            public boolean visitAttribute(AttributeProperty property) {
-                if(!property.getAttribute().isFlattened()) {
-                    return true;
+        for (PropertyDescriptor property : descriptor.getProperties()) {
+            switch (property) {
+                case AttributeProperty attribute -> indexFlattenedAttribute(descriptor, attribute);
+                case ToOneProperty toOne -> indexFlattenedToOne(descriptor, toOne);
+                default -> {
                 }
-
-                Iterator<Object> it = property.getAttribute().getDbPathIterator();
-                CayennePath path = CayennePath.EMPTY_PATH;
-                while(it.hasNext()) {
-                    Object next = it.next();
-                    if(next instanceof DbRelationship) {
-                        DbRelationship rel = (DbRelationship)next;
-                        // When deleting an ObjEntity that has flattened attributes we also delete the target
-                        // DbEntity row for the flattened attribute (see RootRowOpProcessor.visitDelete),
-                        // EXCEPT if the target dbEntity has a toMany relationship with the source dbEntity
-                        // (as there may then be other records in the source entity with references to it)
-                        // OR delete rules prevent it (i.e. if there are any ObjRelationships matching the
-                        // flattened attributes DbRelationship that don't have a CASCADE delete rule).
-                        boolean blockCascadeDelete = rel.getReverseRelationship().isToMany()
-                                                  || descriptor.getEntity().getRelationships().stream()
-                                                     .filter(r -> r.getDbRelationships().equals(List.of(rel)))
-                                                     .anyMatch(r -> r.getDeleteRule() != DeleteRule.CASCADE);
-
-                        path = path.dot(rel.getName());
-                        descriptor.addAdditionalDbEntity(path, rel.getTargetEntity(), blockCascadeDelete);
-                    }
-                }
-                return true;
             }
+        }
+    }
 
-            @Override
-            public boolean visitToOne(ToOneProperty property) {
-                if(!property.getRelationship().isFlattened()) {
-                    return true;
-                }
+    private static void indexFlattenedAttribute(PersistentDescriptor descriptor, AttributeProperty property) {
+        if(!property.getAttribute().isFlattened()) {
+            return;
+        }
 
-                List<DbRelationship> dbRelationships = property.getRelationship().getDbRelationships();
-                CayennePath path = CayennePath.EMPTY_PATH;
-                int count = dbRelationships.size();
-                for(int i=0; i<count-1; i++) {
-                    DbRelationship rel = dbRelationships.get(i);
-                    path = path.dot(rel.getName());
-                    descriptor.addAdditionalDbEntity(path, rel.getTargetEntity(), false);
-                }
-                return true;
+        Iterator<Object> it = property.getAttribute().getDbPathIterator();
+        CayennePath path = CayennePath.EMPTY_PATH;
+        while(it.hasNext()) {
+            Object next = it.next();
+            if(next instanceof DbRelationship rel) {
+                // When deleting an ObjEntity that has flattened attributes we also delete the target
+                // DbEntity row for the flattened attribute (see RootRowOpProcessor.visitDelete),
+                // EXCEPT if the target dbEntity has a toMany relationship with the source dbEntity
+                // (as there may then be other records in the source entity with references to it)
+                // OR delete rules prevent it (i.e. if there are any ObjRelationships matching the
+                // flattened attributes DbRelationship that don't have a CASCADE delete rule).
+                boolean blockCascadeDelete = rel.getReverseRelationship().isToMany()
+                                          || descriptor.getEntity().getRelationships().stream()
+                                             .filter(r -> r.getDbRelationships().equals(List.of(rel)))
+                                             .anyMatch(r -> r.getDeleteRule() != DeleteRule.CASCADE);
+
+                path = path.dot(rel.getName());
+                descriptor.addAdditionalDbEntity(path, rel.getTargetEntity(), blockCascadeDelete);
             }
+        }
+    }
 
-            @Override
-            public boolean visitToMany(ToManyProperty property) {
-                return true;
-            }
-        });
+    private static void indexFlattenedToOne(PersistentDescriptor descriptor, ToOneProperty property) {
+        if(!property.getRelationship().isFlattened()) {
+            return;
+        }
+
+        List<DbRelationship> dbRelationships = property.getRelationship().getDbRelationships();
+        CayennePath path = CayennePath.EMPTY_PATH;
+        int count = dbRelationships.size();
+        for(int i=0; i<count-1; i++) {
+            DbRelationship rel = dbRelationships.get(i);
+            path = path.dot(rel.getName());
+            descriptor.addAdditionalDbEntity(path, rel.getTargetEntity(), false);
+        }
     }
 
     /**

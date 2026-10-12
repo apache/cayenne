@@ -37,15 +37,15 @@ import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.reflect.ArcProperty;
 import org.apache.cayenne.reflect.AttributeProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
-import org.apache.cayenne.reflect.PropertyVisitor;
+import org.apache.cayenne.reflect.PropertyDescriptor;
 import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
-import java.util.Objects;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * A dynamic GraphDiff that represents a delta between object simple properties
@@ -89,43 +89,34 @@ public class ObjectDiff extends NodeDiff {
         if (state == PersistenceState.COMMITTED || state == PersistenceState.DELETED
                 || state == PersistenceState.MODIFIED) {
 
-            final ObjEntity entity = entityResolver.getObjEntity(entityName);
-            final boolean lock = entity.getLockType() == ObjEntity.LOCK_TYPE_OPTIMISTIC;
+            ObjEntity entity = entityResolver.getObjEntity(entityName);
+            boolean lock = entity.getLockType() == ObjEntity.LOCK_TYPE_OPTIMISTIC;
 
             this.snapshot = new HashMap<>();
             this.arcSnapshot = new HashMap<>();
 
-            classDescriptor.visitProperties(new PropertyVisitor() {
+            for (PropertyDescriptor property : classDescriptor.getProperties()) {
+                switch (property) {
+                    case AttributeProperty attribute -> snapshot.put(attribute.getName(), attribute.readProperty(object));
+                    case ToOneProperty toOne -> {
+                        boolean isUsedForLocking = entity.getRelationship(toOne.getName()).isUsedForLocking();
 
-                @Override
-                public boolean visitAttribute(AttributeProperty property) {
-                    snapshot.put(property.getName(), property.readProperty(object));
-                    return true;
-                }
+                        // eagerly resolve optimistically locked relationships
+                        Object target = (lock && isUsedForLocking)
+                                ? toOne.readProperty(object)
+                                : toOne.readPropertyDirectly(object);
 
-                @Override
-                public boolean visitToMany(ToManyProperty property) {
-                    return true;
-                }
+                        if (target instanceof Persistent persistentTarget) {
+                            target = persistentTarget.getObjectId();
+                        }
+                        // else - null || Fault
 
-                @Override
-                public boolean visitToOne(ToOneProperty property) {
-                    boolean isUsedForLocking = entity.getRelationship(property.getName()).isUsedForLocking();
-                    
-                    // eagerly resolve optimistically locked relationships
-                    Object target = (lock && isUsedForLocking)
-                            ? property.readProperty(object)
-                            : property.readPropertyDirectly(object);
-
-                    if (target instanceof Persistent persistentTarget) {
-                        target = persistentTarget.getObjectId();
+                        arcSnapshot.put(toOne.getName(), target);
                     }
-                    // else - null || Fault
-
-                    arcSnapshot.put(property.getName(), target);
-                    return true;
+                    default -> {
+                    }
                 }
-            });
+            }
         }
     }
 
@@ -324,51 +315,40 @@ public class ObjectDiff extends NodeDiff {
             return false;
         }
 
-        // check phantom mods
+        // check phantom mods. To-many changes are tracked as flattened diffs
+        for (PropertyDescriptor property : getClassDescriptor().getProperties()) {
+            boolean modified = switch (property) {
+                case AttributeProperty attribute -> isModified(attribute);
+                case ToOneProperty toOne -> isModified(toOne);
+                default -> false;
+            };
 
-        final boolean[] modFound = new boolean[1];
-        getClassDescriptor().visitProperties(new PropertyVisitor() {
-
-            @Override
-            public boolean visitAttribute(AttributeProperty property) {
-
-                Object oldValue = snapshot.get(property.getName());
-                Object newValue = property.readProperty(object);
-
-                if (!property.equals(oldValue, newValue)) {
-                    modFound[0] = true;
-                }
-
-                return !modFound[0];
+            if (modified) {
+                return false;
             }
+        }
 
-            @Override
-            public boolean visitToMany(ToManyProperty property) {
-                // flattened changes
-                return true;
-            }
+        return true;
+    }
 
-            @Override
-            public boolean visitToOne(ToOneProperty property) {
-                if (arcSnapshot == null) {
-                    return true;
-                }
+    private boolean isModified(AttributeProperty property) {
+        Object oldValue = snapshot.get(property.getName());
+        Object newValue = property.readProperty(object);
+        return !property.equals(oldValue, newValue);
+    }
 
-                Object newValue = property.readPropertyDirectly(object);
-                if (newValue instanceof Fault) {
-                    return true;
-                }
+    private boolean isModified(ToOneProperty property) {
+        if (arcSnapshot == null) {
+            return false;
+        }
 
-                Object oldValue = arcSnapshot.get(property.getName());
-                if (!property.equals(oldValue, newValue != null ? ((Persistent) newValue).getObjectId() : null)) {
-                    modFound[0] = true;
-                }
+        Object newValue = property.readPropertyDirectly(object);
+        if (newValue instanceof Fault) {
+            return false;
+        }
 
-                return !modFound[0];
-            }
-        });
-
-        return !modFound[0];
+        Object oldValue = arcSnapshot.get(property.getName());
+        return !property.equals(oldValue, newValue != null ? ((Persistent) newValue).getObjectId() : null);
     }
 
     @Override
@@ -395,44 +375,31 @@ public class ObjectDiff extends NodeDiff {
         applySimplePropertyChanges(handler);
     }
 
-    private void applySimplePropertyChanges(final GraphChangeHandler handler) {
+    private void applySimplePropertyChanges(GraphChangeHandler handler) {
 
-        getClassDescriptor().visitProperties(new PropertyVisitor() {
+        for (PropertyDescriptor property : getClassDescriptor().getProperties()) {
+            if (!(property instanceof AttributeProperty attribute)) {
+                continue;
+            }
 
-            @Override
-            public boolean visitAttribute(AttributeProperty property) {
+            Object newValue = attribute.readProperty(object);
 
-                Object newValue = property.readProperty(object);
+            // no baseline to compare
+            if (snapshot == null) {
 
-                // no baseline to compare
-                if (snapshot == null) {
-
-                    if (newValue != null) {
-                        handler.nodePropertyChanged(id, property.getName(), null, newValue);
-                    }
+                if (newValue != null) {
+                    handler.nodePropertyChanged(id, attribute.getName(), null, newValue);
                 }
-                // have baseline to compare
-                else {
-                    Object oldValue = snapshot.get(property.getName());
+            }
+            // have baseline to compare
+            else {
+                Object oldValue = snapshot.get(attribute.getName());
 
-                    if (!property.equals(oldValue, newValue)) {
-                        handler.nodePropertyChanged(id, property.getName(), oldValue, newValue);
-                    }
+                if (!attribute.equals(oldValue, newValue)) {
+                    handler.nodePropertyChanged(id, attribute.getName(), oldValue, newValue);
                 }
-
-                return true;
             }
-
-            @Override
-            public boolean visitToMany(ToManyProperty property) {
-                return true;
-            }
-
-            @Override
-            public boolean visitToOne(ToOneProperty property) {
-                return true;
-            }
-        });
+        }
     }
 
     /**

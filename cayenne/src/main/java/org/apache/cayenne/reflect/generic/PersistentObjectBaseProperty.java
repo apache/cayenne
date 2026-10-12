@@ -21,7 +21,6 @@ package org.apache.cayenne.reflect.generic;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.reflect.PropertyDescriptor;
 import org.apache.cayenne.reflect.PropertyException;
-import org.apache.cayenne.reflect.PropertyVisitor;
 
 /**
  * A superclass of Persistent properties that accesses object via Persistent methods.
@@ -33,8 +32,6 @@ abstract class PersistentObjectBaseProperty implements PropertyDescriptor {
     public abstract String getName();
 
     public abstract void injectValueHolder(Object object) throws PropertyException;
-
-    public abstract boolean visit(PropertyVisitor visitor);
 
     public Object readProperty(Object object) throws PropertyException {
         try {

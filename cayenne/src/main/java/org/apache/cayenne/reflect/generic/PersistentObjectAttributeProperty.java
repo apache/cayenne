@@ -21,7 +21,6 @@ package org.apache.cayenne.reflect.generic;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.reflect.AttributeProperty;
 import org.apache.cayenne.reflect.PropertyException;
-import org.apache.cayenne.reflect.PropertyVisitor;
 
 class PersistentObjectAttributeProperty extends PersistentObjectBaseProperty implements
         AttributeProperty {
@@ -49,11 +48,6 @@ class PersistentObjectAttributeProperty extends PersistentObjectBaseProperty imp
 
     @Override
     public void injectValueHolder(Object object) throws PropertyException {
-    }
-
-    @Override
-    public boolean visit(PropertyVisitor visitor) {
-        return visitor.visitAttribute(this);
     }
 
     @Override

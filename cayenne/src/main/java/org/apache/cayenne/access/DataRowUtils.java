@@ -30,7 +30,7 @@ import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.reflect.ArcProperty;
 import org.apache.cayenne.reflect.AttributeProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
-import org.apache.cayenne.reflect.PropertyVisitor;
+import org.apache.cayenne.reflect.PropertyDescriptor;
 import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
 import org.apache.cayenne.util.Util;
@@ -82,52 +82,47 @@ class DataRowUtils {
             DataRow snapshot,
             boolean invalidateRelationships) {
 
-        boolean[] isPartialSnapshot = new boolean[1];
+        boolean isPartialSnapshot = false;
 
-        descriptor.visitProperties(new PropertyVisitor() {
+        for (PropertyDescriptor property : descriptor.getProperties()) {
+            switch (property) {
+                case AttributeProperty attribute -> {
+                    ObjAttribute attr = attribute.getAttribute();
+                    String dbAttrPath = attr.getDbAttributePath().value();
 
-            public boolean visitAttribute(AttributeProperty property) {
-                ObjAttribute attr = property.getAttribute();
-                String dbAttrPath = attr.getDbAttributePath().value();
+                    Object value = snapshot.get(dbAttrPath);
+                    attribute.writePropertyDirectly(object, null, value);
 
-                Object value = snapshot.get(dbAttrPath);
-                property.writePropertyDirectly(object, null, value);
-
-                // note that a check "snaphsot.get(..) == null" would be incorrect in this
-                // case, as NULL value is entirely valid; still save a map lookup by
-                // checking for the null value first
-                if (value == null && !snapshot.containsKey(dbAttrPath)) {
-                    if(attr.isLazy()) {
-                        property.writePropertyDirectly(object, null, new AttributeFault(property));
-                    } else {
-                        isPartialSnapshot[0] = true;
+                    // note that a check "snaphsot.get(..) == null" would be incorrect in this
+                    // case, as NULL value is entirely valid; still save a map lookup by
+                    // checking for the null value first
+                    if (value == null && !snapshot.containsKey(dbAttrPath)) {
+                        if (attr.isLazy()) {
+                            attribute.writePropertyDirectly(object, null, new AttributeFault(attribute));
+                        } else {
+                            isPartialSnapshot = true;
+                        }
                     }
                 }
-
-                return true;
-            }
-
-            public boolean visitToMany(ToManyProperty property) {
-                // "to many" relationships have no information to collect from
-                // snapshot
-                if (invalidateRelationships) {
-                    property.invalidate(object);
+                case ToOneProperty toOne -> {
+                    if (invalidateRelationships) {
+                        toOne.invalidate(object);
+                    } else {
+                        refreshToOne(toOne, object, snapshot);
+                    }
                 }
-
-                return true;
-            }
-
-            public boolean visitToOne(ToOneProperty property) {
-                if (invalidateRelationships) {
-                    property.invalidate(object);
-                } else {
-                    refreshToOne(property, object, snapshot);
+                case ToManyProperty toMany -> {
+                    // "to many" relationships have no information to collect from snapshot
+                    if (invalidateRelationships) {
+                        toMany.invalidate(object);
+                    }
                 }
-                return true;
+                default -> {
+                }
             }
-        });
+        }
 
-        object.setPersistenceState(isPartialSnapshot[0]
+        object.setPersistenceState(isPartialSnapshot
                 ? PersistenceState.HOLLOW
                 : PersistenceState.COMMITTED);
     }
@@ -185,93 +180,94 @@ class DataRowUtils {
     }
 
     static void forceMergeWithSnapshot(
-            final DataContext context,
+            DataContext context,
             ClassDescriptor descriptor,
-            final Persistent object,
-            final DataRow snapshot) {
+            Persistent object,
+            DataRow snapshot) {
 
-        final ObjectDiff diff = context
+        ObjectDiff diff = context
                 .getObjectStore()
                 .getChangesByObjectId()
                 .get(object.getObjectId());
 
-        descriptor.visitProperties(new PropertyVisitor() {
-
-            @Override
-            public boolean visitAttribute(AttributeProperty property) {
-                String dbAttrPath = property.getAttribute().getDbAttributePath().value();
-
-                // supports merging of partial snapshots...
-                // check for null is cheaper than double lookup for a key...
-                // so check for partial snapshot only if the value is null
-                Object newValue = snapshot.get(dbAttrPath);
-                if (newValue != null || snapshot.containsKey(dbAttrPath)) {
-
-                    Object curValue = property.readPropertyDirectly(object);
-                    Object oldValue = diff != null ? diff.getSnapshotValue(property
-                            .getName()) : null;
-
-                    // if value not modified, update it from snapshot, otherwise leave it alone
-                    if (property.equals(curValue, oldValue)
-                            && !property.equals(newValue, curValue)) {
-                        property.writePropertyDirectly(object, oldValue, newValue);
-                    }
+        // to-many relationships have nothing to merge
+        for (PropertyDescriptor property : descriptor.getProperties()) {
+            switch (property) {
+                case AttributeProperty attribute -> mergeAttribute(attribute, object, snapshot, diff);
+                case ToOneProperty toOne -> mergeToOne(context, toOne, object, snapshot, diff);
+                default -> {
                 }
-                return true;
             }
+        }
+    }
 
-            @Override
-            public boolean visitToMany(ToManyProperty property) {
-                // noop - nothing to merge
-                return true;
+    private static void mergeAttribute(
+            AttributeProperty property,
+            Persistent object,
+            DataRow snapshot,
+            ObjectDiff diff) {
+
+        String dbAttrPath = property.getAttribute().getDbAttributePath().value();
+
+        // supports merging of partial snapshots...
+        // check for null is cheaper than double lookup for a key...
+        // so check for partial snapshot only if the value is null
+        Object newValue = snapshot.get(dbAttrPath);
+        if (newValue != null || snapshot.containsKey(dbAttrPath)) {
+
+            Object curValue = property.readPropertyDirectly(object);
+            Object oldValue = diff != null ? diff.getSnapshotValue(property.getName()) : null;
+
+            // if value not modified, update it from snapshot, otherwise leave it alone
+            if (property.equals(curValue, oldValue) && !property.equals(newValue, curValue)) {
+                property.writePropertyDirectly(object, oldValue, newValue);
             }
+        }
+    }
 
-            @Override
-            public boolean visitToOne(ToOneProperty property) {
-                ObjRelationship relationship = property.getRelationship();
-                if (relationship.isToPK()) {
-                    // TODO: will this work for flattened, how do we save snapshots for them?
+    private static void mergeToOne(
+            DataContext context,
+            ToOneProperty property,
+            Persistent object,
+            DataRow snapshot,
+            ObjectDiff diff) {
 
-                    // if value not modified, update it from snapshot, otherwise leave it alone
-                    if (!isToOneTargetModified(property, object, diff)) {
+        ObjRelationship relationship = property.getRelationship();
+        if (!relationship.isToPK()) {
+            return;
+        }
 
-                        DbRelationship dbRelationship = relationship
-                                .getDbRelationships()
-                                .getFirst();
+        // TODO: will this work for flattened, how do we save snapshots for them?
 
-                        // must check before creating ObjectId because of partial snapshots
-                        if (hasFK(dbRelationship, snapshot)) {
-                            Map<String, Object> targetPk = dbRelationship.targetPkSnapshotWithSrcSnapshot(snapshot);
-                            ObjectId id = targetPk != null
-                                    ? ObjectId.of(relationship.getTargetEntityName(), targetPk)
-                                    : null;
+        // if value not modified, update it from snapshot, otherwise leave it alone
+        if (isToOneTargetModified(property, object, diff)) {
+            return;
+        }
 
-                            if (diff == null
-                                    || !diff.containsArcSnapshot(relationship.getName())
-                                    || !property.equals(id, diff.getArcSnapshotValue(relationship.getName()))) {
+        DbRelationship dbRelationship = relationship.getDbRelationships().getFirst();
 
-                                if (id == null) {
-                                    property.writeProperty(object, null, null);
-                                } else {
-                                    // we can't use 'localObject' if relationship is optional or inheritance is involved
-                                    // .. must turn to fault instead
-                                    if (!relationship
-                                            .isSourceDefiningTargetPrecenseAndType(context.getEntityResolver())) {
-                                        property.invalidate(object);
-                                    } else {
-                                        property.writeProperty(
-                                                object,
-                                                null,
-                                                context.findOrCreateObject(id));
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                return true;
+        // must check before creating ObjectId because of partial snapshots
+        if (!hasFK(dbRelationship, snapshot)) {
+            return;
+        }
+
+        Map<String, Object> targetPk = dbRelationship.targetPkSnapshotWithSrcSnapshot(snapshot);
+        ObjectId id = targetPk != null ? ObjectId.of(relationship.getTargetEntityName(), targetPk) : null;
+
+        if (diff == null
+                || !diff.containsArcSnapshot(relationship.getName())
+                || !property.equals(id, diff.getArcSnapshotValue(relationship.getName()))) {
+
+            if (id == null) {
+                property.writeProperty(object, null, null);
+            } else if (!relationship.isSourceDefiningTargetPrecenseAndType(context.getEntityResolver())) {
+                // we can't use 'localObject' if relationship is optional or inheritance is involved
+                // .. must turn to fault instead
+                property.invalidate(object);
+            } else {
+                property.writeProperty(object, null, context.findOrCreateObject(id));
             }
-        });
+        }
     }
 
     static boolean hasFK(DbRelationship relationship, Map<String, Object> snapshot) {

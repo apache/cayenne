@@ -70,7 +70,7 @@ class RootRowOpProcessor implements DbRowOpVisitor<Void> {
     public Void visitUpdate(UpdateDbRowOp dbRow) {
         diff.apply(updateHandler);
         if (dbRowOpFactory.getDescriptor().getEntity().getDeclaredLockType() == ObjEntity.LOCK_TYPE_OPTIMISTIC) {
-            dbRowOpFactory.getDescriptor().visitAllProperties(new OptimisticLockQualifierBuilder(dbRow, diff));
+            new OptimisticLockQualifierBuilder(dbRow, diff).build(dbRowOpFactory.getDescriptor());
         }
         return null;
     }
@@ -94,7 +94,7 @@ class RootRowOpProcessor implements DbRowOpVisitor<Void> {
         });
 
         if (entity.getDeclaredLockType() == ObjEntity.LOCK_TYPE_OPTIMISTIC) {
-            dbRowOpFactory.getDescriptor().visitAllProperties(new OptimisticLockQualifierBuilder(dbRow, diff));
+            new OptimisticLockQualifierBuilder(dbRow, diff).build(descriptor);
         }
         return null;
     }

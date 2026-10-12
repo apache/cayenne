@@ -32,8 +32,7 @@ import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.reflect.AttributeProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
-import org.apache.cayenne.reflect.PropertyVisitor;
-import org.apache.cayenne.reflect.ToManyProperty;
+import org.apache.cayenne.reflect.PropertyDescriptor;
 import org.apache.cayenne.reflect.ToOneProperty;
 
 import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.table;
@@ -41,7 +40,7 @@ import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.table;
 /**
  * @since 4.2
  */
-class DescriptorColumnExtractor extends BaseColumnExtractor implements PropertyVisitor {
+class DescriptorColumnExtractor extends BaseColumnExtractor {
 
     private final ClassDescriptor descriptor;
     private final PathTranslator pathTranslator;
@@ -85,7 +84,15 @@ class DescriptorColumnExtractor extends BaseColumnExtractor implements PropertyV
 
         context.markDescriptorStart(type);
 
-        descriptor.visitAllProperties(this);
+        // a to-many relationship has no column of its own in the result
+        for (PropertyDescriptor property : descriptor.getAllProperties()) {
+            switch (property) {
+                case AttributeProperty attribute -> addAttribute(attribute);
+                case ToOneProperty toOne -> addToOne(toOne);
+                default -> {
+                }
+            }
+        }
 
         // add remaining needed attrs from DbEntity
         DbEntity table = descriptor.getEntity().getDbEntity();
@@ -104,11 +111,10 @@ class DescriptorColumnExtractor extends BaseColumnExtractor implements PropertyV
         context.markDescriptorEnd(type);
     }
 
-    @Override
-    public boolean visitAttribute(AttributeProperty property) {
+    private void addAttribute(AttributeProperty property) {
         ObjAttribute oa = property.getAttribute();
         if(oa.isLazy()) {
-            return true;
+            return;
         }
 
         PathTranslationResult result = pathTranslator.translatePath(oa.getEntity(), CayennePath.of(property.getName()), prefix);
@@ -135,16 +141,13 @@ class DescriptorColumnExtractor extends BaseColumnExtractor implements PropertyV
                 }
             }
         }
-
-        return true;
     }
 
-    @Override
-    public boolean visitToOne(ToOneProperty property) {
+    private void addToOne(ToOneProperty property) {
         ObjRelationship rel = property.getRelationship();
         if(!rel.isToPK()) {
             // should ignore toOne not on PK relationship as it doesn't have any column to add to result
-            return true;
+            return;
         }
 
         PathTranslationResult result = pathTranslator.translatePath(rel.getSourceEntity(), CayennePath.of(property.getName()), prefix);
@@ -157,14 +160,12 @@ class DescriptorColumnExtractor extends BaseColumnExtractor implements PropertyV
             }
             DbAttribute dbAttribute = result.getDbAttributes().get(i);
             if(count > 1) {
-                // See CAY-2911, and CAY-2552 for the same fix in visitAttribute().
+                // See CAY-2911, and CAY-2552 for the same fix in addAttribute().
                 addEntityResultField(result.getAttributePaths().get(i).dot(dbAttribute.getName()));
             } else {
                 addEntityResultField(dbAttribute);
             }
         }
-
-        return true;
     }
 
     private ResultNodeDescriptor processTranslationResult(PathTranslationResult result, int i) {
@@ -194,10 +195,5 @@ class DescriptorColumnExtractor extends BaseColumnExtractor implements PropertyV
             String nameForFlattenedAttribute = pathForFlattenedAttribute.value();
             entityResult.addDbField(nameForFlattenedAttribute, nameForFlattenedAttribute);
         }
-    }
-
-    @Override
-    public boolean visitToMany(ToManyProperty property) {
-        return true;
     }
 }

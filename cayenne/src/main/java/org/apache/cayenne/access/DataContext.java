@@ -47,10 +47,8 @@ import org.apache.cayenne.query.MappedSelect;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.Select;
 import org.apache.cayenne.reflect.ArcProperty;
-import org.apache.cayenne.reflect.AttributeProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.PropertyDescriptor;
-import org.apache.cayenne.reflect.PropertyVisitor;
 import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
 import org.apache.cayenne.util.Util;
@@ -386,7 +384,9 @@ public class DataContext implements ObjectContext {
             // Let the caller know that the specified property could not be found and list
             // all the properties that could be so the caller knows what can be used.
             if (propertyDescriptor == null) {
-                List<String> properties = new CollectingNamePropertyVisitor().allProperties(classDescriptor);
+                List<String> properties = classDescriptor.getProperties().stream()
+                        .map(PropertyDescriptor::getName)
+                        .toList();
                 String errorMessage = String.format("Property '%s' is not declared for entity '%s'.",
                         property, object.getObjectId().getEntityName()) +
                         " Declared properties are: '" + String.join("', '", properties) + "'.";
@@ -524,38 +524,34 @@ public class DataContext implements ObjectContext {
         // now we need to find all arc changes, inject missing value holders and
         // pull in all transient connected objects
 
-        descriptor.visitProperties(new PropertyVisitor() {
+        for (PropertyDescriptor property : descriptor.getProperties()) {
+            switch (property) {
+                case ToManyProperty toMany -> {
+                    toMany.injectValueHolder(object);
 
-            public boolean visitToMany(ToManyProperty property) {
-                property.injectValueHolder(object);
+                    Object value = toMany.readProperty(object);
+                    Collection<?> collection = value instanceof Map<?, ?> map ? map.values() : (Collection<?>) value;
 
-                Object value = property.readProperty(object);
-                Collection<?> collection = value instanceof Map<?, ?> map ? map.values() : (Collection<?>) value;
-
-                for (Object target : collection) {
-                    if (target instanceof Persistent targetDO) {
-                        registerNewObject(targetDO);
-                        objectStore.changeRecorder().arcCreated(object.getObjectId(), targetDO.getObjectId(), new ArcId(property));
+                    for (Object target : collection) {
+                        if (target instanceof Persistent targetDO) {
+                            registerNewObject(targetDO);
+                            objectStore.changeRecorder()
+                                    .arcCreated(object.getObjectId(), targetDO.getObjectId(), new ArcId(toMany));
+                        }
                     }
                 }
-                return true;
-            }
-
-            public boolean visitToOne(ToOneProperty property) {
-                Object target = property.readPropertyDirectly(object);
-
-                if (target instanceof Persistent targetDO) {
-                    // make sure it is registered
-                    registerNewObject(targetDO);
-                    objectStore.changeRecorder().arcCreated(object.getObjectId(), targetDO.getObjectId(), new ArcId(property));
+                case ToOneProperty toOne -> {
+                    if (toOne.readPropertyDirectly(object) instanceof Persistent targetDO) {
+                        // make sure it is registered
+                        registerNewObject(targetDO);
+                        objectStore.changeRecorder()
+                                .arcCreated(object.getObjectId(), targetDO.getObjectId(), new ArcId(toOne));
+                    }
                 }
-                return true;
+                default -> {
+                }
             }
-
-            public boolean visitAttribute(AttributeProperty property) {
-                return true;
-            }
-        });
+        }
     }
 
     private void doRegisterObject(Persistent object) {

@@ -32,12 +32,9 @@ import org.apache.cayenne.graph.ArcId;
 import org.apache.cayenne.graph.GraphChangeHandler;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.graph.GraphEvent;
-import org.apache.cayenne.reflect.AttributeProperty;
+import org.apache.cayenne.reflect.ArcProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.PropertyDescriptor;
-import org.apache.cayenne.reflect.PropertyVisitor;
-import org.apache.cayenne.reflect.ToManyProperty;
-import org.apache.cayenne.reflect.ToOneProperty;
 
 /**
  * A listener of GraphEvents sent by the DataChannel that merges changes to the DataContext.
@@ -214,31 +211,11 @@ class DataContextMergeHandler implements GraphChangeHandler {
 
             PropertyDescriptor p = propertyForId(id, arcId.toString());
             store.withObjectLock(id, () -> {
-                int state = source.getPersistenceState();
-
-                p.visit(new PropertyVisitor() {
-
-                    public boolean visitAttribute(AttributeProperty property) {
-                        return false;
-                    }
-
-                    public boolean visitToMany(ToManyProperty property) {
-                        if (state == PersistenceState.COMMITTED) {
-                            property.invalidate(source);
-                        }
-
-                        return false;
-                    }
-
-                    public boolean visitToOne(ToOneProperty property) {
-                        if (state == PersistenceState.COMMITTED) {
-                            property.invalidate(source);
-                        }
-                        // TODO: andrus, 11/25/2006 - handle replacement of clean properties
-                        // of dirty objects. See DataRowUtils for details.
-                        return false;
-                    }
-                });
+                // TODO: andrus, 11/25/2006 - handle replacement of clean properties
+                // of dirty objects. See DataRowUtils for details.
+                if (p instanceof ArcProperty arc && source.getPersistenceState() == PersistenceState.COMMITTED) {
+                    arc.invalidate(source);
+                }
                 return null;
             });
         }

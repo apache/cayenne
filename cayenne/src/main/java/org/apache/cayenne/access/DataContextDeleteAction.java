@@ -28,9 +28,7 @@ import org.apache.cayenne.map.DeleteRule;
 import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.reflect.ArcProperty;
-import org.apache.cayenne.reflect.AttributeProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
-import org.apache.cayenne.reflect.PropertyVisitor;
 import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
 
@@ -217,26 +215,20 @@ class DataContextDeleteAction {
     }
 
     private void unsetReverseArc(ArcProperty reverseArc, Persistent object, Collection<Persistent> relatedObjects) {
-        reverseArc.visit(new PropertyVisitor() {
-
-            public boolean visitAttribute(AttributeProperty property) {
-                return false;
-            }
-
-            public boolean visitToMany(ToManyProperty property) {
+        switch (reverseArc) {
+            case ToManyProperty toMany -> {
                 for (Persistent relatedObject : relatedObjects) {
-                    property.removeTarget(relatedObject, object, true);
+                    toMany.removeTarget(relatedObject, object, true);
                 }
-                return false;
             }
-
-            public boolean visitToOne(ToOneProperty property) {
+            case ToOneProperty toOne -> {
                 // Inverse is to-one - find all related objects and nullify the reverse relationship
                 for (Persistent relatedObject : relatedObjects) {
-                    property.setTarget(relatedObject, null, true);
+                    toOne.setTarget(relatedObject, null, true);
                 }
-                return false;
             }
-        });
+            default -> {
+            }
+        }
     }
 }

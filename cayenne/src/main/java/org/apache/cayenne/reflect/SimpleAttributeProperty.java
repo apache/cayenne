@@ -37,11 +37,6 @@ public class SimpleAttributeProperty extends BaseProperty implements AttributePr
         this.attribute = attribute;
     }
 
-    @Override
-    public boolean visit(PropertyVisitor visitor) {
-        return visitor.visitAttribute(this);
-    }
-
     public ObjAttribute getAttribute() {
         return attribute;
     }

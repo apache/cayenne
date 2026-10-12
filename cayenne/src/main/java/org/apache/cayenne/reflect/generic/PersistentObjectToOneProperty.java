@@ -24,7 +24,6 @@ import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.reflect.ArcProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.PropertyException;
-import org.apache.cayenne.reflect.PropertyVisitor;
 import org.apache.cayenne.reflect.ToOneProperty;
 
 /**
@@ -91,11 +90,6 @@ class PersistentObjectToOneProperty extends PersistentObjectBaseProperty impleme
             throw new PropertyException("Error setting to-one Persistent property: "
                     + getName(), this, source, th);
         }
-    }
-
-    @Override
-    public boolean visit(PropertyVisitor visitor) {
-        return visitor.visitToOne(this);
     }
 
     @Override

@@ -25,7 +25,6 @@ import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.reflect.ArcProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.PropertyException;
-import org.apache.cayenne.reflect.PropertyVisitor;
 import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.access.ToManyHolder;
 
@@ -104,11 +103,6 @@ class PersistentObjectToManyProperty extends PersistentObjectBaseProperty implem
     @Override
     public boolean isFaultValue(Object value) {
         return value instanceof Fault || value instanceof ToManyHolder<?> holder && holder.isFault();
-    }
-
-    @Override
-    public boolean visit(PropertyVisitor visitor) {
-        return visitor.visitToMany(this);
     }
 
     @Override

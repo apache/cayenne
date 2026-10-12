@@ -27,10 +27,8 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.reflect.ArcProperty;
-import org.apache.cayenne.reflect.AttributeProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.PropertyDescriptor;
-import org.apache.cayenne.reflect.PropertyVisitor;
 import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
 
@@ -131,8 +129,8 @@ public class ChildDiffLoader implements GraphChangeHandler {
 	@Override
 	public void arcCreated(ObjectId id, ObjectId targetId, ArcId arcId) {
 
-		final Persistent source = findObject(id);
-		final Persistent target = findObject(targetId);
+		Persistent source = findObject(id);
+		Persistent target = findObject(targetId);
 
 		// if a target was later deleted, the diff for arcCreated is still
 		// preserved and
@@ -147,35 +145,26 @@ public class ChildDiffLoader implements GraphChangeHandler {
 
 		setExternalChange(Boolean.TRUE);
 		try {
-			property.visit(new PropertyVisitor() {
-
-				public boolean visitAttribute(AttributeProperty property) {
-					return false;
-				}
-
-				public boolean visitToMany(ToManyProperty property) {
-					// connect reverse arc if the relationship is marked as
-					// "runtime"
-					ArcProperty reverseArc = property.getComplementaryReverseArc();
+			switch (property) {
+				case ToManyProperty toMany -> {
+					// connect reverse arc if the relationship is marked as "runtime"
+					ArcProperty reverseArc = toMany.getComplementaryReverseArc();
 					boolean autoConnectReverse = reverseArc != null && reverseArc.getRelationship().isRuntime();
 
-					property.addTarget(source, target, autoConnectReverse);
-					return false;
+					toMany.addTarget(source, target, autoConnectReverse);
 				}
-
-				public boolean visitToOne(ToOneProperty property) {
-					property.setTarget(source, target, false);
-					return false;
+				case ToOneProperty toOne -> toOne.setTarget(source, target, false);
+				default -> {
 				}
-			});
+			}
 		} finally {
 			setExternalChange(Boolean.FALSE);
 		}
 	}
 
 	@Override
-	public void arcDeleted(ObjectId id, final ObjectId targetId, ArcId arcId) {
-		final Persistent source = findObject(id);
+	public void arcDeleted(ObjectId id, ObjectId targetId, ArcId arcId) {
+		Persistent source = findObject(id);
 
 		// needed as sometime temporary objects are evoked from the context
 		// before
@@ -190,48 +179,29 @@ public class ChildDiffLoader implements GraphChangeHandler {
 
 		setExternalChange(Boolean.TRUE);
 		try {
-			property.visit(new PropertyVisitor() {
-
-				public boolean visitAttribute(AttributeProperty property) {
-					return false;
-				}
-
-				public boolean visitToMany(ToManyProperty property) {
-					// connect reverse arc if the relationship is marked as
-					// "runtime"
-					ArcProperty reverseArc = property.getComplementaryReverseArc();
+			switch (property) {
+				case ToManyProperty toMany -> {
+					// connect reverse arc if the relationship is marked as "runtime"
+					ArcProperty reverseArc = toMany.getComplementaryReverseArc();
 					boolean autoConnectReverse = reverseArc != null && reverseArc.getRelationship().isRuntime();
 
 					Persistent target = findObject(targetId);
 
 					if (target == null) {
-
-						// this is usually the case when a NEW object was
-						// deleted and then
-						// its
-						// relationships were manipulated; so try to locate the
-						// object in
-						// the
-						// collection ...
-						// the performance of this is rather dubious of
-						// course...
-						target = findObjectInCollection(targetId, property.readProperty(source));
+						// this is usually the case when a NEW object was deleted and then its relationships were
+						// manipulated; so try to locate the object in the collection ...
+						// the performance of this is rather dubious of course...
+						target = findObjectInCollection(targetId, toMany.readProperty(source));
 					}
 
-					if (target == null) {
-						// ignore?
-					} else {
-						property.removeTarget(source, target, autoConnectReverse);
+					if (target != null) {
+						toMany.removeTarget(source, target, autoConnectReverse);
 					}
-
-					return false;
 				}
-
-				public boolean visitToOne(ToOneProperty property) {
-					property.setTarget(source, null, false);
-					return false;
+				case ToOneProperty toOne -> toOne.setTarget(source, null, false);
+				default -> {
 				}
-			});
+			}
 		} finally {
 			setExternalChange(Boolean.FALSE);
 		}

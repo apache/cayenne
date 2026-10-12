@@ -438,6 +438,12 @@ List<Artist> withExpensivePaintings = ObjectSelect
   `org.apache.cayenne.project.Project` wrapper, `ProjectLoader` of the `cayenne-project` module and `ConfigurationTree`
   were removed: `ProjectLoader` returns a `Project`, and `ProjectSaver` takes a `ProjectNode`. The runtime `DataDomain`
   is not affected.
+*  Per [CAY-3051](https://issues.apache.org/jira/browse/CAY-3051) `PropertyVisitor`, `PropertyDescriptor.visit(..)`
+  and the `ClassDescriptor` methods `visitProperties(..)`,
+  `visitDeclaredProperties(..)` and `visitAllProperties(..)` are deprecated. Iterate over the new
+  `ClassDescriptor.getProperties()`, `getDeclaredProperties()` or `getAllProperties()` and switch on the property type
+  (`AttributeProperty`, `ToOneProperty`, `ToManyProperty`) instead. A custom `ClassDescriptor` must implement the
+  three accessors; the deprecated visit methods are now default methods on top of them.
 
 ## Upgrading to 5.0-M3
 

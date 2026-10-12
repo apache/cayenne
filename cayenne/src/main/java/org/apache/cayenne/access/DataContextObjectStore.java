@@ -40,9 +40,8 @@ import org.apache.cayenne.graph.NodeDiff;
 import org.apache.cayenne.graph.NodePropertyChangeOperation;
 import org.apache.cayenne.map.EntityInheritanceTree;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.reflect.AttributeProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
-import org.apache.cayenne.reflect.PropertyVisitor;
+import org.apache.cayenne.reflect.PropertyDescriptor;
 import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
 
@@ -748,29 +747,16 @@ public class DataContextObjectStore implements ObjectStore {
                         .getClassDescriptor(oid.getEntityName());
 
                 withObjectLock(oid, () -> {
-                    descriptor.visitProperties(new PropertyVisitor() {
-
-                        @Override
-                        public boolean visitToMany(ToManyProperty property) {
-                            property.invalidate(object);
-                            return true;
-                        }
-
-                        @Override
-                        public boolean visitToOne(ToOneProperty property) {
-                            if (property
-                                    .getRelationship()
-                                    .isSourceIndependentFromTargetChange()) {
-                                property.invalidate(object);
+                    for (PropertyDescriptor property : descriptor.getProperties()) {
+                        switch (property) {
+                            case ToManyProperty toMany -> toMany.invalidate(object);
+                            case ToOneProperty toOne
+                                    when toOne.getRelationship().isSourceIndependentFromTargetChange() ->
+                                    toOne.invalidate(object);
+                            default -> {
                             }
-                            return true;
                         }
-
-                        @Override
-                        public boolean visitAttribute(AttributeProperty property) {
-                            return true;
-                        }
-                    });
+                    }
                     return null;
                 });
 

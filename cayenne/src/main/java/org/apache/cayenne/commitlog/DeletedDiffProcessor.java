@@ -64,52 +64,38 @@ class DeletedDiffProcessor implements GraphChangeHandler {
 		ClassDescriptor descriptor = context.getEntityResolver().getClassDescriptor(id.getEntityName());
 		final CommitLogEntity entity = entityFactory.getEntity(id);
 
-		descriptor.visitProperties(new PropertyVisitor() {
-
-			@Override
-			public boolean visitAttribute(AttributeProperty property) {
-
-				if (!entity.isIncluded(property.getName())) {
-					return true;
-				}
-
-				Object value;
-				if (entity.isConfidential(property.getName())) {
-					value = Confidential.getInstance();
-				} else {
-					String key = property.getAttribute().getDbAttributeName();
-					value = row.get(key);
-				}
-
-				if (value != null) {
-					objectChangeSet.attributeChanged(property.getName(), value, null);
-				}
-				return true;
+		for (PropertyDescriptor property : descriptor.getProperties()) {
+			if (!entity.isIncluded(property.getName())) {
+				continue;
 			}
 
-			@Override
-			public boolean visitToOne(ToOneProperty property) {
-                if (!entity.isIncluded(property.getName())) {
-                    return true;
-                }
+			switch (property) {
+				case AttributeProperty attribute -> {
+					Object value;
+					if (entity.isConfidential(attribute.getName())) {
+						value = Confidential.getInstance();
+					} else {
+						String key = attribute.getAttribute().getDbAttributeName();
+						value = row.get(key);
+					}
 
-                // TODO: is there such a thing as "confidential" relationship that we need to hide?
+					if (value != null) {
+						objectChangeSet.attributeChanged(attribute.getName(), value, null);
+					}
+				}
+				case ToOneProperty toOne -> {
+					// TODO: is there such a thing as "confidential" relationship that we need to hide?
+					DbRelationship dbRelationship = toOne.getRelationship().getDbRelationships().get(0);
 
-                DbRelationship dbRelationship = property.getRelationship().getDbRelationships().get(0);
-
-                Map<String, Object> targetPk = dbRelationship.targetPkSnapshotWithSrcSnapshot(row);
-                if (targetPk != null) {
-                    ObjectId value = ObjectId.of(property.getTargetDescriptor().getEntity().getName(), targetPk);
-                    objectChangeSet.toOneRelationshipDisconnected(property.getName(), value);
-                }
-				return true;
+					Map<String, Object> targetPk = dbRelationship.targetPkSnapshotWithSrcSnapshot(row);
+					if (targetPk != null) {
+						ObjectId value = ObjectId.of(toOne.getTargetDescriptor().getEntity().getName(), targetPk);
+						objectChangeSet.toOneRelationshipDisconnected(toOne.getName(), value);
+					}
+				}
+				default -> {
+				}
 			}
-
-			@Override
-			public boolean visitToMany(ToManyProperty property) {
-				return true;
-			}
-
-		});
+		}
 	}
 }

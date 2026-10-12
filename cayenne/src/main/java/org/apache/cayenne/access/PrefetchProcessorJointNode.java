@@ -36,9 +36,7 @@ import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.reflect.ArcProperty;
 import org.apache.cayenne.reflect.AttributeProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
-import org.apache.cayenne.reflect.PropertyVisitor;
-import org.apache.cayenne.reflect.ToManyProperty;
-import org.apache.cayenne.reflect.ToOneProperty;
+import org.apache.cayenne.reflect.PropertyDescriptor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -194,34 +192,25 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
 
         ClassDescriptor descriptor = resolver.getDescriptor();
 
-        descriptor.visitAllProperties(new PropertyVisitor() {
-
-            public boolean visitAttribute(AttributeProperty property) {
-                CayennePath target = property.getAttribute().getDbAttributePath();
-                if(!property.getAttribute().isLazy()) {
-                    appendColumn(targetSource, target.value(), prefix + target);
+        for (PropertyDescriptor property : descriptor.getAllProperties()) {
+            switch (property) {
+                case AttributeProperty attribute -> {
+                    CayennePath target = attribute.getAttribute().getDbAttributePath();
+                    if (!attribute.getAttribute().isLazy()) {
+                        appendColumn(targetSource, target.value(), prefix + target);
+                    }
                 }
-                return true;
-            }
-
-            public boolean visitToMany(ToManyProperty property) {
-                return visitRelationship(property);
-            }
-
-            public boolean visitToOne(ToOneProperty property) {
-                return visitRelationship(property);
-            }
-
-            private boolean visitRelationship(ArcProperty arc) {
-                DbRelationship dbRel = arc.getRelationship().getDbRelationships().get(0);
-                for (DbAttribute attribute : dbRel.getSourceAttributes()) {
-                    String target = attribute.getName();
-
-                    appendColumn(targetSource, target, prefix + target);
+                case ArcProperty arc -> {
+                    DbRelationship dbRel = arc.getRelationship().getDbRelationships().get(0);
+                    for (DbAttribute dbAttribute : dbRel.getSourceAttributes()) {
+                        String target = dbAttribute.getName();
+                        appendColumn(targetSource, target, prefix + target);
+                    }
                 }
-                return true;
+                default -> {
+                }
             }
-        });
+        }
 
         // append id columns ... (some may have been appended already via relationships)
         for (String pkName : descriptor.getEntity().getPrimaryKeyNames()) {

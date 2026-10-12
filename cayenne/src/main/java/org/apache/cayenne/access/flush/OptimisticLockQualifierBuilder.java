@@ -28,16 +28,17 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.reflect.AttributeProperty;
-import org.apache.cayenne.reflect.PropertyVisitor;
-import org.apache.cayenne.reflect.ToManyProperty;
+import org.apache.cayenne.reflect.ClassDescriptor;
+import org.apache.cayenne.reflect.PropertyDescriptor;
 import org.apache.cayenne.reflect.ToOneProperty;
 
 /**
- * {@link PropertyVisitor} that builds optimistic lock qualifier for given db change.
+ * Builds optimistic lock qualifier for given db change out of the locking attributes and to-one relationships of a
+ * descriptor.
  *
  * @since 4.2
  */
-class OptimisticLockQualifierBuilder implements PropertyVisitor {
+class OptimisticLockQualifierBuilder {
     private final DbRowOpWithQualifier dbRow;
     private final ObjectDiff diff;
 
@@ -46,8 +47,18 @@ class OptimisticLockQualifierBuilder implements PropertyVisitor {
         this.diff = diff;
     }
 
-    @Override
-    public boolean visitAttribute(AttributeProperty property) {
+    void build(ClassDescriptor descriptor) {
+        for (PropertyDescriptor property : descriptor.getAllProperties()) {
+            switch (property) {
+                case AttributeProperty attribute -> addAttribute(attribute);
+                case ToOneProperty toOne -> addToOne(toOne);
+                default -> {
+                }
+            }
+        }
+    }
+
+    private void addAttribute(AttributeProperty property) {
         ObjAttribute attribute = property.getAttribute();
         DbAttribute dbAttribute = attribute.getDbAttribute();
         if (attribute.isUsedForLocking() && dbAttribute.getEntity() == dbRow.getEntity()) {
@@ -58,11 +69,9 @@ class OptimisticLockQualifierBuilder implements PropertyVisitor {
             // unimplemented case, see CAY-2560 for details.
             // we can't grab sub entity row here as no good accessor for this implemented.
         }
-        return true;
     }
 
-    @Override
-    public boolean visitToOne(ToOneProperty property) {
+    private void addToOne(ToOneProperty property) {
         ObjRelationship relationship = property.getRelationship();
         if(relationship.isUsedForLocking()) {
             ObjectId value = diff.getArcSnapshotValue(property.getName());
@@ -78,11 +87,5 @@ class OptimisticLockQualifierBuilder implements PropertyVisitor {
                 }
             }
         }
-        return true;
-    }
-
-    @Override
-    public boolean visitToMany(ToManyProperty property) {
-        return true;
     }
 }

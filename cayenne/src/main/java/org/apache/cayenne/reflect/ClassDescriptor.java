@@ -188,13 +188,52 @@ public interface ClassDescriptor {
     Collection<ArcProperty> getMapArcProperties();
 
     /**
+     * Returns the properties declared in this descriptor and all its super-descriptors. Properties that are
+     * overridden in subdescriptors include the overridden information. Each property is one of
+     * {@link AttributeProperty}, {@link ToOneProperty}, {@link ToManyProperty}. The returned collection must not be
+     * modified.
+     *
+     * @since 5.0
+     */
+    Collection<PropertyDescriptor> getProperties();
+
+    /**
+     * Returns the properties declared in this descriptor. This property set excludes inherited properties, even
+     * those that got overridden in this subclass. Each property is one of {@link AttributeProperty},
+     * {@link ToOneProperty}, {@link ToManyProperty}. The returned collection must not be modified.
+     *
+     * @since 5.0
+     */
+    Collection<PropertyDescriptor> getDeclaredProperties();
+
+    /**
+     * Returns a combination of all properties, including properties declared in this descriptor, its super
+     * descriptors, and all subdescriptors. Each property is one of {@link AttributeProperty},
+     * {@link ToOneProperty}, {@link ToManyProperty}. The returned collection must not be modified.
+     *
+     * @since 5.0
+     */
+    Collection<PropertyDescriptor> getAllProperties();
+
+    /**
      * Passes the visitor to the properties "visit" method for all properties declared in
      * this descriptor and all its super-decsriptors. Properties that are overridden in
      * subdescriptors will include overridden information. Walkthrough is terminated in
      * case one of the properties returns false. Returns true if all visited properties
      * returned true, false - if one property returned false.
+     *
+     * @deprecated iterate over {@link #getProperties()} instead.
      */
-    boolean visitProperties(PropertyVisitor visitor);
+    @Deprecated(since = "5.0", forRemoval = true)
+    default boolean visitProperties(PropertyVisitor visitor) {
+        for (PropertyDescriptor property : getProperties()) {
+            if (!property.visit(visitor)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 
     /**
      * Passes the visitor to the properties "visit" method for all properties declared in
@@ -204,8 +243,18 @@ public interface ClassDescriptor {
      * false - if one property returned false.
      * 
      * @since 3.0
+     * @deprecated iterate over {@link #getDeclaredProperties()} instead.
      */
-    boolean visitDeclaredProperties(PropertyVisitor visitor);
+    @Deprecated(since = "5.0", forRemoval = true)
+    default boolean visitDeclaredProperties(PropertyVisitor visitor) {
+        for (PropertyDescriptor property : getDeclaredProperties()) {
+            if (!property.visit(visitor)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 
     /**
      * Passes the visitor to the properties "visit" method for a combination of all
@@ -215,8 +264,18 @@ public interface ClassDescriptor {
      * false - if one property returned false.
      * 
      * @since 3.0
+     * @deprecated iterate over {@link #getAllProperties()} instead.
      */
-    boolean visitAllProperties(PropertyVisitor visitor);
+    @Deprecated(since = "5.0", forRemoval = true)
+    default boolean visitAllProperties(PropertyVisitor visitor) {
+        for (PropertyDescriptor property : getAllProperties()) {
+            if (!property.visit(visitor)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 
     /**
      * Returns true if an object is not fully resolved.

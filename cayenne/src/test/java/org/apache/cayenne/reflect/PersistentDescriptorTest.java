@@ -23,6 +23,7 @@ import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.unit.util.TestObject;
 import org.junit.jupiter.api.Test;
 
+import java.util.Set;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -62,6 +63,32 @@ public class PersistentDescriptorTest {
 
         d1.shallowMerge(from, to);
         assertEquals("123", to.getString());
+    }
+
+    @Test
+    public void propertyAccessors() {
+        ObjAttribute attribute = mock(ObjAttribute.class);
+
+        PersistentDescriptor superDescriptor = new PersistentDescriptor();
+        AttributeProperty superString = new SimpleAttributeProperty(superDescriptor,
+                new FieldAccessor(TestObject.class, "string", String.class), attribute);
+        superDescriptor.addDeclaredProperty(superString);
+
+        PersistentDescriptor subDescriptor = new PersistentDescriptor();
+        subDescriptor.setSuperclassDescriptor(superDescriptor);
+        AttributeProperty subInt = new SimpleAttributeProperty(subDescriptor,
+                new FieldAccessor(TestObject.class, "property2", Integer.TYPE), attribute);
+        subDescriptor.addSuperProperty(superString);
+        subDescriptor.addDeclaredProperty(subInt);
+        superDescriptor.addSubclassDescriptor("Sub", subDescriptor);
+
+        assertEquals(Set.of(superString), Set.copyOf(superDescriptor.getDeclaredProperties()));
+        assertEquals(Set.of(superString), Set.copyOf(superDescriptor.getProperties()));
+        assertEquals(Set.of(superString, subInt), Set.copyOf(superDescriptor.getAllProperties()));
+
+        assertEquals(Set.of(subInt), Set.copyOf(subDescriptor.getDeclaredProperties()));
+        assertEquals(Set.of(superString, subInt), Set.copyOf(subDescriptor.getProperties()));
+        assertEquals(Set.of(superString, subInt), Set.copyOf(subDescriptor.getAllProperties()));
     }
 
     @Test

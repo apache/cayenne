@@ -41,10 +41,6 @@ class AttributePropertyDecorator implements AttributeProperty {
         return attribute;
     }
 
-    public boolean visit(PropertyVisitor visitor) {
-        return visitor.visitAttribute(this);
-    }
-
     public String getName() {
         return delegate.getName();
     }

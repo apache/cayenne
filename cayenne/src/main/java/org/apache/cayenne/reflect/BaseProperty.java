@@ -57,8 +57,6 @@ public abstract class BaseProperty implements PropertyDescriptor {
         return name;
     }
 
-    public abstract boolean visit(PropertyVisitor visitor);
-
     /**
      * Does nothing.
      */

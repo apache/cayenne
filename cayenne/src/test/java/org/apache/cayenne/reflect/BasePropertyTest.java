@@ -33,10 +33,6 @@ public class BasePropertyTest {
         when(accessor.getName()).thenReturn("xyz");
 
         BaseProperty p = new BaseProperty(owner, accessor) {
-            @Override
-            public boolean visit(PropertyVisitor visitor) {
-                return true;
-            }
         };
 
         assertEquals("xyz", p.getName());

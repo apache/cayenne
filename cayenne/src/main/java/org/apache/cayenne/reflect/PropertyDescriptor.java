@@ -67,8 +67,18 @@ public interface PropertyDescriptor {
      * @return a status returned by the corresponding callback method of the
      *         visitor. It serves as an indication of whether peer properties
      *         processing is still needed.
+     * @deprecated switch on the property type ({@link AttributeProperty}, {@link ToOneProperty},
+     * {@link ToManyProperty}) instead.
      */
-    boolean visit(PropertyVisitor visitor);
+    @Deprecated(since = "5.0", forRemoval = true)
+    default boolean visit(PropertyVisitor visitor) {
+        return switch (this) {
+            case AttributeProperty property -> visitor.visitAttribute(property);
+            case ToOneProperty property -> visitor.visitToOne(property);
+            case ToManyProperty property -> visitor.visitToMany(property);
+            default -> throw new IllegalStateException("Property is neither an attribute nor an arc: " + getName());
+        };
+    }
 
     /**
      * If a property is lazily resolved, this operation would create an

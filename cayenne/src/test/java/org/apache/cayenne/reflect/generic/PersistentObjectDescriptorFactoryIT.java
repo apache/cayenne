@@ -21,13 +21,9 @@ package org.apache.cayenne.reflect.generic;
 import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.reflect.ArcProperty;
-import org.apache.cayenne.reflect.AttributeProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.PropertyDescriptor;
-import org.apache.cayenne.reflect.PropertyVisitor;
 import org.apache.cayenne.reflect.SingletonFaultFactory;
-import org.apache.cayenne.reflect.ToManyProperty;
-import org.apache.cayenne.reflect.ToOneProperty;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.Test;
@@ -43,7 +39,7 @@ public class PersistentObjectDescriptorFactoryIT {
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
     @Test
-    public void visitDeclaredProperties_IterationOrder() {
+    public void getDeclaredProperties_IterationOrder() {
 
         PersistentObjectDescriptorFactory factory = new PersistentObjectDescriptorFactory(
                 env.entityResolver().getClassDescriptorMap(),
@@ -53,36 +49,17 @@ public class PersistentObjectDescriptorFactoryIT {
         for (ObjEntity e : env.entityResolver().getObjEntities()) {
             ClassDescriptor descriptor = factory.getDescriptor(e.getName());
 
-            final PropertyDescriptor[] lastProcessed = new PropertyDescriptor[1];
-
-            PropertyVisitor visitor = new PropertyVisitor() {
-
-                public boolean visitToOne(ToOneProperty property) {
-                    assertPropertiesAreInOrder(lastProcessed[0], property);
-                    lastProcessed[0] = property;
-                    return true;
-                }
-
-                public boolean visitToMany(ToManyProperty property) {
-                    assertPropertiesAreInOrder(lastProcessed[0], property);
-                    lastProcessed[0] = property;
-                    return true;
-                }
-
-                public boolean visitAttribute(AttributeProperty property) {
-                    assertPropertiesAreInOrder(lastProcessed[0], property);
-                    lastProcessed[0] = property;
-                    return true;
-                }
-            };
-
-            descriptor.visitDeclaredProperties(visitor);
+            PropertyDescriptor lastProcessed = null;
+            for (PropertyDescriptor property : descriptor.getDeclaredProperties()) {
+                assertPropertiesAreInOrder(lastProcessed, property);
+                lastProcessed = property;
+            }
         }
 
     }
 
     @Test
-    public void visitProperties_IterationOrder() {
+    public void getProperties_IterationOrder() {
 
         PersistentObjectDescriptorFactory factory = new PersistentObjectDescriptorFactory(
                 env.entityResolver().getClassDescriptorMap(),
@@ -92,30 +69,11 @@ public class PersistentObjectDescriptorFactoryIT {
         for (ObjEntity e : env.entityResolver().getObjEntities()) {
             ClassDescriptor descriptor = factory.getDescriptor(e.getName());
 
-            final PropertyDescriptor[] lastProcessed = new PropertyDescriptor[1];
-
-            PropertyVisitor visitor = new PropertyVisitor() {
-
-                public boolean visitToOne(ToOneProperty property) {
-                    assertPropertiesAreInOrder(lastProcessed[0], property);
-                    lastProcessed[0] = property;
-                    return true;
-                }
-
-                public boolean visitToMany(ToManyProperty property) {
-                    assertPropertiesAreInOrder(lastProcessed[0], property);
-                    lastProcessed[0] = property;
-                    return true;
-                }
-
-                public boolean visitAttribute(AttributeProperty property) {
-                    assertPropertiesAreInOrder(lastProcessed[0], property);
-                    lastProcessed[0] = property;
-                    return true;
-                }
-            };
-
-            descriptor.visitProperties(visitor);
+            PropertyDescriptor lastProcessed = null;
+            for (PropertyDescriptor property : descriptor.getProperties()) {
+                assertPropertiesAreInOrder(lastProcessed, property);
+                lastProcessed = property;
+            }
         }
 
     }

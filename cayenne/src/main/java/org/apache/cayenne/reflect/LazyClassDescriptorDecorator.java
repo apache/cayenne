@@ -178,18 +178,21 @@ public class LazyClassDescriptorDecorator implements ClassDescriptor {
         descriptor.shallowMerge(from, to);
     }
 
-    public boolean visitDeclaredProperties(PropertyVisitor visitor) {
+    @Override
+    public Collection<PropertyDescriptor> getProperties() {
         checkDescriptorInitialized();
-        return descriptor.visitDeclaredProperties(visitor);
+        return descriptor.getProperties();
     }
 
-    public boolean visitProperties(PropertyVisitor visitor) {
+    @Override
+    public Collection<PropertyDescriptor> getDeclaredProperties() {
         checkDescriptorInitialized();
-        return descriptor.visitProperties(visitor);
+        return descriptor.getDeclaredProperties();
     }
 
-    public boolean visitAllProperties(PropertyVisitor visitor) {
+    @Override
+    public Collection<PropertyDescriptor> getAllProperties() {
         checkDescriptorInitialized();
-        return descriptor.visitAllProperties(visitor);
+        return descriptor.getAllProperties();
     }
 }

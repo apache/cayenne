@@ -368,70 +368,42 @@ public class PersistentDescriptor implements ClassDescriptor {
 	public void shallowMerge(final Object from, final Object to) throws PropertyException {
 		injectValueHolders(to);
 
-		visitProperties(new PropertyVisitor() {
-			public boolean visitAttribute(AttributeProperty property) {
-				property.writePropertyDirectly(to, property.readPropertyDirectly(to),
-						property.readPropertyDirectly(from));
-				return true;
+		for (PropertyDescriptor property : properties.values()) {
+			switch (property) {
+				case AttributeProperty attribute -> attribute.writePropertyDirectly(to,
+						attribute.readPropertyDirectly(to), attribute.readPropertyDirectly(from));
+				case ToOneProperty toOne -> toOne.invalidate(to);
+				default -> {
+				}
 			}
-
-			public boolean visitToOne(ToOneProperty property) {
-				property.invalidate(to);
-				return true;
-			}
-
-			public boolean visitToMany(ToManyProperty property) {
-				return true;
-			}
-		});
+		}
 
 		if (from instanceof Persistent && to instanceof Persistent) {
 			((Persistent) to).setSnapshotVersion(((Persistent) from).getSnapshotVersion());
 		}
 	}
 
-	/**
-	 * @since 3.0
-	 */
-	public boolean visitDeclaredProperties(PropertyVisitor visitor) {
-
-		for (PropertyDescriptor next : declaredProperties.values()) {
-			if (!next.visit(visitor)) {
-				return false;
-			}
-		}
-
-		return true;
+	@Override
+	public Collection<PropertyDescriptor> getProperties() {
+		return properties.values();
 	}
 
-	/**
-	 * @since 3.0
-	 */
-	public boolean visitAllProperties(PropertyVisitor visitor) {
-		if (!visitProperties(visitor)) {
-			return false;
-		}
-
-		if (!subclassDescriptors.isEmpty()) {
-			for (ClassDescriptor next : subclassDescriptors.values()) {
-				if (!next.visitDeclaredProperties(visitor)) {
-					return false;
-				}
-			}
-		}
-
-		return true;
+	@Override
+	public Collection<PropertyDescriptor> getDeclaredProperties() {
+		return declaredProperties.values();
 	}
 
-	public boolean visitProperties(PropertyVisitor visitor) {
-
-		for (PropertyDescriptor next : properties.values()) {
-			if (!next.visit(visitor)) {
-				return false;
-			}
+	@Override
+	public Collection<PropertyDescriptor> getAllProperties() {
+		if (subclassDescriptors.isEmpty()) {
+			return properties.values();
 		}
 
-		return true;
+		List<PropertyDescriptor> all = new ArrayList<>(properties.values());
+		for (ClassDescriptor next : subclassDescriptors.values()) {
+			all.addAll(next.getDeclaredProperties());
+		}
+		return all;
 	}
 
 	public void setEntity(ObjEntity entity) {
