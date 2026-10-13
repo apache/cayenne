@@ -85,16 +85,16 @@ List<Artist> withExpensivePaintings = ObjectSelect
 ## Upgrading to 5.0-M4
 
 *  Per [CAY-2826](https://issues.apache.org/jira/browse/CAY-2826) `CoreModule` and `CoreModuleExtender` were moved from
-  `org.apache.cayenne.configuration.runtime` to the `org.apache.cayenne` package — fix your imports accordingly.
+   `org.apache.cayenne.configuration.runtime` to the `org.apache.cayenne` package — fix your imports accordingly.
 
 *  The `cayenne-project` module was renamed to `cayenne-project-tools`, and its `org.apache.cayenne.project` package to
-  `org.apache.cayenne.projecttools`. `ProjectModule`, `ProjectModuleExtender` and `ProjectModuleProvider` are now
-  `ProjectToolsModule`, `ProjectToolsModuleExtender` and `ProjectToolsModuleProvider`. Update the dependency and fix
-  your imports accordingly.
+   `org.apache.cayenne.projecttools`. `ProjectModule`, `ProjectModuleExtender` and `ProjectModuleProvider` are now
+   `ProjectToolsModule`, `ProjectToolsModuleExtender` and `ProjectToolsModuleProvider`. Update the dependency and fix
+   your imports accordingly.
 
 *  The `org.apache.cayenne.configuration` package of the core module and its `xml` and `upgrade` subpackages were
-  renamed to `org.apache.cayenne.project` (`Project`, `ProjectLoader`, `DataNodeDescriptor`, etc.) — fix your imports
-  accordingly. The deprecated `ServerRuntime` stays in `org.apache.cayenne.configuration.server`.
+   renamed to `org.apache.cayenne.project` (`Project`, `ProjectLoader`, `DataNodeDescriptor`, etc.) — fix your imports
+   accordingly. The deprecated `ServerRuntime` stays in `org.apache.cayenne.configuration.server`.
 
 *  `RuntimeProperties` and `DefaultRuntimeProperties` were moved from `org.apache.cayenne.configuration` to the
    `org.apache.cayenne` package. The `org.apache.cayenne.configuration.Constants` interface is deprecated and only
@@ -159,57 +159,57 @@ List<Artist> withExpensivePaintings = ObjectSelect
    and no longer registered.
 
 *  Per [CAY-3014](https://issues.apache.org/jira/browse/CAY-3014) `org.apache.cayenne.query.QueryChain`
-  (deprecated in 5.0-M3) was removed. To run several queries together, execute them one by one, wrapping them in an
-  explicit transaction if they must share one:
+   (deprecated in 5.0-M3) was removed. To run several queries together, execute them one by one, wrapping them in an
+   explicit transaction if they must share one:
 
-  ```java
-  runtime.performInTransaction(() -> {
-      List<Artist> artists = ObjectSelect.query(Artist.class).select(context);
-      List<Painting> paintings = ObjectSelect.query(Painting.class).select(context);
-      return null;
-  });
-  ```
+   ```java
+   runtime.performInTransaction(() -> {
+       List<Artist> artists = ObjectSelect.query(Artist.class).select(context);
+       List<Painting> paintings = ObjectSelect.query(Painting.class).select(context);
+       return null;
+   });
+   ```
 
 *  Per [CAY-3015](https://issues.apache.org/jira/browse/CAY-3015) `org.apache.cayenne.query.RefreshQuery` was removed. It was not a query, but a carrier for 
    four cache management operations, each of which has a direct replacement:
 
-- `new RefreshQuery(objects)` / `new RefreshQuery(object)` &rarr; `context.invalidateObjects(objects)`. In nested 
-  contexts, there was previously an issue with cascading invalidation (intermediate contexts would not get invalidated).
-  This was fixed in the current version of `invalidateObjects`.
-- `new RefreshQuery("group1", "group2")` &rarr; `runtime.getDataDomain().getQueryCache().removeGroup("group1")`,
-  once per group.
-- `new RefreshQuery(query)` &rarr; run the query itself, with its cache strategy set to `LOCAL_CACHE_REFRESH` or
-  `SHARED_CACHE_REFRESH`. A query with no caching needs no change, as refreshing it was the same as running it:
+   - `new RefreshQuery(objects)` / `new RefreshQuery(object)` &rarr; `context.invalidateObjects(objects)`. In nested 
+     contexts, there was previously an issue with cascading invalidation (intermediate contexts would not get
+     invalidated). This was fixed in the current version of `invalidateObjects`.
+   - `new RefreshQuery("group1", "group2")` &rarr; `runtime.getDataDomain().getQueryCache().removeGroup("group1")`,
+     once per group.
+   - `new RefreshQuery(query)` &rarr; run the query itself, with its cache strategy set to `LOCAL_CACHE_REFRESH` or
+     `SHARED_CACHE_REFRESH`. A query with no caching needs no change, as refreshing it was the same as running it:
 
-  ```java
-  ObjectSelect.query(Artist.class)
-          .cacheStrategy(QueryCacheStrategy.SHARED_CACHE_REFRESH)
-          .cacheGroup("artists")
-          .select(context);
-  ```
+     ```java
+     ObjectSelect.query(Artist.class)
+             .cacheStrategy(QueryCacheStrategy.SHARED_CACHE_REFRESH)
+             .cacheGroup("artists")
+             .select(context);
+     ```
 
-- `new RefreshQuery()` (refresh everything) has no direct replacement. To start over, create a new
-  `ObjectContext`. To also drop shared state, call `runtime.getDataDomain().getQueryCache().clear()` and
-  `runtime.getDataDomain().getSharedSnapshotCache().clear()`.
+   - `new RefreshQuery()` (refresh everything) has no direct replacement. To start over, create a new
+     `ObjectContext`. To also drop shared state, call `runtime.getDataDomain().getQueryCache().clear()` and
+     `runtime.getDataDomain().getSharedSnapshotCache().clear()`.
 
 *  Per [CAY-3016](https://issues.apache.org/jira/browse/CAY-3016) `org.apache.cayenne.query.RelationshipQuery` was removed. It was an internal mechanism for 
    resolving relationship faults. If you were running it explicitly, use `ObjectSelect` matching on the reverse 
    relationship instead:
 
-  ```java
-  // before
-  // List<Painting> paintings = context.performQuery(new RelationshipQuery(artist.getObjectId(), "paintingArray"));
+   ```java
+   // before
+   // List<Painting> paintings = context.performQuery(new RelationshipQuery(artist.getObjectId(), "paintingArray"));
 
-  // after
-  List<Painting> paintings = ObjectSelect.query(Painting.class)
-          .where(Painting.TO_ARTIST.eq(artist))
-          .select(context);
-  ```
+   // after
+   List<Painting> paintings = ObjectSelect.query(Painting.class)
+           .where(Painting.TO_ARTIST.eq(artist))
+           .select(context);
+   ```
 
 *  Per [CAY-3017](https://issues.apache.org/jira/browse/CAY-3017) `ObjectContext` no longer extends `DataChannel`. This 
-  doesn't change the overall architecture (there are still "channels" downstream from an ObjectContext). But the channel 
-  methods are no longer accessible on the context itself. Application code wasn't ever not supposed to use them, as 
-  everything you need to do, you can do via the ObjectContext API.
+   doesn't change the overall architecture (there are still "channels" downstream from an ObjectContext). But the channel 
+   methods are no longer accessible on the context itself. Application code wasn't ever not supposed to use them, as 
+   everything you need to do, you can do via the ObjectContext API.
 
 *  Per [CAY-3020](https://issues.apache.org/jira/browse/CAY-3020) Cayenne no longer supports Java serialization of
    contexts, queries and mapping objects. `Persistent`, `ObjectContext`, `ObjectId`, `Query`, `Expression`, `Ordering`,
@@ -221,19 +221,19 @@ List<Artist> withExpensivePaintings = ObjectSelect
 *  Per [CAY-3021](https://issues.apache.org/jira/browse/CAY-3021) `org.apache.cayenne.query.ObjectIdQuery` was removed.
    It was an internal mechanism for resolving objects by id via the caches. Its use cases have direct replacements:
 
-  ```java
-  // object lookup via the caches (ObjectIdQuery.CACHE)
-  Artist a = (Artist) context.objectForPK(id);
+   ```java
+   // object lookup via the caches (ObjectIdQuery.CACHE)
+   Artist a = (Artist) context.objectForPK(id);
 
-  // forced refresh from the database (ObjectIdQuery.CACHE_REFRESH)
-  Artist a = ObjectSelect.query(Artist.class).where(Artist.SELF.eqId(id)).selectOne(context);
+   // forced refresh from the database (ObjectIdQuery.CACHE_REFRESH)
+   Artist a = ObjectSelect.query(Artist.class).where(Artist.SELF.eqId(id)).selectOne(context);
 
-  // committed snapshot lookup (fetchingDataRows == true), from the snapshot cache or the database
-  DataRow row = context.getObjectStore().getSnapshot(id);
+   // committed snapshot lookup (fetchingDataRows == true), from the snapshot cache or the database
+   DataRow row = context.getObjectStore().getSnapshot(id);
 
-  // committed snapshot lookup in the snapshot cache only (ObjectIdQuery.CACHE_NOREFRESH)
-  DataRow row = context.getObjectStore().getCachedSnapshot(id);
-  ```
+   // committed snapshot lookup in the snapshot cache only (ObjectIdQuery.CACHE_NOREFRESH)
+   DataRow row = context.getObjectStore().getCachedSnapshot(id);
+   ```
 
 *  Per [CAY-3022](https://issues.apache.org/jira/browse/CAY-3022) the `ObjectContext` query API was cleaned up:
 
@@ -246,15 +246,15 @@ List<Artist> withExpensivePaintings = ObjectSelect
      flavors) are deprecated. Use `execute(Query)`, `SQLExec` / `MappedExec` `update(..)`, and
      `MappedSelect.query(name).select(context)` instead.
 
-  ```java
-  // before
-  List<Artist> artists = context.performQuery(new EJBQLQuery("select a from Artist a"));
-  List<QueryResult> result = context.performGenericQuery(SQLExec.query("DELETE FROM ARTIST"));
+   ```java
+   // before
+   List<Artist> artists = context.performQuery(new EJBQLQuery("select a from Artist a"));
+   List<QueryResult> result = context.performGenericQuery(SQLExec.query("DELETE FROM ARTIST"));
 
-  // after
-  List<Artist> artists = context.select(new EJBQLQuery<>("select a from Artist a"));
-  List<QueryResult> result = context.execute(SQLExec.query("DELETE FROM ARTIST"));
-  ```
+   // after
+   List<Artist> artists = context.select(new EJBQLQuery<>("select a from Artist a"));
+   List<QueryResult> result = context.execute(SQLExec.query("DELETE FROM ARTIST"));
+   ```
 
 *  Per [CAY-3023](https://issues.apache.org/jira/browse/CAY-3023) `QueryResult` was redesigned from a class holding
    the entire multipart result to a sealed interface describing a single item of it. `SQLExec.execute(..)`,
@@ -265,19 +265,19 @@ List<Artist> withExpensivePaintings = ObjectSelect
    `getSelectResult()` / `getUpdateCount()` accessors, so a multipart result can also be scanned with a
    pattern-matching switch:
 
-  ```java
-  List<QueryResult> result = SQLExec.query(sql).execute(context);
-  int updated = ((UpdateResult) result.getFirst()).count();
+   ```java
+   List<QueryResult> result = SQLExec.query(sql).execute(context);
+   int updated = ((UpdateResult) result.getFirst()).count();
 
-  for (QueryResult item : result) {
-      switch (item) {
-          case SelectResult<?> select -> process(select.objects());
-          case UpdateResult update -> process(update.counts());
-          case ResultIterator<?> iterator -> process(iterator);
-          case OutParametersResult out -> process(out.values());
-      }
-  }
-  ```
+   for (QueryResult item : result) {
+       switch (item) {
+           case SelectResult<?> select -> process(select.objects());
+           case UpdateResult update -> process(update.counts());
+           case ResultIterator<?> iterator -> process(iterator);
+           case OutParametersResult out -> process(out.values());
+       }
+   }
+   ```
 
    Stored procedure OUT parameters are no longer disguised as a one-row result set. They arrive as a dedicated
    `OutParametersResult` item (a map keyed by parameter name).
@@ -297,72 +297,72 @@ List<Artist> withExpensivePaintings = ObjectSelect
    same as the to-one entity columns always did, so such rows are returned with a `null` in place of the related
    object:
 
-  ```java
-  List<Object[]> rows = ObjectSelect
-      .columnQuery(Artist.class, Artist.ARTIST_NAME, Artist.PAINTING_ARRAY.flat())
-      .select(context);
+   ```java
+   List<Object[]> rows = ObjectSelect
+       .columnQuery(Artist.class, Artist.ARTIST_NAME, Artist.PAINTING_ARRAY.flat())
+       .select(context);
 
-  // before: artists with no paintings were missing from the result
-  // after: they are present as ["artist name", null]
-  ```
+   // before: artists with no paintings were missing from the result
+   // after: they are present as ["artist name", null]
+   ```
 
-  If you relied on the old behavior, check the related object for `null`, or exclude such rows explicitly by
-  adding a condition on the relationship path to `where(..)` (e.g. `Artist.PAINTING_ARRAY.exists()`). Entity columns
-  whose path is also used in the `where(..)` clause are not affected, as they share the join with the qualifier.
-  Scalar columns (`Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE)`) and aggregates are not affected either.
+   If you relied on the old behavior, check the related object for `null`, or exclude such rows explicitly by
+   adding a condition on the relationship path to `where(..)` (e.g. `Artist.PAINTING_ARRAY.exists()`). Entity columns
+   whose path is also used in the `where(..)` clause are not affected, as they share the join with the qualifier.
+   Scalar columns (`Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE)`) and aggregates are not affected either.
 
 *  The `org.apache.cayenne.query.ParameterizedQuery` interface was removed, together with the `createQuery(Map)`
-  methods of `SQLTemplate`, `ProcedureQuery` and `ObjectSelect` that implemented it. Applying parameters to a mapped
-  query is now the job of the query descriptor - override `QueryDescriptor.buildQuery(Map)` if you have a custom
-  `QueryDescriptor` that supports parameters. This does not affect the user-facing `MappedSelect` / `MappedExec` API.
+   methods of `SQLTemplate`, `ProcedureQuery` and `ObjectSelect` that implemented it. Applying parameters to a mapped
+   query is now the job of the query descriptor - override `QueryDescriptor.buildQuery(Map)` if you have a custom
+   `QueryDescriptor` that supports parameters. This does not affect the user-facing `MappedSelect` / `MappedExec` API.
 
 *  The `groupId` of `cayenne-modeler` and `cayenne-wocompat` changed from `org.apache.cayenne.modeler` to
-  `org.apache.cayenne`. Artifact ids and versions are unchanged. If you depend on any of them directly, update the
-  coordinates:
+   `org.apache.cayenne`. Artifact ids and versions are unchanged. If you depend on any of them directly, update the
+   coordinates:
 
-  ```xml
-  <dependency>
-      <groupId>org.apache.cayenne</groupId>
-      <artifactId>cayenne-modeler</artifactId>
-      <version>5.0-XX</version>
-  </dependency>
-  ```
+   ```xml
+   <dependency>
+       <groupId>org.apache.cayenne</groupId>
+       <artifactId>cayenne-modeler</artifactId>
+       <version>5.0-XX</version>
+   </dependency>
+   ```
 
 *  `DataChannel.onQuery(..)`, `DataChannelQueryFilter.onQuery(..)` and `DataChannelQueryFilterChain.onQuery(..)`
-  take an extra `boolean iteratedResult` parameter, which is `true` when the caller expects a `ResultIterator` (via
-  `ObjectContext.iterator(..)` and friends) rather than a list. It replaces the internal `IteratedQueryDecorator`
-  wrapper, so query filters now see the actual query instead of the wrapper. Custom `DataChannel` implementations and
-  query filters need to add the parameter and pass it down the chain:
+   take an extra `boolean iteratedResult` parameter, which is `true` when the caller expects a `ResultIterator` (via
+   `ObjectContext.iterator(..)` and friends) rather than a list. It replaces the internal `IteratedQueryDecorator`
+   wrapper, so query filters now see the actual query instead of the wrapper. Custom `DataChannel` implementations and
+   query filters need to add the parameter and pass it down the chain:
 
-  ```java
-  public List<QueryResult> onQuery(ObjectContext context, Query query, boolean iteratedResult,
-                                   DataChannelQueryFilterChain chain) {
-      return chain.onQuery(context, query, iteratedResult);
-  }
-  ```
+   ```java
+   public List<QueryResult> onQuery(ObjectContext context, Query query, boolean iteratedResult,
+                                    DataChannelQueryFilterChain chain) {
+       return chain.onQuery(context, query, iteratedResult);
+   }
+   ```
 
 *  `DataContext.performIteratedQuery(Query)` (deprecated earlier in 5.0) was removed. Use `ObjectContext.iterator(Select)`
-  instead; to iterate over `DataRow`s, pass a `DataRow` query, e.g. `ObjectSelect.dataRowQuery(Artist.class)` or
-  `SQLSelect.dataRowQuery(sql)`.
+   instead; to iterate over `DataRow`s, pass a `DataRow` query, e.g. `ObjectSelect.dataRowQuery(Artist.class)` or
+   `SQLSelect.dataRowQuery(sql)`.
 
 *  `EventManager` listener registration no longer takes a listener method name to be looked up via reflection.
-  `addListener(..)` and `addNonBlockingListener(..)` now take the event class and an `EventHandler` callback,
-  which is normally an unbound method reference to the listener method:
+   `addListener(..)` and `addNonBlockingListener(..)` now take the event class and an `EventHandler` callback,
+   which is normally an unbound method reference to the listener method:
 
-  ```java
-  // before
-  eventManager.addListener(this, "snapshotsChanged", SnapshotEvent.class, subject, sender);
+   ```java
+   // before
+   eventManager.addListener(this, "snapshotsChanged", SnapshotEvent.class, subject, sender);
 
-  // after
-  eventManager.addListener(this, SnapshotEvent.class, MyListener::snapshotsChanged, subject, sender);
-  ```
+   // after
+   eventManager.addListener(this, SnapshotEvent.class, MyListener::snapshotsChanged, subject, sender);
+   ```
 
-  The listener object is still passed and is still held via a weak reference, so an unregistered listener is
-  released once it becomes unreachable. This only holds when the handler does not capture the listener: a bound
-  reference such as `this::snapshotsChanged` or a capturing lambda keeps the listener alive for as long as the
-  `EventManager` is. The listener method no longer needs to be public. The reflection-based
-  `org.apache.cayenne.util.Invocation` class and the `SnapshotEventListener` interface (which was only ever a
-  naming convention for the reflective lookup) were removed.
+   The listener object is still passed and is still held via a weak reference, so an unregistered listener is
+   released once it becomes unreachable. This only holds when the handler does not capture the listener: a bound
+   reference such as `this::snapshotsChanged` or a capturing lambda keeps the listener alive for as long as the
+   `EventManager` is. The listener method no longer needs to be public. The reflection-based
+   `org.apache.cayenne.util.Invocation` class and the `SnapshotEventListener` interface (which was only ever a
+   naming convention for the reflective lookup) were removed.
 
 *  Per [CAY-3034](https://issues.apache.org/jira/browse/CAY-3034) the `cayenne-osgi` module was removed, following
    the general direction of focusing on the Cayenne core and dropping external integrations. Users running Cayenne in
@@ -377,18 +377,18 @@ List<Artist> withExpensivePaintings = ObjectSelect
    who still need it are welcome to grab the source code of `IdCoder` and friends from the Cayenne git history and
    incorporate it in their projects.
 *  Per [CAY-3036](https://issues.apache.org/jira/browse/CAY-3036) the `cayenne-project-compatibility` module was removed.
-  The runtime now upgrades project XML created by older Cayenne versions on its own, in memory and without extra
-  dependencies, logging a warning that recommends a permanent upgrade in CayenneModeler. An upgrade that would
-  drop a part of the project without a replacement (e.g. DataNodes, removed in project version 13) still fails to
-  load; open such a project in CayenneModeler to upgrade it.
+   The runtime now upgrades project XML created by older Cayenne versions on its own, in memory and without extra
+   dependencies, logging a warning that recommends a permanent upgrade in CayenneModeler. An upgrade that would
+   drop a part of the project without a replacement (e.g. DataNodes, removed in project version 13) still fails to
+   load; open such a project in CayenneModeler to upgrade it.
 *  Per [CAY-3037](https://issues.apache.org/jira/browse/CAY-3037) the project XML version is bumped to 14, and a
-  `SelectQuery` in a DataMap is now stored as a single query String in the syntax of `ObjectSelect.parse(..)`, instead
-  of the root attributes and the separate `qualifier`, `ordering` and `prefetch` elements. Projects are upgraded 
-  automatically, either in memory by the runtime, or permanently by CayenneModeler.
+   `SelectQuery` in a DataMap is now stored as a single query String in the syntax of `ObjectSelect.parse(..)`, instead
+   of the root attributes and the separate `qualifier`, `ordering` and `prefetch` elements. Projects are upgraded 
+   automatically, either in memory by the runtime, or permanently by CayenneModeler.
 *  Per [CAY-3038](https://issues.apache.org/jira/browse/CAY-3038) `EJBQLQuery` was removed. The replacement is `ObjectSelect` / `ColumnSelect` parsed from a String
-  (see "Queries Parsed from Strings" above). As there is no automatic conversion of EJBQL to the new query language,
-  an `EJBQLQuery` stored in a DataMap is dropped by the upgrade to project version 14 with a warning, and must be
-  recreated as an `ObjectSelect`:
+   (see "Queries Parsed from Strings" above). As there is no automatic conversion of EJBQL to the new query language,
+   an `EJBQLQuery` stored in a DataMap is dropped by the upgrade to project version 14 with a warning, and must be
+   recreated as an `ObjectSelect`:
 
    ```java
    // before
@@ -402,48 +402,48 @@ List<Artist> withExpensivePaintings = ObjectSelect
    ```
 
 *  Per [CAY-3039](https://issues.apache.org/jira/browse/CAY-3039) the expression node classes are no longer tied to
-  the parser. They moved from `org.apache.cayenne.exp.parser` to `org.apache.cayenne.exp` and lost the `AST` prefix:
-  `ASTObjPath` is now `ObjPathExp`, `ASTEqual` is `EqualExp`, `ASTAnd` is `AndExp`, etc. 
+   the parser. They moved from `org.apache.cayenne.exp.parser` to `org.apache.cayenne.exp` and lost the `AST` prefix:
+   `ASTObjPath` is now `ObjPathExp`, `ASTEqual` is `EqualExp`, `ASTAnd` is `AndExp`, etc. 
 
-  Expression nodes no longer know their parent, so `jjtGetParent()` / `jjtSetParent(n)` have no replacement. As a
-  result an expression can be shared between trees: `a.andExp(b)` no longer changes how `a` itself prints, and a node
-  taken out of a tree prints without the parentheses it used to keep.
+   Expression nodes no longer know their parent, so `jjtGetParent()` / `jjtSetParent(n)` have no replacement. As a
+   result an expression can be shared between trees: `a.andExp(b)` no longer changes how `a` itself prints, and a node
+   taken out of a tree prints without the parentheses it used to keep.
 
-  The node classes are now a sealed hierarchy, and the kind of node is its class. `Expression.getType()`,
-  `Expression.setType(..)` and the `Expression.OBJ_PATH`, `Expression.EQUAL_TO`, etc. int constants are removed
-  without replacement: use `instanceof` or a pattern-matching `switch` over `ObjPathExp`, `EqualExp`, etc. instead.
-  This also removed the int-typed factory methods: `ExpressionFactory.expressionOfType(int)` and
-  `ExpressionFactory.joinExp(int, ..)` are gone (use `ExpressionFactory.and(..)` / `or(..)`), and so are
-  `Expression.joinExp(int, ..)` (use `andExp(..)` / `orExp(..)`). `ExpressionFactory.matchAllExp(Map, int)`,
-  `matchAnyExp(Map, int)`, `matchAllDbExp(Map, int)` and `matchAnyDbExp(Map, int)` lost the pair type parameter and
-  always match by equality.
+   The node classes are now a sealed hierarchy, and the kind of node is its class. `Expression.getType()`,
+   `Expression.setType(..)` and the `Expression.OBJ_PATH`, `Expression.EQUAL_TO`, etc. int constants are removed
+   without replacement: use `instanceof` or a pattern-matching `switch` over `ObjPathExp`, `EqualExp`, etc. instead.
+   This also removed the int-typed factory methods: `ExpressionFactory.expressionOfType(int)` and
+   `ExpressionFactory.joinExp(int, ..)` are gone (use `ExpressionFactory.and(..)` / `or(..)`), and so are
+   `Expression.joinExp(int, ..)` (use `andExp(..)` / `orExp(..)`). `ExpressionFactory.matchAllExp(Map, int)`,
+   `matchAnyExp(Map, int)`, `matchAllDbExp(Map, int)` and `matchAnyDbExp(Map, int)` lost the pair type parameter and
+   always match by equality.
 *  Per [CAY-3040](https://issues.apache.org/jira/browse/CAY-3040) a fetch limit or offset of a `SQLTemplate` stored in
-  a DataMap is dropped by the upgrade to project version 14, and must be moved into the query SQL. A DataMap with such
-  a query can not be upgraded in memory by the runtime; open the project in CayenneModeler to upgrade it.
+   a DataMap is dropped by the upgrade to project version 14, and must be moved into the query SQL. A DataMap with such
+   a query can not be upgraded in memory by the runtime; open the project in CayenneModeler to upgrade it.
 *  Per [CAY-3041](https://issues.apache.org/jira/browse/CAY-3041) all tags and attributes of the project XML use
-  camelCase, so the hyphenated names were renamed as a part of project version 14: e.g. `data-map` is now `dataMap`,
-  `db-entity` is `dbEntity` and `db-attribute-path` is `dbAttributePath`. The `project-version` attribute of the root
-  tags was removed, as the version is already a part of the schema namespace (e.g.
-  `http://cayenne.apache.org/schema/14/dataMap`). The boolean attributes of
-  `dbAttribute` lost the "is" prefix (`isMandatory` is now `mandatory`, etc.), and the delete rules are stored in
-  lowercase (`nullify`, `cascade`, `deny`). Projects are upgraded automatically. Any custom code or scripts that read
-  or generate the project XML must be updated.
+   camelCase, so the hyphenated names were renamed as a part of project version 14: e.g. `data-map` is now `dataMap`,
+   `db-entity` is `dbEntity` and `db-attribute-path` is `dbAttributePath`. The `project-version` attribute of the root
+   tags was removed, as the version is already a part of the schema namespace (e.g.
+   `http://cayenne.apache.org/schema/14/dataMap`). The boolean attributes of
+   `dbAttribute` lost the "is" prefix (`isMandatory` is now `mandatory`, etc.), and the delete rules are stored in
+   lowercase (`nullify`, `cascade`, `deny`). Projects are upgraded automatically. Any custom code or scripts that read
+   or generate the project XML must be updated.
 *  Per [CAY-3041](https://issues.apache.org/jira/browse/CAY-3041) the oldest project that can be upgraded is now of
-  version 9, i.e. the one created by Cayenne 4.0. The older projects (versions 6 to 8, created by Cayenne 3.1 or the
-  early 4.0 milestones) must first be upgraded with CayenneModeler 4.2 or older.
+   version 9, i.e. the one created by Cayenne 4.0. The older projects (versions 6 to 8, created by Cayenne 3.1 or the
+   early 4.0 milestones) must first be upgraded with CayenneModeler 4.2 or older.
 *  Per [CAY-3042](https://issues.apache.org/jira/browse/CAY-3042) "domain" is now called "project" in the project XML,
-  the API and CayenneModeler. The root tag of the project XML is `project` instead of `domain` (projects are upgraded
-  automatically). `DataChannelDescriptor` was renamed to `Project`, `ConfigurationNode` to `ProjectNode`, and the
-  related classes follow (`ProjectLoader`, `ProjectMerger`, `ProjectMetaData`, `ProjectNodeVisitor`, etc.). The old
-  `org.apache.cayenne.project.Project` wrapper, `ProjectLoader` of the `cayenne-project` module and `ConfigurationTree`
-  were removed: `ProjectLoader` returns a `Project`, and `ProjectSaver` takes a `ProjectNode`. The runtime `DataDomain`
-  is not affected.
+   the API and CayenneModeler. The root tag of the project XML is `project` instead of `domain` (projects are upgraded
+   automatically). `DataChannelDescriptor` was renamed to `Project`, `ConfigurationNode` to `ProjectNode`, and the
+   related classes follow (`ProjectLoader`, `ProjectMerger`, `ProjectMetaData`, `ProjectNodeVisitor`, etc.). The old
+   `org.apache.cayenne.project.Project` wrapper, `ProjectLoader` of the `cayenne-project` module and `ConfigurationTree`
+   were removed: `ProjectLoader` returns a `Project`, and `ProjectSaver` takes a `ProjectNode`. The runtime `DataDomain`
+   is not affected.
 *  Per [CAY-3051](https://issues.apache.org/jira/browse/CAY-3051) `PropertyVisitor`, `PropertyDescriptor.visit(..)`
-  and the `ClassDescriptor` methods `visitProperties(..)`,
-  `visitDeclaredProperties(..)` and `visitAllProperties(..)` are deprecated. Iterate over the new
-  `ClassDescriptor.getProperties()`, `getDeclaredProperties()` or `getAllProperties()` and switch on the property type
-  (`AttributeProperty`, `ToOneProperty`, `ToManyProperty`) instead. A custom `ClassDescriptor` must implement the
-  three accessors; the deprecated visit methods are now default methods on top of them.
+   and the `ClassDescriptor` methods `visitProperties(..)`,
+   `visitDeclaredProperties(..)` and `visitAllProperties(..)` are deprecated. Iterate over the new
+   `ClassDescriptor.getProperties()`, `getDeclaredProperties()` or `getAllProperties()` and switch on the property type
+   (`AttributeProperty`, `ToOneProperty`, `ToManyProperty`) instead. A custom `ClassDescriptor` must implement the
+   three accessors; the deprecated visit methods are now default methods on top of them.
 
 ## Upgrading to 5.0-M3
 
