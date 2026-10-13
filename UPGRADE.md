@@ -97,27 +97,27 @@ List<Artist> withExpensivePaintings = ObjectSelect
   accordingly. The deprecated `ServerRuntime` stays in `org.apache.cayenne.configuration.server`.
 
 *  `RuntimeProperties` and `DefaultRuntimeProperties` were moved from `org.apache.cayenne.configuration` to the
-  `org.apache.cayenne` package. The `org.apache.cayenne.configuration.Constants` interface is deprecated and only
-  keeps the constants it had in 4.2 as aliases of the new ones:
-  - The DI collection keys (`PROPERTIES_MAP`, `DEFAULT_TYPES_LIST`, `USER_TYPES_LIST`, `TYPE_FACTORIES_LIST`, etc.)
-    are now defined in `CoreModule`. E.g. a custom `DbAdapter` constructor should use
-    `@Inject(CoreModule.USER_TYPES_LIST)` instead of `@Inject(Constants.SERVER_USER_TYPES_LIST)`.
-  - The property names (`JDBC_URL_PROPERTY`, `EXTERNAL_TX_PROPERTY`, `QUERY_CACHE_SIZE_PROPERTY`, etc.) are now
-    defined in `RuntimeProperties`.
-  - The unused `RESOURCE_LOCATOR` key was removed.
+   `org.apache.cayenne` package. The `org.apache.cayenne.configuration.Constants` interface is deprecated and only
+   keeps the constants it had in 4.2 as aliases of the new ones:
+   - The DI collection keys (`PROPERTIES_MAP`, `DEFAULT_TYPES_LIST`, `USER_TYPES_LIST`, `TYPE_FACTORIES_LIST`, etc.)
+     are now defined in `CoreModule`. E.g. a custom `DbAdapter` constructor should use
+     `@Inject(CoreModule.USER_TYPES_LIST)` instead of `@Inject(Constants.SERVER_USER_TYPES_LIST)`.
+   - The property names (`JDBC_URL_PROPERTY`, `EXTERNAL_TX_PROPERTY`, `QUERY_CACHE_SIZE_PROPERTY`, etc.) are now
+     defined in `RuntimeProperties`.
+   - The unused `RESOURCE_LOCATOR` key was removed.
 
 *  Per [CAY-2875](https://issues.apache.org/jira/browse/CAY-2875) a `java.util.UUID` attribute now honors the JDBC
-  type of the column it is mapped to, instead of always being converted to a 36-char string:
+   type of the column it is mapped to, instead of always being converted to a 36-char string:
 
-  - A binary column (`BINARY`, `VARBINARY`, `LONGVARBINARY`) stores the UUID in its 16-byte big-endian form, most
-    significant bits first. `VARBINARY(16)` is the recommended mapping for new models — it uses less than half the
-    space of `VARCHAR(36)` and indexes better.
-  - A character column keeps storing the canonical string, so existing models are unaffected and need no data
-    migration.
-  - Any other JDBC type is passed to the driver as an object, which makes a PostgreSQL native `uuid` column work.
+   - A binary column (`BINARY`, `VARBINARY`, `LONGVARBINARY`) stores the UUID in its 16-byte big-endian form, most
+     significant bits first. `VARBINARY(16)` is the recommended mapping for new models — it uses less than half the
+     space of `VARCHAR(36)` and indexes better.
+   - A character column keeps storing the canonical string, so existing models are unaffected and need no data
+     migration.
+   - Any other JDBC type is passed to the driver as an object, which makes a PostgreSQL native `uuid` column work.
 
-  `UUIDValueType` is deprecated and no longer registered, replaced by
-  `org.apache.cayenne.access.types.UUIDType`.
+   `UUIDValueType` is deprecated and no longer registered, replaced by
+   `org.apache.cayenne.access.types.UUIDType`.
 
 *  Per [CAY-3007](https://issues.apache.org/jira/browse/CAY-3007) `SelectById` is deprecated. Instead, use `ObjectSelect`
    directly with the new `byId(..)` and `byIds(..)` methods:
@@ -139,24 +139,24 @@ List<Artist> withExpensivePaintings = ObjectSelect
 
 
 *  Per [CAY-3010](https://issues.apache.org/jira/browse/CAY-3010) `LocalDate`, `LocalTime` and `LocalDateTime` are
-  passed to and from the JDBC driver directly, instead of being converted through `java.sql.Date` / `Time` /
-  `Timestamp` in the JVM default time zone. Reads are faster, and application behavior changes in these cases:
+   passed to and from the JDBC driver directly, instead of being converted through `java.sql.Date` / `Time` /
+   `Timestamp` in the JVM default time zone. Reads are faster, and application behavior changes in these cases:
 
-  - A `LocalDateTime` inside a DST gap of the JVM zone is no longer shifted. E.g. with the JVM in `America/New_York`,
-    `LocalDateTime.of(2021, 3, 14, 2, 35)` (a time that does not exist in that zone) used to be stored and read back
-    as `03:35`; now it round-trips as `02:35`. MySQL already behaved this way.
-  - Values no longer depend on the JVM default zone: a value stored under one zone and read under another comes back
-    unchanged. Previously it was shifted by the offset difference on all databases except MySQL.
-  - Sub-millisecond precision is no longer truncated on write. `LocalTime.of(13, 45, 30, 123_456_000)` used to reach
-    the database as `13:45:30.123`; now it is sent as is and the database rounds to the column precision, so a
-    `TIME(3)` column may store `13:45:30.123` or `13:45:30.124` depending on the database.
-  - `java.time` attributes now work on SQLite, stored as `yyyy-MM-dd HH:mm:ss`, `yyyy-MM-dd` and `HH:mm:ss` text
-    with a seconds fraction appended only when non-zero.
+   - A `LocalDateTime` inside a DST gap of the JVM zone is no longer shifted. E.g. with the JVM in `America/New_York`,
+     `LocalDateTime.of(2021, 3, 14, 2, 35)` (a time that does not exist in that zone) used to be stored and read back
+     as `03:35`; now it round-trips as `02:35`. MySQL already behaved this way.
+   - Values no longer depend on the JVM default zone: a value stored under one zone and read under another comes back
+     unchanged. Previously it was shifted by the offset difference on all databases except MySQL.
+   - Sub-millisecond precision is no longer truncated on write. `LocalTime.of(13, 45, 30, 123_456_000)` used to reach
+     the database as `13:45:30.123`; now it is sent as is and the database rounds to the column precision, so a
+     `TIME(3)` column may store `13:45:30.123` or `13:45:30.124` depending on the database.
+   - `java.time` attributes now work on SQLite, stored as `yyyy-MM-dd HH:mm:ss`, `yyyy-MM-dd` and `HH:mm:ss` text
+     with a seconds fraction appended only when non-zero.
 
-  Exceptions: PostgreSQL `timestamp with time zone` columns (Cayenne's default mapping of `TIMESTAMP`) are an instant
-  type and keep the previous JVM-zone conversion; Derby and SQL Server still shift DST-gap timestamps on write due to
-  engine / driver limitations. `LocalDateValueType`, `LocalTimeValueType` and `LocalDateTimeValueType` are deprecated
-  and no longer registered.
+   Exceptions: PostgreSQL `timestamp with time zone` columns (Cayenne's default mapping of `TIMESTAMP`) are an instant
+   type and keep the previous JVM-zone conversion; Derby and SQL Server still shift DST-gap timestamps on write due to
+   engine / driver limitations. `LocalDateValueType`, `LocalTimeValueType` and `LocalDateTimeValueType` are deprecated
+   and no longer registered.
 
 *  Per [CAY-3014](https://issues.apache.org/jira/browse/CAY-3014) `org.apache.cayenne.query.QueryChain`
   (deprecated in 5.0-M3) was removed. To run several queries together, execute them one by one, wrapping them in an
