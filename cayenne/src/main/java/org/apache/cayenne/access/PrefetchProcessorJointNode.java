@@ -58,7 +58,7 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
 
     RSColumn[] columns;
     int[] idIndices;
-    Map<Map, Persistent> resolved;
+    Map<Object, Persistent> resolved;
     List<DataRow> resolvedRows;
 
     // the layout of this node's rows, keyed by the columns' result set names
@@ -102,23 +102,32 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
     }
 
     /**
-     * Returns an ObjectId map from the flat row.
+     * Returns a key of the flat row's object for {@link #getResolved(Object)} and {@link #putResolved(Object,
+     * Persistent)}: the PK value of a single-column PK, or a list of the PK values in the PK column order. The key
+     * is only meaningful within this node, as the column names are not a part of it.
      */
-    Map<String, Object> idFromFlatRow(DataRow flatRow) {
+    Object idFromFlatRow(DataRow flatRow) {
 
         // TODO: should we also check for nulls in ID (and skip such rows) - this will
         // likely be an indicator of an outer join ... and considering SQLTemplate,
         // this is reasonable to expect...
 
-        Map<String, Object> id = new TreeMap<>();
         int[] indexes = flatRow.getLayout() != null ? flatIndexes(flatRow) : null;
-        for (int idIndex : idIndices) {
-            RSColumn column = columns[idIndex];
-            Object value = indexes != null ? valueAt(flatRow, indexes[idIndex]) : flatRow.get(column.dataRowName());
-            id.put(column.rsName(), value);
+        if (idIndices.length == 1) {
+            return idValue(flatRow, indexes, idIndices[0]);
         }
 
-        return id;
+        Object[] id = new Object[idIndices.length];
+        for (int i = 0; i < id.length; i++) {
+            id[i] = idValue(flatRow, indexes, idIndices[i]);
+        }
+
+        // Arrays.asList: a value-based key, unlike List.of it allows nulls, which an outer join produces
+        return Arrays.asList(id);
+    }
+
+    private Object idValue(DataRow flatRow, int[] indexes, int idIndex) {
+        return indexes != null ? valueAt(flatRow, indexes[idIndex]) : flatRow.get(columns[idIndex].dataRowName());
     }
 
     /**
@@ -142,10 +151,10 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
     }
 
     /**
-     * Looks up a previously resolved object using an ObjectId map as a key. Returns null
-     * if no matching object exists.
+     * Looks up a previously resolved object by the key returned by {@link #idFromFlatRow(DataRow)}. Returns null if
+     * no matching object exists.
      */
-    Persistent getResolved(Map id) {
+    Persistent getResolved(Object id) {
         return resolved.get(id);
     }
 
@@ -153,7 +162,7 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
      * Registers an object in a map of resolved objects, connects this object to parent if
      * parent exists.
      */
-    void putResolved(Map id, Persistent object) {
+    void putResolved(Object id, Persistent object) {
         resolved.put(id, object);
     }
 

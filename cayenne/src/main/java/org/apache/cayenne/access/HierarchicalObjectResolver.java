@@ -447,7 +447,7 @@ class HierarchicalObjectResolver {
             PrefetchProcessorJointNode processorNode = (PrefetchProcessorJointNode) node;
 
             // find existing object, if found skip further processing
-            Map<String, Object> id = processorNode.idFromFlatRow(currentFlatRow);
+            Object id = processorNode.idFromFlatRow(currentFlatRow);
             Persistent object = processorNode.getResolved(id);
             DataRow row = null;
             if (object == null) {
