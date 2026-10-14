@@ -21,6 +21,7 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.DataRowLayout;
 import org.apache.cayenne.Fault;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
@@ -551,10 +552,8 @@ public class DataContextIT {
 	@Test
 	public void invalidateObjects_Vararg() throws Exception {
 
-		DataRow row = DataRow.of("Artist", Map.of(
-		        "ARTIST_ID", 1,
-		        "ARTIST_NAME", "ArtistXYZ",
-		        "DATE_OF_BIRTH", new Date()), SnapshotVersion.next());
+		DataRow row = DataRow.of("Artist", DataRowLayout.of("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH"),
+		        new Object[]{1, "ArtistXYZ", new Date()}, SnapshotVersion.next());
 		Persistent object = context.objectFromDataRow(Artist.class, row);
 		ObjectId oid = object.getObjectId();
 
@@ -574,10 +573,8 @@ public class DataContextIT {
 	@Test
 	public void invalidateObjects() throws Exception {
 
-		DataRow row = DataRow.of("Artist", Map.of(
-		        "ARTIST_ID", 1,
-		        "ARTIST_NAME", "ArtistXYZ",
-		        "DATE_OF_BIRTH", new Date()), SnapshotVersion.next());
+		DataRow row = DataRow.of("Artist", DataRowLayout.of("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH"),
+		        new Object[]{1, "ArtistXYZ", new Date()}, SnapshotVersion.next());
 		Persistent object = context.objectFromDataRow(Artist.class, row);
 		ObjectId oid = object.getObjectId();
 

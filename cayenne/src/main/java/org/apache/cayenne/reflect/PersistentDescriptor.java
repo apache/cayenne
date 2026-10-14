@@ -18,11 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne.reflect;
 
+import org.apache.cayenne.DataRowLayout;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.path.CayennePath;
+import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.EntityInheritanceTree;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
@@ -34,9 +37,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  * A default ClassDescriptor implementation for persistent objects.
@@ -73,6 +78,9 @@ public class PersistentDescriptor implements ClassDescriptor {
 
 	// the values that this entity's own qualifier pins its attributes to, compiled at creation
 	protected Map<AttributeProperty, Object> discriminatorValues;
+
+	// built on first use. The layout is immutable and the build deterministic, so a racing rebuild is harmless
+	private DataRowLayout snapshotLayout;
 
 	/**
 	 * Creates a PersistentDescriptor.
@@ -404,6 +412,53 @@ public class PersistentDescriptor implements ClassDescriptor {
 			all.addAll(next.getDeclaredProperties());
 		}
 		return all;
+	}
+
+	@Override
+	public DataRowLayout getSnapshotLayout() {
+		DataRowLayout layout = snapshotLayout;
+		if (layout == null) {
+			layout = buildSnapshotLayout();
+			snapshotLayout = layout;
+		}
+		return layout;
+	}
+
+	private DataRowLayout buildSnapshotLayout() {
+		// a column is listed once however many roles it has: a PK column is often an attribute or an FK as well
+		Set<String> names = new LinkedHashSet<>();
+
+		for (PropertyDescriptor property : getProperties()) {
+			switch (property) {
+				case AttributeProperty attribute -> names.add(attribute.getAttribute().getDbAttributePath().value());
+				case ToOneProperty toOne -> {
+					// a to-one whose target does not propagate its key to this entity has no FK in the snapshot
+					ObjRelationship relationship = toOne.getRelationship();
+					if (!relationship.isSourceIndependentFromTargetChange()) {
+						for (DbJoin join : relationship.getDbRelationships().getFirst().getJoins()) {
+							names.add(join.getSourceName());
+						}
+					}
+				}
+				default -> {
+				}
+			}
+		}
+
+		DbEntity dbEntity = entity.getDbEntity();
+		if (dbEntity != null) {
+			for (DbAttribute pk : dbEntity.getPrimaryKeys()) {
+				names.add(pk.getName());
+			}
+		}
+
+		for (AdditionalDbEntityDescriptor additional : getAdditionalDbEntities().values()) {
+			for (DbAttribute pk : additional.getDbEntity().getPrimaryKeys()) {
+				names.add(additional.getPath().dot(pk.getName()).value());
+			}
+		}
+
+		return DataRowLayout.of(names.toArray(new String[0]));
 	}
 
 	public void setEntity(ObjEntity entity) {

@@ -24,7 +24,6 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.RowLayout;
 import org.apache.cayenne.access.event.SnapshotEvent;
 import org.apache.cayenne.event.EventBridge;
 import org.apache.cayenne.event.EventManager;
@@ -39,6 +38,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.BiConsumer;
 import java.util.concurrent.ConcurrentMap;
 
 /**
@@ -286,7 +286,7 @@ public class DataRowStore {
 
         Collection<ObjectId> deletedSnapshotIds = event.getDeletedIds();
         Collection<ObjectId> invalidatedSnapshotIds = event.getInvalidatedIds();
-        Map<ObjectId, DataRow> diffs = event.getModifiedDiffs();
+        Map<ObjectId, Map<String, Object>> diffs = event.getModifiedDiffs();
         Collection<ObjectId> indirectlyModifiedIds = event.getIndirectlyModifiedIds();
 
         if (deletedSnapshotIds.isEmpty()
@@ -299,9 +299,10 @@ public class DataRowStore {
 
         processDeletedIDs(deletedSnapshotIds);
         processInvalidatedIDs(invalidatedSnapshotIds);
-        processUpdateDiffs(diffs);
+        long version = processUpdateDiffs(diffs);
         sendUpdateNotification(
                 event.getPostedBy(),
+                version,
                 diffs,
                 deletedSnapshotIds,
                 invalidatedSnapshotIds,
@@ -331,9 +332,10 @@ public class DataRowStore {
 
         processDeletedIDs(deletedSnapshotIds);
         processInvalidatedIDs(invalidatedSnapshotIds);
-        Map<ObjectId, DataRow> diffs = processUpdatedSnapshots(updatedSnapshots);
+        Map<ObjectId, Map<String, Object>> diffs = processUpdatedSnapshots(updatedSnapshots);
         sendUpdateNotification(
                 postedBy,
+                version(updatedSnapshots),
                 diffs,
                 deletedSnapshotIds,
                 invalidatedSnapshotIds,
@@ -358,8 +360,20 @@ public class DataRowStore {
         }
     }
 
-    private Map<ObjectId, DataRow> processUpdatedSnapshots(Map<ObjectId, DataRow> updatedSnapshots) {
-        Map<ObjectId, DataRow> diffs = null;
+    /**
+     * Returns the version of the snapshots, which are of one operation, or {@link SnapshotVersion#NONE} if there are
+     * none.
+     */
+    private static long version(Map<ObjectId, DataRow> snapshots) {
+        long version = SnapshotVersion.NONE;
+        for (DataRow snapshot : snapshots.values()) {
+            version = Math.max(version, snapshot.getVersion());
+        }
+        return version;
+    }
+
+    private Map<ObjectId, Map<String, Object>> processUpdatedSnapshots(Map<ObjectId, DataRow> updatedSnapshots) {
+        Map<ObjectId, Map<String, Object>> diffs = null;
 
         // MODIFIED: replace/add snapshots, generate diffs for event
         if (!updatedSnapshots.isEmpty()) {
@@ -388,7 +402,7 @@ public class DataRowStore {
 
                 // generate diff for the updated event, if this not a new snapshot
                 if (replaced[0] != null) {
-                    DataRow diff = diff(replaced[0], newSnapshot);
+                    Map<String, Object> diff = diff(replaced[0], newSnapshot);
 
                     if (diff != null) {
                         if (diffs == null) {
@@ -405,68 +419,67 @@ public class DataRowStore {
     }
 
     /**
-     * Returns a row of the keys of {@code oldSnapshot} whose values differ in {@code newSnapshot}, with the values of
+     * Returns the keys of {@code oldSnapshot} whose values differ in {@code newSnapshot}, with the values of
      * {@code newSnapshot}, or null if there are no differences. Key sets are assumed compatible, i.e. both rows are
-     * snapshots of the same entity. The diff represents the newer row, so it carries that row's version.
+     * snapshots of the same entity.
      */
-    private static DataRow diff(DataRow oldSnapshot, DataRow newSnapshot) {
-        HashMap<String, Object> diff = null;
-
-        RowLayout layout = oldSnapshot.getLayout();
-        if (layout != null) {
-            // the old row is an array row: walk its columns by position instead of through entrySet(), which would
-            // allocate an entry per column. The new row is normally read by a later statement, so it has a layout of
-            // its own, and its values are looked up by name. The layouts are the same object only when both rows came
-            // from the same reader, and then the new row can be read by position too
-            boolean sameLayout = layout == newSnapshot.getLayout();
-            int size = layout.size();
-            for (int i = 0; i < size; i++) {
-                String name = layout.nameAt(i);
-                Object newValue = sameLayout ? newSnapshot.valueAt(i) : newSnapshot.get(name);
-                if (!Objects.deepEquals(oldSnapshot.valueAt(i), newValue)) {
-                    if (diff == null) {
-                        diff = new HashMap<>(size);
-                    }
-                    diff.put(name, newValue);
-                }
-            }
-        } else {
-            for (Map.Entry<String, Object> entry : oldSnapshot.entrySet()) {
-                Object newValue = newSnapshot.get(entry.getKey());
-                if (!Objects.deepEquals(entry.getValue(), newValue)) {
-                    if (diff == null) {
-                        diff = new HashMap<>(oldSnapshot.size());
-                    }
-                    diff.put(entry.getKey(), newValue);
-                }
-            }
-        }
-
-        return diff != null ? DataRow.of(newSnapshot.getEntityName(), diff, newSnapshot.getVersion()) : null;
+    private static Map<String, Object> diff(DataRow oldSnapshot, DataRow newSnapshot) {
+        // forEach, unlike the entry set, allocates no entries
+        Diff diff = new Diff(newSnapshot);
+        oldSnapshot.forEach(diff);
+        return diff.changes;
     }
 
-    private void processUpdateDiffs(Map<ObjectId, DataRow> diffs) {
-        // apply snapshot diffs
-        if (!diffs.isEmpty()) {
-            // the diffs come from another JVM, so their versions are not comparable with the local ones: the merged
-            // snapshots take the version of this event
-            long version = SnapshotVersion.next();
-            for (Map.Entry<ObjectId, DataRow> entry : diffs.entrySet()) {
-                ObjectId key = entry.getKey();
-                DataRow oldSnapshot = snapshots.remove(key);
+    private static final class Diff implements BiConsumer<String, Object> {
 
-                if (oldSnapshot == null) {
-                    continue;
+        private final DataRow newSnapshot;
+        private HashMap<String, Object> changes;
+
+        Diff(DataRow newSnapshot) {
+            this.newSnapshot = newSnapshot;
+        }
+
+        @Override
+        public void accept(String name, Object oldValue) {
+            Object newValue = newSnapshot.get(name);
+            if (!Objects.deepEquals(oldValue, newValue)) {
+                if (changes == null) {
+                    changes = new HashMap<>(newSnapshot.size());
                 }
-
-                snapshots.put(key, oldSnapshot.merged(entry.getValue(), version));
+                changes.put(name, newValue);
             }
         }
+    }
+
+    /**
+     * Applies the diffs of a remote event to the cached snapshots and returns the version the merged snapshots got,
+     * or {@link SnapshotVersion#NONE} if there were no diffs.
+     */
+    private long processUpdateDiffs(Map<ObjectId, Map<String, Object>> diffs) {
+        if (diffs.isEmpty()) {
+            return SnapshotVersion.NONE;
+        }
+
+        // the diffs come from another JVM, so their version is not comparable with the local ones: the merged
+        // snapshots take a version of this JVM
+        long version = SnapshotVersion.next();
+        for (Map.Entry<ObjectId, Map<String, Object>> entry : diffs.entrySet()) {
+            ObjectId key = entry.getKey();
+            DataRow oldSnapshot = snapshots.remove(key);
+
+            if (oldSnapshot == null) {
+                continue;
+            }
+
+            snapshots.put(key, oldSnapshot.merged(entry.getValue(), version));
+        }
+        return version;
     }
 
     private void sendUpdateNotification(
             Object postedBy,
-            Map<ObjectId, DataRow> diffs,
+            long version,
+            Map<ObjectId, Map<String, Object>> diffs,
             Collection<ObjectId> deletedSnapshotIDs,
             Collection<ObjectId> invalidatedSnapshotIDs,
             Collection<ObjectId> indirectlyModifiedIds) {
@@ -480,6 +493,7 @@ public class DataRowStore {
             SnapshotEvent event = new SnapshotEvent(
                     this,
                     postedBy,
+                    version,
                     diffs,
                     deletedSnapshotIDs,
                     invalidatedSnapshotIDs,

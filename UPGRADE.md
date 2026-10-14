@@ -445,12 +445,8 @@ List<Artist> withExpensivePaintings = ObjectSelect
    (`AttributeProperty`, `ToOneProperty`, `ToManyProperty`) instead. A custom `ClassDescriptor` must implement the
    three accessors; the deprecated visit methods are now default methods on top of them.
 
-*  Per [CAY-3050](https://issues.apache.org/jira/browse/CAY-3050) `DataRow` is now immutable: `put`, `putAll`,
-  `remove` and `clear` throw `UnsupportedOperationException`, including on rows returned by `dataRows()` queries. To
-  build a row, fill a `Map` first and pass it to `DataRow.of(entityName, map, version)`, which replaces the public
-  constructor. A row with changed values is derived with `row.merged(changes, version)`. Rows read from the database
-  are stored as arrays over a shared `RowLayout`, and a result set column with a repeated name is no longer dropped:
-  the last column keeps the name, and the earlier ones get an underscore appended (`ID`, `ID_`, ...).
+*  Per [CAY-3050](https://issues.apache.org/jira/browse/CAY-3050) `DataRow` is now immutable: `put`, `putAll`, `remove` and `clear` throw 
+   `UnsupportedOperationException`, including on rows returned by `dataRows()` queries. 
 
 ## Upgrading to 5.0-M3
 

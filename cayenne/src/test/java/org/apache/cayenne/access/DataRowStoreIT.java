@@ -20,6 +20,7 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.DataRowLayout;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.access.event.SnapshotEvent;
 import org.apache.cayenne.event.DefaultEventManager;
@@ -80,15 +81,15 @@ public class DataRowStoreIT {
 
         ObjectId key1 = ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 1);
         Map<ObjectId, DataRow> diff1 = new HashMap<>();
-        diff1.put(key1, DataRow.of("Artist", new HashMap<>(1), SnapshotVersion.next()));
+        diff1.put(key1, DataRow.of("Artist", DataRowLayout.of(), new Object[0], SnapshotVersion.next()));
 
         ObjectId key2 = ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 2);
         Map<ObjectId, DataRow> diff2 = new HashMap<>();
-        diff2.put(key2, DataRow.of("Artist", new HashMap<>(1), SnapshotVersion.next()));
+        diff2.put(key2, DataRow.of("Artist", DataRowLayout.of(), new Object[0], SnapshotVersion.next()));
 
         ObjectId key3 = ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 3);
         Map<ObjectId, DataRow> diff3 = new HashMap<>();
-        diff3.put(key3, DataRow.of("Artist", new HashMap<>(1), SnapshotVersion.next()));
+        diff3.put(key3, DataRow.of("Artist", DataRowLayout.of(), new Object[0], SnapshotVersion.next()));
 
         cache.processSnapshotChanges(
                 this,
@@ -137,28 +138,24 @@ public class DataRowStoreIT {
             eventManager.addListener(events, SnapshotEvent.class, List::add, cache.getSnapshotEventSubject());
 
             ObjectId key = ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 1);
-            DataRow old = DataRow.of("Artist",
-                    new HashMap<>(Map.of("ARTIST_ID", 1, "ARTIST_NAME", "a", "DATE_OF_BIRTH", "d")),
-                    SnapshotVersion.next());
+            DataRowLayout layout = DataRowLayout.of("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH");
+            DataRow old = DataRow.of("Artist", layout, new Object[]{1, "a", "d"}, SnapshotVersion.next());
             cache.processSnapshotChanges(this, Map.of(key, old), Collections.emptyList(), Collections.emptyList(),
                     Collections.emptyList());
             assertTrue(events.isEmpty(), "a new snapshot is not an update");
 
-            DataRow same = DataRow.of("Artist", new HashMap<>(old), SnapshotVersion.next());
+            DataRow same = DataRow.of("Artist", layout, new Object[]{1, "a", "d"}, SnapshotVersion.next());
             cache.processSnapshotChanges(this, Map.of(key, same), Collections.emptyList(), Collections.emptyList(),
                     Collections.emptyList());
             assertTrue(events.isEmpty(), "an unchanged snapshot is not broadcast");
 
-            DataRow changed = DataRow.of("Artist",
-                    new HashMap<>(Map.of("ARTIST_ID", 1, "ARTIST_NAME", "b", "DATE_OF_BIRTH", "d")),
-                    SnapshotVersion.next());
+            DataRow changed = DataRow.of("Artist", layout, new Object[]{1, "b", "d"}, SnapshotVersion.next());
             cache.processSnapshotChanges(this, Map.of(key, changed), Collections.emptyList(),
                     Collections.emptyList(), Collections.emptyList());
             assertEquals(1, events.size());
 
-            DataRow diff = events.getFirst().getModifiedDiffs().get(key);
-            assertEquals(Map.of("ARTIST_NAME", "b"), diff);
-            assertEquals(changed.getVersion(), diff.getVersion());
+            assertEquals(Map.of("ARTIST_NAME", "b"), events.getFirst().getModifiedDiffs().get(key));
+            assertEquals(changed.getVersion(), events.getFirst().getVersion());
         } finally {
             eventManager.shutdown();
         }

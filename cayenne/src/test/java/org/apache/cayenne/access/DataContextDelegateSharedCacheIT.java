@@ -20,8 +20,8 @@
 package org.apache.cayenne.access;
 
 import java.util.Date;
+import java.util.Map;
 
-import org.apache.cayenne.DataRow;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.CoreModule;
@@ -72,7 +72,7 @@ public class DataContextDelegateSharedCacheIT {
         DataContextDelegate delegate = new MockDataContextDelegate() {
 
             @Override
-            public boolean shouldMergeChanges(Persistent object, DataRow snapshotInStore) {
+            public boolean shouldMergeChanges(Persistent object, Map<String, Object> snapshotInStore) {
                 methodInvoked[0] = true;
                 return true;
             }
@@ -116,7 +116,7 @@ public class DataContextDelegateSharedCacheIT {
         DataContextDelegate delegate = new MockDataContextDelegate() {
 
             @Override
-            public boolean shouldMergeChanges(Persistent object, DataRow snapshotInStore) {
+            public boolean shouldMergeChanges(Persistent object, Map<String, Object> snapshotInStore) {
                 return false;
             }
         };

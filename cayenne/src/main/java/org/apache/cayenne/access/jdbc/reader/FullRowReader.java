@@ -21,7 +21,7 @@ package org.apache.cayenne.access.jdbc.reader;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
-import org.apache.cayenne.RowLayout;
+import org.apache.cayenne.DataRowLayout;
 import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.map.EntityInheritanceTree;
 import org.apache.cayenne.map.ObjEntity;
@@ -37,7 +37,7 @@ import java.util.Objects;
 class FullRowReader implements RowReader<DataRow> {
 
     private final RSColumn[] columns;
-    private final RowLayout layout;
+    private final DataRowLayout layout;
     private final long version;
     protected final String entityName;
 
@@ -56,14 +56,14 @@ class FullRowReader implements RowReader<DataRow> {
     }
 
     /**
-     * Returns a layout of the columns' DataRow names, in column order.
+     * Returns the layout of the columns' DataRow names, in column order.
      */
-    static RowLayout layout(RSColumn[] columns) {
-        String[] names = new String[columns.length];
-        for (int i = 0; i < columns.length; i++) {
-            names[i] = columns[i].dataRowName();
+    static DataRowLayout layout(RSColumn[] rsColumns) {
+        String[] names = new String[rsColumns.length];
+        for (int i = 0; i < rsColumns.length; i++) {
+            names[i] = rsColumns[i].dataRowName();
         }
-        return new RowLayout(names);
+        return DataRowLayout.of(names);
     }
 
     private FullRowReader(RSColumn[] columns, String entityName, long version) {

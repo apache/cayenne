@@ -19,9 +19,10 @@
 
 package org.apache.cayenne.access;
 
-import org.apache.cayenne.DataRow;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.query.Query;
+
+import java.util.Map;
 
 /**
  * Defines API for a DataContext "delegate" - an object that is temporarily passed control
@@ -59,13 +60,16 @@ public interface DataContextDelegate {
      * not resulting in a snapshot change. In the later case snapshot argument may be
      * null. If a delegate returns <code>true</code>, ObjectStore will attempt to merge
      * the changes into an object.
+     *
+     * @param snapshotInStore the snapshot of the object in the cache, or the changed keys of it with their new
+     *                        values, or null
      */
-    boolean shouldMergeChanges(Persistent object, DataRow snapshotInStore);
+    boolean shouldMergeChanges(Persistent object, Map<String, Object> snapshotInStore);
 
     /**
      * Called after a successful merging of external changes to an object. If previosly a
      * delegate returned <code>false</code> from
-     * {@link #shouldMergeChanges(Persistent, DataRow)}, this method is not invoked,
+     * {@link #shouldMergeChanges(Persistent, Map)}, this method is not invoked,
      * since changes were not merged.
      */
     void finishedMergeChanges(Persistent object);

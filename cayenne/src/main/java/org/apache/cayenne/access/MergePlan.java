@@ -16,10 +16,11 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
 package org.apache.cayenne.access;
 
-import org.apache.cayenne.RowLayout;
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.DataRowLayout;
+import org.apache.cayenne.DataRow;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.ObjRelationship;
@@ -34,56 +35,62 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * The positions of the columns that turn rows of one {@link RowLayout} into objects of one {@link ClassDescriptor}:
- * the primary key, the attributes and the to-one foreign keys. A resolver builds a plan for the rows it converts,
- * so the column names are looked up once per batch of rows instead of once per row. A position of -1 marks a column
- * missing from the layout, i.e. a partial snapshot.
+ * The columns that turn rows into objects of one {@link ClassDescriptor}: the primary key, the attributes and the
+ * to-one foreign keys, by their positions in the descriptor's {@link ClassDescriptor#getSnapshotLayout() snapshot
+ * layout}, and a {@link DataRowLayout.Reader} of that layout, which reads a snapshot built from an object by position
+ * and looks the positions up once per result set otherwise. A resolver builds a plan per descriptor for the rows it
+ * converts.
  */
 final class MergePlan {
 
-    final RowLayout layout;
     final ClassDescriptor descriptor;
 
-    // the primary key of the descriptor's DbEntity
-    final String[] pkNames;
-    final int[] pkIndexes;
+    final DataRowLayout layout;
+    final DataRowLayout.Reader reader;
 
+    // the primary key of the descriptor's DbEntity, PK i being column pkColumns[i]
+    final String[] pkNames;
+    final int[] pkColumns;
+
+    // attribute i being column attributeColumns[i]
     final AttributeProperty[] attributes;
-    final int[] attributeIndexes;
+    final int[] attributeColumns;
 
     final ToOneProperty[] toOnes;
-    // per to-one, the positions of the FK columns join by join, or null when the FK does not define the arc
-    final int[][] toOneFkIndexes;
-    // per to-one, the target PK column of each join
+    // per to-one, the columns of the FK join by join, or null when the FK does not define the arc
+    final int[][] toOneFkColumns;
+    // per to-one, the target PK column name of each join
     final String[][] toOneTargetNames;
 
     final ToManyProperty[] toManys;
 
-    private MergePlan(RowLayout layout, ClassDescriptor descriptor, String[] pkNames, int[] pkIndexes,
-                      AttributeProperty[] attributes, int[] attributeIndexes, ToOneProperty[] toOnes,
-                      int[][] toOneFkIndexes, String[][] toOneTargetNames, ToManyProperty[] toManys) {
-        this.layout = layout;
+    private MergePlan(ClassDescriptor descriptor, DataRowLayout layout, String[] pkNames, int[] pkColumns,
+                      AttributeProperty[] attributes, int[] attributeColumns, ToOneProperty[] toOnes,
+                      int[][] toOneFkColumns, String[][] toOneTargetNames, ToManyProperty[] toManys) {
         this.descriptor = descriptor;
+        this.layout = layout;
+        this.reader = layout.reader();
         this.pkNames = pkNames;
-        this.pkIndexes = pkIndexes;
+        this.pkColumns = pkColumns;
         this.attributes = attributes;
-        this.attributeIndexes = attributeIndexes;
+        this.attributeColumns = attributeColumns;
         this.toOnes = toOnes;
-        this.toOneFkIndexes = toOneFkIndexes;
+        this.toOneFkColumns = toOneFkColumns;
         this.toOneTargetNames = toOneTargetNames;
         this.toManys = toManys;
     }
 
-    static MergePlan of(RowLayout layout, ClassDescriptor descriptor) {
+    static MergePlan of(ClassDescriptor descriptor) {
+
+        DataRowLayout layout = descriptor.getSnapshotLayout();
 
         Collection<DbAttribute> pk = descriptor.getEntity().getDbEntity().getPrimaryKeys();
         String[] pkNames = new String[pk.size()];
-        int[] pkIndexes = new int[pk.size()];
+        int[] pkColumns = new int[pk.size()];
         int i = 0;
         for (DbAttribute attribute : pk) {
             pkNames[i] = attribute.getName();
-            pkIndexes[i] = layout.indexOf(attribute.getName());
-            i++;
+            pkColumns[i++] = column(layout, attribute.getName());
         }
 
         List<AttributeProperty> attributes = new ArrayList<>();
@@ -99,33 +106,41 @@ final class MergePlan {
             }
         }
 
-        int[] attributeIndexes = new int[attributes.size()];
-        for (i = 0; i < attributeIndexes.length; i++) {
-            attributeIndexes[i] = layout.indexOf(attributes.get(i).getAttribute().getDbAttributePath().value());
+        int[] attributeColumns = new int[attributes.size()];
+        for (i = 0; i < attributeColumns.length; i++) {
+            attributeColumns[i] = column(layout, attributes.get(i).getAttribute().getDbAttributePath().value());
         }
 
-        int[][] toOneFkIndexes = new int[toOnes.size()][];
+        int[][] toOneFkColumns = new int[toOnes.size()][];
         String[][] toOneTargetNames = new String[toOnes.size()][];
-        for (i = 0; i < toOneFkIndexes.length; i++) {
+        for (i = 0; i < toOneFkColumns.length; i++) {
             ObjRelationship relationship = toOnes.get(i).getRelationship();
             // only an FK to the target PK lets the source snapshot tell whether the arc changed
             if (relationship.isSourceIndependentFromTargetChange()) {
                 continue;
             }
             List<DbJoin> joins = relationship.getDbRelationships().getFirst().getJoins();
-            int[] fkIndexes = new int[joins.size()];
+            int[] fkColumns = new int[joins.size()];
             String[] targetNames = new String[joins.size()];
-            for (int j = 0; j < fkIndexes.length; j++) {
-                fkIndexes[j] = layout.indexOf(joins.get(j).getSourceName());
+            for (int j = 0; j < fkColumns.length; j++) {
+                fkColumns[j] = column(layout, joins.get(j).getSourceName());
                 targetNames[j] = joins.get(j).getTargetName();
             }
-            toOneFkIndexes[i] = fkIndexes;
+            toOneFkColumns[i] = fkColumns;
             toOneTargetNames[i] = targetNames;
         }
 
-        return new MergePlan(layout, descriptor, pkNames, pkIndexes,
-                attributes.toArray(new AttributeProperty[0]), attributeIndexes,
-                toOnes.toArray(new ToOneProperty[0]), toOneFkIndexes, toOneTargetNames,
+        return new MergePlan(descriptor, layout, pkNames, pkColumns,
+                attributes.toArray(new AttributeProperty[0]), attributeColumns,
+                toOnes.toArray(new ToOneProperty[0]), toOneFkColumns, toOneTargetNames,
                 toManys.toArray(new ToManyProperty[0]));
+    }
+
+    private static int column(DataRowLayout layout, String name) {
+        int column = layout.indexOf(name);
+        if (column < 0) {
+            throw new CayenneRuntimeException("Column '%s' is not in the snapshot layout %s", name, layout);
+        }
+        return column;
     }
 }

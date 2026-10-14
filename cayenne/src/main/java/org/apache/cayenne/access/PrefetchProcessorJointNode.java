@@ -20,9 +20,9 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.DataRowLayout;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.RowLayout;
 import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
@@ -61,12 +61,11 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
     Map<Object, Persistent> resolved;
     List<DataRow> resolvedRows;
 
-    // the layout of this node's rows, keyed by the columns' result set names
-    private RowLayout rowLayout;
+    // the layout of this node's rows, by the columns' result set names
+    private DataRowLayout rowLayout;
 
-    // the positions of this node's columns in the flat rows, resolved for the layout of the last flat row seen
-    private RowLayout flatLayout;
-    private int[] flatIndexes;
+    // reads this node's columns from the flat rows
+    private DataRowLayout.Reader flatReader;
 
     PrefetchProcessorJointNode(PrefetchProcessorNode parent, String segmentPath) {
         super(parent, segmentPath);
@@ -112,42 +111,17 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
         // likely be an indicator of an outer join ... and considering SQLTemplate,
         // this is reasonable to expect...
 
-        int[] indexes = flatRow.getLayout() != null ? flatIndexes(flatRow) : null;
         if (idIndices.length == 1) {
-            return idValue(flatRow, indexes, idIndices[0]);
+            return flatReader.get(flatRow, idIndices[0]);
         }
 
         Object[] id = new Object[idIndices.length];
         for (int i = 0; i < id.length; i++) {
-            id[i] = idValue(flatRow, indexes, idIndices[i]);
+            id[i] = flatReader.get(flatRow, idIndices[i]);
         }
 
         // Arrays.asList: a value-based key, unlike List.of it allows nulls, which an outer join produces
         return Arrays.asList(id);
-    }
-
-    private Object idValue(DataRow flatRow, int[] indexes, int idIndex) {
-        return indexes != null ? valueAt(flatRow, indexes[idIndex]) : flatRow.get(columns[idIndex].dataRowName());
-    }
-
-    /**
-     * Returns the positions of this node's columns in the given flat row, which has a layout.
-     */
-    private int[] flatIndexes(DataRow flatRow) {
-        RowLayout layout = flatRow.getLayout();
-        if (layout != flatLayout) {
-            int[] indexes = new int[columns.length];
-            for (int i = 0; i < columns.length; i++) {
-                indexes[i] = layout.indexOf(columns[i].dataRowName());
-            }
-            flatIndexes = indexes;
-            flatLayout = layout;
-        }
-        return flatIndexes;
-    }
-
-    private static Object valueAt(DataRow row, int index) {
-        return index < 0 ? null : row.valueAt(index);
     }
 
     /**
@@ -173,15 +147,8 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
     DataRow rowFromFlatRow(DataRow flatRow) {
         // extract subset of flat row columns, recasting to the target keys
         Object[] values = new Object[columns.length];
-        if (flatRow.getLayout() != null) {
-            int[] indexes = flatIndexes(flatRow);
-            for (int i = 0; i < columns.length; i++) {
-                values[i] = valueAt(flatRow, indexes[i]);
-            }
-        } else {
-            for (int i = 0; i < columns.length; i++) {
-                values[i] = flatRow.get(columns[i].dataRowName());
-            }
+        for (int i = 0; i < columns.length; i++) {
+            values[i] = flatReader.get(flatRow, i);
         }
 
         DataRow row = DataRow.of(resolver.getEntity().getName(), rowLayout, values, flatRow.getVersion());
@@ -284,10 +251,13 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
         targetSource.values().toArray(columns);
 
         String[] names = new String[size];
+        String[] flatNames = new String[size];
         for (int i = 0; i < size; i++) {
             names[i] = columns[i].rsName();
+            flatNames[i] = columns[i].dataRowName();
         }
-        this.rowLayout = new RowLayout(names);
+        this.rowLayout = DataRowLayout.of(names);
+        this.flatReader = DataRowLayout.of(flatNames).reader();
     }
 
     private RSColumn appendColumn(

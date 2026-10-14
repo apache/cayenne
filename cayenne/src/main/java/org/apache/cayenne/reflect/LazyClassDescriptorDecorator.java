@@ -21,6 +21,7 @@ package org.apache.cayenne.reflect;
 import java.util.Collection;
 import java.util.Map;
 
+import org.apache.cayenne.DataRowLayout;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.DbEntity;
@@ -194,5 +195,11 @@ public class LazyClassDescriptorDecorator implements ClassDescriptor {
     public Collection<PropertyDescriptor> getAllProperties() {
         checkDescriptorInitialized();
         return descriptor.getAllProperties();
+    }
+
+    @Override
+    public DataRowLayout getSnapshotLayout() {
+        checkDescriptorInitialized();
+        return descriptor.getSnapshotLayout();
     }
 }

@@ -19,9 +19,10 @@
 
 package org.apache.cayenne.access;
 
-import org.apache.cayenne.DataRow;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.query.Query;
+
+import java.util.Map;
 
 /**
  * Default implementation of DataContextDelegate that serves as a superclass for mockup
@@ -41,7 +42,7 @@ public class MockDataContextDelegate implements DataContextDelegate {
     }
 
     @Override
-    public boolean shouldMergeChanges(Persistent object, DataRow snapshotInStore) {
+    public boolean shouldMergeChanges(Persistent object, Map<String, Object> snapshotInStore) {
         return true;
     }
 

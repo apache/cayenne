@@ -20,6 +20,7 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.DataRowLayout;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.Expression;
@@ -156,7 +157,7 @@ class HierarchicalObjectResolver {
 
             int maxIdQualifierSize = context.getChannel().getDataDomain().getMaxIdQualifierSize();
             List<DbJoin> joins = getDbJoins(relationship);
-            RowColumns keyColumns = new RowColumns(dataRowKeys(joins, pathPrefix));
+            DataRowLayout.Reader keyReader = DataRowLayout.of(dataRowKeys(joins, pathPrefix)).reader();
 
             List<PrefetchSelectQuery<DataRow>> queries = new ArrayList<>();
             PrefetchSelectQuery<DataRow> currentQuery = null;
@@ -179,7 +180,7 @@ class HierarchicalObjectResolver {
 
                 List<Object> joinValues = new ArrayList<>(joins.size());
                 for (int i = 0; i < joins.size(); i++) {
-                    joinValues.add(keyColumns.get(dataRow, i));
+                    joinValues.add(keyReader.get(dataRow, i));
                 }
 
                 if(values.add(joinValues)) {

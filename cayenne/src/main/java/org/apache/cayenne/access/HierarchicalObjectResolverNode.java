@@ -52,7 +52,7 @@ class HierarchicalObjectResolverNode extends PrefetchObjectResolver {
             // determine entity to use
             ClassDescriptor classDescriptor = descriptorResolutionStrategy.descriptorForRow(row);
 
-            MergePlan plan = planFor(row, classDescriptor);
+            MergePlan plan = planFor(classDescriptor);
             ObjectId anId = createObjectId(row, classDescriptor, plan);
 
             Persistent object = objectFromDataRow(row, anId, classDescriptor, plan);

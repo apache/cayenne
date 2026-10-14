@@ -16,16 +16,15 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
 package org.apache.cayenne.access;
 
+import org.apache.cayenne.DataRowLayout;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.reflect.ArcProperty;
 import org.apache.cayenne.reflect.AttributeProperty;
@@ -35,7 +34,6 @@ import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
 import org.apache.cayenne.util.Util;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -50,68 +48,54 @@ class DataRowUtils {
      * Merges changes reflected in snapshot map to the object. Changes made to attributes
      * and to-one relationships will be merged. In case an object is already modified,
      * modified properties will not be overwritten.
-     */
-    static void mergeObjectWithSnapshot(
-            DataContext context,
-            ClassDescriptor descriptor,
-            Persistent object,
-            DataRow snapshot) {
-        mergeObjectWithSnapshot(context, descriptor, object, snapshot, null);
-    }
-
-    /**
-     * Merges changes reflected in snapshot map to the object. Changes made to attributes
-     * and to-one relationships will be merged. In case an object is already modified,
-     * modified properties will not be overwritten.
      *
-     * @param plan the positions of the descriptor's columns in the snapshot, or null to look them up by name. A plan
-     *             of another layout than the snapshot's is ignored
+     * @param plan the plan of the object's descriptor
      */
     static void mergeObjectWithSnapshot(
             DataContext context,
-            ClassDescriptor descriptor,
             Persistent object,
             DataRow snapshot,
             MergePlan plan) {
 
         int state = object.getPersistenceState();
 
-        if (plan != null && plan.layout != snapshot.getLayout()) {
-            plan = null;
-        }
-
         if (state == PersistenceState.HOLLOW) {
-            refreshObjectWithSnapshot(descriptor, object, snapshot, true, plan);
-        } else if (state != PersistenceState.COMMITTED && !descriptor.getEntity().isReadOnly()) {
-            forceMergeWithSnapshot(context, descriptor, object, snapshot);
+            refreshObjectWithSnapshot(plan, object, snapshot, true);
+        } else if (state != PersistenceState.COMMITTED && !plan.descriptor.getEntity().isReadOnly()) {
+            forceMergeWithSnapshot(context, plan.descriptor, object, snapshot);
         } else {
             // do not invalidate relationships: to-many lists might have just been prefetched, and a to-one target
             // whose FK did not change is still valid
-            refreshObjectWithSnapshot(descriptor, object, snapshot, false, plan);
+            refreshObjectWithSnapshot(plan, object, snapshot, false);
         }
     }
 
-    private static void refreshObjectWithSnapshot(
-            ClassDescriptor descriptor,
+    /**
+     * Replaces all object attribute values with snapshot values. Sets object state to
+     * COMMITTED, unless the snapshot is partial in which case the state is set to HOLLOW.
+     * With 'invalidateRelationships' all relationships are turned into faults. Otherwise to-many relationships
+     * are left alone, and a resolved to-one target is kept when the snapshot FK still points to it.
+     *
+     * @param plan the plan of the object's descriptor
+     */
+    static void refreshObjectWithSnapshot(
+            MergePlan plan,
             Persistent object,
             DataRow snapshot,
-            boolean invalidateRelationships,
-            MergePlan plan) {
-
-        if (plan == null) {
-            refreshObjectWithSnapshot(descriptor, object, snapshot, invalidateRelationships);
-            return;
-        }
+            boolean invalidateRelationships) {
 
         boolean isPartialSnapshot = false;
 
+        DataRowLayout.Reader reader = plan.reader;
         AttributeProperty[] attributes = plan.attributes;
-        int[] attributeIndexes = plan.attributeIndexes;
         for (int i = 0; i < attributes.length; i++) {
             AttributeProperty property = attributes[i];
-            int index = attributeIndexes[i];
-            if (index >= 0) {
-                property.writePropertyDirectly(object, null, snapshot.valueAt(index));
+            int column = plan.attributeColumns[i];
+            Object value = reader.get(snapshot, column);
+
+            // a null value is valid, so the column is only checked for when the value is null
+            if (value != null || reader.has(snapshot, column)) {
+                property.writePropertyDirectly(object, null, value);
             } else if (property.getAttribute().isLazy()) {
                 property.writePropertyDirectly(object, null, new AttributeFault(property));
             } else {
@@ -131,64 +115,7 @@ class DataRowUtils {
         } else {
             ToOneProperty[] toOnes = plan.toOnes;
             for (int i = 0; i < toOnes.length; i++) {
-                refreshToOne(toOnes[i], object, snapshot, plan.toOneFkIndexes[i], plan.toOneTargetNames[i]);
-            }
-        }
-
-        object.setPersistenceState(isPartialSnapshot
-                ? PersistenceState.HOLLOW
-                : PersistenceState.COMMITTED);
-    }
-
-    /**
-     * Replaces all object attribute values with snapshot values. Sets object state to
-     * COMMITTED, unless the snapshot is partial in which case the state is set to HOLLOW.
-     * With 'invalidateRelationships' all relationships are turned into faults. Otherwise to-many relationships
-     * are left alone, and a resolved to-one target is kept when the snapshot FK still points to it.
-     */
-    static void refreshObjectWithSnapshot(
-            ClassDescriptor descriptor,
-            Persistent object,
-            DataRow snapshot,
-            boolean invalidateRelationships) {
-
-        boolean isPartialSnapshot = false;
-
-        for (PropertyDescriptor property : descriptor.getProperties()) {
-            switch (property) {
-                case AttributeProperty attribute -> {
-                    ObjAttribute attr = attribute.getAttribute();
-                    String dbAttrPath = attr.getDbAttributePath().value();
-
-                    Object value = snapshot.get(dbAttrPath);
-                    attribute.writePropertyDirectly(object, null, value);
-
-                    // note that a check "snaphsot.get(..) == null" would be incorrect in this
-                    // case, as NULL value is entirely valid; still save a map lookup by
-                    // checking for the null value first
-                    if (value == null && !snapshot.containsKey(dbAttrPath)) {
-                        if (attr.isLazy()) {
-                            attribute.writePropertyDirectly(object, null, new AttributeFault(attribute));
-                        } else {
-                            isPartialSnapshot = true;
-                        }
-                    }
-                }
-                case ToOneProperty toOne -> {
-                    if (invalidateRelationships) {
-                        toOne.invalidate(object);
-                    } else {
-                        refreshToOne(toOne, object, snapshot);
-                    }
-                }
-                case ToManyProperty toMany -> {
-                    // "to many" relationships have no information to collect from snapshot
-                    if (invalidateRelationships) {
-                        toMany.invalidate(object);
-                    }
-                }
-                default -> {
-                }
+                refreshToOne(toOnes[i], object, snapshot, reader, plan.toOneFkColumns[i], plan.toOneTargetNames[i]);
             }
         }
 
@@ -202,75 +129,35 @@ class DataRowUtils {
      * Replacing an unchanged target with a fault would be pointless: the fault resolves from the cached snapshot to
      * the very same object. It is also harmful on a shared DataContext, where other threads would observe the
      * transient fault and have to resolve it, each contending for the ObjectStore lock.
+     *
+     * @param fkColumns   the FK columns, join by join, or null when the FK does not define the arc. A flattened or a
+     *                    to-dependent-PK relationship is defined by the target rows, so it is invalidated as before
+     * @param targetNames the target PK column of each join
      */
-    private static void refreshToOne(ToOneProperty property, Persistent object, DataRow snapshot) {
+    private static void refreshToOne(ToOneProperty property, Persistent object, DataRow snapshot,
+                                     DataRowLayout.Reader reader, int[] fkColumns, String[] targetNames) {
         Object current = property.readPropertyDirectly(object);
         if (property.isFaultValue(current)) {
             return;
         }
 
-        ObjRelationship relationship = property.getRelationship();
-
-        // only an FK to the target PK lets the source snapshot tell whether the arc changed. A flattened or a
-        // to-dependent-PK relationship is defined by the target rows, so it is invalidated as before
-        if (relationship.isSourceIndependentFromTargetChange()) {
+        if (fkColumns == null) {
             property.invalidate(object);
             return;
         }
 
         // the FK is compared with the current target id join by join, without building an intermediate id
         Map<String, Object> currentPk = current != null ? ((Persistent) current).getObjectId().getIdSnapshot() : null;
-        List<DbJoin> joins = relationship.getDbRelationships().getFirst().getJoins();
         int nullFks = 0;
 
-        for (DbJoin join : joins) {
-            String fkName = join.getSourceName();
-            Object fk = snapshot.get(fkName);
+        for (int i = 0; i < fkColumns.length; i++) {
+            Object fk = reader.get(snapshot, fkColumns[i]);
             if (fk == null) {
-                if (!snapshot.containsKey(fkName)) {
+                if (!reader.has(snapshot, fkColumns[i])) {
                     // partial snapshot
                     property.invalidate(object);
                     return;
                 }
-                nullFks++;
-            } else if (currentPk == null || !Util.idValueEquals(fk, currentPk.get(join.getTargetName()))) {
-                property.invalidate(object);
-                return;
-            }
-        }
-
-        refreshToOne(property, object, current, nullFks, joins.size());
-    }
-
-    /**
-     * The same as {@link #refreshToOne(ToOneProperty, Persistent, DataRow)}, with the FK columns read by position.
-     *
-     * @param fkIndexes   the positions of the FK columns, join by join, or null when the FK does not define the arc
-     * @param targetNames the target PK column of each join
-     */
-    private static void refreshToOne(ToOneProperty property, Persistent object, DataRow snapshot, int[] fkIndexes,
-                                     String[] targetNames) {
-        Object current = property.readPropertyDirectly(object);
-        if (property.isFaultValue(current)) {
-            return;
-        }
-
-        if (fkIndexes == null) {
-            property.invalidate(object);
-            return;
-        }
-
-        Map<String, Object> currentPk = current != null ? ((Persistent) current).getObjectId().getIdSnapshot() : null;
-        int nullFks = 0;
-
-        for (int i = 0; i < fkIndexes.length; i++) {
-            if (fkIndexes[i] < 0) {
-                // partial snapshot
-                property.invalidate(object);
-                return;
-            }
-            Object fk = snapshot.valueAt(fkIndexes[i]);
-            if (fk == null) {
                 nullFks++;
             } else if (currentPk == null || !Util.idValueEquals(fk, currentPk.get(targetNames[i]))) {
                 property.invalidate(object);
@@ -278,15 +165,7 @@ class DataRowUtils {
             }
         }
 
-        refreshToOne(property, object, current, nullFks, fkIndexes.length);
-    }
-
-    /**
-     * Settles a to-one whose non-null FK columns all point to the current target.
-     */
-    private static void refreshToOne(ToOneProperty property, Persistent object, Object current, int nullFks,
-                                     int joins) {
-        if (nullFks == joins) {
+        if (nullFks == fkColumns.length) {
             if (current != null) {
                 property.writePropertyDirectly(object, current, null);
             }
@@ -296,11 +175,15 @@ class DataRowUtils {
         }
     }
 
+    /**
+     * Merges a snapshot, or a diff of one, into a MODIFIED or DELETED object: the properties the object has not
+     * changed take the snapshot values.
+     */
     static void forceMergeWithSnapshot(
             DataContext context,
             ClassDescriptor descriptor,
             Persistent object,
-            DataRow snapshot) {
+            Map<String, Object> snapshot) {
 
         ObjectDiff diff = context
                 .getObjectStore()
@@ -321,7 +204,7 @@ class DataRowUtils {
     private static void mergeAttribute(
             AttributeProperty property,
             Persistent object,
-            DataRow snapshot,
+            Map<String, Object> snapshot,
             ObjectDiff diff) {
 
         String dbAttrPath = property.getAttribute().getDbAttributePath().value();
@@ -346,7 +229,7 @@ class DataRowUtils {
             DataContext context,
             ToOneProperty property,
             Persistent object,
-            DataRow snapshot,
+            Map<String, Object> snapshot,
             ObjectDiff diff) {
 
         ObjRelationship relationship = property.getRelationship();

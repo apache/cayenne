@@ -41,17 +41,21 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DataRowTest {
 
-    private static final RowLayout LAYOUT = new RowLayout(new String[]{"a", "b", "c"});
+    private static final DataRowLayout ABC = DataRowLayout.of("a", "b", "c");
 
-    private static DataRow arrayRow(Object... values) {
-        return DataRow.of("E", LAYOUT, values, SnapshotVersion.next());
+    private static DataRow rowOf(Object... values) {
+        return DataRow.of("E", ABC, values, SnapshotVersion.next());
+    }
+
+    private static DataRow rowOf(DataRowLayout layout, Object... values) {
+        return DataRow.of("E", layout, values, 1);
     }
 
     @Test
-    public void version() throws Exception {
-        DataRow s1 = DataRow.of("E", new HashMap<>(10), SnapshotVersion.next());
-        DataRow s2 = DataRow.of("E", new HashMap<>(10), SnapshotVersion.next());
-        DataRow s3 = DataRow.of("E", new HashMap<>(10), SnapshotVersion.next());
+    public void version() {
+        DataRow s1 = rowOf(1, 2, 3);
+        DataRow s2 = rowOf(1, 2, 3);
+        DataRow s3 = rowOf(1, 2, 3);
 
         assertFalse(s1.getVersion() == s2.getVersion());
         assertFalse(s2.getVersion() == s3.getVersion());
@@ -61,8 +65,8 @@ public class DataRowTest {
     @Test
     public void explicitVersion() {
         long version = SnapshotVersion.next();
-        DataRow s1 = DataRow.of("E", Map.of("a", 1), version);
-        DataRow s2 = DataRow.of("E2", new HashMap<>(s1), version);
+        DataRow s1 = DataRow.of("E", ABC, new Object[]{1, 2, 3}, version);
+        DataRow s2 = DataRow.of("E2", ABC, new Object[]{1, 2, 3}, version);
 
         assertEquals(version, s1.getVersion());
         assertEquals(version, s2.getVersion());
@@ -73,26 +77,22 @@ public class DataRowTest {
 
     @Test
     public void immutable() {
-        DataRow map = DataRow.of("E", new HashMap<>(Map.of("a", 1)), 1);
-        DataRow array = arrayRow(1, 2, 3);
+        DataRow row = rowOf(1, 2, 3);
 
-        for (DataRow row : List.of(map, array)) {
-            assertThrows(UnsupportedOperationException.class, () -> row.put("a", 2));
-            assertThrows(UnsupportedOperationException.class, () -> row.putAll(Map.of("a", 2)));
-            assertThrows(UnsupportedOperationException.class, () -> row.remove("a"));
-            assertThrows(UnsupportedOperationException.class, row::clear);
-        }
+        assertThrows(UnsupportedOperationException.class, () -> row.put("a", 2));
+        assertThrows(UnsupportedOperationException.class, () -> row.putAll(Map.of("a", 2)));
+        assertThrows(UnsupportedOperationException.class, () -> row.remove("a"));
+        assertThrows(UnsupportedOperationException.class, row::clear);
 
-        // the views of an array row are read-only. The views of a map row are those of the map, not wrapped
-        assertThrows(UnsupportedOperationException.class, () -> array.keySet().remove("a"));
-        assertThrows(UnsupportedOperationException.class, () -> array.entrySet().iterator().next().setValue(5));
+        // the views are read-only too
+        assertThrows(UnsupportedOperationException.class, () -> row.keySet().remove("a"));
+        assertThrows(UnsupportedOperationException.class, () -> row.entrySet().iterator().next().setValue(5));
     }
 
     @Test
-    public void arrayRow_MapView() {
-        DataRow row = arrayRow(1, null, "x");
+    public void mapView() {
+        DataRow row = rowOf(1, null, "x");
 
-        assertSame(LAYOUT, row.getLayout());
         assertEquals(3, row.size());
         assertFalse(row.isEmpty());
         assertEquals(1, row.get("a"));
@@ -104,7 +104,6 @@ public class DataRowTest {
         assertTrue(row.containsValue(null));
         assertTrue(row.containsValue("x"));
         assertFalse(row.containsValue("y"));
-        assertEquals("x", row.valueAt(2));
         assertEquals(7, row.getOrDefault("d", 7));
         assertNull(row.getOrDefault("b", 7));
 
@@ -119,99 +118,90 @@ public class DataRowTest {
     }
 
     @Test
-    public void mapRow_NoLayout() {
-        DataRow row = DataRow.of("E", Map.of("a", 1), 1);
-        assertNull(row.getLayout());
-        assertThrows(UnsupportedOperationException.class, () -> row.valueAt(0));
-    }
-
-    @Test
     public void equalsAndHashCode() {
-        DataRow array = arrayRow(1, null, "x");
-        DataRow sameLayout = arrayRow(1, null, "x");
-        DataRow otherLayout = DataRow.of("E", new RowLayout(new String[]{"c", "a", "b"}), new Object[]{"x", 1, null}, 1);
-        DataRow map = DataRow.of("E", new HashMap<>(Map.of("a", 1, "c", "x")), 1);
+        DataRow row = rowOf(1, null, "x");
+        DataRow sameLayout = rowOf(1, null, "x");
+        DataRow otherLayout = rowOf(DataRowLayout.of("c", "a", "b"), "x", 1, null);
+        DataRow narrower = rowOf(DataRowLayout.of("a", "c"), 1, "x");
         HashMap<String, Object> plainMap = new HashMap<>(Map.of("a", 1, "c", "x"));
         plainMap.put("b", null);
 
-        assertEquals(array, sameLayout);
-        assertEquals(array, otherLayout);
-        assertEquals(otherLayout, array);
-        assertEquals(array, plainMap);
-        assertEquals(plainMap, array);
-        assertEquals(array.hashCode(), plainMap.hashCode());
-        assertEquals(array.hashCode(), otherLayout.hashCode());
+        assertEquals(row, sameLayout);
+        assertEquals(row, otherLayout);
+        assertEquals(otherLayout, row);
+        assertEquals(row, plainMap);
+        assertEquals(plainMap, row);
+        assertEquals(row.hashCode(), plainMap.hashCode());
+        assertEquals(row.hashCode(), otherLayout.hashCode());
 
-        // "b" is absent in the map row, null in the array row
-        assertNotEquals(array, map);
-        assertNotEquals(map, array);
+        // "b" is absent in the narrower row, null in the other
+        assertNotEquals(row, narrower);
+        assertNotEquals(narrower, row);
 
-        assertNotEquals(array, arrayRow(1, null, "y"));
-        assertNotEquals(array, arrayRow(1, 2, "x"));
-        assertNotEquals(array, DataRow.of("E", Map.of("a", 1), 1));
+        assertNotEquals(row, rowOf(1, null, "y"));
+        assertNotEquals(row, rowOf(1, 2, "x"));
+        assertNotEquals(row, rowOf(DataRowLayout.of("a"), 1));
     }
 
     @Test
     public void merged() {
-        DataRow array = arrayRow(1, 2, 3);
-        DataRow merged = array.merged(Map.of("b", 20), 7);
+        DataRow row = rowOf(1, 2, 3);
+        DataRow merged = row.merged(Map.of("b", 20), 7);
 
-        assertSame(LAYOUT, merged.getLayout());
         assertEquals(7, merged.getVersion());
         assertEquals("E", merged.getEntityName());
-        assertEquals(20, merged.valueAt(1));
-        assertEquals(1, merged.valueAt(0));
-        assertEquals(2, array.valueAt(1), "the original must not change");
+        assertEquals(Map.of("a", 1, "b", 20, "c", 3), merged);
+        assertSame(row.layout, merged.layout);
+        assertEquals(2, row.get("b"), "the original must not change");
 
-        DataRow widened = array.merged(Map.of("d", 4), 8);
-        assertNull(widened.getLayout());
+        DataRow widened = row.merged(Map.of("d", 4), 8);
         assertEquals(4, widened.size());
         assertEquals(4, widened.get("d"));
         assertEquals(3, widened.get("c"));
-
-        DataRow map = DataRow.of("E", new HashMap<>(Map.of("a", 1)), 1).merged(Map.of("b", 2), 9);
-        assertNull(map.getLayout());
-        assertEquals(9, map.getVersion());
-        assertEquals(Map.of("a", 1, "b", 2), map);
+        assertEquals(List.of("a", "b", "c", "d"), List.copyOf(widened.keySet()));
     }
 
     @Test
     public void withEntityName() {
-        DataRow array = arrayRow(1, 2, 3);
-        DataRow renamed = array.withEntityName("E2");
+        DataRow row = rowOf(1, 2, 3);
+        DataRow renamed = row.withEntityName("E2");
         assertEquals("E2", renamed.getEntityName());
-        assertEquals(array.getVersion(), renamed.getVersion());
-        assertSame(LAYOUT, renamed.getLayout());
-        assertEquals(array, renamed);
-
-        DataRow map = DataRow.of("E", Map.of("a", 1), 1).withEntityName("E2");
-        assertEquals("E2", map.getEntityName());
-        assertEquals(1, map.get("a"));
+        assertEquals(row.getVersion(), renamed.getVersion());
+        assertEquals(row, renamed);
+        assertSame(row.layout, renamed.layout);
     }
 
     @Test
     public void serialization() throws Exception {
-        DataRow array = arrayRow(1, null, "x");
+        DataRow row1 = rowOf(1, null, "x");
+        DataRow row2 = rowOf(2, null, "y");
 
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         try (ObjectOutputStream out = new ObjectOutputStream(bytes)) {
-            out.writeObject(array);
+            out.writeObject(List.of(row1, row2));
         }
 
-        DataRow read;
+        List<?> read;
         try (ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(bytes.toByteArray()))) {
-            read = (DataRow) in.readObject();
+            read = (List<?>) in.readObject();
         }
 
-        assertNotNull(read);
-        assertNull(read.getLayout(), "the layout is not serialized");
-        assertEquals(array, read);
-        assertEquals(array.getVersion(), read.getVersion());
-        assertEquals("E", read.getEntityName());
+        DataRow read1 = (DataRow) read.get(0);
+        DataRow read2 = (DataRow) read.get(1);
+        assertEquals(row1, read1);
+        assertEquals(row2, read2);
+        assertEquals(row1.getVersion(), read1.getVersion());
+        assertEquals("E", read1.getEntityName());
+
+        // the layout is read back once, with its index rebuilt
+        assertSame(read1.layout, read2.layout);
+        assertEquals(List.of("a", "b", "c"), List.copyOf(read1.keySet()));
+        assertEquals("x", read1.get("c"));
+        assertEquals("y", read1.layout.reader().get(read2, 2));
     }
 
     @Test
-    public void arrayRow_LengthMismatch() {
-        assertThrows(IllegalArgumentException.class, () -> DataRow.of("E", LAYOUT, new Object[]{1}, 1));
+    public void lengthMismatch() {
+        assertThrows(IllegalArgumentException.class, () -> DataRow.of("E", ABC, new Object[]{1}, 1));
     }
 }

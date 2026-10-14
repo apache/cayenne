@@ -21,6 +21,7 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.DataRowLayout;
 import org.apache.cayenne.Fault;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
@@ -37,7 +38,8 @@ import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.PropertyDescriptor;
 import org.apache.cayenne.reflect.ToOneProperty;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -71,7 +73,14 @@ public final class ObjectSnapshots {
         private final DataContextObjectStore objectStore;
         private final Persistent object;
         private final long version;
-        private final HashMap<String, Object> values = new HashMap<>(10);
+
+        private DataRowLayout layout;
+        private Object[] values;
+        private boolean[] present;
+        private int presentCount;
+
+        // the FK columns of the to-ones that are null, filled last
+        private List<String> nullFks;
 
         Builder(EntityResolver resolver, DataContextObjectStore objectStore, Persistent object, long version) {
             this.resolver = resolver;
@@ -89,6 +98,10 @@ public final class ObjectSnapshots {
             ObjEntity entity = resolver.getObjEntity(object);
             ClassDescriptor descriptor = resolver.getClassDescriptor(entity.getName());
 
+            this.layout = descriptor.getSnapshotLayout();
+            this.values = new Object[layout.size()];
+            this.present = new boolean[layout.size()];
+
             // to-many relationships contribute nothing to the snapshot
             for (PropertyDescriptor property : descriptor.getProperties()) {
                 switch (property) {
@@ -105,13 +118,8 @@ public final class ObjectSnapshots {
             // set above when db relationships where processed.
             Map<String, Object> thisIdParts = object.getObjectId().getIdSnapshot();
             if (thisIdParts != null) {
-
-                // put only those that do not exist in the map
                 for (Map.Entry<String, Object> entry : thisIdParts.entrySet()) {
-                    String nextKey = entry.getKey();
-                    if (!values.containsKey(nextKey)) {
-                        values.put(nextKey, entry.getValue());
-                    }
+                    setIfAbsent(entry.getKey(), entry.getValue());
                 }
             }
 
@@ -120,18 +128,70 @@ public final class ObjectSnapshots {
                 ObjectId flattenedId = objectStore.getFlattenedId(object.getObjectId(), path);
                 if (flattenedId != null) {
                     for (Map.Entry<String, Object> idEntry : flattenedId.getIdSnapshot().entrySet()) {
-                        values.putIfAbsent(path.dot(idEntry.getKey()).value(), idEntry.getValue());
+                        setIfAbsent(path.dot(idEntry.getKey()).value(), idEntry.getValue());
                     }
                 }
             }
 
-            return DataRow.of(entity.getName(), values, version);
+            // a null to-one is a null FK, unless the column is also a part of the id, which was set above
+            if (nullFks != null) {
+                for (String name : nullFks) {
+                    setIfAbsent(name, null);
+                }
+            }
+
+            return presentCount == values.length
+                    ? DataRow.of(entity.getName(), layout, values, version)
+                    : partialRow(entity.getName());
+        }
+
+        /**
+         * Returns a row of the columns that got a value, over a layout of its own: the snapshot is partial, see the
+         * warning in {@link ObjectSnapshots#snapshot(DataContext, Persistent, long)}.
+         */
+        private DataRow partialRow(String entityName) {
+            String[] names = new String[presentCount];
+            Object[] partial = new Object[presentCount];
+            int j = 0;
+            for (int i = 0; i < values.length; i++) {
+                if (present[i]) {
+                    names[j] = layout.nameAt(i);
+                    partial[j++] = values[i];
+                }
+            }
+            return DataRow.of(entityName, DataRowLayout.of(names), partial, version);
+        }
+
+        private void set(String name, Object value) {
+            int i = index(name);
+            values[i] = value;
+            if (!present[i]) {
+                present[i] = true;
+                presentCount++;
+            }
+        }
+
+        private void setIfAbsent(String name, Object value) {
+            int i = index(name);
+            if (!present[i]) {
+                values[i] = value;
+                present[i] = true;
+                presentCount++;
+            }
+        }
+
+        private int index(String name) {
+            int i = layout.indexOf(name);
+            if (i < 0) {
+                throw new CayenneRuntimeException("Column '%s' is not in the snapshot layout %s", name, layout);
+            }
+            return i;
         }
 
         private void addAttribute(AttributeProperty property) {
             ObjAttribute objAttr = property.getAttribute();
             // processing compound attributes correctly
-            values.put(objAttr.getDbAttributePath().value(), property.readPropertyDirectly(object));
+            set(objAttr.getDbAttributePath().value(), property.readPropertyDirectly(object));
         }
 
         private void addToOne(ToOneProperty property) {
@@ -144,6 +204,12 @@ public final class ObjectSnapshots {
 
             Object targetObject = property.readPropertyDirectly(object);
             if (targetObject == null) {
+                if (nullFks == null) {
+                    nullFks = new ArrayList<>();
+                }
+                for (DbJoin join : rel.getDbRelationships().getFirst().getJoins()) {
+                    nullFks.add(join.getSourceName());
+                }
                 return;
             }
 
@@ -158,7 +224,7 @@ public final class ObjectSnapshots {
                 DbRelationship dbRel = rel.getDbRelationships().getFirst();
                 for (DbJoin join : dbRel.getJoins()) {
                     String key = join.getSourceName();
-                    values.put(key, storedSnapshot.get(key));
+                    set(key, storedSnapshot.get(key));
                 }
 
                 return;
@@ -175,7 +241,9 @@ public final class ObjectSnapshots {
 
             DbRelationship dbRel = rel.getDbRelationships().getFirst();
             Map<String, Object> fk = dbRel.srcFkSnapshotWithTargetSnapshot(idParts);
-            values.putAll(fk);
+            for (Map.Entry<String, Object> entry : fk.entrySet()) {
+                set(entry.getKey(), entry.getValue());
+            }
         }
     }
 }

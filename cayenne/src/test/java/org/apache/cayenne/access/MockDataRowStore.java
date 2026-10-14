@@ -20,10 +20,10 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.DataRowLayout;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.event.MockEventManager;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -46,11 +46,18 @@ public class MockDataRowStore extends DataRowStore {
     }
 
     public void putSnapshot(ObjectId id, Map<String, ?> snapshot) {
-        snapshots.put(id, DataRow.of(id.getEntityName(), new HashMap<>(snapshot), SnapshotVersion.next()));
+        String[] names = new String[snapshot.size()];
+        Object[] values = new Object[names.length];
+        int i = 0;
+        for (Map.Entry<String, ?> entry : snapshot.entrySet()) {
+            names[i] = entry.getKey();
+            values[i++] = entry.getValue();
+        }
+        snapshots.put(id, DataRow.of(id.getEntityName(), DataRowLayout.of(names), values, SnapshotVersion.next()));
     }
 
     public void putEmptySnapshot(ObjectId id) {
-        snapshots.put(id, DataRow.of(id.getEntityName(), new HashMap<>(2), SnapshotVersion.next()));
+        snapshots.put(id, DataRow.of(id.getEntityName(), DataRowLayout.of(), new Object[0], SnapshotVersion.next()));
     }
 
 }

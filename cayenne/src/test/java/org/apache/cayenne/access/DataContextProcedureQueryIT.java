@@ -20,6 +20,7 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.DataRowLayout;
 import org.apache.cayenne.OutParametersResult;
 import org.apache.cayenne.QueryResult;
 import org.apache.cayenne.dba.TypesMapping;
@@ -41,7 +42,6 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.math.BigDecimal;
 import java.sql.Types;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -427,12 +427,13 @@ public class DataContextProcedureQueryIT  {
      * An ugly hack - converting row keys to uppercase ... Tracked via CAY-148.
      */
     protected DataRow uppercaseConverter(DataRow row) {
-        DataRow converted = DataRow.of(row.getEntityName(), new HashMap<>(row.size()), SnapshotVersion.next());
-
-        for (Entry<String, Object> entry : row.entrySet()) {
-            converted.put(entry.getKey().toString().toUpperCase(), entry.getValue());
+        String[] names = new String[row.size()];
+        Object[] values = new Object[names.length];
+        int i = 0;
+        for (Map.Entry<String, Object> entry : row.entrySet()) {
+            names[i] = entry.getKey().toUpperCase();
+            values[i++] = entry.getValue();
         }
-
-        return converted;
+        return DataRow.of(row.getEntityName(), DataRowLayout.of(names), values, SnapshotVersion.next());
     }
 }

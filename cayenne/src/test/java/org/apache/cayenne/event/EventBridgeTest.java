@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.event;
 
+import org.apache.cayenne.access.SnapshotVersion;
 import org.apache.cayenne.access.event.SnapshotEvent;
 import org.apache.cayenne.test.parallel.ParallelTestContainer;
 import org.junit.jupiter.api.AfterEach;
@@ -116,6 +117,7 @@ public class EventBridgeTest {
         final SnapshotEvent eventWithNoSubject = new SnapshotEvent(
                 this,
                 this,
+                SnapshotVersion.NONE,
                 null,
                 null,
                 null,
@@ -141,6 +143,7 @@ public class EventBridgeTest {
         final SnapshotEvent eventWithSubject = new SnapshotEvent(
                 this,
                 this,
+                SnapshotVersion.NONE,
                 null,
                 null,
                 null,

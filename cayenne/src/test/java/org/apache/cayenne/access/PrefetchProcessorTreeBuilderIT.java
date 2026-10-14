@@ -20,6 +20,7 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.DataRowLayout;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
@@ -69,8 +70,8 @@ public class PrefetchProcessorTreeBuilderIT {
 
         final ClassDescriptor descriptor = resolver.getClassDescriptor("Artist");
         List<DataRow> dataRows = new ArrayList<>();
-        dataRows.add(DataRow.of("Artist", new HashMap<>(4), SnapshotVersion.next()));
-        dataRows.add(DataRow.of("Artist", new HashMap<>(4), SnapshotVersion.next()));
+        dataRows.add(DataRow.of("Artist", DataRowLayout.of(), new Object[0], SnapshotVersion.next()));
+        dataRows.add(DataRow.of("Artist", DataRowLayout.of(), new Object[0], SnapshotVersion.next()));
 
         QueryMetadata metadata = new MockQueryMetadata() {
 

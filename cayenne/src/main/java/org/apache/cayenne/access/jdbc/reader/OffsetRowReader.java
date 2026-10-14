@@ -21,7 +21,7 @@ package org.apache.cayenne.access.jdbc.reader;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
-import org.apache.cayenne.RowLayout;
+import org.apache.cayenne.DataRowLayout;
 import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.map.EntityInheritanceTree;
 import org.apache.cayenne.reflect.ClassDescriptor;
@@ -36,7 +36,7 @@ class OffsetRowReader implements RowReader<DataRow> {
     protected final String entityName;
     private final long version;
     private final RSColumn[] columns;
-    private final RowLayout layout;
+    private final DataRowLayout layout;
     private final int offset;
 
     // possible inheritance

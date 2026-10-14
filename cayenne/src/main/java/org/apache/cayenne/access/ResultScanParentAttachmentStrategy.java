@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
+import org.apache.cayenne.DataRowLayout;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.map.DbJoin;
@@ -39,8 +40,8 @@ class ResultScanParentAttachmentStrategy implements ParentAttachmentStrategy {
     private final PrefetchProcessorNode node;
 
     // the join columns in the child rows and in the parent rows
-    private final RowColumns targetColumns;
-    private final RowColumns sourceColumns;
+    private final DataRowLayout.Reader targetReader;
+    private final DataRowLayout.Reader sourceReader;
 
     // TODO: the ivar below makes this strategy STATEFUL and non-reusable. If we need a
     // stateless version down the line, will need to move this to the
@@ -73,8 +74,8 @@ class ResultScanParentAttachmentStrategy implements ParentAttachmentStrategy {
             targetNames[i] = joins[i].getTargetName();
             sourceNames[i] = joins[i].getSourceName();
         }
-        targetColumns = new RowColumns(targetNames);
-        sourceColumns = new RowColumns(sourceNames);
+        targetReader = DataRowLayout.of(targetNames).reader();
+        sourceReader = DataRowLayout.of(sourceNames).reader();
     }
 
     public void linkToParent(DataRow row, Persistent object) {
@@ -87,11 +88,11 @@ class ResultScanParentAttachmentStrategy implements ParentAttachmentStrategy {
         if (joins.length > 1) {
             List<Object> values = new ArrayList<>(joins.length);
             for (int i = 0; i < joins.length; i++) {
-                values.add(targetColumns.get(row, i));
+                values.add(targetReader.get(row, i));
             }
             key = values;
         } else {
-            key = targetColumns.get(row, 0);
+            key = targetReader.get(row, 0);
         }
 
         List<Persistent> parents = partitionByChild.get(key);
@@ -133,11 +134,11 @@ class ResultScanParentAttachmentStrategy implements ParentAttachmentStrategy {
             if (joins.length > 1) {
                 List<Object> values = new ArrayList<>(joins.length);
                 for (int j = 0; j < joins.length; j++) {
-                    values.add(sourceColumns.get(row, j));
+                    values.add(sourceReader.get(row, j));
                 }
                 key = values;
             } else {
-                key = sourceColumns.get(row, 0);
+                key = sourceReader.get(row, 0);
             }
 
             List<Persistent> parents = partitionByChild.computeIfAbsent(key, k -> new ArrayList<>());

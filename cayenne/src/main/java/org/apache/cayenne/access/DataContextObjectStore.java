@@ -48,6 +48,7 @@ import org.apache.cayenne.reflect.ToOneProperty;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -590,10 +591,12 @@ public class DataContextObjectStore implements ObjectStore {
 
     void processSnapshotEvent(SnapshotEvent event) {
 
-        Map<ObjectId, DataRow> modifiedDiffs = event.getModifiedDiffs();
+        Map<ObjectId, Map<String, Object>> modifiedDiffs = event.getModifiedDiffs();
         if (modifiedDiffs != null && !modifiedDiffs.isEmpty()) {
-            for (Map.Entry<ObjectId, DataRow> entry : modifiedDiffs.entrySet()) {
-                processUpdatedSnapshot(entry.getKey(), entry.getValue());
+            // the merge plans of the refreshed objects, built once per descriptor per event
+            Map<ClassDescriptor, MergePlan> plans = new HashMap<>();
+            for (Map.Entry<ObjectId, Map<String, Object>> entry : modifiedDiffs.entrySet()) {
+                processUpdatedSnapshot(entry.getKey(), entry.getValue(), event.getVersion(), plans);
             }
         }
 
@@ -713,7 +716,7 @@ public class DataContextObjectStore implements ObjectStore {
                             ClassDescriptor descriptor = context
                                     .getEntityResolver()
                                     .getClassDescriptor(oid.getEntityName());
-                            mergeDirty(object, descriptor, snapshot);
+                            mergeDirty(object, descriptor, snapshot, snapshot.getVersion());
                             delegate.finishedMergeChanges(object);
                         }
                     }
@@ -766,9 +769,14 @@ public class DataContextObjectStore implements ObjectStore {
     }
 
     /**
+     * @param diff    the changed keys of the snapshot of the id, with their new values
+     * @param version the version of the snapshot the diff is of
+     * @param plans   the merge plans built so far for this event, by descriptor. A COMMITTED object is refreshed with
+     *                the plan of its descriptor, which is built on the first object of that descriptor
      * @since 1.1
      */
-    void processUpdatedSnapshot(ObjectId id, DataRow diff) {
+    void processUpdatedSnapshot(ObjectId id, Map<String, Object> diff, long version,
+                                Map<ClassDescriptor, MergePlan> plans) {
 
         Persistent object = objectMap.get(id);
 
@@ -796,12 +804,13 @@ public class DataContextObjectStore implements ObjectStore {
                     // the snapshot may need a fetch, so it is taken before the object lock
                     DataRow snapshot = getSnapshot(id);
                     if (snapshot != null) {
+                        MergePlan plan = plans.computeIfAbsent(descriptor, MergePlan::of);
                         withObjectLock(id, () -> {
                             // the object may have been modified since the state check above. A MODIFIED object merges
                             // the cached snapshot when its first change is recorded, so there's nothing to do for it
                             if (object.getPersistenceState() == PersistenceState.COMMITTED
                                     && snapshot.getVersion() >= object.getSnapshotVersion()) {
-                                DataRowUtils.refreshObjectWithSnapshot(descriptor, object, snapshot, true);
+                                DataRowUtils.refreshObjectWithSnapshot(plan, object, snapshot, true);
                                 object.setSnapshotVersion(snapshot.getVersion());
                             }
                             return null;
@@ -818,7 +827,7 @@ public class DataContextObjectStore implements ObjectStore {
                     ClassDescriptor descriptor = context
                             .getEntityResolver()
                             .getClassDescriptor(id.getEntityName());
-                    mergeDirty(object, descriptor, diff);
+                    mergeDirty(object, descriptor, diff, version);
                     delegate.finishedMergeChanges(object);
                 }
             }
@@ -830,13 +839,13 @@ public class DataContextObjectStore implements ObjectStore {
      * record changes to the object, so it takes the changes lock before the object lock. The snapshot is only merged
      * if it is not older than the one the object already reflects.
      */
-    private void mergeDirty(Persistent object, ClassDescriptor descriptor, DataRow snapshot) {
+    private void mergeDirty(Persistent object, ClassDescriptor descriptor, Map<String, Object> snapshot, long version) {
         withChangesLock(() -> withObjectLock(object.getObjectId(), () -> {
             int state = object.getPersistenceState();
             if ((state == PersistenceState.MODIFIED || state == PersistenceState.DELETED)
-                    && snapshot.getVersion() >= object.getSnapshotVersion()) {
+                    && version >= object.getSnapshotVersion()) {
                 DataRowUtils.forceMergeWithSnapshot(context, descriptor, object, snapshot);
-                object.setSnapshotVersion(snapshot.getVersion());
+                object.setSnapshotVersion(version);
             }
             return null;
         }));

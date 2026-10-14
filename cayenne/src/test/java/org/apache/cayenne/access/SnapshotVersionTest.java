@@ -20,6 +20,7 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.DataRowLayout;
 import org.apache.cayenne.Persistent;
 import org.junit.jupiter.api.Test;
 
@@ -27,7 +28,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.HashMap;
 
 public class SnapshotVersionTest {
 
@@ -37,7 +37,7 @@ public class SnapshotVersionTest {
         long v2 = SnapshotVersion.next();
         assertNotEquals(SnapshotVersion.NONE, v1);
         assertTrue(v2 > v1);
-        assertTrue(DataRow.of("E", new HashMap<>(10), SnapshotVersion.next()).getVersion() > v2);
+        assertTrue(DataRow.of("E", DataRowLayout.of(), new Object[0], SnapshotVersion.next()).getVersion() > v2);
     }
 
     @Test

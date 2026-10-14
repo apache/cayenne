@@ -20,6 +20,7 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.DataRowLayout;
 import org.apache.cayenne.access.jdbc.CSParameter;
 import org.apache.cayenne.access.jdbc.PSBatchParameter;
 import org.apache.cayenne.access.jdbc.PSParameter;
@@ -194,8 +195,10 @@ public class LoggingObserverTest {
         CapturingLogger logger = new CapturingLogger();
         LoggingObserver observer = observer(logger);
 
-        DataRow row1 = DataRow.of("Artist", Map.of("ARTIST_ID", 1L), SnapshotVersion.next());
-        DataRow row2 = DataRow.of("Artist", Map.of("ARTIST_ID", 2L), SnapshotVersion.next());
+        DataRow row1 = DataRow.of("Artist", DataRowLayout.of("ARTIST_ID"),
+                new Object[]{1L}, SnapshotVersion.next());
+        DataRow row2 = DataRow.of("Artist", DataRowLayout.of("ARTIST_ID"),
+                new Object[]{2L}, SnapshotVersion.next());
 
         observer.nextStatement(null, batch());
         observer.nextGeneratedRows(null, asList(row1, row2), List.of());

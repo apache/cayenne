@@ -23,8 +23,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
-import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.access.SnapshotVersion;
 import org.apache.cayenne.event.CayenneEvent;
 
 /**
@@ -35,18 +35,26 @@ import org.apache.cayenne.event.CayenneEvent;
 public class SnapshotEvent extends CayenneEvent {
 
     protected long timestamp;
+    protected long version;
     protected Collection<ObjectId> deletedIds;
     protected Collection<ObjectId> invalidatedIds;
-    protected Map<ObjectId, DataRow> modifiedDiffs;
+    protected Map<ObjectId, Map<String, Object>> modifiedDiffs;
     protected Collection<ObjectId> indirectlyModifiedIds;
 
-    public SnapshotEvent(Object source, Object postedBy, Map<ObjectId, DataRow> modifiedDiffs,
+    /**
+     * @param version       the {@link SnapshotVersion snapshot version} of the modified snapshots, which are of one
+     *                      operation, or {@link SnapshotVersion#NONE} if none were modified
+     * @param modifiedDiffs the changed keys of each modified snapshot, with their new values
+     * @since 5.0
+     */
+    public SnapshotEvent(Object source, Object postedBy, long version, Map<ObjectId, Map<String, Object>> modifiedDiffs,
             Collection<ObjectId> deletedIds, Collection<ObjectId> invalidatedIds,
             Collection<ObjectId> indirectlyModifiedIds) {
 
         super(source, postedBy);
 
         this.timestamp = System.currentTimeMillis();
+        this.version = version;
         this.modifiedDiffs = modifiedDiffs;
         this.deletedIds = deletedIds;
         this.invalidatedIds = invalidatedIds;
@@ -57,8 +65,21 @@ public class SnapshotEvent extends CayenneEvent {
         return timestamp;
     }
 
-    public Map<ObjectId, DataRow> getModifiedDiffs() {
-        return (modifiedDiffs != null) ? modifiedDiffs : Collections.<ObjectId, DataRow>emptyMap();
+    /**
+     * Returns the {@link SnapshotVersion snapshot version} of the modified snapshots, or {@link SnapshotVersion#NONE}
+     * if none were modified.
+     *
+     * @since 5.0
+     */
+    public long getVersion() {
+        return version;
+    }
+
+    /**
+     * Returns the changed keys of each modified snapshot, with their new values.
+     */
+    public Map<ObjectId, Map<String, Object>> getModifiedDiffs() {
+        return (modifiedDiffs != null) ? modifiedDiffs : Collections.emptyMap();
     }
 
     public Collection<ObjectId> getDeletedIds() {
@@ -80,7 +101,7 @@ public class SnapshotEvent extends CayenneEvent {
         StringBuilder buffer = new StringBuilder();
         buffer.append("[SnapshotEvent] source: ").append(getSource());
 
-        Map<ObjectId, DataRow> modified = getModifiedDiffs();
+        Map<ObjectId, Map<String, Object>> modified = getModifiedDiffs();
         if (!modified.isEmpty()) {
             buffer.append(", modified ").append(modified.size()).append(" id(s)");
         }

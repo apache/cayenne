@@ -20,6 +20,7 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.DataRowLayout;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.QueryCacheStrategy;
@@ -32,7 +33,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-import java.util.Map;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -221,9 +221,8 @@ public class DataContextQueryCachingIT {
         List<Object> rows = new ArrayList<>(len);
 
         for (int i = 0; i < len; i++) {
-            DataRow a = DataRow.of("Artist", Map.of(
-                    "ARTIST_ID", i + 1,
-                    "ARTIST_NAME", "A-" + (i + 1)), SnapshotVersion.next());
+            DataRow a = DataRow.of("Artist", DataRowLayout.of("ARTIST_ID", "ARTIST_NAME"),
+                    new Object[]{i + 1, "A-" + (i + 1)}, SnapshotVersion.next());
             rows.add(a);
         }
 

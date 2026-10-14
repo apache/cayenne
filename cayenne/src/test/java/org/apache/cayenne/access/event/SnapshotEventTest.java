@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.access.event;
 
-import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
 import org.junit.jupiter.api.Test;
 
@@ -28,6 +27,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
 public class SnapshotEventTest {
@@ -37,12 +37,13 @@ public class SnapshotEventTest {
         Object source = new Object();
         Collection<ObjectId> deleted = new ArrayList<>();
         Collection<ObjectId> invalidated = new ArrayList<>();
-        Map<ObjectId, DataRow> modified = new HashMap<>();
+        Map<ObjectId, Map<String, Object>> modified = new HashMap<>();
         Collection<ObjectId> related = new ArrayList<>();
 
         SnapshotEvent event = new SnapshotEvent(
                 source,
                 source,
+                7,
                 modified,
                 deleted,
                 invalidated,
@@ -52,6 +53,7 @@ public class SnapshotEventTest {
         assertSame(deleted, event.getDeletedIds());
         assertSame(invalidated, event.getInvalidatedIds());
         assertSame(modified, event.getModifiedDiffs());
+        assertEquals(7, event.getVersion());
         assertSame(related, event.getIndirectlyModifiedIds());
     }
 }

@@ -21,7 +21,7 @@ package org.apache.cayenne.access.jdbc.reader;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
-import org.apache.cayenne.RowLayout;
+import org.apache.cayenne.DataRowLayout;
 import org.apache.cayenne.access.jdbc.RSColumn;
 
 import java.sql.ResultSet;
@@ -34,7 +34,7 @@ import java.sql.ResultSet;
 class IndexRowReader implements RowReader<DataRow> {
 
     private final RSColumn[] columns;
-    private final RowLayout layout;
+    private final DataRowLayout layout;
     private final int[] jdbcIndexes;
     private final String entityName;
     private final long version;

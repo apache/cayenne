@@ -39,7 +39,6 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import java.math.BigDecimal;
 import java.sql.Types;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
@@ -241,9 +240,7 @@ public class DataContextConcurrentResolveIT {
     }
 
     private static DataRow copy(DataRow row, String title, long version) {
-        HashMap<String, Object> values = new HashMap<>(row);
-        values.put("PAINTING_TITLE", title);
-        return DataRow.of(row.getEntityName(), values, version);
+        return row.merged(Map.of("PAINTING_TITLE", title), version);
     }
 
     @Test

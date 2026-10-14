@@ -21,6 +21,7 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.DataRowLayout;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
@@ -37,7 +38,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
-import java.util.Map;
 import java.util.Date;
 import java.util.List;
 
@@ -339,10 +339,8 @@ public class NestedDataContextReadIT {
 
         DataContext childContext = (DataContext) runtime.newContext(context);
 
-        DataRow row = DataRow.of("Artist", Map.of(
-                "ARTIST_ID", 5L,
-                "ARTIST_NAME", "A",
-                "DATE_OF_BIRTH", new Date()), SnapshotVersion.next());
+        DataRow row = DataRow.of("Artist", DataRowLayout.of("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH"),
+                new Object[]{5L, "A", new Date()}, SnapshotVersion.next());
 
         Artist artist = childContext.objectFromDataRow(Artist.class, row);
         assertNotNull(artist);

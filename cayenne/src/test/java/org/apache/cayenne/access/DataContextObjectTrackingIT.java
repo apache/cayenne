@@ -20,6 +20,7 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.DataRowLayout;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
@@ -33,7 +34,6 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
-import java.util.Map;
 import java.util.Collections;
 import java.util.Date;
 
@@ -89,10 +89,8 @@ public class DataContextObjectTrackingIT {
     @Test
     public void unregisterObject() {
 
-        DataRow row = DataRow.of("Artist", Map.of(
-                "ARTIST_ID", 1,
-                "ARTIST_NAME", "ArtistXYZ",
-                "DATE_OF_BIRTH", new Date()), SnapshotVersion.next());
+        DataRow row = DataRow.of("Artist", DataRowLayout.of("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH"),
+                new Object[]{1, "ArtistXYZ", new Date()}, SnapshotVersion.next());
         Persistent obj = context.objectFromDataRow(Artist.class, row);
         ObjectId oid = obj.getObjectId();
 
@@ -112,10 +110,8 @@ public class DataContextObjectTrackingIT {
     @Test
     public void invalidateObjects_Vararg() {
 
-        DataRow row = DataRow.of("Artist", Map.of(
-                "ARTIST_ID", 1,
-                "ARTIST_NAME", "ArtistXYZ",
-                "DATE_OF_BIRTH", new Date()), SnapshotVersion.next());
+        DataRow row = DataRow.of("Artist", DataRowLayout.of("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH"),
+                new Object[]{1, "ArtistXYZ", new Date()}, SnapshotVersion.next());
         Persistent obj = context.objectFromDataRow(Artist.class, row);
         ObjectId oid = obj.getObjectId();
 

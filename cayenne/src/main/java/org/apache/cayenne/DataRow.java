@@ -20,45 +20,39 @@
 package org.apache.cayenne;
 
 import java.io.Serializable;
+import java.util.AbstractCollection;
+import java.util.AbstractMap;
+import java.util.AbstractSet;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.BiConsumer;
 
 /**
- * DataRow is a read-only map that holds values retrieved from the database for a given query row. DataRows are used to
- * cache raw database data and as a reference point for tracking PersistentObject changes.
- * <p>
- * Every DataRow carries a {@link org.apache.cayenne.access.SnapshotVersion snapshot version}, the version of the
- * operation that produced the row. All rows read by one SQL statement share a version, as do all snapshots of one
- * commit, and an operation that runs later has a greater version. Two rows of the same ObjectId with the same version
- * therefore hold the same data. A cached row keeps its version though while later statements read the same data.
- * <p>
- * A row is immutable: the mutating Map methods throw {@link UnsupportedOperationException}, and the key, value and
- * entry views of a row stored as a map are the views of that map, which the caller is not to change either. A row
- * with changed values is derived with {@link #merged(Map, long)}. Rows come in two forms. A row read from a result set is stored as an
- * array of values over a {@link RowLayout} shared by all the rows of the result set, and exposes its
- * {@link #getLayout() layout} so that the values can be read by position. Any other row is stored as a map and has no
- * layout.
+ * DataRow is a precursor of a persistent object that holds its database values, but models no relationships. A row is
+ * immutable and the mutating Map methods throw {@link UnsupportedOperationException}. A row is serializable when its
+ * values are. Rows serialized in one stream keep sharing their layout.
  *
  * @since 1.1
  */
-public abstract sealed class DataRow implements Map<String, Object>, Serializable permits MapDataRow, ArrayDataRow {
+public final class DataRow implements Map<String, Object>, Serializable {
 
-    private final long version;
     private final String entityName;
+    private final long version;
+    final DataRowLayout layout;
+    final Object[] values;
 
-    DataRow(String entityName, long version) {
+    private DataRow(String entityName, DataRowLayout layout, Object[] values, long version) {
         this.entityName = entityName;
+        this.layout = layout;
+        this.values = values;
         this.version = version;
-    }
-
-    /**
-     * Creates a row over the given values, with the given entity name and snapshot version. The map is not copied:
-     * the row takes ownership of it, and the caller must not change the map after this call. To create a row from a
-     * map that stays in use, pass a copy. The map should be serializable for the row to be.
-     *
-     * @since 5.0
-     */
-    public static DataRow of(String entityName, Map<String, Object> values, long version) {
-        return new MapDataRow(entityName, values, version);
     }
 
     /**
@@ -68,8 +62,12 @@ public abstract sealed class DataRow implements Map<String, Object>, Serializabl
      *
      * @since 5.0
      */
-    public static DataRow of(String entityName, RowLayout layout, Object[] values, long version) {
-        return new ArrayDataRow(entityName, layout, values, version);
+    public static DataRow of(String entityName, DataRowLayout layout, Object[] values, long version) {
+        if (values.length != layout.size()) {
+            throw new IllegalArgumentException(
+                    "Values length " + values.length + " does not match the layout size " + layout.size());
+        }
+        return new DataRow(entityName, layout, values, version);
     }
 
     /**
@@ -90,63 +88,262 @@ public abstract sealed class DataRow implements Map<String, Object>, Serializabl
     }
 
     /**
-     * Returns the layout of a row stored as an array, or null if the row is stored as a map. The values of a row with
-     * a layout can be read by position with {@link #valueAt(int)}.
-     *
-     * @since 5.0
-     */
-    public abstract RowLayout getLayout();
-
-    /**
-     * Returns the value at the given position of the {@link #getLayout() layout} of this row.
-     *
-     * @throws UnsupportedOperationException if the row has no layout
-     * @since 5.0
-     */
-    public abstract Object valueAt(int index);
-
-    /**
      * Returns a row with the given entity name and this row's values and version. The values are shared: rows are
      * immutable, so the copy is free.
      *
      * @since 5.0
      */
-    public abstract DataRow withEntityName(String entityName);
+    public DataRow withEntityName(String entityName) {
+        return new DataRow(entityName, layout, values, version);
+    }
 
     /**
      * Returns a row with this row's entity name and the given version, holding this row's values overlaid with the
-     * given ones. A row with a layout keeps it when every changed key is a column of the layout.
+     * given ones. The row keeps its layout when every changed key is a column of it, and gets its own wider layout
+     * otherwise.
      *
      * @since 5.0
      */
-    public abstract DataRow merged(Map<String, ?> changes, long version);
+    public DataRow merged(Map<String, ?> changes, long version) {
+        Object[] merged = values.clone();
+        List<Map.Entry<String, ?>> added = null;
+
+        for (Map.Entry<String, ?> entry : changes.entrySet()) {
+            int index = layout.indexOf(entry.getKey());
+            if (index >= 0) {
+                merged[index] = entry.getValue();
+            } else {
+                if (added == null) {
+                    added = new ArrayList<>();
+                }
+                added.add(entry);
+            }
+        }
+
+        if (added == null) {
+            return new DataRow(entityName, layout, merged, version);
+        }
+
+        int size = values.length;
+        String[] names = new String[size + added.size()];
+        Object[] widened = Arrays.copyOf(merged, names.length);
+        for (int i = 0; i < size; i++) {
+            names[i] = layout.nameAt(i);
+        }
+        for (int i = 0; i < added.size(); i++) {
+            names[size + i] = added.get(i).getKey();
+            widened[size + i] = added.get(i).getValue();
+        }
+        return new DataRow(entityName, DataRowLayout.of(names), widened, version);
+    }
 
     @Override
-    public final Object put(String key, Object value) {
+    public int size() {
+        return values.length;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return values.length == 0;
+    }
+
+    @Override
+    public boolean containsKey(Object key) {
+        return key instanceof String name && layout.indexOf(name) >= 0;
+    }
+
+    @Override
+    public boolean containsValue(Object value) {
+        for (Object v : values) {
+            if (Objects.equals(v, value)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public Object get(Object key) {
+        if (!(key instanceof String name)) {
+            return null;
+        }
+        int index = layout.indexOf(name);
+        return index < 0 ? null : values[index];
+    }
+
+    @Override
+    public Object getOrDefault(Object key, Object defaultValue) {
+        if (!(key instanceof String name)) {
+            return defaultValue;
+        }
+        int index = layout.indexOf(name);
+        return index < 0 ? defaultValue : values[index];
+    }
+
+    @Override
+    public Object put(String key, Object value) {
         throw new UnsupportedOperationException("DataRow is immutable");
     }
 
     @Override
-    public final Object remove(Object key) {
+    public Object remove(Object key) {
         throw new UnsupportedOperationException("DataRow is immutable");
     }
 
     @Override
-    public final void putAll(Map<? extends String, ?> m) {
+    public void putAll(Map<? extends String, ?> m) {
         throw new UnsupportedOperationException("DataRow is immutable");
     }
 
     @Override
-    public final void clear() {
+    public void clear() {
         throw new UnsupportedOperationException("DataRow is immutable");
+    }
+
+    @Override
+    public Set<String> keySet() {
+        return new AbstractSet<>() {
+            @Override
+            public Iterator<String> iterator() {
+                return new PositionIterator<>() {
+                    @Override
+                    String at(int index) {
+                        return layout.nameAt(index);
+                    }
+                };
+            }
+
+            @Override
+            public int size() {
+                return values.length;
+            }
+
+            @Override
+            public boolean contains(Object o) {
+                return containsKey(o);
+            }
+        };
+    }
+
+    @Override
+    public Collection<Object> values() {
+        return new AbstractCollection<>() {
+            @Override
+            public Iterator<Object> iterator() {
+                return new PositionIterator<>() {
+                    @Override
+                    Object at(int index) {
+                        return values[index];
+                    }
+                };
+            }
+
+            @Override
+            public int size() {
+                return values.length;
+            }
+        };
+    }
+
+    @Override
+    public Set<Entry<String, Object>> entrySet() {
+        return new AbstractSet<>() {
+            @Override
+            public Iterator<Entry<String, Object>> iterator() {
+                return new PositionIterator<>() {
+                    @Override
+                    Entry<String, Object> at(int index) {
+                        return new AbstractMap.SimpleImmutableEntry<>(layout.nameAt(index), values[index]);
+                    }
+                };
+            }
+
+            @Override
+            public int size() {
+                return values.length;
+            }
+        };
     }
 
     /**
-     * Rows are equal to any Map with the same entries, regardless of the version and the entity name.
+     * Visits the entries in column order. Unlike the entry set, allocates nothing per entry.
      */
     @Override
-    public abstract boolean equals(Object o);
+    public void forEach(BiConsumer<? super String, ? super Object> action) {
+        for (int i = 0; i < values.length; i++) {
+            action.accept(layout.nameAt(i), values[i]);
+        }
+    }
+
+    /**
+     * Compares the rows as maps, i.e. by their keys and values and regardless of their entity names, versions or the
+     * order of their columns.
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (o instanceof DataRow other && other.layout == layout) {
+            return Arrays.equals(values, other.values);
+        }
+        if (!(o instanceof Map<?, ?> map) || map.size() != values.length) {
+            return false;
+        }
+        for (int i = 0; i < values.length; i++) {
+            String name = layout.nameAt(i);
+            Object value = values[i];
+            if (value == null) {
+                if (map.get(name) != null || !map.containsKey(name)) {
+                    return false;
+                }
+            } else if (!value.equals(map.get(name))) {
+                return false;
+            }
+        }
+        return true;
+    }
 
     @Override
-    public abstract int hashCode();
+    public int hashCode() {
+        // the Map contract: the sum of the entry hashes, each being the key hash xor the value hash
+        int h = 0;
+        for (int i = 0; i < values.length; i++) {
+            h += layout.nameAt(i).hashCode() ^ Objects.hashCode(values[i]);
+        }
+        return h;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder buffer = new StringBuilder("DataRow@")
+                .append(Integer.toHexString(System.identityHashCode(this))).append("[values={");
+        for (int i = 0; i < values.length; i++) {
+            if (i > 0) {
+                buffer.append(", ");
+            }
+            buffer.append(layout.nameAt(i)).append('=').append(values[i]);
+        }
+        return buffer.append("}, version=").append(version).append(']').toString();
+    }
+
+    private abstract class PositionIterator<T> implements Iterator<T> {
+
+        private int next;
+
+        abstract T at(int index);
+
+        @Override
+        public boolean hasNext() {
+            return next < values.length;
+        }
+
+        @Override
+        public T next() {
+            if (next >= values.length) {
+                throw new NoSuchElementException();
+            }
+            return at(next++);
+        }
+    }
 }

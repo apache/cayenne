@@ -19,10 +19,10 @@
 
 package org.apache.cayenne.access;
 
-import java.util.Map;
 import java.util.List;
 
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.DataRowLayout;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.reflect.ArcProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
@@ -84,12 +84,11 @@ public class DataRowUtilsIT {
                 .get(0);
         a1.setArtistName(n1);
 
-        DataRow s2 = DataRow.of("Artist", Map.of(
-                "ARTIST_NAME", n2,
-                "DATE_OF_BIRTH", new java.util.Date()), SnapshotVersion.next());
+        DataRow s2 = DataRow.of("Artist", DataRowLayout.of("ARTIST_NAME", "DATE_OF_BIRTH"),
+                new Object[]{n2, new java.util.Date()}, SnapshotVersion.next());
 
         ClassDescriptor d = context.getEntityResolver().getClassDescriptor("Artist");
-        DataRowUtils.mergeObjectWithSnapshot(context, d, a1, s2);
+        DataRowUtils.mergeObjectWithSnapshot(context, a1, s2, MergePlan.of(d));
 
         // name was modified, so it should not change during merge
         assertEquals(n1, a1.getArtistName());

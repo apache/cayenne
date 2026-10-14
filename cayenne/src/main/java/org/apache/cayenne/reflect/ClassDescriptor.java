@@ -22,6 +22,7 @@ package org.apache.cayenne.reflect;
 import java.util.Collection;
 import java.util.Map;
 
+import org.apache.cayenne.DataRowLayout;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.DbEntity;
@@ -214,6 +215,16 @@ public interface ClassDescriptor {
      * @since 5.0
      */
     Collection<PropertyDescriptor> getAllProperties();
+
+    /**
+     * Returns the layout of a snapshot of an object of the described class: the columns of the attributes, the
+     * foreign keys of the to-one relationships whose targets propagate their keys to this entity, the primary key,
+     * and the primary keys of the additional DB entities, each column listed once. Snapshots of objects are built
+     * over this layout, and rows of any layout are merged into objects through it.
+     *
+     * @since 5.0
+     */
+    DataRowLayout getSnapshotLayout();
 
     /**
      * Passes the visitor to the properties "visit" method for all properties declared in

@@ -22,6 +22,7 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.DataRowLayout;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
@@ -204,7 +205,8 @@ public class DataContextExtrasIT {
     @Test
     public void idObjectFromDataRow() {
 
-        DataRow row = DataRow.of("Artist", Map.of("ARTIST_ID", 100000), SnapshotVersion.next());
+        DataRow row = DataRow.of("Artist", DataRowLayout.of("ARTIST_ID"),
+                new Object[]{100000}, SnapshotVersion.next());
         Persistent obj = context.objectFromDataRow(Artist.class, row);
         assertNotNull(obj);
         assertTrue(context.getObjectStore().registeredObjects().contains(obj));
@@ -216,9 +218,8 @@ public class DataContextExtrasIT {
     @Test
     public void partialObjectFromDataRow() {
 
-        DataRow row = DataRow.of("Artist", Map.of(
-                "ARTIST_ID", 100001,
-                "ARTIST_NAME", "ArtistXYZ"), SnapshotVersion.next());
+        DataRow row = DataRow.of("Artist", DataRowLayout.of("ARTIST_ID", "ARTIST_NAME"),
+                new Object[]{100001, "ArtistXYZ"}, SnapshotVersion.next());
         Persistent obj = context.objectFromDataRow(Artist.class, row);
         assertNotNull(obj);
         assertTrue(context.getObjectStore().registeredObjects().contains(obj));
@@ -229,10 +230,8 @@ public class DataContextExtrasIT {
     @Test
     public void fullObjectFromDataRow() {
 
-        DataRow row = DataRow.of("Artist", Map.of(
-                "ARTIST_ID", 123456,
-                "ARTIST_NAME", "ArtistXYZ",
-                "DATE_OF_BIRTH", new Date()), SnapshotVersion.next());
+        DataRow row = DataRow.of("Artist", DataRowLayout.of("ARTIST_ID", "ARTIST_NAME", "DATE_OF_BIRTH"),
+                new Object[]{123456, "ArtistXYZ", new Date()}, SnapshotVersion.next());
         Artist obj = context.objectFromDataRow(Artist.class, row);
 
         assertTrue(context.getObjectStore().registeredObjects().contains(obj));

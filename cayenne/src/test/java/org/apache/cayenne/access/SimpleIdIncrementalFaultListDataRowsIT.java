@@ -20,6 +20,7 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.DataRowLayout;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -29,9 +30,10 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -117,7 +119,7 @@ public class SimpleIdIncrementalFaultListDataRowsIT {
         DataRow row = artists.getFirst();
         assertEquals(19, list.indexOf(row));
 
-        DataRow clone = DataRow.of(row.getEntityName(), new HashMap<>(row), SnapshotVersion.next());
+        DataRow clone = row.merged(Map.of(), SnapshotVersion.next());
         assertEquals(19, list.indexOf(clone));
 
         assertEquals(-1, list.indexOf(without(row, "ARTIST_ID")));
@@ -199,8 +201,13 @@ public class SimpleIdIncrementalFaultListDataRowsIT {
         }
     }
     private static DataRow without(DataRow row, String key) {
-        HashMap<String, Object> values = new HashMap<>(row);
-        values.remove(key);
-        return DataRow.of(row.getEntityName(), values, row.getVersion());
+        List<String> names = new ArrayList<>(row.keySet());
+        names.remove(key);
+        Object[] values = new Object[names.size()];
+        for (int i = 0; i < values.length; i++) {
+            values[i] = row.get(names.get(i));
+        }
+        DataRowLayout layout = DataRowLayout.of(names.toArray(new String[0]));
+        return DataRow.of(row.getEntityName(), layout, values, row.getVersion());
     }
 }
