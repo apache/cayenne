@@ -48,6 +48,7 @@ CAY-3043 project.xsd, dataMap.xsd: replace "property" with top tag attributes
 CAY-3047 Per-statement "snapshotVersion"
 CAY-3048 Per-object locking in the ObjectStore
 CAY-3049 Cheap ClockMap to replace ConcurrentLinkedHashMap
+CAY-3050 Array-based DataRows
 CAY-3051 Replace PropertyVisitor with ClassDescriptor property collections
 
 Bug Fixes:
