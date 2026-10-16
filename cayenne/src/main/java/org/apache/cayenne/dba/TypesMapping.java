@@ -133,6 +133,21 @@ public class TypesMapping {
     public static final String JAVA_BLOB = "java.sql.Blob";
 
     /**
+     * @since 5.0
+     */
+    public static final String JAVA_LOCAL_DATE = "java.time.LocalDate";
+
+    /**
+     * @since 5.0
+     */
+    public static final String JAVA_LOCAL_TIME = "java.time.LocalTime";
+
+    /**
+     * @since 5.0
+     */
+    public static final String JAVA_LOCAL_DATETIME = "java.time.LocalDateTime";
+
+    /**
      * Keys: SQL string type names, Values: SQL int type definitions from
      * java.sql.Types
      */
@@ -260,6 +275,9 @@ public class TypesMapping {
         JAVA_SQL_ENUM.put(JAVA_SHORT, SMALLINT);
         JAVA_SQL_ENUM.put(JAVA_BYTE, SMALLINT);
         JAVA_SQL_ENUM.put(JAVA_TIME, TIME);
+        JAVA_SQL_ENUM.put(JAVA_LOCAL_DATE, DATE);
+        JAVA_SQL_ENUM.put(JAVA_LOCAL_TIME, TIME);
+        JAVA_SQL_ENUM.put(JAVA_LOCAL_DATETIME, TIMESTAMP);
 
         // add primitives
         JAVA_SQL_ENUM.put("byte", TINYINT);

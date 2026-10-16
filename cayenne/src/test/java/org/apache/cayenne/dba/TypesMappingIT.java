@@ -32,6 +32,9 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.Types;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -63,6 +66,10 @@ public class TypesMappingIT {
         assertEquals(Types.VARCHAR, TypesMapping.getSqlTypeByJava(char[].class));
         assertEquals(Types.VARCHAR, TypesMapping.getSqlTypeByJava(Character[].class));
         assertEquals(Types.VARBINARY, TypesMapping.getSqlTypeByJava(Byte[].class));
+
+        assertEquals(Types.DATE, TypesMapping.getSqlTypeByJava(LocalDate.class));
+        assertEquals(Types.TIME, TypesMapping.getSqlTypeByJava(LocalTime.class));
+        assertEquals(Types.TIMESTAMP, TypesMapping.getSqlTypeByJava(LocalDateTime.class));
     }
 
     @Test
@@ -91,6 +98,10 @@ public class TypesMappingIT {
                 Types.VARCHAR,
                 TypesMapping.getSqlTypeByJava("java.lang.Character[]"));
         assertEquals(Types.VARBINARY, TypesMapping.getSqlTypeByJava("java.lang.Byte[]"));
+
+        assertEquals(Types.DATE, TypesMapping.getSqlTypeByJava("java.time.LocalDate"));
+        assertEquals(Types.TIME, TypesMapping.getSqlTypeByJava("java.time.LocalTime"));
+        assertEquals(Types.TIMESTAMP, TypesMapping.getSqlTypeByJava("java.time.LocalDateTime"));
     }
 
     @Test
