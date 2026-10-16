@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.runner;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.dbsync.reverse.dbimport.DbImportConfiguration;
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.dbsync.reverse.dbload.DbLoaderDelegate;
@@ -33,9 +34,11 @@ import org.apache.cayenne.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.sql.DataSource;
 import javax.swing.*;
 import java.io.File;
 import java.sql.Connection;
+import java.sql.SQLException;
 
 public class ModelerDbLoaderContext {
 
@@ -116,6 +119,17 @@ public class ModelerDbLoaderContext {
             @Override
             public DbLoaderDelegate createLoaderDelegate() {
                 return new ModelerDbLoaderDelegate(ModelerDbLoaderContext.this);
+            }
+
+            @Override
+            public DataSource createDataSource() {
+                try {
+                    // load the driver from the current Modeler classpath
+                    return new DBConnectorFactory(application.getClassLoader())
+                            .makeDataSource(connectionInfo);
+                } catch (SQLException e) {
+                    throw new CayenneRuntimeException("Error creating DataSource: %s", e, e.getMessage());
+                }
             }
         };
         fillConfig(config, connectionInfo, reverseEngineering);

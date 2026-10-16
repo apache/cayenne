@@ -194,15 +194,6 @@ public class Application {
 
         refreshClassLoader();
 
-        // TODO: is this used by DB Import and CGen? If so, the corresponding actions must set it in a proper scope.
-        //  Or a better idea - get rid of thread-bound classloaders everywhere
-        ModelerClassLoader classLoader = getClassLoader();
-        if (SwingUtilities.isEventDispatchThread()) {
-            Thread.currentThread().setContextClassLoader(classLoader.getClassLoader());
-        } else {
-            SwingUtilities.invokeLater(() -> Thread.currentThread().setContextClassLoader(classLoader.getClassLoader()));
-        }
-
         this.undoManager = new CayenneUndoManager(this);
         this.frame = new MainFrame(this);
         this.platformInit.afterFrameCreated(this);
@@ -241,8 +232,15 @@ public class Application {
      */
     public void refreshClassLoader() {
         List<String> values = new ClasspathPrefs(prefsLocator.appNode(ClasspathPrefs.NODE)).getEntries();
-        if (!values.isEmpty()) {
-            getClassLoader().setFiles(values.stream().map(File::new).collect(Collectors.toList()));
+        getClassLoader().setFiles(values.stream().map(File::new).collect(Collectors.toList()));
+
+        // TODO: get rid of thread-bound classloaders everywhere. For now, keep the EDT context ClassLoader (inherited
+        //  by the background threads started from the UI) in sync with the current classpath
+        ClassLoader classLoader = getClassLoader().getClassLoader();
+        if (SwingUtilities.isEventDispatchThread()) {
+            Thread.currentThread().setContextClassLoader(classLoader);
+        } else {
+            SwingUtilities.invokeLater(() -> Thread.currentThread().setContextClassLoader(classLoader));
         }
     }
 
