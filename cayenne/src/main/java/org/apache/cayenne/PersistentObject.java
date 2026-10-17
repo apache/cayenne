@@ -611,10 +611,8 @@ public abstract class PersistentObject implements Persistent, Validating {
                 continue;
             }
 
-            // skip db relationships that we can't validate or that can't be invalid here
-            // can't handle paths longer than two db relationships
-            // see ObjRelationship.recalculateReadOnlyValue() for more info
-            if (relationship.isSourceIndependentFromTargetChange()) {
+            // only a relationship holding the FK on the source can be validated from the source object
+            if (!relationship.isFromFK()) {
                 continue;
             }
 

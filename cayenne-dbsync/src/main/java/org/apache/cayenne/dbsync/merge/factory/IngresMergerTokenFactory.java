@@ -89,7 +89,7 @@ public class IngresMergerTokenFactory extends DefaultMergerTokenFactory {
             public List<String> createSql(DataNode node) {
                 DbAdapter adapter = node.getAdapter();
 
-                if (!rel.isToMany() && rel.isToPK() && !rel.isToDependentPK()) {
+                if (rel.isFromFK()) {
 
                     DbEntity source = (DbEntity) rel.getSourceEntity();
                     QuotingStrategy quotes = adapter.getQuotingStrategy(source);

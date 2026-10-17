@@ -340,7 +340,9 @@ public class DbGenerator {
 		List<String> list = new ArrayList<>();
 		for (DbRelationship rel : table.getRelationships()) {
 
-			if (rel.isToMany()) {
+			// an FK constraint exists only where the source row holds the FK; a master-to-dependent
+			// relationship is constrained from the dependent side
+			if (!rel.isFromFK()) {
 				continue;
 			}
 
@@ -356,30 +358,23 @@ public class DbGenerator {
 				}
 			}
 
-			// create an FK CONSTRAINT only if the relationship is to PK
-			// and if this is not a dependent PK
-
 			// create UNIQUE CONSTRAINT on FK if reverse relationship is to-one
+			if (getAdapter().supportsUniqueConstraints()) {
 
-			if (rel.isToPK() && !rel.isToDependentPK()) {
+				DbRelationship reverse = rel.getReverseRelationship();
+				if (reverse != null && !reverse.isToMany() && !reverse.isToPK()) {
 
-				if (getAdapter().supportsUniqueConstraints()) {
-
-					DbRelationship reverse = rel.getReverseRelationship();
-					if (reverse != null && !reverse.isToMany() && !reverse.isToPK()) {
-
-						String unique = getAdapter().createUniqueConstraint(rel.getSourceEntity(),
-								rel.getSourceAttributes());
-						if (unique != null) {
-							list.add(unique);
-						}
+					String unique = getAdapter().createUniqueConstraint(rel.getSourceEntity(),
+							rel.getSourceAttributes());
+					if (unique != null) {
+						list.add(unique);
 					}
 				}
+			}
 
-				String fk = getAdapter().createFkConstraint(rel);
-				if (fk != null) {
-					list.add(fk);
-				}
+			String fk = getAdapter().createFkConstraint(rel);
+			if (fk != null) {
+				list.add(fk);
 			}
 		}
 		return list;
@@ -509,7 +504,12 @@ public class DbGenerator {
 			List<DbAttribute> pkAttributes = new ArrayList<>(nextEntity.getPrimaryKeys());
 			while (pkAttributes.size() > 0 && relationships.hasNext()) {
 				DbRelationship nextRelationship = relationships.next();
-				if (!nextRelationship.isToMasterPK()) {
+				DbRelationship reverse = nextRelationship.getReverseRelationship();
+
+				if (nextRelationship.isToMany()
+						|| nextRelationship.isToDependentPK()
+						|| reverse == null
+						|| !reverse.isToDependentPK()) {
 					continue;
 				}
 

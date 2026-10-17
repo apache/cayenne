@@ -30,9 +30,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DbRelationshipIT {
 
@@ -51,6 +53,23 @@ public class DbRelationshipIT {
         artistEnt = runtime.getDataDomain().getEntityResolver().getDbEntity("ARTIST");
         paintingEnt = runtime.getDataDomain().getEntityResolver().getDbEntity("PAINTING");
         galleryEnt = runtime.getDataDomain().getEntityResolver().getDbEntity("GALLERY");
+    }
+
+    @Test
+    public void isFromFK() {
+        // FK to PK
+        assertTrue(paintingEnt.getRelationship("toArtist").isFromFK());
+
+        // to-many
+        assertFalse(artistEnt.getRelationship("paintingArray").isFromFK());
+
+        // master to dependent PK: the join is to the target PK, but the key lives in the target row
+        DbRelationship toPaintingInfo = paintingEnt.getRelationship("toPaintingInfo");
+        assertTrue(toPaintingInfo.isToPK());
+        assertFalse(toPaintingInfo.isFromFK());
+
+        // dependent to master PK: the dependent PK is also the FK
+        assertTrue(toPaintingInfo.getReverseRelationship().isFromFK());
     }
 
     @Test

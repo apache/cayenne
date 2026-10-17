@@ -55,7 +55,9 @@ class DbRelationshipValidator extends ProjectNodeValidator<DbRelationship> {
                 .performIfEnabled(Inspection.DB_RELATIONSHIP_BOTH_TO_MANY, this::validateReverse)
                 .performIfEnabled(Inspection.DB_RELATIONSHIP_DIFFERENT_TYPES, this::checkForSameTypes)
                 .performIfEnabled(Inspection.DB_RELATIONSHIP_GENERATED_WITH_DEPENDENT_PK,
-                        this::checkOnGeneratedStrategyConflict);
+                        this::checkOnGeneratedStrategyConflict)
+                .performIfEnabled(Inspection.DB_RELATIONSHIP_PK_TO_PK_NO_DEPENDENT_PK,
+                        this::checkForUnmarkedDependentPK);
     }
 
     private void checkForName(DbRelationship relationship, ValidationResult validationResult) {
@@ -166,6 +168,22 @@ class DbRelationshipValidator extends ProjectNodeValidator<DbRelationship> {
                         join.getSourceName(), join.getTargetName(), relationship.getName());
             }
         }
+    }
+
+    private void checkForUnmarkedDependentPK(DbRelationship relationship, ValidationResult validationResult) {
+        DbRelationship reverse = relationship.getReverseRelationship();
+        if (relationship.isToMany()
+                || relationship.isToDependentPK()
+                || !relationship.isValidForDepPk()
+                || reverse == null
+                || reverse.isToMany()
+                || reverse.isToDependentPK()) {
+            return;
+        }
+        addFailure(validationResult, relationship,
+                "DbRelationship '%s' joins PK to PK, but neither it nor its reverse '%s' is marked 'To Dep PK', "
+                        + "so Cayenne can't tell which side holds the FK",
+                toString(relationship), reverse.getName());
     }
 
     private void checkOnGeneratedStrategyConflict(DbRelationship relationship, ValidationResult validationResult) {

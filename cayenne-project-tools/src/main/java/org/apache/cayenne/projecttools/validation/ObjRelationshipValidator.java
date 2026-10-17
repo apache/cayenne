@@ -90,13 +90,14 @@ class ObjRelationshipValidator extends ProjectNodeValidator<ObjRelationship> {
     }
 
     private void checkForPK(ObjRelationship relationship, ValidationResult validationResult) {
-        if (relationship.getDbRelationships().isEmpty() || relationship.isToPK()) {
+        List<DbRelationship> dbRelationships = relationship.getDbRelationships();
+        if (dbRelationships.isEmpty() || dbRelationships.getFirst().isToPK()) {
             return;
         }
         ObjRelationship reverseRelationship = relationship.getReverseRelationship();
         if (reverseRelationship != null
-                && !relationship.getDbRelationships().isEmpty()
-                && !reverseRelationship.isToPK()) {
+                && !reverseRelationship.getDbRelationships().isEmpty()
+                && !reverseRelationship.getDbRelationships().getFirst().isToPK()) {
             addFailure(validationResult, relationship,
                     "ObjRelationship '%s' has join not to PK. This is not fully supported by Cayenne.",
                     toString(relationship));

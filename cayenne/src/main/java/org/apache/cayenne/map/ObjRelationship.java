@@ -19,20 +19,19 @@
 
 package org.apache.cayenne.map;
 
+import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.exp.ExpressionException;
+import org.apache.cayenne.exp.path.CayennePath;
+import org.apache.cayenne.exp.path.CayennePathSegment;
+import org.apache.cayenne.project.ProjectNode;
+import org.apache.cayenne.project.ProjectNodeVisitor;
+import org.apache.cayenne.util.ToStringBuilder;
+import org.apache.cayenne.util.XMLEncoder;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
-
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.project.ProjectNode;
-import org.apache.cayenne.project.ProjectNodeVisitor;
-import org.apache.cayenne.exp.ExpressionException;
-import org.apache.cayenne.exp.path.CayennePath;
-import org.apache.cayenne.exp.path.CayennePathSegment;
-import org.apache.cayenne.util.ToStringBuilder;
-import org.apache.cayenne.util.XMLEncoder;
-
 import java.util.Objects;
 
 /**
@@ -302,52 +301,57 @@ public class ObjRelationship extends Relationship<ObjEntity, ObjAttribute, ObjRe
     }
 
     /**
-     * Returns a boolean indicating whether the presence of a non-null source
-     * key(s) will not guarantee a presence of a target record. PK..FK
-     * relationships are all optional, but there are other more subtle cases,
-     * such as PK..PK, etc.
-     * 
-     * @since 3.0
+     * Returns true if this relationship's source owns the foreign key side of the relationship.
+     *
+     * @since 5.0
      */
-    public boolean isOptional() {
+    public boolean isFromFK() {
         if (isToMany() || isFlattened()) {
-            return true;
+            return false;
         }
-
-        // entities with qualifiers may result in filtering even existing target rows,
-        // so such relationships are optional
-        if (isQualifiedEntity(getTargetEntity())) {
-            return true;
-        }
-
-        DbRelationship dbRelationship = getDbRelationships().get(0);
-
-        // to-one mandatory relationships are either from non-PK or to master pk
-        if (dbRelationship.isToPK()) {
-            if (!dbRelationship.isFromPK()) {
-                return false;
-            }
-            DbRelationship reverseRelationship = dbRelationship.getReverseRelationship();
-            return !reverseRelationship.isToDependentPK();
-        }
-
-        return true;
+        return dbRelationships.getFirst().isFromFK();
     }
 
     /**
-     * Returns true if the relationship is non-optional and target has no
-     * subclasses.
-     * 
-     * @since 3.0
+     * Returns true if a non-null FK on the source fully determines the target: the target row is guaranteed to
+     * exist by referential integrity, and its entity is known. Such a target can be materialized as a HOLLOW object
+     * from the FK alone, without a query. This requires the FK to be on the source side (see {@link #isFromFK()}),
+     * no qualifier on the target entity or its super entities that could filter out an existing row, and no
+     * subclasses of the target entity.
+     *
+     * @since 5.0
      */
-    public boolean isSourceDefiningTargetPrecenseAndType(EntityResolver entityResolver) {
+    public boolean isTargetDeterminedByFK(EntityResolver entityResolver) {
+        if (!isFromFK()) {
+            return false;
+        }
 
-        if (isOptional()) {
+        // a source PK column may mean that this is the master side of a PK-to-PK pair, whose dependent row is not
+        // guaranteed to exist; only the "to dependent PK" flag on the reverse tells that the source is the dependent
+        DbRelationship dbRelationship = dbRelationships.getFirst();
+        if (hasPkSource(dbRelationship)) {
+            DbRelationship reverse = dbRelationship.getReverseRelationship();
+            if (reverse == null || !reverse.isToDependentPK()) {
+                return false;
+            }
+        }
+
+        if (isQualifiedEntity(getTargetEntity())) {
             return false;
         }
 
         EntityInheritanceTree inheritanceTree = entityResolver.getInheritanceTree(getTargetEntityName());
         return inheritanceTree == null || inheritanceTree.getChildren().isEmpty();
+    }
+
+    private static boolean hasPkSource(DbRelationship dbRelationship) {
+        for (DbJoin join : dbRelationship.getJoins()) {
+            DbAttribute source = join.getSource();
+            if (source != null && source.isPrimaryKey()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -366,36 +370,6 @@ public class ObjRelationship extends Relationship<ObjEntity, ObjAttribute, ObjRe
         }
 
         return isQualifiedEntity(entity);
-    }
-
-    /**
-     * Returns a boolean indicating whether modifying a target of such
-     * relationship in any way will not change the underlying table row of the
-     * source.
-     * 
-     * @since 1.1
-     */
-    public boolean isSourceIndependentFromTargetChange() {
-        // note - call "isToPK" at the end of the chain, since
-        // if it is to a dependent PK, we still should return true...
-        return isToMany() || isFlattened() || isToDependentEntity() || !isToPK();
-    }
-
-    /**
-     * Returns true if underlying DbRelationships point to dependent entity.
-     */
-    public boolean isToDependentEntity() {
-        return (getDbRelationships().get(0)).isToDependentPK();
-    }
-
-    /**
-     * Returns true if the underlying DbRelationships point to a at least one of
-     * the columns of the target entity.
-     * 
-     * @since 1.1
-     */
-    public boolean isToPK() {
-        return (getDbRelationships().get(0)).isToPK();
     }
 
     /**
@@ -765,13 +739,4 @@ public class ObjRelationship extends Relationship<ObjEntity, ObjAttribute, ObjRe
         this.mapKey = mapKey;
     }
 
-    @Override
-    public boolean isMandatory() {
-        refreshFromDeferredPath();
-        if (dbRelationships.isEmpty()) {
-            return false;
-        }
-
-        return dbRelationships.get(0).isMandatory();
-    }
 }

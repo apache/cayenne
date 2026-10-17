@@ -233,18 +233,17 @@ class DataRowUtils {
             ObjectDiff diff) {
 
         ObjRelationship relationship = property.getRelationship();
-        if (!relationship.isToPK()) {
+        DbRelationship dbRelationship = relationship.getDbRelationships().getFirst();
+
+        // the inverse side of a one-to-one is left alone: the snapshot says nothing about it
+        if (!dbRelationship.isToPK()) {
             return;
         }
-
-        // TODO: will this work for flattened, how do we save snapshots for them?
 
         // if value not modified, update it from snapshot, otherwise leave it alone
         if (isToOneTargetModified(property, object, diff)) {
             return;
         }
-
-        DbRelationship dbRelationship = relationship.getDbRelationships().getFirst();
 
         // must check before creating ObjectId because of partial snapshots
         if (!hasFK(dbRelationship, snapshot)) {
@@ -260,7 +259,7 @@ class DataRowUtils {
 
             if (id == null) {
                 property.writeProperty(object, null, null);
-            } else if (!relationship.isSourceDefiningTargetPrecenseAndType(context.getEntityResolver())) {
+            } else if (!relationship.isTargetDeterminedByFK(context.getEntityResolver())) {
                 // we can't use 'localObject' if relationship is optional or inheritance is involved
                 // .. must turn to fault instead
                 property.invalidate(object);

@@ -221,9 +221,9 @@ public class DbRelationship extends Relationship<DbEntity, DbAttribute, DbRelati
     }
 
     /**
-     * Returns true if the relationship points to at least one of the PK columns
-     * of the target entity.
-     * 
+     * Returns true if every join of this relationship points to a PK column of the target entity. This is a
+     * structural fact about the joins; whether the source row actually holds the FK is {@link #isFromFK()}.
+     *
      * @since 1.1
      */
     public boolean isToPK() {
@@ -243,47 +243,13 @@ public class DbRelationship extends Relationship<DbEntity, DbAttribute, DbRelati
     }
 
     /**
-     * @since 3.0
+     * Returns true if this relationship's source owns the foreign key side of the relationship. I.e., the source join
+     * columns are all foreign keys.
+     *
+     * @since 5.0
      */
-    public boolean isFromPK() {
-        for (DbJoin join : getJoins()) {
-            DbAttribute source = join.getSource();
-            if (source == null) {
-                return false;
-            }
-
-            if (source.isPrimaryKey()) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Returns <code>true</code> if a method <code>isToDependentPK</code> of
-     * reverse relationship of this relationship returns <code>true</code>.
-     */
-    public boolean isToMasterPK() {
-        if (isToMany() || isToDependentPK()) {
-            return false;
-        }
-
-        DbRelationship revRel = getReverseRelationship();
-        return revRel != null && revRel.isToDependentPK();
-    }
-    
-    /**
-     * Returns a boolean indicating whether modifying a target of such
-     * relationship in any way will not change the underlying table row of the
-     * source.
-     * 
-     * @since 4.0
-     */
-    public boolean isSourceIndependentFromTargetChange() {
-        // note - call "isToPK" at the end of the chain, since
-        // if it is to a dependent PK, we still should return true...
-        return isToMany() || isToDependentPK() || !isToPK();
+    public boolean isFromFK() {
+        return !isToMany() && !isToDependentPK() && isToPK();
     }
 
     /**
@@ -475,17 +441,6 @@ public class DbRelationship extends Relationship<DbEntity, DbAttribute, DbRelati
      */
     public void setToMany(boolean toMany) {
         this.toMany = toMany;
-    }
-
-    @Override
-    public boolean isMandatory() {
-        for (DbJoin join : getJoins()) {
-            if (join.getSource().isMandatory()) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     // a join used for comparison

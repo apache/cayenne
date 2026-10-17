@@ -193,7 +193,7 @@ class HierarchicalObjectResolver {
             PrefetchTreeNode jointSubtree = node.cloneJointSubtree();
 
             Expression reversePath = null;
-            if (relationship.isSourceIndependentFromTargetChange()) {
+            if (!relationship.isFromFK()) {
                 reversePath = ExpressionFactory.dbPathExp(relationship.getReverseDbRelationshipPath());
             }
 
@@ -219,10 +219,10 @@ class HierarchicalObjectResolver {
         private List<DbJoin> getDbJoins(ObjRelationship relationship) {
             // we get the part of the relationship path that contains FK
             List<DbRelationship> dbRelationships = relationship.getDbRelationships();
-            if(relationship.isToMany() || !relationship.isToPK()) {
-                return dbRelationships.get(0).getJoins();
+            if (relationship.isToMany() || !dbRelationships.getFirst().isToPK()) {
+                return dbRelationships.getFirst().getJoins();
             } else {
-                return dbRelationships.get(dbRelationships.size() - 1).getJoins();
+                return dbRelationships.getLast().getJoins();
             }
         }
 

@@ -76,6 +76,8 @@ public enum Inspection {
     DB_RELATIONSHIP_BOTH_TO_MANY(Group.DB_RELATIONSHIP, "Both db relationship and the reversed one are to-many"),
     DB_RELATIONSHIP_DIFFERENT_TYPES(Group.DB_RELATIONSHIP, "Source and target db relationship attributes are of different types"),
     DB_RELATIONSHIP_GENERATED_WITH_DEPENDENT_PK(Group.DB_RELATIONSHIP, "Db relationship target is a dependent generated primary key"),
+    DB_RELATIONSHIP_PK_TO_PK_NO_DEPENDENT_PK(Group.DB_RELATIONSHIP,
+            "Db relationship joins PK to PK, but neither side is marked as to dependent PK"),
 
     EMBEDDABLE_NO_NAME(Group.EMBEDDABLE, "Empty embeddable name"),
     EMBEDDABLE_NAME_DUPLICATE(Group.EMBEDDABLE, "Duplicate of an embeddable name"),

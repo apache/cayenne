@@ -115,8 +115,8 @@ final class MergePlan {
         String[][] toOneTargetNames = new String[toOnes.size()][];
         for (i = 0; i < toOneFkColumns.length; i++) {
             ObjRelationship relationship = toOnes.get(i).getRelationship();
-            // only an FK to the target PK lets the source snapshot tell whether the arc changed
-            if (relationship.isSourceIndependentFromTargetChange()) {
+            // only an FK on the source lets the source snapshot tell whether the arc changed
+            if (!relationship.isFromFK()) {
                 continue;
             }
             List<DbJoin> joins = relationship.getDbRelationships().getFirst().getJoins();

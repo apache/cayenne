@@ -44,9 +44,4 @@ public class MockRelationship extends Relationship<MockEntity, MockAttribute, Mo
     public MockRelationship getReverseRelationship() {
         return null;
     }
-
-    @Override
-    public boolean isMandatory() {
-        return false;
-    }
 }

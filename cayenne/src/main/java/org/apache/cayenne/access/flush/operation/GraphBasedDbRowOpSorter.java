@@ -82,7 +82,7 @@ public class GraphBasedDbRowOpSorter implements DbRowOpSorter {
 
         resolver.getDbEntities().forEach(entity ->
             entity.getRelationships().forEach(dbRelationship -> {
-                if(dbRelationship.isToMany() || !dbRelationship.isToPK() || dbRelationship.isToDependentPK()) {
+                if(!dbRelationship.isFromFK()) {
                     // TODO: can we ignore all of these relationships?
                     return;
                 }

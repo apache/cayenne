@@ -131,7 +131,7 @@ class DataContextDeleteAction {
         for (final ObjRelationship relationship : descriptor.getEntity().getRelationships()) {
 
             boolean processFlattened = relationship.isFlattened()
-                    && relationship.isToDependentEntity()
+                    && relationship.getDbRelationships().getFirst().isToDependentPK()
                     && !relationship.isReadOnly();
 
             // first check for no action... bail out if no flattened processing is needed

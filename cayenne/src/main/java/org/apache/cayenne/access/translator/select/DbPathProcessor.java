@@ -121,7 +121,9 @@ class DbPathProcessor extends PathProcessor<DbEntity> {
             currentAlias = currentAlias.substring(DB_PATH_ALIAS_INDICATOR.length());
         }
 
-        // check if we can use own table FK values for this relationship
+        // check if we can match on the source table columns instead of joining the target: the source join
+        // columns carry the target PK value both for an FK on the source and for a master-to-dependent
+        // relationship, whose source PK is also the dependent PK (if the dependent row exists)
         if (relationship.isToMany() || !relationship.isToPK()) {
             // must use target table
             // add relationship first

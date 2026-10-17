@@ -320,6 +320,43 @@ public class ObjRelationshipIT {
     }
 
     @Test
+    public void isFromFK() {
+        EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
+        ObjEntity painting = resolver.getObjEntity("Painting");
+        ObjEntity artist = resolver.getObjEntity("Artist");
+
+        // FK to PK
+        assertTrue(painting.getRelationship("toArtist").isFromFK());
+
+        // master to dependent PK: the key lives in the PAINTING_INFO row
+        assertFalse(painting.getRelationship("toPaintingInfo").isFromFK());
+
+        // dependent to master PK: the dependent PK is also the FK
+        ObjEntity paintingInfo = resolver.getObjEntity("PaintingInfo");
+        assertTrue(paintingInfo.getRelationship("painting").isFromFK());
+
+        // to-many and flattened
+        assertFalse(artist.getRelationship("paintingArray").isFromFK());
+        assertFalse(artist.getRelationship("groupArray").isFromFK());
+    }
+
+    @Test
+    public void isTargetDeterminedByFK() {
+        EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
+        ObjEntity painting = resolver.getObjEntity("Painting");
+        ObjEntity artist = resolver.getObjEntity("Artist");
+
+        // referential integrity guarantees the target of an FK on the source
+        assertTrue(painting.getRelationship("toArtist").isTargetDeterminedByFK(resolver));
+        assertTrue(resolver.getObjEntity("PaintingInfo").getRelationship("painting").isTargetDeterminedByFK(resolver));
+
+        // a dependent row, to-many targets and flattened targets may be missing
+        assertFalse(painting.getRelationship("toPaintingInfo").isTargetDeterminedByFK(resolver));
+        assertFalse(artist.getRelationship("paintingArray").isTargetDeterminedByFK(resolver));
+        assertFalse(artist.getRelationship("groupArray").isTargetDeterminedByFK(resolver));
+    }
+
+    @Test
     public void singleDbRelationship() {
         ObjRelationship relationship = new ObjRelationship();
         DbRelationship r1 = new DbRelationship("X");

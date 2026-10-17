@@ -432,9 +432,9 @@ public class PersistentDescriptor implements ClassDescriptor {
 			switch (property) {
 				case AttributeProperty attribute -> names.add(attribute.getAttribute().getDbAttributePath().value());
 				case ToOneProperty toOne -> {
-					// a to-one whose target does not propagate its key to this entity has no FK in the snapshot
+					// a to-one that does not hold the FK on the source has no column in the snapshot
 					ObjRelationship relationship = toOne.getRelationship();
-					if (!relationship.isSourceIndependentFromTargetChange()) {
+					if (relationship.isFromFK()) {
 						for (DbJoin join : relationship.getDbRelationships().getFirst().getJoins()) {
 							names.add(join.getSourceName());
 						}

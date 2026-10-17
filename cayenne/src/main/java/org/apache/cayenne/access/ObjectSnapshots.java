@@ -197,8 +197,8 @@ public final class ObjectSnapshots {
         private void addToOne(ToOneProperty property) {
             ObjRelationship rel = property.getRelationship();
 
-            // if target doesn't propagate its key value, skip it
-            if (rel.isSourceIndependentFromTargetChange()) {
+            // only a relationship holding the FK on the source contributes columns to the snapshot
+            if (!rel.isFromFK()) {
                 return;
             }
 

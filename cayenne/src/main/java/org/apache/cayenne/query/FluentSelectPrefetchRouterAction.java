@@ -95,7 +95,7 @@ class FluentSelectPrefetchRouterAction implements PrefetchProcessor {
         prefetchQuery.where(classDescriptor.getEntity()
                 .translateToRelatedEntity(queryQualifier, prefetchPath));
 
-        if (relationship.isSourceIndependentFromTargetChange()) {
+        if (!relationship.isFromFK()) {
             // setup extra result columns to be able to relate result rows to the parent result objects.
             prefetchQuery.addResultPath(ExpressionFactory.dbPathExp(relationship.getReverseDbRelationshipPath()));
         }

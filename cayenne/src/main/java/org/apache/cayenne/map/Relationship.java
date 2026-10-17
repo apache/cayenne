@@ -168,10 +168,4 @@ public abstract class Relationship<E extends Entity<E, A, R>, A extends Attribut
      * @since 3.1
      */
     public abstract Relationship<E, A, R> getReverseRelationship();
-    
-    /**
-     * Returns if relationship is mandatory
-     * @since 3.1
-     */
-    public abstract boolean isMandatory();
 }

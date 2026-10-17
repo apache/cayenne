@@ -219,7 +219,7 @@ public class DbSchemaManager {
     }
 
     private DataMap dataMapDependency(DataMap sourceMap, DbRelationship relationship) {
-        if (relationship.isRuntime() || relationship.isToMany() || !relationship.isToPK() || relationship.isToDependentPK()) {
+        if (relationship.isRuntime() || !relationship.isFromFK()) {
             return null;
         }
 
@@ -450,11 +450,7 @@ public class DbSchemaManager {
 
         for (DbRelationship rel : table.getRelationships()) {
 
-            if (rel.isRuntime()) {
-                continue;
-            }
-
-            if (rel.isToMany()) {
+            if (rel.isRuntime() || !rel.isFromFK()) {
                 continue;
             }
 
@@ -465,28 +461,26 @@ public class DbSchemaManager {
                 continue;
             }
 
-            if (rel.isToPK() && !rel.isToDependentPK()) {
-                boolean hasUnresolvedJoin = rel.getJoins().stream()
-                        .anyMatch(join -> join.getSource() == null || join.getTarget() == null);
+            boolean hasUnresolvedJoin = rel.getJoins().stream()
+                    .anyMatch(join -> join.getSource() == null || join.getTarget() == null);
 
-                if (hasUnresolvedJoin) {
-                    continue;
-                }
+            if (hasUnresolvedJoin) {
+                continue;
+            }
 
-                if (adapter.supportsUniqueConstraints()) {
-                    DbRelationship reverse = rel.getReverseRelationship();
-                    if (reverse != null && !reverse.isToMany() && !reverse.isToPK()) {
-                        String unique = adapter.createUniqueConstraint(rel.getSourceEntity(), rel.getSourceAttributes());
-                        if (unique != null) {
-                            queries.add(unique);
-                        }
+            if (adapter.supportsUniqueConstraints()) {
+                DbRelationship reverse = rel.getReverseRelationship();
+                if (reverse != null && !reverse.isToMany() && !reverse.isToPK()) {
+                    String unique = adapter.createUniqueConstraint(rel.getSourceEntity(), rel.getSourceAttributes());
+                    if (unique != null) {
+                        queries.add(unique);
                     }
                 }
+            }
 
-                String fk = adapter.createFkConstraint(rel);
-                if (fk != null) {
-                    queries.add(fk);
-                }
+            String fk = adapter.createFkConstraint(rel);
+            if (fk != null) {
+                queries.add(fk);
             }
         }
 

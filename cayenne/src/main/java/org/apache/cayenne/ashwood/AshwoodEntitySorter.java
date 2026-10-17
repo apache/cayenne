@@ -88,7 +88,8 @@ public class AshwoodEntitySorter implements EntitySorter {
 
 		for (DbEntity destination : entityResolver.getDbEntities()) {
 			for (DbRelationship candidate : destination.getRelationships()) {
-				if ((!candidate.isToMany() && !candidate.isToDependentPK()) || candidate.isToMasterPK()) {
+				// not isFromFK(): a to-one with joins to non-PK columns still contributes arcs for its PK joins
+				if (!candidate.isToMany() && !candidate.isToDependentPK()) {
 					DbEntity origin = candidate.getTargetEntity();
 					boolean newReflexive = destination.equals(origin);
 

@@ -92,13 +92,12 @@ class DataDomainRelationshipAction {
 
         ObjRelationship relationship = arc.getRelationship();
 
-        // only a to-one relationship pointing to the target PK allows to derive the target id from the FK
-        if (relationship.isSourceIndependentFromTargetChange()) {
+        // only a to-one relationship holding the FK on the source allows to derive the target id from it
+        if (!relationship.isFromFK()) {
             return null;
         }
 
-        // we can assume that there is one and only one DbRelationship as we previously checked
-        // that "!isSourceIndependentFromTargetChange"
+        // we can assume that there is one and only one DbRelationship as we previously checked "isFromFK"
         DbRelationship dbRelationship = relationship.getDbRelationships().getFirst();
 
         // FK pointing to a unique field that is a 'fake' PK (CAY-1755)... It is not sufficient to generate target
@@ -128,7 +127,7 @@ class DataDomainRelationshipAction {
 
         // check whether a non-null FK is enough to assume non-null target, and if so, create a hollow object without
         // going to the database. Never pass a partial snapshot to ObjectResolver (CAY-724).
-        if (relationship.isSourceDefiningTargetPrecenseAndType(domain.getEntityResolver())) {
+        if (relationship.isTargetDeterminedByFK(domain.getEntityResolver())) {
             List<Persistent> result = new ArrayList<>(1);
             result.add(context.findOrCreateObject(targetId));
             return result;
