@@ -220,7 +220,7 @@ public class InferRelationshipsDialog extends ProjectDialog {
                         && !attribute.isPrimaryKey()
                         && !targetEntity.getAttributes().isEmpty()) {
 
-                    if (!attribute.isForeignKey()) {
+                    if (!isJoinedToPK(entity, attribute)) {
                         InferredRelationship myir = new InferredRelationship();
                         myir.setSource(entity);
                         myir.setTarget(targetEntity);
@@ -230,6 +230,22 @@ public class InferRelationshipsDialog extends ProjectDialog {
                 }
             }
         }
+    }
+
+    // true if a to-one relationship of the entity already joins this attribute to a PK, so there is nothing to infer
+    // for it. Same per-join rule as AshwoodEntitySorter
+    private static boolean isJoinedToPK(DbEntity entity, DbAttribute attribute) {
+        for (DbRelationship relationship : entity.getRelationships()) {
+            if (relationship.isToMany() || relationship.isToDependentPK()) {
+                continue;
+            }
+            for (DbJoin join : relationship.getJoins()) {
+                if (join.getSource() == attribute && join.getTarget() != null && join.getTarget().isPrimaryKey()) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private void createReverseRelationship(DbEntity eSource, DbEntity eTarget) {

@@ -158,33 +158,6 @@ public class DbAttribute extends Attribute<DbEntity, DbAttribute, DbRelationship
     }
 
     /**
-     * Returns <code>true</code> if the DB column represented by this attribute
-     * is a foreign key, referencing another table.
-     * 
-     * @since 1.1
-     */
-    public boolean isForeignKey() {
-        String name = getName();
-        if (name == null) {
-            // won't be able to match joins...
-            return false;
-        }
-
-        for (DbRelationship relationship : getEntity().getRelationships()) {
-            for (DbJoin join : relationship.getJoins()) {
-                if (name.equals(join.getSourceName())) {
-                    DbAttribute target = join.getTarget();
-                    if (target != null && target.isPrimaryKey()) {
-                        return true;
-                    }
-                }
-            }
-        }
-
-        return false;
-    }
-
-    /**
      * Updates attribute "primaryKey" property.
      */
     public void setPrimaryKey(boolean primaryKey) {

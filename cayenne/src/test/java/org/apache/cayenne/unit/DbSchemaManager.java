@@ -26,6 +26,7 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.CayenneRuntime;
@@ -119,6 +120,30 @@ public class DbSchemaManager {
         }
     }
 
+    private static final Set<Integer> BINARY_TYPES = Set.of(Types.BINARY, Types.VARBINARY, Types.LONGVARBINARY);
+
+    // a table can't exist on a DB without binary PK support if its own PK is binary, or if one of its to-one
+    // relationships joins to a binary PK (the join column has the PK type). Same per-join rule as AshwoodEntitySorter
+    private static boolean hasBinaryKey(DbEntity entity) {
+        for (DbAttribute pk : entity.getPrimaryKeys()) {
+            if (BINARY_TYPES.contains(pk.getType())) {
+                return true;
+            }
+        }
+        for (DbRelationship relationship : entity.getRelationships()) {
+            if (relationship.isToMany() || relationship.isToDependentPK()) {
+                continue;
+            }
+            for (DbJoin join : relationship.getJoins()) {
+                DbAttribute target = join.getTarget();
+                if (target != null && target.isPrimaryKey() && BINARY_TYPES.contains(target.getType())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     private void filterDataMap(DataMap map) {
         boolean supportsBinaryPK = testDbAdapter.supportsBinaryPK();
 
@@ -129,15 +154,8 @@ public class DbSchemaManager {
         List<DbEntity> entitiesToRemove = new ArrayList<>();
 
         for (DbEntity ent : map.getDbEntities()) {
-            for (DbAttribute attr : ent.getAttributes()) {
-                // check for BIN PK or FK to BIN Pk
-                if (attr.getType() == Types.BINARY || attr.getType() == Types.VARBINARY
-                        || attr.getType() == Types.LONGVARBINARY) {
-                    if (attr.isPrimaryKey() || attr.isForeignKey()) {
-                        entitiesToRemove.add(ent);
-                        break;
-                    }
-                }
+            if (hasBinaryKey(ent)) {
+                entitiesToRemove.add(ent);
             }
         }
 
@@ -334,16 +352,8 @@ public class DbSchemaManager {
                 }
             }
 
-            // check for BIN PK
-            if (excludeBinaryPK) {
-                Set<Integer> binaryTypes = Set.of(Types.BINARY, Types.VARBINARY, Types.LONGVARBINARY);
-                boolean hasBinaryPK = entity.getAttributes().stream()
-                        .filter(attribute -> attribute.isPrimaryKey() || attribute.isForeignKey())
-                        .map(DbAttribute::getType)
-                        .anyMatch(binaryTypes::contains);
-                if (hasBinaryPK) {
-                    excludedEntities.add(entity);
-                }
+            if (excludeBinaryPK && hasBinaryKey(entity)) {
+                excludedEntities.add(entity);
             }
         }
         return excludedEntities;

@@ -39,6 +39,8 @@ import org.apache.cayenne.dbsync.reverse.filters.TableFilter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbJoin;
+import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.CayenneRuntime;
 import org.apache.cayenne.unit.CayenneProjects;
@@ -55,6 +57,7 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -179,6 +182,30 @@ public abstract class MergeCase {
         return tokensOut;
     }
 
+    private static final Set<Integer> BINARY_TYPES = Set.of(Types.BINARY, Types.VARBINARY, Types.LONGVARBINARY);
+
+    // a table can't exist on a DB without binary PK support if its own PK is binary, or if one of its to-one
+    // relationships joins to a binary PK (the join column has the PK type). Same per-join rule as AshwoodEntitySorter
+    private static boolean hasBinaryKey(DbEntity entity) {
+        for (DbAttribute pk : entity.getPrimaryKeys()) {
+            if (BINARY_TYPES.contains(pk.getType())) {
+                return true;
+            }
+        }
+        for (DbRelationship relationship : entity.getRelationships()) {
+            if (relationship.isToMany() || relationship.isToDependentPK()) {
+                continue;
+            }
+            for (DbJoin join : relationship.getJoins()) {
+                DbAttribute target = join.getTarget();
+                if (target != null && target.isPrimaryKey() && BINARY_TYPES.contains(target.getType())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     /**
      * Remote binary pk {@link DbEntity} for {@link DbAdapter} not supporting
      * that and so on.
@@ -194,16 +221,8 @@ public abstract class MergeCase {
         List<DbEntity> entitiesToRemove = new ArrayList<DbEntity>();
 
         for (DbEntity ent : map.getDbEntities()) {
-            for (DbAttribute attr : ent.getAttributes()) {
-                // check for BIN PK or FK to BIN Pk
-                if (attr.getType() == Types.BINARY || attr.getType() == Types.VARBINARY
-                        || attr.getType() == Types.LONGVARBINARY) {
-
-                    if (attr.isPrimaryKey() || attr.isForeignKey()) {
-                        entitiesToRemove.add(ent);
-                        break;
-                    }
-                }
+            if (hasBinaryKey(ent)) {
+                entitiesToRemove.add(ent);
             }
         }
 

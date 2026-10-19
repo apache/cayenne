@@ -43,10 +43,12 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * Implements methods for entity merging.
@@ -323,13 +325,29 @@ public class EntityMergeSupport {
      * @since 1.2
      */
     public Collection<DbAttribute> getMeaningfulFKs(ObjEntity objEntity) {
-        List<DbAttribute> fks = new ArrayList<>(2);
+        DbEntity dbEntity = objEntity.getDbEntity();
+        if (dbEntity == null) {
+            return List.of();
+        }
 
+        // columns that a to-one relationship joins to a PK, taken one join at a time even when the relationship's
+        // other joins don't hit a PK. Same per-join rule as AshwoodEntitySorter
+        Set<DbAttribute> joinedToPK = new HashSet<>();
+        for (DbRelationship relationship : dbEntity.getRelationships()) {
+            if (relationship.isToMany() || relationship.isToDependentPK()) {
+                continue;
+            }
+            for (DbJoin join : relationship.getJoins()) {
+                if (join.getTarget() != null && join.getTarget().isPrimaryKey()) {
+                    joinedToPK.add(join.getSource());
+                }
+            }
+        }
+
+        List<DbAttribute> fks = new ArrayList<>(2);
         for (ObjAttribute property : objEntity.getAttributes()) {
             DbAttribute column = property.getDbAttribute();
-
-            // check if adding it makes sense at all
-            if (column != null && column.isForeignKey()) {
+            if (column != null && joinedToPK.contains(column)) {
                 fks.add(column);
             }
         }
