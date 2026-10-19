@@ -231,23 +231,6 @@ public class ObjRelationship extends Relationship<ObjEntity, ObjAttribute, ObjRe
     }
 
     /**
-     * Creates a complementary reverse relationship from target entity to the
-     * source entity. A new relationship is created regardless of whether one
-     * already exists. Returned relationship is not attached to the source
-     * entity and has no name. Throws a {@link CayenneRuntimeException} if
-     * reverse DbRelationship is not mapped.
-     * 
-     * @since 3.0
-     */
-    public ObjRelationship createReverseRelationship() {
-        ObjRelationship reverse = new ObjRelationship();
-        reverse.setSourceEntity(getTargetEntity());
-        reverse.setTargetEntityName(getSourceEntity().getName());
-        reverse.setDbRelationshipPath(getReverseDbRelationshipPath());
-        return reverse;
-    }
-
-    /**
      * Returns an immutable list of underlying DbRelationships.
      */
     public List<DbRelationship> getDbRelationships() {
