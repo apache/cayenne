@@ -68,7 +68,7 @@ public class DbRelationship extends Relationship<DbEntity, DbAttribute, DbRelati
      * 
      * @since 1.1
      */
-    public void encodeAsXML(XMLEncoder encoder, ProjectNodeVisitor delegate) {
+    public void encodeAsXML(XMLEncoder encoder, ProjectNodeVisitor<?> delegate) {
         encoder.start("dbRelationship")
                 .attribute("name", getName())
                 .attribute("source", getSourceEntity().getName());
@@ -123,12 +123,12 @@ public class DbRelationship extends Relationship<DbEntity, DbAttribute, DbRelati
     }
 
     private Collection<DbAttribute> mapJoinsToAttributes(Function<DbJoin, DbAttribute> mapper) {
-        if (joins.size() == 0) {
+        if (joins.isEmpty()) {
             return Collections.emptyList();
         }
         // fast path for common case
         if(joins.size() == 1) {
-            return Collections.singletonList(mapper.apply(joins.get(0)));
+            return Collections.singletonList(mapper.apply(joins.getFirst()));
         }
         Collection<DbAttribute> result = new ArrayList<>(joins.size());
         for(DbJoin join : joins) {
@@ -186,7 +186,7 @@ public class DbRelationship extends Relationship<DbEntity, DbAttribute, DbRelati
         DbEntity src = this.getSourceEntity();
 
         // special case - relationship to self with no joins...
-        if (target == src && joins.size() == 0) {
+        if (target == src && joins.isEmpty()) {
             return null;
         }
 
@@ -270,7 +270,7 @@ public class DbRelationship extends Relationship<DbEntity, DbAttribute, DbRelati
      */
     public boolean isValidForDepPk() {
         // handle case with no joins
-        if (getJoins().size() == 0) {
+        if (getJoins().isEmpty()) {
             return false;
         }
 
@@ -341,7 +341,7 @@ public class DbRelationship extends Relationship<DbEntity, DbAttribute, DbRelati
 
         // optimize for the most common single column join
         if (numJoins == 1) {
-            DbJoin join = joins.get(0);
+            DbJoin join = joins.getFirst();
             Object val = srcSnapshot.get(join.getSourceName());
             if (val == null) {
                 foundNulls++;
@@ -406,11 +406,10 @@ public class DbRelationship extends Relationship<DbEntity, DbAttribute, DbRelati
                 return true;
             }
 
-            if (!(o instanceof DbJoin)) {
+            if (!(o instanceof DbJoin j)) {
                 return false;
             }
 
-            DbJoin j = (DbJoin) o;
             return j.relationship == this.relationship && Objects.equals(j.sourceName, this.sourceName)
                     && Objects.equals(j.targetName, this.targetName);
         }
