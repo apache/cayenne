@@ -94,11 +94,7 @@ public final class DbPathExp extends PathExp {
 
 		for (Object component : pathComponents) {
 			if (component instanceof DbRelationship rel) {
-				DbRelationship reverseRelationship = rel.getReverseRelationship();
-				if (reverseRelationship == null) {
-					reverseRelationship = rel.createReverseRelationship();
-				}
-				reversedPathComponents.addFirst(reverseRelationship);
+				reversedPathComponents.addFirst(rel.getReverseRelationship());
 			} else {
 				break; // an attribute can only occur at the end of the path
 			}

@@ -293,66 +293,6 @@ public class ObjRelationship extends Relationship<ObjEntity, ObjAttribute, ObjRe
     }
 
     /**
-     * Returns true if a non-null FK on the source fully determines the target: the target row is guaranteed to
-     * exist by referential integrity, and its entity is known. Such a target can be materialized as a HOLLOW object
-     * from the FK alone, without a query. This requires the FK to be on the source side (see {@link #isFromFK()}),
-     * no qualifier on the target entity or its super entities that could filter out an existing row, and no
-     * subclasses of the target entity.
-     *
-     * @since 5.0
-     */
-    public boolean isTargetDeterminedByFK(EntityResolver entityResolver) {
-        if (!isFromFK()) {
-            return false;
-        }
-
-        // a source PK column may mean that this is the master side of a PK-to-PK pair, whose dependent row is not
-        // guaranteed to exist; only the "to dependent PK" flag on the reverse tells that the source is the dependent
-        DbRelationship dbRelationship = dbRelationships.getFirst();
-        if (hasPkSource(dbRelationship)) {
-            DbRelationship reverse = dbRelationship.getReverseRelationship();
-            if (reverse == null || !reverse.isToDependentPK()) {
-                return false;
-            }
-        }
-
-        if (isQualifiedEntity(getTargetEntity())) {
-            return false;
-        }
-
-        EntityInheritanceTree inheritanceTree = entityResolver.getInheritanceTree(getTargetEntityName());
-        return inheritanceTree == null || inheritanceTree.getChildren().isEmpty();
-    }
-
-    private static boolean hasPkSource(DbRelationship dbRelationship) {
-        for (DbJoin join : dbRelationship.getJoins()) {
-            DbAttribute source = join.getSource();
-            if (source != null && source.isPrimaryKey()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Returns true if the entity or its super entities have a limiting
-     * qualifier.
-     */
-    private boolean isQualifiedEntity(ObjEntity entity) {
-        if (entity.getDeclaredQualifier() != null) {
-            return true;
-        }
-
-        entity = entity.getSuperEntity();
-
-        if (entity == null) {
-            return false;
-        }
-
-        return isQualifiedEntity(entity);
-    }
-
-    /**
      * Returns true if the relationship is a "flattened" relationship. A
      * relationship is considered "flattened" if it maps to more than one
      * DbRelationship. Such chain of DbRelationships is also called

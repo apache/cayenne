@@ -341,22 +341,6 @@ public class ObjRelationshipIT {
     }
 
     @Test
-    public void isTargetDeterminedByFK() {
-        EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
-        ObjEntity painting = resolver.getObjEntity("Painting");
-        ObjEntity artist = resolver.getObjEntity("Artist");
-
-        // referential integrity guarantees the target of an FK on the source
-        assertTrue(painting.getRelationship("toArtist").isTargetDeterminedByFK(resolver));
-        assertTrue(resolver.getObjEntity("PaintingInfo").getRelationship("painting").isTargetDeterminedByFK(resolver));
-
-        // a dependent row, to-many targets and flattened targets may be missing
-        assertFalse(painting.getRelationship("toPaintingInfo").isTargetDeterminedByFK(resolver));
-        assertFalse(artist.getRelationship("paintingArray").isTargetDeterminedByFK(resolver));
-        assertFalse(artist.getRelationship("groupArray").isTargetDeterminedByFK(resolver));
-    }
-
-    @Test
     public void singleDbRelationship() {
         ObjRelationship relationship = new ObjRelationship();
         DbRelationship r1 = new DbRelationship("X");

@@ -23,6 +23,8 @@ import java.util.List;
 
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.DataRowLayout;
+import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.reflect.ArcProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
@@ -70,6 +72,23 @@ public class DataRowUtilsIT {
     protected void createOneArtistAndOnePainting() throws Exception {
         tArtist.insert(11, "artist2");
         tPainting.insert(6, "p_artist2", 11, 1000);
+    }
+
+    @Test
+    public void isTargetDeterminedByFK() {
+        EntityResolver resolver = context.getEntityResolver();
+        ObjEntity painting = resolver.getObjEntity("Painting");
+        ObjEntity artist = resolver.getObjEntity("Artist");
+        ObjEntity paintingInfo = resolver.getObjEntity("PaintingInfo");
+
+        // referential integrity guarantees the target of an FK on the source
+        assertTrue(DataRowUtils.isTargetDeterminedByFK(painting.getRelationship("toArtist"), resolver));
+        assertTrue(DataRowUtils.isTargetDeterminedByFK(paintingInfo.getRelationship("painting"), resolver));
+
+        // a dependent row, to-many targets and flattened targets may be missing
+        assertFalse(DataRowUtils.isTargetDeterminedByFK(painting.getRelationship("toPaintingInfo"), resolver));
+        assertFalse(DataRowUtils.isTargetDeterminedByFK(artist.getRelationship("paintingArray"), resolver));
+        assertFalse(DataRowUtils.isTargetDeterminedByFK(artist.getRelationship("groupArray"), resolver));
     }
 
     @Test

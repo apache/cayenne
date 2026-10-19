@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.map;
 
-import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.exp.DbPathExp;
 import org.apache.cayenne.exp.Expression;
@@ -577,14 +576,7 @@ public class DbEntity extends Entity<DbEntity, DbAttribute, DbRelationship> impl
         }
 
         private CayennePath prependReversedPath(CayennePath finalPath, DbRelationship relationship) {
-            DbRelationship revNextDBR = relationship.getReverseRelationship();
-
-            if (revNextDBR == null) {
-                throw new CayenneRuntimeException("Unable to find reverse DbRelationship for %s.%s."
-                        , relationship.getSourceEntity().getName(), relationship.getName());
-            }
-
-            return CayennePath.of(revNextDBR.getName()).dot(finalPath);
+            return CayennePath.of(relationship.getReverseRelationship().getName()).dot(finalPath);
         }
     }
 }

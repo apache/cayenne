@@ -127,7 +127,7 @@ class DataDomainRelationshipAction {
 
         // check whether a non-null FK is enough to assume non-null target, and if so, create a hollow object without
         // going to the database. Never pass a partial snapshot to ObjectResolver (CAY-724).
-        if (relationship.isTargetDeterminedByFK(domain.getEntityResolver())) {
+        if (DataRowUtils.isTargetDeterminedByFK(relationship, domain.getEntityResolver())) {
             List<Persistent> result = new ArrayList<>(1);
             result.add(context.findOrCreateObject(targetId));
             return result;

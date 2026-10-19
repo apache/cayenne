@@ -23,8 +23,12 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.EntityInheritanceTree;
+import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.reflect.ArcProperty;
 import org.apache.cayenne.reflect.AttributeProperty;
@@ -259,7 +263,7 @@ class DataRowUtils {
 
             if (id == null) {
                 property.writeProperty(object, null, null);
-            } else if (!relationship.isTargetDeterminedByFK(context.getEntityResolver())) {
+            } else if (!isTargetDeterminedByFK(relationship, context.getEntityResolver())) {
                 // we can't use 'localObject' if relationship is optional or inheritance is involved
                 // .. must turn to fault instead
                 property.invalidate(object);
@@ -277,6 +281,53 @@ class DataRowUtils {
         }
 
         return true;
+    }
+
+    /**
+     * Returns true if a non-null FK on the source fully determines the target of a relationship: the target row is
+     * guaranteed to exist by referential integrity, and its entity is known. Such a target can be materialized as a
+     * HOLLOW object from the FK alone, without a query. This requires the FK to be on the source side (see
+     * {@link ObjRelationship#isFromFK()}), no qualifier on the target entity or its super entities that could filter
+     * out an existing row, and no subclasses of the target entity.
+     */
+    static boolean isTargetDeterminedByFK(ObjRelationship relationship, EntityResolver entityResolver) {
+        if (!relationship.isFromFK()) {
+            return false;
+        }
+
+        // a source PK column may mean that this is the master side of a PK-to-PK pair, whose dependent row is not
+        // guaranteed to exist; only the "to dependent PK" flag on the reverse tells that the source is the dependent
+        DbRelationship dbRelationship = relationship.getDbRelationships().getFirst();
+        if (hasPkSource(dbRelationship) && !dbRelationship.getReverseRelationship().isToDependentPK()) {
+            return false;
+        }
+
+        if (isQualifiedEntity(relationship.getTargetEntity())) {
+            return false;
+        }
+
+        EntityInheritanceTree inheritanceTree = entityResolver.getInheritanceTree(relationship.getTargetEntityName());
+        return inheritanceTree == null || inheritanceTree.getChildren().isEmpty();
+    }
+
+    private static boolean hasPkSource(DbRelationship dbRelationship) {
+        for (DbJoin join : dbRelationship.getJoins()) {
+            DbAttribute source = join.getSource();
+            if (source != null && source.isPrimaryKey()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // true if the entity or any of its super entities has a limiting qualifier
+    private static boolean isQualifiedEntity(ObjEntity entity) {
+        for (ObjEntity e = entity; e != null; e = e.getSuperEntity()) {
+            if (e.getDeclaredQualifier() != null) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
