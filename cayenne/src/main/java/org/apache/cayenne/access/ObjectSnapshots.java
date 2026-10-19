@@ -240,9 +240,8 @@ public final class ObjectSnapshots {
             }
 
             DbRelationship dbRel = rel.getDbRelationships().getFirst();
-            Map<String, Object> fk = dbRel.srcFkSnapshotWithTargetSnapshot(idParts);
-            for (Map.Entry<String, Object> entry : fk.entrySet()) {
-                set(entry.getKey(), entry.getValue());
+            for (DbJoin join : dbRel.getJoins()) {
+                set(join.getSourceName(), idParts.get(join.getTargetName()));
             }
         }
     }

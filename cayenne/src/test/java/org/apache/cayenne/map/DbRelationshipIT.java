@@ -26,10 +26,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -45,14 +41,12 @@ public class DbRelationshipIT {
 
     protected DbEntity artistEnt;
     protected DbEntity paintingEnt;
-    protected DbEntity galleryEnt;
 
     @BeforeEach
     public void setUp() throws Exception {
         runtime = env.runtime();
         artistEnt = runtime.getDataDomain().getEntityResolver().getDbEntity("ARTIST");
         paintingEnt = runtime.getDataDomain().getEntityResolver().getDbEntity("PAINTING");
-        galleryEnt = runtime.getDataDomain().getEntityResolver().getDbEntity("GALLERY");
     }
 
     @Test
@@ -70,17 +64,6 @@ public class DbRelationshipIT {
 
         // dependent to master PK: the dependent PK is also the FK
         assertTrue(toPaintingInfo.getReverseRelationship().isFromFK());
-    }
-
-    @Test
-    public void srcFkSnapshotWithTargetSnapshot() throws Exception {
-        Map<String, Object> map = new HashMap<>();
-        Integer id = 44;
-        map.put("GALLERY_ID", id);
-
-        DbRelationship dbRel = galleryEnt.getRelationship("paintingArray");
-        Map<String, Object> targetMap = dbRel.getReverseRelationship().srcFkSnapshotWithTargetSnapshot(map);
-        assertEquals(id, targetMap.get("GALLERY_ID"));
     }
 
     @Test

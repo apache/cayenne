@@ -383,60 +383,6 @@ public class DbRelationship extends Relationship<DbEntity, DbAttribute, DbRelati
     }
 
     /**
-     * Common code to srcSnapshotWithTargetSnapshot. Both are functionally the
-     * same, except for the name, and whether they operate on a toMany or a
-     * toOne.
-     */
-    private Map<String, Object> srcSnapshotWithTargetSnapshot(Map<String, Object> targetSnapshot) {
-        int len = joins.size();
-
-        // optimize for the most common single column join
-        if (len == 1) {
-            DbJoin join = joins.get(0);
-            Object val = targetSnapshot.get(join.getTargetName());
-            return Collections.singletonMap(join.getSourceName(), val);
-        }
-
-        // general case
-        Map<String, Object> idMap = new HashMap<>(len * 2);
-        for (DbJoin join : joins) {
-            Object val = targetSnapshot.get(join.getTargetName());
-            idMap.put(join.getSourceName(), val);
-        }
-
-        return idMap;
-    }
-
-    /**
-     * Creates a snapshot of foreign key attributes of a source object of this
-     * relationship based on a snapshot of a target. Only "to-one" relationships
-     * are supported. Throws CayenneRuntimeException if relationship is
-     * "to many".
-     */
-    public Map<String, Object> srcFkSnapshotWithTargetSnapshot(Map<String, Object> targetSnapshot) {
-
-        if (isToMany()) {
-            throw new CayenneRuntimeException("Only 'to one' relationships support this method.");
-        }
-
-        return srcSnapshotWithTargetSnapshot(targetSnapshot);
-    }
-
-    /**
-     * Creates a snapshot of primary key attributes of a source object of this
-     * relationship based on a snapshot of a target. Only "to-many"
-     * relationships are supported. Throws CayenneRuntimeException if
-     * relationship is "to one".
-     */
-    public Map<String, Object> srcPkSnapshotWithTargetSnapshot(Map<String, Object> targetSnapshot) {
-        if (!isToMany()) {
-            throw new CayenneRuntimeException("Only 'to many' relationships support this method.");
-        }
-
-        return srcSnapshotWithTargetSnapshot(targetSnapshot);
-    }
-
-    /**
      * Sets relationship multiplicity.
      */
     public void setToMany(boolean toMany) {

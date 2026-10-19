@@ -98,6 +98,7 @@ import org.apache.cayenne.exp.ThenExp;
 import org.apache.cayenne.exp.WhenExp;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.Embeddable;
 
@@ -462,7 +463,11 @@ class QualifierTranslator implements TraversalHandler {
         Map<String, Object> valueSnapshot = getMultiAttributeValueSnapshot(node, parentNode);
         // convert snapshot if we have attributes from source, not target
         if (result.getLastAttribute().getEntity() == relationship.getSourceEntity()) {
-            valueSnapshot = relationship.srcFkSnapshotWithTargetSnapshot(valueSnapshot);
+            Map<String, Object> fkSnapshot = HashMap.newHashMap(relationship.getJoins().size());
+            for (DbJoin join : relationship.getJoins()) {
+                fkSnapshot.put(join.getSourceName(), valueSnapshot.get(join.getTargetName()));
+            }
+            valueSnapshot = fkSnapshot;
         }
 
         // build compound PK/FK comparison node
