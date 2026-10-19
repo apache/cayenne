@@ -164,8 +164,8 @@ public class PersistentDescriptor implements ClassDescriptor {
 			List<Entry<String, PropertyDescriptor>> entries = new ArrayList<>(properties.entrySet());
 
 			entries.sort(PropertyComparator.comparator);
-			Map<String, PropertyDescriptor> orderedProperties = new LinkedHashMap<>((int) (entries.size() / 0.75));
-			Map<String, PropertyDescriptor> orderedDeclared = new LinkedHashMap<>((int) (declaredProperties.size() / 0.75));
+			Map<String, PropertyDescriptor> orderedProperties = LinkedHashMap.newLinkedHashMap(entries.size());
+			Map<String, PropertyDescriptor> orderedDeclared = LinkedHashMap.newLinkedHashMap(declaredProperties.size());
 
 			for (Entry<String, PropertyDescriptor> e : entries) {
 				orderedProperties.put(e.getKey(), e.getValue());

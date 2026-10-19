@@ -98,7 +98,7 @@ class ToManyMap<K, V> extends ToManyHolder<V> implements Map<K, V> {
      */
     @SuppressWarnings("unchecked")
     protected Map<K, V> indexCollection(Collection<V> collection) {
-        Map<K, V> map = new HashMap<>((int) (collection.size() * 1.33d) + 1);
+        Map<K, V> map = HashMap.newHashMap(collection.size());
 
         for (V next : collection) {
             K key = (K) mapKeyAccessor.getValue(next);

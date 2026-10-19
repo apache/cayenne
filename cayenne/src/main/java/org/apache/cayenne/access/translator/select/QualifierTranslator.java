@@ -438,7 +438,7 @@ class QualifierTranslator implements TraversalHandler {
             }
 
             if (operand instanceof EmbeddableObject embeddableObject) {
-                Map<String, Object> snapshot = new HashMap<>(embeddable.getAttributes().size());
+                Map<String, Object> snapshot = HashMap.newHashMap(embeddable.getAttributes().size());
                 embeddable.getAttributeMap().forEach((name, attr) ->
                         snapshot.put(attr.getDbAttributeName(), embeddableObject.readPropertyDirectly(name)));
                 return snapshot;

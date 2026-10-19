@@ -41,7 +41,7 @@ public final class DataRowLayout implements Serializable {
     private final transient Map<String, Integer> indexes;
 
     private DataRowLayout(String[] names) {
-        this.indexes = new HashMap<>((int) Math.ceil(names.length / 0.75));
+        this.indexes = HashMap.newHashMap(names.length);
 
         // the array is owned, so the duplicates are renamed in place
         for (int i = names.length - 1; i >= 0; i--) {

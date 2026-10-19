@@ -62,7 +62,7 @@ class DbRowOpGraph {
 	 * Return (as a Map) the in-degree of each vertex.
 	 */
 	private Map<DbRowOp, Integer> inDegree() {
-		Map<DbRowOp, Integer> result = new LinkedHashMap<>(neighbors.size());
+		Map<DbRowOp, Integer> result = LinkedHashMap.newLinkedHashMap(neighbors.size());
 
 		neighbors.forEach((from, neighbors) -> {
 			neighbors.forEach(to -> result.compute(to, (k, old) -> {

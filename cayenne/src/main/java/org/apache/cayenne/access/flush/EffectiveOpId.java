@@ -54,7 +54,7 @@ public class EffectiveOpId {
         if(idSnapshot.size() == 1 && !(idSnapshot.values().iterator().next() instanceof DeferredValue)) {
             this.snapshot = idSnapshot;
         } else {
-            this.snapshot = new HashMap<>(idSnapshot.size());
+            this.snapshot = HashMap.newHashMap(idSnapshot.size());
             idSnapshot.forEach((key, value) -> {
                 Object resolved = DeferredValue.resolve(value);
                 // keep the unresolved value if it resolves to null, preserving the original snapshot entry

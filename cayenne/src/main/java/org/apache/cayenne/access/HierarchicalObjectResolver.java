@@ -408,7 +408,7 @@ class HierarchicalObjectResolver {
                 if (processorNode.isJointChildren()) {
                     List<Persistent> objects = processorNode.getObjects();
                     if (objects != null && objects.size() > 1) {
-                        Set<Persistent> seen = new HashSet<>(objects.size());
+                        Set<Persistent> seen = HashSet.newHashSet(objects.size());
                         objects.removeIf(persistent -> !seen.add(persistent));
                     }
                 }

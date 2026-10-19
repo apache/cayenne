@@ -57,7 +57,7 @@ public class DefaultTemplateContextFactory implements TemplateContextFactory {
 
     @Override
     public Context createContext(Map<String, ?> parameters, boolean positionalMode, DbAdapter adapter) {
-        Map<String, Object> realParameters = new HashMap<>(parameters.size() + 1);
+        Map<String, Object> realParameters = HashMap.newHashMap(parameters.size() + 1);
         realParameters.putAll(parameters);
         realParameters.put("helper", helper);
         return new Context(directives, realParameters, positionalMode, adapter);

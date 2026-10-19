@@ -45,7 +45,7 @@ class QLParserHelper {
         }
 
         String[] pathSegments = path.split("\\.");
-        Map<String, String> aliasMap = new HashMap<>(pathSegments.length);
+        Map<String, String> aliasMap = HashMap.newHashMap(pathSegments.length);
         for (int i = 0; i < pathSegments.length; i++) {
             if (pathSegments[i].contains("#")) {
                 String[] splitSegment = pathSegments[i].split("#");

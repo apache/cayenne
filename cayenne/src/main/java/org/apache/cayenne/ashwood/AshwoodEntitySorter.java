@@ -125,7 +125,7 @@ public class AshwoodEntitySorter implements EntitySorter {
 		IndegreeTopologicalSort<Collection<DbEntity>> sorter = new IndegreeTopologicalSort<>(
 				contractedReferentialDigraph);
 
-		Map<DbEntity, ComponentRecord> components = new HashMap<>(contractedReferentialDigraph.order());
+		Map<DbEntity, ComponentRecord> components = HashMap.newHashMap(contractedReferentialDigraph.order());
 		int componentIndex = 0;
 		while (sorter.hasNext()) {
 			Collection<DbEntity> component = sorter.next();

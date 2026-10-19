@@ -53,7 +53,7 @@ public class Qualifier {
             return new HashMap<>(idSnapshot);
         }
 
-        Map<String, Object> qualifier = new HashMap<>(additionalQualifier.size() + idSnapshot.size());
+        Map<String, Object> qualifier = HashMap.newHashMap(additionalQualifier.size() + idSnapshot.size());
         AtomicBoolean hasPK = new AtomicBoolean(!idSnapshot.isEmpty());
         idSnapshot.forEach((attr, value) -> {
             if(value != null) {

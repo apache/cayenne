@@ -57,7 +57,7 @@ public abstract sealed class ValueExp extends Expression permits ArithmeticExp, 
         if(firstChild instanceof Map) {
             @SuppressWarnings("unchecked")
             Map<Object, Object> child = (Map<Object, Object>) firstChild;
-            Map<Object, Object> result = new HashMap<>(child.size());
+            Map<Object, Object> result = HashMap.newHashMap(child.size());
             for(Map.Entry<Object, Object> entry : child.entrySet()) {
                 result.put(entry.getKey(), evaluateSubNode(entry.getValue(), evaluatedChildren));
             }

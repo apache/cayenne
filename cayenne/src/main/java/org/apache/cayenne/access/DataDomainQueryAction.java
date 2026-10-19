@@ -674,7 +674,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
 
             // distinct filtering
             if (!metadata.isSuppressingDistinct()) {
-                Set<List<?>> seen = new HashSet<>(result.size());
+                Set<List<?>> seen = HashSet.newHashSet(result.size());
                 result.removeIf(objects -> !seen.add(Arrays.asList(objects)));
             }
 

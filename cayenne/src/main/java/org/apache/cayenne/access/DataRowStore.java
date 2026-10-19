@@ -444,7 +444,7 @@ public class DataRowStore {
             Object newValue = newSnapshot.get(name);
             if (!Objects.deepEquals(oldValue, newValue)) {
                 if (changes == null) {
-                    changes = new HashMap<>(newSnapshot.size());
+                    changes = HashMap.newHashMap(newSnapshot.size());
                 }
                 changes.put(name, newValue);
             }

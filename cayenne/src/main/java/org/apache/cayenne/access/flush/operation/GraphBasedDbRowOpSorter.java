@@ -100,7 +100,7 @@ public class GraphBasedDbRowOpSorter implements DbRowOpSorter {
         initDataSync();
 
         // build index op by ID
-        Map<EffectiveOpId, List<DbRowOp>> indexById = new HashMap<>(dbRows.size());
+        Map<EffectiveOpId, List<DbRowOp>> indexById = HashMap.newHashMap(dbRows.size());
         dbRows.forEach(op -> indexById
                 .computeIfAbsent(effectiveIdFor(op), id -> new ArrayList<>(1))
                 .add(op)
@@ -195,7 +195,7 @@ public class GraphBasedDbRowOpSorter implements DbRowOpSorter {
                 return Collections.emptyMap();
             }
         } else {
-            Map<EffectiveOpId, Map<String, Object>> effectiveOpIds = new HashMap<>(parentIdSnapshots.size());
+            Map<EffectiveOpId, Map<String, Object>> effectiveOpIds = HashMap.newHashMap(parentIdSnapshots.size());
             parentIdSnapshots.forEach(snapshot -> {
                 EffectiveOpId id = this.effectiveIdFor(relationship, snapshot);
                 if(id != null) {
@@ -214,7 +214,7 @@ public class GraphBasedDbRowOpSorter implements DbRowOpSorter {
         int len = relationship.getJoins().size();
         Map<String, Object> idMap = len == 1
                 ? new SingleEntryMap<>(relationship.getJoins().get(0).getTargetName())
-                : new HashMap<>(len);
+                : HashMap.newHashMap(len);
         relationship.getJoins().forEach(join -> {
             Object value = opSnapshot.get(join.getSourceName());
             if(value == null) {
@@ -282,7 +282,7 @@ public class GraphBasedDbRowOpSorter implements DbRowOpSorter {
             int joinSize = relationship.getJoins().size();
             Map<String, Object> snapshot = joinSize == 1
                     ? new SingleEntryMap<>(relationship.getJoins().get(0).getSourceName())
-                    : new HashMap<>(joinSize);
+                    : HashMap.newHashMap(joinSize);
             relationship.getJoins().forEach(join -> {
                 Object value = dataRow.get(join.getSourceName());
                 if(value != null) {

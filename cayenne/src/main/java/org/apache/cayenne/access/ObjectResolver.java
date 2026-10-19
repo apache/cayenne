@@ -168,7 +168,7 @@ class ObjectResolver {
 			return ObjectId.of(name, pkNames[0], val);
 		}
 
-		Map<String, Object> idMap = new HashMap<>(pkNames.length * 2);
+		Map<String, Object> idMap = HashMap.newHashMap(pkNames.length);
 		for (int i = 0; i < pkNames.length; i++) {
 			Object val = reader.get(row, pkColumns[i]);
 			if (val == null) {
@@ -321,7 +321,7 @@ class ObjectResolver {
 
 		// ... handle generic case - PK.size > 1
 
-		Map<String, Object> idMap = new HashMap<>(pk.size() * 2);
+		Map<String, Object> idMap = HashMap.newHashMap(pk.size());
 		for (final DbAttribute attribute : pk) {
 			String key = namePrefix.dot(attribute.getName()).value();
 			Object val = dataRow.get(key);

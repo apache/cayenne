@@ -80,13 +80,13 @@ public class Values {
         } else {
             if(other.attributeSnapshot != null) {
                 if(this.attributeSnapshot == null) {
-                    this.attributeSnapshot = new HashMap<>(other.attributeSnapshot.size());
+                    this.attributeSnapshot = HashMap.newHashMap(other.attributeSnapshot.size());
                 }
                 other.attributeSnapshot.forEach(attributeSnapshot::putIfAbsent);
             }
             if(other.fkSnapshot != null) {
                 if(this.fkSnapshot == null) {
-                    this.fkSnapshot = new HashMap<>(other.fkSnapshot.size());
+                    this.fkSnapshot = HashMap.newHashMap(other.fkSnapshot.size());
                 }
                 other.fkSnapshot.forEach(fkSnapshot::putIfAbsent);
             }

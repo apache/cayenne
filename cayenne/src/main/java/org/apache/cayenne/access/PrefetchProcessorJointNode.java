@@ -85,7 +85,7 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
         }
 
         objects = new ArrayList<>(capacity);
-        resolved = new HashMap<>(capacity);
+        resolved = HashMap.newHashMap(capacity);
         resolvedRows = new ArrayList<>(capacity);
         buildRowMapping();
         buildPKIndex();

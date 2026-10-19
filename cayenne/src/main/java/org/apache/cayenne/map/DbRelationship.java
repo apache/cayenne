@@ -352,7 +352,7 @@ public class DbRelationship extends Relationship<DbEntity, DbAttribute, DbRelati
         }
         // handle generic case: numJoins > 1
         else {
-            idMap = new HashMap<>(numJoins * 2);
+            idMap = HashMap.newHashMap(numJoins);
             for (DbJoin join : joins) {
                 DbAttribute source = join.getSource();
                 Object val = srcSnapshot.get(join.getSourceName());

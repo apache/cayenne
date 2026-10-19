@@ -37,7 +37,7 @@ public class EmbeddedResult {
 
     public EmbeddedResult(Embeddable embeddable, int size) {
         this.embeddable = embeddable;
-        this.fields = new HashMap<>((int) Math.ceil(size / 0.75));
+        this.fields = HashMap.newHashMap(size);
     }
 
     public void addAttribute(ObjAttribute attr) {
