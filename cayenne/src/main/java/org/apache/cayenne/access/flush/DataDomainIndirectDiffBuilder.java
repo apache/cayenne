@@ -22,7 +22,6 @@ package org.apache.cayenne.access.flush;
 import java.util.Collection;
 import java.util.HashSet;
 
-import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.access.ObjectStoreGraphDiff;
 import org.apache.cayenne.graph.ArcId;
@@ -77,11 +76,6 @@ final class DataDomainIndirectDiffBuilder implements GraphChangeHandler {
                     indirectModifications = new HashSet<>();
                 }
                 indirectModifications.add(id);
-            }
-
-            if (relationship.isFlattened() && relationship.isReadOnly()) {
-                throw new CayenneRuntimeException("Cannot change the read-only flattened relationship %s in ObjEntity '%s'."
-                        , relationship.getName(), relationship.getSourceEntity().getName());
             }
         }
     }

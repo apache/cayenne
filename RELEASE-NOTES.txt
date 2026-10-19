@@ -50,6 +50,7 @@ CAY-3048 Per-object locking in the ObjectStore
 CAY-3049 Cheap ClockMap to replace ConcurrentLinkedHashMap
 CAY-3050 Array-based DataRows
 CAY-3051 Replace PropertyVisitor with ClassDescriptor property collections
+CAY-3054 Remove ObjRelationship.isReadOnly()
 
 Bug Fixes:
 

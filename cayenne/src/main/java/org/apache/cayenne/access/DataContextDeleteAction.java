@@ -131,8 +131,7 @@ class DataContextDeleteAction {
         for (final ObjRelationship relationship : descriptor.getEntity().getRelationships()) {
 
             boolean processFlattened = relationship.isFlattened()
-                    && relationship.getDbRelationships().getFirst().isToDependentPK()
-                    && !relationship.isReadOnly();
+                    && relationship.getDbRelationships().getFirst().isToDependentPK();
 
             // first check for no action... bail out if no flattened processing is needed
             if (relationship.getDeleteRule() == null && !processFlattened) {
@@ -208,7 +207,7 @@ class DataContextDeleteAction {
         byEntity.forEach((entityName, sameEntityObjects) -> {
             ClassDescriptor descriptor = context.getEntityResolver().getClassDescriptor(entityName);
             ObjRelationship reverse = property.getRelationship().getReverseRelationship(descriptor.getEntity());
-            if (reverse != null && !reverse.isReadOnly()) {
+            if (reverse != null) {
                 unsetReverseArc((ArcProperty) descriptor.getProperty(reverse.getName()), object, sameEntityObjects);
             }
         });

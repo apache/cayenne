@@ -377,12 +377,7 @@ public class ObjRelationshipInfoDialog extends ProjectDialog implements TreeSele
     }
 
     private void setSemantics() {
-        StringBuilder semantics = new StringBuilder(20);
-        semantics.append(relationship.isToMany() ? "to many" : "to one");
-        if (relationship.isReadOnly()) {
-            semantics.append(", read-only");
-        }
-        semanticsLabel.setText(semantics.toString());
+        semanticsLabel.setText(relationship.isToMany() ? "to many" : "to one");
     }
 
     @Override

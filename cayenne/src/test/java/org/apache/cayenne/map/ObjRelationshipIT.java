@@ -364,7 +364,6 @@ public class ObjRelationshipIT {
         assertEquals(1, relationship.getDbRelationships().size());
         assertEquals(r1, relationship.getDbRelationships().get(0));
         assertFalse(relationship.isFlattened());
-        assertFalse(relationship.isReadOnly());
         assertEquals(r1.isToMany(), relationship.isToMany());
         relationship.removeDbRelationship(r1);
         assertEquals(0, relationship.getDbRelationships().size());
@@ -399,12 +398,10 @@ public class ObjRelationshipIT {
         assertEquals(1, relationship.getDbRelationships().size());
         assertEquals(r2, relationship.getDbRelationships().get(0));
         assertFalse(relationship.isFlattened());
-        assertFalse(relationship.isReadOnly());
-
     }
 
     @Test
-    public void readOnly_Flattened1_1__N_1() {
+    public void flattened1_1__N_1() {
 
         // check common vertical inheritance relationships
 
@@ -416,14 +413,10 @@ public class ObjRelationshipIT {
         ObjEntity iv2Sub1 = resolver.getObjEntity(Iv2Sub1.class);
         ObjRelationship x = iv2Sub1.getRelationship(Iv2Sub1.X.getName());
         assertTrue(x.isFlattened());
-        assertFalse(x.isReadOnly());
     }
 
     @Test
-    public void readOnlyMoreThan3DbRelsRelationship() {
-        // Readonly is a flattened relationship that isn't over a single
-        // many->many link
-        // table
+    public void flattenedMoreThan2DbRels() {
         DbRelationship r1 = new DbRelationship("X");
         DbRelationship r2 = new DbRelationship("Y");
         DbRelationship r3 = new DbRelationship("Z");
@@ -448,11 +441,9 @@ public class ObjRelationshipIT {
 
     }
 
-    // Test for a read-only flattened relationship that is readonly because it's
-    // dbrel
-    // sequence is "incorrect" (or rather, unsupported)
+    // flattened over a to-many followed by a to-one
     @Test
-    public void incorrectSequenceReadOnlyRelationship() {
+    public void flattenedToManyThenToOne() {
         DbRelationship r1 = new DbRelationship("X");
         DbRelationship r2 = new DbRelationship("Y");
 
@@ -479,7 +470,6 @@ public class ObjRelationshipIT {
         ObjRelationship theRel = artistEnt.getRelationship("groupArray");
         assertNotNull(theRel);
         assertTrue(theRel.isFlattened());
-        assertFalse(theRel.isReadOnly());
     }
 
     @Test

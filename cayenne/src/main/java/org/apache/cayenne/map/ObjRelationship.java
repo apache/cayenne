@@ -48,8 +48,6 @@ public class ObjRelationship extends Relationship<ObjEntity, ObjAttribute, ObjRe
      */
     public static final String DEFAULT_COLLECTION_TYPE = "java.util.List";
 
-    boolean readOnly;
-
     protected DeleteRule deleteRule;
     protected boolean usedForLocking;
 
@@ -279,7 +277,6 @@ public class ObjRelationship extends Relationship<ObjEntity, ObjAttribute, ObjRe
     public void clearDbRelationships() {
         deferredPath = null;
         this.dbRelationships.clear();
-        this.readOnly = false;
         this.toMany = false;
     }
 
@@ -359,26 +356,12 @@ public class ObjRelationship extends Relationship<ObjEntity, ObjAttribute, ObjRe
      * Returns true if the relationship is a "flattened" relationship. A
      * relationship is considered "flattened" if it maps to more than one
      * DbRelationship. Such chain of DbRelationships is also called
-     * "relationship path". All flattened relationships are at least readable,
-     * but only those formed across a many-many join table (with no custom
-     * attributes other than foreign keys) can be automatically written.
-     * 
-     * @see #isReadOnly
+     * "relationship path".
+     *
      * @return flag indicating if the relationship is flattened or not.
      */
     public boolean isFlattened() {
         return getDbRelationships().size() > 1;
-    }
-
-    /**
-     * Returns true if the relationship is flattened, but is not of the single
-     * case that can have automatic write support. Otherwise, it returns false.
-     * 
-     * @return flag indicating if the relationship is read only or not
-     */
-    public boolean isReadOnly() {
-        refreshFromDeferredPath();
-        return readOnly;
     }
 
     @Override
@@ -626,49 +609,6 @@ public class ObjRelationship extends Relationship<ObjEntity, ObjAttribute, ObjRe
         }
 
         this.toMany = false;
-    }
-
-    /**
-     * Recalculates a new readonly value based on the underlying DbRelationships.
-     */
-    @Deprecated(since = "4.2")
-    public void recalculateReadOnlyValue() {
-        // not flattened, always read/write
-        if (dbRelationships.size() < 2) {
-            this.readOnly = false;
-            return;
-        }
-
-        // too long, can't handle this yet
-        if (dbRelationships.size() > 2) {
-            this.readOnly = true;
-            return;
-        }
-
-        DbRelationship firstRel = dbRelationships.get(0);
-        DbRelationship secondRel = dbRelationships.get(1);
-
-        // many-to-many with single-step join
-        // also 1..1..1 (CAY-1744) .. TODO all this should go away eventually
-        // per CAY-1743
-        if (!secondRel.isToMany()) {
-
-            // allow modifications if the joins are from FKs
-            if (!secondRel.isToPK()) {
-                this.readOnly = true;
-                return;
-            }
-
-            DbRelationship firstReverseRel = firstRel.getReverseRelationship();
-            if (firstReverseRel == null || !firstReverseRel.isToPK()) {
-                this.readOnly = true;
-                return;
-            }
-
-            this.readOnly = false;
-        } else {
-            readOnly = true;
-        }
     }
 
     @Override

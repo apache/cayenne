@@ -139,9 +139,6 @@ public class ObjRelationshipTableModel extends CMTableModel<ObjRelationship> {
     private static String getSemantics(ObjRelationship relationship) {
         StringBuilder semantics =  new StringBuilder(20);
         semantics.append(relationship.isToMany() ? "to many" : "to one");
-        if (relationship.isReadOnly()) {
-            semantics.append(", read-only");
-        }
         if (relationship.isToMany()) {
             String collection = "list";
             if (relationship.getCollectionType() != null) {
