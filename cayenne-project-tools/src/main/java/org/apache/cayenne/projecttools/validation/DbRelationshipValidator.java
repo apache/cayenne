@@ -54,10 +54,10 @@ class DbRelationshipValidator extends ProjectNodeValidator<DbRelationship> {
                 .performIfEnabled(Inspection.DB_RELATIONSHIP_INVALID_JOIN, this::validateJoins)
                 .performIfEnabled(Inspection.DB_RELATIONSHIP_BOTH_TO_MANY, this::validateReverse)
                 .performIfEnabled(Inspection.DB_RELATIONSHIP_DIFFERENT_TYPES, this::checkForSameTypes)
-                .performIfEnabled(Inspection.DB_RELATIONSHIP_GENERATED_WITH_DEPENDENT_PK,
+                .performIfEnabled(Inspection.DB_RELATIONSHIP_FOREIGN_KEY_IN_GENERATED_PK,
                         this::checkOnGeneratedStrategyConflict)
-                .performIfEnabled(Inspection.DB_RELATIONSHIP_PK_TO_PK_NO_DEPENDENT_PK,
-                        this::checkForUnmarkedDependentPK);
+                .performIfEnabled(Inspection.DB_RELATIONSHIP_ONE_TO_ONE_NO_FOREIGN_KEY, this::checkForOneToOneForeignKey)
+                .performIfEnabled(Inspection.DB_RELATIONSHIP_FOREIGN_KEY_MISMATCH, this::checkForForeignKeyMismatch);
     }
 
     private void checkForName(DbRelationship relationship, ValidationResult validationResult) {
@@ -116,9 +116,9 @@ class DbRelationshipValidator extends ProjectNodeValidator<DbRelationship> {
     }
 
     private void checkForTargetPK(DbRelationship relationship, ValidationResult validationResult) {
-        if (!relationship.isToPK()) {
+        if (!relationship.isToPrimaryKey()) {
             DbRelationship reverseRelationship = relationship.getReverseRelationship();
-            if (reverseRelationship != null && !reverseRelationship.isToPK()) {
+            if (reverseRelationship != null && !reverseRelationship.isToPrimaryKey()) {
                 addFailure(validationResult, relationship,
                         "DbRelationship '%s' has join not to PK. Cayenne doesn't allow this type of relationship",
                         toString(relationship));
@@ -170,31 +170,50 @@ class DbRelationshipValidator extends ProjectNodeValidator<DbRelationship> {
         }
     }
 
-    private void checkForUnmarkedDependentPK(DbRelationship relationship, ValidationResult validationResult) {
+    // exactly one side of a one-to-one must be marked as the FK; when it is joined PK to PK, the columns don't tell
+    private void checkForOneToOneForeignKey(DbRelationship relationship, ValidationResult validationResult) {
         DbRelationship reverse = relationship.getReverseRelationship();
-        if (relationship.isToMany()
-                || relationship.isToDependentPK()
-                || !relationship.isValidForDepPk()
-                || reverse == null
-                || reverse.isToMany()
-                || reverse.isToDependentPK()) {
+        if (relationship.isToMany() || reverse == null || reverse.isToMany()) {
             return;
         }
-        addFailure(validationResult, relationship,
-                "DbRelationship '%s' joins PK to PK, but neither it nor its reverse '%s' is marked 'To Dep PK', "
-                        + "so Cayenne can't tell which side holds the FK",
-                toString(relationship), reverse.getName());
+        if (!relationship.isForeignKey() && !reverse.isForeignKey()) {
+            addFailure(validationResult, relationship,
+                    "DbRelationship '%s' is a one-to-one, but neither it nor its reverse '%s' is marked as the "
+                            + "foreign key",
+                    toString(relationship), reverse.getName());
+        } else if (relationship.isForeignKey() && reverse.isForeignKey()) {
+            addFailure(validationResult, relationship,
+                    "DbRelationship '%s' and its reverse '%s' are both marked as the foreign key",
+                    toString(relationship), reverse.getName());
+        }
+    }
+
+    // a to-many never holds the FK, and the to-one of a one-to-many always does
+    private void checkForForeignKeyMismatch(DbRelationship relationship, ValidationResult validationResult) {
+        if (relationship.isToMany()) {
+            if (relationship.isForeignKey()) {
+                addFailure(validationResult, relationship,
+                        "DbRelationship '%s' is to-many, but is marked as the foreign key", toString(relationship));
+            }
+            return;
+        }
+        DbRelationship reverse = relationship.getReverseRelationship();
+        if (reverse != null && reverse.isToMany() && !relationship.isForeignKey()) {
+            addFailure(validationResult, relationship,
+                    "DbRelationship '%s' is the to-one of a one-to-many, but is not marked as the foreign key",
+                    toString(relationship));
+        }
     }
 
     private void checkOnGeneratedStrategyConflict(DbRelationship relationship, ValidationResult validationResult) {
-        if (!relationship.isToDependentPK()) {
+        if (!relationship.isIdentifying()) {
             return;
         }
-        Collection<DbAttribute> attributes = relationship.getTargetEntity().getGeneratedAttributes();
+        Collection<DbAttribute> attributes = relationship.getSourceEntity().getGeneratedAttributes();
         for (DbAttribute attribute : attributes) {
             if (attribute.isGenerated()) {
                 addFailure(validationResult, relationship,
-                        "'To Dep Pk' incompatible with Database-Generated on '%s' relationship",
+                        "The foreign key of '%s' is a part of the primary key, which can't be database-generated",
                         toString(relationship));
             }
         }

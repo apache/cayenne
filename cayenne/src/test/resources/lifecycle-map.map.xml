@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/15/dataMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/dataMap https://cayenne.apache.org/schema/14/dataMap.xsd"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/15/dataMap https://cayenne.apache.org/schema/15/dataMap.xsd"
 	 defaultPackage="org.apache.cayenne.commitlog.db">
 	<dbEntity name="AUDITABLE1">
 		<dbAttribute name="CHAR_PROPERTY1" type="VARCHAR" length="200"/>
@@ -118,34 +118,34 @@
 	<dbRelationship name="auditable4s" source="AUDITABLE3" target="AUDITABLE4" toMany="true">
 		<dbAttributePair source="ID" target="AUDITABLE3_ID"/>
 	</dbRelationship>
-	<dbRelationship name="auditable3" source="AUDITABLE4" target="AUDITABLE3">
+	<dbRelationship name="auditable3" source="AUDITABLE4" target="AUDITABLE3" foreignKey="true">
 		<dbAttributePair source="AUDITABLE3_ID" target="ID"/>
 	</dbRelationship>
 	<dbRelationship name="children" source="AUDITABLE5" target="AUDITABLE_CHILD5" toMany="true">
 		<dbAttributePair source="ID" target="AUDITABLE5_ID"/>
 	</dbRelationship>
-	<dbRelationship name="parent" source="AUDITABLE_CHILD1" target="AUDITABLE1">
+	<dbRelationship name="parent" source="AUDITABLE_CHILD1" target="AUDITABLE1" foreignKey="true">
 		<dbAttributePair source="AUDITABLE1_ID" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="parent" source="AUDITABLE_CHILD1X" target="AUDITABLE1">
+	<dbRelationship name="parent" source="AUDITABLE_CHILD1X" target="AUDITABLE1" foreignKey="true">
 		<dbAttributePair source="AUDITABLE1_ID" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="parent" source="AUDITABLE_CHILD3" target="AUDITABLE2">
+	<dbRelationship name="parent" source="AUDITABLE_CHILD3" target="AUDITABLE2" foreignKey="true">
 		<dbAttributePair source="AUDITABLE2_ID" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="parent" source="AUDITABLE_CHILD5" target="AUDITABLE5">
+	<dbRelationship name="parent" source="AUDITABLE_CHILD5" target="AUDITABLE5" foreignKey="true">
 		<dbAttributePair source="AUDITABLE5_ID" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="e34s" source="E3" target="E34" toDependentPK="true" toMany="true">
+	<dbRelationship name="e34s" source="E3" target="E34" toMany="true">
 		<dbAttributePair source="ID" target="E3_ID"/>
 	</dbRelationship>
-	<dbRelationship name="e3" source="E34" target="E3">
+	<dbRelationship name="e3" source="E34" target="E3" foreignKey="true">
 		<dbAttributePair source="E3_ID" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="e4" source="E34" target="E4">
+	<dbRelationship name="e4" source="E34" target="E4" foreignKey="true">
 		<dbAttributePair source="E4_ID" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="e34s" source="E4" target="E34" toDependentPK="true" toMany="true">
+	<dbRelationship name="e34s" source="E4" target="E34" toMany="true">
 		<dbAttributePair source="ID" target="E4_ID"/>
 	</dbRelationship>
 	<objRelationship name="children1" source="Auditable1" target="AuditableChild1" deleteRule="deny" dbRelationshipPath="children1"/>
@@ -159,7 +159,7 @@
 	<objRelationship name="parent" source="AuditableChild5" target="Auditable5" deleteRule="nullify" dbRelationshipPath="parent"/>
 	<objRelationship name="e4s" source="E3" target="E4" deleteRule="deny" dbRelationshipPath="e34s.e4"/>
 	<objRelationship name="e3s" source="E4" target="E3" deleteRule="deny" dbRelationshipPath="e34s.e3"/>
-	<cgen xmlns="http://cayenne.apache.org/schema/14/cgen">
+	<cgen xmlns="http://cayenne.apache.org/schema/15/cgen">
 		<destDir>../java</destDir>
 		<mode>entity</mode>
 		<template>templates/v4_1/subclass.vm</template>

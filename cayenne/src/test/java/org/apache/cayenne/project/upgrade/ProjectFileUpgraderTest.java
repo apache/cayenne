@@ -55,8 +55,9 @@ public class ProjectFileUpgraderTest {
         "11,      UPGRADE_NEEDED",
         "12,      UPGRADE_NEEDED",
         "13,      UPGRADE_NEEDED",
-        "14,      UPGRADE_NOT_NEEDED",
-        "15,      DOWNGRADE_NEEDED"
+        "14,      UPGRADE_NEEDED",
+        "15,      UPGRADE_NOT_NEEDED",
+        "16,      DOWNGRADE_NEEDED"
     })
     public void checkUpgradeNeeded(String version, UpgradeType expectedType) {
         assertEquals(expectedType, upgrader.checkUpgradeNeeded(version));
@@ -65,18 +66,18 @@ public class ProjectFileUpgraderTest {
     @Test
     public void all() {
         List<String> versions = UpgradeHandler.all().stream().map(UpgradeHandler::getVersion).toList();
-        assertEquals(List.of("10", "11", "12", "13", "14"), versions,
+        assertEquals(List.of("10", "11", "12", "13", "14", "15"), versions,
                 "handlers must cover every version after the oldest supported one, in order");
         assertEquals(UpgradeHandler.CURRENT_VERSION, versions.getLast());
     }
 
     @Test
     public void handlersForVersion() {
-        assertEquals(5, upgrader.handlersForVersion(UpgradeHandler.MIN_SUPPORTED_VERSION).size());
+        assertEquals(6, upgrader.handlersForVersion(UpgradeHandler.MIN_SUPPORTED_VERSION).size());
         assertTrue(upgrader.handlersForVersion(UpgradeHandler.CURRENT_VERSION).isEmpty());
 
         List<String> versions = upgrader.handlersForVersion("9").stream().map(UpgradeHandler::getVersion).toList();
-        assertEquals(List.of("10", "11", "12", "13", "14"), versions);
+        assertEquals(List.of("10", "11", "12", "13", "14", "15"), versions);
     }
 
     @Test
@@ -87,6 +88,7 @@ public class ProjectFileUpgraderTest {
         // starting with version 14 there is no version attribute, and the version is a part of the namespace
         assertEquals("14", upgrader.readVersion(getResourceForVersion("14")));
         assertEquals("15", upgrader.readVersion(getResourceForVersion("15")));
+        assertEquals("16", upgrader.readVersion(getResourceForVersion("16")));
         assertEquals("6", upgrader.readVersion(new URLResource(getClass().getResource("test-map-v6.map.xml"))));
     }
 
@@ -106,7 +108,7 @@ public class ProjectFileUpgraderTest {
 
         Element root = context.getDocument().getDocumentElement();
         assertFalse(root.hasAttribute("project-version"));
-        assertEquals("http://cayenne.apache.org/schema/14/project", root.getAttribute("xmlns"));
+        assertEquals("http://cayenne.apache.org/schema/15/project", root.getAttribute("xmlns"));
         assertEquals(2, root.getElementsByTagName("map").getLength());
 
         // the version 9 fixture has a DataNode, which version 13 removes without a replacement
@@ -122,7 +124,7 @@ public class ProjectFileUpgraderTest {
         Element root = context.getDocument().getDocumentElement();
         assertEquals("dataMap", root.getNodeName());
         assertFalse(root.hasAttribute("project-version"));
-        assertEquals("http://cayenne.apache.org/schema/14/dataMap", root.getAttribute("xmlns"));
+        assertEquals("http://cayenne.apache.org/schema/15/dataMap", root.getAttribute("xmlns"));
     }
 
     private Resource getResourceForVersion(String version) {

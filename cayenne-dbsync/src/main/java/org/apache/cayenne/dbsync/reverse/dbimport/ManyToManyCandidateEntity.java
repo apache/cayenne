@@ -81,9 +81,10 @@ class ManyToManyCandidateEntity {
     private boolean isManyToMany() {
         boolean isNotHaveAttributes = joinEntity.getAttributes().isEmpty();
 
+        // a join table has no columns beyond its two FKs, that make up its PK
         return isNotHaveAttributes
-                && reverseRelationship1 != null && reverseRelationship1.isToDependentPK()
-                && reverseRelationship2 != null && reverseRelationship2.isToDependentPK()
+                && dbRel1.isIdentifying() && reverseRelationship1 != null
+                && dbRel2.isIdentifying() && reverseRelationship2 != null
                 && entity1 != null && entity2 != null;
     }
 

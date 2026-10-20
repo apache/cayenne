@@ -330,24 +330,17 @@ public class EntityMergeSupport {
             return List.of();
         }
 
-        // columns that a to-one relationship joins to a PK, taken one join at a time even when the relationship's
-        // other joins don't hit a PK. Same per-join rule as AshwoodEntitySorter
-        Set<DbAttribute> joinedToPK = new HashSet<>();
+        Set<DbAttribute> fkColumns = new HashSet<>();
         for (DbRelationship relationship : dbEntity.getRelationships()) {
-            if (relationship.isToMany() || relationship.isToDependentPK()) {
-                continue;
-            }
-            for (DbJoin join : relationship.getJoins()) {
-                if (join.getTarget() != null && join.getTarget().isPrimaryKey()) {
-                    joinedToPK.add(join.getSource());
-                }
+            if (relationship.isForeignKey()) {
+                fkColumns.addAll(relationship.getSourceAttributes());
             }
         }
 
         List<DbAttribute> fks = new ArrayList<>(2);
         for (ObjAttribute property : objEntity.getAttributes()) {
             DbAttribute column = property.getDbAttribute();
-            if (column != null && joinedToPK.contains(column)) {
+            if (column != null && fkColumns.contains(column)) {
                 fks.add(column);
             }
         }

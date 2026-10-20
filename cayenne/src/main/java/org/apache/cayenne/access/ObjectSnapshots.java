@@ -39,11 +39,14 @@ import org.apache.cayenne.reflect.PropertyDescriptor;
 import org.apache.cayenne.reflect.ToOneProperty;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * Builds {@link DataRow} snapshots of persistent objects from their current, possibly uncommitted, in-memory state.
+ * Utilities for {@link DataRow} snapshots of persistent objects: building a snapshot from the current, possibly
+ * uncommitted, in-memory state of an object, and reading a related object id out of a snapshot.
  *
  * @since 5.0
  */
@@ -65,6 +68,61 @@ public final class ObjectSnapshots {
      */
     public static DataRow snapshot(DataContext context, Persistent object, long version) {
         return new Builder(context.getEntityResolver(), context.getObjectStore(), object, version).build();
+    }
+
+    /**
+     * Returns the id of the target of a to-one relationship, derived from the join columns in a snapshot of the
+     * source. Returns null if the FK is null. Throws if the relationship is not
+     * {@link ObjRelationship#isToPrimaryKey() to the target PK}, as then the snapshot doesn't determine the target,
+     * or if the snapshot has only some of the columns of a multi-column FK.
+     *
+     * @param relationship a relationship satisfying {@link ObjRelationship#isToPrimaryKey()}
+     * @param sourceRow    a snapshot of a source object, keyed by DB column names
+     */
+    public static ObjectId targetId(ObjRelationship relationship, Map<String, Object> sourceRow) {
+
+        if (!relationship.isToPrimaryKey()) {
+            throw new CayenneRuntimeException("Source row doesn't determine the target id, relationship: %s",
+                    relationship);
+        }
+
+        DbRelationship dbRelationship = relationship.getDbRelationships().getFirst();
+        List<DbJoin> joins = dbRelationship.getJoins();
+        Map<String, Object> targetPk;
+
+        // optimize for the most common single column FK
+        if (joins.size() == 1) {
+            DbJoin join = joins.getFirst();
+            Object fk = sourceRow.get(join.getSourceName());
+            if (fk == null) {
+                return null;
+            }
+            targetPk = Collections.singletonMap(join.getTargetName(), fk);
+        } else {
+            targetPk = HashMap.newHashMap(joins.size());
+            int nullFks = 0;
+
+            for (DbJoin join : joins) {
+                Object fk = sourceRow.get(join.getSourceName());
+                if (fk != null) {
+                    targetPk.put(join.getTargetName(), fk);
+                } else if (!join.getSource().isMandatory()) {
+                    // a null in a nullable column of a multi-column FK that partially overlaps the PK (CAY-284)
+                    return null;
+                } else {
+                    nullFks++;
+                }
+            }
+
+            if (nullFks == joins.size()) {
+                return null;
+            } else if (nullFks > 0) {
+                throw new CayenneRuntimeException("Some parts of FK are missing in snapshot, relationship: %s",
+                        dbRelationship);
+            }
+        }
+
+        return ObjectId.of(relationship.getTargetEntityName(), targetPk);
     }
 
     private static final class Builder {
@@ -198,7 +256,7 @@ public final class ObjectSnapshots {
             ObjRelationship rel = property.getRelationship();
 
             // only a relationship holding the FK on the source contributes columns to the snapshot
-            if (!rel.isFromFK()) {
+            if (!rel.isForeignKey()) {
                 return;
             }
 

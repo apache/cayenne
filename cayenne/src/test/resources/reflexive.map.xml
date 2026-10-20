@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/15/dataMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/dataMap https://cayenne.apache.org/schema/14/dataMap.xsd"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/15/dataMap https://cayenne.apache.org/schema/15/dataMap.xsd"
 	 defaultPackage="org.apache.cayenne.testdo.reflexive">
 	<dbEntity name="OTHER">
 		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
@@ -25,10 +25,10 @@
 	<dbRelationship name="children" source="REFLEXIVE" target="REFLEXIVE" toMany="true">
 		<dbAttributePair source="ID" target="PARENT_ID"/>
 	</dbRelationship>
-	<dbRelationship name="toOther" source="REFLEXIVE" target="OTHER">
+	<dbRelationship name="toOther" source="REFLEXIVE" target="OTHER" foreignKey="true">
 		<dbAttributePair source="OTHER_ID" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="toParent" source="REFLEXIVE" target="REFLEXIVE">
+	<dbRelationship name="toParent" source="REFLEXIVE" target="REFLEXIVE" foreignKey="true">
 		<dbAttributePair source="PARENT_ID" target="ID"/>
 	</dbRelationship>
 	<objRelationship name="reflexives" source="Other" target="Reflexive" dbRelationshipPath="reflexives"/>

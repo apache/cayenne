@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/15/dataMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/dataMap https://cayenne.apache.org/schema/14/dataMap.xsd"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/15/dataMap https://cayenne.apache.org/schema/15/dataMap.xsd"
 	 defaultPackage="org.apache.cayenne.testdo.inheritance_vertical">
 	<dbEntity name="IV1_ROOT">
 		<dbAttribute name="DISCRIMINATOR" type="VARCHAR" length="10"/>
@@ -202,19 +202,19 @@
 		<qualifier><![CDATA[type = "G"]]></qualifier>
 		<objAttribute name="toyDolls" type="java.lang.Short" dbAttributePath="girl.TOY_DOLLS"/>
 	</objEntity>
-	<dbRelationship name="sub1" source="IV1_ROOT" target="IV1_SUB1" toDependentPK="true">
+	<dbRelationship name="sub1" source="IV1_ROOT" target="IV1_SUB1">
 		<dbAttributePair source="ID" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="root" source="IV1_SUB1" target="IV1_ROOT">
+	<dbRelationship name="root" source="IV1_SUB1" target="IV1_ROOT" foreignKey="true">
 		<dbAttributePair source="ID" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="sub1" source="IV2_ROOT" target="IV2_SUB1" toDependentPK="true">
+	<dbRelationship name="sub1" source="IV2_ROOT" target="IV2_SUB1">
 		<dbAttributePair source="ID" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="root" source="IV2_SUB1" target="IV2_ROOT">
+	<dbRelationship name="root" source="IV2_SUB1" target="IV2_ROOT" foreignKey="true">
 		<dbAttributePair source="ID" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="x" source="IV2_SUB1" target="IV2_X">
+	<dbRelationship name="x" source="IV2_SUB1" target="IV2_X" foreignKey="true">
 		<dbAttributePair source="X_ID" target="ID"/>
 	</dbRelationship>
 	<dbRelationship name="sub1" source="IV2_X" target="IV2_SUB1" toMany="true">
@@ -223,61 +223,61 @@
 	<dbRelationship name="children" source="IV_ABSTRACT" target="IV_ABSTRACT" toMany="true">
 		<dbAttributePair source="ID" target="PARENT_ID"/>
 	</dbRelationship>
-	<dbRelationship name="concrete" source="IV_ABSTRACT" target="IV_CONCRETE" toDependentPK="true">
+	<dbRelationship name="concrete" source="IV_ABSTRACT" target="IV_CONCRETE">
 		<dbAttributePair source="ID" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="parent" source="IV_ABSTRACT" target="IV_ABSTRACT">
+	<dbRelationship name="parent" source="IV_ABSTRACT" target="IV_ABSTRACT" foreignKey="true">
 		<dbAttributePair source="PARENT_ID" target="ID"/>
 	</dbRelationship>
 	<dbRelationship name="relatedConcrete" source="IV_ABSTRACT" target="IV_CONCRETE">
 		<dbAttributePair source="ID" target="RELATED_ABSTRACT_ID"/>
 	</dbRelationship>
-	<dbRelationship name="impl" source="IV_BASE" target="IV_IMPL" toDependentPK="true">
+	<dbRelationship name="impl" source="IV_BASE" target="IV_IMPL">
 		<dbAttributePair source="ID" target="ID"/>
 	</dbRelationship>
 	<dbRelationship name="others" source="IV_BASE" target="IV_OTHER" toMany="true">
 		<dbAttributePair source="ID" target="BASE_ID"/>
 	</dbRelationship>
-	<dbRelationship name="impl" source="IV_BASE_WITH_LOCK" target="IV_IMPL_WITH_LOCK" toDependentPK="true">
+	<dbRelationship name="impl" source="IV_BASE_WITH_LOCK" target="IV_IMPL_WITH_LOCK">
 		<dbAttributePair source="ID" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="abstract" source="IV_CONCRETE" target="IV_ABSTRACT">
+	<dbRelationship name="abstract" source="IV_CONCRETE" target="IV_ABSTRACT" foreignKey="true">
 		<dbAttributePair source="ID" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="relatedAbstract" source="IV_CONCRETE" target="IV_ABSTRACT">
+	<dbRelationship name="relatedAbstract" source="IV_CONCRETE" target="IV_ABSTRACT" foreignKey="true">
 		<dbAttributePair source="RELATED_ABSTRACT_ID" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="sub1" source="IV_GEN_KEY_ROOT" target="IV_GEN_KEY_SUB" toDependentPK="true">
+	<dbRelationship name="sub1" source="IV_GEN_KEY_ROOT" target="IV_GEN_KEY_SUB">
 		<dbAttributePair source="ID" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="root" source="IV_GEN_KEY_SUB" target="IV_GEN_KEY_ROOT">
+	<dbRelationship name="root" source="IV_GEN_KEY_SUB" target="IV_GEN_KEY_ROOT" foreignKey="true">
 		<dbAttributePair source="ID" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="base" source="IV_IMPL" target="IV_BASE">
+	<dbRelationship name="base" source="IV_IMPL" target="IV_BASE" foreignKey="true">
 		<dbAttributePair source="ID" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="other1" source="IV_IMPL" target="IV_OTHER">
+	<dbRelationship name="other1" source="IV_IMPL" target="IV_OTHER" foreignKey="true">
 		<dbAttributePair source="OTHER1_ID" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="other2" source="IV_IMPL" target="IV_OTHER">
+	<dbRelationship name="other2" source="IV_IMPL" target="IV_OTHER" foreignKey="true">
 		<dbAttributePair source="OTHER2_ID" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="other3" source="IV_IMPL" target="IV_OTHER">
+	<dbRelationship name="other3" source="IV_IMPL" target="IV_OTHER" foreignKey="true">
 		<dbAttributePair source="OTHER3_ID" target="ID"/>
 	</dbRelationship>
 	<dbRelationship name="others" source="IV_IMPL" target="IV_OTHER" toMany="true">
 		<dbAttributePair source="ID" target="IMPL_ID"/>
 	</dbRelationship>
-	<dbRelationship name="base" source="IV_IMPL_WITH_LOCK" target="IV_BASE_WITH_LOCK">
+	<dbRelationship name="base" source="IV_IMPL_WITH_LOCK" target="IV_BASE_WITH_LOCK" foreignKey="true">
 		<dbAttributePair source="ID" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="other1" source="IV_IMPL_WITH_LOCK" target="IV_OTHER">
+	<dbRelationship name="other1" source="IV_IMPL_WITH_LOCK" target="IV_OTHER" foreignKey="true">
 		<dbAttributePair source="OTHER1_ID" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="base" source="IV_OTHER" target="IV_BASE">
+	<dbRelationship name="base" source="IV_OTHER" target="IV_BASE" foreignKey="true">
 		<dbAttributePair source="BASE_ID" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="impl" source="IV_OTHER" target="IV_IMPL">
+	<dbRelationship name="impl" source="IV_OTHER" target="IV_IMPL" foreignKey="true">
 		<dbAttributePair source="IMPL_ID" target="ID"/>
 	</dbRelationship>
 	<dbRelationship name="impls" source="IV_OTHER" target="IV_IMPL" toMany="true">
@@ -292,40 +292,43 @@
 	<dbRelationship name="ivSub3s" source="IV_ROOT" target="IV_SUB3" toMany="true">
 		<dbAttributePair source="ID" target="IV_ROOT_ID"/>
 	</dbRelationship>
-	<dbRelationship name="sub1" source="IV_ROOT" target="IV_SUB1" toDependentPK="true">
+	<dbRelationship name="sub1" source="IV_ROOT" target="IV_SUB1">
 		<dbAttributePair source="ID" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="sub2" source="IV_ROOT" target="IV_SUB2" toDependentPK="true">
+	<dbRelationship name="sub2" source="IV_ROOT" target="IV_SUB2">
 		<dbAttributePair source="ID" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="sub3" source="IV_ROOT" target="IV_SUB3" toDependentPK="true">
+	<dbRelationship name="sub3" source="IV_ROOT" target="IV_SUB3">
 		<dbAttributePair source="ID" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="master" source="IV_SUB1" target="IV_ROOT">
+	<dbRelationship name="master" source="IV_SUB1" target="IV_ROOT" foreignKey="true">
 		<dbAttributePair source="ID" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="sub1Sub1" source="IV_SUB1" target="IV_SUB1_SUB1" toDependentPK="true">
+	<dbRelationship name="sub1Sub1" source="IV_SUB1" target="IV_SUB1_SUB1">
 		<dbAttributePair source="ID" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="master" source="IV_SUB1_SUB1" target="IV_SUB1">
+	<dbRelationship name="master" source="IV_SUB1_SUB1" target="IV_SUB1" foreignKey="true">
 		<dbAttributePair source="ID" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="master" source="IV_SUB2" target="IV_ROOT">
+	<dbRelationship name="master" source="IV_SUB2" target="IV_ROOT" foreignKey="true">
 		<dbAttributePair source="ID" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="ivRoot1" source="IV_SUB3" target="IV_ROOT">
+	<dbRelationship name="ivRoot1" source="IV_SUB3" target="IV_ROOT" foreignKey="true">
 		<dbAttributePair source="IV_ROOT_ID" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="student" source="GEN_BOY" target="GEN_STUDENT">
+	<dbRelationship name="master" source="IV_SUB3" target="IV_ROOT" foreignKey="true">
 		<dbAttributePair source="ID" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="student" source="GEN_GIRL" target="GEN_STUDENT">
+	<dbRelationship name="student" source="GEN_BOY" target="GEN_STUDENT" foreignKey="true">
 		<dbAttributePair source="ID" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="boy" source="GEN_STUDENT" target="GEN_BOY" toDependentPK="true">
+	<dbRelationship name="student" source="GEN_GIRL" target="GEN_STUDENT" foreignKey="true">
 		<dbAttributePair source="ID" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="girl" source="GEN_STUDENT" target="GEN_GIRL" toDependentPK="true">
+	<dbRelationship name="boy" source="GEN_STUDENT" target="GEN_BOY">
+		<dbAttributePair source="ID" target="ID"/>
+	</dbRelationship>
+	<dbRelationship name="girl" source="GEN_STUDENT" target="GEN_GIRL">
 		<dbAttributePair source="ID" target="ID"/>
 	</dbRelationship>
 	<objRelationship name="x" source="Iv2Sub1" target="Iv2X" deleteRule="nullify" dbRelationshipPath="sub1.x"/>

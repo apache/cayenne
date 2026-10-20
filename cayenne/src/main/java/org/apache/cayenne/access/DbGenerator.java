@@ -342,7 +342,7 @@ public class DbGenerator {
 
 			// an FK constraint exists only where the source row holds the FK; a master-to-dependent
 			// relationship is constrained from the dependent side
-			if (!rel.isFromFK()) {
+			if (!rel.isForeignKey()) {
 				continue;
 			}
 
@@ -362,7 +362,7 @@ public class DbGenerator {
 			if (getAdapter().supportsUniqueConstraints()) {
 
 				DbRelationship reverse = rel.getReverseRelationship();
-				if (reverse != null && !reverse.isToMany() && !reverse.isToPK()) {
+				if (reverse != null && !reverse.isToMany() && !reverse.isToPrimaryKey()) {
 
 					String unique = getAdapter().createUniqueConstraint(rel.getSourceEntity(),
 							rel.getSourceAttributes());
@@ -494,9 +494,8 @@ public class DbGenerator {
 
 			tables.add(nextEntity);
 
-			// check if an automatic PK generation can be potentially supported
-			// in this entity. For now simply check that the key is not
-			// propagated
+			// check if an automatic PK generation can be potentially supported in this entity. For now simply check
+			// that the key is not propagated: FK columns get their values from the master row
 			Iterator<DbRelationship> relationships = nextEntity.getRelationships().iterator();
 
 			// create a copy of the original PK list,
@@ -504,18 +503,10 @@ public class DbGenerator {
 			List<DbAttribute> pkAttributes = new ArrayList<>(nextEntity.getPrimaryKeys());
 			while (pkAttributes.size() > 0 && relationships.hasNext()) {
 				DbRelationship nextRelationship = relationships.next();
-				DbRelationship reverse = nextRelationship.getReverseRelationship();
-
-				if (nextRelationship.isToMany()
-						|| nextRelationship.isToDependentPK()
-						|| reverse == null
-						|| !reverse.isToDependentPK()) {
+				if (!nextRelationship.isForeignKey()) {
 					continue;
 				}
 
-				// supposedly all source attributes of the relationship
-				// to master entity must be a part of primary key,
-				// so
 				for (DbJoin join : nextRelationship.getJoins()) {
 					pkAttributes.remove(join.getSource());
 				}

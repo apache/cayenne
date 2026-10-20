@@ -17,9 +17,9 @@
 	specific language governing permissions and limitations
 	under the License.
 -->
-<dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/15/dataMap"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://cayenne.apache.org/schema/14/dataMap https://cayenne.apache.org/schema/14/dataMap.xsd"
+          xsi:schemaLocation="http://cayenne.apache.org/schema/15/dataMap https://cayenne.apache.org/schema/15/dataMap.xsd"
 	 defaultSchema="SCHEMA_01">
     <dbEntity name="PARENT" schema="SCHEMA_01">
         <dbAttribute name="COL2" type="CHAR" length="25"/>
@@ -30,6 +30,6 @@
     <objEntity name="Parent" className="Parent" dbEntityName="PARENT">
         <objAttribute name="col2" type="java.lang.String" dbAttributePath="COL2"/>
         <objAttribute name="col4" type="java.lang.String" dbAttributePath="COL4"/>
-        <info:property xmlns:info="http://cayenne.apache.org/schema/14/info" name="comment" value="test"/>
+        <info:property xmlns:info="http://cayenne.apache.org/schema/15/info" name="comment" value="test"/>
     </objEntity>
 </dataMap>

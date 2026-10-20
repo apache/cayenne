@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/15/dataMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/dataMap https://cayenne.apache.org/schema/14/dataMap.xsd"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/15/dataMap https://cayenne.apache.org/schema/15/dataMap.xsd"
 	 defaultPackage="org.apache.cayenne.testdo.inheritance_with_enum">
 	<dbEntity name="iwe_dependent">
 		<dbAttribute name="id" type="INTEGER" primaryKey="true" mandatory="true"/>
@@ -26,7 +26,7 @@
 		<qualifier><![CDATA[type = 1]]></qualifier>
 		<objAttribute name="enum" type="org.apache.cayenne.testdo.inheritance_with_enum.Type" dbAttributePath="enum"/>
 	</objEntity>
-	<dbRelationship name="root" source="iwe_dependent" target="iwe_root">
+	<dbRelationship name="root" source="iwe_dependent" target="iwe_root" foreignKey="true">
 		<dbAttributePair source="root_id" target="id"/>
 	</dbRelationship>
 	<dbRelationship name="dependents" source="iwe_root" target="iwe_dependent" toMany="true">

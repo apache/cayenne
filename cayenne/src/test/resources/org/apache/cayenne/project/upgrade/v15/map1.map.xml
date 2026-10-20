@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap"
+	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/dataMap https://cayenne.apache.org/schema/14/dataMap.xsd"
+	 defaultPackage="org.apache.cayenne.x">
+	<dbEntity name="ARTIST">
+		<dbAttribute name="ARTIST_ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="ARTIST_NAME" type="VARCHAR" length="254"/>
+		<info:property xmlns:info="http://cayenne.apache.org/schema/14/info" name="comment" value="artists"/>
+	</dbEntity>
+	<dbEntity name="ARTIST_EXHIBIT">
+		<dbAttribute name="ARTIST_ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="EXHIBIT_ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="GALLERY">
+		<dbAttribute name="GALLERY_ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="GALLERY_NAME" type="VARCHAR" length="100"/>
+	</dbEntity>
+	<dbEntity name="PAINTING">
+		<dbAttribute name="ARTIST_ID" type="INTEGER"/>
+		<dbAttribute name="GALLERY_NAME" type="VARCHAR" length="100"/>
+		<dbAttribute name="OTHER_ID" type="INTEGER"/>
+		<dbAttribute name="PAINTING_ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="PAINTING_INFO">
+		<dbAttribute name="PAINTING_ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<objEntity name="Artist" className="org.apache.cayenne.x.Artist" dbEntityName="ARTIST">
+		<objAttribute name="artistName" type="java.lang.String" dbAttributePath="ARTIST_NAME"/>
+	</objEntity>
+	<dbRelationship name="artistExhibitArray" source="ARTIST" target="ARTIST_EXHIBIT" toDependentPK="true" toMany="true">
+		<dbAttributePair source="ARTIST_ID" target="ARTIST_ID"/>
+	</dbRelationship>
+	<dbRelationship name="paintingArray" source="ARTIST" target="PAINTING" toMany="true">
+		<dbAttributePair source="ARTIST_ID" target="ARTIST_ID"/>
+	</dbRelationship>
+	<dbRelationship name="toArtist" source="PAINTING" target="ARTIST">
+		<dbAttributePair source="ARTIST_ID" target="ARTIST_ID"/>
+	</dbRelationship>
+	<dbRelationship name="toGallery" source="PAINTING" target="GALLERY">
+		<dbAttributePair source="GALLERY_NAME" target="GALLERY_NAME"/>
+	</dbRelationship>
+	<dbRelationship name="toOther" source="PAINTING" target="OTHER">
+		<dbAttributePair source="OTHER_ID" target="OTHER_ID"/>
+	</dbRelationship>
+	<dbRelationship name="toPaintingInfo" source="PAINTING" target="PAINTING_INFO" toDependentPK="true">
+		<dbAttributePair source="PAINTING_ID" target="PAINTING_ID"/>
+	</dbRelationship>
+	<dbRelationship name="painting" source="PAINTING_INFO" target="PAINTING">
+		<dbAttributePair source="PAINTING_ID" target="PAINTING_ID"/>
+	</dbRelationship>
+	<objRelationship name="self" source="Artist" target="Artist" deleteRule="nullify" dbRelationshipPath="self"/>
+	<cgen xmlns="http://cayenne.apache.org/schema/14/cgen">
+		<destDir>src/main/java</destDir>
+	</cgen>
+	<dbImport xmlns="http://cayenne.apache.org/schema/14/dbimport">
+		<schema>
+			<name>SCHEMA_01</name>
+		</schema>
+	</dbImport>
+</dataMap>

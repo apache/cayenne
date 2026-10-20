@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/15/dataMap"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://cayenne.apache.org/schema/14/dataMap http://cayenne.apache.org/schema/14/dataMap.xsd">
+          xsi:schemaLocation="http://cayenne.apache.org/schema/15/dataMap http://cayenne.apache.org/schema/15/dataMap.xsd">
     <embeddable className="Embeddable"/>
     <objEntity name="ObjEntity" className="ObjEntity"/>
     <objEntity name="ObjEntity1" className="ObjEntity1"/>
-    <cgen xmlns="http://cayenne.apache.org/schema/14/cgen">
+    <cgen xmlns="http://cayenne.apache.org/schema/15/cgen">
         <destDir>../../../../target/cgenClasses</destDir>
         <mode>entity</mode>
         <excludeEntities>ObjEntity1</excludeEntities>

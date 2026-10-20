@@ -17,9 +17,9 @@
 	specific language governing permissions and limitations
 	under the License.
 -->
-<dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/15/dataMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/dataMap https://cayenne.apache.org/schema/14/dataMap.xsd"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/15/dataMap https://cayenne.apache.org/schema/15/dataMap.xsd"
 	 defaultSchema="SCHEMA_01">
 	<dbEntity name="TEST1" schema="SCHEMA_01">
 		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true" length="10"/>
@@ -81,22 +81,22 @@
 	<dbRelationship name="test12s" source="TEST11" target="TEST12" toMany="true">
 		<dbAttributePair source="ID" target="TEST11_ID"/>
 	</dbRelationship>
-	<dbRelationship name="test11" source="TEST12" target="TEST11">
+	<dbRelationship name="test11" source="TEST12" target="TEST11" foreignKey="true">
 		<dbAttributePair source="TEST11_ID" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="TEST2_TO_TEST1" source="TEST2" target="TEST1">
+	<dbRelationship name="TEST2_TO_TEST1" source="TEST2" target="TEST1" foreignKey="true">
 		<dbAttributePair source="TEST1_ID" target="ID"/>
 	</dbRelationship>
 	<dbRelationship name="test4s" source="TEST3" target="TEST4" toMany="true">
 		<dbAttributePair source="ID" target="TEST3_ID"/>
 	</dbRelationship>
-	<dbRelationship name="test3" source="TEST4" target="TEST3">
+	<dbRelationship name="test3" source="TEST4" target="TEST3" foreignKey="true">
 		<dbAttributePair source="TEST3_ID" target="ID"/>
 	</dbRelationship>
 	<dbRelationship name="test8s" source="TEST7" target="TEST8" toMany="true">
 		<dbAttributePair source="ID" target="TEST7_ID"/>
 	</dbRelationship>
-	<dbRelationship name="test7" source="TEST8" target="TEST7">
+	<dbRelationship name="test7" source="TEST8" target="TEST7" foreignKey="true">
 		<dbAttributePair source="TEST7_ID" target="ID"/>
 	</dbRelationship>
 	<objRelationship name="test1ToTest2" source="Test1" target="Test2" deleteRule="deny" dbRelationshipPath="TEST1_TO_TEST2"/>

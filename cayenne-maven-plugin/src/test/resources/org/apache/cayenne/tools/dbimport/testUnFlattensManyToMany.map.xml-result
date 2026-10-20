@@ -17,9 +17,9 @@
 	specific language governing permissions and limitations
 	under the License.
 -->
-<dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/15/dataMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/dataMap https://cayenne.apache.org/schema/14/dataMap.xsd"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/15/dataMap https://cayenne.apache.org/schema/15/dataMap.xsd"
 	 defaultPackage="org.not.my.home">
 	<dbEntity name="A" schema="APP">
 		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true" length="10"/>
@@ -50,28 +50,28 @@
 	<objEntity name="C" className="org.not.my.home.C" dbEntityName="C"/>
 	<objEntity name="X" className="org.not.my.home.X" dbEntityName="X"/>
 	<objEntity name="Y" className="org.not.my.home.Y" dbEntityName="Y"/>
-	<dbRelationship name="aBs" source="A" target="A_B" toDependentPK="true" toMany="true">
+	<dbRelationship name="aBs" source="A" target="A_B" toMany="true">
 		<dbAttributePair source="ID" target="A_ID"/>
 	</dbRelationship>
-	<dbRelationship name="toA" source="A_B" target="A">
+	<dbRelationship name="toA" source="A_B" target="A" foreignKey="true">
 		<dbAttributePair source="A_ID" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="toB" source="A_B" target="B">
+	<dbRelationship name="toB" source="A_B" target="B" foreignKey="true">
 		<dbAttributePair source="B_ID" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="aBs" source="B" target="A_B" toDependentPK="true" toMany="true">
+	<dbRelationship name="aBs" source="B" target="A_B" toMany="true">
 		<dbAttributePair source="ID" target="B_ID"/>
 	</dbRelationship>
-	<dbRelationship name="xIes" source="X" target="X_Y" toDependentPK="true" toMany="true">
+	<dbRelationship name="xIes" source="X" target="X_Y" toMany="true">
 		<dbAttributePair source="ID" target="X_ID"/>
 	</dbRelationship>
-	<dbRelationship name="x" source="X_Y" target="X">
+	<dbRelationship name="x" source="X_Y" target="X" foreignKey="true">
 		<dbAttributePair source="X_ID" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="y" source="X_Y" target="Y">
+	<dbRelationship name="y" source="X_Y" target="Y" foreignKey="true">
 		<dbAttributePair source="Y_ID" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="xIes" source="Y" target="X_Y" toDependentPK="true" toMany="true">
+	<dbRelationship name="xIes" source="Y" target="X_Y" toMany="true">
 		<dbAttributePair source="ID" target="Y_ID"/>
 	</dbRelationship>
 	<objRelationship name="toA" source="AB" target="A" deleteRule="nullify" dbRelationshipPath="toA"/>

@@ -17,6 +17,6 @@
   ~  under the License.
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
 
-<dbRelationship name="artistPaintings" source="ARTIST" target="PAINTING" toDependentPK="true" toMany="true">
-    <dbAttributePair source="ID" target="ARTIST_ID"/>
+<dbRelationship name="toFavoritePainting" source="ARTIST" target="PAINTING" foreignKey="true">
+    <dbAttributePair source="FAVORITE_PAINTING_ID" target="ID"/>
 </dbRelationship>

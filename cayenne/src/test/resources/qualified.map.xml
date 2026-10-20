@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/15/dataMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/dataMap https://cayenne.apache.org/schema/14/dataMap.xsd"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/15/dataMap https://cayenne.apache.org/schema/15/dataMap.xsd"
 	 defaultPackage="org.apache.cayenne.testdo.qualified"
 	 quoteSqlIdentifiers="true">
 	<dbEntity name="TEST_QUALIFIED1">
@@ -47,13 +47,13 @@
 	<dbRelationship name="qualified2s" source="TEST_QUALIFIED1" target="TEST_QUALIFIED2" toMany="true">
 		<dbAttributePair source="ID" target="QUALIFIED1_ID"/>
 	</dbRelationship>
-	<dbRelationship name="qualified1" source="TEST_QUALIFIED2" target="TEST_QUALIFIED1">
+	<dbRelationship name="qualified1" source="TEST_QUALIFIED2" target="TEST_QUALIFIED1" foreignKey="true">
 		<dbAttributePair source="QUALIFIED1_ID" target="ID"/>
 	</dbRelationship>
 	<dbRelationship name="qualified4s" source="TEST_QUALIFIED3" target="TEST_QUALIFIED4" toMany="true">
 		<dbAttributePair source="ID" target="QUALIFIED3_ID"/>
 	</dbRelationship>
-	<dbRelationship name="qualified3" source="TEST_QUALIFIED4" target="TEST_QUALIFIED3">
+	<dbRelationship name="qualified3" source="TEST_QUALIFIED4" target="TEST_QUALIFIED3" foreignKey="true">
 		<dbAttributePair source="QUALIFIED3_ID" target="ID"/>
 	</dbRelationship>
 	<objRelationship name="qualified2s" source="Qualified1" target="Qualified2" dbRelationshipPath="qualified2s"/>

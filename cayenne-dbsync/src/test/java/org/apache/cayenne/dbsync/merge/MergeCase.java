@@ -184,8 +184,8 @@ public abstract class MergeCase {
 
     private static final Set<Integer> BINARY_TYPES = Set.of(Types.BINARY, Types.VARBINARY, Types.LONGVARBINARY);
 
-    // a table can't exist on a DB without binary PK support if its own PK is binary, or if one of its to-one
-    // relationships joins to a binary PK (the join column has the PK type). Same per-join rule as AshwoodEntitySorter
+    // a table can't exist on a DB without binary PK support if its own PK is binary, or if one of its FKs references
+    // a binary PK (the FK column has the PK type)
     private static boolean hasBinaryKey(DbEntity entity) {
         for (DbAttribute pk : entity.getPrimaryKeys()) {
             if (BINARY_TYPES.contains(pk.getType())) {
@@ -193,12 +193,12 @@ public abstract class MergeCase {
             }
         }
         for (DbRelationship relationship : entity.getRelationships()) {
-            if (relationship.isToMany() || relationship.isToDependentPK()) {
+            if (!relationship.isForeignKey()) {
                 continue;
             }
             for (DbJoin join : relationship.getJoins()) {
                 DbAttribute target = join.getTarget();
-                if (target != null && target.isPrimaryKey() && BINARY_TYPES.contains(target.getType())) {
+                if (target != null && BINARY_TYPES.contains(target.getType())) {
                     return true;
                 }
             }

@@ -28,8 +28,8 @@ import org.apache.cayenne.util.XMLSerializable;
  * "arcs" connecting entity "nodes". Relationships are directional, i.e. they have a
  * notion of source and target entity. This makes DataMap a "digraph".
  */
-public abstract class Relationship<E extends Entity<E, A, R>, A extends Attribute<E, A, R>, R extends Relationship<E, A, R>>
-        implements XMLSerializable {
+public abstract class Relationship<E extends Entity<E, A, R>, A extends Attribute<E, A, R>, R
+        extends Relationship<E, A, R>> implements XMLSerializable {
 
     protected String name;
     protected E sourceEntity;
@@ -40,7 +40,7 @@ public abstract class Relationship<E extends Entity<E, A, R>, A extends Attribut
     /**
      * A flag that specifies whether a Relationship was mapped by the user or added
      * dynamically by Cayenne runtime.
-     * 
+     *
      * @since 3.0
      */
     protected boolean runtime;
@@ -121,14 +121,12 @@ public abstract class Relationship<E extends Entity<E, A, R>, A extends Attribut
         return toMany;
     }
 
-
-
     /**
      * Returns guaranteed non-null MappingNamespace of this relationship. If it happens to
      * be null, and exception is thrown. This method is intended for internal use by
      * Relationship class.
      */
-    final MappingNamespace getNonNullNamespace() {
+    MappingNamespace getNonNullNamespace() {
         E entity = getSourceEntity();
 
         if (entity == null) {
@@ -136,16 +134,6 @@ public abstract class Relationship<E extends Entity<E, A, R>, A extends Attribut
         }
 
         return entity.getNonNullNamespace();
-    }
-
-    /**
-     * Overrides Object.toString() to return informative description.
-     */
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this)
-                .append("name", getName())
-                .append("toMany", isToMany()).toString();
     }
 
     /**
@@ -161,11 +149,19 @@ public abstract class Relationship<E extends Entity<E, A, R>, A extends Attribut
     public void setRuntime(boolean synthetic) {
         this.runtime = synthetic;
     }
-    
+
     /**
      * Returns a "complementary" relationship going in the opposite direction. Returns
      * null if no such relationship is found.
+     *
      * @since 3.1
      */
     public abstract Relationship<E, A, R> getReverseRelationship();
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+                .append("name", getName())
+                .append("toMany", isToMany()).toString();
+    }
 }

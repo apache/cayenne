@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/15/dataMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/dataMap http://cayenne.apache.org/schema/14/dataMap.xsd"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/15/dataMap http://cayenne.apache.org/schema/15/dataMap.xsd"
 	 defaultPackage="com.objectstyle">
 	<dbEntity name="table1" catalog="many_to_many_test">
 		<dbAttribute name="id1" type="INTEGER" primaryKey="true" mandatory="true" length="10"/>
@@ -23,16 +23,16 @@
 	<objEntity name="Table2" className="com.objectstyle.Table2" dbEntityName="table2">
 		<objAttribute name="table2col" type="java.lang.String" dbAttributePath="table2col"/>
 	</objEntity>
-	<dbRelationship name="table1Table2Array" source="table1" target="table1_table2" toDependentPK="true" toMany="true">
+	<dbRelationship name="table1Table2Array" source="table1" target="table1_table2" toMany="true">
 		<dbAttributePair source="id1" target="fk1"/>
 	</dbRelationship>
-	<dbRelationship name="toTable1" source="table1_table2" target="table1" toMany="false">
+	<dbRelationship name="toTable1" source="table1_table2" target="table1" foreignKey="true" toMany="false">
 		<dbAttributePair source="fk1" target="id1"/>
 	</dbRelationship>
-	<dbRelationship name="toTable2" source="table1_table2" target="table2" toMany="false">
+	<dbRelationship name="toTable2" source="table1_table2" target="table2" foreignKey="true" toMany="false">
 		<dbAttributePair source="fk2" target="id2"/>
 	</dbRelationship>
-	<dbRelationship name="table1Table2Array" source="table2" target="table1_table2" toDependentPK="true" toMany="true">
+	<dbRelationship name="table1Table2Array" source="table2" target="table1_table2" toMany="true">
 		<dbAttributePair source="id2" target="fk2"/>
 	</dbRelationship>
 	<objRelationship name="table1Table2Array" source="Table1" target="Table1Table2" deleteRule="deny" dbRelationshipPath="table1Table2Array"/>

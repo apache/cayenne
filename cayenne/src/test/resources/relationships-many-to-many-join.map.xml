@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/15/dataMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/dataMap https://cayenne.apache.org/schema/14/dataMap.xsd"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/15/dataMap https://cayenne.apache.org/schema/15/dataMap.xsd"
 	 defaultPackage="org.apache.cayenne.testdo.relationships_many_to_many_join">
 	<dbEntity name="X_AUTHOR">
 		<dbAttribute name="AUTHOR_ID" type="INTEGER" primaryKey="true" mandatory="true"/>
@@ -58,40 +58,40 @@
 	<objEntity name="Song" className="org.apache.cayenne.testdo.relationships_many_to_many_join.Song" dbEntityName="X_SONG">
 		<objAttribute name="name" type="java.lang.String" dbAttributePath="SONG_NAME"/>
 	</objEntity>
-	<dbRelationship name="songAuthor" source="X_AUTHOR" target="X_SONGAUTHOR" toDependentPK="true" toMany="true">
+	<dbRelationship name="songAuthor" source="X_AUTHOR" target="X_SONGAUTHOR" toMany="true">
 		<dbAttributePair source="AUTHOR_ID" target="AUTHOR_ID"/>
 	</dbRelationship>
-	<dbRelationship name="nodeJoinParent" source="X_NODE" target="X_NODE_JOIN" toDependentPK="true" toMany="true">
+	<dbRelationship name="nodeJoinParent" source="X_NODE" target="X_NODE_JOIN" toMany="true">
 		<dbAttributePair source="NODE_ID" target="PARENT_ID"/>
 	</dbRelationship>
-	<dbRelationship name="nodeJoinChild" source="X_NODE" target="X_NODE_JOIN" toDependentPK="true" toMany="true">
+	<dbRelationship name="nodeJoinChild" source="X_NODE" target="X_NODE_JOIN" toMany="true">
 		<dbAttributePair source="NODE_ID" target="CHILD_ID"/>
 	</dbRelationship>
-	<dbRelationship name="nodeParent" source="X_NODE_JOIN" target="X_NODE">
+	<dbRelationship name="nodeParent" source="X_NODE_JOIN" target="X_NODE" foreignKey="true">
 		<dbAttributePair source="PARENT_ID" target="NODE_ID"/>
 	</dbRelationship>
-	<dbRelationship name="nodeChild" source="X_NODE_JOIN" target="X_NODE">
+	<dbRelationship name="nodeChild" source="X_NODE_JOIN" target="X_NODE" foreignKey="true">
 		<dbAttributePair source="CHILD_ID" target="NODE_ID"/>
 	</dbRelationship>
-	<dbRelationship name="selfJoinFrom" source="X_SELF" target="X_SELF_JOIN" toDependentPK="true" toMany="true">
+	<dbRelationship name="selfJoinFrom" source="X_SELF" target="X_SELF_JOIN" toMany="true">
 		<dbAttributePair source="SELF_ID" target="SELF_ID_FROM"/>
 	</dbRelationship>
-	<dbRelationship name="selfJoinTo" source="X_SELF" target="X_SELF_JOIN" toDependentPK="true" toMany="true">
+	<dbRelationship name="selfJoinTo" source="X_SELF" target="X_SELF_JOIN" toMany="true">
 		<dbAttributePair source="SELF_ID" target="SELF_ID_TO"/>
 	</dbRelationship>
-	<dbRelationship name="selfFrom" source="X_SELF_JOIN" target="X_SELF">
+	<dbRelationship name="selfFrom" source="X_SELF_JOIN" target="X_SELF" foreignKey="true">
 		<dbAttributePair source="SELF_ID_FROM" target="SELF_ID"/>
 	</dbRelationship>
-	<dbRelationship name="selfTo" source="X_SELF_JOIN" target="X_SELF">
+	<dbRelationship name="selfTo" source="X_SELF_JOIN" target="X_SELF" foreignKey="true">
 		<dbAttributePair source="SELF_ID_TO" target="SELF_ID"/>
 	</dbRelationship>
-	<dbRelationship name="songAuthor" source="X_SONG" target="X_SONGAUTHOR" toDependentPK="true" toMany="true">
+	<dbRelationship name="songAuthor" source="X_SONG" target="X_SONGAUTHOR" toMany="true">
 		<dbAttributePair source="SONG_ID" target="SONG_ID"/>
 	</dbRelationship>
-	<dbRelationship name="author" source="X_SONGAUTHOR" target="X_AUTHOR">
+	<dbRelationship name="author" source="X_SONGAUTHOR" target="X_AUTHOR" foreignKey="true">
 		<dbAttributePair source="AUTHOR_ID" target="AUTHOR_ID"/>
 	</dbRelationship>
-	<dbRelationship name="song" source="X_SONGAUTHOR" target="X_SONG">
+	<dbRelationship name="song" source="X_SONGAUTHOR" target="X_SONG" foreignKey="true">
 		<dbAttributePair source="SONG_ID" target="SONG_ID"/>
 	</dbRelationship>
 	<objRelationship name="parents" source="Node" target="Node" deleteRule="nullify" dbRelationshipPath="nodeJoinChild.nodeParent"/>

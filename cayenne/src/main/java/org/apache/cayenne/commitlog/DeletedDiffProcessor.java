@@ -21,18 +21,18 @@ package org.apache.cayenne.commitlog;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.access.ObjectSnapshots;
 import org.apache.cayenne.commitlog.meta.CommitLogEntity;
 import org.apache.cayenne.commitlog.meta.CommitLogEntityFactory;
 import org.apache.cayenne.commitlog.model.MutableChangeMap;
 import org.apache.cayenne.commitlog.model.MutableObjectChange;
 import org.apache.cayenne.commitlog.model.ObjectChangeType;
 import org.apache.cayenne.graph.GraphChangeHandler;
-import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.reflect.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Map;
 
 
 class DeletedDiffProcessor implements GraphChangeHandler {
@@ -85,12 +85,13 @@ class DeletedDiffProcessor implements GraphChangeHandler {
 				}
 				case ToOneProperty toOne -> {
 					// TODO: is there such a thing as "confidential" relationship that we need to hide?
-					DbRelationship dbRelationship = toOne.getRelationship().getDbRelationships().get(0);
-
-					Map<String, Object> targetPk = dbRelationship.targetPkSnapshotWithSrcSnapshot(row);
-					if (targetPk != null) {
-						ObjectId value = ObjectId.of(toOne.getTargetDescriptor().getEntity().getName(), targetPk);
-						objectChangeSet.toOneRelationshipDisconnected(toOne.getName(), value);
+					// a flattened to-one or an FK to a non-PK column can't be resolved to a target id from the row
+					ObjRelationship relationship = toOne.getRelationship();
+					if (relationship.isToPrimaryKey()) {
+						ObjectId value = ObjectSnapshots.targetId(relationship, row);
+						if (value != null) {
+							objectChangeSet.toOneRelationshipDisconnected(toOne.getName(), value);
+						}
 					}
 				}
 				default -> {

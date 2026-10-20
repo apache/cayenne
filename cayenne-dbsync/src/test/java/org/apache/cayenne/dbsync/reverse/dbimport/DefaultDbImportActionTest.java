@@ -323,7 +323,7 @@ public class DefaultDbImportActionTest {
         assertTrue(out.isFile());
 
         String contents = stringFromFile(out);
-        assertTrue(contents.contains("http://cayenne.apache.org/schema/14/"), "Has no project version saved");
+        assertTrue(contents.contains("http://cayenne.apache.org/schema/15/"), "Has no project version saved");
     }
 
     @Test
@@ -355,10 +355,10 @@ public class DefaultDbImportActionTest {
         assertTrue(projectFile.isFile());
 
         String dataMapContents = stringFromFile(dataMapFile);
-        assertTrue(dataMapContents.contains("http://cayenne.apache.org/schema/14/"), "Has no project version saved");
+        assertTrue(dataMapContents.contains("http://cayenne.apache.org/schema/15/"), "Has no project version saved");
 
         String projectContents = stringFromFile(projectFile);
-        assertTrue(projectContents.contains("http://cayenne.apache.org/schema/14/"), "Has no project version saved");
+        assertTrue(projectContents.contains("http://cayenne.apache.org/schema/15/"), "Has no project version saved");
         assertTrue(projectContents.contains("<map name=\"testSaveLoaded2\"/>"), "Has no datamap in project");
     }
 
@@ -374,9 +374,9 @@ public class DefaultDbImportActionTest {
         assertFalse(projectFile.exists());
 
         Files.write(projectFile.toPath(), ("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
-                "<project xmlns=\"http://cayenne.apache.org/schema/14/project\"\n" +
+                "<project xmlns=\"http://cayenne.apache.org/schema/15/project\"\n" +
                 "\t xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-                "\t xsi:schemaLocation=\"http://cayenne.apache.org/schema/14/project https://cayenne.apache.org/schema/14/project.xsd\">\n" +
+                "\t xsi:schemaLocation=\"http://cayenne.apache.org/schema/15/project https://cayenne.apache.org/schema/15/project.xsd\">\n" +
                 "</project>").getBytes(StandardCharsets.UTF_8));
         assertTrue(projectFile.isFile());
 
@@ -399,10 +399,10 @@ public class DefaultDbImportActionTest {
         assertTrue(projectFile.isFile());
 
         String dataMapContents = stringFromFile(dataMapFile);
-        assertTrue(dataMapContents.contains("http://cayenne.apache.org/schema/14/"), "Has no project version saved");
+        assertTrue(dataMapContents.contains("http://cayenne.apache.org/schema/15/"), "Has no project version saved");
 
         String projectContents = stringFromFile(projectFile);
-        assertTrue(projectContents.contains("http://cayenne.apache.org/schema/14/"), "Has no project version saved");
+        assertTrue(projectContents.contains("http://cayenne.apache.org/schema/15/"), "Has no project version saved");
         assertTrue(projectContents.contains("<map name=\"testSaveLoaded3\"/>"), "Has no datamap in project");
     }
 
@@ -418,9 +418,9 @@ public class DefaultDbImportActionTest {
         assertFalse(projectFile.exists());
 
         Files.write(projectFile.toPath(), ("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
-                "<project xmlns=\"http://cayenne.apache.org/schema/14/project\"\n" +
+                "<project xmlns=\"http://cayenne.apache.org/schema/15/project\"\n" +
                 "\t xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-                "\t xsi:schemaLocation=\"http://cayenne.apache.org/schema/14/project https://cayenne.apache.org/schema/14/project.xsd\">\n" +
+                "\t xsi:schemaLocation=\"http://cayenne.apache.org/schema/15/project https://cayenne.apache.org/schema/15/project.xsd\">\n" +
                 "\t<map name=\"testSaveLoaded4\"/>\n" +
                 "</project>").getBytes(StandardCharsets.UTF_8));
         assertTrue(projectFile.isFile());
@@ -436,9 +436,9 @@ public class DefaultDbImportActionTest {
         assertFalse(dataMapFile.exists());
 
         Files.write(dataMapFile.toPath(), ("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
-                "<dataMap xmlns=\"http://cayenne.apache.org/schema/14/dataMap\"\n" +
+                "<dataMap xmlns=\"http://cayenne.apache.org/schema/15/dataMap\"\n" +
                 "\t xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-                "\t xsi:schemaLocation=\"http://cayenne.apache.org/schema/14/dataMap https://cayenne.apache.org/schema/14/dataMap.xsd\">\n" +
+                "\t xsi:schemaLocation=\"http://cayenne.apache.org/schema/15/dataMap https://cayenne.apache.org/schema/15/dataMap.xsd\">\n" +
                 "\t<dbEntity name=\"test\">\n" +
                 "\t\t<dbAttribute name=\"test\" type=\"INT\"/>\n" +
                 "\t</dbEntity>\n" +
@@ -454,11 +454,11 @@ public class DefaultDbImportActionTest {
         assertTrue(projectFile.isFile());
 
         String dataMapContents = stringFromFile(dataMapFile);
-        assertTrue(dataMapContents.contains("http://cayenne.apache.org/schema/14/"), "Has no project version saved");
+        assertTrue(dataMapContents.contains("http://cayenne.apache.org/schema/15/"), "Has no project version saved");
         assertFalse(dataMapContents.contains("<dbEntity"));
 
         String projectContents = stringFromFile(projectFile);
-        assertTrue(projectContents.contains("http://cayenne.apache.org/schema/14/"), "Has no project version saved");
+        assertTrue(projectContents.contains("http://cayenne.apache.org/schema/15/"), "Has no project version saved");
         assertEquals(1, Util.countMatches(projectContents, "<map name=\"testSaveLoaded4\"/>"), "Has no or too many datamaps in project");
     }
 

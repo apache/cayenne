@@ -33,7 +33,8 @@ public sealed interface UpgradeHandler permits
         UpgradeHandler_V11,
         UpgradeHandler_V12,
         UpgradeHandler_V13,
-        UpgradeHandler_V14 {
+        UpgradeHandler_V14,
+        UpgradeHandler_V15 {
 
     /**
      * Creates an instance of every permitted handler, ordered from the oldest to the current version. Must be kept in
@@ -47,7 +48,8 @@ public sealed interface UpgradeHandler permits
                 new UpgradeHandler_V11(),
                 new UpgradeHandler_V12(),
                 new UpgradeHandler_V13(),
-                new UpgradeHandler_V14());
+                new UpgradeHandler_V14(),
+                new UpgradeHandler_V15());
     }
 
     /**
@@ -55,7 +57,7 @@ public sealed interface UpgradeHandler permits
      *
      * @since 5.0
      */
-    String CURRENT_VERSION = "14";
+    String CURRENT_VERSION = "15";
 
     /**
      * The oldest project version that can be upgraded to {@link #CURRENT_VERSION}. Older projects must first be

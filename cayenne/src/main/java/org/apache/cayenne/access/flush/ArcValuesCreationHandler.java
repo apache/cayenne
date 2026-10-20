@@ -194,8 +194,8 @@ class ArcValuesCreationHandler implements GraphChangeHandler {
 
             // We manage 3 cases here:
             // 1. PK -> FK: just propagate value from PK and to FK
-            // 2. PK -> PK: check isToDep flag and set dependent one
-            // 3. NON-PK -> FK (not supported fully for now, see CAY-2488): also check isToDep flag,
+            // 2. PK -> PK: the FK side gets the value of the other side
+            // 3. NON-PK -> FK (not supported fully for now, see CAY-2488): same as case 2,
             //    but get value from DbRow, not ObjID
             if(srcPK != targetPK) {
                 // case 1
@@ -211,24 +211,22 @@ class ArcValuesCreationHandler implements GraphChangeHandler {
                     attribute = join.getSource();
                 }
             } else {
-                // case 2 and 3
+                // case 2 and 3. The rows of a join table are not updated here, as they are created and deleted whole
                 processDelete = false;
-                if(dbRelationship.isToDependentPK()) {
-                    valueToUse = ObjectIdValueSupplier.getFor(srcId, join.getSourceName());
-                    rowOp = factory.getOrCreate(dbRelationship.getTargetEntity(), targetId, DbRowOpType.UPDATE);
-                    attribute = join.getTarget();
-                    id = targetId;
-                    if(dbRelationship.isToMany()) {
-                        // strange mapping toDepPK and toMany, but just skip it
-                        rowOp = null;
-                    }
-                } else {
+                if(dbRelationship.isForeignKey()) {
                     valueToUse = ObjectIdValueSupplier.getFor(targetId, join.getTargetName());
                     rowOp = factory.getOrCreate(dbRelationship.getSourceEntity(), srcId, defaultType);
                     attribute = join.getSource();
                     id = srcId;
                     if(dbRelationship.getReverseRelationship().isToMany()) {
-                        // strange mapping toDepPK and toMany, but just skip it
+                        rowOp = null;
+                    }
+                } else {
+                    valueToUse = ObjectIdValueSupplier.getFor(srcId, join.getSourceName());
+                    rowOp = factory.getOrCreate(dbRelationship.getTargetEntity(), targetId, DbRowOpType.UPDATE);
+                    attribute = join.getTarget();
+                    id = targetId;
+                    if(dbRelationship.isToMany()) {
                         rowOp = null;
                     }
                 }

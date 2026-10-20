@@ -23,7 +23,6 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.EntityInheritanceTree;
@@ -240,7 +239,7 @@ class DataRowUtils {
         DbRelationship dbRelationship = relationship.getDbRelationships().getFirst();
 
         // the inverse side of a one-to-one is left alone: the snapshot says nothing about it
-        if (!dbRelationship.isToPK()) {
+        if (!dbRelationship.isToPrimaryKey()) {
             return;
         }
 
@@ -254,8 +253,13 @@ class DataRowUtils {
             return;
         }
 
-        Map<String, Object> targetPk = dbRelationship.targetPkSnapshotWithSrcSnapshot(snapshot);
-        ObjectId id = targetPk != null ? ObjectId.of(relationship.getTargetEntityName(), targetPk) : null;
+        // the first hop FK doesn't determine the target of a flattened to-one, so it is turned into a fault
+        if (relationship.isFlattened()) {
+            property.invalidate(object);
+            return;
+        }
+
+        ObjectId id = ObjectSnapshots.targetId(relationship, snapshot);
 
         if (diff == null
                 || !diff.containsArcSnapshot(relationship.getName())
@@ -287,18 +291,16 @@ class DataRowUtils {
      * Returns true if a non-null FK on the source fully determines the target of a relationship: the target row is
      * guaranteed to exist by referential integrity, and its entity is known. Such a target can be materialized as a
      * HOLLOW object from the FK alone, without a query. This requires the FK to be on the source side (see
-     * {@link ObjRelationship#isFromFK()}), no qualifier on the target entity or its super entities that could filter
-     * out an existing row, and no subclasses of the target entity.
+     * {@link ObjRelationship#isForeignKey()}) and referencing the target PK, no qualifier on the target entity or its
+     * super entities that could filter out an existing row, and no subclasses of the target entity.
      */
     static boolean isTargetDeterminedByFK(ObjRelationship relationship, EntityResolver entityResolver) {
-        if (!relationship.isFromFK()) {
+        if (!relationship.isForeignKey()) {
             return false;
         }
 
-        // a source PK column may mean that this is the master side of a PK-to-PK pair, whose dependent row is not
-        // guaranteed to exist; only the "to dependent PK" flag on the reverse tells that the source is the dependent
-        DbRelationship dbRelationship = relationship.getDbRelationships().getFirst();
-        if (hasPkSource(dbRelationship) && !dbRelationship.getReverseRelationship().isToDependentPK()) {
+        // an FK to a non-PK column doesn't give the target ObjectId
+        if (!relationship.isToPrimaryKey()) {
             return false;
         }
 
@@ -308,16 +310,6 @@ class DataRowUtils {
 
         EntityInheritanceTree inheritanceTree = entityResolver.getInheritanceTree(relationship.getTargetEntityName());
         return inheritanceTree == null || inheritanceTree.getChildren().isEmpty();
-    }
-
-    private static boolean hasPkSource(DbRelationship dbRelationship) {
-        for (DbJoin join : dbRelationship.getJoins()) {
-            DbAttribute source = join.getSource();
-            if (source != null && source.isPrimaryKey()) {
-                return true;
-            }
-        }
-        return false;
     }
 
     // true if the entity or any of its super entities has a limiting qualifier

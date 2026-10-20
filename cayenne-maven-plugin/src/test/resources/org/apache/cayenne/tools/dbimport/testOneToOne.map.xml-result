@@ -17,9 +17,9 @@
 	specific language governing permissions and limitations
 	under the License.
 -->
-<dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/15/dataMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/dataMap https://cayenne.apache.org/schema/14/dataMap.xsd">
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/15/dataMap https://cayenne.apache.org/schema/15/dataMap.xsd">
 	<dbEntity name="PICK_SCHEDULE" schema="APP">
 		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true" length="10"/>
 		<dbAttribute name="OWNER_ID" type="INTEGER" length="10"/>
@@ -36,16 +36,16 @@
 	</objEntity>
 	<objEntity name="Player" className="Player" dbEntityName="PLAYER"/>
 	<objEntity name="PlayerInfo" className="PlayerInfo" dbEntityName="PLAYER_INFO"/>
-	<dbRelationship name="selectedPlayer" source="PICK_SCHEDULE" target="PLAYER">
+	<dbRelationship name="selectedPlayer" source="PICK_SCHEDULE" target="PLAYER" foreignKey="true">
 		<dbAttributePair source="SELECTED_PLAYER_ID" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="id" source="PLAYER" target="PLAYER_INFO" toDependentPK="true">
+	<dbRelationship name="id" source="PLAYER" target="PLAYER_INFO">
 		<dbAttributePair source="ID" target="PLAYER_ID"/>
 	</dbRelationship>
 	<dbRelationship name="selectedPickSchedules" source="PLAYER" target="PICK_SCHEDULE" toMany="true">
 		<dbAttributePair source="ID" target="SELECTED_PLAYER_ID"/>
 	</dbRelationship>
-	<dbRelationship name="player" source="PLAYER_INFO" target="PLAYER">
+	<dbRelationship name="player" source="PLAYER_INFO" target="PLAYER" foreignKey="true">
 		<dbAttributePair source="PLAYER_ID" target="ID"/>
 	</dbRelationship>
 	<objRelationship name="selectedPlayer" source="PickSchedule" target="Player" deleteRule="nullify" dbRelationshipPath="selectedPlayer"/>

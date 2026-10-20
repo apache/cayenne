@@ -130,8 +130,10 @@ class DataContextDeleteAction {
 
         for (final ObjRelationship relationship : descriptor.getEntity().getRelationships()) {
 
+            // a flattened relationship through a join table whose PK includes the PK of the source: the join rows
+            // must go with the object even if they are not in the object graph
             boolean processFlattened = relationship.isFlattened()
-                    && relationship.getDbRelationships().getFirst().isToDependentPK();
+                    && relationship.getDbRelationships().getFirst().getReverseRelationship().isIdentifying();
 
             // first check for no action... bail out if no flattened processing is needed
             if (relationship.getDeleteRule() == null && !processFlattened) {

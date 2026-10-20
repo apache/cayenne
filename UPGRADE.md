@@ -88,6 +88,17 @@ List<Artist> artists = ObjectSelect
         .select(context);
 ```
 
+## Upgrading to 6.0-M1
+
+*  Per [CAY-3055](https://issues.apache.org/jira/browse/CAY-3055) the `DbRelationship` "To Dep PK" flag is replaced
+   with a "Foreign Key" flag on the opposite side: the flag now marks the relationship whose source columns hold the
+   FK, instead of the master side of a PK-to-PK pair. In the DataMap XML `toDependentPK="true"` becomes
+   `foreignKey="true"` on the reverse relationship, and every other to-one gets `foreignKey="true"`. This is a part
+   of project version 15 (schema namespace `http://cayenne.apache.org/schema/15/dataMap`); projects are upgraded
+   automatically, creating the reverse of a "To Dep PK" relationship when it is missing. In the API
+   `isToDependentPK()`, `setToDependentPK(..)` and `isValidForDepPk()` are replaced with `isForeignKey()`,
+   `setForeignKey(..)` and `isIdentifying()`.
+
 ## Upgrading to 5.0-M4
 
 *  Per [CAY-2826](https://issues.apache.org/jira/browse/CAY-2826) `CoreModule` and `CoreModuleExtender` were moved from

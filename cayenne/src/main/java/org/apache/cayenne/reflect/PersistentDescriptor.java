@@ -434,7 +434,7 @@ public class PersistentDescriptor implements ClassDescriptor {
 				case ToOneProperty toOne -> {
 					// a to-one that does not hold the FK on the source has no column in the snapshot
 					ObjRelationship relationship = toOne.getRelationship();
-					if (relationship.isFromFK()) {
+					if (relationship.isForeignKey()) {
 						for (DbJoin join : relationship.getDbRelationships().getFirst().getJoins()) {
 							names.add(join.getSourceName());
 						}

@@ -70,7 +70,7 @@ public class DbRelationshipDialog extends ProjectDialog {
 
     private final JTextField name;
     private final JComboBox<String> targetEntities;
-    private final JCheckBox toDepPk;
+    private final JCheckBox foreignKey;
     private final JCheckBox toMany;
     private final JTextField comment;
     private final JLabel sourceName;
@@ -89,7 +89,8 @@ public class DbRelationshipDialog extends ProjectDialog {
 
     // dialog-local editing state, applied to the relationship only on save
     private DbEntity currentTarget;
-    private boolean unsetReverseDepPk;
+    private boolean unsetReverseForeignKey;
+    private boolean foreignKeyEdited;
 
     public static Optional<DbRelationship> openForCreate(ProjectSession session, Window owner, DbEntity sourceEntity) {
         DbRelationship relationship = new DbRelationship();
@@ -123,7 +124,7 @@ public class DbRelationshipDialog extends ProjectDialog {
 
         this.name = new JTextField(25);
         this.targetEntities = new JComboBox<>();
-        this.toDepPk = new JCheckBox();
+        this.foreignKey = new JCheckBox();
         this.toMany = new JCheckBox();
         this.comment = new JTextField(25);
         this.sourceName = new JLabel();
@@ -160,9 +161,9 @@ public class DbRelationshipDialog extends ProjectDialog {
         JPanel flags = new JPanel(new FlowLayout(FlowLayout.LEADING, 0, 0));
         flags.add(toMany);
         flags.add(Box.createHorizontalStrut(20));
-        flags.add(new JLabel("To Dep PK:"));
+        flags.add(new JLabel("Foreign Key:"));
         flags.add(Box.createHorizontalStrut(6));
-        flags.add(toDepPk);
+        flags.add(foreignKey);
         builder.addLabel("To Many:", cc.xy(1, 7));
         builder.add(flags, cc.xywh(3, 7, 3, 1));
         builder.addLabel("Comment:", cc.xy(1, 9));
@@ -184,8 +185,9 @@ public class DbRelationshipDialog extends ProjectDialog {
     private void initFromModel() {
         targetEntities.setModel(new TargetComboBoxModel(session.entityResolver().getDbEntities()));
         sourceName.setText(relationship.getSourceEntityName());
-        toDepPk.setSelected(relationship.isToDependentPK());
+        foreignKey.setSelected(relationship.isForeignKey());
         toMany.setSelected(relationship.isToMany());
+        updateForeignKeyState();
 
         name.setText(relationship.getName());
         if (reverseRelationship != null) {
@@ -219,10 +221,11 @@ public class DbRelationshipDialog extends ProjectDialog {
             if (joinsReset) {
                 // joins to the old target make no sense for the new one; reset the uncommitted table rows
                 ((DbJoinTableModel) table.getModel()).removeAllRows();
-                toDepPk.setSelected(false);
-                toDepPk.setEnabled(false);
+                updateForeignKeyState();
             }
         });
+
+        toMany.addActionListener(action -> updateForeignKeyState());
 
         addButton.addActionListener(e -> {
             DbJoinTableModel model = (DbJoinTableModel) table.getModel();
@@ -235,13 +238,7 @@ public class DbRelationshipDialog extends ProjectDialog {
             stopEditing();
             int row = table.getSelectedRow();
             model.removeRow(model.getJoin(row));
-
-            if (model.isValidForDepPk()) {
-                toDepPk.setEnabled(true);
-            } else {
-                toDepPk.setEnabled(false);
-                toDepPk.setSelected(false);
-            }
+            updateForeignKeyState();
         });
 
         saveButton.addActionListener(e -> {
@@ -252,20 +249,49 @@ public class DbRelationshipDialog extends ProjectDialog {
 
         cancelButton.addActionListener(e -> dispose());
 
-        toDepPk.setEnabled(relationship.isValidForDepPk());
-        toDepPk.addActionListener(selected -> {
-            unsetReverseDepPk = false;
-            if (toDepPk.isSelected() && reverseRelationship != null && reverseRelationship.isToDependentPK()) {
-                unsetReverseDepPk = JOptionPane.showConfirmDialog(
+        foreignKey.addActionListener(selected -> {
+            foreignKeyEdited = true;
+            unsetReverseForeignKey = false;
+            if (foreignKey.isSelected() && reverseRelationship != null && reverseRelationship.isForeignKey()) {
+                unsetReverseForeignKey = JOptionPane.showConfirmDialog(
                         app.getFrame(),
-                        "Unset reverse relationship's \"To Dep PK\" setting?",
+                        "Unset the \"Foreign Key\" flag of the reverse relationship?",
                         "Warning", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE) == JOptionPane.OK_OPTION;
-                if (!unsetReverseDepPk) {
-                    // both sides can't be dep PK, and the user chose to keep it on the reverse
-                    toDepPk.setSelected(false);
+                if (!unsetReverseForeignKey) {
+                    // both sides can't hold the FK, and the user chose to keep it on the reverse
+                    foreignKey.setSelected(false);
                 }
             }
         });
+    }
+
+    /**
+     * The FK side is a choice only for a one-to-one; a to-many never holds it, and the to-one of a one-to-many always
+     * does. With no reverse, a to-one is taken for the to-one of a one-to-many, unless it is joined PK to PK. A new
+     * one-to-one holds the FK by default, unless it is joined PK to PK.
+     */
+    private void updateForeignKeyState() {
+        if (toMany.isSelected()) {
+            foreignKey.setSelected(false);
+            foreignKey.setEnabled(false);
+            return;
+        }
+
+        boolean pkToPk = table.getModel() instanceof DbJoinTableModel model
+                ? model.isPkToPk()
+                : DbRelationshipOps.isPkToPk(relationship.getJoins(), relationship.getSourceEntity(),
+                        relationship.getTargetEntity());
+        boolean oneToOne = reverseRelationship != null ? !reverseRelationship.isToMany() : pkToPk;
+        if (!oneToOne) {
+            foreignKey.setSelected(true);
+            foreignKey.setEnabled(false);
+            return;
+        }
+
+        if (create && !foreignKeyEdited) {
+            foreignKey.setSelected(!pkToPk);
+        }
+        foreignKey.setEnabled(true);
     }
 
     private void enableInfo() {
@@ -280,7 +306,7 @@ public class DbRelationshipDialog extends ProjectDialog {
         table.setModel(model);
         model.addTableModelListener(change -> {
             if (change.getLastRow() != Integer.MAX_VALUE) {
-                toDepPk.setEnabled(model.isValidForDepPk());
+                updateForeignKeyState();
             }
         });
 
@@ -328,9 +354,9 @@ public class DbRelationshipDialog extends ProjectDialog {
         // the single place where the dialog editing state is written to the relationship
         relationship.setTargetEntityName(currentTarget != null ? currentTarget.getName() : null);
         relationship.setToMany(toMany.isSelected());
-        relationship.setToDependentPK(toDepPk.isSelected());
-        if (unsetReverseDepPk && reverseRelationship != null) {
-            reverseRelationship.setToDependentPK(false);
+        relationship.setForeignKey(foreignKey.isSelected());
+        if (unsetReverseForeignKey && reverseRelationship != null) {
+            reverseRelationship.setForeignKey(false);
         }
 
         ((DbJoinTableModel) table.getModel()).commit();
@@ -354,7 +380,8 @@ public class DbRelationshipDialog extends ProjectDialog {
 
                 reverse.setSourceEntity(relationship.getTargetEntity());
                 reverse.setTargetEntityName(relationship.getSourceEntity());
-                reverse.setToMany(!relationship.isToMany());
+                // the reverse of an FK is a to-many; the reverse of anything else is the to-one that holds the FK
+                reverse.setToMany(relationship.isForeignKey());
                 relationship.getTargetEntity().addRelationship(reverse);
 
                 // fire only if the relationship is to the same entity (needed to update entity view)
@@ -368,8 +395,8 @@ public class DbRelationshipDialog extends ProjectDialog {
 
             reverse.setJoins(getReverseJoins(reverse));
 
-            if (!relationship.isToDependentPK() && reverse.isValidForDepPk()) {
-                reverse.setToDependentPK(true);
+            if (!relationship.isForeignKey()) {
+                reverse.setForeignKey(true);
             }
         }
 
@@ -414,10 +441,10 @@ public class DbRelationshipDialog extends ProjectDialog {
         if (relationship.isToMany() != toMany.isSelected()) {
             return true;
         }
-        if (relationship.isToDependentPK() != toDepPk.isSelected()) {
+        if (relationship.isForeignKey() != foreignKey.isSelected()) {
             return true;
         }
-        if (unsetReverseDepPk && reverseRelationship != null && reverseRelationship.isToDependentPK()) {
+        if (unsetReverseForeignKey && reverseRelationship != null && reverseRelationship.isForeignKey()) {
             return true;
         }
         if (reverseRelationship != null

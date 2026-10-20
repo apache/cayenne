@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<project xmlns="http://cayenne.apache.org/schema/14/project"
+<project xmlns="http://cayenne.apache.org/schema/15/project"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://cayenne.apache.org/schema/14/project https://cayenne.apache.org/schema/14/project.xsd">
-    <validation xmlns="http://cayenne.apache.org/schema/14/validation">
+        xsi:schemaLocation="http://cayenne.apache.org/schema/15/project https://cayenne.apache.org/schema/15/project.xsd">
+    <validation xmlns="http://cayenne.apache.org/schema/15/validation">
         <exclude>PROJECT_NO_NAME</exclude>
         <exclude>DATA_MAP_NO_NAME</exclude>
         <exclude>DATA_MAP_NAME_DUPLICATE</exclude>

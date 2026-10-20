@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/15/dataMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/dataMap https://cayenne.apache.org/schema/14/dataMap.xsd"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/15/dataMap https://cayenne.apache.org/schema/15/dataMap.xsd"
 	 defaultPackage="org.apache.cayenne.testdo.lob"
 	 defaultSuperclass="org.apache.cayenne.GenericPersistentObject">
 	<dbEntity name="BLOB_TEST">
@@ -41,7 +41,7 @@
 	<dbRelationship name="clob" source="CLOB_TEST" target="CLOB_TEST_RELATION" toMany="true">
 		<dbAttributePair source="CLOB_TEST_ID" target="ID_CLOB"/>
 	</dbRelationship>
-	<dbRelationship name="CLOB_REL" source="CLOB_TEST_RELATION" target="CLOB_TEST">
+	<dbRelationship name="CLOB_REL" source="CLOB_TEST_RELATION" target="CLOB_TEST" foreignKey="true">
 		<dbAttributePair source="ID_CLOB" target="CLOB_TEST_ID"/>
 	</dbRelationship>
 	<objRelationship name="clobValue" source="ClobTestEntity" target="ClobTestRelation" dbRelationshipPath="clob"/>

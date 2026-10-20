@@ -19,10 +19,10 @@
 
 package org.apache.cayenne.modeler.ui.dbrelationship;
 
-import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.modeler.project.DbRelationshipOps;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.toolkit.table.CMTableModel;
 
@@ -71,29 +71,11 @@ class DbJoinTableModel extends CMTableModel<DbJoin> {
     }
 
     /**
-     * Same check as {@link DbRelationship#isValidForDepPk()}, but over the uncommitted joins and target
-     * entity of this table.
+     * Returns true if every uncommitted join of this table connects a PK column of the source to a PK column of
+     * the current target entity.
      */
-    public boolean isValidForDepPk() {
-        if (objectList.isEmpty()) {
-            return false;
-        }
-
-        for (DbJoin join : objectList) {
-            DbAttribute sourceAttribute = source != null && join.getSourceName() != null
-                    ? source.getAttribute(join.getSourceName())
-                    : null;
-            DbAttribute targetAttribute = target != null && join.getTargetName() != null
-                    ? target.getAttribute(join.getTargetName())
-                    : null;
-
-            if (targetAttribute != null && !targetAttribute.isPrimaryKey()
-                    || sourceAttribute != null && !sourceAttribute.isPrimaryKey()) {
-                return false;
-            }
-        }
-
-        return true;
+    public boolean isPkToPk() {
+        return DbRelationshipOps.isPkToPk(objectList, source, target);
     }
 
     @Override

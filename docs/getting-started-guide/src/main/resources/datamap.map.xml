@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/15/dataMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/dataMap https://cayenne.apache.org/schema/14/dataMap.xsd"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/15/dataMap https://cayenne.apache.org/schema/15/dataMap.xsd"
 	 defaultPackage="org.example.cayenne.persistent">
 	<dbEntity name="artist" catalog="cayenne_demo">
 		<dbAttribute name="DATE_OF_BIRTH" type="DATE" length="10"/>
@@ -43,16 +43,16 @@
 	<dbRelationship name="paintings" source="gallery" target="painting" toMany="true">
 		<dbAttributePair source="ID" target="GALLERY_ID"/>
 	</dbRelationship>
-	<dbRelationship name="artist" source="painting" target="artist">
+	<dbRelationship name="artist" source="painting" target="artist" foreignKey="true">
 		<dbAttributePair source="ARTIST_ID" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="gallery" source="painting" target="gallery">
+	<dbRelationship name="gallery" source="painting" target="gallery" foreignKey="true">
 		<dbAttributePair source="GALLERY_ID" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="id" source="painting" target="painting_info" toDependentPK="true">
+	<dbRelationship name="id" source="painting" target="painting_info">
 		<dbAttributePair source="ID" target="PAINTING_ID"/>
 	</dbRelationship>
-	<dbRelationship name="painting" source="painting_info" target="painting">
+	<dbRelationship name="painting" source="painting_info" target="painting" foreignKey="true">
 		<dbAttributePair source="PAINTING_ID" target="ID"/>
 	</dbRelationship>
 	<objRelationship name="paintings" source="Artist" target="Painting" deleteRule="cascade" dbRelationshipPath="paintings"/>
@@ -61,7 +61,7 @@
 	<objRelationship name="gallery" source="Painting" target="Gallery" deleteRule="nullify" dbRelationshipPath="gallery"/>
 	<objRelationship name="info" source="Painting" target="PaintingInfo" deleteRule="nullify" dbRelationshipPath="id"/>
 	<objRelationship name="painting" source="PaintingInfo" target="Painting" deleteRule="nullify" dbRelationshipPath="painting"/>
-	<dbImport xmlns="http://cayenne.apache.org/schema/14/dbimport">
+	<dbImport xmlns="http://cayenne.apache.org/schema/15/dbimport">
 		<catalog>
 			<excludeTable>legacy_painting_info</excludeTable>
 			<excludeColumn>__service_column</excludeColumn>
@@ -78,7 +78,7 @@
 		<skipRelationshipsLoading>false</skipRelationshipsLoading>
 		<useJava7Types>false</useJava7Types>
 	</dbImport>
-	<cgen xmlns="http://cayenne.apache.org/schema/14/cgen">
+	<cgen xmlns="http://cayenne.apache.org/schema/15/cgen">
 		<name>Default</name>
 		<destDir>../java</destDir>
 		<mode>entity</mode>

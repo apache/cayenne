@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/15/dataMap"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://cayenne.apache.org/schema/14/dataMap http://cayenne.apache.org/schema/14/dataMap.xsd"
+	xsi:schemaLocation="http://cayenne.apache.org/schema/15/dataMap http://cayenne.apache.org/schema/15/dataMap.xsd"
 	 defaultPackage="org.apache.cayenne.testdo.cgen2">
 	<dbEntity name="MYARTGROUP">
 		<dbAttribute name="MY_GROUP_ID" type="INTEGER" primaryKey="true" mandatory="true"/>
@@ -11,7 +11,7 @@
 	<objEntity name="MyArtGroup" className="org.apache.cayenne.testdo.cgen2.MyArtGroup" dbEntityName="MYARTGROUP">
 		<objAttribute name="custom" type="java.lang.String" dbAttributePath="CUSTOM"/>
 	</objEntity>
-	<dbRelationship name="toParentArtGroup" source="MYARTGROUP" target="ARTGROUP" toMany="false">
+	<dbRelationship name="toParentArtGroup" source="MYARTGROUP" target="ARTGROUP" foreignKey="true" toMany="false">
 		<dbAttributePair source="MY_PARENT_GROUP_ID" target="GROUP_ID"/>
 	</dbRelationship>
 	<objRelationship name="toParentGroup" source="MyArtGroup" target="ArtGroup" deleteRule="nullify" dbRelationshipPath="toParentArtGroup"/>

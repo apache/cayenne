@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/15/dataMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/dataMap https://cayenne.apache.org/schema/14/dataMap.xsd"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/15/dataMap https://cayenne.apache.org/schema/15/dataMap.xsd"
 	 defaultPackage="org.apache.cayenne.testdo.hybrid"
 	 defaultSuperclass="org.apache.cayenne.HybridPersistentObject">
 	<dbEntity name="HYBRID_ENTITY_1">
@@ -28,7 +28,7 @@
 	<dbRelationship name="hybridEntities2" source="HYBRID_ENTITY_1" target="HYBRID_ENTITY_2" toMany="true">
 		<dbAttributePair source="ID" target="HYBRID_ENTITY_1_ID"/>
 	</dbRelationship>
-	<dbRelationship name="hybridEntity1" source="HYBRID_ENTITY_2" target="HYBRID_ENTITY_1">
+	<dbRelationship name="hybridEntity1" source="HYBRID_ENTITY_2" target="HYBRID_ENTITY_1" foreignKey="true">
 		<dbAttributePair source="HYBRID_ENTITY_1_ID" target="ID"/>
 	</dbRelationship>
 	<objRelationship name="hybridEntities2" source="HybridEntity1" target="HybridEntity2" deleteRule="deny" dbRelationshipPath="hybridEntities2"/>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/15/dataMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/dataMap https://cayenne.apache.org/schema/14/dataMap.xsd"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/15/dataMap https://cayenne.apache.org/schema/15/dataMap.xsd"
 	 defaultPackage="org.apache.cayenne.testdo.db2">
 	<dbEntity name="CROSSDB_M2E1">
 		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
@@ -22,10 +22,10 @@
 	<dbRelationship name="listOfM2E2" source="CROSSDB_M2E1" target="CROSSDB_M2E2" toMany="true">
 		<dbAttributePair source="ID" target="M2E1_ID"/>
 	</dbRelationship>
-	<dbRelationship name="toM1E1" source="CROSSDB_M2E2" target="CROSSDB_M1E1">
+	<dbRelationship name="toM1E1" source="CROSSDB_M2E2" target="CROSSDB_M1E1" foreignKey="true">
 		<dbAttributePair source="M1E1_ID" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="toM2E1" source="CROSSDB_M2E2" target="CROSSDB_M2E1">
+	<dbRelationship name="toM2E1" source="CROSSDB_M2E2" target="CROSSDB_M2E1" foreignKey="true">
 		<dbAttributePair source="M2E1_ID" target="ID"/>
 	</dbRelationship>
 	<objRelationship name="listOfM2E2" source="CrossdbM2E1" target="CrossdbM2E2" dbRelationshipPath="listOfM2E2"/>

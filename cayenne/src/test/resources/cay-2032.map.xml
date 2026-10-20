@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/15/dataMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/dataMap https://cayenne.apache.org/schema/14/dataMap.xsd"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/15/dataMap https://cayenne.apache.org/schema/15/dataMap.xsd"
 	 defaultPackage="org.apache.cayenne.testdo.cay_2032">
 	<dbEntity name="TEAM">
 		<dbAttribute name="team_id" type="INTEGER" primaryKey="true" mandatory="true"/>
@@ -24,10 +24,10 @@
 	<dbRelationship name="userHasTeam" source="USERS" target="USER_HAS_TEAM" toMany="true">
 		<dbAttributePair source="user_id" target="user_id"/>
 	</dbRelationship>
-	<dbRelationship name="team" source="USER_HAS_TEAM" target="TEAM">
+	<dbRelationship name="team" source="USER_HAS_TEAM" target="TEAM" foreignKey="true">
 		<dbAttributePair source="team_id" target="team_id"/>
 	</dbRelationship>
-	<dbRelationship name="user" source="USER_HAS_TEAM" target="USERS">
+	<dbRelationship name="user" source="USER_HAS_TEAM" target="USERS" foreignKey="true">
 		<dbAttributePair source="user_id" target="user_id"/>
 	</dbRelationship>
 	<objRelationship name="teamUsers" source="Team" target="Users" deleteRule="deny" dbRelationshipPath="userHasTeam.user"/>

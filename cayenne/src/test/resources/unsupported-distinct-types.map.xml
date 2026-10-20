@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/15/dataMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/dataMap https://cayenne.apache.org/schema/14/dataMap.xsd"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/15/dataMap https://cayenne.apache.org/schema/15/dataMap.xsd"
 	 defaultPackage="org.apache.cayenne.testdo.unsupported_distinct_types">
 	<dbEntity name="COMPOSITION">
 		<dbAttribute name="BASE_ID" type="INTEGER" primaryKey="true" mandatory="true"/>
@@ -25,28 +25,28 @@
 	<objEntity name="Product" className="org.apache.cayenne.testdo.unsupported_distinct_types.Product" dbEntityName="PRODUCT">
 		<objAttribute name="longvarcharCol" type="java.lang.String" dbAttributePath="LONGVARCHAR_COL"/>
 	</objEntity>
-	<dbRelationship name="base" source="COMPOSITION" target="PRODUCT">
+	<dbRelationship name="base" source="COMPOSITION" target="PRODUCT" foreignKey="true">
 		<dbAttributePair source="BASE_ID" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="contained" source="COMPOSITION" target="PRODUCT">
+	<dbRelationship name="contained" source="COMPOSITION" target="PRODUCT" foreignKey="true">
 		<dbAttributePair source="CONTAINED_ID" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="orderBy" source="CUSTOMER" target="ORDERS" toDependentPK="true" toMany="true">
+	<dbRelationship name="orderBy" source="CUSTOMER" target="ORDERS" toMany="true">
 		<dbAttributePair source="ID" target="CUSTOMER_ID"/>
 	</dbRelationship>
-	<dbRelationship name="order" source="ORDERS" target="PRODUCT">
+	<dbRelationship name="order" source="ORDERS" target="PRODUCT" foreignKey="true">
 		<dbAttributePair source="PRODUCT_ID" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="orderBy" source="ORDERS" target="CUSTOMER">
+	<dbRelationship name="orderBy" source="ORDERS" target="CUSTOMER" foreignKey="true">
 		<dbAttributePair source="CUSTOMER_ID" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="base" source="PRODUCT" target="COMPOSITION" toDependentPK="true" toMany="true">
+	<dbRelationship name="base" source="PRODUCT" target="COMPOSITION" toMany="true">
 		<dbAttributePair source="ID" target="BASE_ID"/>
 	</dbRelationship>
-	<dbRelationship name="contained" source="PRODUCT" target="COMPOSITION" toDependentPK="true" toMany="true">
+	<dbRelationship name="contained" source="PRODUCT" target="COMPOSITION" toMany="true">
 		<dbAttributePair source="ID" target="CONTAINED_ID"/>
 	</dbRelationship>
-	<dbRelationship name="order" source="PRODUCT" target="ORDERS" toDependentPK="true" toMany="true">
+	<dbRelationship name="order" source="PRODUCT" target="ORDERS" toMany="true">
 		<dbAttributePair source="ID" target="PRODUCT_ID"/>
 	</dbRelationship>
 	<objRelationship name="order" source="Customer" target="Product" deleteRule="deny" dbRelationshipPath="orderBy.order"/>

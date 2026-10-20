@@ -46,7 +46,6 @@ public class DataRowUtilsTest {
     private ObjEntity item;
     private ObjEntity detail;
     private ObjEntity itemTagEntity;
-    private DbRelationship itemTags;
 
     @BeforeEach
     public void buildModel() {
@@ -56,7 +55,7 @@ public class DataRowUtilsTest {
         DbEntity master = addDbEntity(map, "MASTER");
         DbEntity detailTable = addDbEntity(map, "DETAIL");
         DbEntity twin = addDbEntity(map, "TWIN");
-        addDbEntity(map, "CATEGORY");
+        DbEntity category = addDbEntity(map, "CATEGORY");
         DbEntity itemTable = addDbEntity(map, "ITEM");
         itemTable.addAttribute(new DbAttribute("MASTER_ID"));
         itemTable.addAttribute(new DbAttribute("CATEGORY_ID"));
@@ -66,18 +65,24 @@ public class DataRowUtilsTest {
         DbAttribute tagId = new DbAttribute("TAG_ID");
         tagId.setPrimaryKey(true);
         itemTag.addAttribute(tagId);
-        addDbRelationship(itemTag, "toItem", "ITEM", "ID", "ID", false);
-        itemTags = addDbRelationship(itemTable, "itemTags", "ITEM_TAG", "ID", "ID", true);
+        addDbRelationship(itemTag, "toItem", "ITEM", "ID", "ID", false).setForeignKey(true);
+        addDbRelationship(itemTable, "itemTags", "ITEM_TAG", "ID", "ID", true);
 
-        addDbRelationship(itemTable, "toMaster", "MASTER", "MASTER_ID", "ID", false);
+        addDbRelationship(itemTable, "toMaster", "MASTER", "MASTER_ID", "ID", false).setForeignKey(true);
         addDbRelationship(master, "items", "ITEM", "ID", "MASTER_ID", true);
-        addDbRelationship(itemTable, "toCategory", "CATEGORY", "CATEGORY_ID", "ID", false);
+        addDbRelationship(itemTable, "toCategory", "CATEGORY", "CATEGORY_ID", "ID", false).setForeignKey(true);
+
+        // an FK to a non-PK column of the target
+        itemTable.addAttribute(new DbAttribute("CATEGORY_NAME"));
+        category.addAttribute(new DbAttribute("NAME"));
+        addDbRelationship(itemTable, "toCategoryByName", "CATEGORY", "CATEGORY_NAME", "NAME", false)
+                .setForeignKey(true);
 
         // the DETAIL PK is also an FK to MASTER
-        addDbRelationship(master, "detail", "DETAIL", "ID", "ID", false).setToDependentPK(true);
-        addDbRelationship(detailTable, "master", "MASTER", "ID", "ID", false);
+        addDbRelationship(master, "detail", "DETAIL", "ID", "ID", false);
+        addDbRelationship(detailTable, "master", "MASTER", "ID", "ID", false).setForeignKey(true);
 
-        // a PK-to-PK one-to-one with no "to dependent PK" flag on either side
+        // a PK-to-PK one-to-one with the FK flag on neither side
         addDbRelationship(master, "twin", "TWIN", "ID", "ID", false);
         addDbRelationship(twin, "master", "MASTER", "ID", "ID", false);
 
@@ -102,6 +107,7 @@ public class DataRowUtilsTest {
         item = addObjEntity(map, "Item", "ITEM");
         addObjRelationship(item, "toMaster", "Master", "toMaster");
         addObjRelationship(item, "toCategory", "Category", "toCategory");
+        addObjRelationship(item, "toCategoryByName", "Category", "toCategoryByName");
         addObjRelationship(item, "toQualifiedCategory", "QualifiedCategory", "toCategory");
         addObjRelationship(item, "toDetail", "Detail", "toMaster.detail");
 
@@ -116,6 +122,12 @@ public class DataRowUtilsTest {
     public void targetDeterminedByFK() {
         assertTrue(determined(item, "toCategory"));
 
+        // the FK is a part of the source PK (a join table)
+        assertTrue(determined(itemTagEntity, "toItem"));
+
+        // an FK to a non-PK column doesn't give the target id
+        assertFalse(determined(item, "toCategoryByName"));
+
         // the FK says that a Master row exists, but not whether it is a Master or a SubMaster
         assertFalse(determined(item, "toMaster"));
         assertFalse(determined(detail, "master"));
@@ -129,14 +141,9 @@ public class DataRowUtilsTest {
         assertFalse(determined(master, "detail"));
         assertFalse(determined(item, "toDetail"));
 
-        // one side of an unflagged PK-to-PK pair is the master, so neither side guarantees the target
+        // a PK-to-PK pair with no FK flag has no side that guarantees the target
         assertFalse(determined(master, "twin"));
         assertFalse(determined(resolver.getObjEntity("Twin"), "master"));
-
-        // an FK that is a part of the source PK is trusted only once the reverse marks the source as dependent
-        assertFalse(determined(itemTagEntity, "toItem"));
-        itemTags.setToDependentPK(true);
-        assertTrue(determined(itemTagEntity, "toItem"));
     }
 
     private boolean determined(ObjEntity entity, String relationship) {

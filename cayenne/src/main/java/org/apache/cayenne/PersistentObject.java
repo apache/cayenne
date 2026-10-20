@@ -612,7 +612,7 @@ public abstract class PersistentObject implements Persistent, Validating {
             }
 
             // only a relationship holding the FK on the source can be validated from the source object
-            if (!relationship.isFromFK()) {
+            if (!relationship.isForeignKey()) {
                 continue;
             }
 

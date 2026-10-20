@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/15/dataMap"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://cayenne.apache.org/schema/14/dataMap https://cayenne.apache.org/schema/14/dataMap.xsd">
+          xsi:schemaLocation="http://cayenne.apache.org/schema/15/dataMap https://cayenne.apache.org/schema/15/dataMap.xsd">
     <objEntity name="Artist" className="org.example.Artist">
     </objEntity>
-    <cgen xmlns="http://cayenne.apache.org/schema/14/cgen">
+    <cgen xmlns="http://cayenne.apache.org/schema/15/cgen">
         <name>Default</name>
         <destDir>../java</destDir>
         <mode>entity</mode>

@@ -42,7 +42,7 @@ public class DbRelationshipTableModel extends CMTableModel<DbRelationship> {
     // Columns
     static final int NAME = 0;
     static final int TARGET = 1;
-    static final int TO_DEPENDENT_KEY = 2;
+    static final int FOREIGN_KEY = 2;
     static final int CARDINALITY = 3;
     static final int COMMENTS = 4;
 
@@ -73,8 +73,8 @@ public class DbRelationshipTableModel extends CMTableModel<DbRelationship> {
                 return "Name";
             case TARGET:
                 return "Target";
-            case TO_DEPENDENT_KEY:
-                return "To Dep PK";
+            case FOREIGN_KEY:
+                return "Foreign Key";
             case CARDINALITY:
                 return "To Many";
             case COMMENTS:
@@ -89,7 +89,7 @@ public class DbRelationshipTableModel extends CMTableModel<DbRelationship> {
         switch (col) {
             case TARGET:
                 return DbEntity.class;
-            case TO_DEPENDENT_KEY:
+            case FOREIGN_KEY:
             case CARDINALITY:
                 return Boolean.class;
             default:
@@ -112,8 +112,8 @@ public class DbRelationshipTableModel extends CMTableModel<DbRelationship> {
                 return rel.getName();
             case TARGET:
                 return rel.getTargetEntity();
-            case TO_DEPENDENT_KEY:
-                return rel.isToDependentPK() ? Boolean.TRUE : Boolean.FALSE;
+            case FOREIGN_KEY:
+                return rel.isForeignKey() ? Boolean.TRUE : Boolean.FALSE;
             case CARDINALITY:
                 return rel.isToMany() ? Boolean.TRUE : Boolean.FALSE;
             case COMMENTS:
@@ -149,14 +149,14 @@ public class DbRelationshipTableModel extends CMTableModel<DbRelationship> {
             entity.renameRelationship(rel, newName);
             session.fireDbRelationshipEvent(e);
             fireTableCellUpdated(row, column);
-        } else if (column == TO_DEPENDENT_KEY) {
+        } else if (column == FOREIGN_KEY) {
             boolean flag = (Boolean) aValue;
 
-            // make sure reverse relationship "to-dep-pk" is unset.
+            // only one side of a one-to-one holds the FK
             if (flag) {
                 DbRelationship reverse = rel.getReverseRelationship();
-                if (reverse != null && reverse.isToDependentPK()) {
-                    String message = "Unset reverse relationship's \"To Dep PK\" setting?";
+                if (reverse != null && reverse.isForeignKey()) {
+                    String message = "Unset the \"Foreign Key\" flag of the reverse relationship?";
                     int answer = JOptionPane.showConfirmDialog(
                             session.app().getFrame(),
                             message);
@@ -166,14 +166,20 @@ public class DbRelationshipTableModel extends CMTableModel<DbRelationship> {
                     }
 
                     // unset reverse
-                    reverse.setToDependentPK(false);
+                    reverse.setForeignKey(false);
                 }
             }
 
-            rel.setToDependentPK(flag);
+            rel.setForeignKey(flag);
             session.fireDbRelationshipEvent(DbRelationshipEvent.ofChange(eventSource, rel, entity));
         } else if (column == CARDINALITY) {
             rel.setToMany((Boolean) aValue);
+            // a to-many never holds the FK, and the to-one of a one-to-many always does
+            if (rel.isToMany()) {
+                rel.setForeignKey(false);
+            } else if (!isForeignKeyEditable(rel)) {
+                rel.setForeignKey(true);
+            }
             session.fireDbRelationshipEvent(DbRelationshipEvent.ofChange(eventSource, rel, entity));
 
             updateDependentObjRelationships(rel);
@@ -207,10 +213,22 @@ public class DbRelationshipTableModel extends CMTableModel<DbRelationship> {
             return false;
         } else if (col == TARGET) {
             return false;
-        } else if (col == TO_DEPENDENT_KEY) {
-            return rel.isValidForDepPk();
+        } else if (col == FOREIGN_KEY) {
+            return isForeignKeyEditable(rel);
         }
         return true;
+    }
+
+    // the FK side is a choice only for a one-to-one; a to-many never holds it, and the to-one of a one-to-many always
+    // does. With no reverse, a to-one is taken for the to-one of a one-to-many, unless it is joined PK to PK
+    static boolean isForeignKeyEditable(DbRelationship rel) {
+        if (rel.isToMany()) {
+            return false;
+        }
+        DbRelationship reverse = rel.getReverseRelationship();
+        return reverse != null
+                ? !reverse.isToMany()
+                : DbRelationshipOps.isPkToPk(rel.getJoins(), rel.getSourceEntity(), rel.getTargetEntity());
     }
 
     @Override
@@ -227,8 +245,8 @@ public class DbRelationshipTableModel extends CMTableModel<DbRelationship> {
             case TARGET:
                 sortByElementProperty("targetEntityName", isAscent);
                 break;
-            case TO_DEPENDENT_KEY:
-                sortByElementProperty("toDependentPK", isAscent);
+            case FOREIGN_KEY:
+                sortByElementProperty("foreignKey", isAscent);
                 break;
             case CARDINALITY:
                 sortByElementProperty("toMany", isAscent);

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/15/dataMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/dataMap http://cayenne.apache.org/schema/14/dataMap.xsd"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/15/dataMap http://cayenne.apache.org/schema/15/dataMap.xsd"
 	 defaultPackage="org.apache.cayenne.testdo.testmap"
 	 defaultCatalog="TEST_CATALOG"
 	 defaultSuperclass="org.apache.cayenne.GenericPersistentObject">
@@ -173,10 +173,10 @@
 	<dbRelationship name="toChildGroups" source="ARTGROUP" target="ARTGROUP" toMany="true">
 		<dbAttributePair source="GROUP_ID" target="PARENT_GROUP_ID"/>
 	</dbRelationship>
-	<dbRelationship name="toParentGroup" source="ARTGROUP" target="ARTGROUP">
+	<dbRelationship name="toParentGroup" source="ARTGROUP" target="ARTGROUP" foreignKey="true">
 		<dbAttributePair source="PARENT_GROUP_ID" target="GROUP_ID"/>
 	</dbRelationship>
-	<dbRelationship name="artistExhibitArray" source="ARTIST" target="ARTIST_EXHIBIT" toDependentPK="true" toMany="true">
+	<dbRelationship name="artistExhibitArray" source="ARTIST" target="ARTIST_EXHIBIT" toMany="true">
 		<dbAttributePair source="ARTIST_ID" target="ARTIST_ID"/>
 	</dbRelationship>
 	<dbRelationship name="artistGroupArray" source="ARTIST" target="ARTIST_GROUP" toMany="true">
@@ -185,22 +185,22 @@
 	<dbRelationship name="paintingArray" source="ARTIST" target="PAINTING" toMany="true">
 		<dbAttributePair source="ARTIST_ID" target="ARTIST_ID"/>
 	</dbRelationship>
-	<dbRelationship name="toArtist" source="ARTIST_EXHIBIT" target="ARTIST">
+	<dbRelationship name="toArtist" source="ARTIST_EXHIBIT" target="ARTIST" foreignKey="true">
 		<dbAttributePair source="ARTIST_ID" target="ARTIST_ID"/>
 	</dbRelationship>
-	<dbRelationship name="toExhibit" source="ARTIST_EXHIBIT" target="EXHIBIT">
+	<dbRelationship name="toExhibit" source="ARTIST_EXHIBIT" target="EXHIBIT" foreignKey="true">
 		<dbAttributePair source="EXHIBIT_ID" target="EXHIBIT_ID"/>
 	</dbRelationship>
-	<dbRelationship name="toArtist" source="ARTIST_GROUP" target="ARTIST">
+	<dbRelationship name="toArtist" source="ARTIST_GROUP" target="ARTIST" foreignKey="true">
 		<dbAttributePair source="ARTIST_ID" target="ARTIST_ID"/>
 	</dbRelationship>
-	<dbRelationship name="toGroup" source="ARTIST_GROUP" target="ARTGROUP">
+	<dbRelationship name="toGroup" source="ARTIST_GROUP" target="ARTGROUP" foreignKey="true">
 		<dbAttributePair source="GROUP_ID" target="GROUP_ID"/>
 	</dbRelationship>
-	<dbRelationship name="artistExhibitArray" source="EXHIBIT" target="ARTIST_EXHIBIT" toDependentPK="true" toMany="true">
+	<dbRelationship name="artistExhibitArray" source="EXHIBIT" target="ARTIST_EXHIBIT" toMany="true">
 		<dbAttributePair source="EXHIBIT_ID" target="EXHIBIT_ID"/>
 	</dbRelationship>
-	<dbRelationship name="toGallery" source="EXHIBIT" target="GALLERY">
+	<dbRelationship name="toGallery" source="EXHIBIT" target="GALLERY" foreignKey="true">
 		<dbAttributePair source="GALLERY_ID" target="GALLERY_ID"/>
 	</dbRelationship>
 	<dbRelationship name="exhibitArray" source="GALLERY" target="EXHIBIT" toMany="true">
@@ -209,23 +209,23 @@
 	<dbRelationship name="paintingArray" source="GALLERY" target="PAINTING" toMany="true">
 		<dbAttributePair source="GALLERY_ID" target="GALLERY_ID"/>
 	</dbRelationship>
-	<dbRelationship name="toArtist" source="PAINTING" target="ARTIST">
+	<dbRelationship name="toArtist" source="PAINTING" target="ARTIST" foreignKey="true">
 		<dbAttributePair source="ARTIST_ID" target="ARTIST_ID"/>
 	</dbRelationship>
-	<dbRelationship name="toGallery" source="PAINTING" target="GALLERY">
+	<dbRelationship name="toGallery" source="PAINTING" target="GALLERY" foreignKey="true">
 		<dbAttributePair source="GALLERY_ID" target="GALLERY_ID"/>
 	</dbRelationship>
-	<dbRelationship name="toPaintingInfo" source="PAINTING" target="PAINTING_INFO" toDependentPK="true">
+	<dbRelationship name="toPaintingInfo" source="PAINTING" target="PAINTING_INFO">
 		<dbAttributePair source="PAINTING_ID" target="PAINTING_ID"/>
 	</dbRelationship>
-	<dbRelationship name="toArtist" source="PAINTING1" target="ARTIST">
+	<dbRelationship name="toArtist" source="PAINTING1" target="ARTIST" foreignKey="true">
 		<dbAttributePair source="ARTIST_ID" target="ARTIST_ID"/>
 	</dbRelationship>
-	<dbRelationship name="painting" source="PAINTING_INFO" target="PAINTING">
+	<dbRelationship name="painting" source="PAINTING_INFO" target="PAINTING" foreignKey="true">
 		<dbAttributePair source="PAINTING_ID" target="PAINTING_ID"/>
 	</dbRelationship>
 	<objRelationship name="artistArray" source="ArtGroup" target="Artist" collectionType="java.util.Map" lock="true" deleteRule="cascade" dbRelationshipPath="artistGroupArray.toArtist">
-		<info:property xmlns:info="http://cayenne.apache.org/schema/14/info" name="comment" value="artistGroupArray.toArtist"/>
+		<info:property xmlns:info="http://cayenne.apache.org/schema/15/info" name="comment" value="artistGroupArray.toArtist"/>
 	</objRelationship>
 	<objRelationship name="childGroupsArray" source="ArtGroup" target="ArtGroup" deleteRule="nullify" dbRelationshipPath="toChildGroups"/>
 	<objRelationship name="toParentGroup" source="ArtGroup" target="ArtGroup" deleteRule="nullify" dbRelationshipPath="toParentGroup"/>
