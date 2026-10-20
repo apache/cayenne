@@ -82,14 +82,12 @@ public class RelationshipLoader extends AbstractLoader {
             reverseRelationship.setSourceEntity(fkEntity);
             reverseRelationship.setTargetEntityName(pkEntity);
             reverseRelationship.setToMany(false);
+            reverseRelationship.setForeignKey(true);
 
             createAndAppendJoins(exportedKeys, pkEntity, fkEntity, forwardRelationship, reverseRelationship);
 
-            boolean toDependentPK = isToDependentPK(forwardRelationship);
-            boolean toMany = isToMany(toDependentPK, fkEntity, forwardRelationship);
-
-            forwardRelationship.setToDependentPK(toDependentPK);
-            forwardRelationship.setToMany(toMany);
+            // a one-to-one when the FK is the whole PK of its table
+            forwardRelationship.setToMany(!isFkPK(fkEntity, forwardRelationship));
 
             // set relationship names only after their joins are ready ...
             // generator logic is based on relationship state...
@@ -144,17 +142,15 @@ public class RelationshipLoader extends AbstractLoader {
         }
     }
 
-    private boolean isToMany(boolean toDependentPK, DbEntity fkEntity, DbRelationship forwardRelationship) {
-        return !toDependentPK || fkEntity.getPrimaryKeys().size() != forwardRelationship.getJoins().size();
-    }
-
-    private boolean isToDependentPK(DbRelationship forwardRelationship) {
+    private boolean isFkPK(DbEntity fkEntity, DbRelationship forwardRelationship) {
+        if (fkEntity.getPrimaryKeys().size() != forwardRelationship.getJoins().size()) {
+            return false;
+        }
         for (DbJoin dbJoin : forwardRelationship.getJoins()) {
             if (!dbJoin.getTarget().isPrimaryKey()) {
                 return false;
             }
         }
-
         return true;
     }
 

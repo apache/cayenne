@@ -23,7 +23,7 @@ Reference for the options shown by the CayenneModeler reverse-engineering dialog
 ## XML shape (persisted inside a DataMap)
 
 ```xml
-<dbImport xmlns="http://cayenne.apache.org/schema/14/dbimport">
+<dbImport xmlns="http://cayenne.apache.org/schema/15/dbimport">
     <catalog>
         <name>public</name>
         <schema>

@@ -21,6 +21,9 @@ package org.apache.cayenne.modeler.project;
 
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
@@ -73,5 +76,32 @@ public class DbRelationshipOps {
             }
         }
         return attributes;
+    }
+
+    /**
+     * Returns true if every join connects a PK column of the source to a PK column of the target. The join
+     * attributes are resolved by name against the given entities, so this also works for joins not yet committed to
+     * a relationship.
+     */
+    public static boolean isPkToPk(List<DbJoin> joins, DbEntity source, DbEntity target) {
+        if (joins.isEmpty()) {
+            return false;
+        }
+
+        for (DbJoin join : joins) {
+            DbAttribute sourceAttribute = source != null && join.getSourceName() != null
+                    ? source.getAttribute(join.getSourceName())
+                    : null;
+            DbAttribute targetAttribute = target != null && join.getTargetName() != null
+                    ? target.getAttribute(join.getTargetName())
+                    : null;
+
+            if (targetAttribute != null && !targetAttribute.isPrimaryKey()
+                    || sourceAttribute != null && !sourceAttribute.isPrimaryKey()) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

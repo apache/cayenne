@@ -24,6 +24,7 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.access.ObjectSnapshots;
 import org.apache.cayenne.access.flush.operation.DbRowOp;
 import org.apache.cayenne.ashwood.graph.Digraph;
 import org.apache.cayenne.ashwood.graph.IndegreeTopologicalSort;
@@ -88,8 +89,7 @@ public class AshwoodEntitySorter implements EntitySorter {
 
 		for (DbEntity destination : entityResolver.getDbEntities()) {
 			for (DbRelationship candidate : destination.getRelationships()) {
-				// not isFromFK(): a to-one with joins to non-PK columns still contributes arcs for its PK joins
-				if (!candidate.isToMany() && !candidate.isToDependentPK()) {
+				if (candidate.isForeignKey()) {
 					DbEntity origin = candidate.getTargetEntity();
 					boolean newReflexive = destination.equals(origin);
 
@@ -205,8 +205,7 @@ public class AshwoodEntitySorter implements EntitySorter {
 				masters[k] = (Persistent)descriptor.getProperty(reflexiveRelName).readProperty(persistent);
 
 				if (masters[k] == null) {
-					masters[k] = findReflexiveMaster(persistent, objEntity.getRelationship(reflexiveRelName)
-							, persistent.getObjectId().getEntityName());
+					masters[k] = findReflexiveMaster(persistent, objEntity.getRelationship(reflexiveRelName));
 				}
 
 				if (masters[k] != null) {
@@ -268,9 +267,8 @@ public class AshwoodEntitySorter implements EntitySorter {
 		return reflexiveRelNames;
 	}
 
-	protected Persistent findReflexiveMaster(Persistent object, ObjRelationship toOneRel, String targetEntityName) {
+	protected Persistent findReflexiveMaster(Persistent object, ObjRelationship toOneRel) {
 
-		DbRelationship finalRel = toOneRel.getDbRelationships().getFirst();
 		ObjectContext context = object.getObjectContext();
 
 		// find committed snapshot - so we can't fetch from the context as it will return dirty snapshot;
@@ -286,14 +284,14 @@ public class AshwoodEntitySorter implements EntitySorter {
 			return null;
 		}
 
-		Map<String, Object> targetPk = finalRel.targetPkSnapshotWithSrcSnapshot(snapshot);
-		if (targetPk == null) {
+		ObjectId targetId = ObjectSnapshots.targetId(toOneRel, snapshot);
+		if (targetId == null) {
 			return null;
 		}
 
 		// not using 'localObject', looking up in context instead, as within the sorter
 		// we only care about objects participating in transaction, so no need to create hollow objects
-		return context.getObjectStore().getObject(ObjectId.of(targetEntityName, targetPk));
+		return context.getObjectStore().getObject(targetId);
 	}
 
 	@Override

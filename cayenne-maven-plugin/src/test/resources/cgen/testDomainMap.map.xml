@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/15/dataMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/dataMap http://cayenne.apache.org/schema/14/dataMap.xsd"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/15/dataMap http://cayenne.apache.org/schema/15/dataMap.xsd"
 	 defaultPackage="pack">
 	<embeddable className="pack.Embeddable">
 		<embeddableAttribute name="embAttr" type="java.lang.String" dbAttributeName="EMB_ATTR"/>
@@ -25,7 +25,7 @@
 	<objEntity name="TestEntity" className="pack.TestEntity" dbEntityName="TestEntity">
 		<embeddedAttribute name="embeddedAtr" type="pack.Embeddable"/>
 		<objAttribute name="testAttr" type="java.lang.String" dbAttributePath="testAttr">
-			<info:property xmlns:info="http://cayenne.apache.org/schema/14/info" name="comment" value="comment for test attribute"/>
+			<info:property xmlns:info="http://cayenne.apache.org/schema/15/info" name="comment" value="comment for test attribute"/>
 		</objAttribute>
 	</objEntity>
 	<objEntity name="TestExcludedEntity" className="pack.TestExcludedEntity" dbEntityName="TestExcludedEntity">
@@ -34,7 +34,7 @@
 	<dbRelationship name="childrenRel" source="TestEntity" target="TestEntity" toMany="true">
 		<dbAttributePair source="id" target="id"/>
 	</dbRelationship>
-	<dbRelationship name="parentRel" source="TestEntity" target="TestEntity" toMany="false">
+	<dbRelationship name="parentRel" source="TestEntity" target="TestEntity" foreignKey="true" toMany="false">
 		<dbAttributePair source="id" target="id"/>
 	</dbRelationship>
     <dbRelationship name="additionalRel" source="TestEntity" target="TestRelEntity" toMany="true">

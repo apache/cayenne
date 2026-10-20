@@ -43,13 +43,13 @@ public class DbRelationshipHandlerTest extends BaseHandlerTest {
         });
 
         assertEquals(1, entity.getRelationships().size());
-        DbRelationship relationship = entity.getRelationship("artistPaintings");
+        DbRelationship relationship = entity.getRelationship("toFavoritePainting");
         assertNotNull(relationship);
 
         assertEquals("PAINTING", relationship.getTargetEntityName());
-        assertTrue(relationship.isToDependentPK());
-        assertTrue(relationship.isToMany());
-        assertEquals("ID", relationship.getJoins().get(0).getSourceName());
-        assertEquals("ARTIST_ID", relationship.getJoins().get(0).getTargetName());
+        assertTrue(relationship.isForeignKey());
+        assertFalse(relationship.isToMany());
+        assertEquals("FAVORITE_PAINTING_ID", relationship.getJoins().get(0).getSourceName());
+        assertEquals("ID", relationship.getJoins().get(0).getTargetName());
     }
 }

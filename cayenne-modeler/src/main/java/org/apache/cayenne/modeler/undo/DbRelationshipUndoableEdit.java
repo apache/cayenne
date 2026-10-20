@@ -68,7 +68,7 @@ public class DbRelationshipUndoableEdit extends CayenneUndoableEdit {
     private DbRelationship copyRelationship(DbRelationship dbRelationship) {
         DbRelationship rel = new DbRelationship();
         rel.setName(dbRelationship.getName());
-        rel.setToDependentPK(dbRelationship.isToDependentPK());
+        rel.setForeignKey(dbRelationship.isForeignKey());
         rel.setToMany(dbRelationship.isToMany());
         rel.setTargetEntityName(dbRelationship.getTargetEntityName());
         rel.setSourceEntity(dbRelationship.getSourceEntity());

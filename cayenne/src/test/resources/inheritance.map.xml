@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/15/dataMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/dataMap https://cayenne.apache.org/schema/14/dataMap.xsd"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/15/dataMap https://cayenne.apache.org/schema/15/dataMap.xsd"
 	 defaultPackage="org.apache.cayenne.testdo.inheritance">
 	<dbEntity name="BASE_ENTITY">
 		<dbAttribute name="BASE_ENTITY_ID" type="INTEGER" primaryKey="true" mandatory="true"/>
@@ -23,10 +23,10 @@
 	<objEntity name="SubEntity" superEntityName="BaseEntity" className="org.apache.cayenne.testdo.inheritance.SubEntity">
 		<qualifier><![CDATA[entityType = "sub"]]></qualifier>
 	</objEntity>
-	<dbRelationship name="directToSubEntities" source="BASE_ENTITY" target="DIRECT_TO_SUB_ENTITY">
+	<dbRelationship name="directToSubEntities" source="BASE_ENTITY" target="DIRECT_TO_SUB_ENTITY" foreignKey="true">
 		<dbAttributePair source="DIRECT_TO_SUB_ENTITY_ID" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="relatedEntities" source="BASE_ENTITY" target="RELATED_ENTITY">
+	<dbRelationship name="relatedEntities" source="BASE_ENTITY" target="RELATED_ENTITY" foreignKey="true">
 		<dbAttributePair source="RELATED_ENTITY_ID" target="RELATED_ENTITY_ID"/>
 	</dbRelationship>
 	<dbRelationship name="subEntity" source="DIRECT_TO_SUB_ENTITY" target="BASE_ENTITY" toMany="true">

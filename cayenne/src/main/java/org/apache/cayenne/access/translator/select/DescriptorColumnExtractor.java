@@ -149,8 +149,8 @@ class DescriptorColumnExtractor extends BaseColumnExtractor {
         // whose first hop is to a PK: its key is then fetched through the path joins under a path-qualified name
         // (CAY-2911). An inverse one-to-one has no column of its own here.
         boolean keyInResult = rel.isFlattened()
-                ? rel.getDbRelationships().getFirst().isToPK()
-                : rel.isFromFK();
+                ? rel.getDbRelationships().getFirst().isToPrimaryKey()
+                : rel.isForeignKey();
         if(!keyInResult) {
             return;
         }

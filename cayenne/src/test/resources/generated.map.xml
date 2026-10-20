@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/15/dataMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/dataMap https://cayenne.apache.org/schema/14/dataMap.xsd"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/15/dataMap https://cayenne.apache.org/schema/15/dataMap.xsd"
 	 defaultPackage="org.apache.cayenne.testdo.generated"
 	 defaultSuperclass="org.apache.cayenne.GenericPersistentObject">
 	<dbEntity name="GENERATED_COLUMN_COMP_KEY">
@@ -62,16 +62,16 @@
 	<objEntity name="GeneratedReflexive" className="org.apache.cayenne.testdo.generated.GeneratedReflexive" dbEntityName="GENERATED_REFLEXIVE" superClassName="org.apache.cayenne.GenericPersistentObject">
 		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>
 	</objEntity>
-	<dbRelationship name="toMaster" source="GENERATED_COLUMN_COMP_KEY" target="GENERATED_COLUMN_COMP_M">
+	<dbRelationship name="toMaster" source="GENERATED_COLUMN_COMP_KEY" target="GENERATED_COLUMN_COMP_M" foreignKey="true">
 		<dbAttributePair source="PROPAGATED_PK" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="toDetail" source="GENERATED_COLUMN_COMP_M" target="GENERATED_COLUMN_COMP_KEY" toDependentPK="true" toMany="true">
+	<dbRelationship name="toDetail" source="GENERATED_COLUMN_COMP_M" target="GENERATED_COLUMN_COMP_KEY" toMany="true">
 		<dbAttributePair source="ID" target="PROPAGATED_PK"/>
 	</dbRelationship>
-	<dbRelationship name="toMaster" source="GENERATED_COLUMN_DEP" target="GENERATED_COLUMN_TEST">
+	<dbRelationship name="toMaster" source="GENERATED_COLUMN_DEP" target="GENERATED_COLUMN_TEST" foreignKey="true">
 		<dbAttributePair source="GENERATED_COLUMN_FK" target="GENERATED_COLUMN"/>
 	</dbRelationship>
-	<dbRelationship name="toDep" source="GENERATED_COLUMN_TEST" target="GENERATED_COLUMN_DEP" toDependentPK="true">
+	<dbRelationship name="toDep" source="GENERATED_COLUMN_TEST" target="GENERATED_COLUMN_DEP">
 		<dbAttributePair source="GENERATED_COLUMN" target="GENERATED_COLUMN_FK"/>
 	</dbRelationship>
 	<dbRelationship name="join" source="GENERATED_F1" target="GENERATED_JOIN" toMany="true">
@@ -80,13 +80,13 @@
 	<dbRelationship name="join" source="GENERATED_F2" target="GENERATED_JOIN" toMany="true">
 		<dbAttributePair source="ID" target="ID2"/>
 	</dbRelationship>
-	<dbRelationship name="f1" source="GENERATED_JOIN" target="GENERATED_F1">
+	<dbRelationship name="f1" source="GENERATED_JOIN" target="GENERATED_F1" foreignKey="true">
 		<dbAttributePair source="ID1" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="f2" source="GENERATED_JOIN" target="GENERATED_F2">
+	<dbRelationship name="f2" source="GENERATED_JOIN" target="GENERATED_F2" foreignKey="true">
 		<dbAttributePair source="ID2" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="next" source="GENERATED_REFLEXIVE" target="GENERATED_REFLEXIVE">
+	<dbRelationship name="next" source="GENERATED_REFLEXIVE" target="GENERATED_REFLEXIVE" foreignKey="true">
 		<dbAttributePair source="REF_ID" target="ID"/>
 	</dbRelationship>
 	<objRelationship name="toMaster" source="GeneratedColumnCompKey" target="GeneratedColumnCompMaster" dbRelationshipPath="toMaster"/>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/15/dataMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/dataMap https://cayenne.apache.org/schema/14/dataMap.xsd"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/15/dataMap https://cayenne.apache.org/schema/15/dataMap.xsd"
 	 defaultPackage="org.apache.cayenne.testdo.relationships_clob">
 	<dbEntity name="CLOB_DETAIL">
 		<dbAttribute name="CLOB_DETAIL_ID" type="INTEGER" primaryKey="true" mandatory="true"/>
@@ -20,7 +20,7 @@
 		<objAttribute name="clobColumn" type="java.lang.String" dbAttributePath="CLOB_COLUMN"/>
 		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>
 	</objEntity>
-	<dbRelationship name="master" source="CLOB_DETAIL" target="CLOB_MASTER">
+	<dbRelationship name="master" source="CLOB_DETAIL" target="CLOB_MASTER" foreignKey="true">
 		<dbAttributePair source="CLOB_MASTER_ID" target="CLOB_MASTER_ID"/>
 	</dbRelationship>
 	<dbRelationship name="details" source="CLOB_MASTER" target="CLOB_DETAIL" toMany="true">

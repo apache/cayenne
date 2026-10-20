@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/15/dataMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/dataMap https://cayenne.apache.org/schema/14/dataMap.xsd"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/15/dataMap https://cayenne.apache.org/schema/15/dataMap.xsd"
 	 defaultPackage="org.apache.cayenne.testdo.binary_pk"
 	 defaultSuperclass="org.apache.cayenne.GenericPersistentObject">
 	<dbEntity name="BINARY_PK_TEST1">
@@ -22,7 +22,7 @@
 	<dbRelationship name="binaryPKDetails" source="BINARY_PK_TEST1" target="BINARY_PK_TEST2" toMany="true">
 		<dbAttributePair source="BIN_ID" target="FK_ID"/>
 	</dbRelationship>
-	<dbRelationship name="toBinaryPKMaster" source="BINARY_PK_TEST2" target="BINARY_PK_TEST1">
+	<dbRelationship name="toBinaryPKMaster" source="BINARY_PK_TEST2" target="BINARY_PK_TEST1" foreignKey="true">
 		<dbAttributePair source="FK_ID" target="BIN_ID"/>
 	</dbRelationship>
 	<objRelationship name="binaryPKDetails" source="BinaryPKTest1" target="BinaryPKTest2" dbRelationshipPath="binaryPKDetails"/>

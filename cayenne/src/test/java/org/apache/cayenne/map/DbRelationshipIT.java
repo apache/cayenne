@@ -50,20 +50,20 @@ public class DbRelationshipIT {
     }
 
     @Test
-    public void isFromFK() {
+    public void isForeignKey() {
         // FK to PK
-        assertTrue(paintingEnt.getRelationship("toArtist").isFromFK());
+        assertTrue(paintingEnt.getRelationship("toArtist").isForeignKey());
 
         // to-many
-        assertFalse(artistEnt.getRelationship("paintingArray").isFromFK());
+        assertFalse(artistEnt.getRelationship("paintingArray").isForeignKey());
 
         // master to dependent PK: the join is to the target PK, but the key lives in the target row
         DbRelationship toPaintingInfo = paintingEnt.getRelationship("toPaintingInfo");
-        assertTrue(toPaintingInfo.isToPK());
-        assertFalse(toPaintingInfo.isFromFK());
+        assertTrue(toPaintingInfo.isToPrimaryKey());
+        assertFalse(toPaintingInfo.isForeignKey());
 
         // dependent to master PK: the dependent PK is also the FK
-        assertTrue(toPaintingInfo.getReverseRelationship().isFromFK());
+        assertTrue(toPaintingInfo.getReverseRelationship().isForeignKey());
     }
 
     @Test

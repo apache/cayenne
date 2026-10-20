@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/15/dataMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/dataMap https://cayenne.apache.org/schema/14/dataMap.xsd"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/15/dataMap https://cayenne.apache.org/schema/15/dataMap.xsd"
 	 defaultPackage="org.apache.cayenne.testdo.mt">
 	<dbEntity name="MT_JOIN45">
 		<dbAttribute name="TABLE4_ID" type="INTEGER" primaryKey="true" mandatory="true"/>
@@ -53,25 +53,25 @@
 	</objEntity>
 	<objEntity name="MtTable4" className="org.apache.cayenne.testdo.mt.MtTable4" dbEntityName="MT_TABLE4"/>
 	<objEntity name="MtTable5" className="org.apache.cayenne.testdo.mt.MtTable5" dbEntityName="MT_TABLE5"/>
-	<dbRelationship name="toTable4" source="MT_JOIN45" target="MT_TABLE4">
+	<dbRelationship name="toTable4" source="MT_JOIN45" target="MT_TABLE4" foreignKey="true">
 		<dbAttributePair source="TABLE4_ID" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="toTable5" source="MT_JOIN45" target="MT_TABLE5">
+	<dbRelationship name="toTable5" source="MT_JOIN45" target="MT_TABLE5" foreignKey="true">
 		<dbAttributePair source="TABLE5_ID" target="ID"/>
 	</dbRelationship>
 	<dbRelationship name="table2Array" source="MT_TABLE1" target="MT_TABLE2" toMany="true">
 		<dbAttributePair source="TABLE1_ID" target="TABLE1_ID"/>
 	</dbRelationship>
-	<dbRelationship name="table1" source="MT_TABLE2" target="MT_TABLE1">
+	<dbRelationship name="table1" source="MT_TABLE2" target="MT_TABLE1" foreignKey="true">
 		<dbAttributePair source="TABLE1_ID" target="TABLE1_ID"/>
 	</dbRelationship>
-	<dbRelationship name="table3" source="MT_TABLE2" target="MT_TABLE3">
+	<dbRelationship name="table3" source="MT_TABLE2" target="MT_TABLE3" foreignKey="true">
 		<dbAttributePair source="TABLE3_ID" target="TABLE3_ID"/>
 	</dbRelationship>
 	<dbRelationship name="table2Array" source="MT_TABLE3" target="MT_TABLE2" toMany="true">
 		<dbAttributePair source="TABLE3_ID" target="TABLE3_ID"/>
 	</dbRelationship>
-	<dbRelationship name="joins" source="MT_TABLE4" target="MT_JOIN45" toDependentPK="true" toMany="true">
+	<dbRelationship name="joins" source="MT_TABLE4" target="MT_JOIN45" toMany="true">
 		<dbAttributePair source="ID" target="TABLE4_ID"/>
 	</dbRelationship>
 	<dbRelationship name="joins" source="MT_TABLE5" target="MT_JOIN45" toMany="true">

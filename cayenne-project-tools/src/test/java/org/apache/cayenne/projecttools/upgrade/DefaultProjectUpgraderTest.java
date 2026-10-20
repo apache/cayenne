@@ -85,15 +85,15 @@ public class DefaultProjectUpgraderTest {
         PreUpgradeState state = upgrader.checkUpgradeNeeded(projectWithVersion("5"));
         assertEquals(UpgradeType.INTERMEDIATE_UPGRADE_NEEDED, state.requiredUpgrade());
         assertEquals("5", state.projectVersion());
-        assertEquals("14", state.supportedVersion());
+        assertEquals("15", state.supportedVersion());
         assertEquals("9", state.intermediateUpgradeVersion());
 
         state = upgrader.checkUpgradeNeeded(projectWithVersion("11"));
         assertEquals(UpgradeType.UPGRADE_NEEDED, state.requiredUpgrade());
         assertEquals("11", state.projectVersion());
 
-        assertEquals(UpgradeType.UPGRADE_NOT_NEEDED, upgrader.checkUpgradeNeeded(projectWithVersion("14")).requiredUpgrade());
-        assertEquals(UpgradeType.DOWNGRADE_NEEDED, upgrader.checkUpgradeNeeded(projectWithVersion("15")).requiredUpgrade());
+        assertEquals(UpgradeType.UPGRADE_NOT_NEEDED, upgrader.checkUpgradeNeeded(projectWithVersion("15")).requiredUpgrade());
+        assertEquals(UpgradeType.DOWNGRADE_NEEDED, upgrader.checkUpgradeNeeded(projectWithVersion("16")).requiredUpgrade());
     }
 
     @Test
@@ -115,13 +115,13 @@ public class DefaultProjectUpgraderTest {
         // files are rewritten in the current version, the obsolete graph file is deleted
         String project = Files.readString(projectFile.toPath());
         assertFalse(project.contains("project-version"), project);
-        assertTrue(project.contains("http://cayenne.apache.org/schema/14/project"), project);
+        assertTrue(project.contains("http://cayenne.apache.org/schema/15/project"), project);
         assertFalse(project.contains("<node"), project);
         assertFalse(project.contains("include"), project);
 
         String map = Files.readString(mapFile.toPath());
         assertFalse(map.contains("project-version"), map);
-        assertTrue(map.contains("http://cayenne.apache.org/schema/14/dataMap"), map);
+        assertTrue(map.contains("http://cayenne.apache.org/schema/15/dataMap"), map);
 
         assertFalse(graphFile.exists(), "graph file must be deleted");
 

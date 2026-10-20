@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/15/dataMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/dataMap https://cayenne.apache.org/schema/14/dataMap.xsd"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/15/dataMap https://cayenne.apache.org/schema/15/dataMap.xsd"
 	 defaultPackage="org.apache.cayenne.testdo.relationships_collection_to_many">
 	<dbEntity name="COLLECTION_TO_MANY">
 		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
@@ -15,7 +15,7 @@
 	<dbRelationship name="targets" source="COLLECTION_TO_MANY" target="COLLECTION_TO_MANY_TARGET" toMany="true">
 		<dbAttributePair source="ID" target="COLLECTION_TO_MANY_ID"/>
 	</dbRelationship>
-	<dbRelationship name="collectionToMany" source="COLLECTION_TO_MANY_TARGET" target="COLLECTION_TO_MANY">
+	<dbRelationship name="collectionToMany" source="COLLECTION_TO_MANY_TARGET" target="COLLECTION_TO_MANY" foreignKey="true">
 		<dbAttributePair source="COLLECTION_TO_MANY_ID" target="ID"/>
 	</dbRelationship>
 	<objRelationship name="targets" source="CollectionToMany" target="CollectionToManyTarget" collectionType="java.util.Collection" dbRelationshipPath="targets"/>

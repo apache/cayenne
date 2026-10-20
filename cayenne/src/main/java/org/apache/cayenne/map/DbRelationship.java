@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.map;
 
-import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.project.ProjectNode;
 import org.apache.cayenne.project.ProjectNodeVisitor;
 import org.apache.cayenne.util.XMLEncoder;
@@ -28,9 +27,9 @@ import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 
 /**
@@ -42,11 +41,8 @@ public class DbRelationship extends Relationship<DbEntity, DbAttribute, DbRelati
     // The columns through which the join is implemented.
     protected List<DbJoin> joins = new ArrayList<>(2);
 
-    // Is relationship from source to target points to dependent primary
-    // key (primary key column of destination table that is also a FK to the
-    // source
-    // column)
-    protected boolean toDependentPK;
+    // true if the source join columns hold the FK that references the target join columns
+    protected boolean foreignKey;
 
     public DbRelationship() {
         super();
@@ -77,7 +73,7 @@ public class DbRelationship extends Relationship<DbEntity, DbAttribute, DbRelati
             encoder.attribute("target", getTargetEntityName());
         }
 
-        encoder.attribute("toDependentPK", isToDependentPK() && isValidForDepPk());
+        encoder.attribute("foreignKey", isForeignKey());
         encoder.attribute("toMany", isToMany());
 
         // skip empty joins that would otherwise be saved as useless "<dbAttributePair/>" tags
@@ -150,17 +146,10 @@ public class DbRelationship extends Relationship<DbEntity, DbAttribute, DbRelati
         reverse.setSourceEntity(targetEntity);
         reverse.setTargetEntityName(getSourceEntity().getName());
 
-        // TODO: andrus 12/24/2007 - one more case to handle - set reverse
-        // toDepPK = true
-        // if this relationship toDepPK is false, but the entities are joined on
-        // a PK...
-        // on the other hand, these can still be two independent entities...
-
-        if (isToDependentPK() && !toMany && joins.size() == targetEntity.getPrimaryKeys().size()) {
-            reverse.setToMany(false);
-        } else {
-            reverse.setToMany(!toMany);
-        }
+        // a to-many never holds the FK, so the reverse holds it exactly when this side doesn't. The reverse of an FK is
+        // to-one only when the FK columns are the whole source PK, as then a target row has at most one source row
+        reverse.setForeignKey(!foreignKey);
+        reverse.setToMany(foreignKey && !isSourcePK());
 
         for (DbJoin join : joins) {
             DbJoin reverseJoin = join.createReverseJoin();
@@ -221,20 +210,38 @@ public class DbRelationship extends Relationship<DbEntity, DbAttribute, DbRelati
     }
 
     /**
-     * Returns true if every join of this relationship points to a PK column of the target entity. This is a
-     * structural fact about the joins; whether the source row actually holds the FK is {@link #isFromFK()}.
+     * Returns true if the joins of this relationship cover the entire primary key of the target entity, so that the
+     * source join columns hold a complete target PK. A relationship to a subset of a composite PK, such as a to-many
+     * from a master to a dependent entity keyed by the master PK plus a discriminator, would return false.
      *
-     * @since 1.1
+     * @since 6.0
      */
-    public boolean isToPK() {
-        for (DbJoin join : getJoins()) {
+    public boolean isToPrimaryKey() {
+        // a to-many can't be to the full target PK; cheap check before the entity lookup
+        if (toMany || joins.isEmpty()) {
+            return false;
+        }
 
-            DbAttribute target = join.getTarget();
-            if (target == null) {
-                return false;
-            }
+        DbEntity target = getTargetEntity();
+        if (target == null) {
+            return false;
+        }
 
-            if (!target.isPrimaryKey()) {
+        Collection<DbAttribute> pk = target.getPrimaryKeys();
+        if (pk.size() != joins.size()) {
+            return false;
+        }
+
+        if (joins.size() == 1) {
+            DbAttribute joinTarget = joins.getFirst().getTarget();
+            return joinTarget != null && pk.contains(joinTarget);
+        }
+
+        // sizes match, so every PK column is covered if each join targets a distinct PK column
+        Set<DbAttribute> covered = HashSet.newHashSet(joins.size());
+        for (DbJoin join : joins) {
+            DbAttribute joinTarget = join.getTarget();
+            if (joinTarget == null || !pk.contains(joinTarget) || !covered.add(joinTarget)) {
                 return false;
             }
         }
@@ -243,46 +250,57 @@ public class DbRelationship extends Relationship<DbEntity, DbAttribute, DbRelati
     }
 
     /**
-     * Returns true if this relationship's source owns the foreign key side of the relationship. I.e., the source join
-     * columns are all foreign keys.
+     * Returns true if the source of this relationship holds the foreign key, i.e. the source join columns reference
+     * the target join columns. A to-many never holds the FK, and the to-one of a one-to-many always does. For a
+     * one-to-one joined PK to PK, this flag is the only thing that tells the two sides apart.
      *
-     * @since 5.0
+     * @since 6.0
      */
-    public boolean isFromFK() {
-        return !isToMany() && !isToDependentPK() && isToPK();
+    public boolean isForeignKey() {
+        return foreignKey;
     }
 
     /**
-     * Returns <code>true</code> if relationship from source to target points to
-     * dependent primary key. Dependent PK is a primary key column of the
-     * destination table that is also a FK to the source column.
+     * @since 6.0
      */
-    public boolean isToDependentPK() {
-        return toDependentPK;
-    }
-
-    public void setToDependentPK(boolean toDependentPK) {
-        this.toDependentPK = toDependentPK;
+    public void setForeignKey(boolean foreignKey) {
+        this.foreignKey = foreignKey;
     }
 
     /**
-     * @since 1.1
+     * Returns true if this is an identifying relationship: the source holds the {@link #isForeignKey() foreign key},
+     * and the FK columns are a part of the source primary key, so a source row can't exist without its target row.
+     * A join table of a many-to-many references each side this way, and so does a detail keyed by its master PK plus
+     * a sequence number.
+     *
+     * @since 6.0
      */
-    public boolean isValidForDepPk() {
-        // handle case with no joins
-        if (getJoins().isEmpty()) {
+    public boolean isIdentifying() {
+        if (!foreignKey || joins.isEmpty()) {
             return false;
         }
 
-        for (DbJoin join : getJoins()) {
-            DbAttribute target = join.getTarget();
+        for (DbJoin join : joins) {
             DbAttribute source = join.getSource();
-
-            if (target != null && !target.isPrimaryKey() || source != null && !source.isPrimaryKey()) {
+            if (source == null || !source.isPrimaryKey()) {
                 return false;
             }
         }
 
+        return true;
+    }
+
+    // true if the join source columns are exactly the PK of the source entity
+    private boolean isSourcePK() {
+        List<DbAttribute> pk = getSourceEntity().getPrimaryKeys();
+        if (joins.size() != pk.size()) {
+            return false;
+        }
+        for (DbJoin join : joins) {
+            if (!pk.contains(join.getSource())) {
+                return false;
+            }
+        }
         return true;
     }
 
@@ -318,67 +336,6 @@ public class DbRelationship extends Relationship<DbEntity, DbAttribute, DbRelati
 
         if (newJoins != null) {
             joins.addAll(newJoins);
-        }
-    }
-
-    /**
-     * Creates a snapshot of primary key attributes of a target object of this
-     * relationship based on a snapshot of a source. Only "to-one" relationships
-     * are supported. Returns null if relationship does not point to an object.
-     * Throws CayenneRuntimeException if relationship is "to many" or if
-     * snapshot is missing id components.
-     */
-    public Map<String, Object> targetPkSnapshotWithSrcSnapshot(Map<String, Object> srcSnapshot) {
-
-        if (isToMany()) {
-            throw new CayenneRuntimeException("Only 'to one' relationships support this method.");
-        }
-
-        Map<String, Object> idMap;
-
-        int numJoins = joins.size();
-        int foundNulls = 0;
-
-        // optimize for the most common single column join
-        if (numJoins == 1) {
-            DbJoin join = joins.getFirst();
-            Object val = srcSnapshot.get(join.getSourceName());
-            if (val == null) {
-                foundNulls++;
-                idMap = Collections.emptyMap();
-            } else {
-                idMap = Collections.singletonMap(join.getTargetName(), val);
-            }
-        }
-        // handle generic case: numJoins > 1
-        else {
-            idMap = HashMap.newHashMap(numJoins);
-            for (DbJoin join : joins) {
-                DbAttribute source = join.getSource();
-                Object val = srcSnapshot.get(join.getSourceName());
-
-                if (val == null) {
-
-                    // some keys may be nulls and some not in case of multi-key
-                    // relationships where PK and FK partially overlap (see
-                    // CAY-284)
-                    if (!source.isMandatory()) {
-                        return null;
-                    }
-
-                    foundNulls++;
-                } else {
-                    idMap.put(join.getTargetName(), val);
-                }
-            }
-        }
-
-        if (foundNulls == 0) {
-            return idMap;
-        } else if (foundNulls == numJoins) {
-            return null;
-        } else {
-            throw new CayenneRuntimeException("Some parts of FK are missing in snapshot, relationship: %s", this);
         }
     }
 

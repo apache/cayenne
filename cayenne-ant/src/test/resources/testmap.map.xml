@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/15/dataMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/dataMap http://cayenne.apache.org/schema/14/dataMap.xsd"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/15/dataMap http://cayenne.apache.org/schema/15/dataMap.xsd"
 	 defaultPackage="org.apache.cayenne.testdo.testmap"
 	 defaultSuperclass="org.apache.cayenne.GenericPersistentObject">
 	<procedure name="cayenne_tst_out_proc">
@@ -504,10 +504,10 @@
 	<dbRelationship name="toChildGroups" source="ARTGROUP" target="ARTGROUP" toMany="true">
 		<dbAttributePair source="GROUP_ID" target="PARENT_GROUP_ID"/>
 	</dbRelationship>
-	<dbRelationship name="toParentGroup" source="ARTGROUP" target="ARTGROUP" toMany="false">
+	<dbRelationship name="toParentGroup" source="ARTGROUP" target="ARTGROUP" foreignKey="true" toMany="false">
 		<dbAttributePair source="PARENT_GROUP_ID" target="GROUP_ID"/>
 	</dbRelationship>
-	<dbRelationship name="artistExhibitArray" source="ARTIST" target="ARTIST_EXHIBIT" toDependentPK="true" toMany="true">
+	<dbRelationship name="artistExhibitArray" source="ARTIST" target="ARTIST_EXHIBIT" toMany="true">
 		<dbAttributePair source="ARTIST_ID" target="ARTIST_ID"/>
 	</dbRelationship>
 	<dbRelationship name="artistGroupArray" source="ARTIST" target="ARTIST_GROUP" toMany="true">
@@ -516,25 +516,25 @@
 	<dbRelationship name="paintingArray" source="ARTIST" target="PAINTING" toMany="true">
 		<dbAttributePair source="ARTIST_ID" target="ARTIST_ID"/>
 	</dbRelationship>
-	<dbRelationship name="toArtist" source="ARTIST_EXHIBIT" target="ARTIST" toMany="false">
+	<dbRelationship name="toArtist" source="ARTIST_EXHIBIT" target="ARTIST" foreignKey="true" toMany="false">
 		<dbAttributePair source="ARTIST_ID" target="ARTIST_ID"/>
 	</dbRelationship>
-	<dbRelationship name="toExhibit" source="ARTIST_EXHIBIT" target="EXHIBIT" toMany="false">
+	<dbRelationship name="toExhibit" source="ARTIST_EXHIBIT" target="EXHIBIT" foreignKey="true" toMany="false">
 		<dbAttributePair source="EXHIBIT_ID" target="EXHIBIT_ID"/>
 	</dbRelationship>
-	<dbRelationship name="toArtist" source="ARTIST_GROUP" target="ARTIST" toMany="false">
+	<dbRelationship name="toArtist" source="ARTIST_GROUP" target="ARTIST" foreignKey="true" toMany="false">
 		<dbAttributePair source="ARTIST_ID" target="ARTIST_ID"/>
 	</dbRelationship>
-	<dbRelationship name="toGroup" source="ARTIST_GROUP" target="ARTGROUP" toMany="false">
+	<dbRelationship name="toGroup" source="ARTIST_GROUP" target="ARTGROUP" foreignKey="true" toMany="false">
 		<dbAttributePair source="GROUP_ID" target="GROUP_ID"/>
 	</dbRelationship>
 	<dbRelationship name="binaryPKDetails" source="BINARY_PK_TEST1" target="BINARY_PK_TEST2" toMany="true">
 		<dbAttributePair source="BIN_ID" target="FK_ID"/>
 	</dbRelationship>
-	<dbRelationship name="toBinaryPKMaster" source="BINARY_PK_TEST2" target="BINARY_PK_TEST1" toMany="false">
+	<dbRelationship name="toBinaryPKMaster" source="BINARY_PK_TEST2" target="BINARY_PK_TEST1" foreignKey="true" toMany="false">
 		<dbAttributePair source="FK_ID" target="BIN_ID"/>
 	</dbRelationship>
-	<dbRelationship name="toCharPK" source="CHAR_FK_TEST" target="CHAR_PK_TEST" toMany="false">
+	<dbRelationship name="toCharPK" source="CHAR_FK_TEST" target="CHAR_PK_TEST" foreignKey="true" toMany="false">
 		<dbAttributePair source="FK_COL" target="PK_COL"/>
 	</dbRelationship>
 	<dbRelationship name="charFKs" source="CHAR_PK_TEST" target="CHAR_FK_TEST" toMany="true">
@@ -543,10 +543,10 @@
 	<dbRelationship name="clob" source="CLOB_TEST" target="CLOB_TEST_RELATION" toMany="true">
 		<dbAttributePair source="CLOB_TEST_ID" target="ID_CLOB"/>
 	</dbRelationship>
-	<dbRelationship name="CLOB_REL" source="CLOB_TEST_RELATION" target="CLOB_TEST" toMany="false">
+	<dbRelationship name="CLOB_REL" source="CLOB_TEST_RELATION" target="CLOB_TEST" foreignKey="true" toMany="false">
 		<dbAttributePair source="ID_CLOB" target="CLOB_TEST_ID"/>
 	</dbRelationship>
-	<dbRelationship name="toCompoundPk" source="COMPOUND_FK_TEST" target="COMPOUND_PK_TEST" toMany="false">
+	<dbRelationship name="toCompoundPk" source="COMPOUND_FK_TEST" target="COMPOUND_PK_TEST" foreignKey="true" toMany="false">
 		<dbAttributePair source="F_KEY1" target="KEY1"/>
 		<dbAttributePair source="F_KEY2" target="KEY2"/>
 	</dbRelationship>
@@ -554,10 +554,10 @@
 		<dbAttributePair source="KEY1" target="F_KEY1"/>
 		<dbAttributePair source="KEY2" target="F_KEY2"/>
 	</dbRelationship>
-	<dbRelationship name="artistExhibitArray" source="EXHIBIT" target="ARTIST_EXHIBIT" toDependentPK="true" toMany="true">
+	<dbRelationship name="artistExhibitArray" source="EXHIBIT" target="ARTIST_EXHIBIT" toMany="true">
 		<dbAttributePair source="EXHIBIT_ID" target="EXHIBIT_ID"/>
 	</dbRelationship>
-	<dbRelationship name="toGallery" source="EXHIBIT" target="GALLERY" toMany="false">
+	<dbRelationship name="toGallery" source="EXHIBIT" target="GALLERY" foreignKey="true" toMany="false">
 		<dbAttributePair source="GALLERY_ID" target="GALLERY_ID"/>
 	</dbRelationship>
 	<dbRelationship name="exhibitArray" source="GALLERY" target="EXHIBIT" toMany="true">
@@ -566,16 +566,16 @@
 	<dbRelationship name="paintingArray" source="GALLERY" target="PAINTING" toMany="true">
 		<dbAttributePair source="GALLERY_ID" target="GALLERY_ID"/>
 	</dbRelationship>
-	<dbRelationship name="toMaster" source="GENERATED_COLUMN_COMP_KEY" target="GENERATED_COLUMN_COMP_M" toMany="false">
+	<dbRelationship name="toMaster" source="GENERATED_COLUMN_COMP_KEY" target="GENERATED_COLUMN_COMP_M" foreignKey="true" toMany="false">
 		<dbAttributePair source="PROPAGATED_PK" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="toDetail" source="GENERATED_COLUMN_COMP_M" target="GENERATED_COLUMN_COMP_KEY" toDependentPK="true" toMany="true">
+	<dbRelationship name="toDetail" source="GENERATED_COLUMN_COMP_M" target="GENERATED_COLUMN_COMP_KEY" toMany="true">
 		<dbAttributePair source="ID" target="PROPAGATED_PK"/>
 	</dbRelationship>
-	<dbRelationship name="toMaster" source="GENERATED_COLUMN_DEP" target="GENERATED_COLUMN_TEST" toMany="false">
+	<dbRelationship name="toMaster" source="GENERATED_COLUMN_DEP" target="GENERATED_COLUMN_TEST" foreignKey="true" toMany="false">
 		<dbAttributePair source="GENERATED_COLUMN_FK" target="GENERATED_COLUMN"/>
 	</dbRelationship>
-	<dbRelationship name="toDep" source="GENERATED_COLUMN_TEST" target="GENERATED_COLUMN_DEP" toDependentPK="true" toMany="false">
+	<dbRelationship name="toDep" source="GENERATED_COLUMN_TEST" target="GENERATED_COLUMN_DEP" toMany="false">
 		<dbAttributePair source="GENERATED_COLUMN" target="GENERATED_COLUMN_FK"/>
 	</dbRelationship>
 	<dbRelationship name="join" source="GENERATED_F1" target="GENERATED_JOIN" toMany="true">
@@ -584,13 +584,13 @@
 	<dbRelationship name="join" source="GENERATED_F2" target="GENERATED_JOIN" toMany="true">
 		<dbAttributePair source="ID" target="ID2"/>
 	</dbRelationship>
-	<dbRelationship name="f1" source="GENERATED_JOIN" target="GENERATED_F1" toMany="false">
+	<dbRelationship name="f1" source="GENERATED_JOIN" target="GENERATED_F1" foreignKey="true" toMany="false">
 		<dbAttributePair source="ID1" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="f2" source="GENERATED_JOIN" target="GENERATED_F2" toMany="false">
+	<dbRelationship name="f2" source="GENERATED_JOIN" target="GENERATED_F2" foreignKey="true" toMany="false">
 		<dbAttributePair source="ID2" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="toMeaningfulPK" source="MEANINGFUL_PK_DEP" target="MEANINGFUL_PK_TEST1" toMany="false">
+	<dbRelationship name="toMeaningfulPK" source="MEANINGFUL_PK_DEP" target="MEANINGFUL_PK_TEST1" foreignKey="true" toMany="false">
 		<dbAttributePair source="MASTER_PK" target="PK_ATTRIBUTE"/>
 	</dbRelationship>
 	<dbRelationship name="meaningfulPKDepArray" source="MEANINGFUL_PK_TEST1" target="MEANINGFUL_PK_DEP" toMany="true">
@@ -599,22 +599,22 @@
 	<dbRelationship name="details" source="MIXED_PERSISTENCE_STRATEGY" target="MIXED_PERSISTENCE_STRATEGY2" toMany="true">
 		<dbAttributePair source="ID" target="MASTER_ID"/>
 	</dbRelationship>
-	<dbRelationship name="master" source="MIXED_PERSISTENCE_STRATEGY2" target="MIXED_PERSISTENCE_STRATEGY" toMany="false">
+	<dbRelationship name="master" source="MIXED_PERSISTENCE_STRATEGY2" target="MIXED_PERSISTENCE_STRATEGY" foreignKey="true" toMany="false">
 		<dbAttributePair source="MASTER_ID" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="toArtist" source="PAINTING" target="ARTIST" toMany="false">
+	<dbRelationship name="toArtist" source="PAINTING" target="ARTIST" foreignKey="true" toMany="false">
 		<dbAttributePair source="ARTIST_ID" target="ARTIST_ID"/>
 	</dbRelationship>
-	<dbRelationship name="toGallery" source="PAINTING" target="GALLERY" toMany="false">
+	<dbRelationship name="toGallery" source="PAINTING" target="GALLERY" foreignKey="true" toMany="false">
 		<dbAttributePair source="GALLERY_ID" target="GALLERY_ID"/>
 	</dbRelationship>
-	<dbRelationship name="toPaintingInfo" source="PAINTING" target="PAINTING_INFO" toDependentPK="true" toMany="false">
+	<dbRelationship name="toPaintingInfo" source="PAINTING" target="PAINTING_INFO" toMany="false">
 		<dbAttributePair source="PAINTING_ID" target="PAINTING_ID"/>
 	</dbRelationship>
-	<dbRelationship name="toArtist" source="PAINTING1" target="ARTIST" toMany="false">
+	<dbRelationship name="toArtist" source="PAINTING1" target="ARTIST" foreignKey="true" toMany="false">
 		<dbAttributePair source="ARTIST_ID" target="ARTIST_ID"/>
 	</dbRelationship>
-	<dbRelationship name="painting" source="PAINTING_INFO" target="PAINTING" toMany="false">
+	<dbRelationship name="painting" source="PAINTING_INFO" target="PAINTING" foreignKey="true" toMany="false">
 		<dbAttributePair source="PAINTING_ID" target="PAINTING_ID"/>
 	</dbRelationship>
 	<objRelationship name="artistArray" source="ArtGroup" target="Artist" deleteRule="nullify" dbRelationshipPath="artistGroupArray.toArtist"/>

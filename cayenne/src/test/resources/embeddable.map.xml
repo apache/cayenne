@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/15/dataMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/dataMap https://cayenne.apache.org/schema/14/dataMap.xsd"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/15/dataMap https://cayenne.apache.org/schema/15/dataMap.xsd"
 	 defaultPackage="org.apache.cayenne.testdo.embeddable">
 	<embeddable className="org.apache.cayenne.testdo.embeddable.Embeddable1">
 		<embeddableAttribute name="embedded20" type="java.lang.String" dbAttributeName="EMBEDDED20"/>
@@ -55,16 +55,16 @@
 		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>
 		<objAttribute name="type" type="int" dbAttributePath="TYPE"/>
 	</objEntity>
-	<dbRelationship name="root" source="EMBED_CHILD" target="EMBED_ROOT">
+	<dbRelationship name="root" source="EMBED_CHILD" target="EMBED_ROOT" foreignKey="true">
 		<dbAttributePair source="ID" target="ID"/>
 	</dbRelationship>
 	<dbRelationship name="untitledRel" source="EMBED_ENTITY1" target="EMBED_ENTITY2" toMany="true">
 		<dbAttributePair source="ID" target="ENTITY1_ID"/>
 	</dbRelationship>
-	<dbRelationship name="untitledRel" source="EMBED_ENTITY2" target="EMBED_ENTITY1">
+	<dbRelationship name="untitledRel" source="EMBED_ENTITY2" target="EMBED_ENTITY1" foreignKey="true">
 		<dbAttributePair source="ENTITY1_ID" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="child" source="EMBED_ROOT" target="EMBED_CHILD" toDependentPK="true">
+	<dbRelationship name="child" source="EMBED_ROOT" target="EMBED_CHILD">
 		<dbAttributePair source="ID" target="ID"/>
 	</dbRelationship>
 	<objRelationship name="embedEntity2s" source="EmbedEntity1" target="EmbedEntity2" deleteRule="deny" dbRelationshipPath="untitledRel"/>

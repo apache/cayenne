@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/15/dataMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/dataMap https://cayenne.apache.org/schema/14/dataMap.xsd"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/15/dataMap https://cayenne.apache.org/schema/15/dataMap.xsd"
 	 defaultPackage="org.apache.cayenne.testdo.oneway">
 	<dbEntity name="oneway_table1">
 		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
@@ -23,7 +23,7 @@
 	</objEntity>
 	<objEntity name="OnewayTable3" className="org.apache.cayenne.testdo.oneway.OnewayTable3" dbEntityName="oneway_table3"/>
 	<objEntity name="OnewayTable4" className="org.apache.cayenne.testdo.oneway.OnewayTable4" dbEntityName="oneway_table4"/>
-	<dbRelationship name="toOneOneWayDb" source="oneway_table2" target="oneway_table1">
+	<dbRelationship name="toOneOneWayDb" source="oneway_table2" target="oneway_table1" foreignKey="true">
 		<dbAttributePair source="TABLE1_ID" target="ID"/>
 	</dbRelationship>
 	<dbRelationship name="toManyOneWayDb" source="oneway_table3" target="oneway_table4" toMany="true">

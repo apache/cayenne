@@ -17,9 +17,9 @@
 	specific language governing permissions and limitations
 	under the License.
 -->
-<dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/15/dataMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/dataMap https://cayenne.apache.org/schema/14/dataMap.xsd"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/15/dataMap https://cayenne.apache.org/schema/15/dataMap.xsd"
 	 defaultPackage="org.not.my.home">
 	<dbEntity name="A" schema="APP">
 		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true" length="10"/>
@@ -29,16 +29,16 @@
 		<dbAttribute name="A2_ID" type="INTEGER" primaryKey="true" mandatory="true" length="10"/>
 	</dbEntity>
 	<objEntity name="A" className="org.not.my.home.A" dbEntityName="A"/>
-	<dbRelationship name="aAs" source="A" target="A_A" toDependentPK="true" toMany="true">
+	<dbRelationship name="aAs" source="A" target="A_A" toMany="true">
 		<dbAttributePair source="ID" target="A2_ID"/>
 	</dbRelationship>
-	<dbRelationship name="aAs1" source="A" target="A_A" toDependentPK="true" toMany="true">
+	<dbRelationship name="aAs1" source="A" target="A_A" toMany="true">
 		<dbAttributePair source="ID" target="A1_ID"/>
 	</dbRelationship>
-	<dbRelationship name="a1" source="A_A" target="A">
+	<dbRelationship name="a1" source="A_A" target="A" foreignKey="true">
 		<dbAttributePair source="A1_ID" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="a2" source="A_A" target="A">
+	<dbRelationship name="a2" source="A_A" target="A" foreignKey="true">
 		<dbAttributePair source="A2_ID" target="ID"/>
 	</dbRelationship>
 	<objRelationship name="a1s" source="A" target="A" dbRelationshipPath="aAs.a1"/>

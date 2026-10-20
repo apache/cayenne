@@ -17,9 +17,9 @@
 	specific language governing permissions and limitations
 	under the License.
 -->
-<dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/15/dataMap"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://cayenne.apache.org/schema/14/dataMap http://cayenne.apache.org/schema/14/dataMap.xsd"
+          xsi:schemaLocation="http://cayenne.apache.org/schema/15/dataMap http://cayenne.apache.org/schema/15/dataMap.xsd"
 	 defaultSchema="SCHEMA_01">
     <dbEntity name="TEST1" schema="SCHEMA_01">
         <dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true" length="10"/>
@@ -102,28 +102,28 @@
     <dbRelationship name="TEST1_TO_TEST2" source="TEST1" target="TEST2" toMany="true">
         <dbAttributePair source="ID" target="TEST1_ID"/>
     </dbRelationship>
-    <dbRelationship name="TEST2_TO_TEST1" source="TEST2" target="TEST1">
+    <dbRelationship name="TEST2_TO_TEST1" source="TEST2" target="TEST1" foreignKey="true">
         <dbAttributePair source="TEST1_ID" target="ID"/>
     </dbRelationship>
 
     <dbRelationship name="test8s" source="TEST7" target="TEST8" toMany="true">
         <dbAttributePair source="ID" target="TEST7_ID"/>
     </dbRelationship>
-    <dbRelationship name="test7" source="TEST8" target="TEST7">
+    <dbRelationship name="test7" source="TEST8" target="TEST7" foreignKey="true">
         <dbAttributePair source="TEST7_ID" target="ID"/>
     </dbRelationship>
 
     <dbRelationship name="test10s" source="TEST9" target="TEST10" toMany="true">
         <dbAttributePair source="ID" target="TEST9_ID"/>
     </dbRelationship>
-    <dbRelationship name="test9" source="TEST10" target="TEST9">
+    <dbRelationship name="test9" source="TEST10" target="TEST9" foreignKey="true">
         <dbAttributePair source="TEST9_ID" target="ID"/>
     </dbRelationship>
 
     <dbRelationship name="test12s" source="TEST11" target="TEST12" toMany="true">
         <dbAttributePair source="ID" target="TEST11_ID"/>
     </dbRelationship>
-    <dbRelationship name="test11" source="TEST12" target="TEST11">
+    <dbRelationship name="test11" source="TEST12" target="TEST11" foreignKey="true">
         <dbAttributePair source="TEST11_ID" target="ID"/>
     </dbRelationship>
 

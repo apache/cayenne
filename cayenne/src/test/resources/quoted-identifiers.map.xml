@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/15/dataMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/dataMap https://cayenne.apache.org/schema/14/dataMap.xsd"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/15/dataMap https://cayenne.apache.org/schema/15/dataMap.xsd"
 	 defaultPackage="org.apache.cayenne.testdo.quotemap"
 	 quoteSqlIdentifiers="true">
 	<dbEntity name="QUOTED_ADDRESS">
@@ -32,7 +32,7 @@
 	<dbRelationship name="personRel" source="QUOTED_ADDRESS" target="quote Person">
 		<dbAttributePair source="ADDRESS ID" target="address_id"/>
 	</dbRelationship>
-	<dbRelationship name="addressRel" source="quote Person" target="QUOTED_ADDRESS">
+	<dbRelationship name="addressRel" source="quote Person" target="QUOTED_ADDRESS" foreignKey="true">
 		<dbAttributePair source="address_id" target="ADDRESS ID"/>
 	</dbRelationship>
 	<objRelationship name="person_Rel" source="QuoteAdress" target="Quote_Person" deleteRule="nullify" dbRelationshipPath="personRel"/>

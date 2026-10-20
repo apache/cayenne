@@ -79,7 +79,7 @@ public class DbRelationshipHandler extends NamespaceAwareNestedTagHandler {
         dbRelationship.setSourceEntity(source);
         dbRelationship.setTargetEntityName(attributes.getValue("target"));
         dbRelationship.setToMany("true".equals(attributes.getValue("toMany")));
-        dbRelationship.setToDependentPK("true".equals(attributes.getValue("toDependentPK")));
+        dbRelationship.setForeignKey("true".equals(attributes.getValue("foreignKey")));
 
         source.addRelationship(dbRelationship);
     }

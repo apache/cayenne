@@ -23,10 +23,10 @@ Reference for the embedded `<cgen>` block inside a DataMap that drives `mcp__cay
 ## XML shape (embedded in a DataMap)
 
 ```xml
-<dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap" ...>
+<dataMap xmlns="http://cayenne.apache.org/schema/15/dataMap" ...>
     ...entities, relationships, etc...
 
-    <cgen xmlns="http://cayenne.apache.org/schema/14/cgen">
+    <cgen xmlns="http://cayenne.apache.org/schema/15/cgen">
         <destDir>../java</destDir>
         <mode>entity</mode>
         <excludeEntities></excludeEntities>
@@ -41,7 +41,7 @@ Reference for the embedded `<cgen>` block inside a DataMap that drives `mcp__cay
 </dataMap>
 ```
 
-Note the **different namespace** for `<cgen>` (`http://cayenne.apache.org/schema/14/cgen`) — it is a separate schema embedded in the dataMap schema.
+Note the **different namespace** for `<cgen>` (`http://cayenne.apache.org/schema/15/cgen`) — it is a separate schema embedded in the dataMap schema.
 
 ## Field reference
 
@@ -150,7 +150,7 @@ If the map file lives under a test resource directory (`src/test/resources/`, `t
 ## Recommended starting config
 
 ```xml
-<cgen xmlns="http://cayenne.apache.org/schema/14/cgen">
+<cgen xmlns="http://cayenne.apache.org/schema/15/cgen">
     <destDir>../java</destDir>
     <mode>entity</mode>
     <makePairs>true</makePairs>

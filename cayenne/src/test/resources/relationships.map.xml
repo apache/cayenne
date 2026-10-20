@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/15/dataMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/dataMap https://cayenne.apache.org/schema/14/dataMap.xsd"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/15/dataMap https://cayenne.apache.org/schema/15/dataMap.xsd"
 	 defaultPackage="org.apache.cayenne.testdo.relationships">
 	<dbEntity name="CYCLE_E1">
 		<dbAttribute name="e2_id" type="INTEGER"/>
@@ -47,31 +47,31 @@
 	<objEntity name="RelationshipHelper" className="org.apache.cayenne.testdo.relationships.RelationshipHelper" dbEntityName="RELATIONSHIP_HELPER">
 		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>
 	</objEntity>
-	<dbRelationship name="e2" source="CYCLE_E1" target="CYCLE_E2">
+	<dbRelationship name="e2" source="CYCLE_E1" target="CYCLE_E2" foreignKey="true">
 		<dbAttributePair source="e2_id" target="id"/>
 	</dbRelationship>
 	<dbRelationship name="e2s" source="CYCLE_E1" target="CYCLE_E2" toMany="true">
 		<dbAttributePair source="id" target="e1_id"/>
 	</dbRelationship>
-	<dbRelationship name="e1" source="CYCLE_E2" target="CYCLE_E1">
+	<dbRelationship name="e1" source="CYCLE_E2" target="CYCLE_E1" foreignKey="true">
 		<dbAttributePair source="e1_id" target="id"/>
 	</dbRelationship>
 	<dbRelationship name="e1s" source="CYCLE_E2" target="CYCLE_E1" toMany="true">
 		<dbAttributePair source="id" target="e2_id"/>
 	</dbRelationship>
-	<dbRelationship name="relationshipHelper" source="FK_OF_DIFFERENT_TYPE" target="RELATIONSHIP_HELPER">
+	<dbRelationship name="relationshipHelper" source="FK_OF_DIFFERENT_TYPE" target="RELATIONSHIP_HELPER" foreignKey="true">
 		<dbAttributePair source="RELATIONSHIP_HELPER_FK" target="RELATIONSHIP_HELPER_ID"/>
 	</dbRelationship>
-	<dbRelationship name="toRelationshipHelper" source="MEANINGFUL_FK" target="RELATIONSHIP_HELPER">
+	<dbRelationship name="toRelationshipHelper" source="MEANINGFUL_FK" target="RELATIONSHIP_HELPER" foreignKey="true">
 		<dbAttributePair source="RELATIONSHIP_HELPER_ID" target="RELATIONSHIP_HELPER_ID"/>
 	</dbRelationship>
 	<dbRelationship name="children" source="REFLEXIVE_AND_TO_ONE" target="REFLEXIVE_AND_TO_ONE" toMany="true">
 		<dbAttributePair source="REFLEXIVE_AND_TO_ONE_ID" target="PARENT_ID"/>
 	</dbRelationship>
-	<dbRelationship name="toHelper" source="REFLEXIVE_AND_TO_ONE" target="RELATIONSHIP_HELPER">
+	<dbRelationship name="toHelper" source="REFLEXIVE_AND_TO_ONE" target="RELATIONSHIP_HELPER" foreignKey="true">
 		<dbAttributePair source="RELATIONSHIP_HELPER_ID" target="RELATIONSHIP_HELPER_ID"/>
 	</dbRelationship>
-	<dbRelationship name="toParent" source="REFLEXIVE_AND_TO_ONE" target="REFLEXIVE_AND_TO_ONE">
+	<dbRelationship name="toParent" source="REFLEXIVE_AND_TO_ONE" target="REFLEXIVE_AND_TO_ONE" foreignKey="true">
 		<dbAttributePair source="PARENT_ID" target="REFLEXIVE_AND_TO_ONE_ID"/>
 	</dbRelationship>
 	<dbRelationship name="fksOfDifferentType" source="RELATIONSHIP_HELPER" target="FK_OF_DIFFERENT_TYPE" toMany="true">

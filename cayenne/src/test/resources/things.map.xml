@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/15/dataMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/dataMap https://cayenne.apache.org/schema/14/dataMap.xsd"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/15/dataMap https://cayenne.apache.org/schema/15/dataMap.xsd"
 	 defaultPackage="org.apache.cayenne.testdo.things">
 	<dbEntity name="BAG">
 		<dbAttribute name="ID" type="BIGINT" primaryKey="true" mandatory="true"/>
@@ -53,14 +53,14 @@
 	<dbRelationship name="BOXES" source="BAG" target="BOX" toMany="true">
 		<dbAttributePair source="ID" target="BAG_ID"/>
 	</dbRelationship>
-	<dbRelationship name="BOX" source="BALL" target="BOX">
+	<dbRelationship name="BOX" source="BALL" target="BOX" foreignKey="true">
 		<dbAttributePair source="BOX_ID" target="ID"/>
 	</dbRelationship>
 	<dbRelationship name="THING" source="BALL" target="THING">
 		<dbAttributePair source="THING_VOLUME" target="VOLUME"/>
 		<dbAttributePair source="THING_WEIGHT" target="WEIGHT"/>
 	</dbRelationship>
-	<dbRelationship name="BAG" source="BOX" target="BAG">
+	<dbRelationship name="BAG" source="BOX" target="BAG" foreignKey="true">
 		<dbAttributePair source="BAG_ID" target="ID"/>
 	</dbRelationship>
 	<dbRelationship name="BALLS" source="BOX" target="BALL" toMany="true">
@@ -72,10 +72,10 @@
 	<dbRelationship name="BOX_THING" source="BOX" target="BOX_THING" toMany="true">
 		<dbAttributePair source="ID" target="BOX_ID"/>
 	</dbRelationship>
-	<dbRelationship name="BOX" source="BOX_INFO" target="BOX">
+	<dbRelationship name="BOX" source="BOX_INFO" target="BOX" foreignKey="true">
 		<dbAttributePair source="BOX_ID" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="BOX" source="BOX_THING" target="BOX">
+	<dbRelationship name="BOX" source="BOX_THING" target="BOX" foreignKey="true">
 		<dbAttributePair source="BOX_ID" target="ID"/>
 	</dbRelationship>
 	<dbRelationship name="THING" source="BOX_THING" target="THING">

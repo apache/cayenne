@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/15/dataMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/dataMap https://cayenne.apache.org/schema/14/dataMap.xsd"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/15/dataMap https://cayenne.apache.org/schema/15/dataMap.xsd"
 	 defaultPackage="org.apache.cayenne.testdo.relationships_to_many_fk">
 	<dbEntity name="TO_MANY_FKDEP">
 		<dbAttribute name="DEP_ID" type="INTEGER" primaryKey="true" mandatory="true"/>
@@ -31,13 +31,13 @@
 	<dbRelationship name="root" source="TO_MANY_FKDEP" target="TO_MANY_FKROOT">
 		<dbAttributePair source="DEP_ID" target="FK_ID"/>
 	</dbRelationship>
-	<dbRelationship name="root2" source="TO_MANY_FKDEP" target="TO_MANY_ROOT2">
+	<dbRelationship name="root2" source="TO_MANY_FKDEP" target="TO_MANY_ROOT2" foreignKey="true">
 		<dbAttributePair source="OTHER_ID" target="ID"/>
 	</dbRelationship>
 	<dbRelationship name="deps" source="TO_MANY_FKROOT" target="TO_MANY_FKDEP" toMany="true">
 		<dbAttributePair source="FK_ID" target="DEP_ID"/>
 	</dbRelationship>
-	<dbRelationship name="deps" source="TO_MANY_ROOT2" target="TO_MANY_FKDEP" toDependentPK="true" toMany="true">
+	<dbRelationship name="deps" source="TO_MANY_ROOT2" target="TO_MANY_FKDEP" toMany="true">
 		<dbAttributePair source="ID" target="OTHER_ID"/>
 	</dbRelationship>
 	<objRelationship name="root" source="ToManyFkDep" target="ToManyFkRoot" dbRelationshipPath="root"/>

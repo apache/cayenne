@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/15/dataMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/dataMap https://cayenne.apache.org/schema/14/dataMap.xsd"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/15/dataMap https://cayenne.apache.org/schema/15/dataMap.xsd"
 	 defaultPackage="org.apache.cayenne.testdo.relationships_flattened">
 	<dbEntity name="COMPLEX_JOIN">
 		<dbAttribute name="EXTRA_COLUMN" type="VARCHAR" length="50"/>
@@ -74,40 +74,40 @@
 	<objEntity name="FlattenedTest5" className="org.apache.cayenne.testdo.relationships_flattened.FlattenedTest5" dbEntityName="FLATTENED_TEST_5">
 		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>
 	</objEntity>
-	<dbRelationship name="toFT1" source="COMPLEX_JOIN" target="FLATTENED_TEST_1">
+	<dbRelationship name="toFT1" source="COMPLEX_JOIN" target="FLATTENED_TEST_1" foreignKey="true">
 		<dbAttributePair source="FT1_FK" target="FT1_ID"/>
 	</dbRelationship>
-	<dbRelationship name="toFT3" source="COMPLEX_JOIN" target="FLATTENED_TEST_3">
+	<dbRelationship name="toFT3" source="COMPLEX_JOIN" target="FLATTENED_TEST_3" foreignKey="true">
 		<dbAttributePair source="FT3_FK" target="FT3_ID"/>
 	</dbRelationship>
-	<dbRelationship name="toFT1" source="COMPLEX_JOIN2" target="FLATTENED_TEST_1">
+	<dbRelationship name="toFT1" source="COMPLEX_JOIN2" target="FLATTENED_TEST_1" foreignKey="true">
 		<dbAttributePair source="FT1_FK" target="FT1_ID"/>
 	</dbRelationship>
-	<dbRelationship name="toFT5" source="COMPLEX_JOIN2" target="FLATTENED_TEST_5">
+	<dbRelationship name="toFT5" source="COMPLEX_JOIN2" target="FLATTENED_TEST_5" foreignKey="true">
 		<dbAttributePair source="FT5_FK" target="FT5_ID"/>
 	</dbRelationship>
 	<dbRelationship name="toEntity2" source="ENTITY1" target="ENTITY2">
 		<dbAttributePair source="ID" target="ENTITY1_ID"/>
 	</dbRelationship>
-	<dbRelationship name="toEntity1" source="ENTITY2" target="ENTITY1">
+	<dbRelationship name="toEntity1" source="ENTITY2" target="ENTITY1" foreignKey="true">
 		<dbAttributePair source="ENTITY1_ID" target="ID"/>
 	</dbRelationship>
 	<dbRelationship name="toEntity3" source="ENTITY2" target="ENTITY3">
 		<dbAttributePair source="ID" target="ENTITY2_ID"/>
 	</dbRelationship>
-	<dbRelationship name="toEntity2" source="ENTITY3" target="ENTITY2">
+	<dbRelationship name="toEntity2" source="ENTITY3" target="ENTITY2" foreignKey="true">
 		<dbAttributePair source="ENTITY2_ID" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="side1s" source="FLATTENED_CIRCULAR" target="FLATTENED_CIRCULAR_JOIN" toDependentPK="true" toMany="true">
+	<dbRelationship name="side1s" source="FLATTENED_CIRCULAR" target="FLATTENED_CIRCULAR_JOIN" toMany="true">
 		<dbAttributePair source="ID" target="SIDE2_ID"/>
 	</dbRelationship>
-	<dbRelationship name="side2s" source="FLATTENED_CIRCULAR" target="FLATTENED_CIRCULAR_JOIN" toDependentPK="true" toMany="true">
+	<dbRelationship name="side2s" source="FLATTENED_CIRCULAR" target="FLATTENED_CIRCULAR_JOIN" toMany="true">
 		<dbAttributePair source="ID" target="SIDE1_ID"/>
 	</dbRelationship>
-	<dbRelationship name="side1" source="FLATTENED_CIRCULAR_JOIN" target="FLATTENED_CIRCULAR">
+	<dbRelationship name="side1" source="FLATTENED_CIRCULAR_JOIN" target="FLATTENED_CIRCULAR" foreignKey="true">
 		<dbAttributePair source="SIDE1_ID" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="side2" source="FLATTENED_CIRCULAR_JOIN" target="FLATTENED_CIRCULAR">
+	<dbRelationship name="side2" source="FLATTENED_CIRCULAR_JOIN" target="FLATTENED_CIRCULAR" foreignKey="true">
 		<dbAttributePair source="SIDE2_ID" target="ID"/>
 	</dbRelationship>
 	<dbRelationship name="complexJoins" source="FLATTENED_TEST_1" target="COMPLEX_JOIN" toMany="true">
@@ -122,7 +122,7 @@
 	<dbRelationship name="ft3Array" source="FLATTENED_TEST_2" target="FLATTENED_TEST_3" toMany="true">
 		<dbAttributePair source="FT2_ID" target="FT2_ID"/>
 	</dbRelationship>
-	<dbRelationship name="toFT1" source="FLATTENED_TEST_2" target="FLATTENED_TEST_1">
+	<dbRelationship name="toFT1" source="FLATTENED_TEST_2" target="FLATTENED_TEST_1" foreignKey="true">
 		<dbAttributePair source="FT1_ID" target="FT1_ID"/>
 	</dbRelationship>
 	<dbRelationship name="complexJoins" source="FLATTENED_TEST_3" target="COMPLEX_JOIN" toMany="true">
@@ -131,10 +131,10 @@
 	<dbRelationship name="ft4Array" source="FLATTENED_TEST_3" target="FLATTENED_TEST_4" toMany="true">
 		<dbAttributePair source="FT3_ID" target="FT3_ID"/>
 	</dbRelationship>
-	<dbRelationship name="toFT2" source="FLATTENED_TEST_3" target="FLATTENED_TEST_2">
+	<dbRelationship name="toFT2" source="FLATTENED_TEST_3" target="FLATTENED_TEST_2" foreignKey="true">
 		<dbAttributePair source="FT2_ID" target="FT2_ID"/>
 	</dbRelationship>
-	<dbRelationship name="toFT3" source="FLATTENED_TEST_4" target="FLATTENED_TEST_3">
+	<dbRelationship name="toFT3" source="FLATTENED_TEST_4" target="FLATTENED_TEST_3" foreignKey="true">
 		<dbAttributePair source="FT3_ID" target="FT3_ID"/>
 	</dbRelationship>
 	<dbRelationship name="complexJoin2" source="FLATTENED_TEST_5" target="COMPLEX_JOIN2">

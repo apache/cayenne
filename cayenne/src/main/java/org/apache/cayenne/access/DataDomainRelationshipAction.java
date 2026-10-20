@@ -26,8 +26,6 @@ import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.query.ObjectSelect;
@@ -37,7 +35,6 @@ import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Resolves a relationship at the root of the DataChannel stack. Derives the related object from the snapshot cache
@@ -93,17 +90,12 @@ class DataDomainRelationshipAction {
         ObjRelationship relationship = arc.getRelationship();
 
         // only a to-one relationship holding the FK on the source allows to derive the target id from it
-        if (!relationship.isFromFK()) {
+        if (!relationship.isForeignKey()) {
             return null;
         }
 
-        // we can assume that there is one and only one DbRelationship as we previously checked "isFromFK"
-        DbRelationship dbRelationship = relationship.getDbRelationships().getFirst();
-
-        // FK pointing to a unique field that is a 'fake' PK (CAY-1755)... It is not sufficient to generate target
-        // ObjectId.
-        DbEntity targetEntity = dbRelationship.getTargetEntity();
-        if (dbRelationship.getJoins().size() < targetEntity.getPrimaryKeys().size()) {
+        // an FK to a unique column that is a 'fake' PK (CAY-1755) is not sufficient to generate the target id
+        if (!relationship.isToPrimaryKey()) {
             return null;
         }
 
@@ -113,13 +105,12 @@ class DataDomainRelationshipAction {
             return null;
         }
 
-        // null PK means that FK is null...
-        Map<String, Object> targetPk = dbRelationship.targetPkSnapshotWithSrcSnapshot(sourceRow);
-        if (targetPk == null) {
+        // a null FK means a null target
+        ObjectId targetId = ObjectSnapshots.targetId(relationship, sourceRow);
+        if (targetId == null) {
             return new ArrayList<>(1);
         }
 
-        ObjectId targetId = ObjectId.of(relationship.getTargetEntityName(), targetPk);
         DataRow targetRow = objectStore.getCachedSnapshot(targetId);
         if (targetRow != null) {
             return objectsFromCachedRows(arc, List.of(targetRow));

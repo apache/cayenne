@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/15/dataMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/dataMap https://cayenne.apache.org/schema/14/dataMap.xsd"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/15/dataMap https://cayenne.apache.org/schema/15/dataMap.xsd"
 	 defaultPackage="org.apache.cayenne.testdo.relationships_child_master">
 	<dbEntity name="CHILD">
 		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
@@ -15,7 +15,7 @@
 	<objEntity name="Master" className="org.apache.cayenne.testdo.relationships_child_master.Master" dbEntityName="MASTER">
 		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>
 	</objEntity>
-	<dbRelationship name="master" source="CHILD" target="MASTER">
+	<dbRelationship name="master" source="CHILD" target="MASTER" foreignKey="true">
 		<dbAttributePair source="MASTER_ID" target="ID"/>
 	</dbRelationship>
 	<dbRelationship name="children" source="MASTER" target="CHILD" toMany="true">

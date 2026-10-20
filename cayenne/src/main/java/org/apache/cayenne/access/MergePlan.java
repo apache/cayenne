@@ -116,7 +116,7 @@ final class MergePlan {
         for (i = 0; i < toOneFkColumns.length; i++) {
             ObjRelationship relationship = toOnes.get(i).getRelationship();
             // only an FK on the source lets the source snapshot tell whether the arc changed
-            if (!relationship.isFromFK()) {
+            if (!relationship.isForeignKey()) {
                 continue;
             }
             List<DbJoin> joins = relationship.getDbRelationships().getFirst().getJoins();

@@ -72,7 +72,7 @@ public class AddRelationshipToDb extends AbstractToDbToken.Entity {
 
     @Override
     public boolean isEmpty() {
-        return !relationship.isFromFK();
+        return !relationship.isForeignKey();
     }
 
 }

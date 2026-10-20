@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/15/dataMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/dataMap https://cayenne.apache.org/schema/14/dataMap.xsd"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/15/dataMap https://cayenne.apache.org/schema/15/dataMap.xsd"
 	 defaultPackage="org.apache.cayenne.testdo.meaningful_pk">
 	<dbEntity name="MEANINGFUL_PK">
 		<dbAttribute name="PK" type="VARCHAR" primaryKey="true" mandatory="true" length="100"/>
@@ -62,13 +62,13 @@
 		<objAttribute name="integerNullableAttribute" type="java.lang.Integer" dbAttributePath="INTEGER_NULLABLE_ATTRIBUTE"/>
 		<objAttribute name="pkAttribute" type="java.lang.Integer" dbAttributePath="PK_ATTRIBUTE"/>
 	</objEntity>
-	<dbRelationship name="dep2" source="MEANINGFUL_PK" target="MEANINGFUL_PK_DEP2" toDependentPK="true">
+	<dbRelationship name="dep2" source="MEANINGFUL_PK" target="MEANINGFUL_PK_DEP2">
 		<dbAttributePair source="PK" target="PK"/>
 	</dbRelationship>
-	<dbRelationship name="toMeaningfulPK" source="MEANINGFUL_PK_DEP" target="MEANINGFUL_PK_TEST1">
+	<dbRelationship name="toMeaningfulPK" source="MEANINGFUL_PK_DEP" target="MEANINGFUL_PK_TEST1" foreignKey="true">
 		<dbAttributePair source="MASTER_PK" target="PK_ATTRIBUTE"/>
 	</dbRelationship>
-	<dbRelationship name="meaningfulPk" source="MEANINGFUL_PK_DEP2" target="MEANINGFUL_PK">
+	<dbRelationship name="meaningfulPk" source="MEANINGFUL_PK_DEP2" target="MEANINGFUL_PK" foreignKey="true">
 		<dbAttributePair source="PK" target="PK"/>
 	</dbRelationship>
 	<dbRelationship name="meaningfulPKDepArray" source="MEANINGFUL_PK_TEST1" target="MEANINGFUL_PK_DEP" toMany="true">

@@ -281,15 +281,30 @@ public class ObjRelationship extends Relationship<ObjEntity, ObjAttribute, ObjRe
     }
 
     /**
-     * Returns true if this relationship's source owns the foreign key side of the relationship.
+     * Returns true if the source of this relationship holds the foreign key, i.e. this is a to-one over a single
+     * {@link DbRelationship#isForeignKey() foreign key} DbRelationship.
      *
-     * @since 5.0
+     * @since 6.0
      */
-    public boolean isFromFK() {
+    public boolean isForeignKey() {
         if (isToMany() || isFlattened()) {
             return false;
         }
-        return dbRelationships.getFirst().isFromFK();
+        return dbRelationships.getFirst().isForeignKey();
+    }
+
+    /**
+     * Returns true if the source join columns of this relationship hold a complete target primary key, i.e. this is a
+     * to-one over a single {@link DbRelationship#isToPrimaryKey() to-PK} DbRelationship. Unlike {@link #isForeignKey()}
+     * this says nothing about which side holds the FK: the inverse side of a PK-to-PK one-to-one qualifies too.
+     *
+     * @since 6.0
+     */
+    public boolean isToPrimaryKey() {
+        if (isFlattened()) {
+            return false;
+        }
+        return dbRelationships.getFirst().isToPrimaryKey();
     }
 
     /**

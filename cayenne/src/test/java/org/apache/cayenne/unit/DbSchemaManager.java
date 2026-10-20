@@ -122,8 +122,8 @@ public class DbSchemaManager {
 
     private static final Set<Integer> BINARY_TYPES = Set.of(Types.BINARY, Types.VARBINARY, Types.LONGVARBINARY);
 
-    // a table can't exist on a DB without binary PK support if its own PK is binary, or if one of its to-one
-    // relationships joins to a binary PK (the join column has the PK type). Same per-join rule as AshwoodEntitySorter
+    // a table can't exist on a DB without binary PK support if its own PK is binary, or if one of its FKs references
+    // a binary PK (the FK column has the PK type)
     private static boolean hasBinaryKey(DbEntity entity) {
         for (DbAttribute pk : entity.getPrimaryKeys()) {
             if (BINARY_TYPES.contains(pk.getType())) {
@@ -131,12 +131,12 @@ public class DbSchemaManager {
             }
         }
         for (DbRelationship relationship : entity.getRelationships()) {
-            if (relationship.isToMany() || relationship.isToDependentPK()) {
+            if (!relationship.isForeignKey()) {
                 continue;
             }
             for (DbJoin join : relationship.getJoins()) {
                 DbAttribute target = join.getTarget();
-                if (target != null && target.isPrimaryKey() && BINARY_TYPES.contains(target.getType())) {
+                if (target != null && BINARY_TYPES.contains(target.getType())) {
                     return true;
                 }
             }
@@ -237,7 +237,7 @@ public class DbSchemaManager {
     }
 
     private DataMap dataMapDependency(DataMap sourceMap, DbRelationship relationship) {
-        if (relationship.isRuntime() || !relationship.isFromFK()) {
+        if (relationship.isRuntime() || !relationship.isForeignKey()) {
             return null;
         }
 
@@ -460,7 +460,7 @@ public class DbSchemaManager {
 
         for (DbRelationship rel : table.getRelationships()) {
 
-            if (rel.isRuntime() || !rel.isFromFK()) {
+            if (rel.isRuntime() || !rel.isForeignKey()) {
                 continue;
             }
 
@@ -480,7 +480,7 @@ public class DbSchemaManager {
 
             if (adapter.supportsUniqueConstraints()) {
                 DbRelationship reverse = rel.getReverseRelationship();
-                if (reverse != null && !reverse.isToMany() && !reverse.isToPK()) {
+                if (reverse != null && !reverse.isToMany() && !reverse.isToPrimaryKey()) {
                     String unique = adapter.createUniqueConstraint(rel.getSourceEntity(), rel.getSourceAttributes());
                     if (unique != null) {
                         queries.add(unique);

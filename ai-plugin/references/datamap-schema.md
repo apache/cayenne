@@ -20,8 +20,8 @@
 
 Reference for editing Cayenne DataMap files directly.
 
-- **Namespace**: `http://cayenne.apache.org/schema/14/dataMap`
-- **XSD**: `http://cayenne.apache.org/schema/14/dataMap.xsd`
+- **Namespace**: `http://cayenne.apache.org/schema/15/dataMap`
+- **XSD**: `http://cayenne.apache.org/schema/15/dataMap.xsd`
 - **Project version**: `12` (Cayenne 5.0)
 - **Working example**: `cayenne-ant/src/test/resources/testmap.map.xml`
 
@@ -29,9 +29,9 @@ Reference for editing Cayenne DataMap files directly.
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
-<dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/15/dataMap"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://cayenne.apache.org/schema/14/dataMap http://cayenne.apache.org/schema/14/dataMap.xsd">
+          xsi:schemaLocation="http://cayenne.apache.org/schema/15/dataMap http://cayenne.apache.org/schema/15/dataMap.xsd">
     ...
 </dataMap>
 ```
@@ -43,7 +43,7 @@ Optional attributes of `<dataMap>` configure DataMap-wide settings: `defaultPack
 practice:
 
 ```xml
-<dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap" ...
+<dataMap xmlns="http://cayenne.apache.org/schema/15/dataMap" ...
          defaultPackage="com.example.model"
          defaultSuperclass="org.apache.cayenne.GenericPersistentObject">
 ```
@@ -134,7 +134,7 @@ PK columns are not normally mapped as `objAttribute` — they're handled implici
 | `source` | Owning DbEntity name |
 | `target` | Target DbEntity name |
 | `toMany` | `true` for one-to-many or many-to-many side |
-| `toDependentPK` | `true` when the target row's PK depends on this FK (typical for one-to-one or master/detail) |
+| `foreignKey` | `true` on the side whose join columns hold the FK: every to-one except the master side of a PK-to-PK one-to-one |
 
 Each `<dbAttributePair>` is one column of the join. Compound joins use multiple `<dbAttributePair>` elements.
 

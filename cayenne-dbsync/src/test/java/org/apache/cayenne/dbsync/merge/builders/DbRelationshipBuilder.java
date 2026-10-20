@@ -77,6 +77,8 @@ public class DbRelationshipBuilder extends DefaultBuilder<DbRelationship> {
             obj.addJoin(new DbJoin(obj, from[i], to[i]));
         }
 
+        // a to-one built from the FK side
+        obj.setForeignKey(!obj.isToMany());
         return obj;
     }
 }

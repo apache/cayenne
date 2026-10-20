@@ -77,7 +77,8 @@ public class RelationshipsLoaderIT extends BaseLoaderIT {
 
         assertNotNull(oneToOne, "No relationship to PAINTING_INFO");
         assertFalse(oneToOne.isToMany(), "Relationship to PAINTING_INFO must be to-one");
-        assertTrue(oneToOne.isToDependentPK(), "Relationship to PAINTING_INFO must be to-one");
+        assertFalse(oneToOne.isForeignKey(), "PAINTING holds no FK to PAINTING_INFO");
+        assertTrue(oneToOne.getReverseRelationship().isForeignKey(), "The PAINTING_INFO PK is an FK to PAINTING");
     }
 
     @Test

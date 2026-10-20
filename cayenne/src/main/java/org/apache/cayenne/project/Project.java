@@ -39,8 +39,8 @@ public class Project implements ProjectNode, XMLSerializable {
 	/**
 	 * The namespace in which the data map XML file will be created.
 	 */
-	public static final String SCHEMA_XSD = "http://cayenne.apache.org/schema/14/project";
-	public static final String SCHEMA_XSD_LOCATION = "https://cayenne.apache.org/schema/14/project.xsd";
+	public static final String SCHEMA_XSD = "http://cayenne.apache.org/schema/15/project";
+	public static final String SCHEMA_XSD_LOCATION = "https://cayenne.apache.org/schema/15/project.xsd";
 
 	protected String name;
 	protected boolean sharedCacheEnabled;

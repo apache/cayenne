@@ -157,13 +157,13 @@ public class CgenRunIT {
         Files.createDirectories(resources);
         Files.writeString(resources.resolve("cayenne-project.xml"), """
                 <?xml version="1.0" encoding="utf-8"?>
-                <project xmlns="http://cayenne.apache.org/schema/14/project">
+                <project xmlns="http://cayenne.apache.org/schema/15/project">
                     <map name="DefaultMap"/>
                 </project>
                 """);
         Files.writeString(mapFile, """
                 <?xml version="1.0" encoding="utf-8"?>
-                <dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap"
+                <dataMap xmlns="http://cayenne.apache.org/schema/15/dataMap"
                           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                           defaultPackage="com.example">
                     <objEntity name="Person" className="com.example.Person"/>
@@ -193,7 +193,7 @@ public class CgenRunIT {
         Path projectDescriptor = tempDir.resolve("cayenne-project.xml");
         Files.writeString(projectDescriptor, String.format("""
                 <?xml version="1.0" encoding="utf-8"?>
-                <project xmlns="http://cayenne.apache.org/schema/14/project">
+                <project xmlns="http://cayenne.apache.org/schema/15/project">
                     <map name="%s"/>
                 </project>
                 """, mapName));
@@ -201,11 +201,11 @@ public class CgenRunIT {
         // DataMap with one entity and embedded cgen config
         Files.writeString(tempDir.resolve(mapName + ".map.xml"), String.format("""
                 <?xml version="1.0" encoding="utf-8"?>
-                <dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap"
+                <dataMap xmlns="http://cayenne.apache.org/schema/15/dataMap"
                           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                           defaultPackage="%s">
                     <objEntity name="Person" className="%s.Person"/>
-                    <cgen xmlns="http://cayenne.apache.org/schema/14/cgen">
+                    <cgen xmlns="http://cayenne.apache.org/schema/15/cgen">
                         <destDir>%s</destDir>
                         <mode>entity</mode>
                         <makePairs>%s</makePairs>

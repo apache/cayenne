@@ -320,24 +320,24 @@ public class ObjRelationshipIT {
     }
 
     @Test
-    public void isFromFK() {
+    public void isForeignKey() {
         EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
         ObjEntity painting = resolver.getObjEntity("Painting");
         ObjEntity artist = resolver.getObjEntity("Artist");
 
         // FK to PK
-        assertTrue(painting.getRelationship("toArtist").isFromFK());
+        assertTrue(painting.getRelationship("toArtist").isForeignKey());
 
         // master to dependent PK: the key lives in the PAINTING_INFO row
-        assertFalse(painting.getRelationship("toPaintingInfo").isFromFK());
+        assertFalse(painting.getRelationship("toPaintingInfo").isForeignKey());
 
         // dependent to master PK: the dependent PK is also the FK
         ObjEntity paintingInfo = resolver.getObjEntity("PaintingInfo");
-        assertTrue(paintingInfo.getRelationship("painting").isFromFK());
+        assertTrue(paintingInfo.getRelationship("painting").isForeignKey());
 
         // to-many and flattened
-        assertFalse(artist.getRelationship("paintingArray").isFromFK());
-        assertFalse(artist.getRelationship("groupArray").isFromFK());
+        assertFalse(artist.getRelationship("paintingArray").isForeignKey());
+        assertFalse(artist.getRelationship("groupArray").isForeignKey());
     }
 
     @Test

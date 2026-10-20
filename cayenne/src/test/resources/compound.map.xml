@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/15/dataMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/dataMap https://cayenne.apache.org/schema/14/dataMap.xsd"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/15/dataMap https://cayenne.apache.org/schema/15/dataMap.xsd"
 	 defaultPackage="org.apache.cayenne.testdo.compound"
 	 defaultSuperclass="org.apache.cayenne.GenericPersistentObject">
 	<dbEntity name="CHAR_FK_TEST">
@@ -80,13 +80,13 @@
 		<objAttribute name="key2" type="java.lang.String" dbAttributePath="KEY2"/>
 		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>
 	</objEntity>
-	<dbRelationship name="toCharPK" source="CHAR_FK_TEST" target="CHAR_PK_TEST">
+	<dbRelationship name="toCharPK" source="CHAR_FK_TEST" target="CHAR_PK_TEST" foreignKey="true">
 		<dbAttributePair source="FK_COL" target="PK_COL"/>
 	</dbRelationship>
 	<dbRelationship name="charFKs" source="CHAR_PK_TEST" target="CHAR_FK_TEST" toMany="true">
 		<dbAttributePair source="PK_COL" target="FK_COL"/>
 	</dbRelationship>
-	<dbRelationship name="toCompoundPk" source="COMPOUND_FK_TEST" target="COMPOUND_PK_TEST">
+	<dbRelationship name="toCompoundPk" source="COMPOUND_FK_TEST" target="COMPOUND_PK_TEST" foreignKey="true">
 		<dbAttributePair source="F_KEY1" target="KEY1"/>
 		<dbAttributePair source="F_KEY2" target="KEY2"/>
 	</dbRelationship>
@@ -94,24 +94,24 @@
 		<dbAttributePair source="KEY1" target="F_KEY1"/>
 		<dbAttributePair source="KEY2" target="F_KEY2"/>
 	</dbRelationship>
-	<dbRelationship name="lines" source="compound_order" target="compound_order_line" toDependentPK="true" toMany="true">
+	<dbRelationship name="lines" source="compound_order" target="compound_order_line" toMany="true">
 		<dbAttributePair source="order_number" target="order_number"/>
 	</dbRelationship>
-	<dbRelationship name="info" source="compound_order_line" target="compound_order_line_info" toDependentPK="true">
-		<dbAttributePair source="order_number" target="order_number"/>
-		<dbAttributePair source="order_line_number" target="order_line_number"/>
-	</dbRelationship>
-	<dbRelationship name="order" source="compound_order_line" target="compound_order">
-		<dbAttributePair source="order_number" target="order_number"/>
-	</dbRelationship>
-	<dbRelationship name="line" source="compound_order_line_info" target="compound_order_line">
+	<dbRelationship name="info" source="compound_order_line" target="compound_order_line_info">
 		<dbAttributePair source="order_number" target="order_number"/>
 		<dbAttributePair source="order_line_number" target="order_line_number"/>
 	</dbRelationship>
-	<dbRelationship name="toA1" source="TWO_FK_B" target="TWO_FK_A">
+	<dbRelationship name="order" source="compound_order_line" target="compound_order" foreignKey="true">
+		<dbAttributePair source="order_number" target="order_number"/>
+	</dbRelationship>
+	<dbRelationship name="line" source="compound_order_line_info" target="compound_order_line" foreignKey="true">
+		<dbAttributePair source="order_number" target="order_number"/>
+		<dbAttributePair source="order_line_number" target="order_line_number"/>
+	</dbRelationship>
+	<dbRelationship name="toA1" source="TWO_FK_B" target="TWO_FK_A" foreignKey="true">
 		<dbAttributePair source="A_ID1" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="toA2" source="TWO_FK_B" target="TWO_FK_A">
+	<dbRelationship name="toA2" source="TWO_FK_B" target="TWO_FK_A" foreignKey="true">
 		<dbAttributePair source="A_ID2" target="ID"/>
 	</dbRelationship>
 	<dbRelationship name="bs1" source="TWO_FK_A" target="TWO_FK_B" toMany="true">

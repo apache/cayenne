@@ -17,9 +17,9 @@
   ~  specific language governing permissions and limitations
   ~  under the License.
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/15/dataMap"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://cayenne.apache.org/schema/14/dataMap http://cayenne.apache.org/schema/14/dataMap.xsd">
+          xsi:schemaLocation="http://cayenne.apache.org/schema/15/dataMap http://cayenne.apache.org/schema/15/dataMap.xsd">
 
     <dbEntity name="parent" schema="SCHEMA_01">
         <dbAttribute name="COL2" type="CHAR" length="25"/>
@@ -49,7 +49,7 @@
         <objAttribute name="col5" type="java.util.Date" dbAttributePath="COL5"/>
     </objEntity>
 
-    <dbRelationship name="parent" source="CHILD" target="parent">
+    <dbRelationship name="parent" source="CHILD" target="parent" foreignKey="true">
         <dbAttributePair source="parent_id" target="ID"/>
     </dbRelationship>
     <dbRelationship name="children" source="parent" target="CHILD" toMany="true">

@@ -124,7 +124,7 @@ class DbPathProcessor extends PathProcessor<DbEntity> {
         // check if we can match on the source table columns instead of joining the target: the source join
         // columns carry the target PK value both for an FK on the source and for a master-to-dependent
         // relationship, whose source PK is also the dependent PK (if the dependent row exists)
-        if (relationship.isToMany() || !relationship.isToPK()) {
+        if (!relationship.isToPrimaryKey()) {
             // must use target table
             // add relationship first
             appendCurrentPath(relationship.getName());

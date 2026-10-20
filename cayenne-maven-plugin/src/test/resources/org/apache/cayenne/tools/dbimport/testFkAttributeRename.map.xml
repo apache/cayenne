@@ -17,9 +17,9 @@
   ~  specific language governing permissions and limitations
   ~  under the License.
   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
-<dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/15/dataMap"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://cayenne.apache.org/schema/14/dataMap http://cayenne.apache.org/schema/14/dataMap.xsd">
+          xsi:schemaLocation="http://cayenne.apache.org/schema/15/dataMap http://cayenne.apache.org/schema/15/dataMap.xsd">
 
     <dbEntity name="CHILD" schema="SCHEMA_01">
         <dbAttribute name="id" type="INTEGER" length="10"/>
@@ -32,7 +32,7 @@
     </objEntity>
     <objEntity name="Parent" className="Parent" dbEntityName="PARENT">
     </objEntity>
-    <dbRelationship name="parent" source="CHILD" target="PARENT">
+    <dbRelationship name="parent" source="CHILD" target="PARENT" foreignKey="true">
         <dbAttributePair source="parent_id" target="id"/>
     </dbRelationship>
     <dbRelationship name="children" source="PARENT" target="CHILD" toMany="true">

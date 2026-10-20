@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.projecttools.validation;
 
+import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
@@ -91,17 +92,29 @@ class ObjRelationshipValidator extends ProjectNodeValidator<ObjRelationship> {
 
     private void checkForPK(ObjRelationship relationship, ValidationResult validationResult) {
         List<DbRelationship> dbRelationships = relationship.getDbRelationships();
-        if (dbRelationships.isEmpty() || dbRelationships.getFirst().isToPK()) {
+        if (dbRelationships.isEmpty() || joinsToPK(dbRelationships.getFirst())) {
             return;
         }
         ObjRelationship reverseRelationship = relationship.getReverseRelationship();
         if (reverseRelationship != null
                 && !reverseRelationship.getDbRelationships().isEmpty()
-                && !reverseRelationship.getDbRelationships().getFirst().isToPK()) {
+                && !joinsToPK(reverseRelationship.getDbRelationships().getFirst())) {
             addFailure(validationResult, relationship,
                     "ObjRelationship '%s' has join not to PK. This is not fully supported by Cayenne.",
                     toString(relationship));
         }
+    }
+
+    // true if every join targets a PK column, whatever the multiplicity: the to-many into a join table of a flattened
+    // many-to-many qualifies, as the join table is keyed by its FKs
+    private static boolean joinsToPK(DbRelationship relationship) {
+        for (DbJoin join : relationship.getJoins()) {
+            DbAttribute target = join.getTarget();
+            if (target == null || !target.isPrimaryKey()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private void validateReverse(ObjRelationship relationship, ValidationResult validationResult) {

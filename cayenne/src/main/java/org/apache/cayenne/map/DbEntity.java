@@ -283,11 +283,8 @@ public class DbEntity extends Entity<DbEntity, DbAttribute, DbRelationship> impl
         }
 
         super.removeAttribute(attrName);
-        boolean wasPrimaryKey = primaryKey.remove(attr);
+        primaryKey.remove(attr);
         generatedAttributes.remove(attr);
-        if (wasPrimaryKey) {
-            invalidateToDepPkRelationships();
-        }
     }
 
     @Override
@@ -299,8 +296,7 @@ public class DbEntity extends Entity<DbEntity, DbAttribute, DbRelationship> impl
 
     /**
      * Notification from a child {@link DbAttribute} that its primary-key flag has changed.
-     * Updates the cached primaryKey collection and enforces the {@code toDependentPK}
-     * relationship invariant.
+     * Updates the cached primaryKey collection.
      */
     void attributePrimaryKeyChanged(DbAttribute attr) {
         if (attr.isPrimaryKey()) {
@@ -310,7 +306,6 @@ public class DbEntity extends Entity<DbEntity, DbAttribute, DbRelationship> impl
         } else {
             primaryKey.remove(attr);
         }
-        invalidateToDepPkRelationships();
     }
 
     /**
@@ -323,15 +318,6 @@ public class DbEntity extends Entity<DbEntity, DbAttribute, DbRelationship> impl
             }
         } else {
             generatedAttributes.remove(attr);
-        }
-    }
-
-    private void invalidateToDepPkRelationships() {
-        for (DbRelationship rel : getRelationships()) {
-            DbRelationship reverse = rel.getReverseRelationship();
-            if (reverse != null && reverse.isToDependentPK() && !reverse.isValidForDepPk()) {
-                reverse.setToDependentPK(false);
-            }
         }
     }
 

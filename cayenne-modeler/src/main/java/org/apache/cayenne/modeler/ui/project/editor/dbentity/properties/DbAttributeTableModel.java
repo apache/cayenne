@@ -22,9 +22,7 @@ package org.apache.cayenne.modeler.ui.project.editor.dbentity.properties;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.modeler.event.model.DbAttributeEvent;
-import org.apache.cayenne.modeler.project.DbAttributeOps;
 import org.apache.cayenne.modeler.toolkit.table.CMTableModel;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.undo.ChangePKGeneratorUndoableEdit;
@@ -33,7 +31,6 @@ import java.util.Objects;
 
 import javax.swing.*;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -293,35 +290,7 @@ public class DbAttributeTableModel extends CMTableModel<DbAttribute> {
 
         // when PK is unset, we need to fix some derived flags
         if (!flag) {
-
             attr.setGenerated(false);
-
-            Collection<DbRelationship> relationships = DbAttributeOps.relationshipsUsingAttribute(attr);
-
-            if (!relationships.isEmpty()) {
-                relationships.removeIf(relationship -> !relationship.isToDependentPK());
-
-                // filtered only those that are to dep PK
-                if (!relationships.isEmpty()) {
-                    String message = (relationships.size() == 1)
-                            ? "Fix \"To Dep PK\" relationship using this attribute?"
-                            : "Fix " + relationships.size()
-                            + " \"To Dep PK\" relationships using this attribute?";
-
-                    int answer = JOptionPane.showConfirmDialog(
-                            session.app().getFrame(),
-                            message);
-                    if (answer != JOptionPane.YES_OPTION) {
-                        // no action needed
-                        return false;
-                    }
-
-                    // fix target relationships
-                    for (DbRelationship relationship : relationships) {
-                        relationship.setToDependentPK(false);
-                    }
-                }
-            }
         }
 
         attr.setPrimaryKey(flag);

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/15/dataMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/dataMap https://cayenne.apache.org/schema/14/dataMap.xsd"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/15/dataMap https://cayenne.apache.org/schema/15/dataMap.xsd"
 	 defaultPackage="org.apache.cayenne.docs.persistent">
 	<dbEntity name="ARTIST">
 		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
@@ -51,10 +51,10 @@
 	<dbRelationship name="paintings" source="GALLERY" target="PAINTING" toMany="true">
 		<dbAttributePair source="ID" target="GALLERY_ID"/>
 	</dbRelationship>
-	<dbRelationship name="artist" source="PAINTING" target="ARTIST">
+	<dbRelationship name="artist" source="PAINTING" target="ARTIST" foreignKey="true">
 		<dbAttributePair source="ARTIST_ID" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="gallery" source="PAINTING" target="GALLERY">
+	<dbRelationship name="gallery" source="PAINTING" target="GALLERY" foreignKey="true">
 		<dbAttributePair source="GALLERY_ID" target="ID"/>
 	</dbRelationship>
 	<objRelationship name="paintings" source="Artist" target="Painting" deleteRule="cascade" dbRelationshipPath="paintings"/>

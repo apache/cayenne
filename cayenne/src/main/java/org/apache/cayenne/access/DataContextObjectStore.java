@@ -753,7 +753,7 @@ public class DataContextObjectStore implements ObjectStore {
                     for (PropertyDescriptor property : descriptor.getProperties()) {
                         switch (property) {
                             case ToManyProperty toMany -> toMany.invalidate(object);
-                            case ToOneProperty toOne when !toOne.getRelationship().isFromFK() ->
+                            case ToOneProperty toOne when !toOne.getRelationship().isForeignKey() ->
                                     toOne.invalidate(object);
                             default -> {
                             }

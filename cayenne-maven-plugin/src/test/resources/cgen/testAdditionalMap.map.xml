@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/15/dataMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/dataMap http://cayenne.apache.org/schema/14/dataMap.xsd"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/15/dataMap http://cayenne.apache.org/schema/15/dataMap.xsd"
 	 defaultPackage="pack">
 	<dbEntity name="TestRelEntity">
 		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
@@ -10,7 +10,7 @@
 	<objEntity name="TestRelEntity" className="pack.TestRelEntity" dbEntityName="TestRelEntity">
 		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>
 	</objEntity>
-	<dbRelationship name="additionalRel" source="TestRelEntity" target="TestEntity">
+	<dbRelationship name="additionalRel" source="TestRelEntity" target="TestEntity" foreignKey="true">
 		<dbAttributePair source="ID" target="TestRelEntity_ID"/>
 	</dbRelationship>
 	<objRelationship name="additionalRel" source="TestRelEntity" target="TestEntity" deleteRule="nullify" dbRelationshipPath="additionalRel"/>

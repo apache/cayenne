@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap"
+<dataMap xmlns="http://cayenne.apache.org/schema/15/dataMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/dataMap https://cayenne.apache.org/schema/14/dataMap.xsd"
+	 xsi:schemaLocation="http://cayenne.apache.org/schema/15/dataMap https://cayenne.apache.org/schema/15/dataMap.xsd"
 	 defaultPackage="org.apache.cayenne.crypto.db">
 	<dbEntity name="TABLE1">
 		<dbAttribute name="CRYPTO_INT" type="BLOB"/>
@@ -77,7 +77,7 @@
 	<dbRelationship name="table7s" source="TABLE1" target="TABLE7" toMany="true">
 		<dbAttributePair source="ID" target="TABLE1_ID"/>
 	</dbRelationship>
-	<dbRelationship name="toTable1" source="TABLE7" target="TABLE1">
+	<dbRelationship name="toTable1" source="TABLE7" target="TABLE1" foreignKey="true">
 		<dbAttributePair source="TABLE1_ID" target="ID"/>
 	</dbRelationship>
 	<objRelationship name="table7s" source="Table1" target="Table7" deleteRule="deny" dbRelationshipPath="table7s"/>

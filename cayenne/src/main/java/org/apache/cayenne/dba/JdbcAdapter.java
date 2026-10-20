@@ -484,7 +484,7 @@ public class JdbcAdapter implements DbAdapter {
 
         // sort joins in the order PK are set in target, to avoid errors on some DBs
         List<DbJoin> joins = rel.getJoins();
-        if (rel.isToPK()) {
+        if (rel.isToPrimaryKey()) {
             List<DbAttribute> pks = rel.getTargetEntity().getPrimaryKeys();
             joins.sort(Comparator.comparingInt(join -> pks.indexOf(join.getTarget())));
         }
