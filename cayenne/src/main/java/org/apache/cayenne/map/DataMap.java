@@ -38,6 +38,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
+import java.util.regex.Pattern;
 
 import static java.util.Collections.emptyList;
 
@@ -518,9 +519,15 @@ public class DataMap implements ProjectNode, XMLSerializable, MappingNamespace, 
 
     // the select queries reference entities by name in their query Strings, so a rename has to follow into them
     private void renameEntityInQueries(String oldName, String newName, boolean db) {
-        for (QueryDescriptor query : queryDescriptorMap.values()) {
-            if (query instanceof SelectQueryDescriptor select) {
-                select.renameEntity(oldName, newName, db);
+        Pattern reference = SelectQueryDescriptor.renamePattern(oldName, db);
+        Collection<DataMap> mapList = getNamespace() instanceof EntityResolver resolver
+                ? resolver.getDataMaps()
+                : Collections.singletonList(this);
+        for (DataMap map : mapList) {
+            for (QueryDescriptor query : map.queryDescriptorMap.values()) {
+                if (query instanceof SelectQueryDescriptor select) {
+                    select.renameEntity(reference, newName);
+                }
             }
         }
     }

@@ -22,10 +22,16 @@ package org.apache.cayenne.gen;
 import org.apache.cayenne.projecttools.validation.NameValidator;
 import org.apache.cayenne.util.Util;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * Methods for mangling strings.
  */
 public class StringUtils {
+
+    // a simple or a fully qualified class name within a parameterized type name, like "java.util.List<String>"
+    static final Pattern CLASS_NAME = Pattern.compile("[\\p{javaJavaIdentifierPart}.]+");
 
     private static StringUtils sharedInstance;
 
@@ -51,12 +57,18 @@ public class StringUtils {
     }
 
     /**
-     * Removes package name, leaving base name.
+     * Removes package name, leaving base name. For a parameterized type, like "java.util.List&lt;java.lang.String&gt;",
+     * removes the package names of all the classes in it.
      * 
      * @since 1.2
      */
     public String stripPackageName(String fullyQualifiedClassName) {
-        return Util.stripPackageName(fullyQualifiedClassName);
+        if (fullyQualifiedClassName == null || fullyQualifiedClassName.indexOf('<') < 0) {
+            return Util.stripPackageName(fullyQualifiedClassName);
+        }
+
+        return CLASS_NAME.matcher(fullyQualifiedClassName)
+                .replaceAll(m -> Matcher.quoteReplacement(Util.stripPackageName(m.group())));
     }
 
     /**

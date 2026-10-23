@@ -228,4 +228,15 @@ public class ImportUtilsTest {
 
         assertEquals(baseType, importUtils.formatJavaType(fullyQualifiedType));
     }
+
+    @Test
+    public void addParameterizedType() {
+        importUtils.addType("java.util.Map<java.lang.String, org.myPackage.MyType[]>");
+
+        String generatedStatements = importUtils.generate();
+        assertTrue(generatedStatements.contains("import java.util.Map;"), generatedStatements);
+        assertTrue(generatedStatements.contains("import org.myPackage.MyType;"), generatedStatements);
+        assertFalse(generatedStatements.contains("java.lang"), generatedStatements);
+        assertFalse(generatedStatements.contains("<"), generatedStatements);
+    }
 }

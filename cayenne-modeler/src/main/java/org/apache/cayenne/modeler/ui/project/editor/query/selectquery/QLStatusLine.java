@@ -27,10 +27,9 @@ import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.UIManager;
 
-import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.SelectQueryDescriptor;
-import org.apache.cayenne.query.FluentSelect;
 
 /**
  * A line under the query editor that shows what the query returns and its parameters, or the first problem of the
@@ -58,7 +57,7 @@ class QLStatusLine extends JLabel {
             String more = problems.size() > 1 ? "  (and " + (problems.size() - 1) + " more)" : "";
             setText("✗ " + problems.getFirst() + more);
             setToolTipText(problems.size() > 1 ? "<html>" + String.join("<br>", problems) + "</html>" : null);
-            setForeground(color("Actions.Red", Color.RED));
+            setForeground(color());
             return;
         }
 
@@ -76,22 +75,17 @@ class QLStatusLine extends JLabel {
      * Returns a description of the objects that a valid query returns.
      */
     static String resultType(SelectQueryDescriptor query) {
-        FluentSelect<?, ?> parsed = query.getParsedQuery();
-        if (query.isColumnQuery()) {
-            int columns = parsed.getColumns().size();
-            return columns == 1 ? "Object (1 column)" : "Object[] (" + columns + " columns)";
-        }
-
-        return switch (query.getRoot()) {
-            case DbEntity entity -> "DataRow (" + entity.getName() + ")";
-            case ObjEntity entity when query.isFetchingDataRows() -> "DataRow (" + entity.getName() + ")";
-            case ObjEntity entity -> entity.getName();
-            case null, default -> String.valueOf(query.getRoot());
+        return switch (query.getResultKind()) {
+            case ENTITY -> ((ObjEntity) query.getRoot()).getName();
+            case DATA_ROW -> "DataRow (" + ((Entity<?, ?, ?>) query.getRoot()).getName() + ")";
+            case SCALAR -> "Object (1 column)";
+            case ARRAY -> "Object[] (" + query.getParsedQuery().getColumns().size() + " columns)";
+            case null -> String.valueOf(query.getRoot());
         };
     }
 
-    private static Color color(String key, Color defaultColor) {
-        Color color = UIManager.getColor(key);
-        return color != null ? color : defaultColor;
+    private static Color color() {
+        Color color = UIManager.getColor("Actions.Red");
+        return color != null ? color : Color.RED;
     }
 }

@@ -1,5 +1,6 @@
 package test.auto;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.cayenne.DataRow;
@@ -20,6 +21,8 @@ public class _SelectQueryResultTypes {
 
     public static final String ROWS_QUERYNAME = "rows";
 
+    public static final String FILTERED_QUERYNAME = "filtered";
+
     public List<Object> performNames(ObjectContext context, String name) {
         MappedSelect<Object> query = MappedSelect.query(NAMES_QUERYNAME, Object.class);
         query.param("name", name);
@@ -34,6 +37,13 @@ public class _SelectQueryResultTypes {
     public List<DataRow> performRows(ObjectContext context, Object key) {
         MappedSelect<DataRow> query = MappedSelect.query(ROWS_QUERYNAME, DataRow.class);
         query.param("key", key);
+        return query.select(context);
+    }
+
+    public List<Test> performFiltered(ObjectContext context, Collection<String> nameList, String namePattern) {
+        MappedSelect<Test> query = MappedSelect.query(FILTERED_QUERYNAME, Test.class);
+        query.param("name_list", nameList);
+        query.param("name_pattern", namePattern);
         return query.select(context);
     }
 

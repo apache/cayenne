@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -108,9 +109,18 @@ public class ImportUtils {
 	 * org.apache.cayenne.GenericPersistentObject.
 	 * 
 	 * @param typeName
-	 *            FQ data type class name.
+	 *            FQ data type class name. For a parameterized type, like
+	 *            "java.util.List&lt;java.lang.String&gt;", all the classes in it are registered.
 	 */
 	public void addType(String typeName) {
+		if (typeName != null && typeName.indexOf('<') >= 0) {
+			Matcher matcher = StringUtils.CLASS_NAME.matcher(typeName);
+			while (matcher.find()) {
+				addType(matcher.group());
+			}
+			return;
+		}
+
 		if (!canRegisterType(typeName)) {
             return;
         }

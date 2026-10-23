@@ -55,6 +55,9 @@ public class ObjectSelectView extends BaseQueryMainTab {
     private final ObjectQueryPropertiesPanel properties;
     private final CMUndoableTextField comment;
 
+    // the query that the path browser was last populated for
+    private SelectQueryDescriptor browserQuery;
+
     public ObjectSelectView(ProjectSession session) {
         super(session);
         this.name = new CMUndoableTextField(app.getUndoManager());
@@ -129,6 +132,7 @@ public class ObjectSelectView extends BaseQueryMainTab {
             editor.setQuery(null);
             statusLine.update(null, List.of());
             pathBrowser.setEntity(null);
+            browserQuery = null;
             return;
         }
 
@@ -136,6 +140,13 @@ public class ObjectSelectView extends BaseQueryMainTab {
         comment.setText(ObjectInfo.getFromMetaData(app.getMetaData(), query, ObjectInfo.COMMENT));
         properties.initFromModel(query);
         editor.setQuery(query);
+
+        // a tree kept from another query would insert paths of a wrong entity, so a different query starts with its
+        // own root, or with no tree if its String can't be parsed
+        if (query != browserQuery) {
+            browserQuery = query;
+            pathBrowser.setEntity(rootEntity(query));
+        }
 
         // the entity may have changed since the tree was built
         pathBrowser.refresh();
@@ -146,12 +157,18 @@ public class ObjectSelectView extends BaseQueryMainTab {
         SelectQueryDescriptor query = getQuery();
         statusLine.update(query, problems);
         if (query != null) {
-            // a String that can't be parsed keeps the last tree, so that it doesn't flicker while typing
-            if (query.isValid()) {
-                pathBrowser.setEntity(query.getRoot() instanceof Entity<?, ?, ?> entity ? entity : null);
+            // a String of the same query that can't be parsed keeps the last tree, so that it doesn't flicker while
+            // typing
+            if (query != browserQuery || query.isValid()) {
+                browserQuery = query;
+                pathBrowser.setEntity(rootEntity(query));
             }
             properties.updateDataRowsEnabled(query);
         }
+    }
+
+    private static Entity<?, ?, ?> rootEntity(SelectQueryDescriptor query) {
+        return query.getRoot() instanceof Entity<?, ?, ?> entity ? entity : null;
     }
 
     private void setQueryComment(String text) {
