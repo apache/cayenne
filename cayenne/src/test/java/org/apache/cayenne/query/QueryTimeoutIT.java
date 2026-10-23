@@ -44,8 +44,7 @@ public class QueryTimeoutIT {
 
     @Test
     public void sqlTemplate() {
-        SQLTemplate sqlTemplate = new SQLTemplate();
-        sqlTemplate.setDefaultTemplate("SELECT * FROM ARTIST");
+        SQLTemplate sqlTemplate = SQLTemplate.dataRowQuery("SELECT * FROM ARTIST");
         sqlTemplate.setQueryTimeout(10);
         assertEquals(10, sqlTemplate
                 .getMetaData(env.context().getEntityResolver())

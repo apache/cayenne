@@ -29,7 +29,6 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResult;
 import org.apache.cayenne.SelectResult;
 import org.apache.cayenne.UpdateResult;
-import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 
 /**
@@ -217,24 +216,11 @@ public class SQLExec extends IndirectQuery {
     @Override
     protected Query createReplacementQuery(EntityResolver resolver) {
 
-        Object root;
-
-        if (dataMapName != null) {
-            DataMap map = resolver.getDataMap(dataMapName);
-            if (map == null) {
-                throw new CayenneRuntimeException("Invalid dataMapName '%s'", dataMapName);
-            }
-
-            root = map;
-        } else {
-            // will route via default node. TODO: allow explicit node name?
-            root = null;
-        }
-
-        SQLTemplate<?> template = new SQLTemplate<>();
-        template.setRoot(root);
-        template.setDefaultTemplate(getSql());
-        template.setFetchingDataRows(true); // in case result set will be returned
+        // a data row query in case a result set is returned; without a DataMap it is routed via the default node.
+        // TODO: allow explicit node name?
+        SQLTemplate<?> template = dataMapName != null
+                ? SQLTemplate.dataRowQuery(dataMapName, getSql())
+                : SQLTemplate.dataRowQuery(getSql());
         template.setReturnGeneratedKeys(returnGeneratedKeys);
         template.setQueryTimeout(queryTimeout);
 

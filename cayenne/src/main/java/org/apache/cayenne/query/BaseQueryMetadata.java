@@ -23,7 +23,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
-import org.apache.cayenne.Persistent;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
@@ -117,12 +116,6 @@ class BaseQueryMetadata implements QueryMetadata {
 					this.dataMap = dbEntity.getDataMap();
 				} else if (root instanceof DataMap) {
 					this.dataMap = (DataMap) root;
-				} else if (root instanceof Persistent) {
-					entity = resolver.getObjEntity((Persistent) root);
-					if (entity != null) {
-						this.dbEntity = entity.getDbEntity();
-						this.dataMap = entity.getDataMap();
-					}
 				}
 			}
 

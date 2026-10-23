@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.map;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.project.ProjectNodeVisitor;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.ProcedureQuery;
@@ -101,13 +102,16 @@ public class ProcedureQueryDescriptor extends QueryDescriptor {
 
     @Override
     public ProcedureQuery<?> buildQuery() {
-        ProcedureQuery<?> procedureQuery = new ProcedureQuery<>();
+        String procedureName = switch (root) {
+            case String name -> name;
+            case Procedure procedure -> procedure.getName();
+            case null, default -> throw new CayenneRuntimeException("ProcedureQuery '%s' has no procedure", getName());
+        };
 
-        if (root != null) {
-            procedureQuery.setRoot(root);
-        }
+        ProcedureQuery<?> procedureQuery = resultEntityName != null
+                ? ProcedureQuery.entityQuery(procedureName, resultEntityName)
+                : ProcedureQuery.query(procedureName);
 
-        procedureQuery.setResultEntityName(this.getResultEntityName());
         procedureQuery.setFetchLimit(fetchLimit);
         procedureQuery.setFetchOffset(fetchOffset);
         procedureQuery.setPageSize(pageSize);

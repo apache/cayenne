@@ -21,6 +21,7 @@ package org.apache.cayenne.project.xml;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.SQLTemplateDescriptor;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.PrefetchTreeNode;
@@ -97,11 +98,20 @@ public class SQLTemplateDescriptorHandlerTest extends BaseHandlerTest {
 
     @Test
     public void rootDbEntity() throws Exception {
-        DbEntity entity = new DbEntity("DB1");
-        map.addDbEntity(entity);
+        map.addDbEntity(new DbEntity("DB1"));
 
-        assertSame(entity, parseQuery("""
+        // only routed the query to the map's node in the older formats, so it is loaded as the map
+        assertSame(map, parseQuery("""
                 <sqlQuery name="q" root="dbEntity" rootName="DB1"/>
+                """).getRoot());
+    }
+
+    @Test
+    public void rootProcedure() throws Exception {
+        map.addProcedure(new Procedure("P1"));
+
+        assertSame(map, parseQuery("""
+                <sqlQuery name="q" root="procedure" rootName="P1"/>
                 """).getRoot());
     }
 

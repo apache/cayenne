@@ -31,59 +31,77 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.cayenne.DataRow;
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.junit.jupiter.api.Test;
 
 public class SQLTemplateTest {
 
 	@Test
-	public void setRootEntityName() {
-		SQLTemplate query = new SQLTemplate();
-		assertNull(query.getRoot());
-
-		query.setRoot("SomeEntity");
-		assertSame("SomeEntity", query.getRoot());
+	public void noRoot() {
+		SQLTemplate<Object> query = new SQLTemplate<>("SELECT");
+		assertNull(query.getPersistentType());
+		assertNull(query.getEntityName());
+		assertNull(query.getDataMapName());
+		assertEquals("SELECT", query.getDefaultTemplate());
+		assertFalse(query.isFetchingDataRows());
 	}
 
 	@Test
-	public void setRootObjEntity() {
-		SQLTemplate query = new SQLTemplate();
-		assertNull(query.getRoot());
-
-		ObjEntity e = new ObjEntity("ABC");
-		query.setRoot(e);
-		assertSame(e, query.getRoot());
+	public void query() {
+		SQLTemplate<Artist> query = SQLTemplate.query(Artist.class, "SELECT");
+		assertSame(Artist.class, query.getPersistentType());
+		assertNull(query.getEntityName());
+		assertNull(query.getDataMapName());
+		assertEquals("SELECT", query.getDefaultTemplate());
+		assertFalse(query.isFetchingDataRows());
 	}
 
 	@Test
-	public void setRootClass() {
-		SQLTemplate query = new SQLTemplate();
-		assertNull(query.getRoot());
-
-		query.setRoot(Artist.class);
-		assertSame(Artist.class, query.getRoot());
+	public void entityQuery() {
+		SQLTemplate<Persistent> query = SQLTemplate.entityQuery("SomeEntity", "SELECT");
+		assertNull(query.getPersistentType());
+		assertEquals("SomeEntity", query.getEntityName());
+		assertNull(query.getDataMapName());
+		assertFalse(query.isFetchingDataRows());
 	}
 
 	@Test
-	public void setRootNull() {
-		SQLTemplate query = new SQLTemplate();
-		query.setRoot("SomeEntity");
-
-		query.setRoot(null);
-		assertNull(query.getRoot());
+	public void dataRowQuery() {
+		SQLTemplate<DataRow> query = SQLTemplate.dataRowQuery("SELECT");
+		assertNull(query.getPersistentType());
+		assertNull(query.getEntityName());
+		assertNull(query.getDataMapName());
+		assertTrue(query.isFetchingDataRows());
 	}
 
 	@Test
-	public void setInvalidRoot() {
-		SQLTemplate query = new SQLTemplate();
-		assertThrows(IllegalArgumentException.class, () -> query.setRoot(1));
+	public void dataRowQueryDataMap() {
+		SQLTemplate<DataRow> query = SQLTemplate.dataRowQuery("map1", "SELECT");
+		assertNull(query.getPersistentType());
+		assertNull(query.getEntityName());
+		assertEquals("map1", query.getDataMapName());
+		assertTrue(query.isFetchingDataRows());
+	}
+
+	@Test
+	public void queryWithParametersKeepsRoot() {
+		SQLTemplate<Artist> q1 = SQLTemplate.query(Artist.class, "SELECT");
+		SQLTemplate<Artist> q2 = q1.queryWithParameters(Map.of("a", "b"));
+		assertSame(Artist.class, q2.getPersistentType());
+		assertEquals("SELECT", q2.getDefaultTemplate());
+
+		SQLTemplate<DataRow> q3 = SQLTemplate.dataRowQuery("map1", "SELECT");
+		SQLTemplate<DataRow> q4 = q3.queryWithParameters(Map.of("a", "b"));
+		assertEquals("map1", q4.getDataMapName());
+		assertTrue(q4.isFetchingDataRows());
 	}
 
 	@Test
 	public void setParams() throws Exception {
-		SQLTemplate query = new SQLTemplate();
+		SQLTemplate query = new SQLTemplate("SELECT");
 
 		assertTrue(query.getParams().isEmpty());
 
@@ -99,7 +117,7 @@ public class SQLTemplateTest {
 
 	@Test
 	public void setParamsArray() throws Exception {
-		SQLTemplate query = new SQLTemplate();
+		SQLTemplate query = new SQLTemplate("SELECT");
 
 		assertTrue(query.getPositionalParams().isEmpty());
 
@@ -113,7 +131,7 @@ public class SQLTemplateTest {
 	@Test
 	public void setParams_MixingStyles() throws Exception {
 
-		SQLTemplate query = new SQLTemplate();
+		SQLTemplate query = new SQLTemplate("SELECT");
 
 		assertTrue(query.getParams().isEmpty());
 		assertTrue(query.getPositionalParams().isEmpty());
@@ -135,14 +153,13 @@ public class SQLTemplateTest {
 
 	@Test
 	public void getDefaultTemplate() {
-		SQLTemplate query = new SQLTemplate();
-		query.setDefaultTemplate("AAA # BBB");
+		SQLTemplate query = new SQLTemplate("AAA # BBB");
 		assertEquals("AAA # BBB", query.getDefaultTemplate());
 	}
 
 	@Test
 	public void getTemplate() {
-		SQLTemplate query = new SQLTemplate();
+		SQLTemplate query = new SQLTemplate((String) null);
 
 		// no template for key, no default template... must be null
 		assertNull(query.getTemplate("key1"));
@@ -163,7 +180,7 @@ public class SQLTemplateTest {
 
 	@Test
 	public void columnNameCapitalization() {
-		SQLTemplate q1 = new SQLTemplate("E1", "SELECT");
+		SQLTemplate q1 = SQLTemplate.entityQuery("E1", "SELECT");
 		assertSame(CapsStrategy.DEFAULT, q1.getColumnNamesCapitalization());
 		q1.setColumnNamesCapitalization(CapsStrategy.UPPER);
 		assertEquals(CapsStrategy.UPPER, q1.getColumnNamesCapitalization());
@@ -171,6 +188,6 @@ public class SQLTemplateTest {
 
 	@Test
 	public void notReadOnlyMetadata() {
-		assertFalse(new SQLTemplate("E1", "SELECT").getMetaData(mock(EntityResolver.class)).isReadOnly());
+		assertFalse(SQLTemplate.entityQuery("E1", "SELECT").getMetaData(mock(EntityResolver.class)).isReadOnly());
 	}
 }

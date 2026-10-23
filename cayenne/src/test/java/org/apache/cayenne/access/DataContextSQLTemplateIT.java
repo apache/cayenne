@@ -23,7 +23,6 @@ import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.dba.frontbase.FrontBaseAdapter;
-import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResult;
 import org.apache.cayenne.map.SQLResult;
 import org.apache.cayenne.query.CapsStrategy;
@@ -87,8 +86,7 @@ public class DataContextSQLTemplateIT {
 				+ "FROM ARTIST t0 LEFT JOIN PAINTING t1 ON (t0.ARTIST_ID = t1.ARTIST_ID) "
 				+ "GROUP BY t0.ARTIST_ID, t0.ARTIST_NAME, t0.DATE_OF_BIRTH " + "ORDER BY t0.ARTIST_ID";
 
-		DataMap map = context.getEntityResolver().getDataMap("testmap");
-		SQLTemplate query = new SQLTemplate(map, sql, false);
+		SQLTemplate query = new SQLTemplate(sql);
 		query.setColumnNamesCapitalization(CapsStrategy.UPPER);
 
 		EntityResult artistResult = new EntityResult(Artist.class);
@@ -126,7 +124,7 @@ public class DataContextSQLTemplateIT {
 	public void rootless_DataNodeName() throws Exception {
 		createFourArtists();
 
-		SQLTemplate query = new SQLTemplate("SELECT * FROM ARTIST", true);
+		SQLTemplate query = SQLTemplate.dataRowQuery("SELECT * FROM ARTIST");
 		query.setDataNodeName(env.dataNode().getName());
 		assertEquals(4, context.select(query).size());
 	}
@@ -134,7 +132,7 @@ public class DataContextSQLTemplateIT {
 	@Test
 	public void rootless_DefaultDataNode() throws Exception {
 		createFourArtists();
-		SQLTemplate query = new SQLTemplate("SELECT * FROM ARTIST", true);
+		SQLTemplate query = SQLTemplate.dataRowQuery("SELECT * FROM ARTIST");
 		assertEquals(4, context.select(query).size());
 	}
 
@@ -144,8 +142,7 @@ public class DataContextSQLTemplateIT {
 
 		String sql = "SELECT count(1) AS X FROM ARTIST";
 
-		DataMap map = context.getEntityResolver().getDataMap("testmap");
-		SQLTemplate query = new SQLTemplate(map, sql, false);
+		SQLTemplate query = new SQLTemplate(sql);
 		query.setTemplate(FrontBaseAdapter.class.getName(), "SELECT COUNT(ARTIST_ID) X FROM ARTIST");
 		query.setColumnNamesCapitalization(CapsStrategy.UPPER);
 
@@ -167,8 +164,7 @@ public class DataContextSQLTemplateIT {
 
 		String sql = "SELECT count(1) AS X, 77 AS Y FROM ARTIST";
 
-		DataMap map = context.getEntityResolver().getDataMap("testmap");
-		SQLTemplate query = new SQLTemplate(map, sql, false);
+		SQLTemplate query = new SQLTemplate(sql);
 		query.setTemplate(FrontBaseAdapter.class.getName(), "SELECT COUNT(ARTIST_ID) X, 77 Y FROM ARTIST GROUP BY Y");
 		query.setColumnNamesCapitalization(CapsStrategy.UPPER);
 

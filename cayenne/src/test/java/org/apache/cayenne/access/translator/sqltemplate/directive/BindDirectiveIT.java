@@ -210,7 +210,7 @@ public class BindDirectiveIT {
 
 		// TODO: do we really care if an inserting SQLTemplate is executed via
 		// ObjectContext?
-		SQLTemplate template = new SQLTemplate(Object.class, templateString);
+		SQLTemplate template = new SQLTemplate(templateString);
 		template.setParams(parameters);
 		MockOperationObserver observer = new MockOperationObserver();
 		env.dataNode().performQueries(Collections.singletonList(template), observer);

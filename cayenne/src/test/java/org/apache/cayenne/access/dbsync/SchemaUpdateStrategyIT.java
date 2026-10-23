@@ -38,7 +38,7 @@ public class SchemaUpdateStrategyIT extends SchemaUpdateStrategyBase {
 		setStrategy(CreateIfNoSchemaStrategy.class);
 
 		String template = "SELECT #result('id' 'int') FROM SUS1";
-		SQLTemplate query = new SQLTemplate(Object.class, template);
+		SQLTemplate query = new SQLTemplate(template);
 
 		OperationObserver observer = new MockOperationObserver();
 
@@ -54,7 +54,7 @@ public class SchemaUpdateStrategyIT extends SchemaUpdateStrategyBase {
     @Test
 	public void noStandardSchema() throws Exception {
 		String template = "SELECT #result('ARTIST_ID' 'int') FROM ARTIST ORDER BY ARTIST_ID";
-		SQLTemplate query = new SQLTemplate(Object.class, template);
+		SQLTemplate query = new SQLTemplate(template);
 		MockOperationObserver observer = new MockOperationObserver();
 
 		setStrategy(TstSchemaUpdateStrategy.class);

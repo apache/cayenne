@@ -19,13 +19,11 @@
 
 package org.apache.cayenne.query;
 
+import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.OutParametersResult;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.util.ToStringBuilder;
 
 import java.util.ArrayList;
@@ -54,119 +52,107 @@ import java.util.Map;
  * form should be used: {@link ObjectContext#execute(Query)}.
  * </p>
  *
- * @param <T> the type of the result elements: a {@link org.apache.cayenne.DataRow} by default, or a persistent
+ * <h3>Query Root</h3>
+ * <p>
+ * A ProcedureQuery is defined by the name of a mapped stored procedure and, optionally, by the type of the persistent
+ * objects it fetches, given either as a Java class ({@link #query(String, Class)}) or as an ObjEntity name
+ * ({@link #entityQuery(String, String)}). Both are fixed when the query is created. A query with no result type
+ * ({@link #query(String)}) fetches DataRows.
+ * </p>
+ *
+ * @param <T> the type of the result elements: a {@link DataRow} by default, or a persistent
  *            object when a result type is specified.
  */
 public class ProcedureQuery<T> implements Select<T> {
 
-    protected String resultEntityName;
-    protected Class<?> resultClass;
+    /**
+     * Creates a query calling the named stored procedure and fetching DataRows.
+     *
+     * @since 6.0
+     */
+    public static ProcedureQuery<DataRow> query(String procedureName) {
+        return new ProcedureQuery<>(procedureName);
+    }
+
+    /**
+     * Creates a query calling the named stored procedure and fetching objects of the given persistent type.
+     *
+     * @since 6.0
+     */
+    public static <T> ProcedureQuery<T> query(String procedureName, Class<T> resultType) {
+        return new ProcedureQuery<>(procedureName, resultType);
+    }
+
+    /**
+     * Creates a query calling the named stored procedure and fetching objects of the named ObjEntity. This is the
+     * form of the queries mapped in a DataMap, where the entity class is not necessarily known.
+     *
+     * @since 6.0
+     */
+    public static ProcedureQuery<Persistent> entityQuery(String procedureName, String resultEntityName) {
+        return new ProcedureQuery<>(procedureName, null, resultEntityName);
+    }
+
+    private final String procedureName;
+
+    // the type of the fetched objects: at most one of the two is set
+    private final Class<T> resultType;
+    private final String resultEntityName;
+
     protected CapsStrategy columnNamesCapitalization;
     protected Map<String, Object> parameters = new HashMap<>();
     ProcedureQueryMetadata metaData = new ProcedureQueryMetadata();
     protected List<ProcedureColumn[]> resultDescriptors;
 
     /**
-     * The root object of this query. May be an entity name, Java class, ObjEntity or
-     * DbEntity, depending on the specific query and how it was constructed.
-     */
-    protected Object root;
-
-    /**
-     * Returns the root of this query.
-     */
-    public Object getRoot() {
-        return root;
-    }
-
-    /**
-     * Sets the root of the query.
+     * Creates a query calling the named stored procedure and fetching DataRows.
      *
-     * @param value The new root
-     * @throws IllegalArgumentException if value is not a String, ObjEntity, DbEntity,
-     *             Procedure, DataMap, Class or null.
-     */
-    public void setRoot(Object value) {
-        if (value != null && !(value instanceof String
-                || value instanceof ObjEntity
-                || value instanceof DbEntity
-                || value instanceof Class
-                || value instanceof Procedure
-                || value instanceof DataMap)) {
-
-            throw new IllegalArgumentException(("%s: \"setRoot(..)\" takes a DataMap, String, ObjEntity, DbEntity, "
-                    + "Procedure, or Class. It was passed a %s")
-                    .formatted(getClass().getName(), value.getClass().getName()));
-        }
-
-        this.root = value;
-    }
-
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this)
-                .append("root", root)
-                .toString();
-    }
-
-    /**
-     * Creates an empty procedure query. The query would fetch DataRows. Fetching
-     * Persistent objects can be achieved either by using
-     * {@link #ProcedureQuery(String, Class)} constructor or by calling
-     * {@link #setFetchingDataRows(boolean)} and {@link #setResultEntityName(String)}
-     * methods.
-     */
-    public ProcedureQuery() {
-        // for backwards compatibility we go against usual default...
-        metaData.setFetchingDataRows(true);
-    }
-
-    /**
-     * Creates a ProcedureQuery based on a Procedure object. The query would fetch
-     * DataRows. Fetching Persistent objects can be achieved either by using
-     * {@link #ProcedureQuery(String, Class)} constructor or by calling
-     * {@link #setFetchingDataRows(boolean)} and {@link #setResultEntityName(String)}
-     * methods.
-     */
-    public ProcedureQuery(Procedure procedure) {
-        // for backwards compatibility we go against usual default...
-        metaData.setFetchingDataRows(true);
-        setRoot(procedure);
-    }
-
-    /**
-     * Creates a ProcedureQuery based on a stored procedure. The query would fetch
-     * DataRows. Fetching Persistent objects can be achieved either by using
-     * {@link #ProcedureQuery(String, Class)} constructor or by calling
-     * {@link #setFetchingDataRows(boolean)} and {@link #setResultEntityName(String)}
-     * methods.
-     * 
      * @param procedureName A name of the stored procedure. For this query to work, a
      *            procedure with this name must be mapped in Cayenne.
      */
     public ProcedureQuery(String procedureName) {
+        this(procedureName, null, null);
+
         // for backwards compatibility we go against usual default...
         metaData.setFetchingDataRows(true);
-
-        setRoot(procedureName);
     }
 
     /**
-     * @since 1.1
-     */
-    public ProcedureQuery(Procedure procedure, Class<T> resultType) {
-        setRoot(procedure);
-
-        this.resultClass = resultType;
-    }
-
-    /**
+     * Creates a query calling the named stored procedure and fetching objects of the given persistent type.
+     *
      * @since 1.1
      */
     public ProcedureQuery(String procedureName, Class<T> resultType) {
-        setRoot(procedureName);
+        this(procedureName, resultType, null);
+    }
 
-        this.resultClass = resultType;
+    private ProcedureQuery(String procedureName, Class<T> resultType, String resultEntityName) {
+        this.procedureName = procedureName;
+        this.resultType = resultType;
+        this.resultEntityName = resultEntityName;
+    }
+
+    String getProcedureName() {
+        return procedureName;
+    }
+
+    Class<T> getResultType() {
+        return resultType;
+    }
+
+    String getResultEntityName() {
+        return resultEntityName;
+    }
+
+    @Override
+    public String toString() {
+        ToStringBuilder builder = new ToStringBuilder(this).append("procedureName", procedureName);
+        if (resultType != null) {
+            builder.append("resultType", resultType.getName());
+        } else if (resultEntityName != null) {
+            builder.append("resultEntityName", resultEntityName);
+        }
+        return builder.toString();
     }
 
     /**
@@ -174,12 +160,7 @@ public class ProcedureQuery<T> implements Select<T> {
      */
     @Override
     public QueryMetadata getMetaData(EntityResolver resolver) {
-
-        metaData.resolve(
-                root,
-                resultClass != null ? resultClass : resultEntityName,
-                resolver,
-                this);
+        metaData.resolve(resolver, this);
         return metaData;
     }
 
@@ -438,20 +419,6 @@ public class ProcedureQuery<T> implements Select<T> {
      */
     public void clearPrefetches() {
         metaData.clearPrefetches();
-    }
-
-    /**
-     * @since 1.2
-     */
-    public String getResultEntityName() {
-        return resultEntityName;
-    }
-
-    /**
-     * @since 1.2
-     */
-    public void setResultEntityName(String resultEntityName) {
-        this.resultEntityName = resultEntityName;
     }
 
     /**

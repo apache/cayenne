@@ -108,6 +108,13 @@ public class UpgradeHandler_V15Test extends BaseUpgradeHandlerTest {
         assertEquals(root.getNamespaceURI(), artist.get(0).getNamespaceURI());
         assertEquals("artistExhibitArray", ((Element) artist.get(0).getPreviousSibling()).getAttribute("name"));
 
+        // the "dbEntity" and "procedure" roots of SQL queries are dropped, an "objEntity" root is kept
+        assertEquals(Map.of("name", "byEntity", "root", "objEntity", "rootName", "Artist"),
+                attributes(elements(document, "/dataMap/sqlQuery[@name='byEntity']").get(0)));
+        assertEquals(Map.of("name", "byTable"), attributes(elements(document, "/dataMap/sqlQuery[@name='byTable']").get(0)));
+        assertEquals(Map.of("name", "byProcedure"),
+                attributes(elements(document, "/dataMap/sqlQuery[@name='byProcedure']").get(0)));
+
         // the added reverse relationship is a lossless change
         List<String> notifications = unit.getChangeNotifications();
         assertEquals(1, notifications.size(), notifications.toString());

@@ -19,8 +19,10 @@
 
 package org.apache.cayenne.map;
 
+import java.util.List;
 import java.util.Map;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.query.*;
 import org.junit.jupiter.api.Test;
 
@@ -28,6 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SQLTemplateDescriptorTest {
@@ -41,15 +44,37 @@ public class SQLTemplateDescriptorTest {
     @Test
     public void getQueryRoot() throws Exception {
         DataMap map = new DataMap();
+        DbEntity table = new DbEntity("A_T");
+        map.addDbEntity(table);
         ObjEntity entity = new ObjEntity("A");
+        entity.setDbEntity(table);
         map.addObjEntity(entity);
 
         SQLTemplateDescriptor builder = new SQLTemplateDescriptor();
         builder.setRoot(entity);
 
-        Query query = builder.buildQuery();
-        assertTrue(query instanceof SQLTemplate);
-        assertSame(entity, ((SQLTemplate) query).getRoot());
+        QueryMetadata metadata = builder.buildQuery().getMetaData(new EntityResolver(List.of(map)));
+        assertSame(table, metadata.getDbEntity());
+        assertSame(map, metadata.getDataMap());
+    }
+
+    @Test
+    public void getQueryRootDataMap() throws Exception {
+        DataMap map = new DataMap("m");
+
+        SQLTemplateDescriptor builder = new SQLTemplateDescriptor();
+        builder.setRoot(map);
+
+        QueryMetadata metadata = builder.buildQuery().getMetaData(new EntityResolver(List.of(map)));
+        assertNull(metadata.getDbEntity());
+        assertSame(map, metadata.getDataMap());
+    }
+
+    @Test
+    public void getQueryRootUnsupported() throws Exception {
+        SQLTemplateDescriptor builder = new SQLTemplateDescriptor();
+        builder.setRoot(new DbEntity("T"));
+        assertThrows(CayenneRuntimeException.class, builder::buildQuery);
     }
 
     @Test

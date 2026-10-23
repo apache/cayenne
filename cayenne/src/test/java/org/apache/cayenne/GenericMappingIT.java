@@ -61,13 +61,13 @@ public class GenericMappingIT {
 
     @Test
     public void testSelect() {
-        env.context().execute(new SQLTemplate(
+        env.context().execute(SQLTemplate.entityQuery(
                 "Generic1",
                 "INSERT INTO GENERIC1 (ID, NAME) VALUES (1, 'AAAA')"));
-        env.context().execute(new SQLTemplate(
+        env.context().execute(SQLTemplate.entityQuery(
                 "Generic1",
                 "INSERT INTO GENERIC1 (ID, NAME) VALUES (2, 'BBBB')"));
-        env.context().execute(new SQLTemplate(
+        env.context().execute(SQLTemplate.entityQuery(
                 "Generic1",
                 "INSERT INTO GENERIC2 (GENERIC1_ID, ID, NAME) VALUES (1, 1, 'CCCCC')"));
 

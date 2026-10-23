@@ -112,7 +112,7 @@ public class FrontBasePkGenerator extends JdbcPkGenerator {
 
         final long[] pkHolder = new long[1];
 
-        SQLTemplate<?> query = new SQLTemplate<>(entity, template);
+        SQLTemplate<DataRow> query = SQLTemplate.dataRowQuery(template);
         OperationObserver observer = new OperationObserver() {
 
             @Override

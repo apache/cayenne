@@ -56,6 +56,7 @@ public final class UpgradeHandler_V15 implements UpgradeHandler {
         upgradeExtensionSchema(context, "/dataMap", "dbImport");
         upgradeInfoSchema(context);
         convertForeignKeys(context);
+        dropSqlQueryDbRoots(context);
     }
 
     private void updateProjectSchema(UpgradeContext upgradeUnit) {
@@ -95,6 +96,19 @@ public final class UpgradeHandler_V15 implements UpgradeHandler {
                 + "[normalize-space(text())='DB_RELATIONSHIP_GENERATED_WITH_DEPENDENT_PK']";
         for (Element exclude : elements(upgradeUnit, path)) {
             exclude.setTextContent("DB_RELATIONSHIP_FOREIGN_KEY_IN_GENERATED_PK");
+        }
+    }
+
+    /**
+     * Removes the "dbEntity" and "procedure" roots of "sqlQuery", that only routed the query to the DataNode of its
+     * DataMap. A SQL query root is now an ObjEntity or the DataMap, and a query without a root is run on the DataNode
+     * of its DataMap.
+     */
+    private void dropSqlQueryDbRoots(UpgradeContext upgradeUnit) {
+        String path = "/dataMap/*[local-name()='sqlQuery'][@root='dbEntity' or @root='procedure']";
+        for (Element query : elements(upgradeUnit, path)) {
+            query.removeAttribute("root");
+            query.removeAttribute("rootName");
         }
     }
 
