@@ -21,7 +21,6 @@ package org.apache.cayenne.cache.invalidation;
 
 import org.apache.cayenne.CoreModule;
 import org.apache.cayenne.di.Binder;
-import org.apache.cayenne.di.ListBuilder;
 import org.apache.cayenne.di.Module;
 
 /**
@@ -30,14 +29,6 @@ import org.apache.cayenne.di.Module;
  * @since 4.0
  */
 public class CacheInvalidationModule implements Module {
-
-    /**
-     * @deprecated in favor of {@link #extend(Binder)}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    static ListBuilder<InvalidationHandler> contributeInvalidationHandler(Binder binder) {
-        return binder.bindList(InvalidationHandler.class);
-    }
 
     /**
      * Returns a new "extender" to customize the defaults provided by this module.

@@ -67,7 +67,7 @@ public class CayennePersistentObjectSetToManyListIT {
 
 	@Test
 	public void readRO1() {
-		Artist a1 = Cayenne.objectForPK(env.context(), Artist.class, 8);
+		Artist a1 = env.context().objectForPK(Artist.class, 8);
 		assertNotNull(a1);
 
 		List<ROPainting> paints = ObjectSelect.query(ROPainting.class).where(ROPainting.TO_ARTIST.eq(a1))
@@ -81,7 +81,7 @@ public class CayennePersistentObjectSetToManyListIT {
 
 	@Test
 	public void setEmptyList1() {
-		Artist artist = Cayenne.objectForPK(env.context(), Artist.class, 8);
+		Artist artist = env.context().objectForPK(Artist.class, 8);
 		artist.setToManyTarget(Artist.PAINTING_ARRAY.getName(), new ArrayList<ROPainting>(0), true);
 		List<Painting> paints = artist.getPaintingArray();
 		assertEquals(0, paints.size());
@@ -89,31 +89,31 @@ public class CayennePersistentObjectSetToManyListIT {
 
 	@Test
 	public void setEmptyList2() {
-		Artist artist = Cayenne.objectForPK(env.context(), Artist.class, 8);
+		Artist artist = env.context().objectForPK(Artist.class, 8);
 		assertThrows(IllegalArgumentException.class, () -> artist.setToManyTarget(Artist.PAINTING_ARRAY.getName(), null, true));
 	}
 
 	@Test
 	public void nonExistentRelName() {
-		Artist artist = Cayenne.objectForPK(env.context(), Artist.class, 8);
+		Artist artist = env.context().objectForPK(Artist.class, 8);
 		assertThrows(IllegalArgumentException.class, () -> artist.setToManyTarget("doesnotexist", new ArrayList<ROPainting>(0), true));
 	}
 
 	@Test
 	public void emptyRelName() {
-		Artist artist = Cayenne.objectForPK(env.context(), Artist.class, 8);
+		Artist artist = env.context().objectForPK(Artist.class, 8);
 		assertThrows(IllegalArgumentException.class, () -> artist.setToManyTarget("", new ArrayList<ROPainting>(0), true));
 	}
 
 	@Test
 	public void nullRelName() {
-		Artist artist = Cayenne.objectForPK(env.context(), Artist.class, 8);
+		Artist artist = env.context().objectForPK(Artist.class, 8);
 		assertThrows(IllegalArgumentException.class, () -> artist.setToManyTarget(null, new ArrayList<ROPainting>(0), true));
 	}
 
 	@Test
 	public void totalDifferentPaintings() {
-		Artist artist = Cayenne.objectForPK(env.context(), Artist.class, 8);
+		Artist artist = env.context().objectForPK(Artist.class, 8);
 
 		// copy the paintings list. Replacing paintings wont change the copy
 		List<Painting> oldPaints = new ArrayList<>(artist.getPaintingArray());
@@ -142,12 +142,12 @@ public class CayennePersistentObjectSetToManyListIT {
 
 	@Test
 	public void samePaintings() {
-		Artist artist = Cayenne.objectForPK(env.context(), Artist.class, 8);
+		Artist artist = env.context().objectForPK(Artist.class, 8);
 		List<Painting> oldPaints = new ArrayList<>(artist.getPaintingArray());
 
-		Painting paint6 = Cayenne.objectForPK(env.context(), Painting.class, 6);
-		Painting paint7 = Cayenne.objectForPK(env.context(), Painting.class, 7);
-		Painting paint8 = Cayenne.objectForPK(env.context(), Painting.class, 8);
+		Painting paint6 = env.context().objectForPK(Painting.class, 6);
+		Painting paint7 = env.context().objectForPK(Painting.class, 7);
+		Painting paint8 = env.context().objectForPK(Painting.class, 8);
 
 		List<Painting> newPaints = Arrays.asList(paint6, paint7, paint8);
 		List<? extends Persistent> returnList = artist.setToManyTarget(Artist.PAINTING_ARRAY.getName(), newPaints,
@@ -164,7 +164,7 @@ public class CayennePersistentObjectSetToManyListIT {
 
 	@Test
 	public void oldPlusNewPaintings() {
-		Artist artist = Cayenne.objectForPK(env.context(), Artist.class, 8);
+		Artist artist = env.context().objectForPK(Artist.class, 8);
 		List<Painting> oldPaints = artist.getPaintingArray();
 
 		List<Painting> newPaints = new ArrayList<>(6);
@@ -184,9 +184,9 @@ public class CayennePersistentObjectSetToManyListIT {
 		artist.setToManyTarget(Artist.PAINTING_ARRAY.getName(), newPaints, true);
 
 		List<Painting> newPaints2 = artist.getPaintingArray();
-		Painting paint6 = Cayenne.objectForPK(env.context(), Painting.class, 6);
-		Painting paint7 = Cayenne.objectForPK(env.context(), Painting.class, 7);
-		Painting paint8 = Cayenne.objectForPK(env.context(), Painting.class, 8);
+		Painting paint6 = env.context().objectForPK(Painting.class, 6);
+		Painting paint7 = env.context().objectForPK(Painting.class, 7);
+		Painting paint8 = env.context().objectForPK(Painting.class, 8);
 
 		assertEquals(6, newPaints2.size());
 		assertTrue(newPaints2.contains(paintX));
@@ -199,7 +199,7 @@ public class CayennePersistentObjectSetToManyListIT {
 
 	@Test
 	public void removeOneOldAndAddOneNewPaintings() {
-		Artist artist = Cayenne.objectForPK(env.context(), Artist.class, 8);
+		Artist artist = env.context().objectForPK(Artist.class, 8);
 
 		List<Painting> newPaints = new ArrayList<>();
 
@@ -236,7 +236,7 @@ public class CayennePersistentObjectSetToManyListIT {
 	 */
 	@Test
 	public void relationCollectionTypeList() {
-		Artist artist = Cayenne.objectForPK(env.context(), Artist.class, 8);
+		Artist artist = env.context().objectForPK(Artist.class, 8);
 		assertTrue(artist.readProperty(Artist.PAINTING_ARRAY.getName()) instanceof List);
 		assertDoesNotThrow(() -> artist.setToManyTarget(Artist.PAINTING_ARRAY.getName(), new ArrayList<Painting>(0), true));
 		assertEquals(0, artist.getPaintingArray().size());

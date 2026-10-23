@@ -79,9 +79,9 @@ public class OneWayRelationshipsIT {
 		t1Helper.insert(1).insert(2);
 		t2Helper.insert(1, 1);
 
-		OnewayTable1 t11 = Cayenne.objectForPK(env.context(), OnewayTable1.class, 1);
-		OnewayTable1 t12 = Cayenne.objectForPK(env.context(), OnewayTable1.class, 2);
-		OnewayTable2 t2 = Cayenne.objectForPK(env.context(), OnewayTable2.class, 1);
+		OnewayTable1 t11 = env.context().objectForPK(OnewayTable1.class, 1);
+		OnewayTable1 t12 = env.context().objectForPK(OnewayTable1.class, 2);
+		OnewayTable2 t2 = env.context().objectForPK(OnewayTable2.class, 1);
 
 		assertSame(t11, t2.getToOneOneWayDb());
 
@@ -100,8 +100,8 @@ public class OneWayRelationshipsIT {
 		t1Helper.insert(1);
 		t2Helper.insert(1, 1);
 
-		OnewayTable1 t11 = Cayenne.objectForPK(env.context(), OnewayTable1.class, 1);
-		OnewayTable2 t2 = Cayenne.objectForPK(env.context(), OnewayTable2.class, 1);
+		OnewayTable1 t11 = env.context().objectForPK(OnewayTable1.class, 1);
+		OnewayTable2 t2 = env.context().objectForPK(OnewayTable2.class, 1);
 
 		assertSame(t11, t2.getToOneOneWayDb());
 
@@ -135,10 +135,10 @@ public class OneWayRelationshipsIT {
 		t3Helper.insert(1);
 		t4Helper.insert(1, 1);
 
-		OnewayTable3 t3 = Cayenne.objectForPK(env.context(), OnewayTable3.class, 1);
+		OnewayTable3 t3 = env.context().objectForPK(OnewayTable3.class, 1);
 		assertEquals(1, t3.getToManyOneWayDb().size());
 
-		OnewayTable4 t41 = Cayenne.objectForPK(env.context(), OnewayTable4.class, 1);
+		OnewayTable4 t41 = env.context().objectForPK(OnewayTable4.class, 1);
 		assertTrue(t3.getToManyOneWayDb().contains(t41));
 
 		OnewayTable4 t42 = env.context().newObject(OnewayTable4.class);
@@ -163,13 +163,13 @@ public class OneWayRelationshipsIT {
 		t3Helper.insert(1);
 		t4Helper.insert(1, 1).insert(2, null);
 
-		OnewayTable3 t3 = Cayenne.objectForPK(env.context(), OnewayTable3.class, 1);
+		OnewayTable3 t3 = env.context().objectForPK(OnewayTable3.class, 1);
 		assertEquals(1, t3.getToManyOneWayDb().size());
 
-		OnewayTable4 t41 = Cayenne.objectForPK(env.context(), OnewayTable4.class, 1);
+		OnewayTable4 t41 = env.context().objectForPK(OnewayTable4.class, 1);
 		assertTrue(t3.getToManyOneWayDb().contains(t41));
 
-		OnewayTable4 t42 = Cayenne.objectForPK(env.context(), OnewayTable4.class, 2);
+		OnewayTable4 t42 = env.context().objectForPK(OnewayTable4.class, 2);
 
 		t3.addToToManyOneWayDb(t42);
 		env.context().commitChanges();
@@ -192,13 +192,13 @@ public class OneWayRelationshipsIT {
 		t3Helper.insert(1);
 		t4Helper.insert(1, 1).insert(2, 1);
 
-		OnewayTable3 t3 = Cayenne.objectForPK(env.context(), OnewayTable3.class, 1);
+		OnewayTable3 t3 = env.context().objectForPK(OnewayTable3.class, 1);
 		assertEquals(2, t3.getToManyOneWayDb().size());
 
-		OnewayTable4 t41 = Cayenne.objectForPK(env.context(), OnewayTable4.class, 1);
+		OnewayTable4 t41 = env.context().objectForPK(OnewayTable4.class, 1);
 		assertTrue(t3.getToManyOneWayDb().contains(t41));
 
-		OnewayTable4 t42 = Cayenne.objectForPK(env.context(), OnewayTable4.class, 2);
+		OnewayTable4 t42 = env.context().objectForPK(OnewayTable4.class, 2);
 		assertTrue(t3.getToManyOneWayDb().contains(t42));
 
 		t3.removeFromToManyOneWayDb(t42);

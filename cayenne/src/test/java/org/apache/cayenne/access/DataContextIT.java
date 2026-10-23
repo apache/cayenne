@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.access;
 
-import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.DataRowLayout;
 import org.apache.cayenne.Fault;
@@ -196,7 +195,7 @@ public class DataContextIT {
 		// CAY-96 bug report)
 
         ObjectId eId = ObjectId.of("Exhibit", Exhibit.EXHIBIT_ID_PK_COLUMN, 2);
-		Exhibit e = (Exhibit) Cayenne.objectForPK(context, eId);
+		Exhibit e = (Exhibit) context.objectForPK(eId);
 
 		assertTrue(e.readPropertyDirectly(Exhibit.TO_GALLERY.getName()) instanceof Fault);
 
@@ -595,7 +594,7 @@ public class DataContextIT {
 	public void beforeHollowDeleteShouldChangeStateToCommited() throws Exception {
 		createSingleArtistDataSet();
 
-		Artist hollow = Cayenne.objectForPK(context, Artist.class, 33001);
+		Artist hollow = context.objectForPK(Artist.class, 33001);
 		context.invalidateObjects(hollow);
 		assertEquals(PersistenceState.HOLLOW, hollow.getPersistenceState());
 
@@ -620,4 +619,21 @@ public class DataContextIT {
 
 		assertEquals(PersistenceState.COMMITTED, newObject.getPersistenceState());
 	}
+	@Test
+	public void selectWithNonSelectingSQLTemplate() throws Exception {
+
+		Artist a = context.newObject(Artist.class);
+		a.setArtistName("aa");
+		context.commitChanges();
+
+		SQLTemplate q = new SQLTemplate(Artist.class, "DELETE FROM ARTIST");
+
+		// this way of executing a query makes no sense, but it shouldn't blow
+		// either...
+		List<?> result = context.select(q);
+
+		assertNotNull(result);
+		assertEquals(0, result.size());
+	}
+
 }

@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
-import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.FaultFailureException;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
@@ -55,8 +54,8 @@ public class DataContextLocalObjectIT {
     public void localObject_InCache() throws Exception {
         tArtist.insert(456, "Bla");
 
-        final Artist a1 = Cayenne.objectForPK(context1, Artist.class, 456);
-        final Artist a2 = Cayenne.objectForPK(context2, Artist.class, 456);
+        final Artist a1 = context1.objectForPK(Artist.class, 456);
+        final Artist a2 = context2.objectForPK(Artist.class, 456);
 
         env.runWithQueriesBlocked(() -> {
             Artist a3 = context2.localObject(a1);
@@ -69,7 +68,7 @@ public class DataContextLocalObjectIT {
     public void localObject_SameContext() throws Exception {
         tArtist.insert(456, "Bla");
 
-        final Artist a1 = Cayenne.objectForPK(context1, Artist.class, 456);
+        final Artist a1 = context1.objectForPK(Artist.class, 456);
 
         env.runWithQueriesBlocked(() -> {
             Artist a2 = context1.localObject(a1);
@@ -81,7 +80,7 @@ public class DataContextLocalObjectIT {
     public void localObject_NotInCache() throws Exception {
         tArtist.insert(456, "Bla");
 
-        final Artist a1 = Cayenne.objectForPK(context1, Artist.class, 456);
+        final Artist a1 = context1.objectForPK(Artist.class, 456);
 
         env.runWithQueriesBlocked(() -> {
             Artist a3 = context2.localObject(a1);
@@ -95,7 +94,7 @@ public class DataContextLocalObjectIT {
     public void localObject_FFE_InvalidID() throws Exception {
         tArtist.insert(777, "AA");
 
-        final Artist a1 = Cayenne.objectForPK(context1, Artist.class, 777);
+        final Artist a1 = context1.objectForPK(Artist.class, 777);
 
         Artist a3 = context2.localObject(a1);
         assertEquals(PersistenceState.HOLLOW, a3.getPersistenceState());

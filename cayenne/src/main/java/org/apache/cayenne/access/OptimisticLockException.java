@@ -67,14 +67,6 @@ public class OptimisticLockException extends CayenneRuntimeException {
     }
 
     /**
-     * @deprecated in favor of {@link #getStatement()}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public String getQuerySQL() {
-        return statement.sql();
-    }
-
-    /**
      * Retrieves fresh snapshot for the failed row. Null row indicates that it was deleted.
      *
      * @since 3.0

@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.map.DeleteRule;
 import org.apache.cayenne.map.ObjRelationship;
@@ -84,7 +83,7 @@ public class DeleteObjectIT {
     public void deleteObject() throws Exception {
         createObjectDataSet();
 
-        Artist artist = Cayenne.objectForPK(context, Artist.class, 1);
+        Artist artist = context.objectForPK(Artist.class, 1);
         assertEquals(PersistenceState.COMMITTED, artist.getPersistenceState());
         context.deleteObject(artist);
         assertEquals(PersistenceState.DELETED, artist.getPersistenceState());
@@ -141,7 +140,7 @@ public class DeleteObjectIT {
     public void deleteObjectsRelationshipCollection() throws Exception {
         createObjectsRelationshipCollectionDataSet();
 
-        Artist artist = Cayenne.objectForPK(context, Artist.class, 1);
+        Artist artist = context.objectForPK(Artist.class, 1);
         List<Painting> paintings = artist.getPaintingArray();
 
         assertEquals(3, paintings.size());
@@ -171,7 +170,7 @@ public class DeleteObjectIT {
     public void deleteObjectInIterator() throws Exception {
         createObjectsRelationshipCollectionDataSet();
 
-        Artist artist = Cayenne.objectForPK(context, Artist.class, 1);
+        Artist artist = context.objectForPK(Artist.class, 1);
         List<Painting> paintings = artist.getPaintingArray();
 
         assertEquals(3, paintings.size());

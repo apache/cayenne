@@ -243,18 +243,6 @@ public class DataNode {
     }
 
     /**
-     * Returns a DataNode that should handle queries for all DataMap components.
-     *
-     * @since 1.1
-     * @deprecated unused and unneeded
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public DataNode lookupDataNode(DataMap dataMap) {
-        // we don't know any better than to return ourselves...
-        return this;
-    }
-
-    /**
      * Runs queries using Connection obtained from internal DataSource.
      *
      * @since 1.1

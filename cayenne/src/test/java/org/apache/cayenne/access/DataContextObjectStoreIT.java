@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.access;
 
-import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.DataRowLayout;
 import org.apache.cayenne.MockPersistentObject;
@@ -188,7 +187,7 @@ public class DataContextObjectStoreIT {
         //
         // The full object graph is not being re-registered during auto-registration
         // with the context.
-        Painting newP = (Painting) Cayenne.objectForPK(env.context(), p.getObjectId());
+        Painting newP = (Painting) env.context().objectForPK(p.getObjectId());
         assertNotNull(newP.getToGallery());
     }
 }

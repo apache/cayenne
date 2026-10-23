@@ -18,8 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
-import org.apache.cayenne.Cayenne;
-import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
@@ -88,8 +86,8 @@ public class ShallowMergeOperationIT {
 
         int modifiedId = 33003;
         ObjectId modifiedOid = ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, modifiedId);
-        final Artist modified = (Artist) Cayenne.objectForPK(context, modifiedOid);
-        final Artist peerModified = (Artist) Cayenne.objectForPK(childContext, modifiedOid);
+        final Artist modified = (Artist) context.objectForPK(modifiedOid);
+        final Artist peerModified = (Artist) childContext.objectForPK(modifiedOid);
 
         modified.setArtistName("M1");
         peerModified.setArtistName("M2");
@@ -117,15 +115,15 @@ public class ShallowMergeOperationIT {
 
         final Artist _new = context.newObject(Artist.class);
 
-        final Artist hollow = Cayenne.objectForPK(context, Artist.class, 33001);
+        final Artist hollow = context.objectForPK(Artist.class, 33001);
         context.invalidateObjects(hollow);
 
-        final Artist committed = Cayenne.objectForPK(context, Artist.class, 33002);
+        final Artist committed = context.objectForPK(Artist.class, 33002);
 
-        final Artist modified = Cayenne.objectForPK(context, Artist.class, 33003);
+        final Artist modified = context.objectForPK(Artist.class, 33003);
         modified.setArtistName("M1");
 
-        final Artist deleted = Cayenne.objectForPK(context, Artist.class, 33004);
+        final Artist deleted = context.objectForPK(Artist.class, 33004);
         context.deleteObjects(deleted);
 
         assertEquals(PersistenceState.HOLLOW, hollow.getPersistenceState());

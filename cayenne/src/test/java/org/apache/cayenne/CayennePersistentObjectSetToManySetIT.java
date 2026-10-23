@@ -64,7 +64,7 @@ public class CayennePersistentObjectSetToManySetIT {
 	 */
 	@Test
 	public void relationCollectionTypeMap() throws Exception {
-		SetToMany o1 = Cayenne.objectForPK(env.context(), SetToMany.class, 1);
+		SetToMany o1 = env.context().objectForPK(SetToMany.class, 1);
 		assertTrue(o1.readProperty(SetToMany.TARGETS.getName()) instanceof Set);
 		assertDoesNotThrow(() -> o1.setToManyTarget(SetToMany.TARGETS.getName(), new ArrayList<MapToMany>(0), true));
 		assertEquals(0, o1.getTargets().size());

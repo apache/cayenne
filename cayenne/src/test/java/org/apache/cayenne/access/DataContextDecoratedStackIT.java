@@ -53,7 +53,9 @@ public class DataContextDecoratedStackIT {
     public void commitDecorated() {
         DataDomain dd = env.runtime().getDataDomain();
         DataChannel decorator = new DataChannelDecorator(dd);
-        DataContext context = (DataContext) env.runtime().newContext(decorator);
+        DataContext context = (DataContext) env.runtime().getInjector()
+                .getInstance(ObjectContextFactory.class)
+                .createContext(decorator);
 
         Artist a = context.newObject(Artist.class);
         a.setArtistName("XXX");
@@ -78,20 +80,12 @@ public class DataContextDecoratedStackIT {
     public void getDataDomain() {
         DataDomain dd = env.runtime().getDataDomain();
         DataChannel decorator = new DataChannelDecorator(dd);
-        DataContext context = (DataContext) env.runtime().newContext(decorator);
+        DataContext context = (DataContext) env.runtime().getInjector()
+                .getInstance(ObjectContextFactory.class)
+                .createContext(decorator);
 
         assertSame(dd, decorator.getDataDomain());
         assertSame(dd, context.getChannel().getDataDomain());
-    }
-
-    @Test
-    @SuppressWarnings("removal")
-    public void getParentDataDomain() {
-        DataDomain dd = env.runtime().getDataDomain();
-        DataChannel decorator = new DataChannelDecorator(dd);
-        DataContext context = (DataContext) env.runtime().newContext(decorator);
-
-        assertSame(dd, context.getParentDataDomain());
     }
 
     class DataChannelDecorator implements DataChannel {

@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.access;
 
-import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.DataRowLayout;
@@ -381,7 +380,7 @@ public class DataContextExtrasIT {
         Painting p1 = objects.getFirst();
 
         Artist oldArtist = p1.getToArtist();
-        Artist newArtist = Cayenne.objectForPK(context, Artist.class, 33002);
+        Artist newArtist = context.objectForPK(Artist.class, 33002);
 
         assertNotSame(oldArtist, newArtist);
 
@@ -406,7 +405,7 @@ public class DataContextExtrasIT {
         Painting p1 = objects.getFirst();
 
         Artist oldArtist = p1.getToArtist();
-        Artist newArtist = Cayenne.objectForPK(context, Artist.class, 33002);
+        Artist newArtist = context.objectForPK(Artist.class, 33002);
 
         assertNotSame(oldArtist, newArtist);
 

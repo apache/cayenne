@@ -108,7 +108,7 @@ public class NestedDataContextWriteIT {
 
         ObjectContext childContext = runtime.newContext(context);
 
-        Artist a = Cayenne.objectForPK(childContext, Artist.class, 33001);
+        Artist a = childContext.objectForPK(Artist.class, 33001);
         Painting p = childContext.newObject(Painting.class);
         p.setPaintingTitle("X");
         a.addToPaintingArray(p);
@@ -131,10 +131,10 @@ public class NestedDataContextWriteIT {
         final ObjectContext childContext = runtime.newContext(context);
         ObjectContext childContextPeer = runtime.newContext(context);
 
-        final Painting childP1 = Cayenne.objectForPK(childContext, Painting.class, 33001);
+        final Painting childP1 = childContext.objectForPK(Painting.class, 33001);
 
         // trigger object creation in the peer nested DC
-        Cayenne.objectForPK(childContextPeer, Painting.class, 33001);
+        childContextPeer.objectForPK(Painting.class, 33001);
         childP1.setToArtist(null);
 
         env.runWithQueriesBlocked(() -> {

@@ -1134,14 +1134,6 @@ public class ExpressionFactory {
 	}
 
 	/**
-	 * @deprecated a relationship path expression is all that is needed to select related objects as a column
-	 */
-	@Deprecated(since = "5.0", forRemoval = true)
-	public static Expression fullObjectExp(Expression exp) {
-		return exp;
-	}
-
-	/**
 	 * @since 4.2
 	 */
 	public static Expression enclosingObjectExp(Expression exp) {

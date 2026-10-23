@@ -25,8 +25,6 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -188,26 +186,6 @@ public interface QueryMetadata {
     // TODO: "null" return seems dirty
     ResultSegments getResultSegments();
 
-    /**
-     * @since 3.0
-     * @deprecated use {@link #getResultSegments()}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    default List<Object> getResultSetMapping() {
-        ResultSegments segments = getResultSegments();
-        return segments != null ? Collections.unmodifiableList(segments.segments()) : null;
-    }
-
-    /**
-     * @since 4.0
-     * @deprecated use {@link #getResultSegments()} and check {@link ResultSegments#array()}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    default boolean isSingleResultSetMapping() {
-        ResultSegments segments = getResultSegments();
-        return segments != null && !segments.array();
-    }
-    
     /**
      * @return statement's fetch size
      * @since 3.0

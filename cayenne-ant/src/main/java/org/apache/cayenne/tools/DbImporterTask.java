@@ -239,14 +239,6 @@ public class DbImporterTask extends Task {
     }
 
     /**
-     * @deprecated this method is unused and does nothing
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public void setUsePrimitives(boolean flag) {
-
-    }
-
-    /**
      * @since 4.0
      */
     public void setUseJava7Types(boolean flag) {

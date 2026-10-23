@@ -34,7 +34,6 @@
 	<packaging>pom</packaging>
 
 	<modules>
-		<module>cayenne-asciidoc-extension</module>
 		<module>cayenne-guide</module>
 		<module>getting-started-guide</module>
 	</modules>

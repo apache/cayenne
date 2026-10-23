@@ -64,16 +64,6 @@ public interface PkGenerator {
     List<String> dropAutoPkStatements(List<DbEntity> dbEntities);
 
     /**
-     * Generates a unique and non-repeating primary key for specified PK attribute.
-     *
-     * @deprecated unused by the framework that relies on {@link #generatePk(DataNode, DbAttribute, Class)}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    default Object generatePk(DataNode dataNode, DbAttribute pk) {
-        return generatePk(dataNode, pk, null);
-    }
-
-    /**
      * Generates a unique and non-repeating primary key for the specified PK attribute
      *
      * @since 5.0

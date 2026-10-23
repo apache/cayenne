@@ -380,17 +380,6 @@ public class CayenneGeneratorTask extends CayenneTask {
     }
 
     /**
-     * does nothing
-     *
-     * @param force not used
-     * @deprecated cgen runs unconditionally
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public void setForce(boolean force) {
-        log("'force' is deprecated and ignored. cgen always regenerates classes.");
-    }
-
-    /**
      * @since 4.2
      */
     public void setExternaltoolconfig(String externaltoolconfig) {

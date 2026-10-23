@@ -55,7 +55,7 @@ public class DataContextResolveRelationship_PolymorphicIT extends PeopleTestBase
         context1.commitChanges();
 
         // use different context to ensure we hit shared cache for relationship resolving
-        PersonNotes nPeer = Cayenne.objectForPK(context2, PersonNotes.class, Cayenne.intPKForObject(n));
+        PersonNotes nPeer = context2.objectForPK(PersonNotes.class, Cayenne.intPKForObject(n));
 
         env.runWithQueriesBlocked(() -> assertInstanceOf(Employee.class, nPeer.getPerson()));
     }

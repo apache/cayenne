@@ -69,14 +69,14 @@ public class CDOOneToOneFKIT {
 
         context.invalidateObjects(src, target);
 
-        ToOneFK2 src1 = (ToOneFK2) Cayenne.objectForPK(context, src.getObjectId());
+        ToOneFK2 src1 = (ToOneFK2) context.objectForPK(src.getObjectId());
         assertNotNull(src1.getToOneToFK());
         // resolve HOLLOW
         assertSame(src1, src1.getToOneToFK().getToPK());
 
         context.invalidateObjects(src1, src1.getToOneToFK());
 
-        ToOneFK1 target2 = (ToOneFK1) Cayenne.objectForPK(context, target.getObjectId());
+        ToOneFK1 target2 = (ToOneFK1) context.objectForPK(target.getObjectId());
         assertNotNull(target2.getToPK());
 
         // resolve HOLLOW

@@ -21,9 +21,7 @@ package org.apache.cayenne.projecttools;
 import org.apache.cayenne.project.ConfigurationNameMapper;
 import org.apache.cayenne.project.DefaultConfigurationNameMapper;
 import org.apache.cayenne.di.Binder;
-import org.apache.cayenne.di.ListBuilder;
 import org.apache.cayenne.di.Module;
-import org.apache.cayenne.projecttools.extension.ProjectExtension;
 import org.apache.cayenne.projecttools.upgrade.DefaultProjectUpgrader;
 import org.apache.cayenne.projecttools.upgrade.ProjectUpgrader;
 import org.apache.cayenne.projecttools.validation.DefaultProjectValidator;
@@ -42,15 +40,6 @@ public class ProjectToolsModule implements Module {
      */
     public static ProjectToolsModuleExtender extend(Binder binder) {
         return new ProjectToolsModuleExtender(binder);
-    }
-
-    /**
-     * @since 4.1
-     * @deprecated in favor of {@link #extend(Binder)}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public static ListBuilder<ProjectExtension> contributeExtensions(Binder binder) {
-        return binder.bindList(ProjectExtension.class);
     }
 
     public void configure(Binder binder) {

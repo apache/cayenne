@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
-import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.Fault;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
@@ -62,10 +61,10 @@ public class DataContextResolveRelationshipIT {
         tArtist.insert(1, "a1");
         tPainting.insert(1, "p1", 1);
 
-        Painting p = Cayenne.objectForPK(context, Painting.class, 1);
+        Painting p = context.objectForPK(Painting.class, 1);
 
         // resolve the artist before resolving the relationship, so that the relationship is served from the cache
-        Artist a = Cayenne.objectForPK(context, Artist.class, 1);
+        Artist a = context.objectForPK(Artist.class, 1);
         long v = a.getSnapshotVersion();
         int writeCalls = a.getPropertyWrittenDirectly();
         assertEquals("a1", a.getArtistName());
@@ -87,7 +86,7 @@ public class DataContextResolveRelationshipIT {
     public void toOneNullFk() throws Exception {
         tPainting.insert(1, "p1", null);
 
-        Painting p = Cayenne.objectForPK(context, Painting.class, 1);
+        Painting p = context.objectForPK(Painting.class, 1);
 
         env.runWithQueriesBlocked(() -> {
             List<?> related = context.resolveRelationship(p.getObjectId(), Painting.TO_ARTIST.getName(), false);
@@ -100,8 +99,8 @@ public class DataContextResolveRelationshipIT {
         tArtist.insert(1, "a1");
         tPainting.insert(1, "p1", 1);
 
-        Artist a = Cayenne.objectForPK(context, Artist.class, 1);
-        Painting p = Cayenne.objectForPK(context, Painting.class, 1);
+        Artist a = context.objectForPK(Artist.class, 1);
+        Painting p = context.objectForPK(Painting.class, 1);
         assertEquals("p1", p.getPaintingTitle());
 
         assertEquals(1, tPainting.update().set("PAINTING_TITLE", "p2").where("PAINTING_ID", 1).execute());
@@ -118,7 +117,7 @@ public class DataContextResolveRelationshipIT {
         tPainting.insert(1, "p1", 1);
         tPainting.insert(2, "p2", 1);
 
-        Artist a = Cayenne.objectForPK(context, Artist.class, 1);
+        Artist a = context.objectForPK(Artist.class, 1);
         assertEquals(2, a.getPaintingArray().size());
 
         ObjectContext child = env.runtime().newContext(context);
@@ -138,7 +137,7 @@ public class DataContextResolveRelationshipIT {
         tArtist.insert(1, "a1");
         tPainting.insert(1, "p1", 1);
 
-        Painting p = Cayenne.objectForPK(context, Painting.class, 1);
+        Painting p = context.objectForPK(Painting.class, 1);
         Artist a = p.getToArtist();
         assertEquals("a1", a.getArtistName());
 

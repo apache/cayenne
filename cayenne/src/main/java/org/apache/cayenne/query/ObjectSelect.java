@@ -33,7 +33,6 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -62,45 +61,11 @@ public class ObjectSelect<T> extends FluentSelect<T, ObjectSelect<T>> {
     }
 
     /**
-     * Creates a ObjectSelect that selects objects of a given persistent class
-     * and uses provided expression for its qualifier.
-     *
-     * @deprecated use {@link #query(Class)} and then {@link ObjectSelect#where}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public static <T> ObjectSelect<T> query(Class<T> entityType, Expression expression) {
-        return new ObjectSelect<T>().entityType(entityType).where(expression);
-    }
-
-    /**
-     * Creates a ObjectSelect that selects objects of a given persistent class
-     * and uses provided expression for its qualifier.
-     *
-     * @deprecated use {@link #query(Class)} and then {@link ObjectSelect#where} and {@link #orderBy(Collection)}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public static <T> ObjectSelect<T> query(Class<T> entityType, Expression expression, List<Ordering> orderings) {
-        return new ObjectSelect<T>().entityType(entityType).where(expression).orderBy(orderings);
-    }
-
-    /**
      * Creates a ObjectSelect that fetches data for an {@link ObjEntity}
      * determined from a provided class.
      */
     public static ObjectSelect<DataRow> dataRowQuery(Class<?> entityType) {
         return query(entityType).fetchDataRows();
-    }
-
-    /**
-     * Creates a ObjectSelect that fetches data for an {@link ObjEntity}
-     * determined from a provided class and uses provided expression for its
-     * qualifier.
-     *
-     * @deprecated use {@link #dataRowQuery(Class)} and then {@link ObjectSelect#where}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public static ObjectSelect<DataRow> dataRowQuery(Class<?> entityType, Expression expression) {
-        return query(entityType).fetchDataRows().where(expression);
     }
 
     /**
@@ -119,18 +84,6 @@ public class ObjectSelect<T> extends FluentSelect<T, ObjectSelect<T>> {
      */
     public static ObjectSelect<DataRow> dbQuery(String dbEntityName) {
         return new ObjectSelect<DataRow>().fetchDataRows().dbEntityName(dbEntityName);
-    }
-
-    /**
-     * Creates a ObjectSelect that fetches DataRows for a {@link DbEntity}
-     * determined from provided "dbEntityName" and uses provided expression for
-     * its qualifier.
-     *
-     * @deprecated use {@link #dbQuery(String)} and then {@link ObjectSelect#where}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public static ObjectSelect<DataRow> dbQuery(String dbEntityName, Expression expression) {
-        return new ObjectSelect<DataRow>().fetchDataRows().dbEntityName(dbEntityName).where(expression);
     }
 
     /**

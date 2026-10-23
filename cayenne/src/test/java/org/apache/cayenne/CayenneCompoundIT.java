@@ -78,7 +78,7 @@ public class CayenneCompoundIT {
         Map<String, Object> pk = new HashMap<>();
         pk.put(CompoundPkTestEntity.KEY1_PK_COLUMN, "PK1");
         pk.put(CompoundPkTestEntity.KEY2_PK_COLUMN, "PK2");
-        CompoundPkTestEntity object = Cayenne.objectForPK(env.context(), CompoundPkTestEntity.class, pk);
+        CompoundPkTestEntity object = env.context().objectForPK(CompoundPkTestEntity.class, pk);
 
         assertNotNull(object);
         assertEquals("BBB", object.getName());

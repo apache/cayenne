@@ -66,7 +66,7 @@ public class CDOSetRelationshipIT {
     public void readToMany() throws Exception {
         createTestDataSet();
 
-        SetToMany o1 = Cayenne.objectForPK(env.context(), SetToMany.class, 1);
+        SetToMany o1 = env.context().objectForPK(SetToMany.class, 1);
 
         Set targets = o1.getTargets();
 
@@ -75,17 +75,11 @@ public class CDOSetRelationshipIT {
 
         assertEquals(3, targets.size());
 
-        assertTrue(targets.contains(Cayenne.objectForPK(
-                o1.getObjectContext(),
-                SetToManyTarget.class,
+        assertTrue(targets.contains(o1.getObjectContext().objectForPK(SetToManyTarget.class,
                 1)));
-        assertTrue(targets.contains(Cayenne.objectForPK(
-                o1.getObjectContext(),
-                SetToManyTarget.class,
+        assertTrue(targets.contains(o1.getObjectContext().objectForPK(SetToManyTarget.class,
                 2)));
-        assertTrue(targets.contains(Cayenne.objectForPK(
-                o1.getObjectContext(),
-                SetToManyTarget.class,
+        assertTrue(targets.contains(o1.getObjectContext().objectForPK(SetToManyTarget.class,
                 3)));
     }
 
@@ -103,17 +97,11 @@ public class CDOSetRelationshipIT {
         assertNotNull(targets);
         assertEquals(3, targets.size());
 
-        assertTrue(targets.contains(Cayenne.objectForPK(
-                o1.getObjectContext(),
-                SetToManyTarget.class,
+        assertTrue(targets.contains(o1.getObjectContext().objectForPK(SetToManyTarget.class,
                 1)));
-        assertTrue(targets.contains(Cayenne.objectForPK(
-                o1.getObjectContext(),
-                SetToManyTarget.class,
+        assertTrue(targets.contains(o1.getObjectContext().objectForPK(SetToManyTarget.class,
                 2)));
-        assertTrue(targets.contains(Cayenne.objectForPK(
-                o1.getObjectContext(),
-                SetToManyTarget.class,
+        assertTrue(targets.contains(o1.getObjectContext().objectForPK(SetToManyTarget.class,
                 3)));
     }
 
@@ -121,7 +109,7 @@ public class CDOSetRelationshipIT {
     public void addToMany() throws Exception {
         createTestDataSet();
 
-        SetToMany o1 = Cayenne.objectForPK(env.context(), SetToMany.class, 1);
+        SetToMany o1 = env.context().objectForPK(SetToMany.class, 1);
 
         Set targets = o1.getTargets();
         assertNotNull(targets);
@@ -146,14 +134,12 @@ public class CDOSetRelationshipIT {
     public void removeToMany() throws Exception {
         createTestDataSet();
 
-        SetToMany o1 = Cayenne.objectForPK(env.context(), SetToMany.class, 1);
+        SetToMany o1 = env.context().objectForPK(SetToMany.class, 1);
 
         Set targets = o1.getTargets();
         assertEquals(3, targets.size());
 
-        SetToManyTarget target = Cayenne.objectForPK(
-                o1.getObjectContext(),
-                SetToManyTarget.class,
+        SetToManyTarget target = o1.getObjectContext().objectForPK(SetToManyTarget.class,
                 2);
         o1.removeFromTargets(target);
 
@@ -172,7 +158,7 @@ public class CDOSetRelationshipIT {
     public void addToManyViaReverse() throws Exception {
         createTestDataSet();
 
-        SetToMany o1 = Cayenne.objectForPK(env.context(), SetToMany.class, 1);
+        SetToMany o1 = env.context().objectForPK(SetToMany.class, 1);
 
         Set targets = o1.getTargets();
         assertNotNull(targets);

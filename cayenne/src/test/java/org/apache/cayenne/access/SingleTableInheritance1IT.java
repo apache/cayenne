@@ -56,7 +56,7 @@ public class SingleTableInheritance1IT {
         // Per CAY-1379 removing user and then refetching resulted in a FFE downstream
         group1.removeFromGroupMembers(user);
         ObjectSelect<Group> query = ObjectSelect.query(Group.class)
-                .where(Role.ROLE_GROUPS.contains(group2));
+                .where(Role.ROLE_GROUPS.containsValue(group2));
         env.context().select(query);
         env.context().commitChanges();
 

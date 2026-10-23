@@ -201,16 +201,6 @@ public class CayenneGeneratorMojo extends AbstractMojo {
     private Boolean createPropertyNames;
 
     /**
-     * No longer has any effect - cgen always regenerates classes.
-     *
-     * @since 4.1
-     * @deprecated cgen runs unconditionally
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    @Parameter(defaultValue = "false", property = "force")
-    private boolean force;
-
-    /**
      * Location of Velocity template file for DataMap class generation.
      * DataMap class provides utilities for usage of the Cayenne queries stored in the DataMap.
      * If omitted, default template is used.
@@ -265,10 +255,6 @@ public class CayenneGeneratorMojo extends AbstractMojo {
                 .create();
 
         Logger logger = new MavenLogger(this);
-        if (force) {
-            logger.warn("'force' is deprecated and ignored. cgen always regenerates classes.");
-        }
-
         CayenneGeneratorMapLoaderAction loaderAction = new CayenneGeneratorMapLoaderAction(injector);
         loaderAction.setMainDataMapFile(map);
 

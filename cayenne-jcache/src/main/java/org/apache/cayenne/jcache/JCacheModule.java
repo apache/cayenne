@@ -38,14 +38,6 @@ public class JCacheModule implements Module {
         return new JCacheModuleExtender(binder);
     }
 
-    /**
-     * @deprecated in favor of {@link #extend(Binder)}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public static void contributeJCacheProviderConfig(Binder binder, String providerConfigURI) {
-        extend(binder).setJCacheProviderConfig(providerConfigURI);
-    }
-
     @Override
     public void configure(Binder binder) {
         binder.bind(CacheManager.class).toProvider(JCacheManagerProvider.class);

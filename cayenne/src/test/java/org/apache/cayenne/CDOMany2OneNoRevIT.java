@@ -52,7 +52,7 @@ public class CDOMany2OneNoRevIT {
         ObjectId pid = p1.getObjectId();
         env.context().invalidateObjects(a1, p1);
 
-        Painting1 p2 = (Painting1) Cayenne.objectForPK(env.context(), pid);
+        Painting1 p2 = (Painting1) env.context().objectForPK(pid);
         Artist a2 = p2.getToArtist();
         assertNotNull(a2);
         assertEquals(aid, a2.getObjectId());

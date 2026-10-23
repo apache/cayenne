@@ -22,12 +22,16 @@ import org.apache.cayenne.project.xml.ProjectMetaData;
 import org.apache.cayenne.project.xml.NamespaceAwareNestedTagHandler;
 import org.apache.cayenne.projecttools.validation.Inspection;
 import org.apache.cayenne.projecttools.validation.ValidationConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;
 
 import java.util.EnumSet;
 import java.util.Set;
 
 public class ValidationConfigHandler extends NamespaceAwareNestedTagHandler {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ValidationConfigHandler.class);
 
     static final String CONFIG_TAG = "validation";
 
@@ -55,7 +59,12 @@ public class ValidationConfigHandler extends NamespaceAwareNestedTagHandler {
     @Override
     protected boolean processCharData(String localName, String data) {
         if (localName.equals(EXCLUDE_TAG)) {
-            disabledInspections.add(Inspection.valueOf(data));
+            // inspections removed in later versions may still be referenced by older project files; skip those
+            try {
+                disabledInspections.add(Inspection.valueOf(data));
+            } catch (IllegalArgumentException e) {
+                LOGGER.warn("Ignoring unknown validation inspection '{}'", data);
+            }
             return true;
         }
         return false;

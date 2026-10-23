@@ -49,7 +49,7 @@ practice:
 ```
 
 - `defaultPackage` — Java package for generated classes when an `objEntity` `className` is a short name.
-- `defaultSuperclass` — superclass for generated `_<Name>` superclasses. Default is `BaseDataObject`.
+- `defaultSuperclass` — superclass for generated `_<Name>` superclasses. Default is `PersistentObject`.
 
 ## Element order
 

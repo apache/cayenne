@@ -19,41 +19,22 @@
 
 package org.apache.cayenne.util;
 
-import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
 import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
-import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Member;
 import java.lang.reflect.Modifier;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.StringTokenizer;
-import java.util.regex.Pattern;
 
 /**
  * Contains various unorganized static utility methods used across Cayenne.
@@ -88,65 +69,6 @@ public class Util {
             throw new IllegalArgumentException("URL " + urlString + " can't be converted to URI", e);
         }
         return new File(uri);
-    }
-
-    /**
-     * Reads file contents, returning it as a String, using System default line separator.
-     *
-     * @deprecated unused
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public static String stringFromFile(File file) throws IOException {
-        return stringFromFile(file, System.lineSeparator());
-    }
-
-    /**
-     * Reads file contents, returning it as a String, joining lines with provided separator.
-     *
-     * @deprecated unused
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public static String stringFromFile(File file, String joinWith) throws IOException {
-        StringBuilder buf = new StringBuilder();
-
-        try (BufferedReader in = new BufferedReader(new FileReader(file))) {
-            String line;
-            while ((line = in.readLine()) != null) {
-                buf.append(line).append(joinWith);
-            }
-        }
-        return buf.toString();
-    }
-
-    /**
-     * @param objects   An Iterable of objects that will be converted to Strings and joined together.
-     * @param separator The separator between the strings.
-     * @return A single string of all the input strings separated by the
-     * separator.
-     * @deprecated use {@link String#join(CharSequence, CharSequence...)} or {@link java.util.stream.Collectors#joining}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public static String join(Iterable<?> objects, String separator) {
-        if (objects == null) {
-            return "";
-        }
-
-        if (separator == null) {
-            separator = "";
-        }
-
-        StringBuilder builder = new StringBuilder();
-
-        for (Object o : objects) {
-            if (!builder.isEmpty()) {
-                builder.append(separator);
-            }
-
-            String string = o != null ? o.toString() : "";
-            builder.append(string);
-        }
-
-        return builder.toString();
     }
 
     /**
@@ -221,43 +143,6 @@ public class Util {
     }
 
     /**
-     * Compares two objects similar to "Object.equals(Object)". Unlike
-     * Object.equals(..), this method doesn't throw an exception if any of the
-     * two objects is null.
-     *
-     * @deprecated Use {@link Objects#equals(Object, Object)} for non-array types,
-     * or {@link Objects#deepEquals(Object, Object)} when the values may be arrays.
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public static boolean nullSafeEquals(Object o1, Object o2) {
-        return Objects.deepEquals(o1, o2);
-    }
-
-    /**
-     * Compares two objects similar to "Comparable.compareTo(Object)". Unlike
-     * Comparable.compareTo(..), this method doesn't throw an exception if any
-     * of the two objects is null.
-     *
-     * @since 1.1
-     * @deprecated since 5.0 in favor of the JDK's
-     *             {@link java.util.Comparator#nullsFirst(java.util.Comparator)} /
-     *             {@link java.util.Comparator#nullsLast(java.util.Comparator)} combined with
-     *             {@link java.util.Comparator#naturalOrder()}.
-     */
-    @Deprecated(since = "5.0")
-    public static <T> int nullSafeCompare(boolean nullsFirst, Comparable<T> o1, T o2) {
-        if (o1 == null && o2 == null) {
-            return 0;
-        } else if (o1 == null) {
-            return nullsFirst ? -1 : 1;
-        } else if (o2 == null) {
-            return nullsFirst ? 1 : -1;
-        } else {
-            return o1.compareTo(o2);
-        }
-    }
-
-    /**
      * Returns true, if the String is null or an empty string.
      */
     public static boolean isEmptyString(CharSequence string) {
@@ -283,25 +168,6 @@ public class Util {
     }
 
     /**
-     * @since 4.1
-     * @deprecated use {@code cs.chars().allMatch(Character::isDigit)} or equivalent
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public static boolean isNumeric(CharSequence cs) {
-        if (isEmptyString(cs)) {
-            return false;
-        } else {
-            for (int i = 0; i < cs.length(); ++i) {
-                if (!Character.isDigit(cs.charAt(i))) {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-    }
-
-    /**
      * Returns how many times the sub appears in the str.
      *
      * @since 4.1
@@ -316,90 +182,6 @@ public class Util {
             idx += sub.length();
         }
         return count;
-    }
-
-    /**
-     * Capitalizes the first letter of the property name.
-     *
-     * @since 4.1
-     * @deprecated unused
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public static String capitalized(String name) {
-        if (name == null || name.isEmpty()) {
-            return name;
-        }
-
-        char c = Character.toUpperCase(name.charAt(0));
-        return (name.length() == 1) ? Character.toString(c) : c + name.substring(1);
-    }
-
-    /**
-     * Returns string with lowercased first letter
-     *
-     * @since 4.2
-     * @deprecated unused
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public static String uncapitalized(String aString) {
-        if (aString == null || aString.isEmpty()) {
-            return aString;
-        }
-
-        char c = Character.toLowerCase(aString.charAt(0));
-        return (aString.length() == 1) ? Character.toString(c) : c + aString.substring(1);
-    }
-
-    /**
-     * Creates an XMLReader with default feature set.
-     *
-     * @deprecated in favor of {@code XMLReaderProvider}, the DI-bound provider of XMLReaders
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public static XMLReader createXmlReader() throws SAXException, ParserConfigurationException {
-        SAXParserFactory spf = SAXParserFactory.newInstance();
-        spf.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
-        spf.setFeature("http://xml.org/sax/features/external-general-entities", false);
-        spf.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
-        spf.setFeature("http://xml.org/sax/features/namespaces", true);
-
-        // Create a JAXP SAXParser
-        SAXParser saxParser = spf.newSAXParser();
-
-        // Get the encapsulated SAX XMLReader
-        return saxParser.getXMLReader();
-    }
-
-    /**
-     * @since 4.1
-     * @deprecated unused
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public static Document readDocument(URL url) {
-        DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-        documentBuilderFactory.setNamespaceAware(false);
-        documentBuilderFactory.setXIncludeAware(false);
-        documentBuilderFactory.setExpandEntityReferences(false);
-
-        try {
-            documentBuilderFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
-            documentBuilderFactory.setFeature("http://xml.org/sax/features/external-general-entities", false);
-            documentBuilderFactory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
-            documentBuilderFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-        } catch (ParserConfigurationException ex) {
-            throw new ConfigurationException("Unable to configure DocumentBuilderFactory", ex);
-        }
-
-        try {
-            DocumentBuilder domBuilder = documentBuilderFactory.newDocumentBuilder();
-            try (InputStream inputStream = url.openStream()) {
-                return domBuilder.parse(inputStream);
-            } catch (IOException | SAXException e) {
-                throw new ConfigurationException("Error loading configuration from %s", e, url);
-            }
-        } catch (ParserConfigurationException e) {
-            throw new ConfigurationException(e);
-        }
     }
 
     /**
@@ -429,35 +211,6 @@ public class Util {
         }
 
         return className.substring(lastDot + 1);
-    }
-
-    /**
-     * Creates a mutable map out of two arrays with keys and values.
-     *
-     * @since 1.2
-     * @deprecated use {@link java.util.stream.IntStream#range} with
-     * {@link java.util.stream.Collectors#toMap} to build a map from parallel arrays
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public static <K, V> Map<K, V> toMap(K[] keys, V[] values) {
-        int keysSize = (keys != null) ? keys.length : 0;
-        int valuesSize = (values != null) ? values.length : 0;
-
-        if (keysSize == 0 && valuesSize == 0) {
-            // return mutable map
-            return new HashMap<>();
-        }
-
-        if (keysSize != valuesSize) {
-            throw new IllegalArgumentException("The number of keys doesn't match the number of values.");
-        }
-
-        Map<K, V> map = new HashMap<>();
-        for (int i = 0; i < keysSize; i++) {
-            map.put(keys[i], values[i]);
-        }
-
-        return map;
     }
 
     /**
@@ -556,74 +309,6 @@ public class Util {
         }
 
         return encoded.toString();
-    }
-
-    /**
-     * Trims long strings substituting middle part with "...".
-     *
-     * @deprecated unused
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public static String prettyTrim(String str, int maxLength) {
-        if (maxLength < 5) {
-            throw new IllegalArgumentException("Algorithm for 'prettyTrim' works only with length >= 5. "
-                    + "Supplied length is " + maxLength);
-        }
-
-        if (str == null || str.length() <= maxLength) {
-            return str;
-        }
-
-        // find a section to cut off
-        int len = maxLength - 3;
-        int startLen = len / 2;
-        int endLen = len - startLen;
-
-        return str.substring(0, startLen) + "..." + str.substring(str.length() - endLen);
-    }
-
-    /**
-     * Returns a sorted iterator from an unsorted one. Use this method as a last
-     * resort, since it is much less efficient then just sorting a collection
-     * that backs the original iterator.
-     *
-     * @deprecated unused
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public static <T> Iterator<T> sortedIterator(Iterator<T> it, Comparator<T> comparator) {
-        List<T> list = new ArrayList<>();
-        while (it.hasNext()) {
-            list.add(it.next());
-        }
-
-        Collections.sort(list, comparator);
-        return list.iterator();
-    }
-
-    /**
-     * Builds a hashCode of Collection.
-     *
-     * @deprecated unused
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public static int hashCode(Collection<?> c) {
-        int result = 17;
-        for (Object o : c) {
-            result = 37 * result + Objects.hashCode(o);
-        }
-        return result;
-    }
-
-    /**
-     * @since 1.2
-     * @deprecated unused
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public static Pattern sqlPatternToPattern(String pattern, boolean ignoreCase) {
-        String preprocessed = RegexUtil.sqlPatternToRegex(pattern);
-
-        int flag = (ignoreCase) ? Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE : 0;
-        return Pattern.compile(preprocessed, flag);
     }
 
     /**

@@ -86,12 +86,6 @@ public class DbImportConfig extends SchemaContainer {
     private String stripFromTableNames = "";
 
     /**
-     * <p>If true, would use primitives instead of numeric and boolean classes.</p>
-     * <p>Default is <b>"true"</b>, i.e. primitives will be used.</p>
-     */
-    private boolean usePrimitives = true;
-
-    /**
      * Use old Java 7 date types
      */
     private boolean useJava7Types = false;
@@ -133,7 +127,6 @@ public class DbImportConfig extends SchemaContainer {
         reverseEngineering.setMeaningfulPkTables(meaningfulPkTables);
         reverseEngineering.setNamingStrategy(namingStrategy);
         reverseEngineering.setStripFromTableNames(stripFromTableNames);
-        reverseEngineering.setUsePrimitives(usePrimitives);
         reverseEngineering.setUseJava7Types(useJava7Types);
         reverseEngineering.setTableTypes(tableTypes);
 
@@ -244,18 +237,6 @@ public class DbImportConfig extends SchemaContainer {
 
     public void stripFromTableNames(String stripFromTableNames) {
         setStripFromTableNames(stripFromTableNames);
-    }
-
-    public boolean isUsePrimitives() {
-        return usePrimitives;
-    }
-
-    public void setUsePrimitives(boolean usePrimitives) {
-        this.usePrimitives = usePrimitives;
-    }
-
-    public void usePrimitives(boolean usePrimitives) {
-        setUsePrimitives(usePrimitives);
     }
 
     public boolean isUseJava7Types() {

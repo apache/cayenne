@@ -28,14 +28,12 @@ import java.io.File;
 import java.io.FileWriter;
 import java.math.BigDecimal;
 import java.sql.SQLException;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class UtilTest {
@@ -75,30 +73,6 @@ public class UtilTest {
         assertEquals(byte[].class.getName(), Util.getJavaClass("byte[]").getName());
         assertEquals(String[].class.getName(), Util.getJavaClass("java.lang.String[]").getName());
         assertEquals(UtilTest[].class.getName(), Util.getJavaClass(getClass().getName() + "[]").getName());
-    }
-
-    @Test
-    @SuppressWarnings("deprecation")
-    public void toMap() {
-        Object[] keys = new Object[]{"a", "b"};
-        Object[] values = new Object[]{"1", "2"};
-
-        Map<Object, Object> map = Util.toMap(keys, values);
-        assertEquals(2, map.size());
-        assertEquals("1", map.get("a"));
-        assertEquals("2", map.get("b"));
-
-        // check that map is mutable
-        map.put("c", "3");
-
-        // check that two null maps work
-        Map<Object, Object> emptyMap = Util.toMap(null, new Object[0]);
-        assertTrue(emptyMap.isEmpty());
-        emptyMap.put("key1", "value1");
-
-        // check arrays with different sizes
-        Object[] values2 = new Object[]{"1"};
-        assertThrows(IllegalArgumentException.class, () -> Util.toMap(keys, values2));
     }
 
     @Test
@@ -158,42 +132,6 @@ public class UtilTest {
         String strBefore = "abcd\\12345\\";
         String strAfter = "abcd/12345/";
         assertEquals(strAfter, Util.substBackslashes(strBefore));
-    }
-
-    @Test
-    @SuppressWarnings("deprecation")
-    public void nullSafeEquals() throws Exception {
-        // need a special subclass of Object to make "clone" method public
-        class CloneableObject implements Cloneable {
-
-            @Override
-            public Object clone() throws CloneNotSupportedException {
-                return super.clone();
-            }
-
-            @Override
-            public boolean equals(Object obj) {
-                if (obj == null)
-                    return false;
-
-                // for the purpose of this test
-                // all objects of this class considered equal
-                // (since they carry no state)
-                return obj.getClass() == this.getClass();
-            }
-        }
-
-        CloneableObject o1 = new CloneableObject();
-        Object o2 = new Object();
-        Object o3 = o1.clone();
-
-        assertTrue(o3.equals(o1));
-        assertTrue(Util.nullSafeEquals(o1, o1));
-        assertFalse(Util.nullSafeEquals(o1, o2));
-        assertTrue(Util.nullSafeEquals(o1, o3));
-        assertFalse(Util.nullSafeEquals(o1, null));
-        assertFalse(Util.nullSafeEquals(null, o1));
-        assertTrue(Util.nullSafeEquals(null, null));
     }
 
     @Test
@@ -267,22 +205,6 @@ public class UtilTest {
         Throwable root = new Throwable();
         CayenneRuntimeException e = new CayenneRuntimeException(root);
         assertSame(root, Util.unwindException(e));
-    }
-
-    @Deprecated
-    @Test
-    public void prettyTrim1() {
-        // size is too short, must throw
-        assertThrows(IllegalArgumentException.class, () -> Util.prettyTrim("abc", 4));
-    }
-
-    @Deprecated
-    @Test
-    public void prettyTrim2() {
-        assertEquals("123", Util.prettyTrim("123", 6));
-        assertEquals("123456", Util.prettyTrim("123456", 6));
-        assertEquals("1...67", Util.prettyTrim("1234567", 6));
-        assertEquals("1...78", Util.prettyTrim("12345678", 6));
     }
 
     @Test

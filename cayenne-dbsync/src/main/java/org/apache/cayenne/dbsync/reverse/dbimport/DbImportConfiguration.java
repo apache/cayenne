@@ -138,23 +138,6 @@ public class DbImportConfiguration {
         this.meaningfulPkTables = meaningfulPkTables;
     }
 
-    /**
-     * @return false
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public boolean isUsePrimitives() {
-        return false;
-    }
-
-    /**
-     * does nothing
-     *
-     * @param usePrimitives not used
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public void setUsePrimitives(boolean usePrimitives) {
-    }
-
     public boolean isUseJava7Types() {
         return useJava7Types;
     }

@@ -118,7 +118,7 @@ public class CDOMany2OneIT {
 
         createArtistWithPaintingDataSet();
 
-        Artist a1 = Cayenne.objectForPK(env.context(), Artist.class, 8);
+        Artist a1 = env.context().objectForPK(Artist.class, 8);
 
         List<ROPainting> paints = ObjectSelect.query(ROPainting.class)
                 .where(ROPainting.TO_ARTIST.eq(a1)).select(env.context());
@@ -133,7 +133,7 @@ public class CDOMany2OneIT {
 
         createArtistWithPaintingDataSet();
 
-        Artist a1 = Cayenne.objectForPK(env.context(), Artist.class, 8);
+        Artist a1 = env.context().objectForPK(Artist.class, 8);
 
         List<ROPainting> paints = ObjectSelect.query(ROPainting.class)
                 .where(ROPainting.TO_ARTIST.eq(a1)).select(env.context());
@@ -151,8 +151,8 @@ public class CDOMany2OneIT {
     public void selectViaRelationship() throws Exception {
 
         createArtistWithPaintingDataSet();
-        Artist a1 = Cayenne.objectForPK(env.context(), Artist.class, 8);
-        Painting p1 = Cayenne.objectForPK(env.context(), Painting.class, 6);
+        Artist a1 = env.context().objectForPK(Artist.class, 8);
+        Painting p1 = env.context().objectForPK(Painting.class, 6);
 
         List<Painting> paints = ObjectSelect.query(Painting.class)
                 .where(Painting.TO_ARTIST.eq(a1)).select(env.context());
@@ -165,8 +165,8 @@ public class CDOMany2OneIT {
 
         createArtistWithPaintingsInGalleryDataSet();
 
-        Artist a1 = Cayenne.objectForPK(env.context(), Artist.class, 8);
-        Gallery g1 = Cayenne.objectForPK(env.context(), Gallery.class, 11);
+        Artist a1 = env.context().objectForPK(Artist.class, 8);
+        Gallery g1 = env.context().objectForPK(Gallery.class, 11);
 
         List<Artist> artists = ObjectSelect.query(Artist.class)
                 .where(Artist.PAINTING_ARRAY.dot(Painting.TO_GALLERY).eq(g1))

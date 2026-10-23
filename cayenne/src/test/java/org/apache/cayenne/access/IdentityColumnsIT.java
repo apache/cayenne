@@ -101,7 +101,7 @@ public class IdentityColumnsIT {
 
         // make sure that id is the same as id in the DB
         env.context().invalidateObjects(idObject);
-        GeneratedColumnTestEntity object = Cayenne.objectForPK(env.context(), GeneratedColumnTestEntity.class, id);
+        GeneratedColumnTestEntity object = env.context().objectForPK(GeneratedColumnTestEntity.class, id);
         assertNotNull(object);
         assertEquals(name, object.getName());
     }
@@ -203,7 +203,7 @@ public class IdentityColumnsIT {
         env.context().invalidateObjects(idObjects);
 
         for (int i = 0; i < ids.length; i++) {
-            GeneratedColumnTestEntity object = Cayenne.objectForPK(env.context(), GeneratedColumnTestEntity.class, ids[i]);
+            GeneratedColumnTestEntity object = env.context().objectForPK(GeneratedColumnTestEntity.class, ids[i]);
             assertNotNull(object);
             assertEquals(names[i], object.getName());
         }
@@ -252,7 +252,7 @@ public class IdentityColumnsIT {
 
             env.context().invalidateObjects(master, dep1, dep2);
 
-            Object fetchedDep2 = Cayenne.objectForPK(env.context(), id2);
+            Object fetchedDep2 = env.context().objectForPK(id2);
             assertNotNull(fetchedDep2);
         }
     }
@@ -286,8 +286,8 @@ public class IdentityColumnsIT {
 
         env.context().invalidateObjects(master2, dependent);
 
-        assertNotNull(Cayenne.objectForPK(env.context(), GeneratedColumnTestEntity.class, id1));
-        assertNotNull(Cayenne.objectForPK(env.context(), GeneratedColumnDep.class, id2));
+        assertNotNull(env.context().objectForPK(GeneratedColumnTestEntity.class, id1));
+        assertNotNull(env.context().objectForPK(GeneratedColumnDep.class, id2));
     }
 
     @Test
@@ -322,8 +322,8 @@ public class IdentityColumnsIT {
         // refetch from DB
         env.context().invalidateObjects(idObject, dependent);
 
-        assertNotNull(Cayenne.objectForPK(env.context(), GeneratedColumnTestEntity.class, id1));
-        assertNotNull(Cayenne.objectForPK(env.context(), GeneratedColumnDep.class, id2));
+        assertNotNull(env.context().objectForPK(GeneratedColumnTestEntity.class, id1));
+        assertNotNull(env.context().objectForPK(GeneratedColumnDep.class, id2));
     }
 
     @Test

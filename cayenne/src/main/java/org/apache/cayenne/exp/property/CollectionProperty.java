@@ -64,50 +64,6 @@ public abstract class CollectionProperty<V extends Persistent, E extends Collect
     }
 
     /**
-     * @return An expression representing equality to a value.
-     * @deprecated in favour of {@link #containsValue(V)}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public Expression contains(V value) {
-        return containsValue(value);
-    }
-
-    /**
-     * @return An expression representing equality to a value.
-     * @deprecated in favour of {@link #notContainsValue(V)}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public Expression notContains(V value) {
-        return notContainsValue(value);
-    }
-
-    /**
-     * @return An expression for finding objects with values in the given set.
-     * @deprecated in favour of {@link #containsValues(V...)}
-     */
-    @SuppressWarnings("unchecked")
-    @Deprecated(since = "5.0", forRemoval = true)
-    public Expression contains(V firstValue, V... moreValues) {
-        int moreValuesLength = moreValues != null ? moreValues.length : 0;
-        Object[] values = new Object[moreValuesLength + 1];
-        values[0] = firstValue;
-
-        if (moreValuesLength > 0) {
-            System.arraycopy(moreValues, 0, values, 1, moreValuesLength);
-        }
-        return ExpressionFactory.inExp(getExpression(), values);
-    }
-
-    /**
-     * @return An expression for finding objects with values in the given set.
-     * @deprecated in favour of {@link #containsValuesCollection(Collection)}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public Expression contains(Collection<V> values) {
-        return ExpressionFactory.inExp(getExpression(), values);
-    }
-
-    /**
      * @param id object id
      * @return An expression for finding object with given id.
      */
@@ -116,96 +72,11 @@ public abstract class CollectionProperty<V extends Persistent, E extends Collect
     }
 
     /**
-     * @return An expression for finding objects with given id set
-     * @deprecated in favour of  {@link #containsIds(Object...)}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public Expression containsId(Object firstId, Object... moreId) {
-
-        int moreValuesLength = moreId != null ? moreId.length : 0;
-
-        Object[] values = new Object[moreValuesLength + 1];
-        values[0] = firstId;
-
-        if (moreValuesLength > 0) {
-            System.arraycopy(moreId, 0, values, 1, moreValuesLength);
-        }
-
-        return ExpressionFactory.inExp(getExpression(), values);
-    }
-
-    /**
-     * @return An expression for finding objects with given id set.
-     * @deprecated in favour of {@link #containsIdsCollection(Collection)}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public Expression containsId(Collection<Object> ids) {
-        return ExpressionFactory.inExp(getExpression(), ids);
-    }
-
-    /**
      * @param id object id
      * @return An expression for finding object without given id.
      */
     public Expression notContainsId(Object id) {
         return ExpressionFactory.noMatchExp(getExpression(), id);
-    }
-
-    /**
-     * @return An expression for finding objects without given id set.
-     * @deprecated in favour of {@link #notContainsIds(Object...)}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public Expression notContainsId(Object firstId, Object... moreId) {
-
-        int moreValuesLength = moreId != null ? moreId.length : 0;
-
-        Object[] values = new Object[moreValuesLength + 1];
-        values[0] = firstId;
-
-        if (moreValuesLength > 0) {
-            System.arraycopy(moreId, 0, values, 1, moreValuesLength);
-        }
-
-        return ExpressionFactory.notInExp(getExpression(), values);
-    }
-
-    /**
-     * @return An expression for finding objects without given id set.
-     * @deprecated in favour of {@link #notContainsIdsCollection(Collection)}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public Expression notContainsId(Collection<Object> ids) {
-        return ExpressionFactory.notInExp(getExpression(), ids);
-    }
-
-    /**
-     * @return An expression for finding objects with values not in the given set.
-     * @deprecated in favour of {@link #notContainsValuesCollection(Collection)}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public Expression notContains(Collection<V> values) {
-        return ExpressionFactory.notInExp(getExpression(), values);
-    }
-
-    /**
-     * @return An expression for finding objects with values not in the given set.
-     * @deprecated in favour of {@link #notContainsValues(V...)}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    @SafeVarargs
-    public final Expression notContains(V firstValue, V... moreValues) {
-
-        int moreValuesLength = moreValues != null ? moreValues.length : 0;
-
-        Object[] values = new Object[moreValuesLength + 1];
-        values[0] = firstValue;
-
-        if (moreValuesLength > 0) {
-            System.arraycopy(moreValues, 0, values, 1, moreValuesLength);
-        }
-
-        return ExpressionFactory.notInExp(getExpression(), values);
     }
 
     /**

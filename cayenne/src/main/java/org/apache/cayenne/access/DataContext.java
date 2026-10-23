@@ -42,8 +42,6 @@ import org.apache.cayenne.map.EntityInheritanceTree;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.query.MappedExec;
-import org.apache.cayenne.query.MappedSelect;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.Select;
 import org.apache.cayenne.reflect.ArcProperty;
@@ -67,46 +65,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * The default implementation of {@link ObjectContext}.
  */
 public class DataContext implements ObjectContext {
-
-    /**
-     * A holder of a ObjectContext bound to the current thread.
-     *
-     * @since 3.0
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    protected static final ThreadLocal<ObjectContext> threadObjectContext = new ThreadLocal<>();
-
-    /**
-     * Returns the ObjectContext bound to the current thread.
-     *
-     * @return the ObjectContext associated with caller thread.
-     * @throws IllegalStateException if there is no ObjectContext bound to the current thread.
-     * @since 3.0
-     * @deprecated if you are using thread context, you can create your own ThreadLocal
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public static ObjectContext getThreadObjectContext() throws IllegalStateException {
-        ObjectContext context = threadObjectContext.get();
-        if (context == null) {
-            throw new IllegalStateException("Current thread has no bound ObjectContext.");
-        }
-
-        return context;
-    }
-
-    /**
-     * Binds a ObjectContext to the current thread. ObjectContext can later be
-     * retrieved by users in the same thread by calling
-     * {@link #getThreadObjectContext}. Using null parameter will
-     * unbind currently bound ObjectContext.
-     *
-     * @since 3.0
-     * @deprecated if you are using thread context, you can create your own ThreadLocal
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public static void bindThreadObjectContext(ObjectContext context) {
-        threadObjectContext.set(context);
-    }
 
     protected final DataChannel channel;
     protected final DataContextObjectStore objectStore;
@@ -177,16 +135,6 @@ public class DataContext implements ObjectContext {
     @Override
     public EntityResolver getEntityResolver() {
         return entityResolver;
-    }
-
-    /**
-     * @return DataDomain that is a direct or indirect parent of this DataContext in the DataChannel hierarchy.
-     * @since 1.1
-     * @deprecated use {@link DataChannel#getDataDomain()} on the channel returned by {@link #getChannel()}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public DataDomain getParentDataDomain() {
-        return channel.getDataDomain();
     }
 
     /**
@@ -909,89 +857,6 @@ public class DataContext implements ObjectContext {
 
     List<QueryResult> onQuery(Query query, boolean iteratedResult, boolean ignoreLocalCache) {
         return new DataContextQueryAction(this, query, iteratedResult, ignoreLocalCache).execute();
-    }
-
-    /**
-     * Performs a single database query that does not select rows. Returns an
-     * array of update counts.
-     *
-     * @since 1.1
-     * @deprecated use {@link #execute(Query)}, or {@code SQLExec.update(ObjectContext)} /
-     * {@code MappedExec.update(ObjectContext)} for a query that produces a single update count
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public int[] performNonSelectingQuery(Query query) {
-        int[] count = QueryResults.firstUpdateCount(execute(query));
-        return count != null ? count : new int[0];
-    }
-
-    /**
-     * Performs a named mapped query that does not select rows. Returns an array
-     * of update counts.
-     *
-     * @since 1.1
-     * @deprecated use {@code MappedExec.query(queryName).update(context)}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public int[] performNonSelectingQuery(String queryName) {
-        return performNonSelectingQuery(MappedExec.query(queryName));
-    }
-
-    /**
-     * Performs a named mapped non-selecting query using a map of parameters.
-     * Returns an array of update counts.
-     *
-     * @since 1.1
-     * @deprecated use {@code MappedExec.query(queryName).params(parameters).update(context)}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public int[] performNonSelectingQuery(String queryName, Map<String, ?> parameters) {
-        return performNonSelectingQuery(MappedExec.query(queryName).params(parameters));
-    }
-
-    /**
-     * Returns a list of objects or DataRows for a named query stored in one of
-     * the DataMaps. Internally Cayenne uses a caching policy defined in the
-     * named query. If refresh flag is true, a refresh is forced no matter what
-     * the caching policy is.
-     *
-     * @param queryName         a name of a GenericSelectQuery defined in one of the DataMaps.
-     *                          If no such query is defined, this method will throw a
-     *                          CayenneRuntimeException.
-     * @param expireCachedLists A flag that determines whether refresh of <b>cached lists</b>
-     *                          is required in case a query uses caching.
-     * @since 1.1
-     * @deprecated use {@code MappedSelect.query(queryName).select(context)}, calling {@code forceNoCache()} on the
-     * query to expire cached lists
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public List<?> performQuery(String queryName, boolean expireCachedLists) {
-        return performQuery(queryName, Collections.emptyMap(), expireCachedLists);
-    }
-
-    /**
-     * Returns a list of objects or DataRows for a named query stored in one of
-     * the DataMaps. Internally Cayenne uses a caching policy defined in the
-     * named query. If refresh flag is true, a refresh is forced no matter what
-     * the caching policy is.
-     *
-     * @param queryName         a name of a GenericSelectQuery defined in one of the DataMaps.
-     *                          If no such query is defined, this method will throw a
-     *                          CayenneRuntimeException.
-     * @param parameters        A map of parameters to use with stored query.
-     * @param expireCachedLists A flag that determines whether refresh of <b>cached lists</b>
-     *                          is required in case a query uses caching.
-     * @since 1.1
-     * @deprecated use {@code MappedSelect.query(queryName).params(parameters).select(context)}, calling
-     * {@code forceNoCache()} on the query to expire cached lists
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public List<?> performQuery(String queryName, Map<String, ?> parameters, boolean expireCachedLists) {
-        MappedSelect<?> query = MappedSelect.query(queryName).params(parameters);
-        if (expireCachedLists) {
-            query.forceNoCache();
-        }
-        return select(query);
     }
 
     /**

@@ -22,7 +22,6 @@ package org.apache.cayenne.exp.property;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.exp.Expression;
@@ -114,7 +113,7 @@ public class PathAliasesIT {
 
     @Test
     public void entityPropertyAliases() {
-        Artist artist = Cayenne.objectForPK(context, Artist.class, 1);
+        Artist artist = context.objectForPK(Artist.class, 1);
 
         List<Painting> paintings = ObjectSelect.query(Painting.class)
                 .where(Painting.TO_ARTIST.alias("p1").eq(artist))
@@ -230,8 +229,8 @@ public class PathAliasesIT {
 
     @Test
     public void entityPropertyAliasesInExp() {
-        Painting painting2 = Cayenne.objectForPK(context, Painting.class, 2);
-        Painting painting4 = Cayenne.objectForPK(context, Painting.class, 4);
+        Painting painting2 = context.objectForPK(Painting.class, 2);
+        Painting painting4 = context.objectForPK(Painting.class, 4);
 
         List<Artist> artists = ObjectSelect.query(Artist.class)
                 .where(ExpressionFactory.exp("paintingArray#p1 = $painting1", painting2))

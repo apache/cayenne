@@ -44,14 +44,6 @@ public class ByteArrayType implements ExtendedType<byte[]> {
 	protected boolean trimmingBytes;
 	protected boolean usingBlobs;
 
-    /**
-     * @deprecated in favor of {@link ArrayUtil#appendTruncated(StringBuilder, byte[])}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public static void logBytes(StringBuilder buffer, byte[] bytes) {
-        ArrayUtil.appendTruncated(buffer, bytes);
-    }
-
 	/**
 	 * Strips null bytes from the byte array, returning a potentially smaller
 	 * array that contains no trailing zero bytes.

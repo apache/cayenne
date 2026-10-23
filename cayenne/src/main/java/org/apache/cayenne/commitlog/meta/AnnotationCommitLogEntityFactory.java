@@ -29,8 +29,6 @@ import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.reflect.ClassDescriptor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Compiles {@link CommitLogEntity}'s based on {@link CommitLog} annotation.
@@ -38,8 +36,6 @@ import org.slf4j.LoggerFactory;
  * @since 4.0
  */
 public class AnnotationCommitLogEntityFactory implements CommitLogEntityFactory {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(AnnotationCommitLogEntityFactory.class);
 
 	private static final CommitLogEntity BLOCKED_ENTITY = new CommitLogEntity() {
 
@@ -100,18 +96,6 @@ public class AnnotationCommitLogEntityFactory implements CommitLogEntityFactory 
 					.setIgnoreProperties(a.ignoredProperties()).setIgnoreAttributes(a.ignoreAttributes())
 					.setIgnoreToOneRelationships(a.ignoreToOneRelationships())
 					.setIgnoreToManyRelationships(a.ignoreToManyRelationships());
-		}
-
-		@SuppressWarnings("deprecation")
-		org.apache.cayenne.commitlog.CommitLog legacyA = objectClass.getAnnotation(org.apache.cayenne.commitlog.CommitLog.class);
-		if (legacyA != null) {
-			LOGGER.warn("Entity class '{}' uses deprecated @org.apache.cayenne.commitlog.CommitLog annotation. " +
-					"Replace with @org.apache.cayenne.annotation.CommitLog.", objectClass.getName());
-			ObjEntity entity = entityResolver.getObjEntity(entityName);
-			return new MutableCommitLogLogEntity(entity).setConfidential(legacyA.confidential())
-					.setIgnoreProperties(legacyA.ignoredProperties()).setIgnoreAttributes(legacyA.ignoreAttributes())
-					.setIgnoreToOneRelationships(legacyA.ignoreToOneRelationships())
-					.setIgnoreToManyRelationships(legacyA.ignoreToManyRelationships());
 		}
 
 		return BLOCKED_ENTITY;

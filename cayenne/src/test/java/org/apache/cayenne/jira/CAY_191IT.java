@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.jira;
 
-import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.relationships.FkOfDifferentType;
@@ -62,9 +61,7 @@ public class CAY_191IT {
 
         createTestDataSet();
 
-        FkOfDifferentType root = Cayenne.objectForPK(
-                context,
-                FkOfDifferentType.class,
+        FkOfDifferentType root = context.objectForPK(FkOfDifferentType.class,
                 1);
 
         assertNotNull(root);

@@ -361,46 +361,6 @@ public class SQLTemplate<T> implements Select<T> {
 		metaData.setCacheGroup(cacheGroup);
 	}
 
-	/**
-	 * @since 4.0
-	 * @deprecated use {@link #setCacheStrategy(QueryCacheStrategy)} with {@link QueryCacheStrategy#LOCAL_CACHE}
-	 */
-	@Deprecated(since = "5.0", forRemoval = true)
-	public void useLocalCache() {
-		setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
-	}
-
-	/**
-	 * @since 4.0
-	 * @deprecated use {@link #setCacheStrategy(QueryCacheStrategy)} with {@link QueryCacheStrategy#LOCAL_CACHE} and
-	 * {@link #setCacheGroup(String)}
-	 */
-	@Deprecated(since = "5.0", forRemoval = true)
-	public void useLocalCache(String cacheGroup) {
-		setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
-		setCacheGroup(cacheGroup);
-	}
-
-	/**
-	 * @since 4.0
-	 * @deprecated use {@link #setCacheStrategy(QueryCacheStrategy)} with {@link QueryCacheStrategy#SHARED_CACHE}
-	 */
-	@Deprecated(since = "5.0", forRemoval = true)
-	public void useSharedCache() {
-		setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
-	}
-
-	/**
-	 * @since 4.0
-	 * @deprecated use {@link #setCacheStrategy(QueryCacheStrategy)} with {@link QueryCacheStrategy#SHARED_CACHE} and
-	 * {@link #setCacheGroup(String)}
-	 */
-	@Deprecated(since = "5.0", forRemoval = true)
-	public void useSharedCache(String cacheGroup) {
-		setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
-		setCacheGroup(cacheGroup);
-	}
-
 	public int getFetchLimit() {
 		return metaData.getFetchLimit();
 	}

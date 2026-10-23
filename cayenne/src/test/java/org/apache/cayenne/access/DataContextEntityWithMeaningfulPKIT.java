@@ -66,7 +66,7 @@ public class DataContextEntityWithMeaningfulPKIT {
         obj.setDescr("aaa-aaa");
         context.commitChanges();
         ObjectId objId = ObjectId.of("MeaningfulPKTest1", MeaningfulPKTest1.PK_ATTRIBUTE_PK_COLUMN, 1000);
-        DataRow row = ObjectSelect.dataRowQuery(MeaningfulPKTest1.class, MeaningfulPKTest1.SELF.eqId(objId))
+        DataRow row = ObjectSelect.dataRowQuery(MeaningfulPKTest1.class).where(MeaningfulPKTest1.SELF.eqId(objId))
                 .selectOne(context);
         assertEquals(1000, row.get(MeaningfulPKTest1.PK_ATTRIBUTE_PK_COLUMN));
     }
@@ -78,7 +78,7 @@ public class DataContextEntityWithMeaningfulPKIT {
         context.commitChanges();
 
         assertNotEquals(0, obj.getPkAttribute());
-        assertSame(obj, Cayenne.objectForPK(context, MeaningfulPKTest1.class, obj.getPkAttribute()));
+        assertSame(obj, context.objectForPK(MeaningfulPKTest1.class, obj.getPkAttribute()));
 
         int id = Cayenne.intPKForObject(obj);
 

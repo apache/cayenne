@@ -87,7 +87,6 @@ public class DbImportTaskTest {
                 config.setForceDataMapCatalog(true);
                 config.setForceDataMapSchema(true);
                 config.setUseJava7Types(true);
-                config.setUsePrimitives(false);
 
                 return config;
             }
@@ -116,7 +115,6 @@ public class DbImportTaskTest {
         assertTrue(dbImportConfiguration.isForceDataMapCatalog());
         assertTrue(dbImportConfiguration.isForceDataMapSchema());
         assertTrue(dbImportConfiguration.isUseJava7Types());
-        assertFalse(dbImportConfiguration.isUsePrimitives());
     }
 
 }
