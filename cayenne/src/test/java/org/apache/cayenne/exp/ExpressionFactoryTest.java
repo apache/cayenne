@@ -552,6 +552,19 @@ public class ExpressionFactoryTest {
 	}
 
 
+	@Test
+	public void subqueryParametersPreserved() {
+		// with no values, a parameter is preserved in a subquery too, to be bound later
+		Expression exp = ExpressionFactory.exp("exists (from Painting where title = $t)");
+		SubqueryExp subquery = assertInstanceOf(SubqueryExp.class, exp.getOperand(0));
+		assertEquals(ExpressionFactory.exp("title = $t"), subquery.getQuery().getWhere());
+
+		// with values, the parameter is bound in the subquery
+		Expression bound = ExpressionFactory.exp("exists (from Painting where title = $t)", "x");
+		assertEquals(ExpressionFactory.exp("title = 'x'"),
+				assertInstanceOf(SubqueryExp.class, bound.getOperand(0)).getQuery().getWhere());
+	}
+
     // CAY-2081
     @Test
 

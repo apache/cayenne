@@ -21,15 +21,11 @@ package org.apache.cayenne.exp;
 
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.ql.QLParser;
-import org.apache.cayenne.ql.QLParserTokenManager;
-import org.apache.cayenne.ql.JavaCharStream;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.query.ColumnSelect;
 import org.apache.cayenne.query.FluentSelect;
 
-import java.io.Reader;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -52,8 +48,6 @@ public class ExpressionFactory {
 	public static final char SPLIT_SEPARATOR = '|';
 
 	private static volatile int autoAliasId;
-
-	private static final int PARSE_BUFFER_MAX_SIZE = 4096;
 
 	/**
 	 * Applies a few default rules for adding operands to expressions. In
@@ -1215,31 +1209,13 @@ public class ExpressionFactory {
 	 * @since 4.0
 	 */
 	private static Expression fromString(String expressionString, Object[] parameters) {
-
-		if (expressionString == null) {
-			throw new NullPointerException("Null expression string.");
-		}
-
-		// optimizing parser buffers per CAY-1667...
-		// adding 1 extra char to the buffer size above the String length, as
-		// otherwise resizing still occurs at the end of the stream
-		int bufferSize = expressionString.length() > PARSE_BUFFER_MAX_SIZE ?
-				PARSE_BUFFER_MAX_SIZE : expressionString.length() + 1;
-		Reader reader = new StringReader(expressionString);
-		JavaCharStream stream = new JavaCharStream(reader, 1, 1, bufferSize);
-		QLParserTokenManager tm = new QLParserTokenManager(stream);
-		QLParser parser = new QLParser(tm);
-
-		parser.setParameters(parameters);
-
-		try {
+		return QLParser.parse(expressionString, parser -> {
+			// a null array preserves the parameters in the parsed expression
+			parser.setParameters(parameters);
 			Expression expression = parser.expression();
 			parser.checkParametersBound();
 			return expression;
-		} catch (Throwable th) {
-			String message = th.getMessage();
-			throw new ExpressionException("%s", th, message != null ? message : "");
-		}
+		});
 	}
 
 	/**

@@ -35,6 +35,7 @@ import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -80,6 +81,21 @@ public class ObjectSelectParsedTest extends BaseTest {
                 .parse(Artist.class, "from Artist where name like $name order by dateOfBirth desc limit 10", "A%")
                 .select(context);
         // end::parse[]
+
+        assertEquals(1, artists.size());
+    }
+
+    @Test
+    public void parseNamed() {
+        createArtistsDataSet();
+
+        // tag::parseNamed[]
+        // "$born" has no value, so its condition is dropped from the query
+        List<Artist> artists = ObjectSelect
+                .parse(Artist.class, "from Artist where name like $name and dateOfBirth > $born",
+                        Map.of("name", "A%"))
+                .select(context);
+        // end::parseNamed[]
 
         assertEquals(1, artists.size());
     }

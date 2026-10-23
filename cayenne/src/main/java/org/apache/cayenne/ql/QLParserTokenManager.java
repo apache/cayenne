@@ -21,6 +21,7 @@
 
 
 package org.apache.cayenne.ql;
+import java.io.StringReader;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashMap;

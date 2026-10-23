@@ -31,6 +31,20 @@ executed:
 include::{java-examples}/ObjectSelectParsedTest.java[tags=parseAndCustomize]
 ----
 
+==== Parameters
+
+The values of the `$name` parameters of a query are bound either positionally, in the order of the first occurrence
+of the names in the String, as in the examples above, or by name from a `Map`. When bound by name, a parameter that
+has no value is dropped from the query together with the smallest condition that contains it, in the subqueries
+alike. So a single String can serve a search form with optional filters:
+
+[source,java,indent=0]
+----
+include::{java-examples}/ObjectSelectParsedTest.java[tags=parseNamed]
+----
+
+With no values at all the parameters are preserved in the parsed query, to be bound later.
+
 ==== Query Structure
 
 [source]

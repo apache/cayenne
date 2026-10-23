@@ -36,6 +36,7 @@ PARSER_BEGIN(QLParser)
 
 package org.apache.cayenne.ql;
 
+import java.io.StringReader;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashMap;
@@ -47,51 +48,107 @@ import org.apache.cayenne.query.PrefetchTreeNode;
 /**
   * Parser of Cayenne expressions and queries. Has two entry points: {@link #expression()} that parses a standalone
   * expression, and {@link #query()} that parses a full select query, whose clauses embed the same expressions.
+  * {@link #parse(String, ParseFunction)} runs either of them over a String.
   *
   * @since 5.0 renamed from ExpressionParser and extended to parse queries.
   */
 public class QLParser {
 
-    private Object[] parameters;
-    private int parameterIndex;
-    private Map<String, Object> seenParameters;
+    // optimizing parser buffers per CAY-1667: a cap for very long Strings
+    private static final int PARSE_BUFFER_MAX_SIZE = 4096;
 
     /**
-     * Sets positional parameters to bind in place of "$name" tokens as they are encountered in the parsed String.
-     * A name that occurs more than once consumes a single value. If not called, named parameters are preserved
-     * in the parsed expression.
+     * A function run over a fresh parser, see {@link QLParser#query()} or {@link QLParser#expression()}.
+     *
+     * @since 5.0
+     */
+    public interface ParseFunction<T> {
+
+        T apply(QLParser parser) throws ParseException;
+    }
+
+    /**
+     * Build a parser and let the caller decide how to process the result. Any
+     * error is rethrown as an {@link ExpressionException} with the original error as its cause.
+     *
+     * @since 5.0
+     */
+    public static <T> T parse(String text, ParseFunction<T> function) {
+        if (text == null) {
+            throw new NullPointerException("Null query string.");
+        }
+
+        // one extra char above the length, as otherwise the buffer is resized at the end of the stream
+        int bufferSize = Math.min(text.length() + 1, PARSE_BUFFER_MAX_SIZE);
+        JavaCharStream stream = new JavaCharStream(new StringReader(text), 1, 1, bufferSize);
+        try {
+            return function.apply(new QLParser(new QLParserTokenManager(stream)));
+        } catch (Throwable th) {
+            String message = th.getMessage();
+            throw new ExpressionException("%s", th, message != null ? message : "");
+        }
+    }
+
+    // the values of the "$name" parameters by name, or null to preserve the parameters in the parsed tree
+    private Map<String, Object> parameters;
+
+    // the values to bind in the order of the first occurrence of the names, if the parameters are positional
+    private Object[] positional;
+    private int positionalIndex;
+
+    /**
+     * Sets positional values to bind in place of the "$name" tokens, in the order of the first occurrence of
+     * the names in the parsed String. A name that occurs more than once consumes a single value. If neither this
+     * nor {@link #setParameters(Map)} is called, the parameters are preserved in the parsed tree.
      */
     public void setParameters(Object... parameters) {
-        this.parameters = parameters;
+        // a null array preserves the parameters, like not calling this method at all
+        this.parameters = parameters != null ? new HashMap<String, Object>() : null;
+        this.positional = parameters;
     }
 
     /**
-     * Should be called when the parsing is finished to ensure all positional parameters were consumed.
+     * Sets the values to bind in place of the "$name" tokens by name. Unlike the positional values, a name missing
+     * from the map is not an error: the parameter is preserved, and the smallest condition of a "where" or "having"
+     * clause that contains it is pruned, in the main query and in the subqueries alike. A null value in the map is
+     * bound as is.
+     */
+    public void setParameters(Map<String, ?> parameters) {
+        this.parameters = new HashMap<String, Object>(parameters);
+    }
+
+    /**
+     * Should be called when the parsing is finished to ensure all positional values were consumed.
      */
     public void checkParametersBound() {
-        if (parameters != null && parameterIndex < parameters.length) {
-            throw new ExpressionException("Too many parameters to bind expression. Expected: " + parameterIndex
-                    + ", actual: " + parameters.length);
+        if (positional != null && positionalIndex < positional.length) {
+            throw new ExpressionException("Too many parameters to bind expression. Expected: " + positionalIndex
+                    + ", actual: " + positional.length);
         }
     }
 
-    private Object boundParameter(String name) {
-        if (seenParameters == null) {
-            seenParameters = new HashMap<String, Object>();
+    private Object parameter(String name) {
+        if (parameters == null) {
+            return new ExpressionParameter(name);
         }
 
-        Object value;
-        if (seenParameters.containsKey(name)) {
-            value = seenParameters.get(name);
-        } else {
-            if (parameterIndex >= parameters.length) {
-                throw new ExpressionException("Too few parameters to bind expression: " + parameters.length);
+        if (!parameters.containsKey(name)) {
+            if (positional == null) {
+                // bound by name, the condition on a missing parameter is pruned by condition(..)
+                return new ExpressionParameter(name);
             }
-            value = parameters[parameterIndex++];
-            seenParameters.put(name, value);
+            if (positionalIndex >= positional.length) {
+                throw new ExpressionException("Too few parameters to bind expression: " + positional.length);
+            }
+            parameters.put(name, positional[positionalIndex++]);
         }
 
-        return QLParserHelper.parameterValue(value);
+        return QLParserHelper.parameterValue(parameters.get(name));
+    }
+
+    // a "where" or "having" clause without the conditions on the parameters that have no value bound by name
+    private Expression condition(Expression clause) {
+        return parameters != null && positional == null ? clause.params(Map.of(), true) : clause;
     }
 
     // Query keywords are contextual: they are regular path tokens that are only treated as keywords
@@ -223,8 +280,10 @@ FluentSelect<?, ?> select(boolean root) : {
 {
     [ LOOKAHEAD({ isKeyword(1, "select") }) selectClause(builder) ]
     fromClause(builder)
-    [ LOOKAHEAD({ isKeyword(1, "where") }) keyword("where") orCondition() { builder.where(popExpression()); } ]
-    [ LOOKAHEAD({ isKeyword(1, "having") }) keyword("having") orCondition() { builder.having(popExpression()); } ]
+    [ LOOKAHEAD({ isKeyword(1, "where") }) keyword("where") orCondition()
+        { builder.where(condition(popExpression())); } ]
+    [ LOOKAHEAD({ isKeyword(1, "having") }) keyword("having") orCondition()
+        { builder.having(condition(popExpression())); } ]
     [ LOOKAHEAD({ isKeyword(1, "order") }) orderClause(builder) ]
     [ LOOKAHEAD({ isKeyword(1, "limit") }) limitClause(builder) ]
     [ LOOKAHEAD({ isKeyword(1, "offset") }) offsetClause(builder) ]
@@ -984,11 +1043,7 @@ void namedParameter() :{
 }
 {
 	    // "pathToken" allows parameter names that match the names of functions, like "$min" or "$count"
-
-	    // binding positional parameters as we go
-	    LOOKAHEAD({ parameters != null }) "$" t = pathToken() { jjtree.pushNode(boundParameter(t.image)); }
-	|
-	    "$" t = pathToken() { jjtree.pushNode(new ExpressionParameter(t.image)); }
+	    "$" t = pathToken() { jjtree.pushNode(parameter(t.image)); }
 }
 
 void pathExpression() : {

@@ -20,13 +20,16 @@ package org.apache.cayenne.query;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.ExpressionParameter;
 import org.apache.cayenne.exp.SubqueryExp;
 import org.apache.cayenne.exp.property.Property;
+import org.apache.cayenne.ql.ParseException;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.junit.jupiter.api.Test;
@@ -157,9 +160,61 @@ public class ObjectSelect_ParseTest {
 
     @Test
     public void parameterCountMismatch() {
-        assertThrows(ExpressionException.class, () -> ObjectSelect.parse("from Artist where a = $a"));
+        assertThrows(ExpressionException.class, () -> ObjectSelect.parse("from Artist where a = $a and b = $b", 1));
         assertThrows(ExpressionException.class, () -> ObjectSelect.parse("from Artist where a = $a", 1, 2));
         assertThrows(ExpressionException.class, () -> ObjectSelect.parse("from Artist", 1));
+    }
+
+    @Test
+    public void noValuesPreserveParameters() {
+        FluentSelect<?, ?> q = ObjectSelect.parse(
+                "from Artist where a = $a and exists (from Painting where b = $b) having count(*) > $c");
+
+        assertEquals(new ExpressionParameter("a"), ((Expression) q.getWhere().getOperand(0)).getOperand(1));
+        assertEquals(ExpressionFactory.exp("b = $b"), subquery((Expression) q.getWhere().getOperand(1), 0).getWhere());
+        assertEquals(ExpressionFactory.exp("count(*) > $c"), q.getHaving());
+    }
+
+    @Test
+    public void namedParameters() {
+        FluentSelect<?, ?> q = ObjectSelect.parse(
+                "select artistName from Artist where (artistName = $name or artistName = $name "
+                        + "and db:ARTIST_ID in $ids) and exists (from Painting where x = $x and y = $y) "
+                        + "having count(*) > $c",
+                Map.of("name", "T", "ids", List.of(1, 2), "y", 2));
+
+        // a repeated name binds once, a collection is a list, a missing name prunes its condition, in a subquery too
+        assertEquals(ExpressionFactory.exp("artistName = 'T' or artistName = 'T' and db:ARTIST_ID in (1, 2)"),
+                q.getWhere().getOperand(0));
+        assertEquals(ExpressionFactory.exp("y = 2"), subquery((Expression) q.getWhere().getOperand(1), 0).getWhere());
+        assertNull(q.getHaving());
+
+        assertNull(ObjectSelect.parse("from Artist where a = $a", Map.of()).getWhere());
+
+        // a null map preserves the parameters, like no values
+        assertEquals(ExpressionFactory.exp("a = $a"),
+                ObjectSelect.parse("from Artist where a = $a", (Map<String, ?>) null).getWhere());
+    }
+
+    @Test
+    public void namedParametersTyped() {
+        ObjectSelect<Artist> artists = ObjectSelect.parse(Artist.class, "from Artist where artistName = $name",
+                Map.of("name", "T"));
+        assertEquals(ExpressionFactory.exp("artistName = 'T'"), artists.getWhere());
+
+        ColumnSelect<String> names = ObjectSelect.parseColumn(String.class,
+                "select artistName from Artist where artistName = $name", Map.of("name", "T"));
+        assertEquals(ExpressionFactory.exp("artistName = 'T'"), names.getWhere());
+
+        assertThrows(ExpressionException.class,
+                () -> ObjectSelect.parse(Artist.class, "select artistName from Artist", Map.of()));
+        assertThrows(ExpressionException.class, () -> ObjectSelect.parseColumn(String.class, "from Artist", Map.of()));
+    }
+
+    @Test
+    public void parseErrorCause() {
+        ExpressionException e = assertThrows(ExpressionException.class, () -> ObjectSelect.parse("from Artist where"));
+        assertInstanceOf(ParseException.class, e.getCause());
     }
 
     @Test

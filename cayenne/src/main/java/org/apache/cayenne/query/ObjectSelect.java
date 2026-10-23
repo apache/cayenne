@@ -23,9 +23,7 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.ql.JavaCharStream;
 import org.apache.cayenne.ql.QLParser;
-import org.apache.cayenne.ql.QLParserTokenManager;
 import org.apache.cayenne.exp.property.BaseProperty;
 import org.apache.cayenne.exp.property.ComparableProperty;
 import org.apache.cayenne.exp.property.NumericProperty;
@@ -35,9 +33,9 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 
-import java.io.StringReader;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A selecting query providing chainable API.
@@ -172,29 +170,42 @@ public class ObjectSelect<T> extends FluentSelect<T, ObjectSelect<T>> {
      * </pre>
      *
      * @param query  a query String
-     * @param params values of the "$name" parameters in the String, bound in the order of their first occurrence
+     * @param params values of the "$name" parameters in the String, bound in the order of their first occurrence.
+     *               With no values, the parameters are preserved in the query, to be bound later, e.g. with
+     *               {@link Expression#params(Map)} on its "where" clause
+     * @see #parse(String, Map)
      * @since 5.0
      */
     public static FluentSelect<?, ?> parse(String query, Object... params) {
-
-        if (query == null) {
-            throw new NullPointerException("Null query string.");
-        }
-
-        JavaCharStream stream = new JavaCharStream(new StringReader(query), 1, 1, query.length() + 1);
-        QLParser parser = new QLParser(new QLParserTokenManager(stream));
-
-        // unlike expressions, a parsed query has no API to bind parameters later
-        parser.setParameters(params != null ? params : new Object[0]);
-
-        try {
+        return QLParser.parse(query, parser -> {
+            if (params != null && params.length > 0) {
+                parser.setParameters(params);
+            }
             FluentSelect<?, ?> select = parser.query();
             parser.checkParametersBound();
             return select;
-        } catch (Throwable th) {
-            String message = th.getMessage();
-            throw new ExpressionException("%s", th, message != null ? message : "");
-        }
+        });
+    }
+
+    /**
+     * Parses a query String, binding the values of its "$name" parameters by name. A parameter that has no value in
+     * the map is preserved, and the smallest condition of a "where" or "having" clause that contains it is dropped
+     * from the query, in the subqueries alike. So the same String can be used with and without its optional
+     * parameters. A null value in the map is bound as is.
+     *
+     * @param query  a query String
+     * @param params values of the "$name" parameters in the String by name, or null to preserve the parameters in
+     *               the query, like {@link #parse(String, Object...)} with no values
+     * @see #parse(String, Object...)
+     * @since 5.0
+     */
+    public static FluentSelect<?, ?> parse(String query, Map<String, ?> params) {
+        return QLParser.parse(query, parser -> {
+            if (params != null) {
+                parser.setParameters(params);
+            }
+            return parser.query();
+        });
     }
 
     /**
@@ -205,12 +216,20 @@ public class ObjectSelect<T> extends FluentSelect<T, ObjectSelect<T>> {
      * @see #parse(String, Object...)
      * @since 5.0
      */
-    @SuppressWarnings("unchecked")
     public static <T> ObjectSelect<T> parse(Class<T> type, String query, Object... params) {
-        if (!(parse(query, params) instanceof ObjectSelect<?> select)) {
-            throw new ExpressionException("Expected a query that selects root objects, got a column query: %s", query);
-        }
-        return type == DataRow.class ? (ObjectSelect<T>) select.fetchDataRows() : (ObjectSelect<T>) select;
+        return asObjectSelect(parse(query, params), type, query);
+    }
+
+    /**
+     * Parses a String of a query that fetches root objects, binding its parameters by name.
+     *
+     * @param type result type of the query
+     * @see #parse(String, Map)
+     * @see #parse(Class, String, Object...)
+     * @since 5.0
+     */
+    public static <T> ObjectSelect<T> parse(Class<T> type, String query, Map<String, ?> params) {
+        return asObjectSelect(parse(query, params), type, query);
     }
 
     /**
@@ -220,9 +239,32 @@ public class ObjectSelect<T> extends FluentSelect<T, ObjectSelect<T>> {
      * @see #parse(String, Object...)
      * @since 5.0
      */
-    @SuppressWarnings("unchecked")
     public static <T> ColumnSelect<T> parseColumn(Class<T> type, String query, Object... params) {
-        if (!(parse(query, params) instanceof ColumnSelect<?> select) || !select.isSingleColumn()) {
+        return asColumnSelect(parse(query, params), query);
+    }
+
+    /**
+     * Parses a String of a query that fetches a single column, binding its parameters by name.
+     *
+     * @param type result type of the query
+     * @see #parse(String, Map)
+     * @since 5.0
+     */
+    public static <T> ColumnSelect<T> parseColumn(Class<T> type, String query, Map<String, ?> params) {
+        return asColumnSelect(parse(query, params), query);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T> ObjectSelect<T> asObjectSelect(FluentSelect<?, ?> parsed, Class<T> type, String query) {
+        if (!(parsed instanceof ObjectSelect<?> select)) {
+            throw new ExpressionException("Expected a query that selects root objects, got a column query: %s", query);
+        }
+        return type == DataRow.class ? (ObjectSelect<T>) select.fetchDataRows() : (ObjectSelect<T>) select;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T> ColumnSelect<T> asColumnSelect(FluentSelect<?, ?> parsed, String query) {
+        if (!(parsed instanceof ColumnSelect<?> select) || !select.isSingleColumn()) {
             throw new ExpressionException("Expected a query that selects a single column: %s", query);
         }
         return (ColumnSelect<T>) select;

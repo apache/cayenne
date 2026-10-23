@@ -80,6 +80,12 @@ List<Artist> withExpensivePaintings = ObjectSelect
                 from Artist where exists (
                     from Painting where toArtist = enclosing(self) and estimatedPrice > $price)""", 1000)
         .select(context);
+
+// parameters bound by name, the equivalent of EJBQLQuery.setParameter(name, value). A parameter without a value
+// is dropped from the query together with its condition
+List<Artist> artists = ObjectSelect
+        .parse(Artist.class, "from Artist where artistName like $name and dateOfBirth > $born", Map.of("name", "A%"))
+        .select(context);
 ```
 
 ## Upgrading to 5.0-M4
