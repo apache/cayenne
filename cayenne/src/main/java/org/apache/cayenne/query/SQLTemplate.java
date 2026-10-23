@@ -26,7 +26,6 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.SQLResult;
 import org.apache.cayenne.util.ToStringBuilder;
 
 import java.util.ArrayList;

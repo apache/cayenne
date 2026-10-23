@@ -22,7 +22,6 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.SQLResult;
 
 import java.util.ArrayList;
 import java.util.Collections;

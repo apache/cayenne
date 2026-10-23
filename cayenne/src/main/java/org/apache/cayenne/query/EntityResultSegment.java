@@ -20,7 +20,6 @@ package org.apache.cayenne.query;
 
 import java.util.Map;
 
-import org.apache.cayenne.map.EntityResult;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**

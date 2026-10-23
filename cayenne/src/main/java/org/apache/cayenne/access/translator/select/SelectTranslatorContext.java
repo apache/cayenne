@@ -19,12 +19,12 @@
 
 package org.apache.cayenne.access.translator.select;
 
+import org.apache.cayenne.access.jdbc.PSParameter;
 import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.access.sqlbuilder.SQLBuilder;
 import org.apache.cayenne.access.sqlbuilder.SQLGenerationContext;
 import org.apache.cayenne.access.sqlbuilder.SelectBuilder;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
-import org.apache.cayenne.access.jdbc.PSParameter;
 import org.apache.cayenne.access.translator.TranslatedSelect;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.exp.AggregateFunctionCallExp;
@@ -32,12 +32,12 @@ import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.exp.property.Property;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.EntityResult;
-import org.apache.cayenne.map.SQLResult;
+import org.apache.cayenne.query.EntityResult;
 import org.apache.cayenne.query.FluentSelect;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.ResultSegments;
+import org.apache.cayenne.query.SQLResult;
 
 import java.util.ArrayList;
 import java.util.Collection;

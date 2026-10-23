@@ -25,7 +25,7 @@ import org.apache.cayenne.query.ResultSegment;
 import org.apache.cayenne.query.ResultSegments;
 
 /**
- * Resolves the {@link org.apache.cayenne.map.SQLResult} collected by the column extractors into
+ * Resolves the {@link org.apache.cayenne.query.SQLResult} collected by the column extractors into
  * {@link ResultSegments} with column offsets matching the translated SELECT column list. The result is a part of
  * the translation output and is never written back into the query.
  *

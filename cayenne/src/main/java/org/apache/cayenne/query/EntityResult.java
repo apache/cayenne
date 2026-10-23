@@ -16,8 +16,11 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.map;
+package org.apache.cayenne.query;
 
+import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.ObjAttribute;
+import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.util.ToStringBuilder;
 
 import java.util.ArrayList;
@@ -28,10 +31,10 @@ import java.util.Map;
 
 /**
  * A metadata object that provides mapping of a set of result columns to an
- * ObjEntity. Used by {@link SQLResult}. Note that fields in the EntityResult
+ * ObjEntity. Note that fields in the EntityResult
  * are not required to follow the order of columns in the actual query, and can
  * be added in the arbitrary order.
- * 
+ *
  * @since 3.0
  */
 public class EntityResult {

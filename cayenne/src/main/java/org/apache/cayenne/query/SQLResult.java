@@ -16,12 +16,9 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.map;
+package org.apache.cayenne.query;
 
-import org.apache.cayenne.query.EmbeddableResultSegment;
-import org.apache.cayenne.query.EntityResultSegment;
-import org.apache.cayenne.query.ResultSegment;
-import org.apache.cayenne.query.ScalarResultSegment;
+import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
 import java.util.ArrayList;
@@ -30,8 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * A metadata object that defines how a row in a result set can be converted to
- * result objects. SQLResult can be mapped to a single scalar, a single entity
+ * Maps the structure of a row in a result set. SQLResult can be mapped to a single scalar, a single entity
  * or a mix of scalars and entities that is represented as an Object[].
  * 
  * @since 3.0

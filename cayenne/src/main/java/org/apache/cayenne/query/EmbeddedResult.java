@@ -17,14 +17,16 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.map;
+package org.apache.cayenne.query;
+
+import org.apache.cayenne.map.Embeddable;
+import org.apache.cayenne.map.ObjAttribute;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * A metadata object that provides mapping of a set of result columns to an Embeddable object.
- * Used by {@link SQLResult}.
  * Note that fields in the EmbeddedResult are not required to follow the order of columns
  * in the actual query, and can be added in the arbitrary order.
  *
