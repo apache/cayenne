@@ -18,22 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.project.xml;
 
-import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.SelectQueryDescriptor;
-import org.apache.cayenne.ql.JavaCharStream;
-import org.apache.cayenne.ql.QLParser;
-import org.apache.cayenne.ql.QLParserTokenManager;
-import org.apache.cayenne.query.FluentSelect;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.query.PrefetchTreeNode;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
-
-import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  * A handler of the "objectQuery" tag of a DataMap. The query is defined by a single String in the syntax of
@@ -80,70 +69,12 @@ public class SelectQueryDescriptorHandler extends QueryDescriptorHandler {
     }
 
     /**
-     * Sets the query from its String form. The String defines the root entity, qualifier, orderings, prefetches,
-     * limit, offset and "distinct" of the query. "$name" parameters in the String are preserved as named parameters,
-     * to be bound when the query is executed.
+     * Sets the query from its String form. The String is not parsed here: a String that can't be parsed is kept as is,
+     * and fails when the query is run, or the project is validated.
      */
     private void setSelect(String select) {
-        if (select.isBlank()) {
-            return;
-        }
-
-        // TODO: the parsed query can be a ColumnSelect, have a "having" clause or be rooted in a DbEntity, none of
-        //  which is representable in SelectQueryDescriptor, or editable in the Modeler. Both need to be reworked
-        //  to hold a full query instead of its parts, and MappedSelect should stop assuming an ObjectSelect
-        String name = descriptor.getName();
-        FluentSelect<?, ?> parsed = parseSelect(select);
-        if (!(parsed instanceof ObjectSelect<?> query)) {
-            throw new ConfigurationException("Query '%s' selects columns, which is not supported in a mapped query: %s",
-                    name, select);
-        }
-        if (query.getHaving() != null) {
-            throw new ConfigurationException("Query '%s' has a 'having' clause, which is not supported in a mapped " +
-                    "query: %s", name, select);
-        }
-        if (query.getEntityName() == null) {
-            throw new ConfigurationException("Query '%s' must be rooted in an ObjEntity: %s", name, select);
-        }
-
-        // a select query is rooted in an ObjEntity, and never in a DataMap. If the entity is not in this DataMap, it is
-        // kept by name
-        ObjEntity rootEntity = map.getObjEntity(query.getEntityName());
-        descriptor.setRoot(rootEntity != null ? rootEntity : query.getEntityName());
-        descriptor.setQualifier(query.getWhere());
-        descriptor.setOrderings(query.getOrderings() != null
-                ? new ArrayList<>(query.getOrderings())
-                : new ArrayList<>());
-
-        HashMap<String, Integer> prefetchesMap = new HashMap<>();
-        PrefetchTreeNode prefetches = query.getPrefetches();
-        if (prefetches != null) {
-            for (PrefetchTreeNode node : prefetches.nonPhantomNodes()) {
-                // the root of the tree is not a prefetch
-                if (node.getParent() != null) {
-                    prefetchesMap.put(node.getPath().value(), node.getSemantics());
-                }
-            }
-        }
-        descriptor.setPrefetchesMap(prefetchesMap);
-
-        descriptor.setFetchLimit(query.getLimit());
-        descriptor.setFetchOffset(query.getOffset());
-        descriptor.setDistinct(query.isDistinct());
-    }
-
-    /**
-     * Parses a query String without binding its "$name" parameters, unlike
-     * {@link ObjectSelect#parse(String, Object...)} that requires the values of all the parameters upfront.
-     */
-    private FluentSelect<?, ?> parseSelect(String select) {
-        JavaCharStream stream = new JavaCharStream(new StringReader(select), 1, 1, select.length() + 1);
-        QLParser parser = new QLParser(new QLParserTokenManager(stream));
-        try {
-            return parser.query();
-        } catch (Throwable th) {
-            throw new ConfigurationException("Query '%s' can't be parsed: %s", th, descriptor.getName(),
-                    th.getMessage());
+        if (!select.isBlank()) {
+            descriptor.setQl(select);
         }
     }
 }

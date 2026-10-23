@@ -30,7 +30,7 @@ import org.apache.cayenne.modeler.ui.project.editor.embeddable.EmbeddableView;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.ObjEntityView;
 import org.apache.cayenne.modeler.ui.project.editor.procedure.ProcedureQueryTabbedView;
 import org.apache.cayenne.modeler.ui.project.editor.procedure.ProcedureTabbedView;
-import org.apache.cayenne.modeler.ui.project.editor.query.selectquery.SelectQueryTabbedView;
+import org.apache.cayenne.modeler.ui.project.editor.query.selectquery.ObjectSelectTabbedView;
 import org.apache.cayenne.modeler.ui.project.editor.query.sqltemplate.SQLTemplateTabbedView;
 
 import javax.swing.*;
@@ -63,6 +63,7 @@ public class EditorPanelView extends ProjectPanel {
     private final ProjectEditorView projectEditorView;
     private final DataMapView dataMapView;
     private final ProcedureTabbedView procedureView;
+    private final ObjectSelectTabbedView selectQueryView;
     private final SQLTemplateTabbedView sqlTemplateView;
 
     public EditorPanelView(ProjectSession session) {
@@ -72,6 +73,7 @@ public class EditorPanelView extends ProjectPanel {
         this.projectEditorView = new ProjectEditorView(session);
         this.dataMapView = new DataMapView(session);
         this.procedureView = new ProcedureTabbedView(session);
+        this.selectQueryView = new ObjectSelectTabbedView(session);
         this.sqlTemplateView = new SQLTemplateTabbedView(session);
         this.embeddableView = new EmbeddableView(session);
         this.objDetailView = new ObjEntityView(session);
@@ -91,7 +93,7 @@ public class EditorPanelView extends ProjectPanel {
         add(projectEditorView, PROJECT_VIEW);
         add(dataMapView, DATA_MAP_VIEW);
         add(procedureView, PROCEDURE_VIEW);
-        add(new SelectQueryTabbedView(session), SELECT_QUERY_VIEW);
+        add(selectQueryView, SELECT_QUERY_VIEW);
         add(sqlTemplateView, SQL_TEMPLATE_VIEW);
         add(new ProcedureQueryTabbedView(session), PROCEDURE_QUERY_VIEW);
         add(embeddableView, EMBEDDABLE_VIEW);
@@ -108,6 +110,10 @@ public class EditorPanelView extends ProjectPanel {
         session.addQueryDisplayListener(this::querySelected);
         session.addMultipleObjectsDisplayListener(e -> detailLayout.show(this, EMPTY_VIEW));
         session.addEmbeddableDisplayListener(e -> detailLayout.show(this, e.getEmbeddable() == null ? EMPTY_VIEW : EMBEDDABLE_VIEW));
+    }
+
+    public ObjectSelectTabbedView getSelectQueryView() {
+        return selectQueryView;
     }
 
     public SQLTemplateTabbedView getSqlTemplateView() {

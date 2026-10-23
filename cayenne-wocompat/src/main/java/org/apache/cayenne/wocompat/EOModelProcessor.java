@@ -31,6 +31,8 @@ import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.SQLTemplateDescriptor;
 import org.apache.cayenne.map.SelectQueryDescriptor;
+import org.apache.cayenne.ql.QLSelectPrinter;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.SortOrder;
@@ -228,18 +230,20 @@ public class EOModelProcessor {
 	}
 
 	protected QueryDescriptor makeEOQueryDescriptor(ObjEntity root, Map plistMap) {
-		SelectQueryDescriptor descriptor = new SelectQueryDescriptor();
-		descriptor.setRoot(root);
+		// assemble the query with the fluent API, and store it as a String
+		ObjectSelect<?> query = ObjectSelect.query(Object.class, root.getName());
 
-		descriptor.setDistinct("YES".equalsIgnoreCase((String) plistMap.get("usesDistinct")));
+		if ("YES".equalsIgnoreCase((String) plistMap.get("usesDistinct"))) {
+			query.distinct();
+		}
 
 		Object fetchLimit = plistMap.get("fetchLimit");
 		if (fetchLimit != null) {
 			try {
 				if (fetchLimit instanceof Number n) {
-					descriptor.setFetchLimit(n.intValue());
+					query.limit(n.intValue());
 				} else if (isNumeric(fetchLimit.toString())) {
-					descriptor.setFetchLimit(Integer.parseInt(fetchLimit.toString()));
+					query.limit(Integer.parseInt(fetchLimit.toString()));
 				}
 			} catch (NumberFormatException nfex) {
 				// ignoring...
@@ -253,7 +257,7 @@ public class EOModelProcessor {
 				boolean asc = !"compareDescending:".equals(ordering.get("selectorName"));
 				String key = ordering.get("key");
 				if (key != null) {
-					descriptor.addOrdering(new Ordering(key, asc ? SortOrder.ASCENDING : SortOrder.DESCENDING));
+					query.orderBy(new Ordering(key, asc ? SortOrder.ASCENDING : SortOrder.DESCENDING));
 				}
 			}
 		}
@@ -261,7 +265,7 @@ public class EOModelProcessor {
 		// qualifiers
 		Map<String, ?> qualifierMap = (Map<String, ?>) plistMap.get("qualifier");
 		if (qualifierMap != null && !qualifierMap.isEmpty()) {
-			descriptor.setQualifier(EOFetchSpecificationParser.makeQualifier((EOObjEntity) root, qualifierMap));
+			query.where(EOFetchSpecificationParser.makeQualifier((EOObjEntity) root, qualifierMap));
 		}
 
 		// prefetches
@@ -269,9 +273,12 @@ public class EOModelProcessor {
 		if (prefetches != null && !prefetches.isEmpty()) {
 			Iterator it = prefetches.iterator();
 			while (it.hasNext()) {
-				descriptor.addPrefetch((String) it.next(), PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
+				query.prefetch((String) it.next(), PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
 			}
 		}
+
+		SelectQueryDescriptor descriptor = new SelectQueryDescriptor();
+		descriptor.setQl(QLSelectPrinter.print(query));
 
 		// data rows - note that we do not support fetching individual columns
 		// in the

@@ -20,7 +20,6 @@
 package org.apache.cayenne.modeler.ui.project.editor.query.sqltemplate;
 
 import org.apache.cayenne.modeler.ui.project.editor.query.PrefetchModel;
-import org.apache.cayenne.modeler.ui.project.editor.query.selectquery.SelectQueryPrefetchTab;
 import org.apache.cayenne.modeler.event.model.QueryEvent;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.Entity;
@@ -36,7 +35,6 @@ import org.apache.cayenne.modeler.toolkit.columnview.ColumnViewPanel;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.apache.cayenne.modeler.pref.adapters.SplitPanePrefs;
 import org.apache.cayenne.modeler.toolkit.table.CMTable;
-import org.apache.cayenne.modeler.toolkit.Renderers;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultCellEditor;
@@ -147,8 +145,8 @@ public class SQLTemplatePrefetchTab extends ProjectPanel {
     protected void setUpPrefetchBox(TableColumn column) {
 
         JComboBox<String> prefetchBox = new JComboBox<>();
-        prefetchBox.addItem(SelectQueryPrefetchTab.JOINT_PREFETCH_SEMANTICS);
-        prefetchBox.addItem(SelectQueryPrefetchTab.DISJOINT_BY_ID_PREFETCH_SEMANTICS);
+        prefetchBox.addItem(PrefetchModel.JOINT_PREFETCH_SEMANTICS);
+        prefetchBox.addItem(PrefetchModel.DISJOINT_BY_ID_PREFETCH_SEMANTICS);
 
         prefetchBox.addActionListener(e -> session.setDirty(true));
 
@@ -235,25 +233,7 @@ public class SQLTemplatePrefetchTab extends ProjectPanel {
     }
 
     protected String getSelectedPath() {
-
-        Object[] path = browser.getSelectionPath().getPath();
-
-        // first item in the path is Entity, so we must have
-        // at least two elements to constitute a valid ordering path
-        if (path.length < 2) {
-            return null;
-        }
-
-        StringBuilder buffer = new StringBuilder();
-
-        // attribute or relationships
-        buffer.append(Renderers.asString(path[1]));
-
-        for (int i = 2; i < path.length; i++) {
-            buffer.append(".").append(Renderers.asString(path[i]));
-        }
-
-        return buffer.toString();
+        return EntityTreeModel.toPath(browser.getSelectionPath());
     }
 
     protected TreeModel createBrowserModel(Entity<?,?,?> entity) {
@@ -284,7 +264,8 @@ public class SQLTemplatePrefetchTab extends ProjectPanel {
         }
 
         //default value is joint
-        sqlTemplate.addPrefetch(prefetch, PrefetchModel.getPrefetchType(SelectQueryPrefetchTab.DISJOINT_BY_ID_PREFETCH_SEMANTICS));
+        sqlTemplate.addPrefetch(prefetch,
+                PrefetchModel.getPrefetchType(PrefetchModel.DISJOINT_BY_ID_PREFETCH_SEMANTICS));
 
         // reset the model, since it is immutable
         table.setModel(createTableModel());

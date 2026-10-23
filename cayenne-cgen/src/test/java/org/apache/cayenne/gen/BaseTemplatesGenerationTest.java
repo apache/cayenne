@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.gen;
 
-import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -45,6 +43,7 @@ import java.nio.file.Paths;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -74,30 +73,43 @@ public class BaseTemplatesGenerationTest extends CgenCase {
     @Test
     public void selectQuery() throws Exception {
         dataMap.setName("SelectQuery");
+        createTestEntity();
 
-        String param = "param";
-        String qualifierString = "name = $" + param;
+        execute(new DataMapArtifact(dataMap, List.of(selectQuery("select", "from Test where name = $param"))));
+    }
 
-        DbEntity dbEntity = new DbEntity();
+    @Test
+    public void selectQueryResultTypes() throws Exception {
+        dataMap.setName("SelectQueryResultTypes");
+        createTestEntity();
+
+        execute(new DataMapArtifact(dataMap, List.of(
+                selectQuery("names", "select name from Test where name like $name"),
+                selectQuery("counts", "select name, count(*) from Test"),
+                selectQuery("rows", "from db:TEST where testKey = $key"))));
+    }
+
+    private void createTestEntity() {
+        DbEntity dbEntity = new DbEntity("TEST");
+        dbEntity.addAttribute(new DbAttribute("testKey"));
+        dataMap.addDbEntity(dbEntity);
+
         ObjAttribute attribute = new ObjAttribute("name");
         attribute.setDbAttributePath("testKey");
         attribute.setType("java.lang.String");
+        objEntity.setName("Test");
         objEntity.addAttribute(attribute);
         objEntity.setDbEntity(dbEntity);
         objEntity.setClassName("Test");
+        dataMap.addObjEntity(objEntity);
+    }
 
-        SelectQueryDescriptor selectQueryDescriptor = new SelectQueryDescriptor();
-        Expression exp = ExpressionFactory.exp(qualifierString);
-        selectQueryDescriptor.setQualifier(exp);
-        selectQueryDescriptor.setName("select");
-        selectQueryDescriptor.setRoot(objEntity);
-
-        Collection<QueryDescriptor> descriptors = new ArrayList<>();
-        descriptors.add(selectQueryDescriptor);
-
-        DataMapArtifact dataMapArtifact = new DataMapArtifact(dataMap, descriptors);
-
-        execute(dataMapArtifact);
+    private SelectQueryDescriptor selectQuery(String name, String ql) {
+        SelectQueryDescriptor descriptor = new SelectQueryDescriptor();
+        descriptor.setName(name);
+        descriptor.setQl(ql);
+        dataMap.addQueryDescriptor(descriptor);
+        return descriptor;
     }
 
     @Test

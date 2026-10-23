@@ -18,20 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.project.xml;
 
-import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.SelectQueryDescriptor;
-import org.apache.cayenne.query.Ordering;
-import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.QueryCacheStrategy;
-import org.apache.cayenne.query.SortOrder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -90,55 +85,26 @@ public class SelectQueryDescriptorHandlerTest extends BaseHandlerTest {
         SelectQueryDescriptor descriptor = parseQuery("""
                 <objectQuery name="q">
                     <ql>select distinct self from Artist where artistName like $name
-                        order by artistName desc insensitive, dateOfBirth limit 10 offset 20
-                        prefetch paintings joint, paintings.gallery disjoint, exhibits disjointById, groups</ql>
+                        order by artistName desc insensitive, dateOfBirth asc limit 10 offset 20
+                        prefetch paintings joint</ql>
                 </objectQuery>
                 """);
 
         assertSame(entity, descriptor.getRoot());
+
+        // the String is kept as is, with its formatting
+        assertEquals("""
+                select distinct self from Artist where artistName like $name
+                        order by artistName desc insensitive, dateOfBirth asc limit 10 offset 20
+                        prefetch paintings joint""", descriptor.getQl());
 
         // parameters are preserved, to be bound when the query is executed
-        assertEquals(ExpressionFactory.exp("artistName like $name"), descriptor.getQualifier());
-
-        assertEquals(List.of(
-                        new Ordering("artistName", SortOrder.DESCENDING_INSENSITIVE),
-                        new Ordering("dateOfBirth", SortOrder.ASCENDING)),
-                descriptor.getOrderings());
-
-        assertEquals(Map.of(
-                        "paintings", PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS,
-                        "paintings.gallery", PrefetchTreeNode.DISJOINT_PREFETCH_SEMANTICS,
-                        "exhibits", PrefetchTreeNode.DISJOINT_BY_ID_PREFETCH_SEMANTICS,
-                        "groups", PrefetchTreeNode.UNDEFINED_SEMANTICS),
-                descriptor.getPrefetchesMap());
-
-        assertEquals(10, descriptor.getFetchLimit());
-        assertEquals(20, descriptor.getFetchOffset());
-        assertTrue(descriptor.isDistinct());
+        assertEquals(ExpressionFactory.exp("artistName like $name"), descriptor.getParsedQuery().getWhere());
+        assertEquals(10, descriptor.getParsedQuery().getLimit());
     }
 
     @Test
-    public void selectMinimal() throws Exception {
-        ObjEntity entity = new ObjEntity("Artist");
-        map.addObjEntity(entity);
-
-        SelectQueryDescriptor descriptor = parseQuery("""
-                <objectQuery name="q">
-                    <ql>from Artist</ql>
-                </objectQuery>
-                """);
-
-        assertSame(entity, descriptor.getRoot());
-        assertNull(descriptor.getQualifier());
-        assertTrue(descriptor.getOrderings().isEmpty());
-        assertTrue(descriptor.getPrefetchesMap().isEmpty());
-        assertEquals(0, descriptor.getFetchLimit());
-        assertEquals(0, descriptor.getFetchOffset());
-        assertFalse(descriptor.isDistinct());
-    }
-
-    @Test
-    public void selectWithoutRoot() throws Exception {
+    public void selectWithoutQl() throws Exception {
         SelectQueryDescriptor descriptor = parseQuery("""
                 <objectQuery name="q">
                     <ql> </ql>
@@ -147,6 +113,7 @@ public class SelectQueryDescriptorHandlerTest extends BaseHandlerTest {
 
         // unlike the other queries, a select query is never rooted in a DataMap
         assertNull(descriptor.getRoot());
+        assertNull(descriptor.getQl());
     }
 
     @Test
@@ -157,21 +124,33 @@ public class SelectQueryDescriptorHandlerTest extends BaseHandlerTest {
                 </objectQuery>
                 """);
 
-        // an entity that is not in the DataMap is kept by name, so that the query is not lost on save
+        // an entity that is not in the DataMap is kept by name
         assertEquals("Artist", descriptor.getRoot());
-        assertEquals("from Artist where artistName = \"a\"", descriptor.toQueryString());
     }
 
     @Test
-    public void selectUnsupported() {
-        // TODO: column queries, "having" and DbEntity roots are not supported by the descriptor yet
+    public void selectColumnsHavingAndDbRoot() throws Exception {
         for (String ql : List.of(
                 "select artistName from Artist",
                 "from Artist having count(paintings) > 1",
-                "from db:ARTIST",
-                "from Artist where")) {
-            assertThrows(ConfigurationException.class,
-                    () -> parseQuery("<objectQuery name=\"q\"><ql>" + ql + "</ql></objectQuery>"), ql);
+                "from db:ARTIST")) {
+            SelectQueryDescriptor descriptor = parseQuery("<objectQuery name=\"q\"><ql>" + ql + "</ql></objectQuery>");
+            assertEquals(ql, descriptor.getQl());
+            assertTrue(descriptor.isValid(), ql);
+            map.removeQueryDescriptor("q");
         }
+    }
+
+    @Test
+    public void selectInvalid() throws Exception {
+        // a String that can't be parsed is loaded, so that it can be fixed in the Modeler
+        SelectQueryDescriptor descriptor = parseQuery("""
+                <objectQuery name="q">
+                    <ql>from Artist where</ql>
+                </objectQuery>
+                """);
+
+        assertEquals("from Artist where", descriptor.getQl());
+        assertFalse(descriptor.isValid());
     }
 }

@@ -24,6 +24,7 @@ import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.modeler.project.ProjectComparators;
+import org.apache.cayenne.modeler.toolkit.Renderers;
 
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
@@ -170,5 +171,24 @@ public class EntityTreeModel implements TreeModel {
      */
     public EntityTreeFilter getFilter() {
         return filter;
+    }
+
+    /**
+     * Returns a dot-separated path of the attributes and relationships of a tree path, relative to the root entity,
+     * or null if the tree path is the root itself.
+     */
+    public static String toPath(TreePath treePath) {
+        Object[] path = treePath.getPath();
+
+        // the first item is the root entity, that is not a part of the path
+        if (path.length < 2) {
+            return null;
+        }
+
+        StringBuilder buffer = new StringBuilder(Renderers.asString(path[1]));
+        for (int i = 2; i < path.length; i++) {
+            buffer.append('.').append(Renderers.asString(path[i]));
+        }
+        return buffer.toString();
     }
 }

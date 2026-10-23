@@ -175,7 +175,7 @@ public class MappedSelect<T> extends AbstractMappedQuery implements Select<T> {
 
         switch (descriptor) {
             case SelectQueryDescriptor ignored -> {
-                ObjectSelect<?> selectQuery = (ObjectSelect<?>) query;
+                FluentSelect<?, ?> selectQuery = (FluentSelect<?, ?>) query;
                 if (fetchLimit != null) {
                     selectQuery.limit(fetchLimit);
                 }

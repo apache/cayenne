@@ -19,99 +19,132 @@
 
 package org.apache.cayenne.gen;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.List;
 
-import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.SelectQueryDescriptor;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DataMapUtilsTest {
 
-    protected DataMapUtils dataMapUtils = null;
-    protected ObjEntity objEntity = null;
+    private DataMapUtils dataMapUtils;
+    private DataMap dataMap;
 
     @BeforeEach
     public void setUp() {
         dataMapUtils = new DataMapUtils();
-        objEntity = new ObjEntity();
-    }
+        dataMap = new DataMap("map");
 
-    @AfterEach
-    public void tearDown() {
-        dataMapUtils = null;
-        objEntity = null;
-    }
+        DbEntity dbEntity = new DbEntity("ARTIST");
+        dbEntity.addAttribute(new DbAttribute("NAME"));
+        dataMap.addDbEntity(dbEntity);
 
-    @Test
-    public void getParameterNamesWithFilledQueriesMap() {
+        ObjEntity artist = new ObjEntity("Artist");
+        artist.setClassName("org.example.Artist");
+        artist.setDbEntity(dbEntity);
+        artist.addAttribute(new ObjAttribute("name", "java.lang.String", artist));
+        artist.addAttribute(new ObjAttribute("born", "java.time.LocalDate", artist));
+        dataMap.addObjEntity(artist);
 
-        String param = "param";
-        String qualifierString = "name = $" + param;
+        ObjEntity painting = new ObjEntity("Painting");
+        painting.setClassName("org.example.Painting");
+        painting.addAttribute(new ObjAttribute("price", "java.math.BigDecimal", painting));
+        dataMap.addObjEntity(painting);
 
-        SelectQueryDescriptor selectQueryDescriptor = new SelectQueryDescriptor();
-
-        Set<String> result = new LinkedHashSet<>();
-        assertEquals(result, dataMapUtils.getParameterNames(selectQueryDescriptor));
-
-        Expression exp = ExpressionFactory.exp(qualifierString);
-        selectQueryDescriptor.setQualifier(exp);
-        selectQueryDescriptor.setName("name");
-
-        Map<String, String> map = new HashMap<>();
-        map.put(param, "java.lang.String");
-
-        dataMapUtils.queriesMap.put("name", map);
-        Collection<String> collection = dataMapUtils.getParameterNames(selectQueryDescriptor);
-
-        result.add(param);
-
-        assertEquals(collection, result);
+        ObjRelationship toArtist = new ObjRelationship("artist");
+        toArtist.setTargetEntityName("Artist");
+        painting.addRelationship(toArtist);
     }
 
     @Test
-    public void getParameterNamesWithEmptyQueriesMap() {
+    public void getParameterNames() {
+        SelectQueryDescriptor query = query("""
+                from Artist where name like $name and born in ($from_date, $to_date) and name != $name""");
 
-        DbEntity dbEntity = new DbEntity("test");
-        ObjAttribute attribute = new ObjAttribute("name");
-        attribute.setDbAttributePath("testKey");
-        attribute.setType("java.lang.String");
-        objEntity.addAttribute(attribute);
-        objEntity.setName("test");
-        objEntity.setDbEntity(dbEntity);
+        assertEquals(List.of("name", "fromDate", "toDate"), List.copyOf(dataMapUtils.getParameterNames(query)));
+        assertTrue(dataMapUtils.hasParameters(query));
+        assertFalse(dataMapUtils.hasParameters(query("from Artist")));
+    }
 
-        String param = "param";
-        String qualifierString = "name = $" + param;
+    @Test
+    public void getParameterType() {
+        SelectQueryDescriptor query = query("""
+                from Painting where price > $price and artist = $artist and $flag = true
+                    and exists (from Artist where born < $born)""");
 
-        SelectQueryDescriptor selectQueryDescriptor = new SelectQueryDescriptor();
-        Expression exp = ExpressionFactory.exp(qualifierString);
-        selectQueryDescriptor.setQualifier(exp);
-        selectQueryDescriptor.setName("name");
-        selectQueryDescriptor.setRoot(objEntity);
+        assertEquals("java.math.BigDecimal", dataMapUtils.getParameterType(query, "price"));
+        assertEquals("org.example.Artist", dataMapUtils.getParameterType(query, "artist"));
+        assertEquals("java.lang.Object", dataMapUtils.getParameterType(query, "flag"));
+        assertEquals("java.time.LocalDate", dataMapUtils.getParameterType(query, "born"));
+    }
 
-        Collection<String> collection = dataMapUtils.getParameterNames(selectQueryDescriptor);
+    @Test
+    public void getParameterTypeOfAlias() {
+        SelectQueryDescriptor query = query("""
+                select name as n, count(*) as c from Artist having c > $min and n like $pattern""");
 
-        Map<String, Map<String, String>> queriesMap = new HashMap<>();
-        Map<String, String> map = new HashMap<>();
-        map.put(param, "java.lang.String");
-        queriesMap.put("name", map);
+        assertTrue(dataMapUtils.isValidParameterNames(query));
+        assertEquals(List.of("min", "pattern"), List.copyOf(dataMapUtils.getParameterNames(query)));
+        assertEquals("java.lang.Object", dataMapUtils.getParameterType(query, "min"));
+        assertEquals("java.lang.String", dataMapUtils.getParameterType(query, "pattern"));
+    }
 
-        assertEquals(dataMapUtils.queriesMap, queriesMap);
+    @Test
+    public void getParameterTypeOfInvalidPath() {
+        // an invalid path is reported by the validator, the parameter helpers never fail on it
+        SelectQueryDescriptor query = query("from Artist where nme = $name and born = $born");
 
-        Set<String> result = new LinkedHashSet<>();
-        result.add(param);
+        assertFalse(dataMapUtils.isValidParameterNames(query));
+        assertEquals(List.of("name", "born"), List.copyOf(dataMapUtils.getParameterNames(query)));
+        assertTrue(dataMapUtils.hasParameters(query));
+        assertEquals("java.lang.Object", dataMapUtils.getParameterType(query, "name"));
+        assertEquals("java.time.LocalDate", dataMapUtils.getParameterType(query, "born"));
+    }
 
-        assertEquals(collection, result);
+    @Test
+    public void isValidParameterNames() {
+        assertTrue(dataMapUtils.isValidParameterNames(query("from Artist where name = $name order by born")));
+        assertTrue(dataMapUtils.isValidParameterNames(query("from db:ARTIST where NAME = $name")));
+        assertFalse(dataMapUtils.isValidParameterNames(query("from Artist where")));
+        assertFalse(dataMapUtils.isValidParameterNames(query("from Gallery")));
+        assertFalse(dataMapUtils.isValidParameterNames(query("from Artist where nme = $name")));
+        assertFalse(dataMapUtils.isValidParameterNames(query("from Artist order by nme")));
+
+        // the paths that are not compared to a parameter are checked too
+        assertFalse(dataMapUtils.isValidParameterNames(query("from Artist where nme = 'x'")));
+        assertFalse(dataMapUtils.isValidParameterNames(query("select nme from Artist")));
+        assertFalse(dataMapUtils.isValidParameterNames(query("from db:ARTIST where NME = $name")));
+        assertFalse(dataMapUtils.isValidParameterNames(query("from Artist prefetch galleries")));
+    }
+
+    @Test
+    public void getResultType() {
+        assertEquals("org.example.Artist", dataMapUtils.getResultType(query("from Artist")));
+        assertEquals("org.apache.cayenne.DataRow", dataMapUtils.getResultType(query("from db:ARTIST")));
+        assertEquals("java.lang.Object", dataMapUtils.getResultType(query("select name from Artist")));
+        assertEquals("java.lang.Object[]", dataMapUtils.getResultType(query("select name, born from Artist")));
+
+        SelectQueryDescriptor dataRows = query("from Artist");
+        dataRows.setFetchingDataRows(true);
+        assertEquals("org.apache.cayenne.DataRow", dataMapUtils.getResultType(dataRows));
+    }
+
+    private SelectQueryDescriptor query(String ql) {
+        SelectQueryDescriptor query = new SelectQueryDescriptor();
+        query.setName("q");
+        query.setQl(ql);
+        dataMap.removeQueryDescriptor("q");
+        dataMap.addQueryDescriptor(query);
+        return query;
     }
 }

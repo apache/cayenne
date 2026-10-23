@@ -18,15 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.projecttools.validation;
 
+import java.util.List;
 import java.util.function.Supplier;
 
-import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.Entity;
-import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.SelectQueryDescriptor;
-import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.validation.ValidationResult;
 
 class SelectQueryValidator extends BaseQueryValidator<SelectQueryDescriptor> {
@@ -44,91 +40,36 @@ class SelectQueryValidator extends BaseQueryValidator<SelectQueryDescriptor> {
         ProjectNodeValidator<SelectQueryDescriptor>.Performer<SelectQueryDescriptor> performer =
                 validateQuery(node, validationResult);
 
-        performer.performIfEnabled(Inspection.SELECT_QUERY_NO_ROOT, this::checkForRoot);
-
-        // Resolve root to Entity for further validation
-        Entity<?, ?, ?> root = getRootForValidation(node);
-
-        // validate path-based parts
-        if (root == null) {
+        if (node.getQl() == null || node.getQl().isBlank()) {
+            performer.performIfEnabled(Inspection.SELECT_QUERY_NO_ROOT,
+                    () -> addFailure(validationResult, node, "Query '%s' is empty", node.getName()));
             return;
         }
-        performer.performIfEnabled(Inspection.SELECT_QUERY_INVALID_QUALIFIER,
-                () -> validateQualifier(root, node.getQualifier(), validationResult));
-        for (final Ordering ordering : node.getOrderings()) {
-            performer.performIfEnabled(Inspection.SELECT_QUERY_INVALID_ORDERING_PATH,
-                    () -> validateOrdering(node, root, ordering, validationResult));
-        }
-        if (node.getPrefetchesMap() == null) {
+
+        if (!node.isValid()) {
+            performer.performIfEnabled(Inspection.SELECT_QUERY_INVALID_QL, () -> checkSyntax(node, validationResult));
             return;
         }
-        for (String prefetchPath : node.getPrefetchesMap().keySet()) {
-            performer.performIfEnabled(Inspection.SELECT_QUERY_INVALID_PREFETCH_PATH,
-                    () -> validatePrefetch(root, prefetchPath, validationResult));
+
+        List<SelectQueryPaths.Problem> problems = SelectQueryPaths.check(node);
+        for (SelectQueryPaths.Problem problem : problems) {
+            Inspection inspection = switch (problem.clause()) {
+                case FROM -> Inspection.SELECT_QUERY_NO_ROOT;
+                case SELECT, WHERE, HAVING -> Inspection.SELECT_QUERY_INVALID_QUALIFIER;
+                case ORDER_BY -> Inspection.SELECT_QUERY_INVALID_ORDERING_PATH;
+                case PREFETCH -> Inspection.SELECT_QUERY_INVALID_PREFETCH_PATH;
+            };
+            performer.performIfEnabled(inspection, () -> addFailure(validationResult, node, "Query '%s': %s",
+                    node.getName(), problem.message()));
         }
     }
 
-    private void validatePrefetch(Entity<?, ?, ?> root, String path, ValidationResult validationResult) {
-        // TODO: andrus 03/10/2010 - should this be implemented?
-    }
-
-    private void validateOrdering(SelectQueryDescriptor query, Entity<?, ?, ?> root,
-                                  Ordering ordering, ValidationResult validationResult) {
-
-        // validate paths in ordering
-        String path = ordering.getSortSpecString();
+    private void checkSyntax(SelectQueryDescriptor query, ValidationResult validationResult) {
         try {
-            root.resolvePath(path);
+            query.getParsedQuery();
         } catch (ExpressionException e) {
-            addFailure(validationResult, query, "Invalid ordering path: '%s'", path);
+            addFailure(validationResult, query, "Query '%s' can't be parsed: %s", query.getName(),
+                    e.getUnlabeledMessage());
         }
-    }
-
-    private void validateQualifier(Entity<?, ?, ?> root, Expression qualifier, ValidationResult validationResult) {
-        // TODO: andrus 03/10/2010 - should this be implemented?
-    }
-
-    private void checkForRoot(SelectQueryDescriptor query, ValidationResult validationResult) {
-        // a query can only be rooted in an ObjEntity, either resolved or referenced by name
-        Object root = query.getRoot();
-        if (!(root instanceof ObjEntity) && !(root instanceof String)) {
-            addFailure(validationResult, query, "Query '%s' has no root", query.getName());
-        }
-    }
-
-    private Entity<?, ?, ?> getRootForValidation(SelectQueryDescriptor query) {
-        DataMap map = query.getDataMap();
-        if (query.getRoot() == null && map != null) {
-            return null;
-        }
-
-        if (query.getRoot() == map) {
-            // map-level query... everything is clean
-            return null;
-        }
-
-        if (map == null) {
-            // maybe standalone entity, otherwise bail...
-            return (query.getRoot() instanceof Entity) ? (Entity<?, ?, ?>) query.getRoot() : null;
-        }
-
-        if (query.getRoot() instanceof Entity) {
-            return (Entity<?, ?, ?>) query.getRoot();
-        }
-
-        // can't validate Class root - it is likely not accessible from here...
-        if (query.getRoot() instanceof Class<?>) {
-            return null;
-        }
-
-        // resolve entity
-        if (query.getRoot() instanceof String) {
-            DataMap parent = query.getDataMap();
-            if (parent != null) {
-                return parent.getNamespace().getObjEntity((String) query.getRoot());
-            }
-        }
-
-        return null;
     }
 }

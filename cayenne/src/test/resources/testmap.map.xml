@@ -254,6 +254,19 @@
 	<objRelationship name="painting" source="PaintingInfo" target="Painting" deleteRule="nullify" dbRelationshipPath="painting"/>
 	<objRelationship name="paintingArray" source="ROArtist" target="Painting" deleteRule="deny" dbRelationshipPath="paintingArray"/>
 	<objRelationship name="toArtist" source="ROPainting" target="Artist" deleteRule="nullify" dbRelationshipPath="toArtist"/>
+	<objectQuery name="ArtistNamesQuery">
+		<ql><![CDATA[select artistName from Artist
+where artistName like $name
+order by artistName]]></ql>
+	</objectQuery>
+	<objectQuery name="ArtistRowsQuery">
+		<ql><![CDATA[from db:ARTIST where ARTIST_NAME = $name]]></ql>
+	</objectQuery>
+	<objectQuery name="ArtistsWithPaintingsQuery">
+		<ql><![CDATA[from Artist
+where exists (from Painting where toArtist = enclosing(self) and estimatedPrice > $price)
+order by artistName]]></ql>
+	</objectQuery>
 	<sqlQuery name="NonSelectingQuery" root="dataMap" rootName="testmap" columnNameCapitalization="UPPER">
 		<sql><![CDATA[INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE)
 VALUES (512, 'No Painting Like This', 12.5)]]></sql>

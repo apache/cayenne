@@ -23,10 +23,11 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.SQLTemplateDescriptor;
+import org.apache.cayenne.map.SelectQueryDescriptor;
 import org.apache.cayenne.modeler.ui.project.ProjectView;
 import org.apache.cayenne.modeler.ui.project.editor.EditorPanelView;
 import org.apache.cayenne.modeler.ui.project.editor.query.sqltemplate.SQLTemplateTabbedView;
-import org.apache.cayenne.query.SQLTemplate;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -84,7 +85,11 @@ public class TextCompoundEdit extends CompoundEdit implements DocumentListener {
             tabbedPane = editorPanel.getEmbeddableView();
         }
 
-        if (targetObject instanceof SQLTemplate) {
+        if (targetObject instanceof SelectQueryDescriptor) {
+            tabbedPane = editorPanel.getSelectQueryView();
+        }
+
+        if (targetObject instanceof SQLTemplateDescriptor) {
             tabbedPane = editorPanel.getSqlTemplateView();
 
             if (tabbedPane != null) {
@@ -172,7 +177,11 @@ public class TextCompoundEdit extends CompoundEdit implements DocumentListener {
         }
 
         editor.requestFocusInWindow();
-        editor.selectAll();
+
+        // a single-line field is selected as a whole, a multi-line editor keeps the caret where the undo left it
+        if (editor instanceof JTextField) {
+            editor.selectAll();
+        }
     }
 
     @Override
