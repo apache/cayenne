@@ -91,6 +91,61 @@ public class DataMapTest {
     }
 
     @Test
+    public void renameObjEntityUpdatesSelectQueriesInOtherMaps() {
+        DataMap mapA = new DataMap("a");
+        DataMap mapB = new DataMap("b");
+        EntityResolver resolver = new EntityResolver();
+        resolver.addDataMap(mapA);
+        resolver.addDataMap(mapB);
+
+        // the cache built here is stale once the entity is added
+        assertNull(resolver.getObjEntity("Artist"));
+        ObjEntity artist = new ObjEntity("Artist");
+        mapA.addObjEntity(artist);
+        mapB.addObjEntity(new ObjEntity("Painting"));
+
+        SelectQueryDescriptor inA = selectQuery("inA", "from Artist");
+        SelectQueryDescriptor inB = selectQuery("inB",
+                "from Artist where exists (from Painting where artist = enclosing(self))");
+        SelectQueryDescriptor subqueryInB = selectQuery("subqueryInB",
+                "from Painting where exists (from Artist where artist = enclosing(self))");
+        mapA.addQueryDescriptor(inA);
+        mapB.addQueryDescriptor(inB);
+        mapB.addQueryDescriptor(subqueryInB);
+
+        mapA.renameObjEntity(artist, "Painter");
+
+        assertEquals("from Painter", inA.getQl());
+        assertEquals("from Painter where exists (from Painting where artist = enclosing(self))", inB.getQl());
+        assertSame(artist, inB.getRoot());
+        assertEquals("from Painting where exists (from Painter where artist = enclosing(self))", subqueryInB.getQl());
+    }
+
+    @Test
+    public void renameDbEntityUpdatesSelectQueriesInOtherMaps() {
+        DataMap mapA = new DataMap("a");
+        DataMap mapB = new DataMap("b");
+        EntityResolver resolver = new EntityResolver();
+        resolver.addDataMap(mapA);
+        resolver.addDataMap(mapB);
+
+        DbEntity table = new DbEntity("ARTIST");
+        mapA.addDbEntity(table);
+        mapB.addObjEntity(new ObjEntity("ARTIST"));
+
+        SelectQueryDescriptor db = selectQuery("db", "from db:ARTIST where NAME = 'a'");
+        SelectQueryDescriptor obj = selectQuery("obj", "from ARTIST where NAME = 'a'");
+        mapB.addQueryDescriptor(db);
+        mapB.addQueryDescriptor(obj);
+
+        mapA.renameDbEntity(table, "PAINTER");
+
+        assertEquals("from db:PAINTER where NAME = 'a'", db.getQl());
+        assertSame(table, db.getRoot());
+        assertEquals("from ARTIST where NAME = 'a'", obj.getQl());
+    }
+
+    @Test
     public void removeQueryDescriptorDetachesIt() {
         DataMap map = new DataMap("map");
         SelectQueryDescriptor query = selectQuery("q", "from Artist");

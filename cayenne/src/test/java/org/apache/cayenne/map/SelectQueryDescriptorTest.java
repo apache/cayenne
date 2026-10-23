@@ -29,6 +29,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.SubqueryExp;
+import org.apache.cayenne.map.SelectQueryDescriptor.ResultKind;
 import org.apache.cayenne.project.EmptyProjectNodeVisitor;
 import org.apache.cayenne.query.ColumnSelect;
 import org.apache.cayenne.query.FluentSelect;
@@ -40,6 +41,7 @@ import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.util.XMLEncoder;
 import org.junit.jupiter.api.Test;
 
+import static org.apache.cayenne.map.SelectQueryDescriptor.renamePattern;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class SelectQueryDescriptorTest {
@@ -188,6 +190,40 @@ public class SelectQueryDescriptorTest {
     }
 
     @Test
+    public void getResultKind() {
+        DataMap map = new DataMap();
+        map.addObjEntity(new ObjEntity("A"));
+        map.addDbEntity(new DbEntity("T"));
+
+        SelectQueryDescriptor descriptor = descriptor("from A");
+        descriptor.setDataMap(map);
+        assertEquals(ResultKind.ENTITY, descriptor.getResultKind());
+
+        descriptor.setFetchingDataRows(true);
+        assertEquals(ResultKind.DATA_ROW, descriptor.getResultKind());
+        descriptor.setFetchingDataRows(false);
+
+        descriptor.setQl("from db:T");
+        assertEquals(ResultKind.DATA_ROW, descriptor.getResultKind());
+
+        descriptor.setQl("select a from A");
+        assertEquals(ResultKind.SCALAR, descriptor.getResultKind());
+
+        descriptor.setQl("select a, b from A");
+        assertEquals(ResultKind.ARRAY, descriptor.getResultKind());
+
+        // the columns are known without the mapping
+        descriptor.setQl("select a, b from B");
+        assertEquals(ResultKind.ARRAY, descriptor.getResultKind());
+
+        // an unmapped root, or a String that can't be parsed
+        descriptor.setQl("from B");
+        assertNull(descriptor.getResultKind());
+        descriptor.setQl("from A where");
+        assertNull(descriptor.getResultKind());
+    }
+
+    @Test
     public void setRoot() {
         assertThrows(UnsupportedOperationException.class, () -> new SelectQueryDescriptor().setRoot("A"));
     }
@@ -277,7 +313,7 @@ public class SelectQueryDescriptorTest {
     @Test
     public void renameEntity() {
         SelectQueryDescriptor descriptor = descriptor("select name from  Artist\n  order by name");
-        descriptor.renameEntity("Artist", "Painter", false);
+        descriptor.renameEntity(renamePattern("Artist", false), "Painter");
         assertEquals("select name from  Painter\n  order by name", descriptor.getQl());
         assertEquals("Painter", descriptor.getParsedQuery().getEntityName());
     }
@@ -286,7 +322,7 @@ public class SelectQueryDescriptorTest {
     public void renameEntityInSubquery() {
         SelectQueryDescriptor descriptor = descriptor(
                 "from Painting where exists (from Artist where artist = enclosing(self))");
-        descriptor.renameEntity("Artist", "Painter", false);
+        descriptor.renameEntity(renamePattern("Artist", false), "Painter");
         assertEquals("from Painting where exists (from Painter where artist = enclosing(self))", descriptor.getQl());
     }
 
@@ -295,8 +331,8 @@ public class SelectQueryDescriptorTest {
         String ql = "from Artist2 where fromArtist = 'Artist' and artist.name = 'x' and from = 1"
                 + " and exists (from Artist$1)";
         SelectQueryDescriptor descriptor = descriptor(ql);
-        descriptor.renameEntity("Artist", "Painter", false);
-        descriptor.renameEntity("artist", "Painter", false);
+        descriptor.renameEntity(renamePattern("Artist", false), "Painter");
+        descriptor.renameEntity(renamePattern("artist", false), "Painter");
         assertSame(ql, descriptor.getQl());
     }
 
@@ -304,54 +340,54 @@ public class SelectQueryDescriptorTest {
     public void renameEntitySkipsStringLiterals() {
         String literals = " where name = 'from Artist' or bio = \"from Artist \\\" from Artist\" or name = 'it\\'s'";
         SelectQueryDescriptor descriptor = descriptor("from Artist" + literals);
-        descriptor.renameEntity("Artist", "Painter", false);
+        descriptor.renameEntity(renamePattern("Artist", false), "Painter");
         assertEquals("from Painter" + literals, descriptor.getQl());
 
         // a literal can span lines
         descriptor = descriptor("from Artist where name = 'from\nArtist' and exists (from Artist)");
-        descriptor.renameEntity("Artist", "Painter", false);
+        descriptor.renameEntity(renamePattern("Artist", false), "Painter");
         assertEquals("from Painter where name = 'from\nArtist' and exists (from Painter)", descriptor.getQl());
 
         // an unterminated literal of a String that can't be parsed doesn't stop the rename
         descriptor = descriptor("from Artist where name = 'from Artist");
-        descriptor.renameEntity("Artist", "Painter", false);
+        descriptor.renameEntity(renamePattern("Artist", false), "Painter");
         assertEquals("from Painter where name = 'from Painter", descriptor.getQl());
     }
 
     @Test
     public void renameDbEntity() {
         SelectQueryDescriptor descriptor = descriptor("from db:ARTIST where NAME = 'a'");
-        descriptor.renameEntity("ARTIST", "PAINTER", true);
+        descriptor.renameEntity(renamePattern("ARTIST", true), "PAINTER");
         assertEquals("from db:PAINTER where NAME = 'a'", descriptor.getQl());
 
         // the grammar allows whitespace after the prefix
         SelectQueryDescriptor spaced = descriptor("from db: ARTIST");
-        spaced.renameEntity("ARTIST", "PAINTER", true);
+        spaced.renameEntity(renamePattern("ARTIST", true), "PAINTER");
         assertEquals("from db: PAINTER", spaced.getQl());
 
         // an ObjEntity of the same name is a different reference
-        descriptor.renameEntity("PAINTER", "ARTIST", false);
+        descriptor.renameEntity(renamePattern("PAINTER", false), "ARTIST");
         assertEquals("from db:PAINTER where NAME = 'a'", descriptor.getQl());
 
         SelectQueryDescriptor objDescriptor = descriptor("from ARTIST where NAME = 'a'");
-        objDescriptor.renameEntity("ARTIST", "PAINTER", true);
+        objDescriptor.renameEntity(renamePattern("ARTIST", true), "PAINTER");
         assertEquals("from ARTIST where NAME = 'a'", objDescriptor.getQl());
     }
 
     @Test
     public void renameEntityNullAndSameName() {
         SelectQueryDescriptor empty = new SelectQueryDescriptor();
-        empty.renameEntity("Artist", "Painter", false);
+        empty.renameEntity(renamePattern("Artist", false), "Painter");
         assertNull(empty.getQl());
 
         // a String that can't be parsed is renamed too, as it is kept to be fixed
         SelectQueryDescriptor invalid = descriptor("from Artist where");
-        invalid.renameEntity("Artist", "Painter", false);
+        invalid.renameEntity(renamePattern("Artist", false), "Painter");
         assertEquals("from Painter where", invalid.getQl());
 
         String ql = "from Artist";
         SelectQueryDescriptor same = descriptor(ql);
-        same.renameEntity("Artist", "Artist", false);
+        same.renameEntity(renamePattern("Artist", false), "Artist");
         assertSame(ql, same.getQl());
     }
 

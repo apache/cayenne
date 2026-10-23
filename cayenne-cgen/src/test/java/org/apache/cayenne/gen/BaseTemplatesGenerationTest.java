@@ -86,7 +86,8 @@ public class BaseTemplatesGenerationTest extends CgenCase {
         execute(new DataMapArtifact(dataMap, List.of(
                 selectQuery("names", "select name from Test where name like $name"),
                 selectQuery("counts", "select name, count(*) from Test"),
-                selectQuery("rows", "from db:TEST where testKey = $key"))));
+                selectQuery("rows", "from db:TEST where testKey = $key"),
+                selectQuery("filtered", "from Test where name in $name_list or name like $name_pattern"))));
     }
 
     private void createTestEntity() {

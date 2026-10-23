@@ -20,7 +20,11 @@
 package org.apache.cayenne.gen;
 
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
+import org.apache.cayenne.gen.DataMapUtils.QueryParameter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -33,6 +37,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DataMapUtilsTest {
@@ -67,13 +72,37 @@ public class DataMapUtilsTest {
     }
 
     @Test
-    public void getParameterNames() {
+    public void getParameters() {
         SelectQueryDescriptor query = query("""
                 from Artist where name like $name and born in ($from_date, $to_date) and name != $name""");
 
-        assertEquals(List.of("name", "fromDate", "toDate"), List.copyOf(dataMapUtils.getParameterNames(query)));
+        assertEquals(List.of(
+                new QueryParameter("name", "name", "java.lang.String"),
+                new QueryParameter("from_date", "fromDate", "java.time.LocalDate"),
+                new QueryParameter("to_date", "toDate", "java.time.LocalDate")), dataMapUtils.getParameters(query));
         assertTrue(dataMapUtils.hasParameters(query));
         assertFalse(dataMapUtils.hasParameters(query("from Artist")));
+    }
+
+    @Test
+    public void getParametersCached() {
+        SelectQueryDescriptor query = query("from Artist where name = $name");
+        List<QueryParameter> parameters = dataMapUtils.getParameters(query);
+        assertSame(parameters, dataMapUtils.getParameters(query));
+
+        // a change of the query String is picked up
+        query.setQl("from Artist where born = $born");
+        assertEquals(List.of(new QueryParameter("born", "born", "java.time.LocalDate")),
+                dataMapUtils.getParameters(query));
+    }
+
+    @Test
+    public void getParametersUniqueJavaNames() {
+        SelectQueryDescriptor query = query("""
+                from Artist where name = $a_b or name = $aB or name = $context or born = $query or born = $class""");
+
+        assertEquals(List.of("a_b", "aB", "context", "query", "class"), names(query, QueryParameter::name));
+        assertEquals(List.of("aB", "aB2", "context2", "query2", "class2"), names(query, QueryParameter::javaName));
     }
 
     @Test
@@ -82,10 +111,37 @@ public class DataMapUtilsTest {
                 from Painting where price > $price and artist = $artist and $flag = true
                     and exists (from Artist where born < $born)""");
 
-        assertEquals("java.math.BigDecimal", dataMapUtils.getParameterType(query, "price"));
-        assertEquals("org.example.Artist", dataMapUtils.getParameterType(query, "artist"));
-        assertEquals("java.lang.Object", dataMapUtils.getParameterType(query, "flag"));
-        assertEquals("java.time.LocalDate", dataMapUtils.getParameterType(query, "born"));
+        assertEquals(Map.of(
+                "price", "java.math.BigDecimal",
+                "artist", "org.example.Artist",
+                "flag", "java.lang.Object",
+                "born", "java.time.LocalDate"), types(query));
+    }
+
+    @Test
+    public void getParameterTypeOfIn() {
+        SelectQueryDescriptor query = query("""
+                from Artist where name in $names and born not in $dates and name in ($a, $b) and $c in ('x')""");
+
+        assertEquals(Map.of(
+                "names", "java.util.Collection<java.lang.String>",
+                "dates", "java.util.Collection<java.time.LocalDate>",
+                "a", "java.lang.String",
+                "b", "java.lang.String",
+                "c", "java.lang.Object"), types(query));
+    }
+
+    @Test
+    public void getParameterTypeOfConflictingUses() {
+        SelectQueryDescriptor query = query("""
+                from Artist where name = $x and born = $x and name = $y and $y = 1 and $z = 1 and born = $z
+                    and name in $w and name = $w""");
+
+        assertEquals(Map.of(
+                "x", "java.lang.Object",
+                "y", "java.lang.String",
+                "z", "java.time.LocalDate",
+                "w", "java.lang.Object"), types(query));
     }
 
     @Test
@@ -94,9 +150,8 @@ public class DataMapUtilsTest {
                 select name as n, count(*) as c from Artist having c > $min and n like $pattern""");
 
         assertTrue(dataMapUtils.isValidParameterNames(query));
-        assertEquals(List.of("min", "pattern"), List.copyOf(dataMapUtils.getParameterNames(query)));
-        assertEquals("java.lang.Object", dataMapUtils.getParameterType(query, "min"));
-        assertEquals("java.lang.String", dataMapUtils.getParameterType(query, "pattern"));
+        assertEquals(List.of("min", "pattern"), names(query, QueryParameter::javaName));
+        assertEquals(Map.of("min", "java.lang.Object", "pattern", "java.lang.String"), types(query));
     }
 
     @Test
@@ -105,10 +160,18 @@ public class DataMapUtilsTest {
         SelectQueryDescriptor query = query("from Artist where nme = $name and born = $born");
 
         assertFalse(dataMapUtils.isValidParameterNames(query));
-        assertEquals(List.of("name", "born"), List.copyOf(dataMapUtils.getParameterNames(query)));
+        assertEquals(List.of("name", "born"), names(query, QueryParameter::javaName));
         assertTrue(dataMapUtils.hasParameters(query));
-        assertEquals("java.lang.Object", dataMapUtils.getParameterType(query, "name"));
-        assertEquals("java.time.LocalDate", dataMapUtils.getParameterType(query, "born"));
+        assertEquals(Map.of("name", "java.lang.Object", "born", "java.time.LocalDate"), types(query));
+    }
+
+    @Test
+    @SuppressWarnings("deprecation")
+    public void deprecatedParameterMethods() {
+        SelectQueryDescriptor query = query("from Artist where born = $from_date");
+
+        assertEquals(List.of("fromDate"), List.copyOf(dataMapUtils.getParameterNames(query)));
+        assertEquals("java.time.LocalDate", dataMapUtils.getParameterType(query, "fromDate"));
     }
 
     @Test
@@ -137,6 +200,15 @@ public class DataMapUtilsTest {
         SelectQueryDescriptor dataRows = query("from Artist");
         dataRows.setFetchingDataRows(true);
         assertEquals("org.apache.cayenne.DataRow", dataMapUtils.getResultType(dataRows));
+    }
+
+    private List<String> names(SelectQueryDescriptor query, Function<QueryParameter, String> name) {
+        return dataMapUtils.getParameters(query).stream().map(name).toList();
+    }
+
+    private Map<String, String> types(SelectQueryDescriptor query) {
+        return dataMapUtils.getParameters(query).stream()
+                .collect(Collectors.toMap(QueryParameter::javaName, QueryParameter::type));
     }
 
     private SelectQueryDescriptor query(String ql) {

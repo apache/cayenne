@@ -121,4 +121,14 @@ public class StringUtilsTest {
         assertEquals("EditEntityReport.vm", stringUtils.replaceWildcardInStringWithString("*", "Edit*Report.vm", "Entity"));
         assertEquals("Entity", stringUtils.replaceWildcardInStringWithString("*", "*", "Entity"));
     }
+
+    @Test
+    public void stripPackageName() {
+        assertEquals("String", stringUtils.stripPackageName("java.lang.String"));
+        assertEquals("Object[]", stringUtils.stripPackageName("java.lang.Object[]"));
+        assertEquals("Test", stringUtils.stripPackageName("Test"));
+        assertEquals("Collection<String>", stringUtils.stripPackageName("java.util.Collection<java.lang.String>"));
+        assertEquals("Map<String, List<byte[]>>",
+                stringUtils.stripPackageName("java.util.Map<java.lang.String, java.util.List<byte[]>>"));
+    }
 }

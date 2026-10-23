@@ -141,6 +141,24 @@ public class SelectQueryDescriptor extends QueryDescriptor {
     }
 
     /**
+     * Returns the kind of the objects that the query fetches.
+     *
+     * @since 5.0
+     */
+    public ResultKind getResultKind() {
+        if (parsedOrNull() instanceof ColumnSelect<?> columnSelect) {
+            return columnSelect.getColumns().size() == 1 ? ResultKind.SCALAR : ResultKind.ARRAY;
+        }
+
+        return switch (getRoot()) {
+            case ObjEntity ignored when !fetchingDataRows -> ResultKind.ENTITY;
+            case ObjEntity ignored -> ResultKind.DATA_ROW;
+            case DbEntity ignored -> ResultKind.DATA_ROW;
+            case null, default -> null;
+        };
+    }
+
+    /**
      * Returns the names of the "$name" parameters of the query, in the order of their first occurrence.
      *
      * @throws ExpressionException if the query String can't be parsed
@@ -169,22 +187,24 @@ public class SelectQueryDescriptor extends QueryDescriptor {
     }
 
     /**
-     * Renames an entity in the "from" clauses of the query String, those of the subqueries included. The rest of the
-     * String, its formatting and string literals included, is kept as is. The String is not parsed, so it may be one
-     * that can't be.
+     * Returns a Pattern matching the references to an entity in the "from" clauses of a query String, for
+     * {@link #renameEntity(Pattern, String)}.
      *
      * @param db whether the entity is a DbEntity, i.e. is referenced as "from db:NAME"
      */
-    void renameEntity(String oldName, String newName, boolean db) {
-        if (ql == null || oldName.equals(newName)) {
+    static Pattern renamePattern(String name, boolean db) {
+        return Pattern.compile(QUOTED_STRING + "|(\\bfrom\\s+" + (db ? "db:\\s*" : "") + ")"
+                + Pattern.quote(name) + "(?![\\w$.])", Pattern.DOTALL);
+    }
+
+    /**
+     * Renames an entity in the "from" clauses of the query String
+     */
+    void renameEntity(Pattern reference, String newName) {
+        if (ql == null) {
             return;
         }
 
-        // A scan of the String is exact for any String that parses: the grammar has no comments, and "from" followed
-        // by a simple name is a "from" clause anywhere but inside a string literal, which is why the literals are
-        // matched (and kept) too. The keyword is case-sensitive, and the name must be a whole token.
-        Pattern reference = Pattern.compile(QUOTED_STRING + "|(\\bfrom\\s+" + (db ? "db:\\s*" : "") + ")"
-                + Pattern.quote(oldName) + "(?![\\w$.])", Pattern.DOTALL);
         String renamed = reference.matcher(ql)
                 .replaceAll(m -> Matcher.quoteReplacement(m.group(1) == null ? m.group() : m.group(1) + newName));
         if (!renamed.equals(ql)) {
@@ -339,6 +359,34 @@ public class SelectQueryDescriptor extends QueryDescriptor {
 
         delegate.visitQuery(this);
         encoder.end();
+    }
+
+    /**
+     * The kind of the objects that a select query fetches, see {@link #getResultKind()}.
+     *
+     * @since 5.0
+     */
+    public enum ResultKind {
+
+        /**
+         * The persistent objects of the root ObjEntity.
+         */
+        ENTITY,
+
+        /**
+         * DataRows, for a query rooted in a DbEntity or fetching DataRows.
+         */
+        DATA_ROW,
+
+        /**
+         * The values of the single column of a column query.
+         */
+        SCALAR,
+
+        /**
+         * The arrays of the values of the multiple columns of a column query.
+         */
+        ARRAY
     }
 
     // collects the names of the unbound "$name" parameters of the expressions, including those of the subqueries
