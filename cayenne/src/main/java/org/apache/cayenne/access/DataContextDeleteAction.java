@@ -99,7 +99,7 @@ class DataContextDeleteAction {
     }
 
     private void deletePersistent(Persistent object) throws DeleteDenyException {
-        context.getEntityResolver().getCallbackRegistry().performCallbacks(
+        context.getChannel().getLifecycleEventManager().performCallbacks(
                 LifecycleEvent.PRE_REMOVE,
                 object);
 

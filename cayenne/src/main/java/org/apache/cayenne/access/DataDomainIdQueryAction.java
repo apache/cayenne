@@ -28,7 +28,7 @@ import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.reflect.ClassDescriptor;
-import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
+import org.apache.cayenne.access.lifecycle.LifecycleEventManager;
 
 import java.util.List;
 
@@ -80,9 +80,9 @@ class DataDomainIdQueryAction {
         List<Persistent> objects = new ObjectResolver(context, descriptor, false)
                 .objectsFromDataRows(List.of(row));
 
-        LifecycleCallbackRegistry callbackRegistry = domain.getEntityResolver().getCallbackRegistry();
-        if (!callbackRegistry.isEmpty(LifecycleEvent.POST_LOAD)) {
-            callbackRegistry.performCallbacks(LifecycleEvent.POST_LOAD, objects);
+        LifecycleEventManager lifecycleEventManager = domain.getLifecycleEventManager();
+        if (!lifecycleEventManager.hasListeners(LifecycleEvent.POST_LOAD)) {
+            lifecycleEventManager.performCallbacks(LifecycleEvent.POST_LOAD, objects);
         }
 
         return objects.getFirst();

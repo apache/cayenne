@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.reflect;
+package org.apache.cayenne.access.lifecycle;
 
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.Persistent;
@@ -35,7 +35,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class LifecycleCallbackRegistryIT {
+public class LifecycleEventManagerIT {
 
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
@@ -49,15 +49,13 @@ public class LifecycleCallbackRegistryIT {
 
     @Test
     public void addListener_PostAdd() {
-        LifecycleCallbackRegistry registry = new LifecycleCallbackRegistry(context
-                .getEntityResolver());
-
-        context.getEntityResolver().setCallbackRegistry(registry);
+        LifecycleEventManager lifecycleEventManager = context.getChannel().getLifecycleEventManager();
+        int mappedListeners = lifecycleEventManager.getHandler(LifecycleEvent.POST_ADD).listenersSize();
 
         PostAddListener listener = new PostAddListener();
-        registry.addListener(listener);
+        lifecycleEventManager.addListener(listener);
 
-        assertEquals(3, registry.getHandler(LifecycleEvent.POST_ADD).listenersSize());
+        assertEquals(mappedListeners + 3, lifecycleEventManager.getHandler(LifecycleEvent.POST_ADD).listenersSize());
 
         context.newObject(Gallery.class);
         assertEquals("e:Gallery;", listener.getAndReset());
@@ -74,15 +72,13 @@ public class LifecycleCallbackRegistryIT {
 
     @Test
     public void addListener_PostAdd_InheritedListenerMethods() {
-        LifecycleCallbackRegistry registry = new LifecycleCallbackRegistry(context
-                .getEntityResolver());
-
-        context.getEntityResolver().setCallbackRegistry(registry);
+        LifecycleEventManager lifecycleEventManager = context.getChannel().getLifecycleEventManager();
+        int mappedListeners = lifecycleEventManager.getHandler(LifecycleEvent.POST_ADD).listenersSize();
 
         PostAddListenerSubclass listener = new PostAddListenerSubclass();
-        registry.addListener(listener);
+        lifecycleEventManager.addListener(listener);
 
-        assertEquals(3, registry.getHandler(LifecycleEvent.POST_ADD).listenersSize());
+        assertEquals(mappedListeners + 3, lifecycleEventManager.getHandler(LifecycleEvent.POST_ADD).listenersSize());
 
         context.newObject(Gallery.class);
         assertEquals("e:Gallery;", listener.getAndReset());

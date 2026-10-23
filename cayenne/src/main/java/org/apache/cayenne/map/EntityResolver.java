@@ -21,31 +21,19 @@ package org.apache.cayenne.map;
 
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
-import org.apache.cayenne.annotation.PostAdd;
-import org.apache.cayenne.annotation.PostLoad;
-import org.apache.cayenne.annotation.PostPersist;
-import org.apache.cayenne.annotation.PostRemove;
-import org.apache.cayenne.annotation.PostUpdate;
-import org.apache.cayenne.annotation.PrePersist;
-import org.apache.cayenne.annotation.PreRemove;
-import org.apache.cayenne.annotation.PreUpdate;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.ClassDescriptorMap;
 import org.apache.cayenne.reflect.FaultFactory;
-import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
 import org.apache.cayenne.reflect.SingletonFaultFactory;
 import org.apache.cayenne.reflect.generic.PersistentObjectDescriptorFactory;
 import org.apache.cayenne.reflect.generic.ValueComparisonStrategyFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.EnumMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -64,26 +52,10 @@ public class EntityResolver implements MappingNamespace {
     private static final Logger LOGGER = LoggerFactory.getLogger(EntityResolver.class);
     protected static AtomicLong incrementer = new AtomicLong();
 
-    protected static final Map<LifecycleEvent, Class<? extends Annotation>> LIFECYCLE_EVENT_MAP;
-
-    static {
-        LIFECYCLE_EVENT_MAP = new EnumMap<>(LifecycleEvent.class);
-        LIFECYCLE_EVENT_MAP.put(LifecycleEvent.POST_ADD, PostAdd.class);
-        LIFECYCLE_EVENT_MAP.put(LifecycleEvent.PRE_PERSIST, PrePersist.class);
-        LIFECYCLE_EVENT_MAP.put(LifecycleEvent.POST_PERSIST, PostPersist.class);
-        LIFECYCLE_EVENT_MAP.put(LifecycleEvent.PRE_UPDATE, PreUpdate.class);
-        LIFECYCLE_EVENT_MAP.put(LifecycleEvent.POST_UPDATE, PostUpdate.class);
-        LIFECYCLE_EVENT_MAP.put(LifecycleEvent.PRE_REMOVE, PreRemove.class);
-        LIFECYCLE_EVENT_MAP.put(LifecycleEvent.POST_REMOVE, PostRemove.class);
-        LIFECYCLE_EVENT_MAP.put(LifecycleEvent.POST_LOAD, PostLoad.class);
-    }
-
     protected Collection<DataMap> maps;
     protected MappingNamespace mappingCache;
 
     protected volatile ClassDescriptorMap classDescriptorMap;
-
-    protected LifecycleCallbackRegistry callbackRegistry;
 
     protected ValueObjectTypeRegistry valueObjectTypeRegistry;
     protected ValueComparisonStrategyFactory valueComparisonStrategyFactory;
@@ -153,64 +125,6 @@ public class EntityResolver implements MappingNamespace {
         } while (entity.getRelationship(name) != null);
 
         return name;
-    }
-
-    /**
-     * Compiles internal callback registry.
-     */
-    synchronized void initCallbacks() {
-        if (callbackRegistry == null) {
-            LifecycleCallbackRegistry callbackRegistry = new LifecycleCallbackRegistry(this);
-
-            // load entity callbacks
-            for (ObjEntity entity : getObjEntities()) {
-                Class<?> entityClass = objectFactory.getJavaClass(entity.getJavaClassName());
-
-                // load annotated methods
-                for (Method m : entityClass.getDeclaredMethods()) {
-                    LIFECYCLE_EVENT_MAP.forEach((eventType, annotationType) -> {
-                        if (m.getDeclaredAnnotation(annotationType) != null) {
-                            callbackRegistry.addCallback(eventType, entityClass, m);
-                        }
-                    });
-                }
-
-                // load callback defined in the model
-                CallbackDescriptor[] callbacks = entity.getCallbackMap().getCallbacks();
-                for (CallbackDescriptor callback : callbacks) {
-                    for (String method : callback.getCallbackMethods()) {
-                        callbackRegistry.addCallback(callback.getCallbackType(), entityClass, method);
-                    }
-                }
-            }
-
-            this.callbackRegistry = callbackRegistry;
-        }
-    }
-
-    /**
-     * Returns a {@link LifecycleCallbackRegistry} for handling callbacks.
-     * Registry is lazily initialized on first call.
-     *
-     * @since 3.0
-     */
-    public LifecycleCallbackRegistry getCallbackRegistry() {
-        if (callbackRegistry == null) {
-            initCallbacks();
-        }
-
-        return callbackRegistry;
-    }
-
-    /**
-     * Sets a lifecycle callbacks registry of the EntityResolver. Users rarely
-     * if ever need to call this method as Cayenne would instantiate a registry
-     * itself as needed based on mapped configuration.
-     *
-     * @since 3.0
-     */
-    public void setCallbackRegistry(LifecycleCallbackRegistry callbackRegistry) {
-        this.callbackRegistry = callbackRegistry;
     }
 
     /**

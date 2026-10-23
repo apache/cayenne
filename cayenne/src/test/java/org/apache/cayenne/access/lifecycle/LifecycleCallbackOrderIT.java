@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.reflect;
+package org.apache.cayenne.access.lifecycle;
 
 import org.apache.cayenne.annotation.PostPersist;
 import org.apache.cayenne.annotation.PostRemove;
@@ -40,11 +40,10 @@ public class LifecycleCallbackOrderIT {
 
     @Test
     public void lifecycleCallbackOrder() {
-        LifecycleCallbackRegistry registry = new LifecycleCallbackRegistry(env.context().getEntityResolver());
-        env.context().getEntityResolver().setCallbackRegistry(registry);
+        LifecycleEventManager lifecycleEventManager = env.context().getChannel().getLifecycleEventManager();
 
         LifecycleEventListener eventListener = new LifecycleEventListener();
-        registry.addListener(eventListener);
+        lifecycleEventManager.addListener(eventListener);
 
         Lifecycle lifecycle = env.context().newObject(Lifecycle.class);
         env.context().commitChanges();

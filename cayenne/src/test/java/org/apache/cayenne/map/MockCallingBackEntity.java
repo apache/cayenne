@@ -18,7 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.map;
 
-public class MockCallingBackEntity {
+import org.apache.cayenne.PersistentObject;
+
+public class MockCallingBackEntity extends PersistentObject {
 
     public boolean publicCallbackInvoked;
     public boolean protectedCallbackInvoked;

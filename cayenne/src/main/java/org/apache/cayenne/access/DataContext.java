@@ -513,7 +513,7 @@ public class DataContext implements ObjectContext {
         objectStore.changeRecorder().nodeCreated(object.getObjectId());
 
         entityResolver.getClassDescriptor(object.getObjectId().getEntityName()).injectDiscriminatorValues(object);
-        entityResolver.getCallbackRegistry().performCallbacks(LifecycleEvent.POST_ADD, object);
+        channel.getLifecycleEventManager().performCallbacks(LifecycleEvent.POST_ADD, object);
     }
 
     /**

@@ -27,6 +27,7 @@ import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.access.lifecycle.LifecycleEventManager;
 
 /**
  * Stores all messages passed via this handler.
@@ -35,6 +36,7 @@ import org.apache.cayenne.query.Query;
 public class MockDataChannel implements DataChannel {
 
     protected EntityResolver resolver;
+    protected LifecycleEventManager lifecycleEventManager;
     protected List requestObjects = new ArrayList();
     protected GraphDiff commitResponse;
     protected List<QueryResult> response;
@@ -114,6 +116,13 @@ public class MockDataChannel implements DataChannel {
 
     public EntityResolver getEntityResolver() {
         return resolver;
+    }
+
+    public LifecycleEventManager getLifecycleEventManager() {
+        if (lifecycleEventManager == null) {
+            lifecycleEventManager = new LifecycleEventManager(resolver);
+        }
+        return lifecycleEventManager;
     }
     
     public void setEntityResolver(EntityResolver resolver) {

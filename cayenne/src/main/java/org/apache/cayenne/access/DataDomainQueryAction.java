@@ -53,7 +53,7 @@ import org.apache.cayenne.query.ResultSegments;
 import org.apache.cayenne.query.ScalarResultSegment;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.DefaultConstructor;
-import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
+import org.apache.cayenne.access.lifecycle.LifecycleEventManager;
 import org.apache.cayenne.tx.BaseTransaction;
 import org.apache.cayenne.tx.ReadOnlyTransaction;
 import org.apache.cayenne.tx.Transaction;
@@ -542,17 +542,17 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         return cacheHit;
     }
 
-    private void performPostLoadCallbacks(PrefetchProcessorNode node, LifecycleCallbackRegistry callbackRegistry) {
+    private void performPostLoadCallbacks(PrefetchProcessorNode node, LifecycleEventManager lifecycleEventManager) {
 
         if (node.hasChildren()) {
             for (PrefetchTreeNode child : node.getChildren()) {
-                performPostLoadCallbacks((PrefetchProcessorNode) child, callbackRegistry);
+                performPostLoadCallbacks((PrefetchProcessorNode) child, lifecycleEventManager);
             }
         }
 
         List<Persistent> objects = node.getObjects();
         if (objects != null) {
-            callbackRegistry.performCallbacks(LifecycleEvent.POST_LOAD, objects);
+            lifecycleEventManager.performCallbacks(LifecycleEvent.POST_LOAD, objects);
         }
     }
 
@@ -574,10 +574,10 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
             List<Persistent> objects = node.getObjects();
 
             // apply POST_LOAD callback
-            LifecycleCallbackRegistry callbackRegistry = context.getEntityResolver().getCallbackRegistry();
+            LifecycleEventManager lifecycleEventManager = domain.getLifecycleEventManager();
 
-            if (!callbackRegistry.isEmpty(LifecycleEvent.POST_LOAD)) {
-                performPostLoadCallbacks(node, callbackRegistry);
+            if (!lifecycleEventManager.hasListeners(LifecycleEvent.POST_LOAD)) {
+                performPostLoadCallbacks(node, lifecycleEventManager);
             }
             return objects != null ? objects : new ArrayList<>(1);
         }
@@ -664,10 +664,10 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                 List<PrefetchProcessorNode> segmentNodes = doInPlaceConversion(result);
 
                 // invoke callbacks now that all objects are resolved...
-                LifecycleCallbackRegistry callbackRegistry = context.getEntityResolver().getCallbackRegistry();
-                if (!callbackRegistry.isEmpty(LifecycleEvent.POST_LOAD)) {
+                LifecycleEventManager lifecycleEventManager = domain.getLifecycleEventManager();
+                if (!lifecycleEventManager.hasListeners(LifecycleEvent.POST_LOAD)) {
                     for (PrefetchProcessorNode node : segmentNodes) {
-                        performPostLoadCallbacks(node, callbackRegistry);
+                        performPostLoadCallbacks(node, lifecycleEventManager);
                     }
                 }
             }

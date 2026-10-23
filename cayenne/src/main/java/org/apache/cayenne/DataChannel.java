@@ -25,6 +25,7 @@ import org.apache.cayenne.event.EventSubject;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.access.lifecycle.LifecycleEventManager;
 
 import java.util.Collection;
 import java.util.List;
@@ -80,6 +81,14 @@ public interface DataChannel {
      * Returns an EntityResolver instance that contains runtime mapping information.
      */
     EntityResolver getEntityResolver();
+
+    /**
+     * Returns the manager of lifecycle callbacks and listeners invoked for the objects passing through this channel.
+     * Channels in a stack share the manager of the root channel.
+     *
+     * @since 6.0
+     */
+    LifecycleEventManager getLifecycleEventManager();
 
     /**
      * Returns the parent channel of this channel in the DataChannel stack, or null if this is a

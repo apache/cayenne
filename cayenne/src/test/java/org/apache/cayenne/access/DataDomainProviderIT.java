@@ -222,7 +222,7 @@ public class DataDomainProviderIT {
         DataDomain domain = env.runtime().getDataDomain();
 
         int before = LISTENER.counter.get();
-        domain.getEntityResolver().getCallbackRegistry()
+        domain.getLifecycleEventManager()
                 .performCallbacks(LifecycleEvent.POST_LOAD, env.context().newObject(CrossdbM1E1.class));
 
         assertEquals(before + 1, LISTENER.counter.get(), "Should call postLoadCallback()");

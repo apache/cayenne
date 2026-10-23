@@ -31,7 +31,7 @@ import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.reflect.ArcProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
-import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
+import org.apache.cayenne.access.lifecycle.LifecycleEventManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -152,9 +152,9 @@ class DataDomainRelationshipAction {
         List<Persistent> objects = new ObjectResolver(context, arc.getTargetDescriptor(), false)
                 .objectsFromDataRows(rows);
 
-        LifecycleCallbackRegistry callbackRegistry = domain.getEntityResolver().getCallbackRegistry();
-        if (!callbackRegistry.isEmpty(LifecycleEvent.POST_LOAD)) {
-            callbackRegistry.performCallbacks(LifecycleEvent.POST_LOAD, objects);
+        LifecycleEventManager lifecycleEventManager = domain.getLifecycleEventManager();
+        if (!lifecycleEventManager.hasListeners(LifecycleEvent.POST_LOAD)) {
+            lifecycleEventManager.performCallbacks(LifecycleEvent.POST_LOAD, objects);
         }
 
         return objects;

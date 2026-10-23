@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.reflect;
+package org.apache.cayenne.access.lifecycle;
 
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.annotation.PostAdd;
@@ -33,22 +33,19 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class LifecycleCallbackRegistry_InheritanceIT {
+public class LifecycleEventManager_InheritanceIT {
 
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.INHERITANCE_SINGLE_TABLE1_PROJECT);
 
     @Test
     public void addListener_PostAdd_EntityInheritance() {
-        LifecycleCallbackRegistry registry = new LifecycleCallbackRegistry(env.context()
-                .getEntityResolver());
-
-        env.context().getEntityResolver().setCallbackRegistry(registry);
+        LifecycleEventManager lifecycleEventManager = env.context().getChannel().getLifecycleEventManager();
 
         PostAddListenerInherited listener = new PostAddListenerInherited();
-        registry.addListener(listener);
+        lifecycleEventManager.addListener(listener);
 
-        assertEquals(1, registry.getHandler(LifecycleEvent.POST_ADD).listenersSize());
+        assertEquals(1, lifecycleEventManager.getHandler(LifecycleEvent.POST_ADD).listenersSize());
 
         env.context().newObject(User.class);
         assertEquals("a:User;", listener.getAndReset());

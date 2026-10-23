@@ -42,6 +42,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.EntitySorter;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.access.lifecycle.LifecycleEventManager;
 import org.apache.cayenne.tx.BaseTransaction;
 import org.apache.cayenne.tx.Transaction;
 import org.apache.cayenne.tx.TransactionFactory;
@@ -82,6 +83,9 @@ public class DataDomain implements DataChannel {
     protected final Map<String, DataNode> nodesByDataMapName;
 
     protected DataNode defaultNode;
+
+    // created lazily on first access, as it loads all mapped entity classes
+    protected volatile LifecycleEventManager lifecycleEventManager;
 
     protected boolean stopped;
 
@@ -422,6 +426,27 @@ public class DataDomain implements DataChannel {
     }
 
     /**
+     * Returns the lifecycle event manager of this domain. It is created on first access, as it loads the classes of
+     * all mapped entities to register their declared callbacks.
+     *
+     * @since 6.0
+     */
+    @Override
+    public LifecycleEventManager getLifecycleEventManager() {
+        LifecycleEventManager result = lifecycleEventManager;
+        if (result == null) {
+            synchronized (this) {
+                result = lifecycleEventManager;
+                if (result == null) {
+                    result = new LifecycleEventManager(entityResolver);
+                    lifecycleEventManager = result;
+                }
+            }
+        }
+
+        return result;
+    }
+    /**
      * Only handles commit-type synchronization, ignoring any other type.
      *
      * @since 1.2
@@ -554,14 +579,13 @@ public class DataDomain implements DataChannel {
     }
 
     /**
-     * Adds a listener, mapping its methods to events based on annotations. This
-     * is a shortcut for
-     * 'getEntityResolver().getCallbackRegistry().addListener(listener)'.
+     * Adds a listener, mapping its methods to events based on annotations. This is a shortcut for
+     * 'getLifecycleEventManager().addListener(listener)'.
      *
      * @since 4.0
      */
     public void addListener(Object listener) {
-        getEntityResolver().getCallbackRegistry().addListener(listener);
+        getLifecycleEventManager().addListener(listener);
     }
 
     final class DataDomainQueryFilterChain implements DataChannelQueryFilterChain {

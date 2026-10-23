@@ -19,7 +19,7 @@
 package org.apache.cayenne.map;
 
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
+import org.apache.cayenne.access.lifecycle.LifecycleEventManager;
 import org.apache.cayenne.testdo.annotation.ArtistAnnotation;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
@@ -36,16 +36,16 @@ public class AnnotationIT {
     @Test
     public void availableCallback() {
 
-        LifecycleCallbackRegistry lifecycleCallbackRegistry = env.context().getEntityResolver().getCallbackRegistry();
+        LifecycleEventManager lifecycleEventManager = env.context().getChannel().getLifecycleEventManager();
 
-        assertFalse(lifecycleCallbackRegistry.isEmpty(LifecycleEvent.POST_ADD));
-        assertFalse(lifecycleCallbackRegistry.isEmpty(LifecycleEvent.PRE_PERSIST));
-        assertFalse(lifecycleCallbackRegistry.isEmpty(LifecycleEvent.POST_PERSIST));
-        assertFalse(lifecycleCallbackRegistry.isEmpty(LifecycleEvent.POST_LOAD));
-        assertFalse(lifecycleCallbackRegistry.isEmpty(LifecycleEvent.PRE_UPDATE));
-        assertFalse(lifecycleCallbackRegistry.isEmpty(LifecycleEvent.POST_UPDATE));
-        assertFalse(lifecycleCallbackRegistry.isEmpty(LifecycleEvent.PRE_REMOVE));
-        assertFalse(lifecycleCallbackRegistry.isEmpty(LifecycleEvent.POST_REMOVE));
+        assertFalse(lifecycleEventManager.hasListeners(LifecycleEvent.POST_ADD));
+        assertFalse(lifecycleEventManager.hasListeners(LifecycleEvent.PRE_PERSIST));
+        assertFalse(lifecycleEventManager.hasListeners(LifecycleEvent.POST_PERSIST));
+        assertFalse(lifecycleEventManager.hasListeners(LifecycleEvent.POST_LOAD));
+        assertFalse(lifecycleEventManager.hasListeners(LifecycleEvent.PRE_UPDATE));
+        assertFalse(lifecycleEventManager.hasListeners(LifecycleEvent.POST_UPDATE));
+        assertFalse(lifecycleEventManager.hasListeners(LifecycleEvent.PRE_REMOVE));
+        assertFalse(lifecycleEventManager.hasListeners(LifecycleEvent.POST_REMOVE));
     }
 
     @Test

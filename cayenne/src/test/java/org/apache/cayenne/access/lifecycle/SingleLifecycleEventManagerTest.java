@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.reflect;
+package org.apache.cayenne.access.lifecycle;
 
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistentObject;
@@ -28,14 +28,14 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class LifecycleCallbackEventHandlerTest {
+public class SingleLifecycleEventManagerTest {
 
     @Test
     public void defaultListeners() {
 
-        LifecycleCallbackEventHandler map = new LifecycleCallbackEventHandler();
+        SingleLifecycleEventManager map = new SingleLifecycleEventManager();
         L1 l1 = new L1();
-        map.addDefaultListener(l1, "callback");
+        map.addDefaultListener(l1::callback);
 
         C1 c1 = new C1();
         c1.setObjectId(ObjectId.of("bogus"));
@@ -49,12 +49,12 @@ public class LifecycleCallbackEventHandlerTest {
     @Test
     public void defaultListenersCallbackOrder() {
 
-        LifecycleCallbackEventHandler map = new LifecycleCallbackEventHandler();
+        SingleLifecycleEventManager map = new SingleLifecycleEventManager();
         L2 l1 = new L2();
-        map.addListener(C1.class, l1, "callback");
+        map.addListener(C1.class, l1::callback);
 
         L2 l2 = new L2();
-        map.addDefaultListener(l2, "callback");
+        map.addDefaultListener(l2::callback);
 
         C1 c1 = new C1();
         c1.setObjectId(ObjectId.of("bogus"));
@@ -71,8 +71,8 @@ public class LifecycleCallbackEventHandlerTest {
     @Test
     public void callbackOnSuperclass() {
 
-        LifecycleCallbackEventHandler map = new LifecycleCallbackEventHandler();
-        map.addListener(C1.class, "c1Callback");
+        SingleLifecycleEventManager map = new SingleLifecycleEventManager();
+        map.addListener(C1.class, C1::c1Callback);
 
         C3 subclass = new C3();
         subclass.setObjectId(ObjectId.of("bogusSubclass"));
@@ -85,8 +85,8 @@ public class LifecycleCallbackEventHandlerTest {
     @Test
     public void callbackOnSuperclassWithSublcassOverrides() {
 
-        LifecycleCallbackEventHandler map = new LifecycleCallbackEventHandler();
-        map.addListener(C1.class, "c1Callback");
+        SingleLifecycleEventManager map = new SingleLifecycleEventManager();
+        map.addListener(C1.class, C1::c1Callback);
 
         C4 subclass = new C4();
         subclass.setObjectId(ObjectId.of("bogus"));
@@ -100,9 +100,9 @@ public class LifecycleCallbackEventHandlerTest {
     @Test
     public void callbackOrderInInheritanceHierarchy() {
 
-        LifecycleCallbackEventHandler map = new LifecycleCallbackEventHandler();
-        map.addListener(C2.class, "c2Callback");
-        map.addListener(C1.class, "c1Callback");
+        SingleLifecycleEventManager map = new SingleLifecycleEventManager();
+        map.addListener(C2.class, C2::c2Callback);
+        map.addListener(C1.class, C1::c1Callback);
 
         C2 c = new C2();
         c.setObjectId(ObjectId.of("bogus"));

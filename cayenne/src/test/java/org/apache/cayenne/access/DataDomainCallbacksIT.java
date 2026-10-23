@@ -21,10 +21,9 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
+import org.apache.cayenne.access.lifecycle.LifecycleEventManager;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.CayenneProjects;
@@ -40,26 +39,20 @@ public class DataDomainCallbacksIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    private EntityResolver resolver;
     private ObjectContext context1;
 
     @BeforeEach
     public void setUp() {
-        resolver = env.entityResolver();
         context1 = env.runtime().newContext();
     }
 
     @Test
     public void postLoad() throws Exception {
-        LifecycleCallbackRegistry registry = resolver.getCallbackRegistry();
+        LifecycleEventManager lifecycleEventManager = env.runtime().getDataDomain().getLifecycleEventManager();
 
-        registry.addCallback(LifecycleEvent.POST_LOAD, Artist.class, "postLoadCallback");
+        lifecycleEventManager.addListener(LifecycleEvent.POST_LOAD, Artist.class, Artist::postLoadCallback);
         MockCallingBackListener listener = new MockCallingBackListener();
-        registry.addListener(
-                LifecycleEvent.POST_LOAD,
-                Artist.class,
-                listener,
-                "publicCallback");
+        lifecycleEventManager.addListener(LifecycleEvent.POST_LOAD, Artist.class, listener::publicCallback);
 
         Artist a1 = env.context().newObject(Artist.class);
         a1.setArtistName("XX");
@@ -105,15 +98,11 @@ public class DataDomainCallbacksIT {
 
     @Test
     public void postLoad_MixedResult() throws Exception {
-        LifecycleCallbackRegistry registry = resolver.getCallbackRegistry();
+        LifecycleEventManager lifecycleEventManager = env.runtime().getDataDomain().getLifecycleEventManager();
 
-        registry.addCallback(LifecycleEvent.POST_LOAD, Artist.class, "postLoadCallback");
+        lifecycleEventManager.addListener(LifecycleEvent.POST_LOAD, Artist.class, Artist::postLoadCallback);
         MockCallingBackListener listener = new MockCallingBackListener();
-        registry.addListener(
-                LifecycleEvent.POST_LOAD,
-                Artist.class,
-                listener,
-                "publicCallback");
+        lifecycleEventManager.addListener(LifecycleEvent.POST_LOAD, Artist.class, listener::publicCallback);
 
         Artist a1 = env.context().newObject(Artist.class);
         a1.setArtistName("XX");
@@ -128,15 +117,11 @@ public class DataDomainCallbacksIT {
 
     @Test
     public void postLoad_Relationship() throws Exception {
-        LifecycleCallbackRegistry registry = resolver.getCallbackRegistry();
+        LifecycleEventManager lifecycleEventManager = env.runtime().getDataDomain().getLifecycleEventManager();
 
-        registry.addCallback(LifecycleEvent.POST_LOAD, Artist.class, "postLoadCallback");
+        lifecycleEventManager.addListener(LifecycleEvent.POST_LOAD, Artist.class, Artist::postLoadCallback);
         MockCallingBackListener listener = new MockCallingBackListener();
-        registry.addListener(
-                LifecycleEvent.POST_LOAD,
-                Artist.class,
-                listener,
-                "publicCallback");
+        lifecycleEventManager.addListener(LifecycleEvent.POST_LOAD, Artist.class, listener::publicCallback);
 
         Artist a1 = env.context().newObject(Artist.class);
         a1.setArtistName("XX");
@@ -162,15 +147,11 @@ public class DataDomainCallbacksIT {
 
     @Test
     public void postLoad_Prefetch() throws Exception {
-        LifecycleCallbackRegistry registry = resolver.getCallbackRegistry();
+        LifecycleEventManager lifecycleEventManager = env.runtime().getDataDomain().getLifecycleEventManager();
 
-        registry.addCallback(LifecycleEvent.POST_LOAD, Artist.class, "postLoadCallback");
+        lifecycleEventManager.addListener(LifecycleEvent.POST_LOAD, Artist.class, Artist::postLoadCallback);
         MockCallingBackListener listener = new MockCallingBackListener();
-        registry.addListener(
-                LifecycleEvent.POST_LOAD,
-                Artist.class,
-                listener,
-                "publicCallback");
+        lifecycleEventManager.addListener(LifecycleEvent.POST_LOAD, Artist.class, listener::publicCallback);
 
         Artist a1 = env.context().newObject(Artist.class);
         a1.setArtistName("XX");
@@ -192,19 +173,15 @@ public class DataDomainCallbacksIT {
 
     @Test
     public void postLoad_LocalObject() throws Exception {
-        LifecycleCallbackRegistry registry = resolver.getCallbackRegistry();
+        LifecycleEventManager lifecycleEventManager = env.runtime().getDataDomain().getLifecycleEventManager();
 
         Artist a1 = env.context().newObject(Artist.class);
         a1.setArtistName("XX");
         env.context().commitChanges();
 
-        registry.addCallback(LifecycleEvent.POST_LOAD, Artist.class, "postLoadCallback");
+        lifecycleEventManager.addListener(LifecycleEvent.POST_LOAD, Artist.class, Artist::postLoadCallback);
         MockCallingBackListener listener = new MockCallingBackListener();
-        registry.addListener(
-                LifecycleEvent.POST_LOAD,
-                Artist.class,
-                listener,
-                "publicCallback");
+        lifecycleEventManager.addListener(LifecycleEvent.POST_LOAD, Artist.class, listener::publicCallback);
 
         Artist a2 = context1.localObject(a1);
 
@@ -219,9 +196,9 @@ public class DataDomainCallbacksIT {
 
     @Test
     public void postLoad_ThatModifiesObject() {
-        LifecycleCallbackRegistry registry = resolver.getCallbackRegistry();
+        LifecycleEventManager lifecycleEventManager = env.runtime().getDataDomain().getLifecycleEventManager();
 
-        registry.addCallback(LifecycleEvent.POST_LOAD, Artist.class, "postLoadCallback");
+        lifecycleEventManager.addListener(LifecycleEvent.POST_LOAD, Artist.class, Artist::postLoadCallback);
         MockCallingBackListener listener = new MockCallingBackListener() {
         	@Override
         	public void publicCallback(Object entity) {
@@ -230,11 +207,7 @@ public class DataDomainCallbacksIT {
         		a.setArtistName("Changed"); // modify object during postLoad callback
         	}
         };
-        registry.addListener(
-                LifecycleEvent.POST_LOAD,
-                Artist.class,
-                listener,
-                "publicCallback");
+        lifecycleEventManager.addListener(LifecycleEvent.POST_LOAD, Artist.class, listener::publicCallback);
 
         Artist a1 = env.context().newObject(Artist.class);
         a1.setArtistName("XX");
@@ -262,7 +235,7 @@ public class DataDomainCallbacksIT {
     @Test
     public void preUpdate() {
 
-        LifecycleCallbackRegistry registry = resolver.getCallbackRegistry();
+        LifecycleEventManager lifecycleEventManager = env.runtime().getDataDomain().getLifecycleEventManager();
 
         Artist a1 = env.context().newObject(Artist.class);
         a1.setArtistName("XX");
@@ -273,8 +246,8 @@ public class DataDomainCallbacksIT {
         env.context().commitChanges();
         assertFalse(a1.isPreUpdated());
 
-        registry
-                .addCallback(LifecycleEvent.PRE_UPDATE, Artist.class, "preUpdateCallback");
+        lifecycleEventManager
+                .addListener(LifecycleEvent.PRE_UPDATE, Artist.class, Artist::preUpdateCallback);
         a1.setArtistName("ZZ");
         env.context().commitChanges();
         assertTrue(a1.isPreUpdated());
@@ -283,11 +256,7 @@ public class DataDomainCallbacksIT {
         assertFalse(a1.isPreUpdated());
 
         MockCallingBackListener listener2 = new MockCallingBackListener();
-        registry.addListener(
-                LifecycleEvent.PRE_UPDATE,
-                Artist.class,
-                listener2,
-                "publicCallback");
+        lifecycleEventManager.addListener(LifecycleEvent.PRE_UPDATE, Artist.class, listener2::publicCallback);
 
         a1.setArtistName("AA");
         env.context().commitChanges();
@@ -299,7 +268,7 @@ public class DataDomainCallbacksIT {
     @Test
     public void postUpdate() {
 
-        LifecycleCallbackRegistry registry = resolver.getCallbackRegistry();
+        LifecycleEventManager lifecycleEventManager = env.runtime().getDataDomain().getLifecycleEventManager();
 
         Artist a1 = env.context().newObject(Artist.class);
         a1.setArtistName("XX");
@@ -310,10 +279,7 @@ public class DataDomainCallbacksIT {
         env.context().commitChanges();
         assertFalse(a1.isPostUpdated());
 
-        registry.addCallback(
-                LifecycleEvent.POST_UPDATE,
-                Artist.class,
-                "postUpdateCallback");
+        lifecycleEventManager.addListener(LifecycleEvent.POST_UPDATE, Artist.class, Artist::postUpdateCallback);
         a1.setArtistName("ZZ");
         env.context().commitChanges();
         assertTrue(a1.isPostUpdated());
@@ -322,11 +288,7 @@ public class DataDomainCallbacksIT {
         assertFalse(a1.isPostUpdated());
 
         MockCallingBackListener listener2 = new MockCallingBackListener();
-        registry.addListener(
-                LifecycleEvent.POST_UPDATE,
-                Artist.class,
-                listener2,
-                "publicCallback");
+        lifecycleEventManager.addListener(LifecycleEvent.POST_UPDATE, Artist.class, listener2::publicCallback);
 
         a1.setArtistName("AA");
         env.context().commitChanges();
@@ -338,22 +300,15 @@ public class DataDomainCallbacksIT {
     @Test
     public void postRemove() {
 
-        LifecycleCallbackRegistry registry = resolver.getCallbackRegistry();
+        LifecycleEventManager lifecycleEventManager = env.runtime().getDataDomain().getLifecycleEventManager();
 
         Artist a1 = env.context().newObject(Artist.class);
         a1.setArtistName("XX");
         env.context().commitChanges();
 
-        registry.addCallback(
-                LifecycleEvent.POST_REMOVE,
-                Artist.class,
-                "postRemoveCallback");
+        lifecycleEventManager.addListener(LifecycleEvent.POST_REMOVE, Artist.class, Artist::postRemoveCallback);
         MockCallingBackListener listener2 = new MockCallingBackListener();
-        registry.addListener(
-                LifecycleEvent.POST_REMOVE,
-                Artist.class,
-                listener2,
-                "publicCallback");
+        lifecycleEventManager.addListener(LifecycleEvent.POST_REMOVE, Artist.class, listener2::publicCallback);
 
         env.context().deleteObjects(a1);
         env.context().commitChanges();
@@ -365,25 +320,17 @@ public class DataDomainCallbacksIT {
     @Test
     public void postRemove_UpdatedDeleted() {
 
-        LifecycleCallbackRegistry registry = resolver.getCallbackRegistry();
+        LifecycleEventManager lifecycleEventManager = env.runtime().getDataDomain().getLifecycleEventManager();
 
         Artist a1 = env.context().newObject(Artist.class);
         a1.setArtistName("XX");
         env.context().commitChanges();
 
         MockCallingBackListener listener1 = new MockCallingBackListener();
-        registry.addListener(
-                LifecycleEvent.POST_REMOVE,
-                Artist.class,
-                listener1,
-                "publicCallback");
+        lifecycleEventManager.addListener(LifecycleEvent.POST_REMOVE, Artist.class, listener1::publicCallback);
 
         MockCallingBackListener listener2 = new MockCallingBackListener();
-        registry.addListener(
-                LifecycleEvent.POST_UPDATE,
-                Artist.class,
-                listener2,
-                "publicCallback");
+        lifecycleEventManager.addListener(LifecycleEvent.POST_UPDATE, Artist.class, listener2::publicCallback);
 
         // change before removing
         a1.setArtistName("YY");
@@ -397,28 +344,16 @@ public class DataDomainCallbacksIT {
     @Test
     public void postRemove_InsertedUpdatedDeleted() {
 
-        LifecycleCallbackRegistry registry = resolver.getCallbackRegistry();
+        LifecycleEventManager lifecycleEventManager = env.runtime().getDataDomain().getLifecycleEventManager();
 
         MockCallingBackListener listener0 = new MockCallingBackListener();
-        registry.addListener(
-                LifecycleEvent.POST_PERSIST,
-                Artist.class,
-                listener0,
-                "publicCallback");
+        lifecycleEventManager.addListener(LifecycleEvent.POST_PERSIST, Artist.class, listener0::publicCallback);
 
         MockCallingBackListener listener1 = new MockCallingBackListener();
-        registry.addListener(
-                LifecycleEvent.POST_REMOVE,
-                Artist.class,
-                listener1,
-                "publicCallback");
+        lifecycleEventManager.addListener(LifecycleEvent.POST_REMOVE, Artist.class, listener1::publicCallback);
 
         MockCallingBackListener listener2 = new MockCallingBackListener();
-        registry.addListener(
-                LifecycleEvent.POST_UPDATE,
-                Artist.class,
-                listener2,
-                "publicCallback");
+        lifecycleEventManager.addListener(LifecycleEvent.POST_UPDATE, Artist.class, listener2::publicCallback);
 
         Artist a1 = env.context().newObject(Artist.class);
         a1.setArtistName("XX");
@@ -433,17 +368,14 @@ public class DataDomainCallbacksIT {
     @Test
     public void postPersist() {
 
-        LifecycleCallbackRegistry registry = resolver.getCallbackRegistry();
+        LifecycleEventManager lifecycleEventManager = env.runtime().getDataDomain().getLifecycleEventManager();
 
         Artist a1 = env.context().newObject(Artist.class);
         a1.setArtistName("XX");
         env.context().commitChanges();
         assertFalse(a1.isPostPersisted());
 
-        registry.addCallback(
-                LifecycleEvent.POST_PERSIST,
-                Artist.class,
-                "postPersistCallback");
+        lifecycleEventManager.addListener(LifecycleEvent.POST_PERSIST, Artist.class, Artist::postPersistCallback);
         MockCallingBackListener listener2 = new MockCallingBackListener() {
 
             @Override
@@ -452,11 +384,7 @@ public class DataDomainCallbacksIT {
                 assertFalse(((Persistent) entity).getObjectId().isTemporary());
             }
         };
-        registry.addListener(
-                LifecycleEvent.POST_PERSIST,
-                Artist.class,
-                listener2,
-                "publicCallback");
+        lifecycleEventManager.addListener(LifecycleEvent.POST_PERSIST, Artist.class, listener2::publicCallback);
 
         Artist a2 = env.context().newObject(Artist.class);
         a2.setArtistName("XX");

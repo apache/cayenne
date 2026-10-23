@@ -18,31 +18,28 @@
  ****************************************************************/
 package org.apache.cayenne;
 
-import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
-
 /**
  * A callback interface to listen to persistent object lifecycle events. Note that
  * listeners ARE NOT REQUIRED to implement this interface, and in fact most won't. It
- * exists for type safety and for simplifying listener registration. See
- * {@link LifecycleCallbackRegistry} for details on how to register callbacks.
+ * exists for type safety and for simplifying listener registration.
  * 
  * @since 3.0
  */
 public interface LifecycleListener {
 
-    void postAdd(Object entity);
+    void postAdd(Persistent object);
     
-    void prePersist(Object entity);
+    void prePersist(Persistent object);
 
-    void postPersist(Object entity);
+    void postPersist(Persistent object);
 
-    void preRemove(Object entity);
+    void preRemove(Persistent object);
 
-    void postRemove(Object entity);
+    void postRemove(Persistent object);
 
-    void preUpdate(Object entity);
+    void preUpdate(Persistent object);
 
-    void postUpdate(Object entity);
+    void postUpdate(Persistent object);
 
-    void postLoad(Object entity);
+    void postLoad(Persistent object);
 }

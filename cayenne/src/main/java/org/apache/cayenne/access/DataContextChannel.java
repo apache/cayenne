@@ -35,6 +35,7 @@ import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.ResultSegment;
+import org.apache.cayenne.access.lifecycle.LifecycleEventManager;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -62,6 +63,11 @@ public record DataContextChannel(DataContext context) implements DataChannel {
     @Override
     public EntityResolver getEntityResolver() {
         return context.getEntityResolver();
+    }
+
+    @Override
+    public LifecycleEventManager getLifecycleEventManager() {
+        return context.getChannel().getLifecycleEventManager();
     }
 
     @Override

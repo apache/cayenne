@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.tx;
 
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectStore;
@@ -25,7 +26,7 @@ import org.apache.cayenne.graph.ArcId;
 import org.apache.cayenne.graph.GraphChangeHandler;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.map.LifecycleEvent;
-import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
+import org.apache.cayenne.access.lifecycle.LifecycleEventManager;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,34 +40,34 @@ abstract class DataChannelSyncCallbackAction implements GraphChangeHandler {
     }
 
     public static DataChannelSyncCallbackAction getCallbackAction(
-            LifecycleCallbackRegistry callbackRegistry,
+            LifecycleEventManager lifecycleEventManager,
             ObjectStore objectStore,
             GraphDiff changes,
             int syncType) {
 
         return switch (syncType) {
             case DataChannel.FLUSH_CASCADE_SYNC, DataChannel.FLUSH_NOCASCADE_SYNC ->
-                    new FlushCallbackAction(callbackRegistry, objectStore, changes);
+                    new FlushCallbackAction(lifecycleEventManager, objectStore, changes);
             case DataChannel.ROLLBACK_CASCADE_SYNC ->
-                    new RollbackCallbackAction(callbackRegistry, objectStore, changes);
+                    new RollbackCallbackAction(lifecycleEventManager, objectStore, changes);
             default -> throw new IllegalArgumentException("Unsupported sync type: " + syncType);
         };
     }
 
-    LifecycleCallbackRegistry callbackRegistry;
-    Collection<Object> updated;
-    Collection<Object> persisted;
-    Collection<Object> removed;
+    LifecycleEventManager lifecycleEventManager;
+    Collection<Persistent> updated;
+    Collection<Persistent> persisted;
+    Collection<Persistent> removed;
 
     private Map<ObjectId, Op> seenIds;
     private final ObjectStore objectStore;
 
     DataChannelSyncCallbackAction(
-            LifecycleCallbackRegistry callbackRegistry,
+            LifecycleEventManager lifecycleEventManager,
             ObjectStore objectStore,
             GraphDiff changes) {
 
-        this.callbackRegistry = callbackRegistry;
+        this.lifecycleEventManager = lifecycleEventManager;
         this.objectStore = objectStore;
 
         if (hasListeners()) {
@@ -81,9 +82,9 @@ abstract class DataChannelSyncCallbackAction implements GraphChangeHandler {
 
     public abstract void applyPostCommit();
 
-    void apply(LifecycleEvent callbackType, Collection<?> objects) {
+    void apply(LifecycleEvent callbackType, Collection<Persistent> objects) {
         if (seenIds != null && objects != null) {
-            callbackRegistry.performCallbacks(callbackType, objects);
+            lifecycleEventManager.performCallbacks(callbackType, objects);
         }
     }
 
@@ -92,7 +93,7 @@ abstract class DataChannelSyncCallbackAction implements GraphChangeHandler {
         Op op = seenIds.put(id, Op.INSERT);
         if (op == null) {
 
-            Object node = objectStore.getObject(id);
+            Persistent node = objectStore.getObject(id);
             if (node != null) {
 
                 if (persisted == null) {
@@ -111,7 +112,7 @@ abstract class DataChannelSyncCallbackAction implements GraphChangeHandler {
         // the node may have been updated prior to delete
         if (op != Op.DELETE) {
 
-            Object node = objectStore.getObject(id);
+            Persistent node = objectStore.getObject(id);
             if (node != null) {
 
                 if (removed == null) {
@@ -156,7 +157,7 @@ abstract class DataChannelSyncCallbackAction implements GraphChangeHandler {
 
         if (op == null) {
 
-            Object node = objectStore.getObject(id);
+            Persistent node = objectStore.getObject(id);
             if (node != null) {
 
                 if (updated == null) {
@@ -170,18 +171,18 @@ abstract class DataChannelSyncCallbackAction implements GraphChangeHandler {
 
     static class FlushCallbackAction extends DataChannelSyncCallbackAction {
 
-        FlushCallbackAction(LifecycleCallbackRegistry callbackRegistry,
+        FlushCallbackAction(LifecycleEventManager lifecycleEventManager,
                             ObjectStore objectStore, GraphDiff changes) {
-            super(callbackRegistry, objectStore, changes);
+            super(lifecycleEventManager, objectStore, changes);
         }
 
         @Override
         protected boolean hasListeners() {
-            return !(callbackRegistry.isEmpty(LifecycleEvent.PRE_UPDATE)
-                    && callbackRegistry.isEmpty(LifecycleEvent.PRE_PERSIST)
-                    && callbackRegistry.isEmpty(LifecycleEvent.POST_UPDATE)
-                    && callbackRegistry.isEmpty(LifecycleEvent.POST_REMOVE) && callbackRegistry
-                    .isEmpty(LifecycleEvent.POST_PERSIST));
+            return !(lifecycleEventManager.hasListeners(LifecycleEvent.PRE_UPDATE)
+                    && lifecycleEventManager.hasListeners(LifecycleEvent.PRE_PERSIST)
+                    && lifecycleEventManager.hasListeners(LifecycleEvent.POST_UPDATE)
+                    && lifecycleEventManager.hasListeners(LifecycleEvent.POST_REMOVE) && lifecycleEventManager
+                    .hasListeners(LifecycleEvent.POST_PERSIST));
         }
 
         @Override
@@ -200,14 +201,14 @@ abstract class DataChannelSyncCallbackAction implements GraphChangeHandler {
 
     static class RollbackCallbackAction extends DataChannelSyncCallbackAction {
 
-        RollbackCallbackAction(LifecycleCallbackRegistry callbackRegistry,
+        RollbackCallbackAction(LifecycleEventManager lifecycleEventManager,
                                ObjectStore objectStore, GraphDiff changes) {
-            super(callbackRegistry, objectStore, changes);
+            super(lifecycleEventManager, objectStore, changes);
         }
 
         @Override
         protected boolean hasListeners() {
-            return !callbackRegistry.isEmpty(LifecycleEvent.POST_LOAD);
+            return !lifecycleEventManager.hasListeners(LifecycleEvent.POST_LOAD);
         }
 
         @Override
