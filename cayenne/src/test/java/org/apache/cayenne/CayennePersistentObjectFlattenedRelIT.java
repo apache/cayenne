@@ -76,7 +76,7 @@ public class CayennePersistentObjectFlattenedRelIT {
     public void readFlattenedRelationship() throws Exception {
         create1Artist1ArtGroupDataSet();
 
-        Artist a1 = Cayenne.objectForPK(env.context(), Artist.class, 33001);
+        Artist a1 = env.context().objectForPK(Artist.class, 33001);
         List<ArtGroup> groupList = a1.getGroupArray();
         assertNotNull(groupList);
         assertEquals(0, groupList.size());
@@ -87,7 +87,7 @@ public class CayennePersistentObjectFlattenedRelIT {
 
         create1Artist1ArtGroup1ArtistGroupDataSet();
 
-        Artist a1 = Cayenne.objectForPK(env.context(), Artist.class, 33001);
+        Artist a1 = env.context().objectForPK(Artist.class, 33001);
         List<ArtGroup> groupList = a1.getGroupArray();
         assertNotNull(groupList);
         assertEquals(1, groupList.size());
@@ -100,7 +100,7 @@ public class CayennePersistentObjectFlattenedRelIT {
 
         create1Artist1ArtGroupDataSet();
 
-        Artist a1 = Cayenne.objectForPK(env.context(), Artist.class, 33001);
+        Artist a1 = env.context().objectForPK(Artist.class, 33001);
         assertEquals(0, a1.getGroupArray().size());
 
         List<ArtGroup> results = ObjectSelect.query(ArtGroup.class).where(ArtGroup.NAME.eq("g1")).select(env.context());
@@ -123,7 +123,7 @@ public class CayennePersistentObjectFlattenedRelIT {
 
         // refetch artist with a different context
         ObjectContext context2 = runtime.newContext();
-        a1 = Cayenne.objectForPK(context2, Artist.class, 33001);
+        a1 = context2.objectForPK(Artist.class, 33001);
         groupList = a1.getGroupArray();
         assertEquals(1, groupList.size());
         assertEquals("g1", ((ArtGroup) groupList.getFirst()).getName());
@@ -134,7 +134,7 @@ public class CayennePersistentObjectFlattenedRelIT {
     public void doubleCommitAddToFlattenedRelationship() throws Exception {
         create1Artist1ArtGroupDataSet();
 
-        Artist a1 = Cayenne.objectForPK(env.context(), Artist.class, 33001);
+        Artist a1 = env.context().objectForPK(Artist.class, 33001);
 
         List<ArtGroup> results = ObjectSelect.query(ArtGroup.class).where(ArtGroup.NAME.eq("g1")).select(env.context());
         assertEquals(1, results.size());
@@ -157,7 +157,7 @@ public class CayennePersistentObjectFlattenedRelIT {
     public void removeFromFlattenedRelationship() throws Exception {
         create1Artist1ArtGroup1ArtistGroupDataSet();
 
-        Artist a1 = Cayenne.objectForPK(env.context(), Artist.class, 33001);
+        Artist a1 = env.context().objectForPK(Artist.class, 33001);
 
         ArtGroup group = a1.getGroupArray().getFirst();
         a1.removeFromGroupArray(group);
@@ -179,7 +179,7 @@ public class CayennePersistentObjectFlattenedRelIT {
     @Test
     public void removeFlattenedRelationshipAndRootRecord() throws Exception {
         create1Artist1ArtGroup1ArtistGroupDataSet();
-        Artist a1 = Cayenne.objectForPK(env.context(), Artist.class, 33001);
+        Artist a1 = env.context().objectForPK(Artist.class, 33001);
 
         ArtGroup group = a1.getGroupArray().getFirst();
         a1.removeFromGroupArray(group); // Cause the delete of the link record
@@ -193,7 +193,7 @@ public class CayennePersistentObjectFlattenedRelIT {
     public void addRemoveFlattenedRelationship1() throws Exception {
         create1Artist1ArtGroupDataSet();
 
-        Artist a1 = Cayenne.objectForPK(env.context(), Artist.class, 33001);
+        Artist a1 = env.context().objectForPK(Artist.class, 33001);
 
         List<ArtGroup> results = ObjectSelect.query(ArtGroup.class).where(ArtGroup.NAME.eq("g1")).select(env.context());
         assertEquals(1, results.size());
@@ -209,7 +209,7 @@ public class CayennePersistentObjectFlattenedRelIT {
     public void addRemoveFlattenedRelationship2() throws Exception {
         create1Artist2ArtGroupDataSet();
 
-        Artist a1 = Cayenne.objectForPK(env.context(), Artist.class, 33001);
+        Artist a1 = env.context().objectForPK(Artist.class, 33001);
 
         List<?> results = ObjectSelect.query(ArtGroup.class).select(env.context());
         assertEquals(2, results.size());

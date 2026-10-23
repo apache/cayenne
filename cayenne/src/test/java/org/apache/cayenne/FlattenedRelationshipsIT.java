@@ -122,7 +122,7 @@ public class FlattenedRelationshipsIT {
 
         context.invalidateObjects(obj01, obj11, obj12);
 
-        FlattenedTest1 fresh01 = Cayenne.objectForPK(context1, FlattenedTest1.class, pk);
+        FlattenedTest1 fresh01 = context1.objectForPK(FlattenedTest1.class, pk);
 
         assertEquals("t01", fresh01.getName());
         ToManyHolder related = (ToManyHolder) fresh01.getFt3OverComplex();
@@ -141,7 +141,7 @@ public class FlattenedRelationshipsIT {
         joinSelect.setFetchingDataRows(true);
         assertEquals(3, context.select(joinSelect).size());
 
-        FlattenedTest1 ft1 = Cayenne.objectForPK(context, FlattenedTest1.class, 2);
+        FlattenedTest1 ft1 = context.objectForPK(FlattenedTest1.class, 2);
 
         assertEquals("ft12", ft1.getName());
         List<FlattenedTest3> related = ft1.getFt3OverComplex();
@@ -149,7 +149,7 @@ public class FlattenedRelationshipsIT {
 
         assertEquals(2, related.size());
 
-        FlattenedTest3 ft3 = Cayenne.objectForPK(context, FlattenedTest3.class, 3);
+        FlattenedTest3 ft3 = context.objectForPK(FlattenedTest3.class, 3);
         assertTrue(related.contains(ft3));
 
         ft1.removeFromFt3OverComplex(ft3);
@@ -199,7 +199,7 @@ public class FlattenedRelationshipsIT {
 
         // test 2: qualify on flattened relationship
         List<FlattenedTest1> objects2 = ObjectSelect.query(FlattenedTest1.class)
-                .where(FlattenedTest1.FT3ARRAY.contains(obj131))
+                .where(FlattenedTest1.FT3ARRAY.containsValue(obj131))
                 .select(context);
 
         assertEquals(1, objects2.size());
@@ -271,7 +271,7 @@ public class FlattenedRelationshipsIT {
     public void testFlattenedCircular() throws Exception {
         createFlattenedCircularDataSet();
 
-        FlattenedCircular fc1 = Cayenne.objectForPK(context, FlattenedCircular.class, 1);
+        FlattenedCircular fc1 = context.objectForPK(FlattenedCircular.class, 1);
 
         List<FlattenedCircular> side2s = fc1.getSide2s();
         assertEquals(2, side2s.size());

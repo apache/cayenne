@@ -384,25 +384,6 @@ public class CgenConfiguration implements XMLSerializable {
         this.createPropertyNames = createPropertyNames;
     }
 
-    /**
-     * @return false
-     * @deprecated cgen always regenerates classes, so there is nothing left to force
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public boolean isForce() {
-        return true;
-    }
-
-    /**
-     * does nothing
-     *
-     * @param force not used
-     * @deprecated cgen always regenerates classes, so there is nothing left to force
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public void setForce(boolean force) {
-    }
-
     public boolean isCreatePKProperties() {
         return createPKProperties;
     }

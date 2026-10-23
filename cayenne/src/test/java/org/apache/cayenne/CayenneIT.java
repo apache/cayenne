@@ -67,7 +67,7 @@ public class CayenneIT {
         tPainting.insert(1, 1, "a1");
         tPainting.insert(2, 1, "a2");
 
-        Artist a = Cayenne.objectForPK(env.context(), Artist.class, 1);
+        Artist a = env.context().objectForPK(Artist.class, 1);
         Collection<String> titles = (Collection<String>) Cayenne.readNestedProperty(
                 a,
                 "paintingArray.paintingTitle");
@@ -85,23 +85,6 @@ public class CayenneIT {
         assertEquals("", Cayenne.makePath());
         assertEquals("a", Cayenne.makePath("a"));
         assertEquals("a.b", Cayenne.makePath("a", "b"));
-    }
-
-    @Test
-    @SuppressWarnings("removal")
-    public void objectForQuery() throws Exception {
-        createOneArtist();
-
-        ObjectId id = ObjectId.of("Artist", Artist.ARTIST_ID_PK_COLUMN, 33002);
-
-        assertNull(env.context().getObjectStore().getObject(id));
-
-        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class).where(Artist.SELF.eqId(id));
-        Object object = Cayenne.objectForQuery(env.context(), query);
-
-        assertNotNull(object);
-        assertInstanceOf(Artist.class, object);
-        assertEquals("artist2", ((Artist) object).getArtistName());
     }
 
     @Test
@@ -126,13 +109,12 @@ public class CayenneIT {
         assertNull(env.context().selectOne(query));
     }
 
-    @Deprecated
     @Test
     public void noObjectForPK() throws Exception {
         createOneArtist();
 
         // use bogus non-existent PK
-        Object object = Cayenne.objectForPK(env.context(), Artist.class, 44001);
+        Object object = env.context().objectForPK(Artist.class, 44001);
         assertNull(object);
     }
 
@@ -142,10 +124,10 @@ public class CayenneIT {
 
         Persistent o1 = env.context().newObject(Artist.class);
         Persistent o2 = env.context().newObject(Artist.class);
-        assertSame(o1, Cayenne.objectForPK(env.context(), o1.getObjectId()));
-        assertSame(o2, Cayenne.objectForPK(env.context(), o2.getObjectId()));
+        assertSame(o1, env.context().objectForPK(o1.getObjectId()));
+        assertSame(o2, env.context().objectForPK(o2.getObjectId()));
 
-        assertNull(Cayenne.objectForPK(env.context(), ObjectId.of("Artist", new byte[]{1, 2, 3})));
+        assertNull(env.context().objectForPK(ObjectId.of("Artist", new byte[]{1, 2, 3})));
     }
 
     @Deprecated
@@ -153,7 +135,7 @@ public class CayenneIT {
     public void objectForPKObjectId() throws Exception {
         createOneArtist();
 
-        Object object = Cayenne.objectForPK(env.context(), ObjectId.of(
+        Object object = env.context().objectForPK(ObjectId.of(
                 "Artist",
                 Artist.ARTIST_ID_PK_COLUMN,
                 33002));
@@ -168,7 +150,7 @@ public class CayenneIT {
     public void objectForPKClassInt() throws Exception {
         createOneArtist();
 
-        Artist object = Cayenne.objectForPK(env.context(), Artist.class, 33002);
+        Artist object = env.context().objectForPK(Artist.class, 33002);
 
         assertNotNull(object);
         assertInstanceOf(Artist.class, object);
@@ -180,7 +162,7 @@ public class CayenneIT {
     public void objectForPKEntityInt() throws Exception {
         createOneArtist();
 
-        Object object = Cayenne.objectForPK(env.context(), "Artist", 33002);
+        Object object = env.context().objectForPK("Artist", 33002);
 
         assertNotNull(object);
         assertInstanceOf(Artist.class, object);
@@ -195,7 +177,7 @@ public class CayenneIT {
         Map<String, Integer> pk = Collections.singletonMap(
                 Artist.ARTIST_ID_PK_COLUMN,
                 33002);
-        Artist object = Cayenne.objectForPK(env.context(), Artist.class, pk);
+        Artist object = env.context().objectForPK(Artist.class, pk);
 
         assertNotNull(object);
         assertTrue(true);

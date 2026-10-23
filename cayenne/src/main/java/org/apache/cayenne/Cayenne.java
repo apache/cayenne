@@ -21,8 +21,6 @@ package org.apache.cayenne;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.Select;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.PropertyDescriptor;
 import org.apache.cayenne.reflect.PropertyUtils;
@@ -331,85 +329,6 @@ public class Cayenne {
         }
 
         throw new CayenneRuntimeException("Can't get primary key from temporary id.");
-    }
-
-    /**
-     * @deprecated use {@link ObjectContext#objectForPK(Class, Object)}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public static <T extends Persistent> T objectForPK(ObjectContext context, Class<T> persistentObjectClass, int pk) {
-        return context.objectForPK(persistentObjectClass, pk);
-    }
-
-    /**
-     * @deprecated use {@link ObjectContext#objectForPK(Class, Object)}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public static <T extends Persistent> T objectForPK(ObjectContext context, Class<T> persistentObjectClass,
-                                                          Object pk) {
-        return context.objectForPK(persistentObjectClass, pk);
-    }
-
-    /**
-     * @deprecated use {@link ObjectContext#objectForPK(Class, Map)}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public static <T extends Persistent> T objectForPK(ObjectContext context, Class<T> persistentObjectClass,
-                                                          Map<String, ?> pk) {
-        return context.objectForPK(persistentObjectClass, pk);
-    }
-
-    /**
-     * @deprecated use {@link ObjectContext#objectForPK(String, Object)}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public static Object objectForPK(ObjectContext context, String objEntityName, int pk) {
-        return context.objectForPK(objEntityName, pk);
-    }
-
-    /**
-     * @deprecated use {@link ObjectContext#objectForPK(String, Object)}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public static Object objectForPK(ObjectContext context, String objEntityName, Object pk) {
-        return context.objectForPK(objEntityName, pk);
-    }
-
-    /**
-     * @deprecated use {@link ObjectContext#objectForPK(String, Map)}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public static Object objectForPK(ObjectContext context, String objEntityName, Map<String, ?> pk) {
-        return context.objectForPK(objEntityName, pk);
-    }
-
-    /**
-     * @deprecated use {@link ObjectContext#objectForPK(ObjectId)}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public static Object objectForPK(ObjectContext context, ObjectId id) {
-        return context.objectForPK(id);
-    }
-
-    /**
-     * Returns an object or a DataRow that is a result of a given query. If
-     * query returns more than one object, an exception is thrown. If query
-     * returns no objects, null is returned.
-     *
-     * @deprecated use {@link ObjectContext#selectOne(Select)}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    @SuppressWarnings("removal")
-    public static Object objectForQuery(ObjectContext context, Query query) {
-        List<?> objects = context.performQuery(query);
-
-        if (objects.isEmpty()) {
-            return null;
-        } else if (objects.size() > 1) {
-            throw new CayenneRuntimeException("Expected zero or one object, instead query matched: %d", objects.size());
-        }
-
-        return objects.get(0);
     }
 
     protected Cayenne() {

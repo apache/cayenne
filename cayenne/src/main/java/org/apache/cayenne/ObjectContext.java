@@ -294,17 +294,6 @@ public interface ObjectContext {
     void rollbackChangesLocally();
 
     /**
-     * Executes a selecting query, returning a list of persistent objects or data rows.
-     *
-     * @throws ClassCastException if the query does not implement {@link Select}
-     * @deprecated use {@link #select(Select)}. All selecting queries implement {@link Select}.
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    default List performQuery(Query query) {
-        return select((Select<?>) query);
-    }
-
-    /**
      * Executes a selecting query, returning a list of persistent objects or
      * data rows.
      * 

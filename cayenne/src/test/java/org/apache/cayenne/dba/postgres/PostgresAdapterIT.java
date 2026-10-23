@@ -28,7 +28,6 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.sql.Types;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -89,9 +88,6 @@ public class PostgresAdapterIT {
         assertFalse(variants[0].autoIncrement());
         assertEquals("serial", variants[1].nativeType());
         assertTrue(variants[1].autoIncrement());
-
-        // the deprecated array view still reproduces the historical contents
-        assertArrayEquals(new String[]{"integer", "serial"}, adapter.externalTypesForJdbcType(Types.INTEGER));
     }
 
     @Test

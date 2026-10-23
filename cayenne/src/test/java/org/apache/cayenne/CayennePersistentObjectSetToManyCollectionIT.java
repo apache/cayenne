@@ -53,7 +53,7 @@ public class CayennePersistentObjectSetToManyCollectionIT {
 	@Test
 	public void readToMany() {
 
-		CollectionToMany o1 = Cayenne.objectForPK(env.context(), CollectionToMany.class, 1);
+		CollectionToMany o1 = env.context().objectForPK(CollectionToMany.class, 1);
 
 		Collection<?> targets = o1.getTargets();
 
@@ -62,9 +62,9 @@ public class CayennePersistentObjectSetToManyCollectionIT {
 
 		assertEquals(3, targets.size());
 
-		assertTrue(targets.contains(Cayenne.objectForPK(o1.getObjectContext(), CollectionToManyTarget.class, 1)));
-		assertTrue(targets.contains(Cayenne.objectForPK(o1.getObjectContext(), CollectionToManyTarget.class, 2)));
-		assertTrue(targets.contains(Cayenne.objectForPK(o1.getObjectContext(), CollectionToManyTarget.class, 3)));
+		assertTrue(targets.contains(o1.getObjectContext().objectForPK(CollectionToManyTarget.class, 1)));
+		assertTrue(targets.contains(o1.getObjectContext().objectForPK(CollectionToManyTarget.class, 2)));
+		assertTrue(targets.contains(o1.getObjectContext().objectForPK(CollectionToManyTarget.class, 3)));
 	}
 
 	/**
@@ -72,7 +72,7 @@ public class CayennePersistentObjectSetToManyCollectionIT {
 	 */
 	@Test
 	public void relationCollectionTypeCollection() {
-		CollectionToMany o1 = Cayenne.objectForPK(env.context(), CollectionToMany.class, 1);
+		CollectionToMany o1 = env.context().objectForPK(CollectionToMany.class, 1);
 		assertTrue(o1.readProperty(CollectionToMany.TARGETS.getName()) instanceof Collection);
 		assertDoesNotThrow(() -> o1.setToManyTarget(CollectionToMany.TARGETS.getName(), new ArrayList<CollectionToMany>(0), true));
 		assertEquals(0, o1.getTargets().size());

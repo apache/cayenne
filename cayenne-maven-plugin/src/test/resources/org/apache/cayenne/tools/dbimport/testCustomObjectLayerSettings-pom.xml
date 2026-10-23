@@ -41,7 +41,6 @@
                     </dataSource>
                     <dbimport>
                         <meaningfulPkTables>^*$</meaningfulPkTables>
-                        <usePrimitives>true</usePrimitives>
                         <stripFromTableNames>^xyz_</stripFromTableNames>
                         <schema>
                             <name>SCHEMA_01</name>

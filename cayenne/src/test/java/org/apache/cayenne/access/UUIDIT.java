@@ -20,7 +20,6 @@ package org.apache.cayenne.access;
 
 import java.util.UUID;
 
-import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.query.ObjectSelect;
@@ -90,7 +89,7 @@ public class UUIDIT {
 
         uuidPkEntity.insert(id.toString());
 
-        UuidPkEntity o1 = Cayenne.objectForPK(env.context(), UuidPkEntity.class, id);
+        UuidPkEntity o1 = env.context().objectForPK(UuidPkEntity.class, id);
 
         assertNotNull(o1);
         assertEquals(id, o1.getId());

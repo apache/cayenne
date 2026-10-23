@@ -22,7 +22,6 @@ package org.apache.cayenne.access;
 import java.util.Collection;
 import java.util.Set;
 
-import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -61,7 +60,7 @@ public class DataContextUncommittedObjectsIT {
     public void committedObjectsAreNotReported() throws Exception {
         tArtist.insert(1, "artist1");
 
-        Artist artist = Cayenne.objectForPK(context, Artist.class, 1);
+        Artist artist = context.objectForPK(Artist.class, 1);
         assertEquals("artist1", artist.getArtistName());
 
         assertTrue(context.newObjects().isEmpty());
@@ -88,8 +87,8 @@ public class DataContextUncommittedObjectsIT {
         tArtist.insert(1, "artist1");
         tArtist.insert(2, "artist2");
 
-        Artist a1 = Cayenne.objectForPK(context, Artist.class, 1);
-        Artist a2 = Cayenne.objectForPK(context, Artist.class, 2);
+        Artist a1 = context.objectForPK(Artist.class, 1);
+        Artist a2 = context.objectForPK(Artist.class, 2);
         context.deleteObject(a1);
 
         assertTrue(context.newObjects().isEmpty());
@@ -104,8 +103,8 @@ public class DataContextUncommittedObjectsIT {
         tArtist.insert(1, "artist1");
         tArtist.insert(2, "artist2");
 
-        Artist a1 = Cayenne.objectForPK(context, Artist.class, 1);
-        Cayenne.objectForPK(context, Artist.class, 2);
+        Artist a1 = context.objectForPK(Artist.class, 1);
+        context.objectForPK(Artist.class, 2);
         a1.setArtistName("changed");
 
         assertTrue(context.newObjects().isEmpty());
@@ -120,9 +119,9 @@ public class DataContextUncommittedObjectsIT {
         tArtist.insert(2, "artist2");
         tArtist.insert(3, "artist3");
 
-        Artist deleted = Cayenne.objectForPK(context, Artist.class, 1);
-        Artist modified = Cayenne.objectForPK(context, Artist.class, 2);
-        Artist committed = Cayenne.objectForPK(context, Artist.class, 3);
+        Artist deleted = context.objectForPK(Artist.class, 1);
+        Artist modified = context.objectForPK(Artist.class, 2);
+        Artist committed = context.objectForPK(Artist.class, 3);
         assertEquals("artist3", committed.getArtistName());
 
         context.deleteObject(deleted);
@@ -140,7 +139,7 @@ public class DataContextUncommittedObjectsIT {
     public void emptyAfterCommit() throws Exception {
         tArtist.insert(1, "artist1");
 
-        Artist modified = Cayenne.objectForPK(context, Artist.class, 1);
+        Artist modified = context.objectForPK(Artist.class, 1);
         modified.setArtistName("changed");
         Artist created = context.newObject(Artist.class);
         created.setArtistName("new");
@@ -160,8 +159,8 @@ public class DataContextUncommittedObjectsIT {
         tArtist.insert(1, "artist1");
         tArtist.insert(2, "artist2");
 
-        Artist deleted = Cayenne.objectForPK(context, Artist.class, 1);
-        Artist modified = Cayenne.objectForPK(context, Artist.class, 2);
+        Artist deleted = context.objectForPK(Artist.class, 1);
+        Artist modified = context.objectForPK(Artist.class, 2);
         context.deleteObject(deleted);
         modified.setArtistName("changed");
         Artist created = context.newObject(Artist.class);

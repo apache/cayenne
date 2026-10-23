@@ -162,7 +162,7 @@ public class DataContextCompoundRelIT {
         context.invalidateObjects(master, master1, detail, detail1);
 
         List<CompoundPkTestEntity> objs = ObjectSelect.query(CompoundPkTestEntity.class)
-                .where(CompoundPkTestEntity.COMPOUND_FK_ARRAY.contains(detail1))
+                .where(CompoundPkTestEntity.COMPOUND_FK_ARRAY.containsValue(detail1))
                 .select(context1);
 
         assertEquals(1, objs.size());

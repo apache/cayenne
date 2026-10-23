@@ -21,7 +21,6 @@ package org.apache.cayenne.query;
 import java.math.BigDecimal;
 import java.util.List;
 
-import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.access.DataContext;
@@ -123,7 +122,7 @@ public class ObjectSelect_ParseIT {
 
     @Test
     public void persistentParameter() {
-        Artist artist2 = Cayenne.objectForPK(context, Artist.class, 2);
+        Artist artist2 = context.objectForPK(Artist.class, 2);
 
         List<Painting> paintings = select(
                 "from Painting where toArtist = $artist and estimatedPrice between $low and $high", artist2, 20, 100);

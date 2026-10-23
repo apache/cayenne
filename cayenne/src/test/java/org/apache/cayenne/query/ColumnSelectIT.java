@@ -1062,7 +1062,7 @@ public class ColumnSelectIT {
         Painting painting = ObjectSelect.query(Painting.class).selectFirst(context);
 
         Artist artist = ObjectSelect.query(Artist.class)
-                .where(Artist.PAINTING_ARRAY.contains(painting))
+                .where(Artist.PAINTING_ARRAY.containsValue(painting))
                 .and(Artist.DATE_OF_BIRTH.year().gt(1950))
                 .and(Artist.ARTIST_NAME.like("artist%"))
                 .selectOne(context);

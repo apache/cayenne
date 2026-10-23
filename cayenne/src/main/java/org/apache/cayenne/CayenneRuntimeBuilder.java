@@ -20,7 +20,6 @@ package org.apache.cayenne;
 
 import org.apache.cayenne.project.DataNodeDescriptor;
 import org.apache.cayenne.project.DataNodeDescriptors;
-import org.apache.cayenne.datasource.CayenneDataSource;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.spi.ModuleLoader;
 
@@ -52,9 +51,6 @@ public class CayenneRuntimeBuilder {
     private int autoNodeSuffix;
     private DataNodeDescriptor defaultNode;
     private final Map<DataNodeDescriptor, Set<String>> mapsByNode;
-
-    @Deprecated
-    private String jdbcUrl;
 
     @Deprecated
     private String jdbcDriver;
@@ -100,14 +96,6 @@ public class CayenneRuntimeBuilder {
     }
 
     /**
-     * @deprecated in favor of {@link #defaultDataNode(DataSource)}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public CayenneRuntimeBuilder dataSource(DataSource dataSource) {
-        return defaultDataNode(dataSource);
-    }
-
-    /**
      * Will create a default DataNode based on the provided DataSource that will handle all DataMaps not explicitly
      * linked to other DataNodes.
      */
@@ -134,90 +122,6 @@ public class CayenneRuntimeBuilder {
     private String nextAutoNodeName() {
         String base = this.name != null ? this.name : CayenneRuntimeBuilder.DEFAULT_NAME;
         return base + "-" + autoNodeSuffix++;
-    }
-
-    /**
-     * Sets a database URL for the default DataSource.
-     *
-     * @deprecated in favor of {@link #defaultDataNode(DataSource)}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public CayenneRuntimeBuilder url(String url) {
-        this.jdbcUrl = url;
-        return this;
-    }
-
-    /**
-     * Sets a driver Java class for the default DataSource.
-     *
-     * @deprecated in favor of {@link #defaultDataNode(DataSource)}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public CayenneRuntimeBuilder jdbcDriver(String driver) {
-        this.jdbcDriver = driver;
-        return this;
-    }
-
-    /**
-     * Sets a validation query for the default DataSource.
-     *
-     * @param validationQuery a SQL string that returns some result. It will be used to
-     *                        validate connections in the pool.
-     * @deprecated in favor of {@link #defaultDataNode(DataSource)}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public CayenneRuntimeBuilder validationQuery(String validationQuery) {
-        this.validationQuery = validationQuery;
-        return this;
-    }
-
-    /**
-     * @deprecated in favor of {@link #defaultDataNode(DataSource)}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public CayenneRuntimeBuilder maxQueueWaitTime(long maxQueueWaitTime) {
-        this.maxQueueWaitTime = maxQueueWaitTime;
-        return this;
-    }
-
-    /**
-     * Sets a user name for the default DataSource.
-     *
-     * @deprecated in favor of {@link #defaultDataNode(DataSource)}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public CayenneRuntimeBuilder user(String user) {
-        this.jdbcUser = user;
-        return this;
-    }
-
-    /**
-     * Sets a password for the default DataSource.
-     *
-     * @deprecated in favor of {@link #defaultDataNode(DataSource)}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public CayenneRuntimeBuilder password(String password) {
-        this.jdbcPassword = password;
-        return this;
-    }
-
-    /**
-     * @deprecated in favor of {@link #defaultDataNode(DataSource)}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public CayenneRuntimeBuilder minConnections(int minConnections) {
-        this.jdbcMinConnections = minConnections;
-        return this;
-    }
-
-    /**
-     * @deprecated in favor of {@link #defaultDataNode(DataSource)}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public CayenneRuntimeBuilder maxConnections(int maxConnections) {
-        this.jdbcMaxConnections = maxConnections;
-        return this;
     }
 
     public CayenneRuntimeBuilder addConfig(String configurationLocation) {
@@ -293,29 +197,8 @@ public class CayenneRuntimeBuilder {
                     .setProperty(RuntimeProperties.DOMAIN_NAME_PROPERTY, finalNameOverride));
         }
 
-        DataNodeDescriptor defaultNode = this.defaultNode != null ? this.defaultNode : defaultNodeFromConnectionInfo();
         modules.add(b -> b.bind(DataNodeDescriptors.class).toInstance(new DataNodeDescriptors(mapsByNode, defaultNode)));
 
         return modules;
-    }
-
-    private DataNodeDescriptor defaultNodeFromConnectionInfo() {
-
-        if (jdbcUrl == null) {
-            return null;
-        }
-
-        CayenneDataSource.Builder builder = CayenneDataSource.of(jdbcUrl)
-                .driverClass(jdbcDriver)
-                .userName(jdbcUser)
-                .password(jdbcPassword)
-                .maxQueueWaitTime(maxQueueWaitTime)
-                .validationQuery(validationQuery);
-
-        if (jdbcMinConnections >= 0 && jdbcMaxConnections >= 0) {
-            builder.pool(jdbcMinConnections, jdbcMaxConnections);
-        }
-
-        return DataNodeDescriptor.of(nextAutoNodeName()).dataSource(builder.build()).build();
     }
 }

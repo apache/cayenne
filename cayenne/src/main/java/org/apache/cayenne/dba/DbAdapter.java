@@ -197,15 +197,6 @@ public interface DbAdapter {
     String createFkConstraint(DbRelationship rel);
 
     /**
-     * Returns an array of RDBMS types that can be used with JDBC
-     * <code>type</code>. Valid JDBC types are defined in java.sql.Types.
-     *
-     * @deprecated use {@link #nativeColumnTypes(int)}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    String[] externalTypesForJdbcType(int type);
-
-    /**
      * Returns the database-native types that the given JDBC <code>type</code> (see {@link java.sql.Types}) maps to,
      * or null if the type is not supported. The first variant is used for column DDL.
      *
@@ -290,17 +281,6 @@ public interface DbAdapter {
      * @since 3.0
      */
     void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column);
-
-    /**
-     * Returns the SQL identifier quoting style (start/end quote characters) for this adapter. Whether
-     * quoting is applied is decided by the caller, which uses this instance when quoting is enabled
-     * and {@link QuotingStrategy#NONE} otherwise.
-     *
-     * @since 4.0
-     * @deprecated in favor of {@link #getQuotingStrategy(DbEntity)}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    QuotingStrategy getQuotingStrategy();
 
     /**
      * Resolves the {@link QuotingStrategy} to use for the given entity: this adapter's strategy when the

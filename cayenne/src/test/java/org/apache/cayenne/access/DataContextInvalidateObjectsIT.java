@@ -21,7 +21,6 @@ package org.apache.cayenne.access;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
@@ -204,7 +203,7 @@ public class DataContextInvalidateObjectsIT {
     public void invalidateObjectToMany() throws Exception {
         createRefreshObjectToManyDataSet();
 
-        Artist a = Cayenne.objectForPK(context, Artist.class, 33001L);
+        Artist a = context.objectForPK(Artist.class, 33001L);
         assertEquals(2, a.getPaintingArray().size());
 
         createRefreshObjectToManyUpdateDataSet();
@@ -227,7 +226,7 @@ public class DataContextInvalidateObjectsIT {
         List<Painting> paints = q.select(context);
 
         // fetch P1 separately from cached query
-        Painting p1 = Cayenne.objectForPK(context, Painting.class, 33001);
+        Painting p1 = context.objectForPK(Painting.class, 33001);
 
         Painting p2 = paints.get(0);
         Artist a1 = p2.getToArtist();
@@ -279,7 +278,7 @@ public class DataContextInvalidateObjectsIT {
         List<?> paints = q.select(context);
 
         // fetch P1 separately from cached query
-        Painting p1 = Cayenne.objectForPK(context, Painting.class, 33001);
+        Painting p1 = context.objectForPK(Painting.class, 33001);
 
         Painting p2 = (Painting) paints.get(0);
         Artist a1 = p2.getToArtist();
@@ -331,7 +330,7 @@ public class DataContextInvalidateObjectsIT {
         List<Painting> paints = q.select(context);
 
         // fetch P1 separately from cached query
-        Painting p1 = Cayenne.objectForPK(context, Painting.class, 33001);
+        Painting p1 = context.objectForPK(Painting.class, 33001);
 
         Painting p2 = paints.get(0);
         Artist a1 = p2.getToArtist();
@@ -431,12 +430,12 @@ public class DataContextInvalidateObjectsIT {
     public void invalidateFromChildContext() throws Exception {
         createRefreshCollectionDataSet();
 
-        Artist parentArtist = Cayenne.objectForPK(context, Artist.class, 33001);
+        Artist parentArtist = context.objectForPK(Artist.class, 33001);
         parentArtist.setArtistName("modified in parent");
         assertEquals(PersistenceState.MODIFIED, parentArtist.getPersistenceState());
 
         ObjectContext child = env.runtime().newContext(context);
-        Artist childArtist = Cayenne.objectForPK(child, Artist.class, 33001);
+        Artist childArtist = child.objectForPK(Artist.class, 33001);
         assertNotSame(parentArtist, childArtist);
 
         child.invalidateObjects(childArtist);

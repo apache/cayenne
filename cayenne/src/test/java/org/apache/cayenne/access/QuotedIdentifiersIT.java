@@ -19,7 +19,6 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.ObjectId;
-import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.ObjectSelect;
@@ -139,8 +138,8 @@ public class QuotedIdentifiersIT {
         assertEquals(1, objects7.size());
 
         ObjectId addressId = ObjectId.of("QuoteAdress", QuoteAdress.GROUP.getName(), "324");
-        assertNotNull(Cayenne.objectForPK(env.context(), addressId));
-        assertNotNull(Cayenne.objectForPK(env.context(), ObjectId.of("Quote_Person", "GROUP", "1111")));
+        assertNotNull(env.context().objectForPK(addressId));
+        assertNotNull(env.context().objectForPK(ObjectId.of("Quote_Person", "GROUP", "1111")));
 
         Quote_Person quote_Person2 = ObjectSelect.query(Quote_Person.class)
                 .where(Quote_Person.NAME.eq("Name")).selectOne(env.context());

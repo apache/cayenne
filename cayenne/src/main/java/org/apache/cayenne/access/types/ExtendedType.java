@@ -29,14 +29,6 @@ import java.sql.ResultSet;
 public interface ExtendedType<T> {
 
     /**
-     * Defines trimming constant for toString method that helps to limit logging of large values.
-     *
-     * @deprecated unused
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    int TRIM_VALUES_THRESHOLD = 30;
-
-    /**
      * Returns a full name of Java class that this ExtendedType supports.
      */
     String getClassName();

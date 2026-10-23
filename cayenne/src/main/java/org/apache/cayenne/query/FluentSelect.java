@@ -537,65 +537,6 @@ public abstract class FluentSelect<T, S extends FluentSelect<T, S>> implements S
         return getBaseMetaData().getCacheGroup();
     }
 
-    /**
-     * Note that unlike {@link #cacheStrategy(QueryCacheStrategy)} this method preserves the
-     * existing cache group. To reset it, use {@link #cacheStrategy(QueryCacheStrategy, String)}.
-     *
-     * @since 3.0
-     * @deprecated use {@link #cacheStrategy(QueryCacheStrategy, String)}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public void setCacheStrategy(QueryCacheStrategy strategy) {
-        getBaseMetaData().setCacheStrategy(strategy);
-    }
-
-    /**
-     * @since 4.0
-     * @deprecated use {@link #cacheGroup(String)}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public void setCacheGroup(String cacheGroup) {
-        getBaseMetaData().setCacheGroup(cacheGroup);
-    }
-
-    /**
-     * @since 4.0
-     * @deprecated use {@link #localCache()}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public void useLocalCache() {
-        getBaseMetaData().setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
-    }
-
-    /**
-     * @since 4.0
-     * @deprecated use {@link #localCache(String)}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public void useLocalCache(String cacheGroup) {
-        getBaseMetaData().setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
-        getBaseMetaData().setCacheGroup(cacheGroup);
-    }
-
-    /**
-     * @since 4.0
-     * @deprecated use {@link #sharedCache()}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public void useSharedCache() {
-        getBaseMetaData().setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
-    }
-
-    /**
-     * @since 4.0
-     * @deprecated use {@link #sharedCache(String)}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public void useSharedCache(String cacheGroup) {
-        getBaseMetaData().setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
-        getBaseMetaData().setCacheGroup(cacheGroup);
-    }
-
     public int getStatementFetchSize() {
         return getBaseMetaData().getStatementFetchSize();
     }

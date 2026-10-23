@@ -83,7 +83,6 @@ cdbimport {
 
     dbImport {
         // additional settings
-        usePrimitives false
         defaultPackage 'org.apache.cayenne.test'
 
         // DB filter configuration

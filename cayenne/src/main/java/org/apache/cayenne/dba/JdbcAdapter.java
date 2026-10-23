@@ -36,7 +36,6 @@ import org.apache.cayenne.access.types.ValueObjectTypeFactory;
 import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.RuntimeProperties;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.log.SQLLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -78,10 +77,6 @@ public class JdbcAdapter implements DbAdapter {
 
     protected boolean caseInsensitiveCollations;
 
-    @Inject
-    @Deprecated(since = "5.0", forRemoval = true)
-    protected SQLLogger logger;
-
     /**
      * Creates new JdbcAdapter with a set of default parameters.
      */
@@ -112,15 +107,6 @@ public class JdbcAdapter implements DbAdapter {
     @Override
     public String getBatchTerminator() {
         return ";";
-    }
-
-    /**
-     * @since 3.1
-     * @deprecated logger should be taken from the DataNode
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public SQLLogger getSQLLogger() {
-        return this.logger;
     }
 
     /**
@@ -379,14 +365,6 @@ public class JdbcAdapter implements DbAdapter {
         sqlBuffer.append(column.isMandatory() ? " NOT NULL" : " NULL");
     }
 
-    /**
-     * @deprecated in favor of {@link #sizeAndScale(DbAdapter, DbAttribute)}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public static String sizeAndPrecision(DbAdapter adapter, DbAttribute column) {
-        return sizeAndScale(adapter, column);
-    }
-
     public static String sizeAndScale(DbAdapter adapter, DbAttribute column) {
         int type = column.getType();
 
@@ -414,14 +392,6 @@ public class JdbcAdapter implements DbAdapter {
         }
 
         return "";
-    }
-
-    /**
-     * @deprecated in favor of {@link #preferredNativeColumnType(DbAttribute)}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public static String getType(DbAdapter adapter, DbAttribute column) {
-        return adapter.preferredNativeColumnType(column).nativeType();
     }
 
     /**
@@ -512,23 +482,6 @@ public class JdbcAdapter implements DbAdapter {
 
         buf.append(" (").append(refBuf).append(')');
         return buf.toString();
-    }
-
-    /**
-     * @deprecated use {@link #nativeColumnTypes(int)}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    @Override
-    public String[] externalTypesForJdbcType(int type) {
-        NativeColumnType[] variants = nativeColumnTypes.get(type);
-        if (variants == null) {
-            return null;
-        }
-        String[] names = new String[variants.length];
-        for (int i = 0; i < variants.length; i++) {
-            names[i] = variants[i].nativeType();
-        }
-        return names;
     }
 
     /**
@@ -663,11 +616,6 @@ public class JdbcAdapter implements DbAdapter {
 
     protected QuotingStrategy createQuotingStrategy() {
         return new DefaultQuotingStrategy('"', '"');
-    }
-
-    @Override
-    public QuotingStrategy getQuotingStrategy() {
-        return quotingStrategy;
     }
 
     @Override

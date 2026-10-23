@@ -332,7 +332,7 @@ public class CoreModuleExtender {
     }
 
     /**
-     * Restricts commit log auditing to entities annotated with {@link org.apache.cayenne.commitlog.CommitLog}.
+     * Restricts commit log auditing to entities annotated with {@link org.apache.cayenne.annotation.CommitLog}.
      * By default all entities are audited.
      *
      * @since 5.0

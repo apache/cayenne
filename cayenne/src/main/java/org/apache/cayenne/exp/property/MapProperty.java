@@ -90,40 +90,11 @@ public class MapProperty<K, V extends Persistent> extends BaseProperty<Map<K, V>
 
     /**
      * @return An expression for finding objects with values in the given set.
-     * @deprecated in favour of {@link #containsValues(V...)}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    @SafeVarargs
-    public final Expression contains(V firstValue, V... moreValues) {
-
-        int moreValuesLength = moreValues != null ? moreValues.length : 0;
-
-        Object[] values = new Object[moreValuesLength + 1];
-        values[0] = firstValue;
-
-        if (moreValuesLength > 0) {
-            System.arraycopy(moreValues, 0, values, 1, moreValuesLength);
-        }
-
-        return ExpressionFactory.inExp(getExpression(), values);
-    }
-
-    /**
-     * @return An expression for finding objects with values in the given set.
      * @since 5.0
      */
     @SafeVarargs
     public final Expression containsValues(V... values) {
         return ExpressionFactory.inExp(getExpression(), (Object[])values);
-    }
-
-    /**
-     * @return An expression for finding objects with values in the given set.
-     * @deprecated in favour of {@link #containsValuesCollection(Collection)}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public Expression contains(Collection<V> values) {
-        return ExpressionFactory.inExp(getExpression(), values);
     }
 
     /**
@@ -135,39 +106,10 @@ public class MapProperty<K, V extends Persistent> extends BaseProperty<Map<K, V>
     }
 
     /**
-     * @return An expression for finding objects with values not in the given set.
-     * @deprecated in favour of {@link #notContainsValuesCollection(Collection)}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public Expression notContains(Collection<V> values) {
-        return ExpressionFactory.notInExp(getExpression(), values);
-    }
-
-    /**
      * @return An expression for finding objects with values in the given set.
      * @since 5.0
      */
     public Expression notContainsValuesCollection(Collection<V> values) {
-        return ExpressionFactory.notInExp(getExpression(), values);
-    }
-
-    /**
-     * @return An expression for finding objects with values not in the given set.
-     * @deprecated in favour of {@link #notContainsValues(V...)}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    @SafeVarargs
-    public final Expression notContains(V firstValue, V... moreValues) {
-
-        int moreValuesLength = moreValues != null ? moreValues.length : 0;
-
-        Object[] values = new Object[moreValuesLength + 1];
-        values[0] = firstValue;
-
-        if (moreValuesLength > 0) {
-            System.arraycopy(moreValues, 0, values, 1, moreValuesLength);
-        }
-
         return ExpressionFactory.notInExp(getExpression(), values);
     }
 
@@ -190,37 +132,9 @@ public class MapProperty<K, V extends Persistent> extends BaseProperty<Map<K, V>
 
     /**
      * @return An expression for finding objects with given id set
-     * @deprecated in favour of {@link #containsIds(Object...)}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public Expression containsId(Object firstId, Object... moreId) {
-
-        int moreValuesLength = moreId != null ? moreId.length : 0;
-
-        Object[] values = new Object[moreValuesLength + 1];
-        values[0] = firstId;
-
-        if (moreValuesLength > 0) {
-            System.arraycopy(moreId, 0, values, 1, moreValuesLength);
-        }
-
-        return ExpressionFactory.inExp(getExpression(), values);
-    }
-
-    /**
-     * @return An expression for finding objects with given id set
      * @since 5.0
      */
     public Expression containsIds(Object... ids) {
-        return ExpressionFactory.inExp(getExpression(), ids);
-    }
-
-    /**
-     * @return An expression for finding objects with given id set.
-     * @deprecated in favour of {@link #containsIdsCollection(Collection)}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public Expression containsId(Collection<Object> ids) {
         return ExpressionFactory.inExp(getExpression(), ids);
     }
 
@@ -243,37 +157,9 @@ public class MapProperty<K, V extends Persistent> extends BaseProperty<Map<K, V>
 
     /**
      * @return An expression for finding objects without given id set.
-     * @deprecated in favour of {@link #notContainsIds(Object...)}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public Expression notContainsId(Object firstId, Object... moreId) {
-
-        int moreValuesLength = moreId != null ? moreId.length : 0;
-
-        Object[] values = new Object[moreValuesLength + 1];
-        values[0] = firstId;
-
-        if (moreValuesLength > 0) {
-            System.arraycopy(moreId, 0, values, 1, moreValuesLength);
-        }
-
-        return ExpressionFactory.notInExp(getExpression(), values);
-    }
-
-    /**
-     * @return An expression for finding objects without given id set.
      * @since 5.0
      */
     public Expression notContainsIds(Object... ids) {
-        return ExpressionFactory.notInExp(getExpression(), ids);
-    }
-
-    /**
-     * @return An expression for finding objects without given id set.
-     * @deprecated in favour of {@link #notContainsIdsCollection(Collection)}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public Expression notContainsId(Collection<Object> ids) {
         return ExpressionFactory.notInExp(getExpression(), ids);
     }
 

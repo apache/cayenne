@@ -58,20 +58,4 @@ public interface QueryRouter {
      */
     DataNode nodeForDataMap(DataMap map);
 
-    /**
-     * @since 4.0
-     * @deprecated renamed to {@link #nodeForName(String)}.
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    default DataNode engineForName(String name) {
-        return nodeForName(name);
-    }
-
-    /**
-     * @deprecated renamed to {@link #nodeForDataMap(DataMap)}.
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    default DataNode engineForDataMap(DataMap map) {
-        return nodeForDataMap(map);
-    }
 }

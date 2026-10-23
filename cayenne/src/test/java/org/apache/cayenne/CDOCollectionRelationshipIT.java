@@ -58,7 +58,7 @@ public class CDOCollectionRelationshipIT {
     @Test
     public void readToMany() throws Exception {
 
-        CollectionToMany o1 = Cayenne.objectForPK(env.context(), CollectionToMany.class, 1);
+        CollectionToMany o1 = env.context().objectForPK(CollectionToMany.class, 1);
 
         Collection<?> targets = o1.getTargets();
 
@@ -67,17 +67,11 @@ public class CDOCollectionRelationshipIT {
 
         assertEquals(3, targets.size());
 
-        assertTrue(targets.contains(Cayenne.objectForPK(
-                o1.getObjectContext(),
-                CollectionToManyTarget.class,
+        assertTrue(targets.contains(o1.getObjectContext().objectForPK(CollectionToManyTarget.class,
                 1)));
-        assertTrue(targets.contains(Cayenne.objectForPK(
-                o1.getObjectContext(),
-                CollectionToManyTarget.class,
+        assertTrue(targets.contains(o1.getObjectContext().objectForPK(CollectionToManyTarget.class,
                 2)));
-        assertTrue(targets.contains(Cayenne.objectForPK(
-                o1.getObjectContext(),
-                CollectionToManyTarget.class,
+        assertTrue(targets.contains(o1.getObjectContext().objectForPK(CollectionToManyTarget.class,
                 3)));
     }
 
@@ -95,24 +89,18 @@ public class CDOCollectionRelationshipIT {
         assertNotNull(targets);
         assertEquals(3, targets.size());
 
-        assertTrue(targets.contains(Cayenne.objectForPK(
-                o1.getObjectContext(),
-                CollectionToManyTarget.class,
+        assertTrue(targets.contains(o1.getObjectContext().objectForPK(CollectionToManyTarget.class,
                 1)));
-        assertTrue(targets.contains(Cayenne.objectForPK(
-                o1.getObjectContext(),
-                CollectionToManyTarget.class,
+        assertTrue(targets.contains(o1.getObjectContext().objectForPK(CollectionToManyTarget.class,
                 2)));
-        assertTrue(targets.contains(Cayenne.objectForPK(
-                o1.getObjectContext(),
-                CollectionToManyTarget.class,
+        assertTrue(targets.contains(o1.getObjectContext().objectForPK(CollectionToManyTarget.class,
                 3)));
     }
 
     @Test
     public void addToMany() throws Exception {
 
-        CollectionToMany o1 = Cayenne.objectForPK(env.context(), CollectionToMany.class, 1);
+        CollectionToMany o1 = env.context().objectForPK(CollectionToMany.class, 1);
 
         Collection<?> targets = o1.getTargets();
         assertNotNull(targets);
@@ -135,14 +123,12 @@ public class CDOCollectionRelationshipIT {
     @Test
     public void removeToMany() throws Exception {
 
-        CollectionToMany o1 = Cayenne.objectForPK(env.context(), CollectionToMany.class, 1);
+        CollectionToMany o1 = env.context().objectForPK(CollectionToMany.class, 1);
 
         Collection<?> targets = o1.getTargets();
         assertEquals(3, targets.size());
 
-        CollectionToManyTarget target = Cayenne.objectForPK(
-                o1.getObjectContext(),
-                CollectionToManyTarget.class,
+        CollectionToManyTarget target = o1.getObjectContext().objectForPK(CollectionToManyTarget.class,
                 2);
         o1.removeFromTargets(target);
 
@@ -160,7 +146,7 @@ public class CDOCollectionRelationshipIT {
     @Test
     public void addToManyViaReverse() throws Exception {
 
-        CollectionToMany o1 = Cayenne.objectForPK(env.context(), CollectionToMany.class, 1);
+        CollectionToMany o1 = env.context().objectForPK(CollectionToMany.class, 1);
 
         Collection<?> targets = o1.getTargets();
         assertNotNull(targets);

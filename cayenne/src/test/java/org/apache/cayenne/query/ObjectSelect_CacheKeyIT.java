@@ -75,7 +75,7 @@ public class ObjectSelect_CacheKeyIT {
         assertNull(md1.getCacheGroup());
 
         ObjectSelect<Artist> q2 = ObjectSelect.query(Artist.class);
-        q2.useLocalCache("g1");
+        q2.localCache("g1");
 
         QueryMetadata md2 = q2.getMetaData(env.entityResolver());
         assertEquals(QueryCacheStrategy.LOCAL_CACHE, md2.getCacheStrategy());

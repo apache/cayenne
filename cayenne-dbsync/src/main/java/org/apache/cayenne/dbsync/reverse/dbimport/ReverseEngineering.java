@@ -242,14 +242,6 @@ public class ReverseEngineering extends SchemaContainer implements XMLSerializab
         return stripFromTableNames;
     }
 
-    /**
-     * @return false
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public boolean isUsePrimitives() {
-        return false;
-    }
-
     public boolean isUseJava7Types() {
         return useJava7Types;
     }
@@ -276,13 +268,6 @@ public class ReverseEngineering extends SchemaContainer implements XMLSerializab
 
     public void setStripFromTableNames(String stripFromTableNames) {
         this.stripFromTableNames = stripFromTableNames;
-    }
-
-    /**
-     * does nothing
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public void setUsePrimitives(boolean usePrimitives) {
     }
 
     public void setUseJava7Types(boolean useJava7Types) {

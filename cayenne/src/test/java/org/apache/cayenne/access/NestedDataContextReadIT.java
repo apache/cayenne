@@ -135,15 +135,15 @@ public class NestedDataContextReadIT {
 
         Persistent _new = context.newObject(Artist.class);
 
-        Persistent hollow = Cayenne.objectForPK(context, Artist.class, 33001);
+        Persistent hollow = context.objectForPK(Artist.class, 33001);
         context.invalidateObjects(hollow);
 
-        Persistent committed = Cayenne.objectForPK(context, Artist.class, 33002);
+        Persistent committed = context.objectForPK(Artist.class, 33002);
 
-        Artist modified = Cayenne.objectForPK(context, Artist.class, 33003);
+        Artist modified = context.objectForPK(Artist.class, 33003);
         modified.setArtistName("MODDED");
 
-        Persistent deleted = Cayenne.objectForPK(context, Artist.class, 33004);
+        Persistent deleted = context.objectForPK(Artist.class, 33004);
         context.deleteObjects(deleted);
 
         assertEquals(PersistenceState.HOLLOW, hollow.getPersistenceState());
@@ -189,26 +189,24 @@ public class NestedDataContextReadIT {
 
         // test how different object states appear in the child on select
 
-        Painting hollowTargetSrc = Cayenne.objectForPK(context, Painting.class, 33001);
+        Painting hollowTargetSrc = context.objectForPK(Painting.class, 33001);
         Artist hollowTarget = hollowTargetSrc.getToArtist();
 
-        Painting modifiedTargetSrc = Cayenne.objectForPK(context, Painting.class, 33002);
+        Painting modifiedTargetSrc = context.objectForPK(Painting.class, 33002);
         Artist modifiedTarget = modifiedTargetSrc.getToArtist();
         modifiedTarget.setArtistName("M1");
 
-        final Painting deletedTargetSrc = Cayenne.objectForPK(
-                context,
-                Painting.class,
+        final Painting deletedTargetSrc = context.objectForPK(Painting.class,
                 33003);
         Artist deletedTarget = deletedTargetSrc.getToArtist();
         deletedTargetSrc.setToArtist(null);
         context.deleteObjects(deletedTarget);
 
-        Painting committedTargetSrc = Cayenne.objectForPK(context, Painting.class, 33004);
+        Painting committedTargetSrc = context.objectForPK(Painting.class, 33004);
         Artist committedTarget = committedTargetSrc.getToArtist();
         committedTarget.getArtistName();
 
-        final Painting newTargetSrc = Cayenne.objectForPK(context, Painting.class, 33005);
+        final Painting newTargetSrc = context.objectForPK(Painting.class, 33005);
         Artist newTarget = context.newObject(Artist.class);
         newTarget.setArtistName("N1");
         newTargetSrc.setToArtist(newTarget);

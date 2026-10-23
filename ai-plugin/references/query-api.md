@@ -171,7 +171,7 @@ ObjectSelect.query(Artist.class).where(Artist.SELF.idsIn(1, 2, 3).orExp(Artist.A
 ObjectSelect.query(Painting.class).where(Painting.TO_ARTIST.eqId(42));
 ```
 
-`SelectById` is deprecated in 5.0 — do not use it in new code.
+`SelectById` was removed in 6.0 — do not use it.
 
 ## SQLSelect / SQLExec — raw SQL
 

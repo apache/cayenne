@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.reflect;
 
-import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.mixed_persistence_strategy.MixedPersistenceStrategy;
 import org.apache.cayenne.testdo.mixed_persistence_strategy.MixedPersistenceStrategy2;
@@ -62,9 +61,7 @@ public class MixedPersistenceStrategyIT {
 
         createConflictingFieldDataSet();
 
-        MixedPersistenceStrategy object = Cayenne.objectForPK(
-                env.context(),
-                MixedPersistenceStrategy.class,
+        MixedPersistenceStrategy object = env.context().objectForPK(MixedPersistenceStrategy.class,
                 1);
 
         assertEquals(2, object.getDetails().size());
@@ -79,14 +76,10 @@ public class MixedPersistenceStrategyIT {
 
         createConflictingFieldDataSet();
 
-        MixedPersistenceStrategy2 detail1 = Cayenne.objectForPK(
-                env.context(),
-                MixedPersistenceStrategy2.class,
+        MixedPersistenceStrategy2 detail1 = env.context().objectForPK(MixedPersistenceStrategy2.class,
                 1);
 
-        MixedPersistenceStrategy2 detail2 = Cayenne.objectForPK(
-                env.context(),
-                MixedPersistenceStrategy2.class,
+        MixedPersistenceStrategy2 detail2 = env.context().objectForPK(MixedPersistenceStrategy2.class,
                 2);
 
         // resolve master (this is where CAY-582 exception happens)

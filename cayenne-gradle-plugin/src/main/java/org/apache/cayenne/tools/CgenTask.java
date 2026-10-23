@@ -198,16 +198,6 @@ public class CgenTask extends BaseCayenneTask {
     private Boolean createPropertyNames;
 
     /**
-     * No longer has any effect - cgen always regenerates classes.
-     *
-     * @since 4.1
-     * @deprecated cgen runs unconditionally
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    @Input
-    private boolean force;
-
-    /**
      * Location of Velocity template file for DataMap class generation.
      * DataMap class provides utilities for usage of the Cayenne queries stored in the DataMap.
      * If omitted, default template is used.
@@ -261,10 +251,6 @@ public class CgenTask extends BaseCayenneTask {
     @TaskAction
     public void generate() {
         File dataMapFile = getDataMapFile();
-
-        if (force || getProject().hasProperty("force")) {
-            getLogger().warn("'force' is deprecated and ignored. cgen always regenerates classes.");
-        }
 
         injector = new ToolsInjectorBuilder()
                 .addModule(new ToolsModule(LoggerFactory.getLogger(CgenTask.class)))
@@ -722,30 +708,6 @@ public class CgenTask extends BaseCayenneTask {
 
     public void createPropertyNames(boolean createPropertyNames) {
         setCreatePropertyNames(createPropertyNames);
-    }
-
-    /**
-     * @deprecated cgen runs unconditionally
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public boolean isForce() {
-        return force;
-    }
-
-    /**
-     * @deprecated cgen runs unconditionally
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public void setForce(boolean force) {
-        this.force = force;
-    }
-
-    /**
-     * @deprecated cgen runs unconditionally
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public void force(boolean force) {
-        setForce(force);
     }
 
     public void setCreatePKProperties(Boolean createPKProperties) {

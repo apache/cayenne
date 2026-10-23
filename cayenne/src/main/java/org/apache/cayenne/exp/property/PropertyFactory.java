@@ -404,30 +404,6 @@ public class PropertyFactory {
         return new SelfProperty<>(CayennePath.EMPTY_PATH, ExpressionFactory.fullObjectExp(), type);
     }
 
-    /**
-     * <b>Self</b> property allows to create column queries that return
-     * full objects along with custom column set.
-     *  <p>
-     *  This method is not much useful, as to-one property can be used as is in this case,
-     *  example is purely for demonstration purpose only. See {@link EntityProperty} usage examples.
-     *  <p>
-     *  Usage example, query will return object with dependent objects count:<pre>{@code
-     *  List<Object[]> result = ObjectSelect.columnQuery(Painting.class,
-     *          Painting.PAINTING_TITLE,
-     *          PropertyFactory.createSelf(Painting.TO_ARTIST.getExpression(), Painting.class))
-     *      .select(context); }</pre>
-     *
-     * @param expression expression to be used for this property (usually it will be path from other property)
-     * @param type of represented entity
-     * @param <T> type of represented entity
-     * @return new 'self' property
-     * @deprecated use {@link #createEntity(Expression, Class)}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public static <T extends Persistent> EntityProperty<T> createSelf(Expression expression, Class<T> type) {
-        return createEntity(expression, type);
-    }
-
     // ToMany relationship properties
 
     /**

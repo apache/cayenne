@@ -111,10 +111,6 @@ ${project.basedir}/src/main/resources/my.map.xml
 .^|boolean
 .^|If set to "true", will generate String Property names. Default is "false"
 
-.^|force
-.^|boolean
-.^|_Deprecated and ignored._ cgen always regenerates classes, so there is nothing left to force.
-
 .^|createPKProperties
 .^|boolean
 .^|If set to "true", will generate PK attributes as Properties. Default is "false".
@@ -254,10 +250,6 @@ a|Regex that matches the part of the table name that needs to be stripped off wh
 <!-- Strip multiple occurrences in the middle -->
 <stripFromTableNames>_abc</stripFromTableNames>
 ----
-
-.^|usePrimitives
-.^|boolean
-.^|Whether numeric and boolean data types should be mapped as Java primitives or Java classes. Default is "true", i.e. primitives will be used.
 
 .^|useJava7Types
 .^|boolean

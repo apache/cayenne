@@ -94,7 +94,7 @@ public class EntityInheritanceIT {
 
         int subEntityId = Cayenne.intPKForObject(subEntity);
 
-        BaseEntity forPkLoadedEntity = Cayenne.objectForPK(env.context(), BaseEntity.class, subEntityId);
+        BaseEntity forPkLoadedEntity = env.context().objectForPK(BaseEntity.class, subEntityId);
         assertEquals(forPkLoadedEntity.getClass(), SubEntity.class);
 
         BaseEntity selectLoadedEntity = ObjectSelect.query(BaseEntity.class)

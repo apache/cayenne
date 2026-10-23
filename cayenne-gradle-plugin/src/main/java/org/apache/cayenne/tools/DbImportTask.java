@@ -32,7 +32,6 @@ import org.apache.cayenne.dbsync.reverse.dbimport.DbImportConfiguration;
 import org.apache.cayenne.dbsync.reverse.dbimport.DbImportConfigurationValidator;
 import org.apache.cayenne.dbsync.reverse.dbimport.DbImportModule;
 import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
-import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
 import org.apache.cayenne.dbsync.reverse.filters.FiltersConfigBuilder;
 import org.apache.cayenne.di.ClassLoaderManager;
 import org.apache.cayenne.di.DIBootstrap;
@@ -155,7 +154,6 @@ public class DbImportTask extends BaseCayenneTask {
         config.setForceDataMapCatalog(reverseEngineering.isForceDataMapCatalog());
         config.setForceDataMapSchema(reverseEngineering.isForceDataMapSchema());
         config.setDefaultPackage(reverseEngineering.getDefaultPackage());
-        config.setUsePrimitives(reverseEngineering.isUsePrimitives());
         config.setUseJava7Types(reverseEngineering.isUseJava7Types());
         config.setCayenneProject(cayenneProject);
 

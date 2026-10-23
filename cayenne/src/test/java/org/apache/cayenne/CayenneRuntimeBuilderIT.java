@@ -20,6 +20,7 @@ package org.apache.cayenne;
 
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.datasource.CayenneDataSource;
 import org.apache.cayenne.project.DataSourceDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.query.SQLSelect;
@@ -66,16 +67,21 @@ public class CayenneRuntimeBuilderIT {
                 .insert(33002, "AA2");
     }
 
+    private DataSource dataSourceFromDescriptor() {
+        return CayenneDataSource.of(dsi.getDataSourceUrl())
+                .driverClass(dsi.getJdbcDriver())
+                .userName(dsi.getUserName())
+                .password(dsi.getPassword())
+                .pool(1, 2)
+                .build();
+    }
+
     @Test
     public void configFree_WithDBParams() {
 
         localRuntime = new CayenneRuntimeBuilder(null)
-                .jdbcDriver(dsi.getJdbcDriver())
-                .url(dsi.getDataSourceUrl())
-                .password(dsi.getPassword())
-                .user(dsi.getUserName())
-                .minConnections(1)
-                .maxConnections(2).build();
+                .defaultDataNode(dataSourceFromDescriptor())
+                .build();
 
         List<DataRow> result = SQLSelect.dataRowQuery("SELECT * FROM ARTIST").select(localRuntime.newContext());
         assertEquals(2, result.size());
@@ -84,9 +90,10 @@ public class CayenneRuntimeBuilderIT {
     @Test
     public void configFree_WithDBParams_WithProject() {
 
-        localRuntime = new CayenneRuntimeBuilder(null).addConfig(CayenneProjects.TESTMAP_PROJECT)
-                .jdbcDriver(dsi.getJdbcDriver()).url(dsi.getDataSourceUrl()).password(dsi.getPassword())
-                .user(dsi.getUserName()).minConnections(1).maxConnections(2).build();
+        localRuntime = new CayenneRuntimeBuilder(null)
+                .addConfig(CayenneProjects.TESTMAP_PROJECT)
+                .defaultDataNode(dataSourceFromDescriptor())
+                .build();
 
         DataMap map = localRuntime.getDataDomain().getDataMap("testmap");
         assertNotNull(map);

@@ -55,7 +55,7 @@ public class CDOOneToManyFKIT {
 
         env.context().invalidateObjects(src, target, src2);
 
-        ToManyFkRoot src1 = (ToManyFkRoot) Cayenne.objectForPK(env.context(), src.getObjectId());
+        ToManyFkRoot src1 = (ToManyFkRoot) env.context().objectForPK(src.getObjectId());
         assertNotNull(src1.getDeps());
         assertEquals(1, src1.getDeps().size());
         // resolve HOLLOW
@@ -63,7 +63,7 @@ public class CDOOneToManyFKIT {
 
         env.context().invalidateObjects(src1, src1.getDeps().get(0));
 
-        ToManyFkDep target2 = (ToManyFkDep) Cayenne.objectForPK(env.context(), target.getObjectId());
+        ToManyFkDep target2 = (ToManyFkDep) env.context().objectForPK(target.getObjectId());
         assertNotNull(target2.getRoot());
 
         // resolve HOLLOW

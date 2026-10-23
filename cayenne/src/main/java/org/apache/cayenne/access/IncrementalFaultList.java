@@ -135,17 +135,6 @@ public class IncrementalFaultList<E> implements List<E> {
 	}
 
 	/**
-	 * Performs initialization of the list of objects. Only the first page is
-	 * fully resolved. For the rest of the list, only ObjectIds are read.
-	 * 
-	 * @since 3.0
-	 * @deprecated does nothing
-	 */
-	@Deprecated(since = "5.0", forRemoval = true)
-	protected void fillIn(final Query query, List<Object> elementsList) {
-	}
-
-	/**
 	 * Sets initial data (i.e. list of ObjectIds) for this FaultList
 	 *
 	 * @param elementsList initial data to fill this list with

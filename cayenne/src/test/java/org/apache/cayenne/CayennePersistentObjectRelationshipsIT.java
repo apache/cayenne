@@ -75,7 +75,7 @@ public class CayennePersistentObjectRelationshipsIT {
     public void readNestedProperty1() throws Exception {
         createArtistWithPaintingDataSet();
 
-        Painting p1 = Cayenne.objectForPK(env.context(), Painting.class, 6);
+        Painting p1 = env.context().objectForPK(Painting.class, 6);
         assertEquals("aX", p1.readNestedProperty("toArtist.artistName"));
     }
 
@@ -83,7 +83,7 @@ public class CayennePersistentObjectRelationshipsIT {
     public void readNestedProperty2() throws Exception {
         createArtistWithPaintingDataSet();
 
-        Painting p1 = Cayenne.objectForPK(env.context(), Painting.class, 6);
+        Painting p1 = env.context().objectForPK(Painting.class, 6);
         assertInstanceOf(List.class, p1.getToArtist().readNestedProperty("paintingArray"));
     }
 
@@ -91,7 +91,7 @@ public class CayennePersistentObjectRelationshipsIT {
     public void reciprocalRel1() throws Exception {
         createArtistWithPaintingDataSet();
 
-        Painting p1 = Cayenne.objectForPK(env.context(), Painting.class, 6);
+        Painting p1 = env.context().objectForPK(Painting.class, 6);
         Artist a1 = p1.getToArtist();
 
         assertNotNull(a1);
@@ -107,7 +107,7 @@ public class CayennePersistentObjectRelationshipsIT {
     public void readToOneRel1() throws Exception {
         createArtistWithPaintingDataSet();
 
-        Painting p1 = Cayenne.objectForPK(env.context(), Painting.class, 6);
+        Painting p1 = env.context().objectForPK(Painting.class, 6);
         Artist a1 = p1.getToArtist();
 
         assertNotNull(a1);
@@ -121,7 +121,7 @@ public class CayennePersistentObjectRelationshipsIT {
         // test chained calls to read relationships
         createArtistWithPaintingAndInfoDataSet();
 
-        PaintingInfo pi1 = Cayenne.objectForPK(env.context(), PaintingInfo.class, 6);
+        PaintingInfo pi1 = env.context().objectForPK(PaintingInfo.class, 6);
         Painting p1 = pi1.getPainting();
         p1.getPaintingTitle();
 
@@ -137,7 +137,7 @@ public class CayennePersistentObjectRelationshipsIT {
     public void readToOneRel3() throws Exception {
         createArtistWithPaintingDataSet();
 
-        Painting p1 = Cayenne.objectForPK(env.context(), Painting.class, 6);
+        Painting p1 = env.context().objectForPK(Painting.class, 6);
         Gallery g1 = p1.getToGallery();
         assertNull(g1);
     }
@@ -146,7 +146,7 @@ public class CayennePersistentObjectRelationshipsIT {
     public void readToManyRel1() throws Exception {
         createArtistWithPaintingDataSet();
 
-        Artist a1 = Cayenne.objectForPK(env.context(), Artist.class, 8);
+        Artist a1 = env.context().objectForPK(Artist.class, 8);
         List<Painting> plist = a1.getPaintingArray();
 
         assertNotNull(plist);
@@ -160,7 +160,7 @@ public class CayennePersistentObjectRelationshipsIT {
         // test empty relationship
         tArtist.insert(11, "aX");
 
-        Artist a1 = Cayenne.objectForPK(env.context(), Artist.class, 11);
+        Artist a1 = env.context().objectForPK(Artist.class, 11);
         List<Painting> plist = a1.getPaintingArray();
 
         assertNotNull(plist);

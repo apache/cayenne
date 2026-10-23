@@ -1186,7 +1186,7 @@ public class VerticalInheritanceIT {
 		// This rebuilds the shared cached snapshot for the child.
 		{
 			ObjectContext freshContext = runtime.newContext();
-			IvImpl impl = Cayenne.objectForPK(freshContext, IvImpl.class, 1);
+			IvImpl impl = freshContext.objectForPK(IvImpl.class, 1);
 			impl.setAttr1("attr1-first");
 			freshContext.commitChanges();
 		}
@@ -1195,7 +1195,7 @@ public class VerticalInheritanceIT {
 		// objectForPK is served from the cached snapshot
 		{
 			ObjectContext freshContext = runtime.newContext();
-			IvImpl impl = Cayenne.objectForPK(freshContext, IvImpl.class, 1);
+			IvImpl impl = freshContext.objectForPK(IvImpl.class, 1);
 			impl.setAttr1("attr1-second");
 			freshContext.commitChanges();
 		}

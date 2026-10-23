@@ -192,16 +192,6 @@ public class PropertyFactoryTest {
     }
 
     @Test
-    public void createSelf1() {
-        EntityProperty<Artist> property = PropertyFactory
-                .createSelf(exp("path"), Artist.class);
-
-        assertNull(property.getName());
-        assertEquals(exp("path"), property.getExpression());
-        assertEquals(Artist.class, property.getType());
-    }
-
-    @Test
     public void createList() {
         ListProperty<Artist> property = PropertyFactory
                 .createList("path", Artist.class);

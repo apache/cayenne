@@ -76,26 +76,6 @@ public class CayenneRuntime {
     }
 
     /**
-     * Creates a builder of CayenneRuntime.
-     *
-     * @deprecated use {@link #of()} instead
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public static CayenneRuntimeBuilder builder() {
-        return of();
-    }
-
-    /**
-     * Creates a builder of CayenneRuntime.
-     *
-     * @deprecated use {@link #of(String)} instead
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public static CayenneRuntimeBuilder builder(String name) {
-        return of(name);
-    }
-
-    /**
      * Creates a runtime configuring it with a standard set of services
      * contained in {@link org.apache.cayenne.CoreModule}. CoreModule is created with
      * one or more 'configurationLocations'. An optional array of extra modules
@@ -176,16 +156,6 @@ public class CayenneRuntime {
     }
 
     /**
-     * Returns the runtime {@link DataChannel}.
-     *
-     * @deprecated in favor of {@link #getDataDomain()}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public DataChannel getChannel() {
-        return getDataDomain();
-    }
-
-    /**
      * Returns the main runtime DataDomain.
      */
     public DataDomain getDataDomain() {
@@ -238,17 +208,6 @@ public class CayenneRuntime {
     }
 
     /**
-     * Returns the collection of modules used to initialize this runtime.
-     *
-     * @since 4.0
-     * @deprecated this is fairly useless. Modules are opaque. {@link #getInjector()} is the closest useful thing.
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public Collection<Module> getModules() {
-        return modules;
-    }
-
-    /**
      * Returns DI injector used by this runtime.
      */
     public Injector getInjector() {
@@ -275,17 +234,6 @@ public class CayenneRuntime {
     public ObjectContext newContext() {
         DataDomain domain = getDataDomain();
         return injector.getInstance(ObjectContextFactory.class).createContext(domain);
-    }
-
-    /**
-     * Returns a new ObjectContext attached to the specified DataChannel.
-     *
-     * @since 4.0
-     * @deprecated use either {@link #newContext()} or {@link #newContext(ObjectContext)}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public ObjectContext newContext(DataChannel parentChannel) {
-        return injector.getInstance(ObjectContextFactory.class).createContext(parentChannel);
     }
 
     /**

@@ -26,15 +26,6 @@ public interface SQLAppendable {
 
     SQLAppendable append(String str);
 
-    /**
-     * @deprecated unused; no SQL tree node appends a sub-range. Kept for binary compatibility,
-     * now delegating to {@link #append(String)}.
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    default SQLAppendable append(CharSequence csq, int start, int end) {
-        return append(csq.subSequence(start, end).toString());
-    }
-
     SQLAppendable append(char c);
 
     SQLAppendable append(int i);

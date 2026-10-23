@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
-import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.test.parallel.ParallelTestContainer;
@@ -102,7 +101,7 @@ public class DataContextObjectStoreGCIT {
                 "insert into ARTIST (ARTIST_ID, ARTIST_NAME) values (1, 'aa')"));
 
         assertEquals(0, context.getObjectStore().registeredObjectsCount());
-        Artist a = Cayenne.objectForPK(context, Artist.class, 1);
+        Artist a = context.objectForPK(Artist.class, 1);
         a.setArtistName("Y");
         a = null;
         assertEquals(1, context.getObjectStore().registeredObjectsCount());

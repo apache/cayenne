@@ -50,18 +50,6 @@ public class DataRowStore {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DataRowStore.class);
 
-    /**
-     * @deprecated unused
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public static final long SNAPSHOT_EXPIRATION_DEFAULT = 2 * 60 * 60;
-
-    /**
-     * @deprecated use {@link DefaultDataRowStoreFactory#SNAPSHOT_CACHE_SIZE_DEFAULT}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public static final int SNAPSHOT_CACHE_SIZE_DEFAULT = DefaultDataRowStoreFactory.SNAPSHOT_CACHE_SIZE_DEFAULT;
-
     protected String name;
     private final int maxSize;
     protected final ConcurrentMap<ObjectId, DataRow> snapshots;

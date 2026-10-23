@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
-import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -87,8 +86,8 @@ public class DataContextJoinAliasesIT {
 
         createMatchAllDataSet();
 
-        Artist picasso = Cayenne.objectForPK(env.context(), Artist.class, 1);
-        Artist dali = Cayenne.objectForPK(env.context(), Artist.class, 2);
+        Artist picasso = env.context().objectForPK(Artist.class, 1);
+        Artist dali = env.context().objectForPK(Artist.class, 2);
 
         List<Gallery> galleries = ObjectSelect.query(Gallery.class)
                 .where(ExpressionFactory.matchAllExp("|exhibitArray.artistExhibitArray.toArtist", picasso, dali))

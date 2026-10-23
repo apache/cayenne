@@ -52,7 +52,7 @@ List<Artist> list = ObjectSelect.query(Artist.class).byIds(1, 2, 3).select(ctx);
 ```
 
 Both accept a scalar, a `Map<String, Object>` of PK column → value (the form for composite PKs), or an
-`ObjectId`, and `byIds(..)` may mix them. `SelectById` is deprecated — never generate it. If the object is likely
+`ObjectId`, and `byIds(..)` may mix them. `SelectById` no longer exists — never generate it. If the object is likely
 already in the context and no query customization is needed, `ctx.objectForPK(Artist.class, 42)` resolves it
 from the session cache without a SQL query.
 

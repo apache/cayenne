@@ -289,7 +289,7 @@ public class CayennePersistentObjectInContextIT {
         // refetch
         context.invalidateObjects(object);
 
-        Artist object2 = Cayenne.objectForPK(context, Artist.class, 3);
+        Artist object2 = context.objectForPK(Artist.class, 3);
         assertNotNull(object2);
         assertEquals("ABC1", object2.getArtistName());
     }

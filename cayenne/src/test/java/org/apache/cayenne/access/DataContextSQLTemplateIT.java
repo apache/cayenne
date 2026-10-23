@@ -260,7 +260,7 @@ public class DataContextSQLTemplateIT {
 	public void bindObjectEqualShort() throws Exception {
 		createFourArtistsAndThreePaintingsDataSet();
 
-		Artist a = Cayenne.objectForPK(context, Artist.class, 101);
+		Artist a = context.objectForPK(Artist.class, 101);
 
 		String template = "SELECT * FROM PAINTING " + "WHERE #bindObjectEqual($a) ORDER BY PAINTING_ID";
 		SQLTemplate query = new SQLTemplate(Painting.class, template);
@@ -278,7 +278,7 @@ public class DataContextSQLTemplateIT {
 	public void bindObjectNotEqualShort() throws Exception {
 		createFourArtistsAndThreePaintingsDataSet();
 
-		Artist a = Cayenne.objectForPK(context, Artist.class, 101);
+		Artist a = context.objectForPK(Artist.class, 101);
 
 		String template = "SELECT * FROM PAINTING " + "WHERE #bindObjectNotEqual($a) ORDER BY PAINTING_ID";
 		SQLTemplate query = new SQLTemplate(Painting.class, template);
@@ -300,7 +300,7 @@ public class DataContextSQLTemplateIT {
 	public void bindObjectEqualFull() throws Exception {
 		createFourArtistsAndThreePaintingsDataSet();
 
-		Artist a = Cayenne.objectForPK(context, Artist.class, 101);
+		Artist a = context.objectForPK(Artist.class, 101);
 
 		String template = "SELECT * FROM PAINTING t0"
 				+ " WHERE #bindObjectEqual($a [ 't0.ARTIST_ID' ] [ 'ARTIST_ID' ] ) ORDER BY PAINTING_ID";
@@ -319,7 +319,7 @@ public class DataContextSQLTemplateIT {
 	public void bindObjectEqualFullNonArray() throws Exception {
 		createFourArtistsAndThreePaintingsDataSet();
 
-		Artist a = Cayenne.objectForPK(context, Artist.class, 101);
+		Artist a = context.objectForPK(Artist.class, 101);
 
 		String template = "SELECT * FROM PAINTING t0"
 				+ " WHERE #bindObjectEqual($a 't0.ARTIST_ID' 'ARTIST_ID' ) ORDER BY PAINTING_ID";
@@ -355,7 +355,7 @@ public class DataContextSQLTemplateIT {
 	public void bindObjectNotEqualFull() throws Exception {
 		createFourArtistsAndThreePaintingsDataSet();
 
-		Artist a = Cayenne.objectForPK(context, Artist.class, 101);
+		Artist a = context.objectForPK(Artist.class, 101);
 
 		String template = "SELECT * FROM PAINTING t0"
 				+ " WHERE #bindObjectNotEqual($a [ 't0.ARTIST_ID' ] [ 'ARTIST_ID' ] ) ORDER BY PAINTING_ID";

@@ -45,16 +45,6 @@ public abstract class Entity<
 
     public static final String PATH_SEPARATOR = ".";
 
-    /**
-     * A suffix that can be used in a path component to indicate that an OUTER JOIN should be used when resolving
-     * the expression.
-     *
-     * @since 3.0
-     * @deprecated in favor of {@link CayennePath#OUTER_JOIN_INDICATOR}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public static final String OUTER_JOIN_INDICATOR = "+";
-
     protected String name;
     protected DataMap dataMap;
 

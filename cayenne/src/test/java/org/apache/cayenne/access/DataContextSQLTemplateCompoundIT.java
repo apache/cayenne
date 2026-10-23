@@ -73,9 +73,7 @@ public class DataContextSQLTemplateCompoundIT {
         pk.put(CompoundPkTestEntity.KEY1_PK_COLUMN, "a1");
         pk.put(CompoundPkTestEntity.KEY2_PK_COLUMN, "a2");
 
-        CompoundPkTestEntity a = Cayenne.objectForPK(
-                context,
-                CompoundPkTestEntity.class,
+        CompoundPkTestEntity a = context.objectForPK(CompoundPkTestEntity.class,
                 pk);
 
         String template = "SELECT * FROM COMPOUND_FK_TEST t0"
@@ -99,9 +97,7 @@ public class DataContextSQLTemplateCompoundIT {
         pk.put(CompoundPkTestEntity.KEY1_PK_COLUMN, "a1");
         pk.put(CompoundPkTestEntity.KEY2_PK_COLUMN, "a2");
 
-        CompoundPkTestEntity a = Cayenne.objectForPK(
-                context,
-                CompoundPkTestEntity.class,
+        CompoundPkTestEntity a = context.objectForPK(CompoundPkTestEntity.class,
                 pk);
 
         String template = "SELECT * FROM COMPOUND_FK_TEST t0"

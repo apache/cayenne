@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.access;
 
-import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
@@ -72,7 +71,7 @@ public class DataContextObjectStoreDiffRetainingIT {
     public void snapshotRetainedOnPropertyModification() throws Exception {
         createMixedDataSet();
 
-        Artist a = Cayenne.objectForPK(context, Artist.class, 2000);
+        Artist a = context.objectForPK(Artist.class, 2000);
         DataContextObjectStore objectStore = context.getObjectStore();
 
         assertNull(objectStore.getChangesByObjectId().get(a.getObjectId()));
@@ -85,7 +84,7 @@ public class DataContextObjectStoreDiffRetainingIT {
     public void snapshotRetainedOnRelAndPropertyModification() throws Exception {
         createMixedDataSet();
 
-        Artist a = Cayenne.objectForPK(context, Artist.class, 2000);
+        Artist a = context.objectForPK(Artist.class, 2000);
         DataContextObjectStore objectStore = context.getObjectStore();
 
         assertNull(objectStore.getChangesByObjectId().get(a.getObjectId()));

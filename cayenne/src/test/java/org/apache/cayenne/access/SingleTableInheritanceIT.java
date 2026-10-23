@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.access;
 
-import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.PeopleTestBase;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SQLTemplate;
@@ -168,7 +167,7 @@ public class SingleTableInheritanceIT extends PeopleTestBase {
                 PersonNotes.class,
                 "INSERT INTO PERSON_NOTES (ID, NOTES, PERSON_ID) VALUES (1, 'AA', 1)"));
 
-        PersonNotes note = Cayenne.objectForPK(context, PersonNotes.class, 1);
+        PersonNotes note = context.objectForPK(PersonNotes.class, 1);
         assertNotNull(note);
         assertNotNull(note.getPerson());
         assertTrue(note.getPerson() instanceof Employee);
@@ -354,7 +353,7 @@ public class SingleTableInheritanceIT extends PeopleTestBase {
         // CAY-592 - make sure modification of the address in a parallel context
         // doesn't mess up the Manager
 
-        e = (Employee) Cayenne.objectForPK(context2, e.getObjectId());
+        e = (Employee) context2.objectForPK(e.getObjectId());
         address = e.getAddresses().get(0);
 
         assertSame(e, address.getToEmployee());

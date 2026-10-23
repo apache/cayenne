@@ -89,21 +89,6 @@ public interface ClassDescriptor {
     ClassDescriptor getSuperclassDescriptor();
 
     /**
-     * Returns the most "specialized" descriptor for a given class.
-     * This method assumes that the following is true:
-     * 
-     * <pre>
-     * this.getObjectClass().isAssignableFrom(objectClass)
-     * </pre>
-     * @deprecated will throw UnsupportedOperationException on invocation,
-     *             use {@link #getSubclassDescriptor(String)}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    default ClassDescriptor getSubclassDescriptor(Class<?> unused) {
-        throw new UnsupportedOperationException("This method is deprecated, use getSubclassDescriptor(entityName) instead");
-    }
-
-    /**
      * Returns the most "specialized" descriptor for a given entity name.
      * @since 5.0
      */
@@ -225,68 +210,6 @@ public interface ClassDescriptor {
      * @since 5.0
      */
     DataRowLayout getSnapshotLayout();
-
-    /**
-     * Passes the visitor to the properties "visit" method for all properties declared in
-     * this descriptor and all its super-decsriptors. Properties that are overridden in
-     * subdescriptors will include overridden information. Walkthrough is terminated in
-     * case one of the properties returns false. Returns true if all visited properties
-     * returned true, false - if one property returned false.
-     *
-     * @deprecated iterate over {@link #getProperties()} instead.
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    default boolean visitProperties(PropertyVisitor visitor) {
-        for (PropertyDescriptor property : getProperties()) {
-            if (!property.visit(visitor)) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * Passes the visitor to the properties "visit" method for all properties declared in
-     * this descriptor. This property set excludes inherited properties, even those that
-     * got overridden in this subclass. Walkthrough is terminated in case one of the
-     * properties returns false. Returns true if all visited properties returned true,
-     * false - if one property returned false.
-     * 
-     * @since 3.0
-     * @deprecated iterate over {@link #getDeclaredProperties()} instead.
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    default boolean visitDeclaredProperties(PropertyVisitor visitor) {
-        for (PropertyDescriptor property : getDeclaredProperties()) {
-            if (!property.visit(visitor)) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * Passes the visitor to the properties "visit" method for a combination of all
-     * properties, including properties declared in this descriptor, its super
-     * descriptors, and all subdescriptors. Walkthrough is terminated in case one of the
-     * properties returns false. Returns true if all visited properties returned true,
-     * false - if one property returned false.
-     * 
-     * @since 3.0
-     * @deprecated iterate over {@link #getAllProperties()} instead.
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    default boolean visitAllProperties(PropertyVisitor visitor) {
-        for (PropertyDescriptor property : getAllProperties()) {
-            if (!property.visit(visitor)) {
-                return false;
-            }
-        }
-
-        return true;
-    }
 
     /**
      * Returns true if an object is not fully resolved.

@@ -217,7 +217,7 @@ public class DataContextConcurrentResolveIT {
         tArtist.insert(1, "a1");
         tPainting.insert(1, titleFor(1, 0), 1, 0);
 
-        Painting p = Cayenne.objectForPK(context, Painting.class, 1);
+        Painting p = context.objectForPK(Painting.class, 1);
         long version = p.getSnapshotVersion();
 
         DataRow dbRow = ObjectSelect.dataRowQuery(Painting.class).selectOne(context);
@@ -278,10 +278,10 @@ public class DataContextConcurrentResolveIT {
     public void childContextObjectTakesParentVersion() throws Exception {
         tArtist.insert(1, "a1");
 
-        Artist a = Cayenne.objectForPK(context, Artist.class, 1);
+        Artist a = context.objectForPK(Artist.class, 1);
 
         ObjectContext child = env.runtime().newContext(context);
-        Artist childA = Cayenne.objectForPK(child, Artist.class, 1);
+        Artist childA = child.objectForPK(Artist.class, 1);
 
         assertNotSame(a, childA);
         assertEquals("a1", childA.getArtistName());

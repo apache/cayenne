@@ -62,8 +62,6 @@ public enum Inspection {
     DB_ATTRIBUTE_NO_NAME(Group.DB_ATTRIBUTE, "Empty db attribute name"),
     DB_ATTRIBUTE_INVALID_NAME(Group.DB_ATTRIBUTE, "Invalid db attribute name"),
     DB_ATTRIBUTE_NO_TYPE(Group.DB_ATTRIBUTE, "Empty db attribute type"),
-    @Deprecated(since = "5.0", forRemoval = true)
-    DB_ATTRIBUTE_NO_LENGTH(Group.DB_ATTRIBUTE, "String db attribute has no length", true),
 
     DB_RELATIONSHIP_NO_NAME(Group.DB_RELATIONSHIP, "Empty db relationship name"),
     DB_RELATIONSHIP_NAME_DUPLICATE(Group.DB_RELATIONSHIP, "Duplicate of a db relationship name"),
@@ -94,8 +92,6 @@ public enum Inspection {
 
     PROCEDURE_PARAMETER_NO_NAME(Group.PROCEDURE_PARAMETER, "Empty procedure parameter name"),
     PROCEDURE_PARAMETER_NO_TYPE(Group.PROCEDURE_PARAMETER, "Empty procedure parameter type"),
-    @Deprecated(since = "5.0", forRemoval = true)
-    PROCEDURE_PARAMETER_NO_LENGTH(Group.PROCEDURE_PARAMETER, "String procedure parameter has no length", true),
     PROCEDURE_PARAMETER_NO_DIRECTION(Group.PROCEDURE_PARAMETER, "Procedure parameter has no direction"),
 
     QUERY_NO_NAME(Group.QUERY, "Empty query name"),

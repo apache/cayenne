@@ -72,12 +72,12 @@ public class CAY_194IT {
         context.commitChanges();
 
         List<?> parents = ObjectSelect.query(ReflexiveAndToOne.class)
-                .where(ReflexiveAndToOne.CHILDREN.contains(o2)).select(context);
+                .where(ReflexiveAndToOne.CHILDREN.containsValue(o2)).select(context);
         assertEquals(1, parents.size());
         assertSame(o1, parents.get(0));
 
         parents = ObjectSelect.query(ReflexiveAndToOne.class)
-                .where(ReflexiveAndToOne.CHILDREN.contains(o1)).select(context);
+                .where(ReflexiveAndToOne.CHILDREN.containsValue(o1)).select(context);
         assertEquals(0, parents.size());
     }
 

@@ -14,6 +14,7 @@ Date:
 Changes/New Features:
 
 CAY-3055 DbRelationship.foreignKey
+CAY-3059 Remove APIs deprecated in 5.0
 
 ----------------------------------
 Release: 5.0-RC1
