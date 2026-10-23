@@ -19,6 +19,11 @@ The actual stored query can be ObjectSelect, SQLTemplate or ProcedureQuery.
 Difference between `MappedSelect` and `MappedExec` is (as reflected in their names) whether underlying query
 intended to select data or just to perform some generic SQL code.
 
+An ObjectSelect stored in the DataMap is defined by a String in the <<ql,Object Query Language>>, so it can be any
+query that the language supports, including the column queries and the queries rooted in a DbEntity. Its "$name"
+parameters are bound by name when the query is executed. A condition with a parameter that has no value is dropped
+from the query, so the same mapped query can be used both with and without its optional parameters.
+
 Here is example of how to use `MappedSelect`:
 
 [source,java,indent=0]

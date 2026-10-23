@@ -87,6 +87,47 @@ public class MappedQueryIT {
     }
 
     @Test
+    public void columnQuery() throws Exception {
+        createArtistsDataSet();
+
+        List<?> names = MappedSelect.query("ArtistNamesQuery").param("name", "artist1%").select(env.context());
+        assertEquals(List.of("artist1", "artist10", "artist11", "artist12", "artist13", "artist14", "artist15",
+                "artist16", "artist17", "artist18", "artist19"), names);
+    }
+
+    @Test
+    public void dbQuery() throws Exception {
+        createArtistsDataSet();
+
+        List<DataRow> rows = MappedSelect.query("ArtistRowsQuery", DataRow.class)
+                .param("name", "artist3")
+                .select(env.context());
+        assertEquals(1, rows.size());
+        assertEquals(3L, ((Number) rows.get(0).get("ARTIST_ID")).longValue());
+    }
+
+    @Test
+    public void subqueryParameters() throws Exception {
+        TableHelper tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
+        tArtist.insert(1, "artist1");
+        tArtist.insert(2, "artist2");
+        tArtist.insert(3, "artist3");
+
+        TableHelper tPainting = env.table("PAINTING", "PAINTING_ID", "PAINTING_TITLE", "ARTIST_ID", "ESTIMATED_PRICE");
+        tPainting.insert(1, "p1", 1, 100);
+        tPainting.insert(2, "p2", 2, 2000);
+
+        List<Artist> expensive = MappedSelect.query("ArtistsWithPaintingsQuery", Artist.class)
+                .param("price", 1000)
+                .select(env.context());
+        assertEquals(List.of("artist2"), expensive.stream().map(Artist::getArtistName).toList());
+
+        // with the parameter missing, its condition is pruned from the subquery
+        List<Artist> any = MappedSelect.query("ArtistsWithPaintingsQuery", Artist.class).select(env.context());
+        assertEquals(List.of("artist1", "artist2"), any.stream().map(Artist::getArtistName).toList());
+    }
+
+    @Test
     public void sqlTemplateSelect() throws Exception {
         createArtistsDataSet();
 

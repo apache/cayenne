@@ -16,35 +16,28 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.modeler.ui.project.editor.query.selectquery;
+package org.apache.cayenne.modeler.toolkit.tree;
 
-import javax.swing.undo.AbstractUndoableEdit;
-import javax.swing.undo.CannotRedoException;
-import javax.swing.undo.CannotUndoException;
+import javax.swing.tree.TreePath;
 
-class AddPrefetchUndoableEdit extends AbstractUndoableEdit {
+import org.apache.cayenne.map.ObjAttribute;
+import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.ObjRelationship;
+import org.junit.jupiter.api.Test;
 
-    private final String prefetch;
-    private final SelectQueryPrefetchTab tab;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
-    public AddPrefetchUndoableEdit(String prefetch, SelectQueryPrefetchTab tab) {
-        super();
-        this.prefetch = prefetch;
-        this.tab = tab;
-    }
+public class EntityTreeModelTest {
 
-    @Override
-    public String getPresentationName() {
-        return "Add Prefetch";
-    }
+    @Test
+    public void toPath() {
+        ObjEntity artist = new ObjEntity("Artist");
+        ObjRelationship paintings = new ObjRelationship("paintings");
+        ObjAttribute title = new ObjAttribute("title");
 
-    @Override
-    public void redo() throws CannotRedoException {
-        tab.addPrefetch(prefetch);
-    }
-
-    @Override
-    public void undo() throws CannotUndoException {
-        tab.removePrefetch(prefetch);
+        assertNull(EntityTreeModel.toPath(new TreePath(artist)));
+        assertEquals("paintings", EntityTreeModel.toPath(new TreePath(new Object[]{artist, paintings})));
+        assertEquals("paintings.title", EntityTreeModel.toPath(new TreePath(new Object[]{artist, paintings, title})));
     }
 }

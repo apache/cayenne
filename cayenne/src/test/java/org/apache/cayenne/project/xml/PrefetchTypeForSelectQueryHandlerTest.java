@@ -21,6 +21,7 @@ package org.apache.cayenne.project.xml;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.SelectQueryDescriptor;
+import org.apache.cayenne.query.PrefetchTreeNode;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -39,11 +40,12 @@ public class PrefetchTypeForSelectQueryHandlerTest extends BaseHandlerTest{
         });
 
         SelectQueryDescriptor selectQueryDescriptor = (SelectQueryDescriptor) map.getQueryDescriptor("query");
-        assertEquals(3, selectQueryDescriptor.getPrefetchesMap().size());
+        PrefetchTreeNode prefetches = selectQueryDescriptor.getParsedQuery().getPrefetches();
+        assertEquals(3, prefetches.nonPhantomNodes().size());
 
-        assertEquals(1, (int) selectQueryDescriptor.getPrefetchesMap().get("paintings"));
-        assertEquals(2, (int) selectQueryDescriptor.getPrefetchesMap().get("paintings.artist"));
-        assertEquals(3, (int) selectQueryDescriptor.getPrefetchesMap().get("paintings.gallery"));
+        assertEquals(1, prefetches.getNode("paintings").getSemantics());
+        assertEquals(2, prefetches.getNode("paintings.artist").getSemantics());
+        assertEquals(3, prefetches.getNode("paintings.gallery").getSemantics());
     }
 
 }
