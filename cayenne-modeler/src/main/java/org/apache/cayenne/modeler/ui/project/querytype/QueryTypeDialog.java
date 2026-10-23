@@ -24,6 +24,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.modeler.event.display.QueryDisplayEvent;
 import org.apache.cayenne.modeler.event.model.QueryEvent;
@@ -128,6 +129,13 @@ public class QueryTypeDialog extends ProjectDialog {
     private QueryDescriptor newQuery() {
         if (sqlSelect.isSelected()) return new SQLTemplateDescriptor();
         if (procedureSelect.isSelected()) return new ProcedureQueryDescriptor();
-        return new SelectQueryDescriptor();
+
+        // start the query String with the selected entity, if any
+        SelectQueryDescriptor query = new SelectQueryDescriptor();
+        ObjEntity entity = session.getSelectedObjEntity();
+        if (entity != null && entity.getDataMap() == dataMap) {
+            query.setQl("from " + entity.getName());
+        }
+        return query;
     }
 }

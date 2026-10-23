@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.modeler.ui.project.editor.query;
 
-import org.apache.cayenne.modeler.ui.project.editor.query.selectquery.SelectQueryPrefetchTab;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.ExpressionFactory;
@@ -32,6 +31,11 @@ import java.util.Map;
  * A table model for the Prefetch table.
  */
 public class PrefetchModel extends AbstractTableModel {
+
+    public static final String JOINT_PREFETCH_SEMANTICS = "Joint";
+    public static final String DISJOINT_PREFETCH_SEMANTICS = "Disjoint";
+    public static final String DISJOINT_BY_ID_PREFETCH_SEMANTICS = "Disjoint by id";
+    public static final String UNDEFINED_SEMANTICS = "Undefined semantics";
 
     private final Map<String, Integer> prefetchMap;
 
@@ -124,10 +128,10 @@ public class PrefetchModel extends AbstractTableModel {
 
     private static String getPrefetchTypeString(int semantics) {
         return switch (semantics) {
-            case 1 -> SelectQueryPrefetchTab.JOINT_PREFETCH_SEMANTICS;
-            case 2 -> SelectQueryPrefetchTab.DISJOINT_PREFETCH_SEMANTICS;
-            case 3 -> SelectQueryPrefetchTab.DISJOINT_BY_ID_PREFETCH_SEMANTICS;
-            default -> SelectQueryPrefetchTab.UNDEFINED_SEMANTICS;
+            case 1 -> JOINT_PREFETCH_SEMANTICS;
+            case 2 -> DISJOINT_PREFETCH_SEMANTICS;
+            case 3 -> DISJOINT_BY_ID_PREFETCH_SEMANTICS;
+            default -> UNDEFINED_SEMANTICS;
         };
     }
 

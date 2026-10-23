@@ -19,23 +19,12 @@
 
 package org.apache.cayenne.map;
 
-import org.apache.cayenne.project.EmptyProjectNodeVisitor;
-import org.apache.cayenne.project.xml.XMLDataMapLoader;
-import org.apache.cayenne.resource.URLResource;
-import org.apache.cayenne.util.XMLEncoder;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.net.URL;
 import java.util.Collection;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 /**
  * DataMap unit tests.
@@ -52,6 +41,65 @@ public class DataMapTest {
 
         map.setDefaultSchema(null);
         assertNull(map.getDefaultSchema());
+    }
+
+    @Test
+    public void renameObjEntityUpdatesSelectQueries() {
+        DataMap map = new DataMap("map");
+        ObjEntity artist = new ObjEntity("Artist");
+        map.addObjEntity(artist);
+        map.addObjEntity(new ObjEntity("Painting"));
+
+        SelectQueryDescriptor rooted = selectQuery("rooted", "from Artist\nwhere name = $name");
+        SelectQueryDescriptor subquery = selectQuery("subquery",
+                "from Painting where exists (from Artist where artist = enclosing(self))");
+        SelectQueryDescriptor unrelated = selectQuery("unrelated", "from Painting where artist.name = 'Artist'");
+        SelectQueryDescriptor invalid = selectQuery("invalid", "from Artist where");
+        map.addQueryDescriptor(rooted);
+        map.addQueryDescriptor(subquery);
+        map.addQueryDescriptor(unrelated);
+        map.addQueryDescriptor(invalid);
+
+        map.renameObjEntity(artist, "Painter");
+
+        assertEquals("from Painter\nwhere name = $name", rooted.getQl());
+        assertSame(artist, rooted.getRoot());
+        assertEquals("from Painting where exists (from Painter where artist = enclosing(self))", subquery.getQl());
+        assertEquals("from Painting where artist.name = 'Artist'", unrelated.getQl());
+
+        // a String that can't be parsed is renamed too, as it is kept to be fixed
+        assertEquals("from Painter where", invalid.getQl());
+    }
+
+    @Test
+    public void renameDbEntityUpdatesSelectQueries() {
+        DataMap map = new DataMap("map");
+        DbEntity table = new DbEntity("ARTIST");
+        map.addDbEntity(table);
+        map.addObjEntity(new ObjEntity("ARTIST"));
+
+        SelectQueryDescriptor db = selectQuery("db", "from db:ARTIST where NAME = 'a'");
+        SelectQueryDescriptor obj = selectQuery("obj", "from ARTIST where NAME = 'a'");
+        map.addQueryDescriptor(db);
+        map.addQueryDescriptor(obj);
+
+        map.renameDbEntity(table, "PAINTER");
+
+        assertEquals("from db:PAINTER where NAME = 'a'", db.getQl());
+        assertSame(table, db.getRoot());
+        assertEquals("from ARTIST where NAME = 'a'", obj.getQl());
+    }
+
+    @Test
+    public void removeQueryDescriptorDetachesIt() {
+        DataMap map = new DataMap("map");
+        SelectQueryDescriptor query = selectQuery("q", "from Artist");
+        map.addQueryDescriptor(query);
+        assertSame(map, query.getDataMap());
+
+        map.removeQueryDescriptor("q");
+        assertNull(query.getDataMap());
+        assertNull(map.getQueryDescriptor("q"));
     }
 
     @Test
@@ -350,48 +398,10 @@ public class DataMapTest {
         }
     }
 
-    @Disabled("this test is broken for many reasons " +
-            "(URL can't be mocked, encoder doesn't provide version, loader requires XMLReader proovider)")
-    @Test
-    public void quoteSqlIdentifiersEncodeAsXML() {
-        DataMap map = new DataMap("aaa");
-        map.setQuotingSQLIdentifiers(true);
-        StringWriter w = new StringWriter();
-        XMLEncoder encoder = new XMLEncoder(new PrintWriter(w));
-        map.encodeAsXML(encoder, new EmptyProjectNodeVisitor());
-
-        assertTrue(map.quotingSQLIdentifiers);
-
-        XMLDataMapLoader loader = new XMLDataMapLoader();
-        try {
-            URL url = mock(URL.class);
-            InputStream is = new ByteArrayInputStream(w.getBuffer().toString().getBytes("UTF-8"));
-            when(url.openStream()).thenReturn(is);
-
-            DataMap newMap = loader.load(new URLResource(url));
-            assertTrue(newMap.quotingSQLIdentifiers);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        map.setQuotingSQLIdentifiers(false);
-        StringWriter w2 = new StringWriter();
-        XMLEncoder encoder2 = new XMLEncoder(new PrintWriter(w2));
-        map.encodeAsXML(encoder2, new EmptyProjectNodeVisitor());
-
-        assertFalse(map.quotingSQLIdentifiers);
-        try {
-            URL url = mock(URL.class);
-            InputStream is = new ByteArrayInputStream(w.getBuffer().toString().getBytes("UTF-8"));
-            when(url.openStream()).thenReturn(is);
-
-            DataMap newMap = loader.load(new URLResource(url));
-            assertFalse(newMap.quotingSQLIdentifiers);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
+    private static SelectQueryDescriptor selectQuery(String name, String ql) {
+        SelectQueryDescriptor query = new SelectQueryDescriptor();
+        query.setName(name);
+        query.setQl(ql);
+        return query;
     }
 }

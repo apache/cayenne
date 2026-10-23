@@ -309,6 +309,7 @@ public class DataMap implements ProjectNode, XMLSerializable, MappingNamespace, 
         }
 
         queryDescriptorMap.put(queryDescriptor.getName(), queryDescriptor);
+        queryDescriptor.setDataMap(this);
     }
 
     /**
@@ -317,7 +318,10 @@ public class DataMap implements ProjectNode, XMLSerializable, MappingNamespace, 
      * @since 4.0
      */
     public void removeQueryDescriptor(String queryName) {
-        queryDescriptorMap.remove(queryName);
+        QueryDescriptor removed = queryDescriptorMap.remove(queryName);
+        if (removed != null) {
+            removed.setDataMap(null);
+        }
     }
 
     /**
@@ -474,6 +478,7 @@ public class DataMap implements ProjectNode, XMLSerializable, MappingNamespace, 
         entity.renameSelf(newName);
         dbEntityMap.remove(oldName);
         dbEntityMap.put(newName, entity);
+        renameEntityInQueries(oldName, newName, true);
 
         MappingNamespace ns = getNamespace();
         if (ns instanceof EntityResolver) {
@@ -503,10 +508,20 @@ public class DataMap implements ProjectNode, XMLSerializable, MappingNamespace, 
         entity.renameSelf(newName);
         objEntityMap.remove(oldName);
         objEntityMap.put(newName, entity);
+        renameEntityInQueries(oldName, newName, false);
 
         MappingNamespace ns = getNamespace();
         if (ns instanceof EntityResolver) {
             ((EntityResolver) ns).refreshMappingCache();
+        }
+    }
+
+    // the select queries reference entities by name in their query Strings, so a rename has to follow into them
+    private void renameEntityInQueries(String oldName, String newName, boolean db) {
+        for (QueryDescriptor query : queryDescriptorMap.values()) {
+            if (query instanceof SelectQueryDescriptor select) {
+                select.renameEntity(oldName, newName, db);
+            }
         }
     }
 

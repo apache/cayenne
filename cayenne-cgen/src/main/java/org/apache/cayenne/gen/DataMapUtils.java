@@ -19,29 +19,32 @@
 
 package org.apache.cayenne.gen;
 
+import org.apache.cayenne.DataRow;
+import org.apache.cayenne.exp.EnclosingObjectExp;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.ExpressionParameter;
 import org.apache.cayenne.exp.ListExp;
 import org.apache.cayenne.exp.ObjPathExp;
+import org.apache.cayenne.exp.SubqueryExp;
+import org.apache.cayenne.exp.property.Property;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.SelectQueryDescriptor;
-import org.apache.cayenne.query.Ordering;
+import org.apache.cayenne.projecttools.validation.SelectQueryPaths;
+import org.apache.cayenne.query.ColumnSelect;
+import org.apache.cayenne.query.FluentSelect;
 import org.apache.cayenne.util.Util;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Attributes and Methods for working with Queries.
@@ -50,7 +53,7 @@ import java.util.regex.Pattern;
  */
 public class DataMapUtils {
 
-	Map<String, Map<String, String>> queriesMap = new HashMap<>();
+	private static final String OBJECT_TYPE = Object.class.getName();
 
 	/**
 	 * Return valid method name based on query name (replace all illegal
@@ -64,86 +67,29 @@ public class DataMapUtils {
 	}
 
 	/**
-	 * Get all parameter names that used in query qualifier.
+	 * Get all parameter names used in the query, in the order of their first occurrence.
 	 *
 	 * @param query select query descriptor
 	 * @return Parameter names.
 	 */
 	public Collection<String> getParameterNames(SelectQueryDescriptor query) {
-
-		if (query.getQualifier() == null) {
-			return Collections.emptySet();
-		}
-
-		Map<String, String> queryParameters = queriesMap.get(query.getName());
-
-		if (queryParameters == null) {
-			queryParameters = getParameterNames(query.getQualifier(), query.getRoot());
-			queriesMap.put(query.getName(), queryParameters);
-		}
-
-		return parseQualifier(query.getQualifier().toString());
-	}
-
-	public Boolean isValidParameterNames(SelectQueryDescriptor query) {
-
-		if (query.getQualifier() == null) {
-			return true;
-		}
-
-		Map<String, String> queryParameters = queriesMap.get(query.getName());
-
-		if (queryParameters == null) {
-			try {
-				queryParameters = getParameterNames(query.getQualifier(), query.getRoot());
-			} catch (Exception e) {
-				// if we have wrong path in queryParameters return false.
-				return false;
-			}
-		}
-
-		for (Ordering ordering : query.getOrderings()) {
-			// validate paths in ordering
-			String path = ordering.getSortSpecString();
-			try {
-				((ObjEntity) query.getRoot()).resolvePath(path);
-			} catch (ExpressionException e) {
-				// if we have wrong path in orderings return false.
-				return false;
-			}
-		}
-
-		return true;
+		return parameterTypes(query).keySet();
 	}
 
 	/**
-	 * Get list of parameter names in the same order as in qualifier.
-	 * 
-	 * @param qualifierString
-	 *            to be parsed
-	 * @return List of parameter names.
+	 * Returns whether a method can be generated for the query: the query String can be parsed, its root is mapped,
+	 * and the entity names and paths of all its clauses can be resolved.
 	 */
-	private Set<String> parseQualifier(String qualifierString) {
-		Set<String> result = new LinkedHashSet<>();
-		Pattern pattern = Pattern.compile("\\$[\\w]+");
-		Matcher matcher = pattern.matcher(qualifierString);
-		while (matcher.find()) {
-			String name = matcher.group();
-			result.add(Util.underscoredToJava(name.substring(1), false));
-		}
-
-		return result;
-	}
-
-	public boolean hasParameters(SelectQueryDescriptor query) {
-		Map<String, String> queryParameters = queriesMap.get(query.getName());
-
-		if (queryParameters == null) {
+	public Boolean isValidParameterNames(SelectQueryDescriptor query) {
+		if (!query.isValid() || !(query.getRoot() instanceof ObjEntity || query.getRoot() instanceof DbEntity)) {
 			return false;
 		}
 
-		return queryParameters.keySet().size() > 0;
+		return SelectQueryPaths.check(query).isEmpty();
+	}
 
+	public boolean hasParameters(SelectQueryDescriptor query) {
+		return !getParameterNames(query).isEmpty();
 	}
 
 	/**
@@ -154,54 +100,134 @@ public class DataMapUtils {
 	 * @return Parameter type.
 	 */
 	public String getParameterType(SelectQueryDescriptor query, String name) {
-		return queriesMap.get(query.getName()).get(name);
+		return parameterTypes(query).get(name);
 	}
 
-	private Map<String, String> getParameterNames(Expression expression, Object root) {
-		if (expression != null) {
-			Map<String, String> types = new HashMap<>();
-			String typeName = "";
-			List<String> names = new LinkedList<>();
+	/**
+	 * Returns the fully qualified name of the type of the objects that the query fetches: the class of the root
+	 * ObjEntity, a DataRow, an Object for a single column, or an Object[] for multiple columns.
+	 *
+	 * @since 5.0
+	 */
+	public String getResultType(SelectQueryDescriptor query) {
+		FluentSelect<?, ?> parsed = query.getParsedQuery();
+		if (parsed instanceof ColumnSelect<?> columnSelect) {
+			return columnSelect.getColumns().size() == 1 ? OBJECT_TYPE : Object[].class.getCanonicalName();
+		}
 
-			for (int i = 0; i < expression.getOperandCount(); i++) {
-				Object operand = expression.getOperand(i);
+		if (query.getRoot() instanceof ObjEntity entity && !query.isFetchingDataRows()) {
+			return entity.getClassName();
+		}
 
-				if (operand instanceof Expression) {
-					types.putAll(getParameterNames((Expression) operand, root));
+		return DataRow.class.getName();
+	}
+
+	// parameter types by the names of the parameters, in the order of their first occurrence
+	private Map<String, String> parameterTypes(SelectQueryDescriptor query) {
+		if (!query.isValid()) {
+			return Map.of();
+		}
+
+		Map<String, String> types = new HashMap<>();
+		collectParameterTypes(query.getDataMap(), query.getParsedQuery(), types);
+
+		Map<String, String> ordered = new LinkedHashMap<>();
+		for (String name : query.getParameterNames()) {
+			ordered.put(Util.underscoredToJava(name, false), types.getOrDefault(name, OBJECT_TYPE));
+		}
+		return ordered;
+	}
+
+	private void collectParameterTypes(DataMap dataMap, FluentSelect<?, ?> query, Map<String, String> types) {
+		// the type of a parameter can only be inferred from an ObjEntity attribute or relationship
+		ObjEntity entity = query.getEntityName() != null && dataMap != null
+				? dataMap.getObjEntity(query.getEntityName())
+				: null;
+
+		// the aliases of the columns can be used in place of the paths elsewhere in the query
+		Map<String, String> aliasTypes = new HashMap<>();
+		if (query.getColumns() != null) {
+			for (Property<?> column : query.getColumns()) {
+				if (column.getAlias() != null) {
+					aliasTypes.put(column.getAlias(), column.getExpression() instanceof ObjPathExp pathExp
+							? pathType(entity, pathExp)
+							: OBJECT_TYPE);
 				}
+			}
+		}
 
-				if (operand instanceof ObjPathExp pathExp) {
-					Object component = ((ObjEntity) root)
-							.resolvePath(pathExp.getExpandedPath())
-							.getLast();
-					typeName = switch (component) {
-						case ObjAttribute attribute -> attribute.getType();
-						case ObjRelationship relationship -> relationship.getTargetEntity().getClassName();
-						default -> "Object";
-					};
+		Scope scope = new Scope(dataMap, entity, aliasTypes);
+		collectParameterTypes(scope, query.getWhere(), types);
+		collectParameterTypes(scope, query.getHaving(), types);
+	}
+
+	private void collectParameterTypes(Scope scope, Expression expression, Map<String, String> types) {
+		if (expression == null || expression instanceof EnclosingObjectExp) {
+			return;
+		}
+
+		if (expression instanceof SubqueryExp subquery) {
+			if (subquery.getQuery() != null) {
+				collectParameterTypes(scope.dataMap(), subquery.getQuery(), types);
+			}
+			return;
+		}
+
+		// a parameter takes the type of a path compared to it
+		String typeName = OBJECT_TYPE;
+		for (int i = 0; i < expression.getOperandCount(); i++) {
+			if (expression.getOperand(i) instanceof ObjPathExp pathExp) {
+				typeName = scope.aliasTypes().getOrDefault(pathExp.getPath().value(),
+						pathType(scope.entity(), pathExp));
+			}
+		}
+
+		for (int i = 0; i < expression.getOperandCount(); i++) {
+			Object operand = expression.getOperand(i);
+			switch (operand) {
+				case ExpressionParameter parameter -> {
+					types.merge(parameter.getName(), typeName, DataMapUtils::moreSpecific);
 				}
-
-				if (operand instanceof ListExp) {
-					Object[] values = (Object[]) ((ListExp) operand).getOperand(0);
-					for (Object value : values) {
-						if (value instanceof ExpressionParameter) {
-							names.add(((ExpressionParameter) value).getName());
+				case ListExp list -> {
+					for (Object value : (Object[]) list.getOperand(0)) {
+						if (value instanceof ExpressionParameter parameter) {
+							types.merge(parameter.getName(), typeName, DataMapUtils::moreSpecific);
 						}
 					}
 				}
-
-				if (operand instanceof ExpressionParameter) {
-					names.add(((ExpressionParameter) operand).getName());
+				case Expression child -> collectParameterTypes(scope, child, types);
+				case null, default -> {
 				}
-
 			}
-
-			for (String name : names) {
-				types.put(Util.underscoredToJava(name, false), typeName);
-			}
-
-			return types;
 		}
-		return Collections.emptyMap();
+	}
+
+	// the type of the attribute or relationship at the end of a path, or Object if the path can't be resolved. An
+	// invalid path is a problem of the query, reported by the validator, and not of the type inference
+	private static String pathType(ObjEntity entity, ObjPathExp pathExp) {
+		if (entity == null) {
+			return OBJECT_TYPE;
+		}
+
+		List<Object> components;
+		try {
+			components = entity.resolvePath(pathExp.getExpandedPath());
+		} catch (ExpressionException e) {
+			return OBJECT_TYPE;
+		}
+
+		return switch (components.getLast()) {
+			case ObjAttribute attribute -> attribute.getType();
+			case ObjRelationship relationship -> relationship.getTargetEntity().getClassName();
+			default -> OBJECT_TYPE;
+		};
+	}
+
+	// the root entity of a query (null if unknown) and the types of its column aliases
+	private record Scope(DataMap dataMap, ObjEntity entity, Map<String, String> aliasTypes) {
+	}
+
+	private static String moreSpecific(String type1, String type2) {
+		return OBJECT_TYPE.equals(type1) ? type2 : type1;
 	}
 }

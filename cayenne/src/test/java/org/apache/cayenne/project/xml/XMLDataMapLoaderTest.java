@@ -92,7 +92,7 @@ public class XMLDataMapLoaderTest {
         assertEquals("org.apache.cayenne.GenericPersistentObject", map.getObjEntity("Artist").getClassName());
 
         SelectQueryDescriptor select = (SelectQueryDescriptor) map.getQueryDescriptor("ArtistQuery");
-        assertEquals("from Artist where artistName = \"a\" limit 5", select.toQueryString());
+        assertEquals("from Artist where artistName = \"a\" limit 5", select.getQl());
         assertEquals(10, select.getPageSize());
         assertEquals("g1 & g2", select.getCacheGroup());
 

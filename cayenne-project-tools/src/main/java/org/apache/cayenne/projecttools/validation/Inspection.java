@@ -99,10 +99,13 @@ public enum Inspection {
     QUERY_NAME_DUPLICATE(Group.QUERY, "Duplicate of a query name"),
     QUERY_MULTI_CACHE_GROUP(Group.QUERY, "Query has several cache groups"),
 
-    SELECT_QUERY_NO_ROOT(Group.SELECT_QUERY, "Empty select query root"),
-    SELECT_QUERY_INVALID_QUALIFIER(Group.SELECT_QUERY, "Invalid select query qualifier", "Not implemented"),
+    SELECT_QUERY_NO_ROOT(Group.SELECT_QUERY, "Empty select query root",
+            "Select query is empty, or its root entity is not mapped"),
+    SELECT_QUERY_INVALID_QL(Group.SELECT_QUERY, "Invalid select query syntax"),
+    SELECT_QUERY_INVALID_QUALIFIER(Group.SELECT_QUERY, "Invalid select query qualifier",
+            "Invalid paths in the 'select', 'where' or 'having' clauses of a select query"),
     SELECT_QUERY_INVALID_ORDERING_PATH(Group.SELECT_QUERY, "Invalid select query ordering path"),
-    SELECT_QUERY_INVALID_PREFETCH_PATH(Group.SELECT_QUERY, "Invalid select query prefetch path", "Not implemented"),
+    SELECT_QUERY_INVALID_PREFETCH_PATH(Group.SELECT_QUERY, "Invalid select query prefetch path"),
 
     PROCEDURE_QUERY_NO_ROOT(Group.PROCEDURE_QUERY, "Empty procedure query root"),
     PROCEDURE_QUERY_INVALID_ROOT(Group.PROCEDURE_QUERY, "Invalid procedure query root"),

@@ -39,8 +39,8 @@ ${importUtils.addType('org.apache.cayenne.ObjectContext')}##
 ${importUtils.addType('java.util.List')}##
 ${importUtils.addType('org.apache.cayenne.query.MappedSelect')}##
 #foreach( $selectQuery in ${object.SelectQueries})
-${importUtils.addType(${selectQuery.Root.ClassName})}##
 #if(${dataMapUtils.isValidParameterNames($selectQuery)})
+${importUtils.addType(${dataMapUtils.getResultType($selectQuery)})}##
 #foreach( $parameter in ${dataMapUtils.getParameterNames(${selectQuery})})
 ${importUtils.addType(${dataMapUtils.getParameterType(${selectQuery}, ${parameter})})}##
 #end##
@@ -71,7 +71,7 @@ public class ${superClassName} {
 #foreach( $selectQuery in ${object.SelectQueries})
 
 #if(${dataMapUtils.isValidParameterNames($selectQuery)})
-    #set($rootClass = ${stringUtils.stripPackageName($selectQuery.Root.ClassName)})
+    #set($rootClass = ${stringUtils.stripPackageName(${dataMapUtils.getResultType($selectQuery)})})
     public List<$rootClass> perform${dataMapUtils.getQueryMethodName(${selectQuery})}(ObjectContext context#foreach( $parameter in ${dataMapUtils.getParameterNames(${selectQuery})}), ${stringUtils.stripPackageName(${dataMapUtils.getParameterType(${selectQuery}, ${parameter})})} ${parameter}#end) {
         MappedSelect<${rootClass}> query = MappedSelect.query(${stringUtils.capitalizedAsConstant(${selectQuery.Name})}_QUERYNAME, ${rootClass}.class);
 #foreach( $parameter in ${dataMapUtils.getParameterNames(${selectQuery})})

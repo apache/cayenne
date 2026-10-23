@@ -22,7 +22,7 @@ package org.apache.cayenne.wocompat;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.SelectQueryDescriptor;
-import org.apache.cayenne.query.ObjectSelect;
+import org.apache.cayenne.query.FluentSelect;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.junit.jupiter.api.Test;
@@ -52,12 +52,12 @@ public class EOFetchSpecificationParserTest {
         SelectQueryDescriptor selectDescriptor = assertInstanceOf(SelectQueryDescriptor.class, descriptor);
         assertSame(map.getObjEntity("Entity1"), selectDescriptor.getRoot());
 
-        assertNotNull(selectDescriptor.getQualifier());
+        FluentSelect<?, ?> query = selectDescriptor.buildQuery();
+
+        assertNotNull(query.getWhere());
         assertEquals(
                 "(name = \"aa\") and (db:ID >= 7) and ((e2.name = \"bb\") or (db:e2.ID != 5))",
-                selectDescriptor.getQualifier().toString());
-
-        ObjectSelect<?> query = selectDescriptor.buildQuery();
+                query.getWhere().toString());
 
         assertNotNull(query.getPrefetches());
         Collection<PrefetchTreeNode> prefetches = query.getPrefetches().getChildren();

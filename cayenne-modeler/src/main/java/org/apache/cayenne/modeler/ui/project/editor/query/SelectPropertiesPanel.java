@@ -191,7 +191,7 @@ public abstract class SelectPropertiesPanel<Q extends QueryDescriptor> extends P
         session.fireQueryEvent(QueryEvent.ofChange(this, query));
     }
 
-    private static int intValue(String string, String label) {
+    protected static int intValue(String string, String label) {
         string = (string == null) ? "" : string.trim();
         if (string.isEmpty()) {
             return 0;

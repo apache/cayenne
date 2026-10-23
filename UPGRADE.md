@@ -391,6 +391,14 @@ List<Artist> artists = ObjectSelect
    `SelectQuery` in a DataMap is now stored as a single query String in the syntax of `ObjectSelect.parse(..)`, instead
    of the root attributes and the separate `qualifier`, `ordering` and `prefetch` elements. Projects are upgraded 
    automatically, either in memory by the runtime, or permanently by CayenneModeler.
+*  `SelectQueryDescriptor` now holds the query String as is (`getQl()` / `setQl(..)`), and derives the rest from it.
+   The query String can define any `ObjectSelect` or `ColumnSelect`, including column queries, `having` and queries
+   rooted in a DbEntity (`from db:ARTIST`). Its root is defined by the "from" clause, so `setRoot(..)` is not supported.
+   The setters of the query parts (`setQualifier(..)`, `addOrdering(..)`, `addPrefetch(..)`, `setDistinct(..)`, etc.)
+   were removed and their getters are deprecated, use `getParsedQuery()` instead. `buildQuery(..)` returns a
+   `FluentSelect`, not an `ObjectSelect`. A query String that can't be parsed no longer fails the DataMap loading, but
+   the execution of the query, and is reported by the project validator. CayenneModeler edits a mapped `ObjectSelect`
+   as a query String.
 *  Per [CAY-3038](https://issues.apache.org/jira/browse/CAY-3038) `EJBQLQuery` was removed. The replacement is `ObjectSelect` / `ColumnSelect` parsed from a String
    (see "Queries Parsed from Strings" above). As there is no automatic conversion of EJBQL to the new query language,
    an `EJBQLQuery` stored in a DataMap is dropped by the upgrade to project version 14 with a warning, and must be
