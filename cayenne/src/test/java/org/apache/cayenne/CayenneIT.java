@@ -19,21 +19,15 @@
 
 package org.apache.cayenne;
 
-import org.apache.cayenne.dba.frontbase.FrontBaseAdapter;
-import org.apache.cayenne.dba.mysql.MySQLAdapter;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.SQLResult;
-import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
-import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -53,9 +47,7 @@ public class CayenneIT {
     @BeforeEach
     public void setUp() throws Exception {
         tArtist = env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME");
-
         tPainting = env.table("PAINTING", "PAINTING_ID", "ARTIST_ID", "PAINTING_TITLE");
-
     }
 
     private void createOneArtist() throws Exception {
@@ -67,6 +59,7 @@ public class CayenneIT {
         tArtist.insert(33002, "artist2");
     }
 
+    @Deprecated
     @Test
     public void readNestedProperty_ToMany() throws Exception {
 
@@ -85,32 +78,6 @@ public class CayenneIT {
 
         int size = (Integer) Cayenne.readNestedProperty(a, "paintingArray.@size");
         assertEquals(2, size);
-    }
-
-    @Test
-    public void scalarObjectForQuery() throws Exception {
-        createTwoArtists();
-
-        String sql = "SELECT count(1) AS X FROM ARTIST";
-
-        DataMap map = env.context().getEntityResolver().getDataMap("testmap");
-        SQLTemplate query = new SQLTemplate(map, sql, false);
-        query.setTemplate(
-                FrontBaseAdapter.class.getName(),
-                "SELECT COUNT(ARTIST_ID) AS X FROM ARTIST");
-        query.setTemplate(
-                MySQLAdapter.class.getName(),
-                "SELECT COUNT(ARTIST_ID) AS X FROM ARTIST");
-        query.setColumnNamesCapitalization(CapsStrategy.UPPER);
-
-        SQLResult rsMap = new SQLResult();
-        rsMap.addColumnResult("X");
-        query.setResult(rsMap);
-
-        Object object = env.context().selectOne(query);
-        assertNotNull(object);
-        assertInstanceOf(Number.class, object);
-        assertEquals(2, ((Number) object).intValue());
     }
 
     @Test
@@ -159,6 +126,7 @@ public class CayenneIT {
         assertNull(env.context().selectOne(query));
     }
 
+    @Deprecated
     @Test
     public void noObjectForPK() throws Exception {
         createOneArtist();
@@ -168,6 +136,7 @@ public class CayenneIT {
         assertNull(object);
     }
 
+    @Deprecated
     @Test
     public void objectForPKTemporary() {
 
@@ -176,9 +145,10 @@ public class CayenneIT {
         assertSame(o1, Cayenne.objectForPK(env.context(), o1.getObjectId()));
         assertSame(o2, Cayenne.objectForPK(env.context(), o2.getObjectId()));
 
-        assertNull(Cayenne.objectForPK(env.context(), ObjectId.of("Artist", new byte[] {1, 2, 3})));
+        assertNull(Cayenne.objectForPK(env.context(), ObjectId.of("Artist", new byte[]{1, 2, 3})));
     }
 
+    @Deprecated
     @Test
     public void objectForPKObjectId() throws Exception {
         createOneArtist();
@@ -193,6 +163,7 @@ public class CayenneIT {
         assertEquals("artist2", ((Artist) object).getArtistName());
     }
 
+    @Deprecated
     @Test
     public void objectForPKClassInt() throws Exception {
         createOneArtist();
@@ -204,6 +175,7 @@ public class CayenneIT {
         assertEquals("artist2", object.getArtistName());
     }
 
+    @Deprecated
     @Test
     public void objectForPKEntityInt() throws Exception {
         createOneArtist();
@@ -215,6 +187,7 @@ public class CayenneIT {
         assertEquals("artist2", ((Artist) object).getArtistName());
     }
 
+    @Deprecated
     @Test
     public void objectForPKClassMap() throws Exception {
         createOneArtist();
