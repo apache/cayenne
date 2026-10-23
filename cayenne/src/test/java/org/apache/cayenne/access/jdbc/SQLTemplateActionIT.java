@@ -77,7 +77,7 @@ public class SQLTemplateActionIT {
 
     @Test
     public void properties() {
-        SQLTemplate template = new SQLTemplate(Object.class, "AAAAA");
+        SQLTemplate template = new SQLTemplate("AAAAA");
 
         SQLTemplateAction action = new SQLTemplateAction(template, node);
         assertSame(template, action.getQuery());
@@ -89,7 +89,7 @@ public class SQLTemplateActionIT {
         createFourArtists();
 
         String templateString = "SELECT * FROM ARTIST WHERE ARTIST_ID = #bind($id)";
-        SQLTemplate template = new SQLTemplate(Object.class, templateString);
+        SQLTemplate template = new SQLTemplate(templateString);
         template.setColumnNamesCapitalization(CapsStrategy.UPPER);
 
         Map<String, Object> bindings = new HashMap<>();
@@ -149,7 +149,7 @@ public class SQLTemplateActionIT {
 
         String templateString = "SELECT #result('DATE_OF_BIRTH' 'java.util.Date' 'DOB') "
                 + "FROM ARTIST WHERE ARTIST_ID = #bind($id)";
-        SQLTemplate template = new SQLTemplate(Object.class, templateString);
+        SQLTemplate template = new SQLTemplate(templateString);
         template.setColumnNamesCapitalization(CapsStrategy.UPPER);
 
         Map<String, Object> bindings = new HashMap<>();
@@ -179,7 +179,7 @@ public class SQLTemplateActionIT {
 
         String templateString = "SELECT #result('DATE_OF_BIRTH' 'java.sql.Date' 'DOB') "
                 + "FROM ARTIST WHERE ARTIST_ID = #bind($id)";
-        SQLTemplate template = new SQLTemplate(Object.class, templateString);
+        SQLTemplate template = new SQLTemplate(templateString);
         template.setColumnNamesCapitalization(CapsStrategy.UPPER);
 
         Map<String, Object> bindings = new HashMap<>();
@@ -209,7 +209,7 @@ public class SQLTemplateActionIT {
 
         String templateString = "SELECT #result('DATE_OF_BIRTH' 'java.sql.Timestamp' 'DOB') "
                 + "FROM ARTIST WHERE ARTIST_ID = #bind($id)";
-        SQLTemplate template = new SQLTemplate(Object.class, templateString);
+        SQLTemplate template = new SQLTemplate(templateString);
         template.setColumnNamesCapitalization(CapsStrategy.UPPER);
 
         Map<String, Object> bindings = new HashMap<>();
@@ -238,7 +238,7 @@ public class SQLTemplateActionIT {
     public void executeUpdate() throws Exception {
         String templateString = "INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME, DATE_OF_BIRTH) "
                 + "VALUES (#bind($id), #bind($name), #bind($dob 'DATE'))";
-        SQLTemplate template = new SQLTemplate(Object.class, templateString);
+        SQLTemplate template = new SQLTemplate(templateString);
 
         Map<String, Object> bindings = new HashMap<>();
         bindings.put("id", 1L);
@@ -266,7 +266,7 @@ public class SQLTemplateActionIT {
     public void executeUpdateNoParameters() throws Exception {
         createFourArtists();
 
-        SQLTemplate template = new SQLTemplate(Object.class, "delete from ARTIST where ARTIST_NAME like 'a%'");
+        SQLTemplate template = new SQLTemplate("delete from ARTIST where ARTIST_NAME like 'a%'");
 
         SQLAction action = node.getAdapter().getAction(template, node);
 
@@ -285,7 +285,7 @@ public class SQLTemplateActionIT {
     public void executeUpdateBatch() throws Exception {
         String templateString = "INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME, DATE_OF_BIRTH) "
                 + "VALUES (#bind($id), #bind($name), #bind($dob 'DATE'))";
-        SQLTemplate template = new SQLTemplate(Object.class, templateString);
+        SQLTemplate template = new SQLTemplate(templateString);
 
         Map<String, Object> bindings1 = new HashMap<>();
         bindings1.put("id", 1L);

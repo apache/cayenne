@@ -23,7 +23,6 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.access.DataContext;
-import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.SQLResult;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -75,8 +74,7 @@ public class SQLTemplateIT {
 
 	@Test
 	public void testSQLTemplateForDataMap() {
-		DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
-		SQLTemplate q1 = new SQLTemplate(testDataMap, "SELECT * FROM ARTIST", true);
+		SQLTemplate q1 = SQLTemplate.dataRowQuery("testmap", "SELECT * FROM ARTIST");
 		List<DataRow> result = context.select(q1);
 		assertEquals(0, result.size());
 	}
@@ -85,8 +83,7 @@ public class SQLTemplateIT {
 	public void testSQLTemplateForDataMapWithInsert() throws SQLException {
 		createArtistDataSet();
 
-		DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
-		SQLTemplate q2 = new SQLTemplate(testDataMap, "SELECT * FROM ARTIST", true);
+		SQLTemplate q2 = SQLTemplate.dataRowQuery("testmap", "SELECT * FROM ARTIST");
 		List<DataRow> result = context.select(q2);
 		assertEquals(2, result.size());
 	}
@@ -94,15 +91,14 @@ public class SQLTemplateIT {
 	@Test
 	public void testReturnGeneratedKeys() {
 		if(testDbAdapter.supportsGeneratedKeys()) {
-			DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
 			String sql = "INSERT INTO GENERATED_COLUMN (NAME) VALUES ('Surikov')";
-			SQLTemplate q1 = new SQLTemplate(testDataMap, sql, true);
+			SQLTemplate q1 = SQLTemplate.dataRowQuery("testmap", sql);
 			q1.setReturnGeneratedKeys(true);
 			List<DataRow> response = context.select(q1);
 			assertEquals(1, response.size());
 
 			String sql1 = "INSERT INTO GENERATED_COLUMN (NAME) VALUES ('Test')";
-			SQLTemplate q2 = new SQLTemplate(testDataMap, sql1, true);
+			SQLTemplate q2 = SQLTemplate.dataRowQuery("testmap", sql1);
 			q2.setReturnGeneratedKeys(false);
 			List<DataRow> response1 = context.select(q2);
 			assertEquals(0, response1.size());
@@ -113,8 +109,7 @@ public class SQLTemplateIT {
 	public void testSQLTemplateForDataMapWithInsertException() throws SQLException {
 		createArtistDataSet();
 
-		DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
-		SQLTemplate q2 = new SQLTemplate(testDataMap, "SELECT * FROM ARTIST", false);
+		SQLTemplate q2 = new SQLTemplate("SELECT * FROM ARTIST");
 		boolean gotRuntimeException = false;
 		try {
 			context.select(q2);
@@ -129,7 +124,7 @@ public class SQLTemplateIT {
 		createArtistDataSet();
 
 		assertThrows(CayenneRuntimeException.class, () -> {
-			SQLTemplate query = new SQLTemplate("SELECT ARTIST_ID P FROM ARTIST", true);
+			SQLTemplate query = SQLTemplate.dataRowQuery("SELECT ARTIST_ID P FROM ARTIST");
 			query.setResultColumnsTypes(Float.class);
 			SQLResult resultDescriptor = new SQLResult();
 			resultDescriptor.addColumnResult("P");
@@ -143,8 +138,7 @@ public class SQLTemplateIT {
 		createArtistDataSet();
 
 		assertThrows(CayenneRuntimeException.class, () -> {
-			DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
-			SQLTemplate query = new SQLTemplate(testDataMap, "SELECT ARTIST_ID, ARTIST_NAME P FROM ARTIST", false);
+			SQLTemplate query = new SQLTemplate("SELECT ARTIST_ID, ARTIST_NAME P FROM ARTIST");
 			query.setResultColumnsTypes(Float.class, String.class);
 			query.setUseScalar(true);
 			SQLResult resultDescriptor = new SQLResult();
@@ -209,8 +203,7 @@ public class SQLTemplateIT {
 	public void testDataRowWithTypes() throws SQLException {
 		createArtistDataSet();
 
-		DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
-		SQLTemplate q3 = new SQLTemplate(testDataMap, "SELECT ARTIST_ID, ARTIST_NAME FROM ARTIST", true);
+		SQLTemplate q3 = SQLTemplate.dataRowQuery("testmap", "SELECT ARTIST_ID, ARTIST_NAME FROM ARTIST");
 		q3.setResultColumnsTypes(Double.class, String.class);
 		q3.setColumnNamesCapitalization(CapsStrategy.UPPER);
 		List<DataRow> artists = context.select(q3);
@@ -223,8 +216,7 @@ public class SQLTemplateIT {
 	public void testDataRowReturnAndDirectives() throws SQLException {
 		createArtistDataSet();
 
-		DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
-		SQLTemplate q3 = new SQLTemplate(testDataMap, "SELECT #result('ARTIST_ID' 'java.lang.Long'), #result('ARTIST_NAME' 'java.lang.String') FROM ARTIST", true);
+		SQLTemplate q3 = SQLTemplate.dataRowQuery("testmap", "SELECT #result('ARTIST_ID' 'java.lang.Long'), #result('ARTIST_NAME' 'java.lang.String') FROM ARTIST");
 		List<DataRow> result = context.select(q3);
 		assertEquals(2, result.size());
 		assertTrue(result.get(0) instanceof DataRow);
@@ -238,8 +230,7 @@ public class SQLTemplateIT {
 		createArtistDataSet();
 
 		assertThrows(CayenneRuntimeException.class, () -> {
-			DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
-			SQLTemplate q3 = new SQLTemplate(testDataMap, "SELECT #result('ARTIST_ID' 'java.lang.Long'), #result('ARTIST_NAME' 'java.lang.String') FROM ARTIST", true);
+			SQLTemplate q3 = SQLTemplate.dataRowQuery("testmap", "SELECT #result('ARTIST_ID' 'java.lang.Long'), #result('ARTIST_NAME' 'java.lang.String') FROM ARTIST");
 			q3.setResultColumnsTypes(Integer.class, String.class);
 			context.select(q3);
 		});
@@ -249,8 +240,7 @@ public class SQLTemplateIT {
 	public void testObjectArrayReturnAndDirectives() throws SQLException {
 		createArtistDataSet();
 
-		DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
-		SQLTemplate q3 = new SQLTemplate(testDataMap, "SELECT #result('ARTIST_ID' 'java.lang.Long'), #result('ARTIST_NAME' 'java.lang.String') FROM ARTIST", false);
+		SQLTemplate q3 = new SQLTemplate("SELECT #result('ARTIST_ID' 'java.lang.Long'), #result('ARTIST_NAME' 'java.lang.String') FROM ARTIST");
 		q3.setUseScalar(true);
 		List<Object[]> result = context.select(q3);
 		assertEquals(2, result.size());
@@ -265,8 +255,7 @@ public class SQLTemplateIT {
 		createArtistDataSet();
 
 		assertThrows(CayenneRuntimeException.class, () -> {
-			DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
-			SQLTemplate q3 = new SQLTemplate(testDataMap, "SELECT #result('ARTIST_ID' 'java.lang.Long'), #result('ARTIST_NAME' 'java.lang.String') FROM ARTIST", false);
+			SQLTemplate q3 = new SQLTemplate("SELECT #result('ARTIST_ID' 'java.lang.Long'), #result('ARTIST_NAME' 'java.lang.String') FROM ARTIST");
 			q3.setResultColumnsTypes(Integer.class, String.class);
 			q3.setUseScalar(true);
 			context.select(q3);
@@ -277,8 +266,7 @@ public class SQLTemplateIT {
 	public void testObjectArrayWithSingleObjectReturnAndDirectives() throws SQLException {
 		createArtistDataSet();
 
-		DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
-		SQLTemplate q3 = new SQLTemplate(testDataMap, "SELECT #result('ARTIST_ID' 'java.lang.Long') FROM ARTIST", false);
+		SQLTemplate q3 = new SQLTemplate("SELECT #result('ARTIST_ID' 'java.lang.Long') FROM ARTIST");
 		q3.setUseScalar(true);
 		List<Object[]> result = context.select(q3);
 		assertEquals(2, result.size());
@@ -292,8 +280,7 @@ public class SQLTemplateIT {
 		createArtistDataSet();
 
 		assertThrows(CayenneRuntimeException.class, () -> {
-			DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
-			SQLTemplate q3 = new SQLTemplate(testDataMap, "SELECT ARTIST_ID, ARTIST_NAME FROM ARTIST", false);
+			SQLTemplate q3 = new SQLTemplate("SELECT ARTIST_ID, ARTIST_NAME FROM ARTIST");
 			q3.setResultColumnsTypes(Integer.class);
 			q3.setUseScalar(true);
 			context.select(q3);
@@ -304,8 +291,7 @@ public class SQLTemplateIT {
 	public void testObjectArrayWithSingleObjectReturn() throws SQLException {
 		createArtistDataSet();
 
-		DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
-		SQLTemplate q3 = new SQLTemplate(testDataMap, "SELECT ARTIST_ID FROM ARTIST", false);
+		SQLTemplate q3 = new SQLTemplate("SELECT ARTIST_ID FROM ARTIST");
 		q3.setUseScalar(true);
 		List<Object[]> artists = context.select(q3);
 		assertEquals(2, artists.size());
@@ -321,8 +307,7 @@ public class SQLTemplateIT {
 	public void testObjectArrayReturnWithDefaultTypes() throws SQLException {
 		createArtistDataSet();
 
-		DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
-		SQLTemplate q3 = new SQLTemplate(testDataMap, "SELECT ARTIST_ID, ARTIST_NAME FROM ARTIST", false);
+		SQLTemplate q3 = new SQLTemplate("SELECT ARTIST_ID, ARTIST_NAME FROM ARTIST");
 		q3.setUseScalar(true);
 		List<Object[]> artists = context.select(q3);
 		assertEquals(2, artists.size());
@@ -338,8 +323,7 @@ public class SQLTemplateIT {
 	public void testObjectArrayReturn() throws SQLException {
 		createArtistDataSet();
 
-		DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
-		SQLTemplate q5 = new SQLTemplate(testDataMap, "SELECT * FROM ARTIST", false);
+		SQLTemplate q5 = new SQLTemplate("SELECT * FROM ARTIST");
 		q5.setResultColumnsTypes(Float.class, String.class, LocalDateTime.class);
 		q5.setUseScalar(true);
 		List dates = context.select(q5);
@@ -353,8 +337,7 @@ public class SQLTemplateIT {
 	public void testSingleObjectReturn() throws SQLException {
 		tArtistCt.insert(1, "Test", new Date(System.currentTimeMillis()));
 
-		DataMap testDataMap = context.getEntityResolver().getDataMap("testmap");
-		SQLTemplate q5 = new SQLTemplate(testDataMap, "SELECT ARTIST_NAME FROM ARTIST_CT", false);
+		SQLTemplate q5 = new SQLTemplate("SELECT ARTIST_NAME FROM ARTIST_CT");
 		q5.setResultColumnsTypes(String.class);
 		q5.setUseScalar(true);
 		List dates = context.select(q5);

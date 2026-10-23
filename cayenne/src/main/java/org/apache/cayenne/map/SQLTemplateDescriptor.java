@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.map;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.project.ProjectNodeVisitor;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.PrefetchTreeNode;
@@ -116,11 +117,13 @@ public class SQLTemplateDescriptor extends QueryDescriptor {
 
     @Override
     public SQLTemplate<?> buildQuery() {
-        SQLTemplate<?> template = new SQLTemplate<>();
-
-        if (root != null) {
-            template.setRoot(root);
-        }
+        SQLTemplate<?> template = switch (root) {
+            case null -> new SQLTemplate<>(getSql());
+            case String entityName -> SQLTemplate.entityQuery(entityName, getSql());
+            case ObjEntity entity -> SQLTemplate.entityQuery(entity.getName(), getSql());
+            case DataMap map -> SQLTemplate.dataRowQuery(map.getName(), getSql());
+            default -> throw new CayenneRuntimeException("Unsupported SQLTemplate root: %s", root);
+        };
 
         if (prefetchesMap != null) {
             for (Map.Entry<String, Integer> entry : prefetchesMap.entrySet()) {
@@ -134,9 +137,6 @@ public class SQLTemplateDescriptor extends QueryDescriptor {
         template.setCacheStrategy(cacheStrategy);
         template.setCacheGroup(cacheGroup);
         template.setColumnNamesCapitalization(columnNamesCapitalization);
-
-        // init SQL
-        template.setDefaultTemplate(this.getSql());
 
         Map<String, String> adapterSql = this.getAdapterSql();
 
@@ -176,15 +176,6 @@ public class SQLTemplateDescriptor extends QueryDescriptor {
         } else if (root instanceof ObjEntity) {
             rootType = QueryDescriptor.OBJ_ENTITY_ROOT;
             rootString = ((ObjEntity) root).getName();
-        } else if (root instanceof DbEntity) {
-            rootType = QueryDescriptor.DB_ENTITY_ROOT;
-            rootString = ((DbEntity) root).getName();
-        } else if (root instanceof Procedure) {
-            rootType = QueryDescriptor.PROCEDURE_ROOT;
-            rootString = ((Procedure) root).getName();
-        } else if (root instanceof Class<?>) {
-            rootType = QueryDescriptor.JAVA_CLASS_ROOT;
-            rootString = ((Class<?>) root).getName();
         } else if (root instanceof DataMap) {
             rootType = QueryDescriptor.DATA_MAP_ROOT;
             rootString = ((DataMap) root).getName();

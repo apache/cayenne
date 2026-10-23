@@ -83,7 +83,7 @@ public class DataNodeQueriesIT {
     public void perfomQueriesSQLTemplate() throws Exception {
         String template = "INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME, DATE_OF_BIRTH) "
                 + "VALUES (#bind($id), #bind($name), #bind($dob 'DATE'))";
-        SQLTemplate query = new SQLTemplate(Object.class, template);
+        SQLTemplate query = new SQLTemplate(template);
 
         Map<String, Object> bindings = new HashMap<>();
         bindings.put("id", 1L);
@@ -108,7 +108,7 @@ public class DataNodeQueriesIT {
         createFourArtists();
 
         String template = "SELECT #result('ARTIST_ID' 'int') FROM ARTIST ORDER BY ARTIST_ID";
-        SQLTemplate query = new SQLTemplate(Object.class, template);
+        SQLTemplate query = new SQLTemplate(template);
 
         MockOperationObserver observer = new MockOperationObserver();
         node.performQueries(Collections.singletonList((Query) query), observer);
@@ -125,7 +125,7 @@ public class DataNodeQueriesIT {
         createFourArtists();
 
         String template = "SELECT * FROM ARTIST ORDER BY ARTIST_ID";
-        SQLTemplate query = new SQLTemplate(Object.class, template);
+        SQLTemplate query = new SQLTemplate(template);
         query.setColumnNamesCapitalization(CapsStrategy.UPPER);
 
         MockOperationObserver observer = new MockOperationObserver();
@@ -146,7 +146,7 @@ public class DataNodeQueriesIT {
         createFourArtists();
 
         String template = "SELECT #result('ARTIST_ID' 'int' 'A') FROM ARTIST ORDER BY ARTIST_ID";
-        Query query = new SQLTemplate(Object.class, template);
+        Query query = new SQLTemplate(template);
 
         MockOperationObserver observer = new MockOperationObserver();
         node.performQueries(Collections.singletonList(query), observer);
@@ -163,7 +163,7 @@ public class DataNodeQueriesIT {
         String templateString = "INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME)"
                 + "\n"
                 + "VALUES (1, 'A')";
-        Query template = new SQLTemplate(Object.class, templateString);
+        Query template = new SQLTemplate(templateString);
         node.performQueries(
                 Collections.singletonList(template),
                 new MockOperationObserver());
@@ -174,7 +174,7 @@ public class DataNodeQueriesIT {
         String templateString = "INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME)"
                 + "\r\n"
                 + "VALUES (1, 'A')";
-        Query template = new SQLTemplate(Object.class, templateString);
+        Query template = new SQLTemplate(templateString);
         node.performQueries(
                 Collections.singletonList(template),
                 new MockOperationObserver());
@@ -185,7 +185,7 @@ public class DataNodeQueriesIT {
         String templateString = "INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME)"
                 + "\r"
                 + "VALUES (1, 'A')";
-        Query template = new SQLTemplate(Object.class, templateString);
+        Query template = new SQLTemplate(templateString);
         node.performQueries(
                 Collections.singletonList(template),
                 new MockOperationObserver());

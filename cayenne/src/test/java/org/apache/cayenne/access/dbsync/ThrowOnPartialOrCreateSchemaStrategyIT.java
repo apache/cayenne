@@ -39,7 +39,7 @@ public class ThrowOnPartialOrCreateSchemaStrategyIT extends SchemaUpdateStrategy
 		createOneTable("SUS2");
 
 		String template = "SELECT #result('ARTIST_ID' 'int') FROM ARTIST ORDER BY ARTIST_ID";
-		SQLTemplate query = new SQLTemplate(Object.class, template);
+		SQLTemplate query = new SQLTemplate(template);
 
 		setStrategy(ThrowOnPartialOrCreateSchemaStrategy.class);
 		node.performQueries(Collections.singletonList(query), new MockOperationObserver());
@@ -49,7 +49,7 @@ public class ThrowOnPartialOrCreateSchemaStrategyIT extends SchemaUpdateStrategy
 	public void mixedStrategyTableNoExist() throws Exception {
 
 		String template = "SELECT #result('id' 'int') FROM SUS1";
-		SQLTemplate query = new SQLTemplate(Object.class, template);
+		SQLTemplate query = new SQLTemplate(template);
 
 		setStrategy(ThrowOnPartialOrCreateSchemaStrategy.class);
 
@@ -68,7 +68,7 @@ public class ThrowOnPartialOrCreateSchemaStrategyIT extends SchemaUpdateStrategy
 		setStrategy(ThrowOnPartialOrCreateSchemaStrategy.class);
 
 		String template = "SELECT #result('ARTIST_ID' 'int') FROM ARTIST ORDER BY ARTIST_ID";
-		SQLTemplate query = new SQLTemplate(Object.class, template);
+		SQLTemplate query = new SQLTemplate(template);
 
 		assertThrows(CayenneRuntimeException.class, () ->
 			node.performQueries(Collections.singletonList(query), new MockOperationObserver()));

@@ -50,6 +50,15 @@
 		<dbAttributePair source="PAINTING_ID" target="PAINTING_ID"/>
 	</dbRelationship>
 	<objRelationship name="self" source="Artist" target="Artist" deleteRule="nullify" dbRelationshipPath="self"/>
+	<sqlQuery name="byEntity" root="objEntity" rootName="Artist">
+		<sql><![CDATA[SELECT * FROM ARTIST]]></sql>
+	</sqlQuery>
+	<sqlQuery name="byTable" root="dbEntity" rootName="ARTIST">
+		<sql><![CDATA[SELECT * FROM ARTIST]]></sql>
+	</sqlQuery>
+	<sqlQuery name="byProcedure" root="procedure" rootName="some_proc">
+		<sql><![CDATA[SELECT * FROM ARTIST]]></sql>
+	</sqlQuery>
 	<cgen xmlns="http://cayenne.apache.org/schema/14/cgen">
 		<destDir>src/main/java</destDir>
 	</cgen>

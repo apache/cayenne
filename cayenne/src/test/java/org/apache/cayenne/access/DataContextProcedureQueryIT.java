@@ -193,9 +193,7 @@ public class DataContextProcedureQueryIT  {
         // create an artist with painting in the database
         createArtist(1000.0);
 
-        // test ProcedureQuery with Procedure as root
-        Procedure proc = env.context().getEntityResolver().getProcedure(SELECT_STORED_PROCEDURE);
-        ProcedureQuery q = new ProcedureQuery(proc);
+        ProcedureQuery q = new ProcedureQuery(SELECT_STORED_PROCEDURE);
         q.addParameter("aName", "An Artist");
         q.addParameter("paintingPrice", 3000);
 
@@ -344,9 +342,7 @@ public class DataContextProcedureQueryIT  {
         // create an artist with painting in the database
         createArtist(1000.0);
 
-        // test ProcedureQuery with Procedure as root
-        Procedure proc = env.context().getEntityResolver().getProcedure(SELECT_STORED_PROCEDURE);
-        ProcedureQuery q = new ProcedureQuery(proc);
+        ProcedureQuery q = new ProcedureQuery(SELECT_STORED_PROCEDURE);
         q.setFetchingDataRows(true);
         q.addParameter("aName", "An Artist");
         q.addParameter("paintingPrice", 3000);

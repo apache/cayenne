@@ -34,7 +34,7 @@ public class ThrowOnPartialSchemaStrategyIT extends SchemaUpdateStrategyBase {
 	public void throwOnPartialStrategyTableNoExist() throws Exception {
 
 		String template = "SELECT #result('ARTIST_ID' 'int') FROM ARTIST ORDER BY ARTIST_ID";
-		SQLTemplate query = new SQLTemplate(Object.class, template);
+		SQLTemplate query = new SQLTemplate(template);
 		MockOperationObserver observer = new MockOperationObserver();
 
 		setStrategy(ThrowOnPartialSchemaStrategy.class);
@@ -56,7 +56,7 @@ public class ThrowOnPartialSchemaStrategyIT extends SchemaUpdateStrategyBase {
 	public void throwOnPartialStrategyTableExist() throws Exception {
 
 		String template = "SELECT #result('ARTIST_ID' 'int') FROM ARTIST ORDER BY ARTIST_ID";
-		SQLTemplate query = new SQLTemplate(Object.class, template);
+		SQLTemplate query = new SQLTemplate(template);
 		MockOperationObserver observer = new MockOperationObserver();
 
 		createOneTable("SUS1");
@@ -73,7 +73,7 @@ public class ThrowOnPartialSchemaStrategyIT extends SchemaUpdateStrategyBase {
 		setStrategy(ThrowOnPartialSchemaStrategy.class);
 
 		String template = "SELECT #result('ARTIST_ID' 'int') FROM ARTIST ORDER BY ARTIST_ID";
-		SQLTemplate query = new SQLTemplate(Object.class, template);
+		SQLTemplate query = new SQLTemplate(template);
 		MockOperationObserver observer = new MockOperationObserver();
 
 		assertThrows(CayenneRuntimeException.class, () ->

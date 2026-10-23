@@ -19,16 +19,20 @@
 
 package org.apache.cayenne.map;
 
+import java.util.List;
 import java.util.Map;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.ProcedureQuery;
 import org.apache.cayenne.query.QueryCacheStrategy;
+import org.apache.cayenne.query.QueryMetadata;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ProcedureQueryDescriptorTest {
@@ -46,20 +50,54 @@ public class ProcedureQueryDescriptorTest {
 
     @Test
     public void getQueryRoot() {
+        DataMap map = new DataMap();
         Procedure procedure = new Procedure("p1");
+        map.addProcedure(procedure);
+        DbEntity table = new DbEntity("A_T");
+        map.addDbEntity(table);
+        ObjEntity entity = new ObjEntity("A");
+        entity.setDbEntity(table);
+        map.addObjEntity(entity);
 
         ProcedureQueryDescriptor builder = new ProcedureQueryDescriptor();
         builder.setRoot(procedure);
         builder.setResultEntityName("A");
 
-        ProcedureQuery<?> query = builder.buildQuery();
-        assertSame(procedure, query.getRoot());
-        assertEquals("A", query.getResultEntityName());
+        QueryMetadata metadata = builder.buildQuery().getMetaData(new EntityResolver(List.of(map)));
+        assertSame(procedure, metadata.getProcedure());
+        assertSame(table, metadata.getDbEntity());
+        assertSame(map, metadata.getDataMap());
+    }
+
+    @Test
+    public void getQueryRootName() {
+        DataMap map = new DataMap();
+        Procedure procedure = new Procedure("p1");
+        map.addProcedure(procedure);
+
+        ProcedureQueryDescriptor builder = new ProcedureQueryDescriptor();
+        builder.setRoot("p1");
+
+        QueryMetadata metadata = builder.buildQuery().getMetaData(new EntityResolver(List.of(map)));
+        assertSame(procedure, metadata.getProcedure());
+        assertNull(metadata.getDbEntity());
+        assertSame(map, metadata.getDataMap());
+    }
+
+    @Test
+    public void getQueryNoRoot() {
+        ProcedureQueryDescriptor builder = new ProcedureQueryDescriptor();
+        builder.setName("q");
+        assertThrows(CayenneRuntimeException.class, builder::buildQuery);
+
+        builder.setRoot(new DataMap("m"));
+        assertThrows(CayenneRuntimeException.class, builder::buildQuery);
     }
 
     @Test
     public void getQueryProperties() {
         ProcedureQueryDescriptor builder = new ProcedureQueryDescriptor();
+        builder.setRoot("p1");
         builder.setFetchLimit(5);
         builder.setFetchOffset(2);
         builder.setPageSize(10);
@@ -83,6 +121,7 @@ public class ProcedureQueryDescriptorTest {
     @Test
     public void columnNamesCapitalization() {
         ProcedureQueryDescriptor builder = new ProcedureQueryDescriptor();
+        builder.setRoot("p1");
         assertNull(builder.getColumnNamesCapitalization());
 
         builder.setColumnNamesCapitalization(CapsStrategy.LOWER);

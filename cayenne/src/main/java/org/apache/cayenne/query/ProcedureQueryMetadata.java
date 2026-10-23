@@ -42,27 +42,15 @@ class ProcedureQueryMetadata extends BaseQueryMetadata {
         super.copyFromInfo(info);
     }
 
-    void resolve(
-            Object root,
-            Object resultRoot,
-            EntityResolver resolver,
-            ProcedureQuery<?> query) {
+    void resolve(EntityResolver resolver, ProcedureQuery<?> query) {
+        Object resultRoot = query.getResultType() != null ? query.getResultType() : query.getResultEntityName();
         if (super.resolve(resultRoot, resolver)) {
-            procedure = null;
+            this.procedure = resolver.getProcedure(query.getProcedureName());
 
-            if (root != null) {
-                if (root instanceof String) {
-                    this.procedure = resolver.getProcedure((String) root);
-                }
-                else if (root instanceof Procedure) {
-                    this.procedure = (Procedure) root;
-                }
-
-                // theoretically procedure can be in one DataMap, while the Java Class
-                // - in another.
-                if (this.procedure != null && this.dataMap == null) {
-                    this.dataMap = procedure.getDataMap();
-                }
+            // theoretically procedure can be in one DataMap, while the Java Class
+            // - in another.
+            if (this.procedure != null && this.dataMap == null) {
+                this.dataMap = procedure.getDataMap();
             }
 
             // generate unique cache key...

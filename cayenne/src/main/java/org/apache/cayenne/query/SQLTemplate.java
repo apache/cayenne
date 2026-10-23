@@ -20,13 +20,12 @@
 package org.apache.cayenne.query;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.SQLResult;
 import org.apache.cayenne.util.ToStringBuilder;
 
@@ -65,15 +64,70 @@ import java.util.stream.Stream;
  * This way a single query can have multiple "dialects" specific to a given
  * database.
  * </p>
+ * <h3>Query Root</h3>
+ * <p>
+ * The root of a SQLTemplate determines the DataNode that runs the SQL and, for a query fetching objects, their
+ * entity. It is one of a persistent class ({@link #query(Class, String)}), an ObjEntity name
+ * ({@link #entityQuery(String, String)}) or a DataMap name ({@link #dataRowQuery(String, String)}), and is fixed
+ * when the query is created. A query with no root ({@link #SQLTemplate(String)}, {@link #dataRowQuery(String)})
+ * runs on the DataNode set via {@link #setDataNodeName(String)}, or on the default DataNode.
+ * </p>
  * 
  * @param <T> the type of the result elements. Depending on the query root and configuration, this may be a
- *            persistent object, a {@link org.apache.cayenne.DataRow}, a scalar or an {@code Object[]}.
+ *            persistent object, a {@link DataRow}, a scalar or an {@code Object[]}.
  * @since 1.1
  */
 public class SQLTemplate<T> implements Select<T> {
 
 	private static final Function<Map<String, ?>, Map<String, ?>> nullMapTransformer = input ->
 			(input != null) ? input : Collections.emptyMap();
+
+	/**
+	 * Creates a query fetching objects of the given persistent type, routed to the DataNode of the type's entity.
+	 *
+	 * @since 6.0
+	 */
+	public static <T> SQLTemplate<T> query(Class<T> type, String sql) {
+		return new SQLTemplate<>(type, sql);
+	}
+
+	/**
+	 * Creates a query fetching objects of the named ObjEntity, routed to the DataNode of that entity. This is the
+	 * form of the queries mapped in a DataMap, where the entity class is not necessarily known.
+	 *
+	 * @since 6.0
+	 */
+	public static SQLTemplate<Persistent> entityQuery(String entityName, String sql) {
+		return new SQLTemplate<>(null, entityName, null, sql);
+	}
+
+	/**
+	 * Creates a query fetching DataRows, routed to the DataNode set via {@link #setDataNodeName(String)} or to the
+	 * default DataNode.
+	 *
+	 * @since 6.0
+	 */
+	public static SQLTemplate<DataRow> dataRowQuery(String sql) {
+		SQLTemplate<DataRow> query = new SQLTemplate<>(sql);
+		query.setFetchingDataRows(true);
+		return query;
+	}
+
+	/**
+	 * Creates a query fetching DataRows, routed to the DataNode of the named DataMap.
+	 *
+	 * @since 6.0
+	 */
+	public static SQLTemplate<DataRow> dataRowQuery(String dataMapName, String sql) {
+		SQLTemplate<DataRow> query = new SQLTemplate<>(null, null, dataMapName, sql);
+		query.setFetchingDataRows(true);
+		return query;
+	}
+
+	// the root: at most one of the three is set
+	private final Class<T> persistentType;
+	private final String entityName;
+	private final String dataMapName;
 
 	protected String defaultTemplate;
 	protected Map<String, String> templates;
@@ -90,24 +144,30 @@ public class SQLTemplate<T> implements Select<T> {
 	SQLTemplateMetadata metaData = new SQLTemplateMetadata();
 
 	/**
-	 * Creates an empty SQLTemplate. Note this constructor does not specify the
-	 * "root" of the query, so a user must call "setRoot" later to make sure
-	 * SQLTemplate can be executed.
-	 * 
-	 * @since 1.2
+	 * Creates a query with no root. It is routed to the DataNode set via {@link #setDataNodeName(String)}, or to the
+	 * default DataNode, and the shape of its result, if it has one, is defined by
+	 * {@link #setFetchingDataRows(boolean)}, {@link #setUseScalar(boolean)} or {@link #setResult(SQLResult)}.
+	 *
+	 * @since 6.0
 	 */
-	public SQLTemplate() {
+	public SQLTemplate(String sql) {
+		this(null, null, null, sql);
 	}
 
 	/**
-	 * Creates a SQLTemplate without an explicit root.
-	 * 
-	 * @since 4.0
+	 * Creates a query fetching objects of the given persistent type, routed to the DataNode of the type's entity.
+	 *
+	 * @since 1.2
 	 */
-	public SQLTemplate(String defaultTemplate, boolean isFetchingDataRows) {
-		setDefaultTemplate(defaultTemplate);
-		setRoot(null);
-		setFetchingDataRows(isFetchingDataRows);
+	public SQLTemplate(Class<T> persistentType, String sql) {
+		this(persistentType, null, null, sql);
+	}
+
+	private SQLTemplate(Class<T> persistentType, String entityName, String dataMapName, String sql) {
+		this.persistentType = persistentType;
+		this.entityName = entityName;
+		this.dataMapName = dataMapName;
+		this.defaultTemplate = sql;
 	}
 
 	public void setResultColumnsTypes(Class<?> ...types) {
@@ -117,47 +177,29 @@ public class SQLTemplate<T> implements Select<T> {
 		Collections.addAll(resultColumnsTypes, types);
 	}
 
-	/**
-	 * The root object of this query. May be an entity name, Java class, ObjEntity or
-	 * DbEntity, depending on how the query was constructed. Null root is allowed.
-	 */
-	protected Object root;
-
-	/**
-	 * Returns the root of this query.
-	 */
-	public Object getRoot() {
-		return root;
+	Class<T> getPersistentType() {
+		return persistentType;
 	}
 
-	/**
-	 * Sets the root of the query.
-	 *
-	 * @param value The new root
-	 * @throws IllegalArgumentException if value is not a String, ObjEntity, DbEntity,
-	 *             Procedure, DataMap, Class or null.
-	 */
-	public void setRoot(Object value) {
-		if (value != null && !(value instanceof String
-				|| value instanceof ObjEntity
-				|| value instanceof DbEntity
-				|| value instanceof Class
-				|| value instanceof Procedure
-				|| value instanceof DataMap)) {
+	String getEntityName() {
+		return entityName;
+	}
 
-			throw new IllegalArgumentException(("%s: \"setRoot(..)\" takes a DataMap, String, ObjEntity, DbEntity, "
-					+ "Procedure, or Class. It was passed a %s")
-					.formatted(getClass().getName(), value.getClass().getName()));
-		}
-
-		this.root = value;
+	String getDataMapName() {
+		return dataMapName;
 	}
 
 	@Override
 	public String toString() {
-		return new ToStringBuilder(this)
-				.append("root", root)
-				.toString();
+		ToStringBuilder builder = new ToStringBuilder(this);
+		if (persistentType != null) {
+			builder.append("persistentType", persistentType.getName());
+		} else if (entityName != null) {
+			builder.append("entityName", entityName);
+		} else if (dataMapName != null) {
+			builder.append("dataMapName", dataMapName);
+		}
+		return builder.append("sql", defaultTemplate).toString();
 	}
 
 	@Override
@@ -175,52 +217,11 @@ public class SQLTemplate<T> implements Select<T> {
 	}
 
 	/**
-	 * @since 3.1
-	 */
-	public SQLTemplate(DataMap rootMap, String defaultTemplate, boolean isFetchingDataRows) {
-		setDefaultTemplate(defaultTemplate);
-		setRoot(rootMap);
-		setFetchingDataRows(isFetchingDataRows);
-	}
-
-	/**
-	 * @since 1.2
-	 */
-	public SQLTemplate(ObjEntity rootEntity, String defaultTemplate) {
-		setDefaultTemplate(defaultTemplate);
-		setRoot(rootEntity);
-	}
-
-	/**
-	 * @since 1.2
-	 */
-	public SQLTemplate(Class<?> rootClass, String defaultTemplate) {
-		setDefaultTemplate(defaultTemplate);
-		setRoot(rootClass);
-	}
-
-	/**
-	 * @since 1.2
-	 */
-	public SQLTemplate(DbEntity rootEntity, String defaultTemplate) {
-		setDefaultTemplate(defaultTemplate);
-		setRoot(rootEntity);
-	}
-
-	/**
-	 * @since 1.2
-	 */
-	public SQLTemplate(String objEntityName, String defaultTemplate) {
-		setRoot(objEntityName);
-		setDefaultTemplate(defaultTemplate);
-	}
-
-	/**
 	 * @since 1.2
 	 */
 	@Override
 	public QueryMetadata getMetaData(EntityResolver resolver) {
-		metaData.resolve(root, resolver, this);
+		metaData.resolve(resolver, this);
 		return metaData;
 	}
 
@@ -319,10 +320,7 @@ public class SQLTemplate<T> implements Select<T> {
 	 */
 	public SQLTemplate<T> queryWithParameters(Map<String, ?>... parameters) {
 		// create a query replica
-		SQLTemplate<T> query = new SQLTemplate<>();
-
-		query.setRoot(root);
-		query.setDefaultTemplate(getDefaultTemplate());
+		SQLTemplate<T> query = new SQLTemplate<>(persistentType, entityName, dataMapName, defaultTemplate);
 
 		if (templates != null) {
 			query.templates = new HashMap<>(templates);
@@ -478,9 +476,9 @@ public class SQLTemplate<T> implements Select<T> {
 	}
 
 	/**
-	 * Adds a SQL template string for a given key. Note the the keys understood
+	 * Adds a SQL template string for a given key. Note the keys understood
 	 * by Cayenne must be fully qualified adapter class names. This way the
-	 * framework can related current DataNode to the right template. E.g.
+	 * framework can relate current DataNode to the right template. E.g.
 	 * "org.apache.cayenne.dba.oracle.OracleAdapter" is a key that should be
 	 * used to setup an Oracle-specific template.
 	 * 

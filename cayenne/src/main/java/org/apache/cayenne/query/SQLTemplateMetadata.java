@@ -19,6 +19,7 @@
 package org.apache.cayenne.query;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.SQLResult;
@@ -36,9 +37,9 @@ public class SQLTemplateMetadata extends BaseQueryMetadata {
 
 	private Function<?, ?> resultMapper;
 
-	boolean resolve(Object root, EntityResolver resolver, SQLTemplate<?> query) {
+	boolean resolve(EntityResolver resolver, SQLTemplate<?> query) {
 
-		if (super.resolve(root, resolver)) {
+		if (super.resolve(root(resolver, query), resolver)) {
 
 			if((!query.isUseScalar() && !query.isFetchingDataRows()) && (query.getResultColumnsTypes() != null && !query.getResultColumnsTypes().isEmpty())) {
 				throw new CayenneRuntimeException("Error caused by using root in query with resultColumnTypes without scalar or dataRow.");
@@ -135,5 +136,26 @@ public class SQLTemplateMetadata extends BaseQueryMetadata {
 	@Override
 	public Function<?, ?> getResultMapper() {
 		return resultMapper;
+	}
+	// the root of the shared resolution: a persistent type or an entity name resolve to the query entity, a DataMap
+	// name to the DataMap the query is routed to
+	private static Object root(EntityResolver resolver, SQLTemplate<?> query) {
+		if (query.getPersistentType() != null) {
+			return query.getPersistentType();
+		}
+
+		if (query.getEntityName() != null) {
+			return query.getEntityName();
+		}
+
+		if (query.getDataMapName() != null) {
+			DataMap map = resolver.getDataMap(query.getDataMapName());
+			if (map == null) {
+				throw new CayenneRuntimeException("Invalid dataMapName '%s'", query.getDataMapName());
+			}
+			return map;
+		}
+
+		return null;
 	}
 }

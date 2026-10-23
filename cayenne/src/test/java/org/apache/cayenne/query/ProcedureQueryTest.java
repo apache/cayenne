@@ -19,58 +19,75 @@
 
 package org.apache.cayenne.query;
 
-import org.apache.cayenne.map.Procedure;
+import org.apache.cayenne.DataRow;
+import org.apache.cayenne.Persistent;
+import org.apache.cayenne.testdo.testmap.Artist;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ProcedureQueryTest {
 
     @Test
-    public void setRootProcedureName() {
-        ProcedureQuery query = new ProcedureQuery("SomeProcedure");
-        assertSame("SomeProcedure", query.getRoot());
+    public void constructorDataRows() {
+        ProcedureQuery<DataRow> query = new ProcedureQuery<>("SomeProcedure");
+        assertEquals("SomeProcedure", query.getProcedureName());
+        assertNull(query.getResultType());
+        assertNull(query.getResultEntityName());
+        assertTrue(query.isFetchingDataRows());
     }
 
     @Test
-    public void setRootProcedure() {
-        Procedure procedure = new Procedure("ABC");
-        ProcedureQuery query = new ProcedureQuery(procedure);
-        assertSame(procedure, query.getRoot());
+    public void constructorResultType() {
+        ProcedureQuery<Artist> query = new ProcedureQuery<>("SomeProcedure", Artist.class);
+        assertEquals("SomeProcedure", query.getProcedureName());
+        assertSame(Artist.class, query.getResultType());
+        assertNull(query.getResultEntityName());
+        assertFalse(query.isFetchingDataRows());
     }
 
     @Test
-    public void setInvalidRoot() {
-        ProcedureQuery query = new ProcedureQuery();
-        assertNull(query.getRoot());
-        assertThrows(IllegalArgumentException.class, () -> query.setRoot(1));
+    public void query() {
+        ProcedureQuery<DataRow> query = ProcedureQuery.query("SomeProcedure");
+        assertEquals("SomeProcedure", query.getProcedureName());
+        assertNull(query.getResultType());
+        assertNull(query.getResultEntityName());
+        assertTrue(query.isFetchingDataRows());
+    }
+
+    @Test
+    public void queryResultType() {
+        ProcedureQuery<Artist> query = ProcedureQuery.query("SomeProcedure", Artist.class);
+        assertSame(Artist.class, query.getResultType());
+        assertNull(query.getResultEntityName());
+        assertFalse(query.isFetchingDataRows());
+    }
+
+    @Test
+    public void entityQuery() {
+        ProcedureQuery<Persistent> query = ProcedureQuery.entityQuery("SomeProcedure", "abc.AAAA");
+        assertEquals("SomeProcedure", query.getProcedureName());
+        assertNull(query.getResultType());
+        assertEquals("abc.AAAA", query.getResultEntityName());
+        assertFalse(query.isFetchingDataRows());
     }
 
     @Test
     public void columnNameCapitalization() {
-        ProcedureQuery q1 = new ProcedureQuery();
+        ProcedureQuery q1 = new ProcedureQuery("SomeProcedure");
         assertSame(CapsStrategy.DEFAULT, q1.getColumnNamesCapitalization());
         q1.setColumnNamesCapitalization(CapsStrategy.UPPER);
         assertEquals(CapsStrategy.UPPER, q1.getColumnNamesCapitalization());
     }
 
     @Test
-    public void resultEntityName() {
-        ProcedureQuery query = new ProcedureQuery();
-        assertNull(query.getResultEntityName());
-
-        query.setResultEntityName("abc.AAAA");
-        assertSame("abc.AAAA", query.getResultEntityName());
-    }
-
-    @Test
     public void resultDescriptors() {
-        ProcedureQuery query = new ProcedureQuery();
+        ProcedureQuery query = new ProcedureQuery("SomeProcedure");
 
         assertNotNull(query.getResultDescriptors());
         assertTrue(query.getResultDescriptors().isEmpty());

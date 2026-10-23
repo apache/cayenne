@@ -57,7 +57,7 @@ public class SchemaUpdateStrategyBase {
 		for (String name : existingTables()) {
 
 			for (String drop : node.getAdapter().dropTableStatements(map.getDbEntity(name))) {
-				context.execute(new SQLTemplate(Object.class, drop));
+				context.execute(new SQLTemplate(drop));
 			}
 		}
 	}
@@ -80,7 +80,7 @@ public class SchemaUpdateStrategyBase {
 	protected void createOneTable(String entityName) {
 		DataMap map = node.getEntityResolver().getDataMap("sus-map");
 		String createTable = node.getAdapter().createTable(map.getDbEntity(entityName));
-		context.execute(new SQLTemplate(Object.class, createTable));
+		context.execute(new SQLTemplate(createTable));
 	}
 
 	protected Map<String, Boolean> tablesMap() {

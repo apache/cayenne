@@ -19,6 +19,7 @@
 package org.apache.cayenne.project.xml;
 
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.SQLTemplateDescriptor;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.xml.sax.Attributes;
@@ -54,7 +55,7 @@ public class SQLTemplateDescriptorHandler extends QueryDescriptorHandler {
             case SQL_QUERY_TAG -> {
                 descriptor = new SQLTemplateDescriptor();
                 loadQuerySettings(descriptor, attributes);
-                descriptor.setRoot(resolveRoot(attributes));
+                descriptor.setRoot(sqlQueryRoot(attributes));
                 descriptor.setColumnNamesCapitalization(columnNameCapitalization(attributes));
                 yield true;
             }
@@ -69,6 +70,13 @@ public class SQLTemplateDescriptorHandler extends QueryDescriptorHandler {
             case CACHE_GROUP_TAG -> true;
             default -> false;
         };
+    }
+
+    // a SQL query root is an ObjEntity or the DataMap; the "dbEntity" and "procedure" roots of the older formats only
+    // routed the query to the DataNode of the map, so they are loaded as the DataMap
+    private Object sqlQueryRoot(Attributes attributes) {
+        Object root = resolveRoot(attributes);
+        return root instanceof ObjEntity ? root : map;
     }
 
     @Override

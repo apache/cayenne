@@ -34,7 +34,7 @@ public class CayenneSqlExceptionTest {
 
     @Test
     public void messageIncludesSql() {
-        Query query = new SQLTemplate();
+        Query query = new SQLTemplate<>("SELECT * FROM ARTIST");
         TranslatedStatement statement = new TranslatedSQL("SELECT * FROM ARTIST", null, null);
         Throwable cause = new RuntimeException("boom");
 
@@ -49,7 +49,7 @@ public class CayenneSqlExceptionTest {
 
     @Test
     public void queryNotIncludedInMessage() {
-        Query query = new SQLTemplate();
+        Query query = new SQLTemplate<>("SELECT * FROM ARTIST");
         TranslatedStatement statement = new TranslatedSQL("SELECT * FROM ARTIST", null, null);
 
         CayenneSqlException e = new CayenneSqlException("Query exception.", query, statement, new RuntimeException());

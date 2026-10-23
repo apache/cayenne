@@ -38,7 +38,7 @@ public class SQLTemplate_LegacyTest {
 	@SuppressWarnings("unchecked")
 	@Deprecated
 	public void queryWithParameters() {
-		SQLTemplate q1 = new SQLTemplate("E1", "SELECT");
+		SQLTemplate q1 = SQLTemplate.entityQuery("E1", "SELECT");
 
 		Query q2 = q1.queryWithParameters(Collections.EMPTY_MAP);
 		assertNotNull(q2);
@@ -58,7 +58,7 @@ public class SQLTemplate_LegacyTest {
 	@Test
 	@Deprecated
 	public void setParameters_SingleParameterSet() throws Exception {
-		SQLTemplate query = new SQLTemplate();
+		SQLTemplate query = new SQLTemplate("SELECT");
 
 		assertNotNull(query.getParameters());
 		assertTrue(query.getParameters().isEmpty());
@@ -84,7 +84,7 @@ public class SQLTemplate_LegacyTest {
 	@SuppressWarnings("unchecked")
 	@Deprecated
 	public void setParameters_BatchParameterSet() throws Exception {
-		SQLTemplate query = new SQLTemplate();
+		SQLTemplate query = new SQLTemplate("SELECT");
 
 		assertNotNull(query.getParameters());
 		assertTrue(query.getParameters().isEmpty());
