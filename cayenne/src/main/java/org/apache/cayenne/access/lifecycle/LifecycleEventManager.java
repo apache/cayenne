@@ -30,7 +30,6 @@ import org.apache.cayenne.annotation.PostUpdate;
 import org.apache.cayenne.annotation.PrePersist;
 import org.apache.cayenne.annotation.PreRemove;
 import org.apache.cayenne.annotation.PreUpdate;
-import org.apache.cayenne.map.CallbackDescriptor;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.map.ObjEntity;
@@ -80,7 +79,7 @@ public class LifecycleEventManager {
         // other "static" lookup maps are initialized on-demand
         this.entitiesByAnnotation = new ConcurrentHashMap<>();
 
-        // register callbacks declared by the mapped entities: annotated methods and callbacks from the model
+        // register callbacks declared by the mapped entities as annotated methods
         for (ObjEntity entity : resolver.getObjEntities()) {
             Class<? extends Persistent> entityClass = entityClass(resolver, entity);
 
@@ -90,13 +89,6 @@ public class LifecycleEventManager {
                     if (reader != null) {
                         eventManagers[reader.eventType().ordinal()].addListener(entityClass, entityCallback(m));
                     }
-                }
-            }
-
-            for (CallbackDescriptor callback : entity.getCallbackMap().getCallbacks()) {
-                for (String method : callback.getCallbackMethods()) {
-                    eventManagers[callback.getCallbackType().ordinal()]
-                            .addListener(entityClass, entityCallback(entityClass, method));
                 }
             }
         }
@@ -443,22 +435,6 @@ public class LifecycleEventManager {
 
     private static Class<? extends Persistent> entityClass(EntityResolver resolver, ObjEntity entity) {
         return resolver.getObjectFactory().getJavaClass(entity.getJavaClassName()).asSubclass(Persistent.class);
-    }
-
-    /**
-     * Creates a callback invoking a no-arg method of the entity, found by name. The method must be declared in the
-     * entity class itself.
-     */
-    static Consumer<Persistent> entityCallback(Class<?> entityClass, String methodName) {
-        Method method;
-        try {
-            method = entityClass.getDeclaredMethod(methodName);
-        } catch (NoSuchMethodException e) {
-            throw new IllegalArgumentException("Class " + entityClass.getName()
-                    + " has no valid callback method '" + methodName + "'");
-        }
-
-        return entityCallback(method);
     }
 
     /**

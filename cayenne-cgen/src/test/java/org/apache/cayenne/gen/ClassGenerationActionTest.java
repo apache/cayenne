@@ -27,7 +27,6 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.cayenne.gen.mock.TestClassGenerationAction;
-import org.apache.cayenne.map.CallbackDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
@@ -189,39 +188,6 @@ public class ClassGenerationActionTest extends CgenCase {
 		generated = execute(new DataMapArtifact(map, map.getQueryDescriptors()));
 		assertEquals(2, generated.size());
 		assertTrue(generated.get(0).contains("public static final String TEST_QUERY_QUERYNAME = \"TestQuery\""));
-	}
-
-	@Test
-	public void callbackMethodGeneration() throws Exception {
-		assertCallbacks();
-	}
-
-	private void assertCallbacks() throws Exception {
-		ObjEntity testEntity1 = new ObjEntity("TE1");
-		testEntity1.setClassName("org.example.TestClass1");
-		int i = 0;
-		for (CallbackDescriptor cb : testEntity1.getCallbackMap().getCallbacks()) {
-			cb.addCallbackMethod("cb" + i++);
-		}
-
-		cgenConfiguration.setMakePairs(true);
-
-		List<String> generated = execute(new EntityArtifact(testEntity1));
-		assertNotNull(generated);
-		assertEquals(2, generated.size());
-
-		String superclass = generated.get(0);
-
-		assertTrue(superclass.contains("public abstract class _TestClass1"), superclass);
-
-		for (int j = 0; j < i; j++) {
-			assertTrue(superclass.contains("protected abstract void cb" + j + "();"), superclass);
-		}
-
-		String subclass = generated.get(1);
-		for (int j = 0; j < i; j++) {
-			assertTrue(subclass.contains("protected void cb" + j + "() {"), subclass);
-		}
 	}
 
 	protected List<String> execute(Artifact artifact) throws Exception {

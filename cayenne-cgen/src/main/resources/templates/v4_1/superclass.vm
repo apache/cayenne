@@ -206,13 +206,6 @@ public abstract class ${superClassName} extends ${baseClassName} {
 
 #end
 #end
-#############################
-## Create callback methods ##
-#############################
-#foreach($cbname in ${entityUtils.callbackNames})
-    protected abstract void ${cbname}();
-
-#end
 ###########################################################
 ## Create writePropertyDirect/readPropertyDirect methods ##
 ###########################################################

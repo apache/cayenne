@@ -99,6 +99,17 @@ List<Artist> artists = ObjectSelect
    `isToDependentPK()`, `setToDependentPK(..)` and `isValidForDepPk()` are replaced with `isForeignKey()`,
    `setForeignKey(..)` and `isIdentifying()`.
 
+*  Per [CAY-3060](https://issues.apache.org/jira/browse/CAY-3060) callbacks are no longer mapped on an ObjEntity in
+   the Modeler. The upgrade removes them from the project, listing the affected methods. To keep an existing callback
+   working, annotate the method in the Persistent class with the annotation of its event, e.g.:
+
+```java
+@PostAdd
+protected void onNewOrder() {
+    ...
+}
+```
+
 ## Upgrading to 5.0-M4
 
 *  Per [CAY-2826](https://issues.apache.org/jira/browse/CAY-2826) `CoreModule` and `CoreModuleExtender` were moved from

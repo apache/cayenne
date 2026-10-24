@@ -187,7 +187,6 @@
 	</objEntity>
 	<objEntity name="IvSub3" superEntityName="IvRoot" className="org.apache.cayenne.testdo.inheritance_vertical.IvSub3">
 		<qualifier><![CDATA[discriminator = "IvSub3"]]></qualifier>
-		<prePersist methodName="onPrePersist"/>
 	</objEntity>
 	<objEntity name="GenStudent" abstract="true" dbEntityName="GEN_STUDENT">
 		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>

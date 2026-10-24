@@ -39,8 +39,6 @@ import org.apache.cayenne.modeler.event.display.*;
 import org.apache.cayenne.modeler.event.model.*;
 import org.apache.cayenne.modeler.pref.adapters.ProjectPrefs;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
-import org.apache.cayenne.modeler.ui.project.editor.objentity.callbacks.CallbackType;
-import org.apache.cayenne.modeler.ui.project.editor.objentity.callbacks.ObjCallbackMethod;
 import org.apache.cayenne.projecttools.ProjectNodeParentGetter;
 
 import javax.swing.event.EventListenerList;
@@ -55,7 +53,6 @@ import java.util.Objects;
 import java.util.Set;
 
 
-// TODO: deal with imports from "org.apache.cayenne.modeler.ui.project.editor.objentity.callbacks" package
 
 /**
  * Per-project state and event hub. Tracks selection, dispatches model/display events,
@@ -1008,60 +1005,6 @@ public class ProjectSession {
         dirtyListeners.remove(listener);
     }
 
-    public CallbackType getSelectedCallbackType() {
-        return state.callbackType;
-    }
-
-    public void addCallbackTypeSelectionListener(CallbackTypeSelectionListener listener) {
-        listeners.add(CallbackTypeSelectionListener.class, listener);
-    }
-
-    public void displayCallbackType(CallbackTypeDisplayEvent e) {
-        state.callbackType = e.getCallbackType();
-        for (CallbackTypeSelectionListener l : listeners.getListeners(CallbackTypeSelectionListener.class)) {
-            l.callbackTypeSelected(e);
-        }
-    }
-
-    public ObjCallbackMethod[] getSelectedCallbackMethods() {
-        return state.callbackMethods;
-    }
-
-    public void addCallbackMethodDisplayListener(CallbackMethodDisplayListener listener) {
-        listeners.add(CallbackMethodDisplayListener.class, listener);
-    }
-
-    public void displayCallbackMethod(CallbackMethodDisplayEvent e) {
-        state.callbackMethods = e.getCallbackMethods();
-        for (CallbackMethodDisplayListener l : listeners.getListeners(CallbackMethodDisplayListener.class)) {
-            l.callbackMethodSelected(e);
-        }
-    }
-
-    public void addCallbackMethodListener(CallbackMethodListener listener) {
-        listeners.add(CallbackMethodListener.class, listener);
-    }
-
-    public void fireCallbackMethodEvent(CallbackMethodEvent e) {
-        setDirty(true);
-
-        for (CallbackMethodListener listener : listeners.getListeners(CallbackMethodListener.class)) {
-            switch (e.getType()) {
-                case ADD:
-                    listener.callbackMethodAdded(e);
-                    break;
-                case CHANGE:
-                    listener.callbackMethodChanged(e);
-                    break;
-                case REMOVE:
-                    listener.callbackMethodRemoved(e);
-                    break;
-                default:
-                    throw new IllegalArgumentException("Invalid CallbackEvent type: " + e.getType());
-            }
-        }
-    }
-
     public void addEmbeddableAttributeListener(EmbeddableAttributeListener listener) {
         listeners.add(EmbeddableAttributeListener.class, listener);
     }
@@ -1136,8 +1079,6 @@ public class ProjectSession {
         QueryDescriptor query;
         ProjectNode[] paths;
         ProjectNode parentPath;
-        CallbackType callbackType;
-        ObjCallbackMethod[] callbackMethods;
 
         State() {
             // life is much easier if these guys are never null
@@ -1147,8 +1088,6 @@ public class ProjectSession {
             procedureParameters = new ProcedureParameter[0];
             objAttributes = new ObjAttribute[0];
             objRelationships = new ObjRelationship[0];
-
-            callbackMethods = new ObjCallbackMethod[0];
         }
     }
 }

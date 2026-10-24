@@ -35,9 +35,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class LifecycleEventManager_CallbacksTest {
 
     @Test
-    public void onEntity_Public() {
+    public void onEntity_Public() throws Exception {
         Consumer<Persistent> callback = LifecycleEventManager.entityCallback(
-                MockCallingBackEntity.class, "publicCallback");
+                MockCallingBackEntity.class.getDeclaredMethod("publicCallback"));
 
         MockCallingBackEntity e = new MockCallingBackEntity();
         callback.accept(e);
@@ -48,9 +48,9 @@ public class LifecycleEventManager_CallbacksTest {
     }
 
     @Test
-    public void onEntity_Protected() {
+    public void onEntity_Protected() throws Exception {
         Consumer<Persistent> callback = LifecycleEventManager.entityCallback(
-                MockCallingBackEntity.class, "protectedCallback");
+                MockCallingBackEntity.class.getDeclaredMethod("protectedCallback"));
 
         MockCallingBackEntity e = new MockCallingBackEntity();
         callback.accept(e);
@@ -61,9 +61,9 @@ public class LifecycleEventManager_CallbacksTest {
     }
 
     @Test
-    public void onEntity_Private() {
+    public void onEntity_Private() throws Exception {
         Consumer<Persistent> callback = LifecycleEventManager.entityCallback(
-                MockCallingBackEntity.class, "privateCallback");
+                MockCallingBackEntity.class.getDeclaredMethod("privateCallback"));
 
         MockCallingBackEntity e = new MockCallingBackEntity();
         callback.accept(e);
@@ -74,9 +74,9 @@ public class LifecycleEventManager_CallbacksTest {
     }
 
     @Test
-    public void onEntity_Default() {
+    public void onEntity_Default() throws Exception {
         Consumer<Persistent> callback = LifecycleEventManager.entityCallback(
-                MockCallingBackEntity.class, "defaultCallback");
+                MockCallingBackEntity.class.getDeclaredMethod("defaultCallback"));
 
         MockCallingBackEntity e = new MockCallingBackEntity();
         callback.accept(e);
@@ -87,21 +87,15 @@ public class LifecycleEventManager_CallbacksTest {
     }
 
     @Test
-    public void onEntity_Static() {
+    public void onEntity_Static() throws Exception {
         assertThrows(IllegalArgumentException.class,
-                () -> LifecycleEventManager.entityCallback(MockCallingBackEntity.class, "staticCallback"));
+                () -> LifecycleEventManager.entityCallback(MockCallingBackEntity.class.getDeclaredMethod("staticCallback")));
     }
 
     @Test
-    public void onEntity_Unknown() {
-        assertThrows(IllegalArgumentException.class,
-                () -> LifecycleEventManager.entityCallback(MockCallingBackEntity.class, "noSuchCallback"));
-    }
-
-    @Test
-    public void onEntity_UncheckedExceptionPropagatesAsIs() {
+    public void onEntity_UncheckedExceptionPropagatesAsIs() throws Exception {
         Consumer<Persistent> callback = LifecycleEventManager.entityCallback(
-                MockCallingBackEntity.class, "uncheckedThrowingCallback");
+                MockCallingBackEntity.class.getDeclaredMethod("uncheckedThrowingCallback"));
 
         IllegalStateException e = assertThrows(IllegalStateException.class,
                 () -> callback.accept(new MockCallingBackEntity()));
@@ -109,9 +103,9 @@ public class LifecycleEventManager_CallbacksTest {
     }
 
     @Test
-    public void onEntity_CheckedExceptionIsWrapped() {
+    public void onEntity_CheckedExceptionIsWrapped() throws Exception {
         Consumer<Persistent> callback = LifecycleEventManager.entityCallback(
-                MockCallingBackEntity.class, "checkedThrowingCallback");
+                MockCallingBackEntity.class.getDeclaredMethod("checkedThrowingCallback"));
 
         CayenneRuntimeException e = assertThrows(CayenneRuntimeException.class,
                 () -> callback.accept(new MockCallingBackEntity()));

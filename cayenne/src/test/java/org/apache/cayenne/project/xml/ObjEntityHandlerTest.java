@@ -43,7 +43,6 @@ public class ObjEntityHandlerTest extends BaseHandlerTest {
         assertTrue(entity.isAbstract());
         assertTrue(entity.isReadOnly());
         assertEquals(3, entity.getAttributes().size());
-        assertEquals(8, entity.getCallbackMethods().size());
         assertEquals(ObjEntity.LOCK_TYPE_OPTIMISTIC, entity.getDeclaredLockType());
         assertEquals("org.apache.cayenne.testdo.testmap.ArtistCallback", entity.getClassName());
         assertNull(entity.getSuperClassName(), "super.class should be suppressed by super entity");

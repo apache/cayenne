@@ -25,7 +25,6 @@ import org.apache.cayenne.modeler.event.display.EmbeddableDisplayEvent;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.toolkit.ProjectTabbedPane;
 import org.apache.cayenne.modeler.ui.action.RemoveAttributeAction;
-import org.apache.cayenne.modeler.ui.action.RemoveCallbackMethodAction;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.project.editor.embeddable.attributes.EmbeddableAttributesView;
 import org.apache.cayenne.modeler.ui.project.editor.embeddable.main.EmbeddableMainView;
@@ -77,7 +76,6 @@ public class EmbeddableView extends ProjectTabbedPane {
         GlobalActions globalActions = app.getActionManager();
 
         globalActions.getAction(RemoveAttributeAction.class).setEnabled(false);
-        globalActions.getAction(RemoveCallbackMethodAction.class).setEnabled(false);
     }
 
     private void currentEmbeddableChanged(EmbeddableDisplayEvent e) {

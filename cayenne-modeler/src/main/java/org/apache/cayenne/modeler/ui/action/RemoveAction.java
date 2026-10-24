@@ -22,7 +22,6 @@ package org.apache.cayenne.modeler.ui.action;
 import org.apache.cayenne.project.ProjectNode;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.map.Attribute;
-import org.apache.cayenne.map.CallbackMap;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -38,7 +37,6 @@ import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.event.model.CallbackMethodEvent;
 import org.apache.cayenne.modeler.event.model.DataMapEvent;
 import org.apache.cayenne.modeler.event.model.DbAttributeEvent;
 import org.apache.cayenne.modeler.event.model.DbEntityEvent;
@@ -55,14 +53,11 @@ import org.apache.cayenne.modeler.project.DataMapOps;
 import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.ui.confirmremove.ConfirmRemoveDialog;
 import org.apache.cayenne.modeler.project.ProjectSession;
-import org.apache.cayenne.modeler.ui.project.editor.objentity.callbacks.CallbackType;
-import org.apache.cayenne.modeler.ui.project.editor.objentity.callbacks.ObjCallbackMethod;
 import org.apache.cayenne.modeler.undo.RemoveDbAttributeUndoableEdit;
 import org.apache.cayenne.modeler.undo.RemoveDbRelationshipUndoableEdit;
 import org.apache.cayenne.modeler.undo.RemoveEmbeddableAttributeUndoableEdit;
 import org.apache.cayenne.modeler.undo.RemoveObjAttributeUndoableEdit;
 import org.apache.cayenne.modeler.undo.RemoveObjRelationshipUndoableEdit;
-import org.apache.cayenne.modeler.undo.RemoveCallbackMethodUndoableEdit;
 import org.apache.cayenne.modeler.undo.RemoveCompoundUndoableEdit;
 import org.apache.cayenne.modeler.undo.RemoveUndoableEdit;
 
@@ -177,8 +172,6 @@ public class RemoveAction extends AppAction {
 
                 app.getUndoManager().addEdit(compoundEdit);
             }
-        } else if(session.getSelectedCallbackMethods().length > 0) {
-            removeMethods(session, dialog, getProjectSession().getSelectedCallbackMethods());
         } else if(session.getSelectedObjRelationships().length > 0) {
       		removeObjRelationships(session, dialog, getProjectSession().getSelectedObjRelationships());
         } else if(session.getSelectedDbRelationships().length > 0) {
@@ -296,24 +289,6 @@ ObjRelationshipEvent e = ObjRelationshipEvent.ofRemove(app.getFrame(), rel, enti
 			}
 			app.getUndoManager().addEdit(new RemoveObjRelationshipUndoableEdit(session, entity, rels));
 		}		
-	}
-
-	private void removeMethods(ProjectSession session, ConfirmRemoveDialog dialog, ObjCallbackMethod[] methods) {
-    	CallbackMap callbackMap = session.getSelectedObjEntity().getCallbackMap();
-    	CallbackType callbackType = session.getSelectedCallbackType();
-
-        if ((methods.length == 1 && dialog.shouldDelete("callback method", methods[0].getName()))
-        	|| (methods.length > 1 && dialog.shouldDelete("selected callback methods"))) {
-            for (ObjCallbackMethod callbackMethod : methods) {
-            	callbackMap.getCallbackDescriptor(callbackType.getType()).removeCallbackMethod(callbackMethod.getName());
-                    
-                CallbackMethodEvent ce = CallbackMethodEvent.ofRemove(this, callbackMethod.getName());
-                    
-                session.fireCallbackMethodEvent(ce);
-            }
-            
-            app.getUndoManager().addEdit(new RemoveCallbackMethodUndoableEdit(getProjectSession(), callbackType, methods));
-        }		
 	}
 
 	public void removeDataMap(DataMap map) {

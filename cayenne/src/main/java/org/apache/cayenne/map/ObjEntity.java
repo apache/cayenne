@@ -38,10 +38,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.Function;
 
@@ -76,8 +74,6 @@ public class ObjEntity extends Entity<ObjEntity, ObjAttribute, ObjRelationship> 
 
     protected boolean _abstract;
 
-    protected CallbackMap callbacks;
-
     protected Map<String, CayennePath> attributeOverrides;
 
     public ObjEntity() {
@@ -87,7 +83,6 @@ public class ObjEntity extends Entity<ObjEntity, ObjAttribute, ObjRelationship> 
     public ObjEntity(String name) {
         setName(name);
         this.lockType = LOCK_TYPE_NONE;
-        this.callbacks = new CallbackMap();
         this.attributeOverrides = new TreeMap<>();
     }
 
@@ -160,9 +155,6 @@ public class ObjEntity extends Entity<ObjEntity, ObjAttribute, ObjRelationship> 
                     .end();
         }
 
-        // write entity-level callbacks
-        getCallbackMap().encodeCallbacksAsXML(encoder);
-
         delegate.visitObjEntity(this);
         encoder.end();
     }
@@ -186,15 +178,6 @@ public class ObjEntity extends Entity<ObjEntity, ObjAttribute, ObjRelationship> 
         }
 
         return name;
-    }
-
-    /**
-     * Returns an object that stores callback methods of this entity.
-     * 
-     * @since 3.0
-     */
-    public CallbackMap getCallbackMap() {
-        return callbacks;
     }
 
     /**
@@ -829,17 +812,6 @@ public class ObjEntity extends Entity<ObjEntity, ObjAttribute, ObjRelationship> 
         Expression dbClone = expression.transform(transformer);
 
         return getDbEntity().translateToRelatedEntity(dbClone, dbPath);
-    }
-
-    /**
-     * @since 4.0
-     */
-    public Set<String> getCallbackMethods() {
-        Set<String> res = new LinkedHashSet<>();
-        for (CallbackDescriptor descriptor : getCallbackMap().getCallbacks()) {
-            res.addAll(descriptor.getCallbackMethods());
-        }
-        return res;
     }
 
     final class DBPathConverter implements Function<Object, Object> {

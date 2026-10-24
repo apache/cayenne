@@ -33,8 +33,6 @@ public abstract class _IvSub3 extends IvRoot {
         return (IvRoot)readProperty("ivRoot");
     }
 
-    protected abstract void onPrePersist();
-
     @Override
     public Object readPropertyDirectly(String propName) {
         if(propName == null) {

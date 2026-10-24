@@ -35,10 +35,8 @@ import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.action.PasteAction;
 import org.apache.cayenne.modeler.ui.action.RemoveAction;
 import org.apache.cayenne.modeler.ui.action.RemoveAttributeAction;
-import org.apache.cayenne.modeler.ui.action.RemoveCallbackMethodAction;
 import org.apache.cayenne.modeler.ui.action.RemoveProcedureParameterAction;
 import org.apache.cayenne.modeler.ui.action.RemoveRelationshipAction;
-import org.apache.cayenne.modeler.ui.project.editor.objentity.callbacks.ObjCallbackMethod;
 
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
@@ -86,9 +84,6 @@ public class PasteUndoableEdit extends CayenneUndoableEdit {
         RemoveRelationshipAction rRelationShipAction = globalActions
                 .getAction(RemoveRelationshipAction.class);
 
-        RemoveCallbackMethodAction rCallbackMethodAction = globalActions
-                .getAction(RemoveCallbackMethodAction.class);
-
         RemoveProcedureParameterAction rProcedureParamAction = globalActions
                 .getAction(RemoveProcedureParameterAction.class);
 
@@ -132,10 +127,6 @@ public class PasteUndoableEdit extends CayenneUndoableEdit {
                 rRelationShipAction.removeObjRelationships(
                         objEntityWhere,
                         new ObjRelationship[] { objRelationship });
-            } else if (content instanceof ObjCallbackMethod callbackMethod) {
-                rCallbackMethodAction.removeCallbackMethod(
-                        callbackMethod.getCallbackType(),
-                        callbackMethod.getName());
             }
         } else if (where instanceof Procedure whereProcedure) {
             if (content instanceof ProcedureParameter param) {

@@ -93,13 +93,6 @@
 	<objEntity name="ArtistCallback" className="org.apache.cayenne.testdo.testmap.ArtistCallback" dbEntityName="ARTIST_CT">
 		<objAttribute name="artistName" type="java.lang.String"/>
 		<objAttribute name="dateOfBirth" type="java.util.Date"/>
-		<postAdd methodName="prePersistEntityObjEntity"/>
-		<postPersist methodName="postPersistEntityObjEntity"/>
-		<preUpdate methodName="preUpdateEntityObjEntity"/>
-		<postUpdate methodName="postUpdateEntityObjEntity"/>
-		<preRemove methodName="preRemoveEntityObjEntity"/>
-		<postRemove methodName="postRemoveEntityObjEntity"/>
-		<postLoad methodName="postLoadEntityObjEntity"/>
 	</objEntity>
 	<objEntity name="ArtistExhibit" className="org.apache.cayenne.testdo.testmap.ArtistExhibit" dbEntityName="ARTIST_EXHIBIT"/>
 	<objEntity name="Award" className="org.apache.cayenne.testdo.testmap.Award" dbEntityName="AWARD" superClassName="org.apache.cayenne.GenericPersistentObject">

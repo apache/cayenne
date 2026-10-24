@@ -47,8 +47,6 @@ public abstract class _ArtistAnnotation extends PersistentObject {
         return this.preCallback;
     }
 
-    protected abstract void onPostAdd();
-
     @Override
     public Object readPropertyDirectly(String propName) {
         if(propName == null) {

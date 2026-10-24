@@ -34,7 +34,6 @@ import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.toolkit.AppAction;
-import org.apache.cayenne.modeler.ui.project.editor.objentity.callbacks.ObjCallbackMethod;
 import org.apache.cayenne.modeler.toolkit.copypaste.CMTransferable;
 
 import javax.swing.*;
@@ -116,7 +115,6 @@ public class CopyAction extends AppAction {
                 || object instanceof DbRelationship
                 || object instanceof ObjAttribute
                 || object instanceof ObjRelationship
-                || object instanceof ObjCallbackMethod
                 || object instanceof Procedure
                 || object instanceof ProcedureParameter;
     }

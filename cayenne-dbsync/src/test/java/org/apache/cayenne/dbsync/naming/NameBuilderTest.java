@@ -131,8 +131,6 @@ public class NameBuilderTest {
 
         ObjEntity entity = new ObjEntity();
 
-        entity.getCallbackMap().getPostAdd().addCallbackMethod("getMe");
-
         ObjAttribute a0 = new ObjAttribute();
         String na0 = NameBuilder.of(a0, entity).build();
         assertEquals("untitledAttr", na0);
@@ -144,12 +142,6 @@ public class NameBuilderTest {
         assertEquals("untitledAttr1", na1);
         a1.setName(na1);
         entity.addAttribute(a1);
-
-        ObjAttribute a2 = new ObjAttribute();
-        String na2 = NameBuilder.of(a2, entity).preferredName("me").build();
-        assertEquals("me1", na2, "Conflict with callback method was not detected");
-        a2.setName(na2);
-        entity.addAttribute(a2);
 
         ObjRelationship r0 = new ObjRelationship();
         String nr0 = NameBuilder.of(r0, entity).build();
@@ -239,25 +231,5 @@ public class NameBuilderTest {
         assertEquals("myName1", na1);
         a1.setName(na1);
         entity.addAttribute(a1);
-    }
-
-    @Test
-    public void build_Callbacks_ObjEntityContext() {
-
-        ObjEntity entity = new ObjEntity();
-
-        String c0 = NameBuilder.of(new CallbackNode(), entity).build();
-        assertEquals("onEvent", c0);
-        entity.getCallbackMap().getPostAdd().addCallbackMethod(c0);
-
-        String c1 = NameBuilder.of(new CallbackNode(), entity).build();
-        assertEquals("onEvent1", c1);
-        entity.getCallbackMap().getPostAdd().addCallbackMethod(c1);
-
-        entity.addAttribute(new ObjAttribute("untitledAttr"));
-
-        String c3 = NameBuilder.of(new CallbackNode(), entity).preferredName("getUntitledAttr").build();
-        assertEquals("getUntitledAttr1", c3);
-        entity.getCallbackMap().getPostAdd().addCallbackMethod(c3);
     }
 }

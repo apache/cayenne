@@ -20,7 +20,6 @@ package org.apache.cayenne.modeler.ui.action;
 
 import org.apache.cayenne.project.ProjectNode;
 import org.apache.cayenne.project.Project;
-import org.apache.cayenne.dbsync.naming.CallbackNode;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
@@ -37,12 +36,10 @@ import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.event.model.CallbackMethodEvent;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.toolkit.copypaste.CMTransferable;
 import org.apache.cayenne.modeler.ui.errors.ErrorDialog;
-import org.apache.cayenne.modeler.ui.project.editor.objentity.callbacks.ObjCallbackMethod;
 import org.apache.cayenne.modeler.ui.project.querytype.QueryTypeDialog;
 import org.apache.cayenne.modeler.undo.PasteCompoundUndoableEdit;
 import org.apache.cayenne.modeler.undo.PasteUndoableEdit;
@@ -366,21 +363,6 @@ public class PasteAction extends AppAction implements FlavorListener {
                         session,
                         objEntity,
                         rel);
-            } else if (content instanceof ObjCallbackMethod method) {
-
-                method.setName(NameBuilder
-                        .of(new CallbackNode(), objEntity)
-                        .preferredName(method.getName())
-                        .dupesPattern(COPY_PATTERN)
-                        .build());
-
-                objEntity.getCallbackMap()
-                        .getCallbackDescriptor(method.getCallbackType().getType())
-                        .addCallbackMethod(method.getName());
-
-                CallbackMethodEvent ce = CallbackMethodEvent.ofAdd(this, method.getName());
-
-                getProjectSession().fireCallbackMethodEvent(ce);
             }
         } else if (where instanceof Embeddable embeddable) {
 
@@ -480,7 +462,7 @@ public class PasteAction extends AppAction implements FlavorListener {
                     ||
 
                     (currentObject instanceof ObjEntity && (content instanceof ObjAttribute
-                            || content instanceof ObjRelationship || content instanceof ObjCallbackMethod || isTreeLeaf(content)))
+                            || content instanceof ObjRelationship || isTreeLeaf(content)))
                     ||
 
                     (currentObject instanceof Embeddable && (content instanceof EmbeddableAttribute || isTreeLeaf(content)))

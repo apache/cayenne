@@ -22,7 +22,6 @@ package org.apache.cayenne.project.xml;
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.map.CallbackDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
@@ -41,16 +40,6 @@ public class ObjEntityHandler extends NamespaceAwareNestedTagHandler {
     private static final String OBJ_ATTRIBUTE_TAG = "objAttribute";
     private static final String OBJ_ATTRIBUTE_OVERRIDE_TAG = "attributeOverride";
     private static final String QUALIFIER_TAG = "qualifier";
-
-    // lifecycle listeners and callbacks related
-    private static final String POST_ADD_TAG = "postAdd";
-    private static final String PRE_PERSIST_TAG = "prePersist";
-    private static final String POST_PERSIST_TAG = "postPersist";
-    private static final String PRE_UPDATE_TAG = "preUpdate";
-    private static final String POST_UPDATE_TAG = "postUpdate";
-    private static final String PRE_REMOVE_TAG = "preRemove";
-    private static final String POST_REMOVE_TAG = "postRemove";
-    private static final String POST_LOAD_TAG = "postLoad";
 
     private DataMap map;
 
@@ -79,11 +68,6 @@ public class ObjEntityHandler extends NamespaceAwareNestedTagHandler {
                 yield true;
             }
             case QUALIFIER_TAG -> true;
-            case POST_ADD_TAG, PRE_PERSIST_TAG, POST_PERSIST_TAG, PRE_UPDATE_TAG, POST_UPDATE_TAG, PRE_REMOVE_TAG,
-                 POST_REMOVE_TAG, POST_LOAD_TAG -> {
-                createCallback(localName, attributes);
-                yield true;
-            }
             default -> false;
         };
     }
@@ -138,32 +122,6 @@ public class ObjEntityHandler extends NamespaceAwareNestedTagHandler {
     private void processStartAttributeOverride(Attributes attributes) {
         entity.addAttributeOverride(attributes.getValue("name"),
                 attributes.getValue("dbAttributePath"));
-    }
-
-    private CallbackDescriptor getCallbackDescriptor(String type) {
-        if (entity == null) {
-            return null;
-        }
-
-        return switch (type) {
-            case POST_ADD_TAG -> entity.getCallbackMap().getPostAdd();
-            case PRE_PERSIST_TAG -> entity.getCallbackMap().getPrePersist();
-            case POST_PERSIST_TAG -> entity.getCallbackMap().getPostPersist();
-            case PRE_UPDATE_TAG -> entity.getCallbackMap().getPreUpdate();
-            case POST_UPDATE_TAG -> entity.getCallbackMap().getPostUpdate();
-            case PRE_REMOVE_TAG -> entity.getCallbackMap().getPreRemove();
-            case POST_REMOVE_TAG -> entity.getCallbackMap().getPostRemove();
-            case POST_LOAD_TAG -> entity.getCallbackMap().getPostLoad();
-            default -> null;
-        };
-    }
-
-    private void createCallback(String type, Attributes attributes) {
-        String methodName = attributes.getValue("methodName");
-        CallbackDescriptor descriptor = getCallbackDescriptor(type);
-        if(descriptor != null) {
-            descriptor.addCallbackMethod(methodName);
-        }
     }
 
     private void createQualifier(String qualifier) {

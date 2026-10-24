@@ -27,11 +27,9 @@ import org.apache.cayenne.modeler.event.display.ObjRelationshipDisplayEvent;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
 import org.apache.cayenne.modeler.toolkit.ProjectTabbedPane;
 import org.apache.cayenne.modeler.ui.action.RemoveAttributeAction;
-import org.apache.cayenne.modeler.ui.action.RemoveCallbackMethodAction;
 import org.apache.cayenne.modeler.ui.action.RemoveRelationshipAction;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.project.editor.query.ExistingSelectionProcessor;
-import org.apache.cayenne.modeler.ui.project.editor.objentity.callbacks.ObjEntityCallbacksView;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.main.ObjEntityMainView;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.properties.ObjAttributePanel;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.properties.ObjEntityPropertiesView;
@@ -45,7 +43,6 @@ public class ObjEntityView extends ProjectTabbedPane {
 
     private final Component entityPanel;
     private final ObjEntityPropertiesView attributeRelationshipTab;
-    private final ObjEntityCallbacksView callbacksPanel;
     private int lastTabIndex;
 
     public ObjEntityView(ProjectSession session) {
@@ -53,7 +50,6 @@ public class ObjEntityView extends ProjectTabbedPane {
         // note that those panels that have no internal scrollable tables must be wrapped in a scroll pane
         entityPanel = new JScrollPane(new ObjEntityMainView(session));
         attributeRelationshipTab = new ObjEntityPropertiesView(session);
-        callbacksPanel = new ObjEntityCallbacksView(session);
         initLayout();
         initBindings();
     }
@@ -62,7 +58,6 @@ public class ObjEntityView extends ProjectTabbedPane {
         setTabPlacement(JTabbedPane.TOP);
         addTab("ObjEntity", entityPanel);
         addTab("Properties", attributeRelationshipTab);
-        addTab("Callbacks", callbacksPanel);
     }
 
     private void initBindings() {
@@ -92,7 +87,6 @@ public class ObjEntityView extends ProjectTabbedPane {
 
         globalActions.getAction(RemoveAttributeAction.class).setEnabled(false);
         globalActions.getAction(RemoveRelationshipAction.class).setEnabled(false);
-        globalActions.getAction(RemoveCallbackMethodAction.class).setEnabled(false);
     }
 
     private void currentObjEntityChanged(ObjEntityDisplayEvent e) {

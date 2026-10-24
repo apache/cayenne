@@ -131,16 +131,6 @@
 				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:objAttribute"/>
 				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:attributeOverride"/>
 
-				<!--  Callbacks -->
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:postAdd"/>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:prePersist"/>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:postPersist"/>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:preUpdate"/>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:postUpdate"/>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:preRemove"/>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:postRemove"/>
-				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:postLoad"/>
-
 				<xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other" processContents="lax"/>
 			</xs:sequence>
 			<xs:attribute name="className" type="xs:string"/>
@@ -407,46 +397,6 @@
 			<xs:attribute name="schema" type="xs:string"/>
 			<xs:attribute name="catalog" type="xs:string"/>
 			<xs:attribute name="returningValue" type="xs:boolean"/>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="preUpdate">
-		<xs:complexType>
-			<xs:attribute name="methodName" use="required" type="xs:string"/>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="postPersist">
-		<xs:complexType>
-			<xs:attribute name="methodName" use="required" type="xs:string"/>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="postUpdate">
-		<xs:complexType>
-			<xs:attribute name="methodName" use="required" type="xs:string"/>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="postAdd">
-		<xs:complexType>
-			<xs:attribute name="methodName" use="required" type="xs:string"/>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="prePersist">
-		<xs:complexType>
-			<xs:attribute name="methodName" use="required" type="xs:string"/>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="postRemove">
-		<xs:complexType>
-			<xs:attribute name="methodName" use="required" type="xs:string"/>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="postLoad">
-		<xs:complexType>
-			<xs:attribute name="methodName" use="required" type="xs:string"/>
-		</xs:complexType>
-	</xs:element>
-	<xs:element name="preRemove">
-		<xs:complexType>
-			<xs:attribute name="methodName" use="required" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
 

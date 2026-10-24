@@ -198,15 +198,6 @@ public#if("true" == "${object.isAbstract()}") abstract#end class ${subClassName}
 
 #end
 #end
-#############################
-## Create callback methods ##
-#############################
-#foreach($cbname in ${entityUtils.callbackNames})
-    protected void ${cbname}() {
-        //TODO: implement ${cbname}
-    }
-
-#end
 ###########################################################
 ## Create writePropertyDirect/readPropertyDirect methods ##
 ###########################################################

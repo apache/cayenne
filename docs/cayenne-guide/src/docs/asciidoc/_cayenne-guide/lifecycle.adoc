@@ -60,32 +60,19 @@ a|
 
 === Callbacks on Persistent Objects
 
-Apache Cayenne provides two main methods to set up callbacks for Persistent objects: using annotated methods or configuring them via Cayenne Modeler.
+Callbacks on Persistent objects are methods of the object class annotated with one of the lifecycle event annotations.
 As a rule callback methods do not have any knowledge of the outside application, and can only access the state of the object itself and possibly the state of other persistent objects via object's own ObjectContext.
 
 NOTE: Validation and callbacks: There is a clear overlap in functionality between object callbacks and `PersistentObject.validateForX()` methods. In the future validation may be completely superseded by callbacks. It is a good idea to use "validateForX" strictly for validation (or not use it at all). Updating the state before commit should be done via callbacks.
 
 ==== Annotated Callbacks Methods
 
-You can define callback methods directly in your Persistent object class using annotations. These methods are invoked automatically by Cayenne during the lifecycle of the object.
+Callback methods are defined directly in the Persistent object class using annotations. These methods are invoked automatically by Cayenne during the lifecycle of the object. A callback method takes no arguments and returns `void`; it can be public, private, protected or use default access. Only the methods declared in the entity class itself are registered, so an annotated method must be declared in the class mapped as the ObjEntity, not inherited from a superclass.
 
 [source,java,indent=0]
 ----
 include::{java-examples}/lifecycle/Order.java[tags=content]
 ----
-
-==== Cayenne Modeler Callbacks Configuration
-
-Alternatively, you can configure callbacks using the Cayenne Modeler for each ObjEntity. Empty callback methods are automatically created as a part of class generation (either with Maven, Ant or the Modeler) and are later filled with appropriate logic by the programmer. E.g. assuming we mapped a 'postAdd' callback called 'onNewOrder' in ObjEntity 'Order', the following code will be generated:
-
-[source,java,indent=0]
-----
-include::{java-examples}/lifecycle/modeler/_Order.java[tags=content]
-
-include::{java-examples}/lifecycle/modeler/Order.java[tags=content]
-----
-
-As `onNewOrder()` is already declared in the mapping, it does not need to be registered explicitly. Implementing the method in subclass to do something meaningful is all that is required at this point.
 
 === Callbacks on Non-Persistent Listeners
 

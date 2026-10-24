@@ -115,11 +115,18 @@ public class UpgradeHandler_V15Test extends BaseUpgradeHandlerTest {
         assertEquals(Map.of("name", "byProcedure"),
                 attributes(elements(document, "/dataMap/sqlQuery[@name='byProcedure']").get(0)));
 
-        // the added reverse relationship is a lossless change
+        // the mapped callbacks are removed, keeping the rest of the entity
+        assertTrue(elements(document, "/dataMap/objEntity/*[@methodName]").isEmpty());
+        assertEquals(List.of("objAttribute"), childNames(elements(document, "/dataMap/objEntity[@name='Artist']").get(0)));
+
+        // the added reverse relationship is a lossless change, the removed callbacks are not
         List<String> notifications = unit.getChangeNotifications();
-        assertEquals(1, notifications.size(), notifications.toString());
+        assertEquals(2, notifications.size(), notifications.toString());
         assertTrue(notifications.get(0).contains("'artist'"), notifications.toString());
-        assertTrue(unit.getChangesAffectingRuntime().isEmpty());
+        assertTrue(notifications.get(1).contains("'Artist'"), notifications.toString());
+        assertTrue(notifications.get(1).contains("postAdd: onPostAdd, prePersist: onPrePersist, postLoad: onPostLoad"),
+                notifications.toString());
+        assertEquals(List.of(notifications.get(1)), unit.getChangesAffectingRuntime());
     }
 
     private List<String> childNames(Element parent) {

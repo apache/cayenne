@@ -24,12 +24,5 @@ import org.apache.cayenne.testdo.testmap.auto._ArtistCallback;
  * Class for testing callbacks
  */
 public class ArtistCallback extends _ArtistCallback {
-    public void prePersistEntityObjEntity() {}
-    public void postPersistEntityObjEntity() {}
-    public void preUpdateEntityObjEntity() {}
-    public void postUpdateEntityObjEntity() {}
-    public void preRemoveEntityObjEntity() {}
-    public void postRemoveEntityObjEntity() {}
-    public void postLoadEntityObjEntity() {}
 }
 

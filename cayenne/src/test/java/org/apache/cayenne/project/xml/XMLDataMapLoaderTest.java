@@ -175,8 +175,6 @@ public class XMLDataMapLoaderTest {
                 map.getObjEntity("CompoundPainting").getAttributes().size());
         assertEquals(3,
                 map.getObjEntity("Artist").getRelationships().size());
-        assertEquals(7,
-                map.getObjEntity("ArtistCallback").getCallbackMethods().size());
 
         assertEquals("name = \"test\"",
                 map.getDbEntity("ARTGROUP").getQualifier().toString());

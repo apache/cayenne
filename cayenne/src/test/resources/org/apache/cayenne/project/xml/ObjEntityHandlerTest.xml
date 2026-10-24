@@ -26,13 +26,4 @@
     <objAttribute name="artistName" type="java.lang.String" dbAttributePath="NAME" lock="true"/>
     <objAttribute name="dateOfBirth" type="java.util.Date" />
     <attributeOverride name="name" type="int" dbAttributePath="parent.child.name"/>
-
-    <postAdd methodName="postAddEntityObjEntity"/>
-    <prePersist methodName="prePersistEntityObjEntity"/>
-    <postPersist methodName="postPersistEntityObjEntity"/>
-    <preUpdate methodName="preUpdateEntityObjEntity"/>
-    <postUpdate methodName="postUpdateEntityObjEntity"/>
-    <preRemove methodName="preRemoveEntityObjEntity"/>
-    <postRemove methodName="postRemoveEntityObjEntity"/>
-    <postLoad methodName="postLoadEntityObjEntity"/>
 </objEntity>

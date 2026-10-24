@@ -161,10 +161,6 @@ public class GlobalActions {
         registerAction(new CreateRelationshipAction(application));
         registerAction(new RemoveRelationshipAction(application));
         registerAction(new RemoveAttributeRelationshipAction(application));
-        // start callback-related actions
-        registerAction(new CreateCallbackMethodAction(application)).setAlwaysOn(true);
-        registerAction(new RemoveCallbackMethodAction(application));
-        // end callback-related actions
         registerAction(new DbEntitySyncAction(application));
         registerAction(new ObjEntitySyncAction(application));
         registerAction(new DbEntityCounterpartAction(application));
@@ -190,12 +186,10 @@ public class GlobalActions {
         registerAction(new CutRelationshipAction(application));
         registerAction(new CutAttributeRelationshipAction(application));
         registerAction(new CutProcedureParameterAction(application));
-        registerAction(new CutCallbackMethodAction(application));
         registerAction(new CopyAction(application));
         registerAction(new CopyAttributeAction(application));
         registerAction(new CopyRelationshipAction(application));
         registerAction(new CopyAttributeRelationshipAction(application));
-        registerAction(new CopyCallbackMethodAction(application));
         registerAction(new CopyProcedureParameterAction(application));
         registerAction(new PasteAction(application));
 

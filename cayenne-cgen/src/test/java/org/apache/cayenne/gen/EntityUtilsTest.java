@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.gen;
 
-import org.apache.cayenne.map.CallbackDescriptor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -29,8 +28,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -53,28 +50,6 @@ public class EntityUtilsTest {
         dataMap = null;
         objEntity = null;
         entityUtils = null;
-    }
-
-    @Test
-    public void allCallbackNamesUnique() throws Exception {
-
-        CallbackDescriptor[] callbacks = objEntity.getCallbackMap().getCallbacks();
-        for (int i = 0; i < callbacks.length; i++) {
-            callbacks[i].addCallbackMethod("callback1");
-            callbacks[i].addCallbackMethod("callback2");
-            callbacks[i].addCallbackMethod("callback3");
-        }
-        entityUtils = new EntityUtils(dataMap, objEntity, "TestBaseClass", "TestSuperClass", "TestSubClass");
-
-        boolean hasNoDuplicates = true;
-        Set<String> callbackNames = new LinkedHashSet<String>();
-        for (String cbName : entityUtils.getCallbackNames()) {
-            if (!callbackNames.add(cbName)) {
-                hasNoDuplicates = false;
-            }
-        }
-
-        assertTrue(hasNoDuplicates, "Contains duplicate callback names.");
     }
 
     @Test

@@ -57,6 +57,7 @@ public final class UpgradeHandler_V15 implements UpgradeHandler {
         upgradeInfoSchema(context);
         convertForeignKeys(context);
         dropSqlQueryDbRoots(context);
+        dropEntityCallbacks(context);
     }
 
     private void updateProjectSchema(UpgradeContext upgradeUnit) {
@@ -109,6 +110,32 @@ public final class UpgradeHandler_V15 implements UpgradeHandler {
         for (Element query : elements(upgradeUnit, path)) {
             query.removeAttribute("root");
             query.removeAttribute("rootName");
+        }
+    }
+
+    /**
+     * Removes the callbacks mapped on "objEntity" ("postAdd", "prePersist", etc.), that are no longer supported. The
+     * user has to annotate the methods instead, so the change is recorded as affecting the runtime, and a project
+     * with mapped callbacks is not upgraded in memory.
+     */
+    private void dropEntityCallbacks(UpgradeContext upgradeUnit) {
+        Set<String> callbackTags = Set.of("postAdd", "prePersist", "postPersist", "preUpdate", "postUpdate",
+                "preRemove", "postRemove", "postLoad");
+
+        for (Element entity : elements(upgradeUnit, "/dataMap/*[local-name()='objEntity']")) {
+            List<String> callbacks = new ArrayList<>();
+            for (Element child : childElements(entity)) {
+                if (callbackTags.contains(localName(child))) {
+                    callbacks.add(localName(child) + ": " + child.getAttribute("methodName"));
+                    entity.removeChild(child);
+                }
+            }
+
+            if (!callbacks.isEmpty()) {
+                upgradeUnit.recordChange(("Callbacks mapped on ObjEntity '%s' were removed (%s). To keep them "
+                        + "working, annotate the methods in the Persistent class, e.g. with @PostAdd")
+                        .formatted(entity.getAttribute("name"), String.join(", ", callbacks)), true);
+            }
         }
     }
 

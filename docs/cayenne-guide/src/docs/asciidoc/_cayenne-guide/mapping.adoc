@@ -54,8 +54,6 @@ ObjEntity is a model of a single persistent Java class. ObjEntity is made of Obj
 
 ObjEntity maps to one or more DbEntities. There's always one "root" DbEntity for each ObjEntity. ObjAttribiute maps to a DbAttribute or an Embeddable. Most often mapped DbAttribute is from the root DbEntity. Sometimes mapping is done to a DbAttribute from another DbEntity somehow related to the root DbEntity. Such ObjAttribute is called "flattened". Similarly ObjRelationship maps either to a single DbRelationship, or to a chain of DbRelationships ("flattened" ObjRelationship).
 
-ObjEntities may also contain mapping of their lifecycle callback methods.
-
 === Embeddable
 
 Embeddable is a model of a Java class that acts as a single attribute of an ObjEntity, but maps to multiple columns in the database.

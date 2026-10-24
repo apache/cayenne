@@ -26,6 +26,9 @@
 		<dbAttribute name="PAINTING_ID" type="INTEGER" primaryKey="true" mandatory="true"/>
 	</dbEntity>
 	<objEntity name="Artist" className="org.apache.cayenne.x.Artist" dbEntityName="ARTIST">
+		<postAdd methodName="onPostAdd"/>
+		<prePersist methodName="onPrePersist"/>
+		<postLoad methodName="onPostLoad"/>
 		<objAttribute name="artistName" type="java.lang.String" dbAttributePath="ARTIST_NAME"/>
 	</objEntity>
 	<dbRelationship name="artistExhibitArray" source="ARTIST" target="ARTIST_EXHIBIT" toDependentPK="true" toMany="true">

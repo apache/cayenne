@@ -98,7 +98,6 @@ public class NameBuilder {
             case Procedure ignored -> "procedure";
             case ProcedureParameter ignored -> "UntitledProcedureParameter";
             case QueryDescriptor ignored -> "query";
-            case CallbackNode ignored -> "onEvent";
             default -> throw new IllegalArgumentException("Unsupported node type: " + node.getClass().getName());
         };
     }
@@ -135,7 +134,6 @@ public class NameBuilder {
             case Procedure ignored -> name -> ((DataMap) parent).getProcedure(name) != null;
             case ProcedureParameter ignored -> this::procedureParameterExists;
             case QueryDescriptor ignored -> name -> ((DataMap) parent).getQueryDescriptor(name) != null;
-            case CallbackNode ignored -> this::callbackMethodExists;
             default -> throw new IllegalArgumentException("Unsupported node type: " + node.getClass().getName());
         };
 
@@ -173,31 +171,6 @@ public class NameBuilder {
     private boolean objEntityPropertyExists(String name) {
         ObjEntity entity = (ObjEntity) parent;
 
-        // check if either attribute or relationship name matches...
-        if (entity.getAttribute(name) != null || entity.getRelationship(name) != null) {
-            return true;
-        }
-
-        //  check if there's a callback method that shadows attribute getter (unlikely, but still)
-        String conflictingCallback = "get" + NameUtil.capitalize(name);
-        return entity.getCallbackMethods().contains(conflictingCallback);
-    }
-
-    private boolean callbackMethodExists(String name) {
-        ObjEntity entity = (ObjEntity) parent;
-
-        if (entity.getCallbackMethods().contains(name)) {
-            return true;
-        }
-
-        if (name.startsWith("get")) {
-            String conflictingProperty = NameUtil.uncapitalize(name.substring(3));
-
-            // check if either attribute or relationship name matches...
-            return entity.getAttribute(conflictingProperty) != null
-                    || entity.getRelationship(conflictingProperty) != null;
-        }
-
-        return false;
+        return entity.getAttribute(name) != null || entity.getRelationship(name) != null;
     }
 }

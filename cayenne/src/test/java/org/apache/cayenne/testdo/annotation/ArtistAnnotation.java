@@ -62,7 +62,4 @@ public class ArtistAnnotation extends _ArtistAnnotation {
     protected void testPreRemove() {
         preCallback = "testPreRemove";
     }
-
-    @Override
-    protected void onPostAdd() { }
 }

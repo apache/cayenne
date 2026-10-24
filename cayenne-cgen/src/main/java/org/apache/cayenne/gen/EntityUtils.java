@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.gen;
 
-import java.util.Collection;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
@@ -49,7 +48,6 @@ public class EntityUtils {
     protected DataMap primaryDataMap;
     protected ObjEntity objEntity;
 
-    protected Collection<String> callbackNames;
 
     public EntityUtils(DataMap dataMap, ObjEntity objEntity, String fqnBaseClass, String fqnSuperClass,
             String fqnSubClass) {
@@ -66,7 +64,6 @@ public class EntityUtils {
         this.primaryDataMap = dataMap;
 
         this.objEntity = objEntity;
-        this.callbackNames = objEntity.getCallbackMethods();
     }
 
     EntityUtils(DataMap dataMap, ObjEntity objEntity, String baseClassName, String basePackageName,
@@ -82,7 +79,6 @@ public class EntityUtils {
         this.primaryDataMap = dataMap;
 
         this.objEntity = objEntity;
-        this.callbackNames = objEntity.getCallbackMethods();
     }
 
     /**
@@ -269,13 +265,5 @@ public class EntityUtils {
      */
     public boolean declaresDbAttribute(DbAttribute pkAttribute) {
         return objEntity.getAttributeForDbAttribute(pkAttribute) != null;
-    }
-
-    /**
-     * @return the list of all callback names registered for the entity.
-     * @since 3.0
-     */
-    public Collection<String> getCallbackNames() {
-        return callbackNames;
     }
 }
