@@ -16,32 +16,16 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.docs.lifecycle;
+package org.apache.cayenne.lifecycle;
 
-import org.apache.cayenne.Persistent;
-import org.apache.cayenne.annotation.PostPersist;
-import org.apache.cayenne.annotation.PostRemove;
-import org.apache.cayenne.annotation.PostUpdate;
+/**
+ * A callback interface that a Persistent class may implement to be notified of its own
+ * PreUpdate events: invoked right before a modified object is
+ * committed to the database, after its validation.
+ *
+ * @since 6.0
+ */
+public interface PreUpdateAware {
 
-public class AnnotationExamples {
-
-    // tag::multipleEntities[]
-    // this callback will be invoked on PostRemove event of any object
-    // belonging to MyEntity1, MyEntity2 or their subclasses
-    @PostRemove({MyEntity1.class, MyEntity2.class})
-    void postRemove(Persistent object) {
-        // ...
-    }
-    // end::multipleEntities[]
-
-    // tag::multipleAnnotations[]
-    // similar example with multiple annotations on a single method
-    // each matching just one entity
-    @PostPersist(MyEntity1.class)
-    @PostRemove(MyEntity1.class)
-    @PostUpdate(MyEntity1.class)
-    void postCommit(MyEntity1 object) {
-        // ...
-    }
-    // end::multipleAnnotations[]
+    void onPreUpdate();
 }

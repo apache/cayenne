@@ -27,7 +27,7 @@ import org.apache.cayenne.DataChannelSyncFilter;
 import org.apache.cayenne.DataChannelSyncFilterChain;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResult;
-import org.apache.cayenne.annotation.PostPersist;
+import org.apache.cayenne.access.lifecycle.LifecycleEventsManager;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.Query;
@@ -165,6 +165,12 @@ public class DataDomainFiltersIT {
 
         private List<String> results = new ArrayList<>();
 
+        // implemented by both filter interfaces, so an override is required; must be invoked once
+        @Override
+        public void init(LifecycleEventsManager lifecycleEventsManager) {
+            lifecycleEventsManager.postPersist().addListener(o -> results.add("postPersist"));
+        }
+
         @Override
         public List<QueryResult> onQuery(ObjectContext originatingContext, Query query, boolean iteratedResult,
                                          DataChannelQueryFilterChain filterChain) {
@@ -173,14 +179,10 @@ public class DataDomainFiltersIT {
         }
 
         @Override
-        public GraphDiff onSync(ObjectContext originatingContext, GraphDiff changes, int syncType, DataChannelSyncFilterChain filterChain) {
+        public GraphDiff onSync(ObjectContext originatingContext, GraphDiff changes, int syncType,
+                                DataChannelSyncFilterChain filterChain) {
             results.add("onSync");
             return filterChain.onSync(originatingContext, changes, syncType);
-        }
-
-        @PostPersist
-        public void postPersist(Object object) {
-            results.add("postPersist");
         }
     }
 }

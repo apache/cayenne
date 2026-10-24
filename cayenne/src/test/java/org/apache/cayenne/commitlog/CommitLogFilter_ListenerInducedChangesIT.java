@@ -20,8 +20,6 @@
 package org.apache.cayenne.commitlog;
 
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.annotation.PrePersist;
-import org.apache.cayenne.annotation.PreUpdate;
 import org.apache.cayenne.commitlog.db.Auditable1;
 import org.apache.cayenne.commitlog.db.AuditableChild1;
 import org.apache.cayenne.commitlog.model.AttributeChange;
@@ -70,7 +68,8 @@ public class CommitLogFilter_ListenerInducedChangesIT extends AuditableRuntimeCa
 	public void postCommit_Insert() {
 
 		final InsertListener listener = new InsertListener();
-		runtime.getDataDomain().addListener(listener);
+		runtime.getDataDomain().getLifecycleEventsManager()
+				.prePersist().addListener(listener::prePersist, Auditable1.class);
 
 		final Auditable1 a1 = context.newObject(Auditable1.class);
 		a1.setCharProperty1("yy");
@@ -109,7 +108,8 @@ public class CommitLogFilter_ListenerInducedChangesIT extends AuditableRuntimeCa
 		auditableChild1.insert(31, 1, "yyc");
 
 		final DeleteListener listener = new DeleteListener();
-		runtime.getDataDomain().addListener(listener);
+		runtime.getDataDomain().getLifecycleEventsManager()
+				.preUpdate().addListener(listener::preUpdate, Auditable1.class);
 
 		final Auditable1 a1 = ObjectSelect.query(Auditable1.class)
 				.where(Auditable1.SELF.eqId(1)).prefetch(Auditable1.CHILDREN1.joint())
@@ -151,7 +151,8 @@ public class CommitLogFilter_ListenerInducedChangesIT extends AuditableRuntimeCa
 		auditableChild1.insert(31, 1, "yyc");
 
 		final UpdateListener listener = new UpdateListener();
-		runtime.getDataDomain().addListener(listener);
+		runtime.getDataDomain().getLifecycleEventsManager()
+				.preUpdate().addListener(listener::preUpdate, Auditable1.class);
 
 		final Auditable1 a1 = ObjectSelect.query(Auditable1.class)
 				.where(Auditable1.SELF.eqId(1)).prefetch(Auditable1.CHILDREN1.joint())
@@ -202,7 +203,6 @@ public class CommitLogFilter_ListenerInducedChangesIT extends AuditableRuntimeCa
 
 		private AuditableChild1 c;
 
-		@PrePersist(Auditable1.class)
 		public void prePersist(Auditable1 a) {
 
 			c = a.getObjectContext().newObject(AuditableChild1.class);
@@ -215,8 +215,7 @@ public class CommitLogFilter_ListenerInducedChangesIT extends AuditableRuntimeCa
 
 		private List<AuditableChild1> toDelete;
 
-		@PreUpdate(Auditable1.class)
-		public void prePersist(Auditable1 a) {
+		public void preUpdate(Auditable1 a) {
 
 			toDelete = new ArrayList<>(a.getChildren1());
 			for (AuditableChild1 c : toDelete) {
@@ -229,8 +228,7 @@ public class CommitLogFilter_ListenerInducedChangesIT extends AuditableRuntimeCa
 
 		private List<AuditableChild1> toUpdate;
 
-		@PreUpdate(Auditable1.class)
-		public void prePersist(Auditable1 a) {
+		public void preUpdate(Auditable1 a) {
 
 			toUpdate = new ArrayList<>(a.getChildren1());
 			for (AuditableChild1 c : toUpdate) {

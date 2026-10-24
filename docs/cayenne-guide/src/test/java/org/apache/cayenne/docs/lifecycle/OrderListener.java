@@ -18,16 +18,17 @@
  ****************************************************************/
 package org.apache.cayenne.docs.lifecycle;
 
-import org.apache.cayenne.annotation.PostAdd;
-
-import java.util.Date;
+import org.apache.cayenne.Persistent;
 
 // tag::content[]
 public class OrderListener {
 
-    @PostAdd(Order.class)
-    public void setDefaultsForNewOrder(Order o) {
-        o.setCreatedOn(new Date());
+    public void orderCreated(Order order) {
+        // do something with a new Order
+    }
+
+    public void objectCommitted(Persistent object) {
+        // do something with any committed object
     }
 }
 // end::content[]

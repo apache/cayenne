@@ -26,7 +26,6 @@ import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.reflect.ArcProperty;
@@ -152,9 +151,9 @@ class DataDomainRelationshipAction {
         List<Persistent> objects = new ObjectResolver(context, arc.getTargetDescriptor(), false)
                 .objectsFromDataRows(rows);
 
-        LifecycleEventManager lifecycleEventManager = domain.getLifecycleEventManager();
-        if (!lifecycleEventManager.hasListeners(LifecycleEvent.POST_LOAD)) {
-            lifecycleEventManager.performCallbacks(LifecycleEvent.POST_LOAD, objects);
+        LifecycleEventManager postLoad = domain.getLifecycleEventsManager().postLoad();
+        if (postLoad.hasListeners()) {
+            postLoad.onEvent(objects);
         }
 
         return objects;

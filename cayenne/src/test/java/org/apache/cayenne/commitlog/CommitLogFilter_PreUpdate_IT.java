@@ -19,7 +19,7 @@
 package org.apache.cayenne.commitlog;
 
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.annotation.PreUpdate;
+import org.apache.cayenne.access.lifecycle.LifecycleEventsManager;
 import org.apache.cayenne.commitlog.db.AuditLog;
 import org.apache.cayenne.commitlog.db.AuditableChild5;
 import org.apache.cayenne.commitlog.model.ObjectChange;
@@ -58,7 +58,8 @@ public class CommitLogFilter_PreUpdate_IT extends AuditableRuntimeCase {
         return super.configureCayenne()
                 .addModule(binder ->
                         CoreModule.extend(binder)
-                                .addListenerType(MyPreUpdateListener.class)
+                                .addListener(LifecycleEventsManager::preUpdate,
+                                        child -> child.getParent().setCharProperty1("zz"), AuditableChild5.class)
                 )
                 .addModule(binder ->
                         CoreModule.extend(binder)
@@ -88,14 +89,4 @@ public class CommitLogFilter_PreUpdate_IT extends AuditableRuntimeCase {
         List<Object[]> logs = auditLog.selectAll();
         assertEquals(2, logs.size());
     }
-
-    public static class MyPreUpdateListener {
-
-        @PreUpdate({ AuditableChild5.class })
-        public void preUpdate( AuditableChild5 child ) {
-            child.getParent().setCharProperty1("zz");
-        }
-    }
-
-
 }

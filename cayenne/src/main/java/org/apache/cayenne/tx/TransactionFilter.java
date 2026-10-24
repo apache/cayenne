@@ -40,7 +40,7 @@ public class TransactionFilter implements DataChannelSyncFilter {
     @Override
     public GraphDiff onSync(ObjectContext originatingContext, GraphDiff changes, int syncType, DataChannelSyncFilterChain filterChain) {
         DataChannelSyncCallbackAction callbackAction = DataChannelSyncCallbackAction.getCallbackAction(
-                originatingContext.getChannel().getLifecycleEventManager(),
+                originatingContext.getChannel().getLifecycleEventsManager(),
                 originatingContext.getObjectStore(),
                 changes,
                 syncType

@@ -18,9 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne;
 
+import org.apache.cayenne.access.DataContextFactory;
 import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.access.DataDomainProvider;
+import org.apache.cayenne.access.DataNodeFactory;
 import org.apache.cayenne.access.DataRowStoreFactory;
+import org.apache.cayenne.access.DefaultDataNodeFactory;
 import org.apache.cayenne.access.DefaultDataRowStoreFactory;
+import org.apache.cayenne.access.ObjectContextFactory;
 import org.apache.cayenne.access.flush.DataDomainFlushActionFactory;
 import org.apache.cayenne.access.flush.DefaultDataDomainFlushActionFactory;
 import org.apache.cayenne.access.flush.operation.DbRowOpSorter;
@@ -48,26 +53,6 @@ import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.commitlog.CommitLogFilter;
 import org.apache.cayenne.commitlog.meta.CommitLogEntityFactory;
 import org.apache.cayenne.commitlog.meta.IncludeAllCommitLogEntityFactory;
-import org.apache.cayenne.project.ConfigurationNameMapper;
-import org.apache.cayenne.project.ProjectLoader;
-import org.apache.cayenne.project.ProjectMerger;
-import org.apache.cayenne.project.DataMapLoader;
-import org.apache.cayenne.project.DefaultConfigurationNameMapper;
-import org.apache.cayenne.project.DefaultProjectMerger;
-import org.apache.cayenne.access.ObjectContextFactory;
-import org.apache.cayenne.access.DataContextFactory;
-import org.apache.cayenne.access.DataDomainProvider;
-import org.apache.cayenne.access.DataNodeFactory;
-import org.apache.cayenne.dba.DbAdapterDetector;
-import org.apache.cayenne.access.DefaultDataNodeFactory;
-import org.apache.cayenne.project.upgrade.ProjectFileUpgrader;
-import org.apache.cayenne.project.xml.ProjectMetaData;
-import org.apache.cayenne.project.xml.DefaultHandlerFactory;
-import org.apache.cayenne.project.xml.HandlerFactory;
-import org.apache.cayenne.project.xml.NoopProjectMetaData;
-import org.apache.cayenne.project.xml.XMLProjectLoader;
-import org.apache.cayenne.project.xml.XMLDataMapLoader;
-import org.apache.cayenne.project.xml.XMLReaderProvider;
 import org.apache.cayenne.dba.db2.DB2Sniffer;
 import org.apache.cayenne.dba.derby.DerbySniffer;
 import org.apache.cayenne.dba.firebird.FirebirdSniffer;
@@ -96,6 +81,20 @@ import org.apache.cayenne.event.NoopEventBridgeProvider;
 import org.apache.cayenne.log.SQLLogger;
 import org.apache.cayenne.log.Slf4jSQLLogger;
 import org.apache.cayenne.map.EntitySorterFactory;
+import org.apache.cayenne.project.ConfigurationNameMapper;
+import org.apache.cayenne.project.DataMapLoader;
+import org.apache.cayenne.project.DefaultConfigurationNameMapper;
+import org.apache.cayenne.project.DefaultProjectMerger;
+import org.apache.cayenne.project.ProjectLoader;
+import org.apache.cayenne.project.ProjectMerger;
+import org.apache.cayenne.project.upgrade.ProjectFileUpgrader;
+import org.apache.cayenne.project.xml.DefaultHandlerFactory;
+import org.apache.cayenne.project.xml.HandlerFactory;
+import org.apache.cayenne.project.xml.NoopProjectMetaData;
+import org.apache.cayenne.project.xml.ProjectMetaData;
+import org.apache.cayenne.project.xml.XMLDataMapLoader;
+import org.apache.cayenne.project.xml.XMLProjectLoader;
+import org.apache.cayenne.project.xml.XMLReaderProvider;
 import org.apache.cayenne.reflect.generic.DefaultValueComparisonStrategyFactory;
 import org.apache.cayenne.reflect.generic.ValueComparisonStrategyFactory;
 import org.apache.cayenne.resource.ClassLoaderResourceLocator;
@@ -109,6 +108,8 @@ import org.xml.sax.XMLReader;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * A DI module containing all Cayenne runtime configuration.
@@ -131,9 +132,10 @@ public class CoreModule implements Module {
     public static final String ADAPTER_DETECTORS_LIST = "cayenne.adapter_detectors";
 
     /**
-     * A DI container key for the List&lt;Object&gt; storing lifecycle events listeners.
+     * A DI container key for the List&lt;Consumer&lt;LifecycleEventsManager&gt;&gt; of lifecycle event listener
+     * registrations.
      *
-     * @see CoreModuleExtender#addListener(Object)
+     * @see CoreModuleExtender#addListener(Function, Consumer, Class[])
      */
     public static final String DOMAIN_LISTENERS_LIST = "cayenne.domain_listeners";
 

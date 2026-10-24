@@ -27,12 +27,11 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResult;
 import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
 import org.apache.cayenne.access.dbsync.ThrowOnPartialOrCreateSchemaStrategy;
-import org.apache.cayenne.annotation.PostLoad;
+import org.apache.cayenne.access.lifecycle.LifecycleEventsManager;
 import org.apache.cayenne.project.DataNodeDescriptor;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.CayenneRuntime;
 import org.apache.cayenne.testdo.db1.CrossdbM1E1;
@@ -65,7 +64,9 @@ public class DataDomainProviderIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.DOMAIN_PROVIDER_PROJECT)
             .withExtraModules(b -> CoreModule.extend(b)
-                    .addListener(LISTENER)
+                    .addListener(LifecycleEventsManager::postLoad, LISTENER::postLoadCallback)
+                    .addListener(LifecycleEventsManager::postAdd, LISTENER::postAddCallback, CrossdbM1E1.class)
+                    .addSyncFilter(ListeningFilter.class)
                     .addQueryFilter(QUERY_FILTER)
                     .addSyncFilter(SYNC_FILTER));
 
@@ -222,10 +223,28 @@ public class DataDomainProviderIT {
         DataDomain domain = env.runtime().getDataDomain();
 
         int before = LISTENER.counter.get();
-        domain.getLifecycleEventManager()
-                .performCallbacks(LifecycleEvent.POST_LOAD, env.context().newObject(CrossdbM1E1.class));
+        domain.getLifecycleEventsManager()
+                .postLoad().onEvent(List.of(env.context().newObject(CrossdbM1E1.class)));
 
         assertEquals(before + 1, LISTENER.counter.get(), "Should call postLoadCallback()");
+    }
+
+    @Test
+    public void entityListenersFromDI() {
+        int before = LISTENER.added.get();
+        env.context().newObject(CrossdbM1E1.class);
+        assertEquals(before + 1, LISTENER.added.get(), "Should call postAddCallback()");
+    }
+
+    @Test
+    public void filterListenersFromDI() {
+        DataDomain domain = env.runtime().getDataDomain();
+
+        int before = ListeningFilter.removed.get();
+        domain.getLifecycleEventsManager()
+                .postRemove().onEvent(List.of(env.context().newObject(CrossdbM1E1.class)));
+
+        assertEquals(before + 1, ListeningFilter.removed.get(), "Should call the listener registered by the filter");
     }
 
     @Test
@@ -239,10 +258,33 @@ public class DataDomainProviderIT {
     static class TestListener {
 
         final AtomicInteger counter = new AtomicInteger();
+        final AtomicInteger added = new AtomicInteger();
 
-        @PostLoad
         public void postLoadCallback(Object object) {
             counter.incrementAndGet();
+        }
+
+        public void postAddCallback(CrossdbM1E1 object) {
+            added.incrementAndGet();
+        }
+    }
+
+    /**
+     * A DI-created filter that registers its own listener when initialized by the DataDomain.
+     */
+    public static class ListeningFilter implements DataChannelSyncFilter {
+
+        static final AtomicInteger removed = new AtomicInteger();
+
+        @Override
+        public void init(LifecycleEventsManager lifecycleEventsManager) {
+            lifecycleEventsManager.postRemove().addListener(o -> removed.incrementAndGet());
+        }
+
+        @Override
+        public GraphDiff onSync(ObjectContext originatingContext, GraphDiff changes, int syncType,
+                                DataChannelSyncFilterChain filterChain) {
+            return filterChain.onSync(originatingContext, changes, syncType);
         }
     }
 

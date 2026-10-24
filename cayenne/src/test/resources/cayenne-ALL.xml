@@ -60,5 +60,5 @@
 	<map name="lazy-attributes"/>
 	<map name="cay2666/datamap"/>
 	<map name="cay2641/datamapLazy"/>
-	<map name="annotation/datamapAnnotation"/>
+	<map name="entity_callbacks/datamapEntityCallbacks"/>
 </project>

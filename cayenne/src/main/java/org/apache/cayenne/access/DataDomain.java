@@ -42,7 +42,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.EntitySorter;
 import org.apache.cayenne.query.Query;
-import org.apache.cayenne.access.lifecycle.LifecycleEventManager;
+import org.apache.cayenne.access.lifecycle.LifecycleEventsManager;
 import org.apache.cayenne.tx.BaseTransaction;
 import org.apache.cayenne.tx.Transaction;
 import org.apache.cayenne.tx.TransactionFactory;
@@ -83,9 +83,7 @@ public class DataDomain implements DataChannel {
     protected final Map<String, DataNode> nodesByDataMapName;
 
     protected DataNode defaultNode;
-
-    // created lazily on first access, as it loads all mapped entity classes
-    protected volatile LifecycleEventManager lifecycleEventManager;
+    protected final LifecycleEventsManager lifecycleEventsManager;
 
     protected boolean stopped;
 
@@ -103,7 +101,8 @@ public class DataDomain implements DataChannel {
             boolean validatingObjectsOnCommit,
 
             EntityResolver entityResolver,
-            EntitySorter entitySorter
+            EntitySorter entitySorter,
+            LifecycleEventsManager lifecycleEventsManager
     ) {
 
         this.name = name;
@@ -113,6 +112,7 @@ public class DataDomain implements DataChannel {
         this.objectFactory = objectFactory;
         this.eventManager = eventManager;
         this.entitySorter = entitySorter;
+        this.lifecycleEventsManager = lifecycleEventsManager;
         this.queryCache = queryCache;
         this.sharedSnapshotCache = sharedSnapshotCache;
         this.entityResolver = entityResolver;
@@ -426,25 +426,11 @@ public class DataDomain implements DataChannel {
     }
 
     /**
-     * Returns the lifecycle event manager of this domain. It is created on first access, as it loads the classes of
-     * all mapped entities to register their declared callbacks.
-     *
      * @since 6.0
      */
     @Override
-    public LifecycleEventManager getLifecycleEventManager() {
-        LifecycleEventManager result = lifecycleEventManager;
-        if (result == null) {
-            synchronized (this) {
-                result = lifecycleEventManager;
-                if (result == null) {
-                    result = new LifecycleEventManager(entityResolver);
-                    lifecycleEventManager = result;
-                }
-            }
-        }
-
-        return result;
+    public LifecycleEventsManager getLifecycleEventsManager() {
+        return lifecycleEventsManager;
     }
     /**
      * Only handles commit-type synchronization, ignoring any other type.
@@ -533,29 +519,27 @@ public class DataDomain implements DataChannel {
     }
 
     /**
-     * Adds a new query filter.
-     * Also registers passed filter as an event listener, if any of its methods have event annotations.
+     * Adds a new query filter, initializing it with the lifecycle event manager of the domain.
      *
      * @since 4.1
      */
     public void addQueryFilter(DataChannelQueryFilter filter) {
-        // skip double listener registration, if filter already in sync filters list
+        // init once, if the filter is already in the sync filters list
         if (!syncFilters.contains(filter)) {
-            addListener(filter);
+            filter.init(lifecycleEventsManager);
         }
         queryFilters.add(filter);
     }
 
     /**
-     * Adds a new sync filter.
-     * Also registers passed filter as an event listener, if any of its methods have event annotations.
+     * Adds a new sync filter, initializing it with the lifecycle event manager of the domain.
      *
      * @since 4.1
      */
     public void addSyncFilter(DataChannelSyncFilter filter) {
-        // skip double listener registration, if filter already in query filters list
+        // init once, if the filter is already in the query filters list
         if (!queryFilters.contains(filter)) {
-            addListener(filter);
+            filter.init(lifecycleEventsManager);
         }
         syncFilters.add(filter);
     }
@@ -576,16 +560,6 @@ public class DataDomain implements DataChannel {
      */
     public void removeSyncFilter(DataChannelSyncFilter filter) {
         syncFilters.remove(filter);
-    }
-
-    /**
-     * Adds a listener, mapping its methods to events based on annotations. This is a shortcut for
-     * 'getLifecycleEventManager().addListener(listener)'.
-     *
-     * @since 4.0
-     */
-    public void addListener(Object listener) {
-        getLifecycleEventManager().addListener(listener);
     }
 
     final class DataDomainQueryFilterChain implements DataChannelQueryFilterChain {

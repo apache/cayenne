@@ -16,198 +16,155 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
 package org.apache.cayenne.access.lifecycle;
 
-import org.apache.cayenne.LifecycleListener;
-import org.apache.cayenne.Persistent;
-import org.apache.cayenne.annotation.PostAdd;
-import org.apache.cayenne.annotation.PostLoad;
-import org.apache.cayenne.annotation.PostPersist;
-import org.apache.cayenne.annotation.PostRemove;
-import org.apache.cayenne.annotation.PostUpdate;
-import org.apache.cayenne.annotation.PrePersist;
-import org.apache.cayenne.annotation.PreRemove;
-import org.apache.cayenne.annotation.PreUpdate;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.LifecycleEvent;
-import org.apache.cayenne.testdo.testmap.Artist;
-import org.junit.jupiter.api.BeforeEach;
+import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.PersistentObject;
 import org.junit.jupiter.api.Test;
 
-import java.util.function.Consumer;
+import java.util.ArrayList;
+import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class LifecycleEventManagerTest {
 
-    LifecycleEventManager lifecycleEventManager;
+    @Test
+    public void defaultListeners() {
 
-    @BeforeEach
-    public void createRegistry() {
-        EntityResolver entityResolver = mock(EntityResolver.class);
-        lifecycleEventManager = new LifecycleEventManager(entityResolver);
-        for(LifecycleEvent event : LifecycleEvent.values()) {
-            assertEquals(0, lifecycleEventManager.getHandler(event).defaultListenersSize());
-            assertEquals(0, lifecycleEventManager.getHandler(event).listenersSize());
-        }
+        LifecycleEventManager map = new LifecycleEventManager();
+        L1 l1 = new L1();
+        map.addListener(l1::callback);
+
+        C1 c1 = new C1();
+        c1.setObjectId(ObjectId.of("bogus"));
+
+        assertEquals(0, l1.entities.size());
+        map.onEvent(List.of(c1));
+        assertEquals(1, l1.entities.size());
+        assertTrue(l1.entities.contains(c1));
     }
 
     @Test
-    public void addDefaultListener() throws Exception {
-        LifecycleListener listener = mock(LifecycleListener.class);
-        lifecycleEventManager.addDefaultListener(listener);
-        for(LifecycleEvent event : LifecycleEvent.values()) {
-            assertEquals(1, lifecycleEventManager.getHandler(event).defaultListenersSize());
-            assertEquals(0, lifecycleEventManager.getHandler(event).listenersSize());
-        }
+    public void defaultListenersCallbackOrder() {
+
+        LifecycleEventManager map = new LifecycleEventManager();
+        L2 l1 = new L2();
+        map.addListener(l1::callback, C1.class);
+
+        L2 l2 = new L2();
+        map.addListener(l2::callback);
+
+        C1 c1 = new C1();
+        c1.setObjectId(ObjectId.of("bogus"));
+
+        map.onEvent(List.of(c1));
+        assertEquals(1, l1.callbackTimes.size());
+        assertEquals(1, l2.callbackTimes.size());
+
+        Long t1 = (Long) l1.callbackTimes.get(0);
+        Long t2 = (Long) l2.callbackTimes.get(0);
+        assertTrue(t2.compareTo(t1) < 0);
     }
 
     @Test
-    public void addDefaultListenerSingleType() throws Exception {
-        for(LifecycleEvent event : LifecycleEvent.values()) {
-            assertEquals(0, lifecycleEventManager.getHandler(event).defaultListenersSize());
-            LifecycleListener listener = mock(LifecycleListener.class);
-            lifecycleEventManager.addDefaultListener(event, method(listener, event));
-            assertEquals(1, lifecycleEventManager.getHandler(event).defaultListenersSize());
-            assertEquals(0, lifecycleEventManager.getHandler(event).listenersSize());
-        }
+    public void callbackOnSuperclass() {
+
+        LifecycleEventManager map = new LifecycleEventManager();
+        map.addListener(C1::c1Callback, C1.class);
+
+        C3 subclass = new C3();
+        subclass.setObjectId(ObjectId.of("bogusSubclass"));
+
+        assertEquals(0, subclass.callbacks.size());
+        map.onEvent(List.of(subclass));
+        assertEquals(1, subclass.callbacks.size());
     }
 
     @Test
-    public void addListenerWithEntityClass() throws Exception {
-        LifecycleListener listener = mock(LifecycleListener.class);
-        lifecycleEventManager.addListener(Persistent.class, listener);
-        for(LifecycleEvent event : LifecycleEvent.values()) {
-            assertEquals(1, lifecycleEventManager.getHandler(event).listenersSize());
-            assertEquals(0, lifecycleEventManager.getHandler(event).defaultListenersSize());
-        }
+    public void callbackOnSuperclassWithSublcassOverrides() {
+
+        LifecycleEventManager map = new LifecycleEventManager();
+        map.addListener(C1::c1Callback, C1.class);
+
+        C4 subclass = new C4();
+        subclass.setObjectId(ObjectId.of("bogus"));
+
+        assertEquals(0, subclass.callbacks.size());
+        map.onEvent(List.of(subclass));
+        assertEquals(1, subclass.callbacks.size());
+        assertEquals("c4Callback", subclass.callbacks.get(0));
     }
 
     @Test
-    public void addListenerWithEntityClassSingleType() throws Exception {
-        for(LifecycleEvent event : LifecycleEvent.values()) {
-            assertEquals(0, lifecycleEventManager.getHandler(event).listenersSize());
-            LifecycleListener listener = mock(LifecycleListener.class);
-            lifecycleEventManager.addListener(event, Persistent.class, method(listener, event));
-            assertEquals(1, lifecycleEventManager.getHandler(event).listenersSize());
-            assertEquals(0, lifecycleEventManager.getHandler(event).defaultListenersSize());
+    public void callbackOrderInInheritanceHierarchy() {
+
+        LifecycleEventManager map = new LifecycleEventManager();
+        map.addListener(C2::c2Callback, C2.class);
+        map.addListener(C1::c1Callback, C1.class);
+
+        C2 c = new C2();
+        c.setObjectId(ObjectId.of("bogus"));
+
+        assertTrue(c.callbacks.isEmpty());
+        map.onEvent(List.of(c));
+        assertEquals(2, c.callbacks.size());
+
+        // superclass callbacks should be invoked first
+        assertEquals("c1Callback", c.callbacks.get(0));
+        assertEquals("c2Callback", c.callbacks.get(1));
+    }
+
+    static class C1 extends PersistentObject {
+
+        protected List callbacks = new ArrayList();
+
+        void c1Callback() {
+            callbacks.add("c1Callback");
         }
     }
 
-    @Test
-    public void addDefaultListener_MethodReference() {
-        PersistentParameterListener listener = new PersistentParameterListener();
-        lifecycleEventManager.addDefaultListener(LifecycleEvent.POST_ADD, listener::postAdd);
-        assertEquals(1, lifecycleEventManager.getHandler(LifecycleEvent.POST_ADD).defaultListenersSize());
+    static class C2 extends C1 {
 
-        Persistent object = new Artist();
-        lifecycleEventManager.performCallbacks(LifecycleEvent.POST_ADD, object);
-        assertSame(object, listener.seen);
-    }
-
-    @Test
-    public void addAnnotatedListener_PersistentParameter() {
-        PersistentParameterListener listener = new PersistentParameterListener();
-        lifecycleEventManager.addListener(listener);
-        assertEquals(1, lifecycleEventManager.getHandler(LifecycleEvent.POST_ADD).defaultListenersSize());
-
-        Persistent object = new Artist();
-        lifecycleEventManager.performCallbacks(LifecycleEvent.POST_ADD, object);
-        assertSame(object, listener.seen);
-    }
-
-    @Test
-    public void addAnnotatedListener() {
-        lifecycleEventManager.addListener(new AnnotatedListener());
-        for(LifecycleEvent event : LifecycleEvent.values()) {
-            assertEquals(1, lifecycleEventManager.getHandler(event).defaultListenersSize());
-            assertEquals(0, lifecycleEventManager.getHandler(event).listenersSize());
+        void c2Callback() {
+            callbacks.add("c2Callback");
         }
     }
 
-    @Test
-    public void addAnnotatedListenerWithEntityClass() {
-        lifecycleEventManager.addListener(new AnnotatedListenerWithEntity());
-        for(LifecycleEvent event : LifecycleEvent.values()) {
-            assertEquals(0, lifecycleEventManager.getHandler(event).defaultListenersSize());
-            assertEquals(1, lifecycleEventManager.getHandler(event).listenersSize());
+    static class C3 extends C1 {
+
+    }
+
+    static class C4 extends C1 {
+
+        @Override
+        void c1Callback() {
+            callbacks.add("c4Callback");
         }
     }
 
-    private static class PersistentParameterListener {
+    static class L1 {
 
-        Persistent seen;
+        protected List entities = new ArrayList();
 
-        @PostAdd
-        public void postAdd(Persistent object) {
-            this.seen = object;
+        void callback(Object entity) {
+            entities.add(entity);
         }
     }
 
-    private static class AnnotatedListener {
-        @PostAdd
-        public void postAdd(Object object) {}
+    static class L2 {
 
-        @PostLoad
-        public void postLoad(Object object) {}
+        protected List callbackTimes = new ArrayList();
 
-        @PostPersist
-        public void postPersist(Object object) {}
-
-        @PostRemove
-        public void postRemove(Object object) {}
-
-        @PostUpdate
-        public void postUpdate(Object object) {}
-
-        @PrePersist
-        public void prePersist(Object object) {}
-
-        @PreRemove
-        public void preRemove(Object object) {}
-
-        @PreUpdate
-        public void preUpdate(Object object) {}
-    }
-
-    private static class AnnotatedListenerWithEntity {
-        @PostAdd(Persistent.class)
-        public void postAdd(Object object) {}
-
-        @PostLoad(Persistent.class)
-        public void postLoad(Object object) {}
-
-        @PostPersist(Persistent.class)
-        public void postPersist(Object object) {}
-
-        @PostRemove(Persistent.class)
-        public void postRemove(Object object) {}
-
-        @PostUpdate(Persistent.class)
-        public void postUpdate(Object object) {}
-
-        @PrePersist(Persistent.class)
-        public void prePersist(Object object) {}
-
-        @PreRemove(Persistent.class)
-        public void preRemove(Object object) {}
-
-        @PreUpdate(Persistent.class)
-        public void preUpdate(Object object) {}
-    }
-
-    private static Consumer<Persistent> method(LifecycleListener listener, LifecycleEvent event) {
-        return switch (event) {
-            case POST_ADD -> listener::postAdd;
-            case PRE_PERSIST -> listener::prePersist;
-            case POST_PERSIST -> listener::postPersist;
-            case PRE_REMOVE -> listener::preRemove;
-            case POST_REMOVE -> listener::postRemove;
-            case PRE_UPDATE -> listener::preUpdate;
-            case POST_UPDATE -> listener::postUpdate;
-            case POST_LOAD -> listener::postLoad;
-        };
+        void callback(Object entity) {
+            callbackTimes.add(System.currentTimeMillis());
+            try {
+                Thread.sleep(100);
+            }
+            catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

@@ -19,6 +19,7 @@
 
 package org.apache.cayenne;
 
+import org.apache.cayenne.access.lifecycle.LifecycleEventsManager;
 import org.apache.cayenne.query.Query;
 
 import java.util.List;
@@ -57,4 +58,12 @@ public interface DataChannelQueryFilter {
     List<QueryResult> onQuery(ObjectContext originatingContext, Query query, boolean iteratedResult,
                               DataChannelQueryFilterChain filterChain);
 
+    /**
+     * Called once when the filter is added to the DataDomain, letting the filter register lifecycle event listeners,
+     * e.g. to collect the events of a single query in the filter's own state. The default implementation does nothing.
+     *
+     * @since 6.0
+     */
+    default void init(LifecycleEventsManager lifecycleEventsManager) {
+    }
 }

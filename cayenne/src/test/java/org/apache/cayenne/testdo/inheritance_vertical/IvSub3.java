@@ -19,18 +19,18 @@
 
 package org.apache.cayenne.testdo.inheritance_vertical;
 
-import org.apache.cayenne.annotation.PrePersist;
+import org.apache.cayenne.lifecycle.PrePersistAware;
 import org.apache.cayenne.testdo.inheritance_vertical.auto._IvSub3;
 import org.apache.cayenne.validation.ValidationException;
 
-public class IvSub3 extends _IvSub3 {
+public class IvSub3 extends _IvSub3 implements PrePersistAware {
 
     public void setIvRoot(IvRoot ivRoot) {
         setToOneTarget("ivRoot", ivRoot, true);
     }
 
-    @PrePersist
-    protected void onPrePersist() {
+    @Override
+    public void onPrePersist() {
         if(getIvRoot() == null) {
             throw new ValidationException("ivRoot is null");
         }

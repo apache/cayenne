@@ -115,8 +115,8 @@ public final class UpgradeHandler_V15 implements UpgradeHandler {
 
     /**
      * Removes the callbacks mapped on "objEntity" ("postAdd", "prePersist", etc.), that are no longer supported. The
-     * user has to annotate the methods instead, so the change is recorded as affecting the runtime, and a project
-     * with mapped callbacks is not upgraded in memory.
+     * user has to implement the callback interfaces instead, so the change is recorded as affecting the runtime, and a
+     * project with mapped callbacks is not upgraded in memory.
      */
     private void dropEntityCallbacks(UpgradeContext upgradeUnit) {
         Set<String> callbackTags = Set.of("postAdd", "prePersist", "postPersist", "preUpdate", "postUpdate",
@@ -133,7 +133,8 @@ public final class UpgradeHandler_V15 implements UpgradeHandler {
 
             if (!callbacks.isEmpty()) {
                 upgradeUnit.recordChange(("Callbacks mapped on ObjEntity '%s' were removed (%s). To keep them "
-                        + "working, annotate the methods in the Persistent class, e.g. with @PostAdd")
+                        + "working, implement the callback interfaces from 'org.apache.cayenne.lifecycle' in the "
+                        + "Persistent class, e.g. PostAddAware")
                         .formatted(entity.getAttribute("name"), String.join(", ", callbacks)), true);
             }
         }

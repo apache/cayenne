@@ -30,7 +30,7 @@ import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLTemplate;
-import org.apache.cayenne.access.lifecycle.LifecycleEventManager;
+import org.apache.cayenne.access.lifecycle.LifecycleEventsManager;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
@@ -108,8 +108,8 @@ public class DataContextDecoratedStackIT {
         }
 
         @Override
-        public LifecycleEventManager getLifecycleEventManager() {
-            return channel.getLifecycleEventManager();
+        public LifecycleEventsManager getLifecycleEventsManager() {
+            return channel.getLifecycleEventsManager();
         }
 
         @Override

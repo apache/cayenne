@@ -16,8 +16,16 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.docs.lifecycle;
+package org.apache.cayenne.lifecycle;
 
-public class MyEntity extends _MyEntity {
+/**
+ * A callback interface that a Persistent class may implement to be notified of its own
+ * PostPersist events: invoked right after a commit of a new object is
+ * done.
+ *
+ * @since 6.0
+ */
+public interface PostPersistAware {
 
+    void onPostPersist();
 }

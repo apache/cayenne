@@ -20,6 +20,8 @@
 package org.apache.cayenne;
 
 import org.apache.cayenne.access.flush.operation.DeleteDbRowOpFactory;
+import org.apache.cayenne.access.lifecycle.LifecycleEventManager;
+import org.apache.cayenne.access.lifecycle.LifecycleEventsManager;
 import org.apache.cayenne.access.flush.operation.ConditionalSoftDeleteDbRowOpFactory;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeFactory;
@@ -34,6 +36,9 @@ import org.apache.cayenne.di.ListBuilder;
 import org.apache.cayenne.di.MapBuilder;
 import org.apache.cayenne.graph.GraphChangeHandler;
 import org.apache.cayenne.tx.TransactionFilter;
+
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * A builder of extensions for {@link CoreModule}.
@@ -50,7 +55,7 @@ public class CoreModuleExtender {
     private ListBuilder<DbAdapterDetector> adapterDetectors;
     private ListBuilder<DataChannelQueryFilter> queryFilters;
     private ListBuilder<DataChannelSyncFilter> syncFilters;
-    private ListBuilder<Object> listeners;
+    private ListBuilder<Consumer<LifecycleEventsManager>> listeners;
     private ListBuilder<ExtendedType> defaultExtendedTypes;
     private ListBuilder<ExtendedType> userExtendedTypes;
     private ListBuilder<ExtendedTypeFactory> extendedTypeFactories;
@@ -210,18 +215,20 @@ public class CoreModuleExtender {
     }
 
     /**
-     * Registers an annotated event listener.
+     * Registers a lifecycle event listener for a given event on the given entities and their subclasses, or on all
+     * entities if no entity classes are given. The event is one of the per-event methods of
+     * {@link LifecycleEventsManager}, and the listener is typically a method reference, e.g.
+     * {@code addListener(LifecycleEventsManager::postAdd, auditor::artistAdded, Artist.class)} or
+     * {@code addListener(LifecycleEventsManager::postLoad, auditor::objectLoaded)}.
+     *
+     * @since 6.0
      */
-    public CoreModuleExtender addListener(Object listener) {
-        contributeListeners().add(listener);
-        return this;
-    }
-
-    /**
-     * Registers an annotated event listener of a given type
-     */
-    public CoreModuleExtender addListenerType(Class<?> listenerType) {
-        contributeListeners().add(listenerType);
+    @SafeVarargs
+    public final <T extends Persistent> CoreModuleExtender addListener(
+            Function<LifecycleEventsManager, LifecycleEventManager> event,
+            Consumer<? super T> listener,
+            Class<? extends T>... entityClasses) {
+        contributeListeners().add(manager -> event.apply(manager).addListener(listener, entityClasses));
         return this;
     }
 
@@ -416,9 +423,11 @@ public class CoreModuleExtender {
         return syncFilters;
     }
 
-    private ListBuilder<Object> contributeListeners() {
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private ListBuilder<Consumer<LifecycleEventsManager>> contributeListeners() {
         if (listeners == null) {
-            listeners = binder.bindList(Object.class, CoreModule.DOMAIN_LISTENERS_LIST);
+            // the list holds Consumer<LifecycleEventsManager> lambdas, but DI keys are not parameterized
+            listeners = (ListBuilder) binder.bindList(Consumer.class, CoreModule.DOMAIN_LISTENERS_LIST);
         }
         return listeners;
     }

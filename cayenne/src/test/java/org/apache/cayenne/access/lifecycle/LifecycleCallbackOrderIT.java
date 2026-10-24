@@ -19,12 +19,6 @@
 
 package org.apache.cayenne.access.lifecycle;
 
-import org.apache.cayenne.annotation.PostPersist;
-import org.apache.cayenne.annotation.PostRemove;
-import org.apache.cayenne.annotation.PostUpdate;
-import org.apache.cayenne.annotation.PrePersist;
-import org.apache.cayenne.annotation.PreRemove;
-import org.apache.cayenne.annotation.PreUpdate;
 import org.apache.cayenne.testdo.lifecycle_callbacks_order.Lifecycle;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
@@ -40,10 +34,20 @@ public class LifecycleCallbackOrderIT {
 
     @Test
     public void lifecycleCallbackOrder() {
-        LifecycleEventManager lifecycleEventManager = env.context().getChannel().getLifecycleEventManager();
+        LifecycleEventsManager lifecycleEventsManager = env.context().getChannel().getLifecycleEventsManager();
 
-        LifecycleEventListener eventListener = new LifecycleEventListener();
-        lifecycleEventManager.addListener(eventListener);
+        lifecycleEventsManager.prePersist().addListener(
+                l -> l.getCallbackBuffer().append("PrePersist;"), Lifecycle.class);
+        lifecycleEventsManager.postPersist().addListener(
+                l -> l.getCallbackBuffer().append("PostPersist;"), Lifecycle.class);
+        lifecycleEventsManager.preUpdate().addListener(
+                l -> l.getCallbackBuffer().append("PreUpdate;"), Lifecycle.class);
+        lifecycleEventsManager.postUpdate().addListener(
+                l -> l.getCallbackBuffer().append("PostUpdate;"), Lifecycle.class);
+        lifecycleEventsManager.preRemove().addListener(
+                l -> l.getCallbackBuffer().append("PreRemove;"), Lifecycle.class);
+        lifecycleEventsManager.postRemove().addListener(
+                l -> l.getCallbackBuffer().append("PostRemove;"), Lifecycle.class);
 
         Lifecycle lifecycle = env.context().newObject(Lifecycle.class);
         env.context().commitChanges();
@@ -58,39 +62,4 @@ public class LifecycleCallbackOrderIT {
         env.context().commitChanges();
         assertEquals("PreRemove;validateForDelete;PostRemove;", lifecycle.getCallbackBufferValueAndReset());
     }
-
-    class LifecycleEventListener {
-
-        @PrePersist(Lifecycle.class)
-        void prePersist(Lifecycle lifecycle) {
-            lifecycle.getCallbackBuffer().append("PrePersist;");
-        }
-
-        @PostPersist(Lifecycle.class)
-        void postPersist(Lifecycle lifecycle) {
-            lifecycle.getCallbackBuffer().append("PostPersist;");
-        }
-
-        @PreUpdate(Lifecycle.class)
-        void preUpdate(Lifecycle lifecycle) {
-            lifecycle.getCallbackBuffer().append("PreUpdate;");
-        }
-
-        @PostUpdate(Lifecycle.class)
-        void postUpdate(Lifecycle lifecycle) {
-            lifecycle.getCallbackBuffer().append("PostUpdate;");
-        }
-
-        @PreRemove(Lifecycle.class)
-        void preRemove(Lifecycle lifecycle) {
-            lifecycle.getCallbackBuffer().append("PreRemove;");
-        }
-
-        @PostRemove(Lifecycle.class)
-        void postRemove(Lifecycle lifecycle) {
-            lifecycle.getCallbackBuffer().append("PostRemove;");
-        }
-
-    }
-
 }

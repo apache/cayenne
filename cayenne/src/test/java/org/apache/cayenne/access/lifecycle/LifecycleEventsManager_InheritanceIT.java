@@ -18,14 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.access.lifecycle;
 
-import org.apache.cayenne.Persistent;
-import org.apache.cayenne.annotation.PostAdd;
-import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.testdo.inheritance_flat.Group;
 import org.apache.cayenne.testdo.inheritance_flat.Role;
 import org.apache.cayenne.testdo.inheritance_flat.User;
 import org.apache.cayenne.testdo.inheritance_flat.UserProperties;
-import org.apache.cayenne.testdo.testmap.annotations.Tag2;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.Test;
@@ -33,46 +29,32 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class LifecycleEventManager_InheritanceIT {
+public class LifecycleEventsManager_InheritanceIT {
 
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.INHERITANCE_SINGLE_TABLE1_PROJECT);
 
     @Test
     public void addListener_PostAdd_EntityInheritance() {
-        LifecycleEventManager lifecycleEventManager = env.context().getChannel().getLifecycleEventManager();
+        LifecycleEventsManager lifecycleEventsManager = env.context().getChannel().getLifecycleEventsManager();
 
-        PostAddListenerInherited listener = new PostAddListenerInherited();
-        lifecycleEventManager.addListener(listener);
-
-        assertEquals(1, lifecycleEventManager.getHandler(LifecycleEvent.POST_ADD).listenersSize());
+        StringBuilder callbackBuffer = new StringBuilder();
+        lifecycleEventsManager.postAdd().addListener(
+                u -> callbackBuffer.append("a:").append(u.getObjectId().getEntityName()).append(";"), User.class);
 
         env.context().newObject(User.class);
-        assertEquals("a:User;", listener.getAndReset());
+        assertEquals("a:User;", callbackBuffer.toString());
 
+        // Group is a subclass of User
+        callbackBuffer.setLength(0);
         env.context().newObject(Group.class);
-        assertEquals("a:Group;", listener.getAndReset());
+        assertEquals("a:Group;", callbackBuffer.toString());
 
+        callbackBuffer.setLength(0);
         env.context().newObject(Role.class);
-        assertEquals("", listener.getAndReset());
+        assertEquals("", callbackBuffer.toString());
 
         env.context().newObject(UserProperties.class);
-        assertEquals("", listener.getAndReset());
-    }
-}
-
-class PostAddListenerInherited {
-
-    StringBuilder callbackBuffer = new StringBuilder();
-
-    @PostAdd(entityAnnotations = Tag2.class)
-    void postAddAnnotated(Persistent object) {
-        callbackBuffer.append("a:" + object.getObjectId().getEntityName() + ";");
-    }
-
-    String getAndReset() {
-        String v = callbackBuffer.toString();
-        callbackBuffer = new StringBuilder();
-        return v;
+        assertEquals("", callbackBuffer.toString());
     }
 }

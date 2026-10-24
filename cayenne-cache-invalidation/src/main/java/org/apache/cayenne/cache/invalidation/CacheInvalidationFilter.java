@@ -22,10 +22,8 @@ package org.apache.cayenne.cache.invalidation;
 import org.apache.cayenne.DataChannelSyncFilter;
 import org.apache.cayenne.DataChannelSyncFilterChain;
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.access.lifecycle.LifecycleEventsManager;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.annotation.PrePersist;
-import org.apache.cayenne.annotation.PreRemove;
-import org.apache.cayenne.annotation.PreUpdate;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
@@ -68,12 +66,22 @@ public class CacheInvalidationFilter implements DataChannelSyncFilter {
     private final Function<Persistent, Collection<CacheGroupDescriptor>> skipHandler;
     private final ThreadLocal<Set<CacheGroupDescriptor>> groups;
 
-    public CacheInvalidationFilter(@Inject Provider<QueryCache> cacheProvider, @Inject List<InvalidationHandler> handlers) {
+    public CacheInvalidationFilter(
+            @Inject Provider<QueryCache> cacheProvider,
+            @Inject List<InvalidationHandler> handlers) {
+
         this.mappedHandlers = new ConcurrentHashMap<>();
         this.skipHandler = p -> Collections.emptyList();
         this.groups = new ThreadLocal<>();
         this.cacheProvider = cacheProvider;
         this.handlers = handlers;
+    }
+
+    @Override
+    public void init(LifecycleEventsManager lifecycleEventsManager) {
+        lifecycleEventsManager.prePersist().addListener(this::preCommit);
+        lifecycleEventsManager.preRemove().addListener(this::preCommit);
+        lifecycleEventsManager.preUpdate().addListener(this::preCommit);
     }
 
     @Override
@@ -102,13 +110,7 @@ public class CacheInvalidationFilter implements DataChannelSyncFilter {
     /**
      * A callback method that records cache group to flush at the end of the commit.
      */
-    @PrePersist
-    @PreRemove
-    @PreUpdate
-    protected void preCommit(Object object) {
-        // TODO: for some reason we can't use Persistent as the argument type... (is it fixed in Cayenne 4.0.M4?)
-        Persistent p = (Persistent) object;
-
+    protected void preCommit(Persistent p) {
         Function<Persistent, Collection<CacheGroupDescriptor>> invalidationFunction = mappedHandlers
                 .computeIfAbsent(p.getClass(), cl -> {
                     for (InvalidationHandler handler : handlers) {

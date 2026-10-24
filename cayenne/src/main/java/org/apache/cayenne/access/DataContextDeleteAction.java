@@ -25,7 +25,6 @@ import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.graph.ArcId;
 import org.apache.cayenne.map.DeleteRule;
-import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.reflect.ArcProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
@@ -99,9 +98,7 @@ class DataContextDeleteAction {
     }
 
     private void deletePersistent(Persistent object) throws DeleteDenyException {
-        context.getChannel().getLifecycleEventManager().performCallbacks(
-                LifecycleEvent.PRE_REMOVE,
-                object);
+        context.getChannel().getLifecycleEventsManager().preRemove().onEvent(List.of(object));
 
         int oldState = object.getPersistenceState();
         object.setPersistenceState(PersistenceState.DELETED);

@@ -83,5 +83,5 @@ public class CayenneProjects {
     public static final String LAZY_ATTRIBUTES_PROJECT = "cayenne-lazy-attributes.xml";
     public static final String CAY_2666 = "cay2666/cayenne-cay-2666.xml";
     public static final String CAY_2641 = "cay2641/cayenne-cay-2641.xml";
-    public static final String ANNOTATION = "annotation/cayenne-project.xml";
+    public static final String ENTITY_CALLBACKS = "entity_callbacks/cayenne-project.xml";
 }

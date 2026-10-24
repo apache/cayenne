@@ -16,17 +16,16 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.docs.lifecycle;
+package org.apache.cayenne.lifecycle;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+/**
+ * A callback interface that a Persistent class may implement to be notified of its own
+ * PostLoad events: invoked after an object is fetched from the database,
+ * reverted inside {@code ObjectContext.rollbackChanges()}, or resolved from a fault.
+ *
+ * @since 6.0
+ */
+public interface PostLoadAware {
 
-// tag::content[]
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface Tag {
-
+    void onPostLoad();
 }
-// end::content[]

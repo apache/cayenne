@@ -31,6 +31,7 @@ import org.apache.cayenne.QueryResult;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.SelectResult;
 import org.apache.cayenne.UpdateResult;
+import org.apache.cayenne.access.lifecycle.LifecycleEventManager;
 import org.apache.cayenne.access.translator.TranslatedStatement;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.cache.QueryCacheEntryFactory;
@@ -38,7 +39,6 @@ import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
-import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.query.EmbeddableResultSegment;
 import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.cayenne.query.PrefetchSelectQuery;
@@ -53,7 +53,6 @@ import org.apache.cayenne.query.ResultSegments;
 import org.apache.cayenne.query.ScalarResultSegment;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.DefaultConstructor;
-import org.apache.cayenne.access.lifecycle.LifecycleEventManager;
 import org.apache.cayenne.tx.BaseTransaction;
 import org.apache.cayenne.tx.ReadOnlyTransaction;
 import org.apache.cayenne.tx.Transaction;
@@ -542,17 +541,17 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         return cacheHit;
     }
 
-    private void performPostLoadCallbacks(PrefetchProcessorNode node, LifecycleEventManager lifecycleEventManager) {
+    private void performPostLoadCallbacks(PrefetchProcessorNode node, LifecycleEventManager postLoad) {
 
         if (node.hasChildren()) {
             for (PrefetchTreeNode child : node.getChildren()) {
-                performPostLoadCallbacks((PrefetchProcessorNode) child, lifecycleEventManager);
+                performPostLoadCallbacks((PrefetchProcessorNode) child, postLoad);
             }
         }
 
         List<Persistent> objects = node.getObjects();
         if (objects != null) {
-            lifecycleEventManager.performCallbacks(LifecycleEvent.POST_LOAD, objects);
+            postLoad.onEvent(objects);
         }
     }
 
@@ -574,10 +573,9 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
             List<Persistent> objects = node.getObjects();
 
             // apply POST_LOAD callback
-            LifecycleEventManager lifecycleEventManager = domain.getLifecycleEventManager();
-
-            if (!lifecycleEventManager.hasListeners(LifecycleEvent.POST_LOAD)) {
-                performPostLoadCallbacks(node, lifecycleEventManager);
+            LifecycleEventManager postLoad = domain.getLifecycleEventsManager().postLoad();
+            if (postLoad.hasListeners()) {
+                performPostLoadCallbacks(node, postLoad);
             }
             return objects != null ? objects : new ArrayList<>(1);
         }
@@ -605,7 +603,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         }
     }
 
-    class SingleScalarConversionStrategy extends ObjectConversionStrategy<Object, Object> {
+    static class SingleScalarConversionStrategy extends ObjectConversionStrategy<Object, Object> {
 
         @Override
         List<Object> convert(List<Object> mainRows) {
@@ -664,10 +662,10 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                 List<PrefetchProcessorNode> segmentNodes = doInPlaceConversion(result);
 
                 // invoke callbacks now that all objects are resolved...
-                LifecycleEventManager lifecycleEventManager = domain.getLifecycleEventManager();
-                if (!lifecycleEventManager.hasListeners(LifecycleEvent.POST_LOAD)) {
+                LifecycleEventManager postLoad = domain.getLifecycleEventsManager().postLoad();
+                if (postLoad.hasListeners()) {
                     for (PrefetchProcessorNode node : segmentNodes) {
-                        performPostLoadCallbacks(node, lifecycleEventManager);
+                        performPostLoadCallbacks(node, postLoad);
                     }
                 }
             }
@@ -785,7 +783,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         }
     }
 
-    private class IdentityConversionStrategy extends ObjectConversionStrategy<Object, Object> {
+    private static class IdentityConversionStrategy extends ObjectConversionStrategy<Object, Object> {
         @Override
         List<Object> convert(List<Object> mainRows) {
             //noop

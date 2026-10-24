@@ -18,13 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
-import org.apache.cayenne.map.LifecycleEvent;
-import org.apache.cayenne.access.lifecycle.LifecycleEventManager;
+import org.apache.cayenne.access.lifecycle.LifecycleEventsManager;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -36,34 +34,30 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DataContextCallbacksIT {
 
+    // listeners are registered per test, so each test gets its own runtime
     @RegisterExtension
-    static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
-
-    @AfterEach
-    public void tearDown() throws Exception {
-        env.runtime().getDataDomain().getLifecycleEventManager().clear();
-    }
+    final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
     @Test
     public void postAddCallbacks() {
         DataContext context = env.context();
-        LifecycleEventManager lifecycleEventManager = env.runtime()
+        LifecycleEventsManager lifecycleEventsManager = env.runtime()
                 .getDataDomain()
-                .getLifecycleEventManager();
+                .getLifecycleEventsManager();
 
         // no callbacks
         Artist a1 = context.newObject(Artist.class);
         assertNotNull(a1);
         assertFalse(a1.isPostAdded());
 
-        lifecycleEventManager.addListener(LifecycleEvent.POST_ADD, Artist.class, Artist::postAddCallback);
+        lifecycleEventsManager.postAdd().addListener(Artist::postAddCallback, Artist.class);
 
         Artist a2 = context.newObject(Artist.class);
         assertNotNull(a2);
         assertTrue(a2.isPostAdded());
 
         MockCallingBackListener listener2 = new MockCallingBackListener();
-        lifecycleEventManager.addListener(LifecycleEvent.POST_ADD, Artist.class, listener2::publicCallback);
+        lifecycleEventsManager.postAdd().addListener(listener2::publicCallback, Artist.class);
 
         Artist a3 = context.newObject(Artist.class);
         assertNotNull(a3);
@@ -80,9 +74,9 @@ public class DataContextCallbacksIT {
     @Test
     public void prePersistCallbacks() {
         DataContext context = env.context();
-        LifecycleEventManager lifecycleEventManager = env.runtime()
+        LifecycleEventsManager lifecycleEventsManager = env.runtime()
                 .getDataDomain()
-                .getLifecycleEventManager();
+                .getLifecycleEventsManager();
 
         // no callbacks
         Artist a1 = context.newObject(Artist.class);
@@ -91,7 +85,7 @@ public class DataContextCallbacksIT {
         context.commitChanges();
         assertFalse(a1.isPrePersisted());
 
-        lifecycleEventManager.addListener(LifecycleEvent.PRE_PERSIST, Artist.class, Artist::prePersistCallback);
+        lifecycleEventsManager.prePersist().addListener(Artist::prePersistCallback, Artist.class);
 
         Artist a2 = context.newObject(Artist.class);
         a2.setArtistName("2");
@@ -100,7 +94,7 @@ public class DataContextCallbacksIT {
         assertTrue(a2.isPrePersisted());
 
         MockCallingBackListener listener2 = new MockCallingBackListener();
-        lifecycleEventManager.addListener(LifecycleEvent.PRE_PERSIST, Artist.class, listener2::publicCallback);
+        lifecycleEventsManager.prePersist().addListener(listener2::publicCallback, Artist.class);
 
         Artist a3 = context.newObject(Artist.class);
         a3.setArtistName("3");
@@ -112,9 +106,9 @@ public class DataContextCallbacksIT {
     @Test
     public void preRemoveCallbacks() {
         DataContext context = env.context();
-        LifecycleEventManager lifecycleEventManager = env.runtime()
+        LifecycleEventsManager lifecycleEventsManager = env.runtime()
                 .getDataDomain()
-                .getLifecycleEventManager();
+                .getLifecycleEventsManager();
 
         // no callbacks
         Artist a1 = context.newObject(Artist.class);
@@ -124,8 +118,8 @@ public class DataContextCallbacksIT {
         assertFalse(a1.isPostAdded());
         assertFalse(a1.isPreRemoved());
 
-        lifecycleEventManager
-                .addListener(LifecycleEvent.PRE_REMOVE, Artist.class, Artist::preRemoveCallback);
+        lifecycleEventsManager
+                .preRemove().addListener(Artist::preRemoveCallback, Artist.class);
 
         Artist a2 = context.newObject(Artist.class);
         a2.setArtistName("XX");
@@ -135,7 +129,7 @@ public class DataContextCallbacksIT {
         assertTrue(a2.isPreRemoved());
 
         MockCallingBackListener listener2 = new MockCallingBackListener();
-        lifecycleEventManager.addListener(LifecycleEvent.PRE_REMOVE, Artist.class, listener2::publicCallback);
+        lifecycleEventsManager.preRemove().addListener(listener2::publicCallback, Artist.class);
 
         Artist a3 = context.newObject(Artist.class);
         a3.setArtistName("XX");

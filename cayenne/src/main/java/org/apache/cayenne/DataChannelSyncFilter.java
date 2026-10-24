@@ -19,6 +19,7 @@
 
 package org.apache.cayenne;
 
+import org.apache.cayenne.access.lifecycle.LifecycleEventsManager;
 import org.apache.cayenne.graph.GraphDiff;
 
 /**
@@ -66,4 +67,12 @@ public interface DataChannelSyncFilter {
             int syncType,
             DataChannelSyncFilterChain filterChain);
 
+    /**
+     * Called once when the filter is added to the DataDomain, letting the filter register lifecycle event listeners,
+     * e.g. to collect the events of a single commit in the filter's own state. The default implementation does nothing.
+     *
+     * @since 6.0
+     */
+    default void init(LifecycleEventsManager lifecycleEventsManager) {
+    }
 }

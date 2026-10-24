@@ -20,13 +20,10 @@ package org.apache.cayenne.access.lifecycle;
 
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.annotation.PostAdd;
-import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Exhibit;
 import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
-import org.apache.cayenne.testdo.testmap.annotations.Tag1;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,7 +32,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class LifecycleEventManagerIT {
+public class LifecycleEventsManagerIT {
 
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
@@ -49,13 +46,12 @@ public class LifecycleEventManagerIT {
 
     @Test
     public void addListener_PostAdd() {
-        LifecycleEventManager lifecycleEventManager = context.getChannel().getLifecycleEventManager();
-        int mappedListeners = lifecycleEventManager.getHandler(LifecycleEvent.POST_ADD).listenersSize();
+        LifecycleEventsManager lifecycleEventsManager = context.getChannel().getLifecycleEventsManager();
 
         PostAddListener listener = new PostAddListener();
-        lifecycleEventManager.addListener(listener);
-
-        assertEquals(mappedListeners + 3, lifecycleEventManager.getHandler(LifecycleEvent.POST_ADD).listenersSize());
+        lifecycleEventsManager.postAdd().addListener(listener::postAddEntity,
+                Gallery.class, Painting.class);
+        lifecycleEventsManager.postAdd().addListener(listener::postAddArtist, Artist.class);
 
         context.newObject(Gallery.class);
         assertEquals("e:Gallery;", listener.getAndReset());
@@ -71,53 +67,35 @@ public class LifecycleEventManagerIT {
     }
 
     @Test
-    public void addListener_PostAdd_InheritedListenerMethods() {
-        LifecycleEventManager lifecycleEventManager = context.getChannel().getLifecycleEventManager();
-        int mappedListeners = lifecycleEventManager.getHandler(LifecycleEvent.POST_ADD).listenersSize();
+    public void addListener_AllEntities_PostAdd() {
+        LifecycleEventsManager lifecycleEventsManager = context.getChannel().getLifecycleEventsManager();
 
-        PostAddListenerSubclass listener = new PostAddListenerSubclass();
-        lifecycleEventManager.addListener(listener);
-
-        assertEquals(mappedListeners + 3, lifecycleEventManager.getHandler(LifecycleEvent.POST_ADD).listenersSize());
+        PostAddListener listener = new PostAddListener();
+        lifecycleEventsManager.postAdd().addListener(listener::postAddEntity);
 
         context.newObject(Gallery.class);
         assertEquals("e:Gallery;", listener.getAndReset());
 
-        context.newObject(Artist.class);
-        assertEquals("a:Artist;", listener.getAndReset());
-
         context.newObject(Exhibit.class);
-        assertEquals("", listener.getAndReset());
-
-        context.newObject(Painting.class);
-        assertEquals("e:Painting;", listener.getAndReset());
+        assertEquals("e:Exhibit;", listener.getAndReset());
     }
 
-}
+    static class PostAddListener {
 
-class PostAddListener {
+        StringBuilder callbackBuffer = new StringBuilder();
 
-    StringBuilder callbackBuffer = new StringBuilder();
+        void postAddEntity(Persistent object) {
+            callbackBuffer.append("e:").append(object.getObjectId().getEntityName()).append(";");
+        }
 
-    @PostAdd( {
-            Gallery.class, Painting.class
-    })
-    void postAddEntities(Persistent object) {
-        callbackBuffer.append("e:" + object.getObjectId().getEntityName() + ";");
+        void postAddArtist(Artist artist) {
+            callbackBuffer.append("a:").append(artist.getObjectId().getEntityName()).append(";");
+        }
+
+        String getAndReset() {
+            String v = callbackBuffer.toString();
+            callbackBuffer = new StringBuilder();
+            return v;
+        }
     }
-
-    @PostAdd(entityAnnotations = Tag1.class)
-    void postAddAnnotated(Persistent object) {
-        callbackBuffer.append("a:" + object.getObjectId().getEntityName() + ";");
-    }
-
-    String getAndReset() {
-        String v = callbackBuffer.toString();
-        callbackBuffer = new StringBuilder();
-        return v;
-    }
-}
-
-class PostAddListenerSubclass extends PostAddListener {
-
 }

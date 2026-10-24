@@ -22,15 +22,21 @@ import org.apache.cayenne.DataChannelSyncFilter;
 import org.apache.cayenne.DataChannelSyncFilterChain;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.annotation.PostPersist;
-import org.apache.cayenne.annotation.PostRemove;
-import org.apache.cayenne.annotation.PostUpdate;
+import org.apache.cayenne.access.lifecycle.LifecycleEventsManager;
 import org.apache.cayenne.graph.GraphDiff;
 
 // tag::content[]
 public class CommittedObjectCounter implements DataChannelSyncFilter {
 
-    private ThreadLocal<int[]> counter = new ThreadLocal<int[]>();
+    private ThreadLocal<int[]> counter = new ThreadLocal<>();
+
+    // called once when the filter is added to the DataDomain
+    @Override
+    public void init(LifecycleEventsManager lifecycleEventsManager) {
+        lifecycleEventsManager.postPersist().addListener(this::afterCommit);
+        lifecycleEventsManager.postUpdate().addListener(this::afterCommit);
+        lifecycleEventsManager.postRemove().addListener(this::afterCommit);
+    }
 
     @Override
     public GraphDiff onSync(ObjectContext originatingContext, GraphDiff changes, int syncType,
@@ -49,9 +55,6 @@ public class CommittedObjectCounter implements DataChannelSyncFilter {
         }
     }
 
-    @PostPersist(entityAnnotations = Tag.class)
-    @PostUpdate(entityAnnotations = Tag.class)
-    @PostRemove(entityAnnotations = Tag.class)
     void afterCommit(Persistent object) {
         counter.get()[0]++;
     }

@@ -16,42 +16,16 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.map;
+package org.apache.cayenne.lifecycle;
 
-import org.apache.cayenne.PersistentObject;
+/**
+ * A callback interface that a Persistent class may implement to be notified of its own
+ * PreRemove events: invoked right before an object is deleted inside
+ * {@code ObjectContext.deleteObjects()}, including the objects deleted indirectly by a CASCADE delete rule.
+ *
+ * @since 6.0
+ */
+public interface PreRemoveAware {
 
-public class MockCallingBackEntity extends PersistentObject {
-
-    public boolean publicCallbackInvoked;
-    public boolean protectedCallbackInvoked;
-    public boolean privateCallbackInvoked;
-    public boolean defaultCallbackInvoked;
-
-    public static void staticCallback() {
-
-    }
-
-    public void publicCallback() {
-        publicCallbackInvoked = true;
-    }
-
-    protected void protectedCallback() {
-        protectedCallbackInvoked = true;
-    }
-
-    private void privateCallback() {
-        privateCallbackInvoked = true;
-    }
-
-    void defaultCallback() {
-        defaultCallbackInvoked = true;
-    }
-
-    public void uncheckedThrowingCallback() {
-        throw new IllegalStateException("unchecked");
-    }
-
-    public void checkedThrowingCallback() throws Exception {
-        throw new Exception("checked");
-    }
+    void onPreRemove();
 }

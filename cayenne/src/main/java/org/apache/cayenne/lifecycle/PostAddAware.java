@@ -16,11 +16,16 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.docs.lifecycle;
+package org.apache.cayenne.lifecycle;
 
-// tag::content[]
-@Tag
-public class MyEntity1 extends _MyEntity1 {
+/**
+ * A callback interface that a Persistent class may implement to be notified of its own
+ * PostAdd events: invoked right after a new object is created inside
+ * {@code ObjectContext.newObject()}, once the object is registered with the context and has its ObjectId set.
+ *
+ * @since 6.0
+ */
+public interface PostAddAware {
 
+    void onPostAdd();
 }
-// end::content[]

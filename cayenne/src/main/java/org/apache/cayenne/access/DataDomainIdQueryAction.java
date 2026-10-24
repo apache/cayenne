@@ -25,7 +25,6 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.access.lifecycle.LifecycleEventManager;
@@ -80,9 +79,9 @@ class DataDomainIdQueryAction {
         List<Persistent> objects = new ObjectResolver(context, descriptor, false)
                 .objectsFromDataRows(List.of(row));
 
-        LifecycleEventManager lifecycleEventManager = domain.getLifecycleEventManager();
-        if (!lifecycleEventManager.hasListeners(LifecycleEvent.POST_LOAD)) {
-            lifecycleEventManager.performCallbacks(LifecycleEvent.POST_LOAD, objects);
+        LifecycleEventManager postLoad = domain.getLifecycleEventsManager().postLoad();
+        if (postLoad.hasListeners()) {
+            postLoad.onEvent(objects);
         }
 
         return objects.getFirst();

@@ -16,15 +16,16 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.testdo.testmap.annotations;
+package org.apache.cayenne.lifecycle;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+/**
+ * A callback interface that a Persistent class may implement to be notified of its own
+ * PostUpdate events: invoked right after a commit of a modified
+ * object is done.
+ *
+ * @since 6.0
+ */
+public interface PostUpdateAware {
 
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.RUNTIME)
-public @interface Tag1 {
-
+    void onPostUpdate();
 }

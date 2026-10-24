@@ -2,13 +2,13 @@
 <dataMap xmlns="http://cayenne.apache.org/schema/15/dataMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	 xsi:schemaLocation="http://cayenne.apache.org/schema/15/dataMap https://cayenne.apache.org/schema/15/dataMap.xsd"
-	 defaultPackage="org.apache.cayenne.testdo.annotation">
-	<dbEntity name="artist_annotation">
+	 defaultPackage="org.apache.cayenne.testdo.entity_callbacks">
+	<dbEntity name="callback_artist">
 		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
 		<dbAttribute name="PostCallback" type="VARCHAR" length="15"/>
 		<dbAttribute name="PreCallback" type="VARCHAR" length="15"/>
 	</dbEntity>
-	<objEntity name="ArtistAnnotation" className="org.apache.cayenne.testdo.annotation.ArtistAnnotation" dbEntityName="artist_annotation">
+	<objEntity name="CallbackArtist" className="org.apache.cayenne.testdo.entity_callbacks.CallbackArtist" dbEntityName="callback_artist">
 		<objAttribute name="postCallback" type="java.lang.String" dbAttributePath="PostCallback"/>
 		<objAttribute name="preCallback" type="java.lang.String" dbAttributePath="PreCallback"/>
 	</objEntity>

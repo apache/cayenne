@@ -40,7 +40,6 @@ import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.graph.GraphEvent;
 import org.apache.cayenne.map.EntityInheritanceTree;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.LifecycleEvent;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.Select;
@@ -513,7 +512,7 @@ public class DataContext implements ObjectContext {
         objectStore.changeRecorder().nodeCreated(object.getObjectId());
 
         entityResolver.getClassDescriptor(object.getObjectId().getEntityName()).injectDiscriminatorValues(object);
-        channel.getLifecycleEventManager().performCallbacks(LifecycleEvent.POST_ADD, object);
+        channel.getLifecycleEventsManager().postAdd().onEvent(List.of(object));
     }
 
     /**

@@ -18,14 +18,17 @@
  ****************************************************************/
 package org.apache.cayenne.docs.lifecycle;
 
-import org.apache.cayenne.annotation.PostAdd;
+import org.apache.cayenne.lifecycle.PostAddAware;
+
+import java.util.Date;
 
 // tag::content[]
-public class Order extends _Order {
+public class Order extends _Order implements PostAddAware {
 
-    @PostAdd
-    public void onNewOrder() {
-        // Custom logic before inserting
+    @Override
+    public void onPostAdd() {
+        // initialize the defaults of a new object
+        setCreatedOn(new Date());
     }
 }
 // end::content[]

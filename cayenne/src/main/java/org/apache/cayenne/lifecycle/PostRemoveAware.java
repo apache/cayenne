@@ -16,23 +16,16 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.docs.lifecycle;
+package org.apache.cayenne.lifecycle;
 
-import org.apache.cayenne.Persistent;
-import org.apache.cayenne.annotation.PostRemove;
-import org.apache.cayenne.annotation.PostUpdate;
+/**
+ * A callback interface that a Persistent class may implement to be notified of its own
+ * PostRemove events: invoked right after a commit of a deleted object is
+ * done.
+ *
+ * @since 6.0
+ */
+public interface PostRemoveAware {
 
-// tag::content[]
-public class Listener2 {
-
-    @PostRemove({MyEntity1.class, MyEntity2.class})
-    void postRemove(Persistent object) {
-        // do something
-    }
-
-    @PostUpdate({MyEntity1.class, MyEntity2.class})
-    void postUpdate(Persistent object) {
-        // do something
-    }
+    void onPostRemove();
 }
-// end::content[]

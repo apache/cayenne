@@ -20,19 +20,11 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.Persistent;
-import org.apache.cayenne.annotation.PostAdd;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.testdo.testmap.Exhibit;
-import org.apache.cayenne.testdo.testmap.Gallery;
-import org.apache.cayenne.testdo.testmap.Painting;
-import org.apache.cayenne.testdo.testmap.annotations.Tag1;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.Test;
@@ -155,28 +147,6 @@ public class DataDomainIT {
         assertTrue(cache.shutdown);
     }
 
-    @Test
-    public void addListener() {
-
-        DataDomain domain = env.runtime().getDataDomain();
-        PostAddListener listener = new PostAddListener();
-        domain.addListener(listener);
-
-        ObjectContext context = env.runtime().newContext();
-
-        context.newObject(Gallery.class);
-        assertEquals("e:Gallery;", listener.getAndReset());
-
-        context.newObject(Artist.class);
-        assertEquals("a:Artist;", listener.getAndReset());
-
-        context.newObject(Exhibit.class);
-        assertEquals("", listener.getAndReset());
-
-        context.newObject(Painting.class);
-        assertEquals("e:Painting;", listener.getAndReset());
-    }
-
     public static class ShutdownTrackingRowStoreFactory implements DataRowStoreFactory {
 
         private final EventManager eventManager;
@@ -203,27 +173,6 @@ public class DataDomainIT {
         public void shutdown() {
             shutdown = true;
             super.shutdown();
-        }
-    }
-
-    class PostAddListener {
-
-        StringBuilder callbackBuffer = new StringBuilder();
-
-        @PostAdd({Gallery.class, Painting.class})
-        void postAddEntities(Persistent object) {
-            callbackBuffer.append("e:").append(object.getObjectId().getEntityName()).append(";");
-        }
-
-        @PostAdd(entityAnnotations = Tag1.class)
-        void postAddAnnotated(Persistent object) {
-            callbackBuffer.append("a:").append(object.getObjectId().getEntityName()).append(";");
-        }
-
-        String getAndReset() {
-            String v = callbackBuffer.toString();
-            callbackBuffer = new StringBuilder();
-            return v;
         }
     }
 }

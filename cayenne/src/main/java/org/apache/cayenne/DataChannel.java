@@ -25,7 +25,7 @@ import org.apache.cayenne.event.EventSubject;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
-import org.apache.cayenne.access.lifecycle.LifecycleEventManager;
+import org.apache.cayenne.access.lifecycle.LifecycleEventsManager;
 
 import java.util.Collection;
 import java.util.List;
@@ -88,7 +88,7 @@ public interface DataChannel {
      *
      * @since 6.0
      */
-    LifecycleEventManager getLifecycleEventManager();
+    LifecycleEventsManager getLifecycleEventsManager();
 
     /**
      * Returns the parent channel of this channel in the DataChannel stack, or null if this is a

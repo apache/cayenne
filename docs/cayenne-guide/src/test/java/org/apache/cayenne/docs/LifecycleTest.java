@@ -18,11 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.docs;
 
+import org.apache.cayenne.CayenneRuntime;
+import org.apache.cayenne.access.lifecycle.LifecycleEventsManager;
 import org.apache.cayenne.CoreModule;
 import org.apache.cayenne.docs.lifecycle.CommittedObjectCounter;
-import org.apache.cayenne.docs.lifecycle.Listener1;
-import org.apache.cayenne.docs.lifecycle.Listener2;
-import org.apache.cayenne.CayenneRuntime;
+import org.apache.cayenne.docs.lifecycle.Order;
+import org.apache.cayenne.docs.lifecycle.OrderListener;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -32,12 +33,17 @@ public class LifecycleTest {
     @Test
     public void listeners() {
         // tag::listeners[]
+        OrderListener listener = new OrderListener();
+
         CayenneRuntime runtime = CayenneRuntime.of()
                 // ..
                 .addModule(binder ->
                         CoreModule.extend(binder)
-                                .addListenerType(Listener1.class)
-                                .addListener(new Listener2())
+                                // listener of an event on one entity (and its subclasses)
+                                .addListener(LifecycleEventsManager::postAdd, listener::orderCreated, Order.class)
+                                // listener of an event on all entities
+                                .addListener(LifecycleEventsManager::postPersist, listener::objectCommitted)
+                                .addListener(LifecycleEventsManager::postUpdate, listener::objectCommitted)
                 )
                 // ..
                 .build();
@@ -48,9 +54,22 @@ public class LifecycleTest {
     }
 
     @Test
+    public void runtimeRegistration() {
+        CayenneRuntime runtime = CayenneRuntime.of().build();
+        OrderListener listener = new OrderListener();
+
+        // tag::runtimeRegistration[]
+        runtime.getDataDomain().getLifecycleEventsManager()
+                .postAdd().addListener(listener::orderCreated, Order.class);
+        // end::runtimeRegistration[]
+
+        runtime.shutdown();
+    }
+
+    @Test
     public void syncFilter() {
         // tag::syncFilter[]
-        // this will also add filter as a listener
+        // this will also register the filter's listeners
         CayenneRuntime runtime = CayenneRuntime.of()
                 // ..
                 .addModule(b ->

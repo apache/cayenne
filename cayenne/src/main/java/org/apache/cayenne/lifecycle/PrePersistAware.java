@@ -16,14 +16,16 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.map;
+package org.apache.cayenne.lifecycle;
 
 /**
- * Defines possible entity object lifecycle events. Cayenne notifies registered listeners
- * and entity callback methods when such events occur during the object lifecycle.
- * 
- * @since 3.0
+ * A callback interface that a Persistent class may implement to be notified of its own
+ * PrePersist events: invoked right before a new object is committed to
+ * the database, after its validation.
+ *
+ * @since 6.0
  */
-public enum LifecycleEvent {
-    POST_ADD, PRE_REMOVE, PRE_UPDATE, POST_PERSIST, POST_REMOVE, POST_UPDATE, POST_LOAD, PRE_PERSIST;
+public interface PrePersistAware {
+
+    void onPrePersist();
 }

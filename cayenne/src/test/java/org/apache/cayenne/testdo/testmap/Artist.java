@@ -18,13 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.testdo.testmap;
 
-import org.apache.cayenne.testdo.testmap.annotations.Tag1;
 import org.apache.cayenne.testdo.testmap.auto._Artist;
 import org.apache.cayenne.validation.ValidationResult;
 
 import java.util.function.Consumer;
 
-@Tag1
 public class Artist extends _Artist {
     
     protected transient Consumer<Artist> validationCallback;
