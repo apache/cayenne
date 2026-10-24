@@ -20,7 +20,6 @@
 package org.apache.cayenne;
 
 import org.apache.cayenne.access.flush.operation.DeleteDbRowOpFactory;
-import org.apache.cayenne.access.lifecycle.LifecycleEventManager;
 import org.apache.cayenne.access.lifecycle.LifecycleEventsManager;
 import org.apache.cayenne.access.flush.operation.ConditionalSoftDeleteDbRowOpFactory;
 import org.apache.cayenne.access.types.ExtendedType;
@@ -38,7 +37,6 @@ import org.apache.cayenne.graph.GraphChangeHandler;
 import org.apache.cayenne.tx.TransactionFilter;
 
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 /**
  * A builder of extensions for {@link CoreModule}.
@@ -215,20 +213,130 @@ public class CoreModuleExtender {
     }
 
     /**
-     * Registers a lifecycle event listener for a given event on the given entities and their subclasses, or on all
-     * entities if no entity classes are given. The event is one of the per-event methods of
-     * {@link LifecycleEventsManager}, and the listener is typically a method reference, e.g.
-     * {@code addListener(LifecycleEventsManager::postAdd, auditor::artistAdded, Artist.class)} or
-     * {@code addListener(LifecycleEventsManager::postLoad, auditor::objectLoaded)}.
+     * Registers a listener of the events fired right after a new object is created inside
+     * {@code ObjectContext.newObject()}, for the given entities and their subclasses, or for all entities if no entity
+     * classes are given. The listener is typically a method reference, e.g.
+     * {@code addPostAddListener(auditor::artistAdded, Artist.class)}.
      *
      * @since 6.0
      */
     @SafeVarargs
-    public final <T extends Persistent> CoreModuleExtender addListener(
-            Function<LifecycleEventsManager, LifecycleEventManager> event,
+    public final <T extends Persistent> CoreModuleExtender addPostAddListener(
             Consumer<? super T> listener,
             Class<? extends T>... entityClasses) {
-        contributeListeners().add(manager -> event.apply(manager).addListener(listener, entityClasses));
+        contributeListeners().add(manager -> manager.postAdd().addListener(listener, entityClasses));
+        return this;
+    }
+
+    /**
+     * Registers a listener of the events fired right before a new object is committed, for the given
+     * entities and their subclasses, or for all entities if no entity classes are given. The listener is typically a
+     * method reference, e.g.
+     * {@code addPrePersistListener(auditor::artistAdded, Artist.class)}.
+     *
+     * @since 6.0
+     */
+    @SafeVarargs
+    public final <T extends Persistent> CoreModuleExtender addPrePersistListener(
+            Consumer<? super T> listener,
+            Class<? extends T>... entityClasses) {
+        contributeListeners().add(manager -> manager.prePersist().addListener(listener, entityClasses));
+        return this;
+    }
+
+    /**
+     * Registers a listener of the events fired right after a commit of a new object is done, for the given
+     * entities and their subclasses, or for all entities if no entity classes are given. The listener is typically a
+     * method reference, e.g.
+     * {@code addPostPersistListener(auditor::artistAdded, Artist.class)}.
+     *
+     * @since 6.0
+     */
+    @SafeVarargs
+    public final <T extends Persistent> CoreModuleExtender addPostPersistListener(
+            Consumer<? super T> listener,
+            Class<? extends T>... entityClasses) {
+        contributeListeners().add(manager -> manager.postPersist().addListener(listener, entityClasses));
+        return this;
+    }
+
+    /**
+     * Registers a listener of the events fired right before a modified object is committed, for the given
+     * entities and their subclasses, or for all entities if no entity classes are given. The listener is typically a
+     * method reference, e.g.
+     * {@code addPreUpdateListener(auditor::artistAdded, Artist.class)}.
+     *
+     * @since 6.0
+     */
+    @SafeVarargs
+    public final <T extends Persistent> CoreModuleExtender addPreUpdateListener(
+            Consumer<? super T> listener,
+            Class<? extends T>... entityClasses) {
+        contributeListeners().add(manager -> manager.preUpdate().addListener(listener, entityClasses));
+        return this;
+    }
+
+    /**
+     * Registers a listener of the events fired right after a commit of a modified object is done, for the given
+     * entities and their subclasses, or for all entities if no entity classes are given. The listener is typically a
+     * method reference, e.g.
+     * {@code addPostUpdateListener(auditor::artistAdded, Artist.class)}.
+     *
+     * @since 6.0
+     */
+    @SafeVarargs
+    public final <T extends Persistent> CoreModuleExtender addPostUpdateListener(
+            Consumer<? super T> listener,
+            Class<? extends T>... entityClasses) {
+        contributeListeners().add(manager -> manager.postUpdate().addListener(listener, entityClasses));
+        return this;
+    }
+
+    /**
+     * Registers a listener of the events fired right before an object is deleted inside
+     * {@code ObjectContext.deleteObjects()}, for the given entities and their subclasses, or for all entities if no
+     * entity classes are given. The listener is typically a method reference, e.g.
+     * {@code addPreRemoveListener(auditor::artistAdded, Artist.class)}.
+     *
+     * @since 6.0
+     */
+    @SafeVarargs
+    public final <T extends Persistent> CoreModuleExtender addPreRemoveListener(
+            Consumer<? super T> listener,
+            Class<? extends T>... entityClasses) {
+        contributeListeners().add(manager -> manager.preRemove().addListener(listener, entityClasses));
+        return this;
+    }
+
+    /**
+     * Registers a listener of the events fired right after a commit of a deleted object is done, for the given
+     * entities and their subclasses, or for all entities if no entity classes are given. The listener is typically a
+     * method reference, e.g.
+     * {@code addPostRemoveListener(auditor::artistAdded, Artist.class)}.
+     *
+     * @since 6.0
+     */
+    @SafeVarargs
+    public final <T extends Persistent> CoreModuleExtender addPostRemoveListener(
+            Consumer<? super T> listener,
+            Class<? extends T>... entityClasses) {
+        contributeListeners().add(manager -> manager.postRemove().addListener(listener, entityClasses));
+        return this;
+    }
+
+    /**
+     * Registers a listener of the events fired after an object is fetched, reverted or resolved from a fault, for the
+     * given entities and their subclasses, or for all entities if no entity classes are given. The listener is
+     * typically a method reference, e.g.
+     * {@code addPostLoadListener(auditor::artistAdded, Artist.class)}.
+     *
+     * @since 6.0
+     */
+    @SafeVarargs
+    public final <T extends Persistent> CoreModuleExtender addPostLoadListener(
+            Consumer<? super T> listener,
+            Class<? extends T>... entityClasses) {
+        contributeListeners().add(manager -> manager.postLoad().addListener(listener, entityClasses));
         return this;
     }
 

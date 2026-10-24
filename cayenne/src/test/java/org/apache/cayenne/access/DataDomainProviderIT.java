@@ -64,8 +64,8 @@ public class DataDomainProviderIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.DOMAIN_PROVIDER_PROJECT)
             .withExtraModules(b -> CoreModule.extend(b)
-                    .addListener(LifecycleEventsManager::postLoad, LISTENER::postLoadCallback)
-                    .addListener(LifecycleEventsManager::postAdd, LISTENER::postAddCallback, CrossdbM1E1.class)
+                    .addPostLoadListener(LISTENER::postLoadCallback)
+                    .addPostAddListener(LISTENER::postAddCallback, CrossdbM1E1.class)
                     .addSyncFilter(ListeningFilter.class)
                     .addQueryFilter(QUERY_FILTER)
                     .addSyncFilter(SYNC_FILTER));

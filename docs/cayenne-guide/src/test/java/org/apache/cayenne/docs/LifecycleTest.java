@@ -40,10 +40,10 @@ public class LifecycleTest {
                 .addModule(binder ->
                         CoreModule.extend(binder)
                                 // listener of an event on one entity (and its subclasses)
-                                .addListener(LifecycleEventsManager::postAdd, listener::orderCreated, Order.class)
+                                .addPostAddListener(listener::orderCreated, Order.class)
                                 // listener of an event on all entities
-                                .addListener(LifecycleEventsManager::postPersist, listener::objectCommitted)
-                                .addListener(LifecycleEventsManager::postUpdate, listener::objectCommitted)
+                                .addPostPersistListener(listener::objectCommitted)
+                                .addPostUpdateListener(listener::objectCommitted)
                 )
                 // ..
                 .build();

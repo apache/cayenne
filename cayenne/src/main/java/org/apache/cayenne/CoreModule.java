@@ -109,7 +109,6 @@ import org.xml.sax.XMLReader;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 /**
  * A DI module containing all Cayenne runtime configuration.
@@ -135,7 +134,7 @@ public class CoreModule implements Module {
      * A DI container key for the List&lt;Consumer&lt;LifecycleEventsManager&gt;&gt; of lifecycle event listener
      * registrations.
      *
-     * @see CoreModuleExtender#addListener(Function, Consumer, Class[])
+     * @see CoreModuleExtender#addPostAddListener(Consumer, Class[])
      */
     public static final String DOMAIN_LISTENERS_LIST = "cayenne.domain_listeners";
 

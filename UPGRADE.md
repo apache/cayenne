@@ -44,9 +44,9 @@
 
      ```java
      CoreModule.extend(binder)
-         .addListener(LifecycleEventsManager::postAdd, listener::orderCreated, Order.class)
-         .addListener(LifecycleEventsManager::postRemove, listener::objectRemoved, Order.class, Invoice.class)
-         .addListener(LifecycleEventsManager::postPersist, listener::objectCommitted);
+         .addPostAddListener(listener::orderCreated, Order.class)
+         .addPostRemoveListener(listener::objectRemoved, Order.class, Invoice.class)
+         .addPostPersistListener(listener::objectCommitted);
      ```
 
      The same registrations are available at runtime via `DataDomain.getLifecycleEventsManager()`.
