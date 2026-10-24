@@ -2,6 +2,61 @@
 
 > For upgrade notes for Cayenne 4.2 and older, see [UPGRADE-4.2-and-older.md](UPGRADE-4.2-and-older.md).
 
+## Upgrading to 6.0-M1
+
+*  Per [CAY-3055](https://issues.apache.org/jira/browse/CAY-3055) the `DbRelationship` "To Dep PK" flag is replaced
+   with a "Foreign Key" flag on the opposite side: the flag now marks the relationship whose source columns hold the
+   FK, instead of the master side of a PK-to-PK pair. In the DataMap XML `toDependentPK="true"` becomes
+   `foreignKey="true"` on the reverse relationship, and every other to-one gets `foreignKey="true"`. This is a part
+   of project version 15 (schema namespace `http://cayenne.apache.org/schema/15/dataMap`); projects are upgraded
+   automatically, creating the reverse of a "To Dep PK" relationship when it is missing. In the API
+   `isToDependentPK()`, `setToDependentPK(..)` and `isValidForDepPk()` are replaced with `isForeignKey()`,
+   `setForeignKey(..)` and `isIdentifying()`.
+
+*  Per [CAY-3060](https://issues.apache.org/jira/browse/CAY-3060) callbacks are no longer mapped on an ObjEntity in
+   the Modeler. The upgrade removes them from the project, listing the affected methods. To keep an existing callback
+   working, implement the callback interface of its event in the Persistent class (see CAY-3061 below).
+
+*  Per [CAY-3061](https://issues.apache.org/jira/browse/CAY-3061) lifecycle annotations (`@PostAdd`, `@PrePersist`,
+   etc.) are removed, together with the `LifecycleListener` interface and the annotation-based listener registration
+   (`CoreModuleExtender.addListener(Object)`, `addListenerType(Class)`, `DataDomain.addListener(Object)`). The
+   annotations are removed without deprecation, so their users get compilation errors pointing to the code that
+   needs to change:
+
+   * A Persistent class receives its own events by implementing the callback interfaces from
+     `org.apache.cayenne.lifecycle`: `PostAddAware`, `PrePersistAware`, `PostPersistAware`, `PreUpdateAware`,
+     `PostUpdateAware`, `PreRemoveAware`, `PostRemoveAware`, `PostLoadAware`. Each declares a single no-arg method,
+     e.g. `onPostAdd()`. An interface may be implemented by a (mapped or unmapped) superclass shared by several
+     entities; the callback is invoked once per object.
+
+     ```java
+     public class Order extends _Order implements PostAddAware {
+         @Override
+         public void onPostAdd() {
+             ...
+         }
+     }
+     ```
+
+   * Listeners are registered per event type as method references or lambdas, for one or more entities (and their
+     subclasses) passed as trailing varargs, or for all entities when no entity classes are given. The `value` and
+     `entityAnnotations` filters of the annotations are replaced by listing the entity classes:
+
+     ```java
+     CoreModule.extend(binder)
+         .addListener(LifecycleEventsManager::postAdd, listener::orderCreated, Order.class)
+         .addListener(LifecycleEventsManager::postRemove, listener::objectRemoved, Order.class, Invoice.class)
+         .addListener(LifecycleEventsManager::postPersist, listener::objectCommitted);
+     ```
+
+     The same registrations are available at runtime via `DataDomain.getLifecycleEventsManager()`.
+
+   * A `DataChannelSyncFilter` / `DataChannelQueryFilter` that used to have annotated listener methods overrides the
+     new `init(LifecycleEventsManager)` default method instead. It is called once when the filter is added to the
+     DataDomain, and registers the filter's listeners explicitly.
+
+   * `org.apache.cayenne.Validating` is deprecated in favor of `org.apache.cayenne.lifecycle.Validating`.
+
 ## What's New in 5.0
 
 This is a high-level overview of 5.0 changes. Check the next section for milestone-by-milestone upgrade instructions.
@@ -87,61 +142,6 @@ List<Artist> artists = ObjectSelect
         .parse(Artist.class, "from Artist where artistName like $name and dateOfBirth > $born", Map.of("name", "A%"))
         .select(context);
 ```
-
-## Upgrading to 6.0-M1
-
-*  Per [CAY-3055](https://issues.apache.org/jira/browse/CAY-3055) the `DbRelationship` "To Dep PK" flag is replaced
-   with a "Foreign Key" flag on the opposite side: the flag now marks the relationship whose source columns hold the
-   FK, instead of the master side of a PK-to-PK pair. In the DataMap XML `toDependentPK="true"` becomes
-   `foreignKey="true"` on the reverse relationship, and every other to-one gets `foreignKey="true"`. This is a part
-   of project version 15 (schema namespace `http://cayenne.apache.org/schema/15/dataMap`); projects are upgraded
-   automatically, creating the reverse of a "To Dep PK" relationship when it is missing. In the API
-   `isToDependentPK()`, `setToDependentPK(..)` and `isValidForDepPk()` are replaced with `isForeignKey()`,
-   `setForeignKey(..)` and `isIdentifying()`.
-
-*  Per [CAY-3060](https://issues.apache.org/jira/browse/CAY-3060) callbacks are no longer mapped on an ObjEntity in
-   the Modeler. The upgrade removes them from the project, listing the affected methods. To keep an existing callback
-   working, implement the callback interface of its event in the Persistent class (see CAY-3061 below).
-
-*  Per [CAY-3061](https://issues.apache.org/jira/browse/CAY-3061) lifecycle annotations (`@PostAdd`, `@PrePersist`,
-   etc.) are removed, together with the `LifecycleListener` interface and the annotation-based listener registration
-   (`CoreModuleExtender.addListener(Object)`, `addListenerType(Class)`, `DataDomain.addListener(Object)`). The
-   annotations are removed without deprecation, so their users get compilation errors pointing to the code that
-   needs to change:
-
-   * A Persistent class receives its own events by implementing the callback interfaces from
-     `org.apache.cayenne.lifecycle`: `PostAddAware`, `PrePersistAware`, `PostPersistAware`, `PreUpdateAware`,
-     `PostUpdateAware`, `PreRemoveAware`, `PostRemoveAware`, `PostLoadAware`. Each declares a single no-arg method,
-     e.g. `onPostAdd()`. An interface may be implemented by a (mapped or unmapped) superclass shared by several
-     entities; the callback is invoked once per object.
-
-     ```java
-     public class Order extends _Order implements PostAddAware {
-         @Override
-         public void onPostAdd() {
-             ...
-         }
-     }
-     ```
-
-   * Listeners are registered per event type as method references or lambdas, for one or more entities (and their
-     subclasses) passed as trailing varargs, or for all entities when no entity classes are given. The `value` and
-     `entityAnnotations` filters of the annotations are replaced by listing the entity classes:
-
-     ```java
-     CoreModule.extend(binder)
-         .addListener(LifecycleEventsManager::postAdd, listener::orderCreated, Order.class)
-         .addListener(LifecycleEventsManager::postRemove, listener::objectRemoved, Order.class, Invoice.class)
-         .addListener(LifecycleEventsManager::postPersist, listener::objectCommitted);
-     ```
-
-     The same registrations are available at runtime via `DataDomain.getLifecycleEventsManager()`.
-
-   * A `DataChannelSyncFilter` / `DataChannelQueryFilter` that used to have annotated listener methods overrides the
-     new `init(LifecycleEventsManager)` default method instead. It is called once when the filter is added to the
-     DataDomain, and registers the filter's listeners explicitly.
-
-   * `org.apache.cayenne.Validating` is deprecated in favor of `org.apache.cayenne.lifecycle.Validating`.
 
 ## Upgrading to 5.0-M4
 
