@@ -61,7 +61,7 @@ def cayenneVersion = version
 
 def getProjectVersion() {
     logger.info('Info: provided project version ' + project.findProperty('projectVersion'))
-    return project.findProperty('projectVersion') ?: '5.0-SNAPSHOT'
+    return project.findProperty('projectVersion') ?: '6.0-SNAPSHOT'
 }
 
 def classpathFile = file('build/classpath.txt')
