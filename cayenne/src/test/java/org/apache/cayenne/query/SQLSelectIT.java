@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ResultBatchIterator;
 import org.apache.cayenne.ResultIterator;
@@ -103,6 +104,23 @@ public class SQLSelectIT {
 		List<DataRow> result = context.select(q1);
 		assertEquals(20, result.size());
 		assertTrue(result.get(0) instanceof DataRow);
+	}
+
+	@Test
+	public void dataNode() throws Exception {
+		createPaintingsDataSet();
+
+		List<DataRow> result = SQLSelect.dataRowQuery("SELECT * FROM PAINTING")
+				.dataNode(env.dataNode().getName())
+				.select(context);
+		assertEquals(20, result.size());
+	}
+
+	@Test
+	public void dataNode_Unknown() throws Exception {
+		SQLSelect<DataRow> query = SQLSelect.dataRowQuery("SELECT * FROM PAINTING").dataNode("no_such_node");
+		CayenneRuntimeException e = assertThrows(CayenneRuntimeException.class, () -> query.select(context));
+		assertTrue(e.getMessage().contains("no_such_node"), e.getMessage());
 	}
 
 	@Test

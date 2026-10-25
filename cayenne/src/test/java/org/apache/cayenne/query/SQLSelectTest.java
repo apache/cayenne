@@ -103,6 +103,14 @@ public class SQLSelectTest {
 	}
 
 	@Test
+	public void createReplacementQuery_DataNode() {
+
+		SQLSelect<DataRow> q = SQLSelect.dataRowQuery("bla").dataNode("n1");
+		SQLTemplate<?> replacement = (SQLTemplate<?>) q.createReplacementQuery(mock(EntityResolver.class));
+		assertEquals("n1", replacement.getDataNodeName());
+	}
+
+	@Test
 	public void createReplacementQuery_Dialect() {
 
 		SQLSelect<DataRow> q = SQLSelect.dataRowQuery("default")

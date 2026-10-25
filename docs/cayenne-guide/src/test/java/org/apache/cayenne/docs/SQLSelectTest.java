@@ -87,6 +87,26 @@ public class SQLSelectTest extends BaseTest {
     }
 
     @Test
+    public void dataNode() {
+        createArtistsDataSet();
+
+        // tag::dataNode[]
+        List<String> names = SQLSelect
+                .scalarQuery("SELECT NAME FROM ARTIST ORDER BY NAME", String.class)
+                .dataNode("docs")
+                .select(context);
+
+        int inserted = SQLExec
+                .query("INSERT INTO ARTIST (ID, NAME) VALUES (55, 'Picasso')")
+                .dataNode("docs")
+                .update(context);
+        // end::dataNode[]
+
+        assertEquals("Aivazovsky", names.get(0));
+        assertEquals(1, inserted);
+    }
+
+    @Test
     public void exec() {
         // tag::exec[]
         int inserted = SQLExec

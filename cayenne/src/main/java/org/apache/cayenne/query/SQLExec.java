@@ -59,6 +59,7 @@ public class SQLExec extends IndirectQuery {
     }
 
     protected String dataMapName;
+    protected String dataNodeName;
     protected StringBuilder sql;
     protected Map<String, StringBuilder> sqlDialects;
     protected Map<String, Object> params;
@@ -250,14 +251,29 @@ public class SQLExec extends IndirectQuery {
         return this;
     }
 
+    /**
+     * Routes the query to the DataNode with the given name. This allows to run SQL in a project without any mapping,
+     * as the query does not need a DataMap to find its database. The node name is only used by queries created
+     * without a DataMap name (see {@link #query(String)}). Without it such queries are routed to the default DataNode.
+     *
+     * @param dataNodeName the name of the DataNode to run the query against
+     * @since 6.0
+     */
+    public SQLExec dataNode(String dataNodeName) {
+        this.dataNodeName = dataNodeName;
+        this.replacementQuery = null;
+        return this;
+    }
+
     @Override
     protected Query createReplacementQuery(EntityResolver resolver) {
 
-        // a data row query in case a result set is returned; without a DataMap it is routed via the default node.
-        // TODO: allow explicit node name?
+        // a data row query in case a result set is returned; without a DataMap it is routed via the named or the
+        // default node
         SQLTemplate<?> template = dataMapName != null
                 ? SQLTemplate.dataRowQuery(dataMapName, getSql())
                 : SQLTemplate.dataRowQuery(getSql());
+        template.setDataNodeName(dataNodeName);
         if (sqlDialects != null) {
             sqlDialects.forEach((adapter, sql) -> template.setTemplate(adapter, sql.toString()));
         }

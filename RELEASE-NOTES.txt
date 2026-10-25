@@ -19,6 +19,7 @@ CAY-3060 Remove support for callbacks XML mapping
 CAY-3061 Annotation-free lifecycle
 CAY-3062 SQLTemplate to stop supporting multiple parameter sets
 CAY-3063 SQLSelect / SQLExec per-adapter dialects
+CAY-3064 SQLSelect / SQLExec explicit DataNode routing
 
 ----------------------------------
 Release: 5.0-RC1

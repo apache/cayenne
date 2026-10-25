@@ -44,6 +44,7 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
     private Function<T, ?> resultMapper;
     protected Class<T> persistentType;
     protected String dataMapName;
+    protected String dataNodeName;
     protected StringBuilder sql;
     protected Map<String, StringBuilder> sqlDialects;
     protected QueryCacheStrategy cacheStrategy;
@@ -338,10 +339,10 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
         } else if (dataMapName != null) {
             template = SQLTemplate.dataRowQuery(dataMapName, getSql());
         } else {
-            // will route via default node. TODO: allow explicit node name?
             template = new SQLTemplate<>(getSql());
         }
 
+        template.setDataNodeName(dataNodeName);
         if (sqlDialects != null) {
             sqlDialects.forEach((adapter, sql) -> template.setTemplate(adapter, sql.toString()));
         }
@@ -496,6 +497,21 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
      */
     public SQLSelect<T> lowerColumnNames() {
         return columnNameCaps(CapsStrategy.LOWER);
+    }
+
+    /**
+     * Routes the query to the DataNode with the given name. This allows to run SQL in a project without any mapping,
+     * as the query needs neither a persistent type nor a DataMap to find its database. The node name is only used by
+     * queries that have no other routing information, i.e. created with factory methods that take neither a
+     * persistent type nor a DataMap name. Without it such queries are routed to the default DataNode.
+     *
+     * @param dataNodeName the name of the DataNode to run the query against
+     * @since 6.0
+     */
+    public SQLSelect<T> dataNode(String dataNodeName) {
+        this.dataNodeName = dataNodeName;
+        this.replacementQuery = null;
+        return this;
     }
 
     public int getLimit() {

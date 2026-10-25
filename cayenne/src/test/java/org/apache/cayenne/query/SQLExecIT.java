@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.QueryResult;
 import org.apache.cayenne.SelectResult;
@@ -34,6 +35,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SQLExecIT {
@@ -52,6 +54,23 @@ public class SQLExecIT {
     public void defaultRoot() throws Exception {
         int inserted = SQLExec.query("INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (1, 'a')").update(env.context());
         assertEquals(1, inserted);
+    }
+
+    @Test
+    public void dataNode() throws Exception {
+        int inserted = SQLExec.query("INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (1, 'a')")
+                .dataNode(env.dataNode().getName())
+                .update(env.context());
+        assertEquals(1, inserted);
+        assertEquals(1L, env.table("ARTIST").getLong("ARTIST_ID"));
+    }
+
+    @Test
+    public void dataNode_Unknown() throws Exception {
+        SQLExec query = SQLExec.query("INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (1, 'a')")
+                .dataNode("no_such_node");
+        CayenneRuntimeException e = assertThrows(CayenneRuntimeException.class, () -> query.update(env.context()));
+        assertTrue(e.getMessage().contains("no_such_node"), e.getMessage());
     }
 
     @Test
