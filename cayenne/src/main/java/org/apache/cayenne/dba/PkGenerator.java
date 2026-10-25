@@ -44,8 +44,12 @@ public interface PkGenerator {
      * Returns a list of SQL strings needed to generates database objects to provide
      * automatic primary support for the list of entities. No actual database operations
      * are performed.
+     *
+     * @param adapter    the adapter of the target DB, for its SQL dialect.
+     * @param dbEntities a list of entities that require primary key auto-generation support.
+     * @since 6.0
      */
-    List<String> createAutoPkStatements(List<DbEntity> dbEntities);
+    List<String> createAutoPkStatements(DbAdapter adapter, List<DbEntity> dbEntities);
 
     /**
      * Drops any common database objects associated with automatic primary key generation
@@ -60,8 +64,12 @@ public interface PkGenerator {
     /**
      * Returns SQL string needed to drop database objects associated with automatic
      * primary key generation. No actual database operations are performed.
+     *
+     * @param adapter    the adapter of the target DB, for its SQL dialect.
+     * @param dbEntities a list of entities whose primary key auto-generation support should be dropped.
+     * @since 6.0
      */
-    List<String> dropAutoPkStatements(List<DbEntity> dbEntities);
+    List<String> dropAutoPkStatements(DbAdapter adapter, List<DbEntity> dbEntities);
 
     /**
      * Generates a unique and non-repeating primary key for the specified PK attribute, as a value of the attribute's
@@ -69,13 +77,6 @@ public interface PkGenerator {
      * the key to the Java type of a mapped ObjAttribute is up to the caller.
      */
     Object generatePk(DataNode dataNode, DbAttribute pk);
-
-    /**
-     * Get an adapter associated with current PkGenerator
-     *
-     * @since 4.1
-     */
-    DbAdapter getAdapter();
 
     /**
      * Resets any cached primary keys forcing generator to go to the database next time id

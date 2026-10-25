@@ -268,6 +268,27 @@ public class DbRelationship extends Relationship<DbEntity, DbAttribute, DbRelati
     }
 
     /**
+     * Returns true if this is a reflexive relationship: the source holds the {@link #isForeignKey() foreign key},
+     * and it references the primary key of the source's own entity, e.g. a parent reference in a tree table.
+     *
+     * @since 6.0
+     */
+    public boolean isReflexive() {
+        if (!foreignKey || joins.isEmpty() || getTargetEntity() != getSourceEntity()) {
+            return false;
+        }
+
+        for (DbJoin join : joins) {
+            DbAttribute target = join.getTarget();
+            if (target != null && target.isPrimaryKey()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Returns true if this is an identifying relationship: the source holds the {@link #isForeignKey() foreign key},
      * and the FK columns are a part of the source primary key, so a source row can't exist without its target row.
      * A join table of a many-to-many references each side this way, and so does a detail keyed by its master PK plus

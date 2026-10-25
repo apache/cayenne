@@ -16,63 +16,33 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+
 package org.apache.cayenne.access.dbsync;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.access.StatementContexts;
-import org.apache.cayenne.query.SQLTemplate;
 import org.junit.jupiter.api.Test;
-
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class ThrowOnPartialSchemaStrategyIT extends SchemaUpdateStrategyBase {
 
-    @Test
-	public void throwOnPartialStrategyTableNoExist() throws Exception {
-
-		String template = "SELECT #result('ARTIST_ID' 'int') FROM ARTIST ORDER BY ARTIST_ID";
-		SQLTemplate query = new SQLTemplate(template);
-
-		setStrategy(ThrowOnPartialSchemaStrategy.class);
-
-		try {
-			StatementContexts.run(node, query);
-		} catch (CayenneRuntimeException e) {
-			// expected
-		}
-
-		try {
-			StatementContexts.run(node, query);
-		} catch (CayenneRuntimeException e) {
-			// expected
-		}
+	@Test
+	public void noTables() {
+		assertThrows(CayenneRuntimeException.class, () -> updateSchema(new ThrowOnPartialSchemaStrategy()));
 	}
 
-    @Test
-	public void throwOnPartialStrategyTableExist() throws Exception {
-
-		String template = "SELECT #result('ARTIST_ID' 'int') FROM ARTIST ORDER BY ARTIST_ID";
-		SQLTemplate query = new SQLTemplate(template);
-
+	@Test
+	public void allTables() throws Exception {
 		createOneTable("SUS1");
 		createOneTable("SUS2");
 
-		setStrategy(ThrowOnPartialSchemaStrategy.class);
-		StatementContexts.run(node, query);
+		updateSchema(new ThrowOnPartialSchemaStrategy());
 	}
 
-    @Test
-	public void throwOnPartialStrategyWithOneTable() throws Exception {
+	@Test
+	public void oneTable() {
 		createOneTable("SUS1");
 
-		setStrategy(ThrowOnPartialSchemaStrategy.class);
-
-		String template = "SELECT #result('ARTIST_ID' 'int') FROM ARTIST ORDER BY ARTIST_ID";
-		SQLTemplate query = new SQLTemplate(template);
-
-		assertThrows(CayenneRuntimeException.class, () ->
-			StatementContexts.run(node, query));
+		assertThrows(CayenneRuntimeException.class, () -> updateSchema(new ThrowOnPartialSchemaStrategy()));
 	}
-
 }

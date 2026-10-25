@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.dba.postgres;
 
-import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.SequencePkGenerator;
 import org.apache.cayenne.map.DbEntity;
 
@@ -28,12 +28,11 @@ import org.apache.cayenne.map.DbEntity;
  */
 public class PostgresPkGenerator extends SequencePkGenerator {
 
-    public PostgresPkGenerator(JdbcAdapter adapter) {
-        super(adapter);
+    public PostgresPkGenerator() {
     }
 
     @Override
-    protected String createSequenceString(DbEntity ent) {
+    protected String createSequenceString(DbAdapter adapter, DbEntity ent) {
         // note that PostgreSQL 7.4 and newer supports INCREMENT BY and START WITH
         // however 7.3 doesn't like BY and WITH, so using older more neutral
         // syntax that works with all tested versions.

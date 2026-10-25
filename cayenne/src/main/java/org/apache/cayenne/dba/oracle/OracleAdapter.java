@@ -206,7 +206,7 @@ public class OracleAdapter extends JdbcAdapter {
      */
     @Override
     public PkGenerator createPkGenerator() {
-        return new OraclePkGenerator(this);
+        return new OraclePkGenerator();
     }
 
     /**

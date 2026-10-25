@@ -22,6 +22,7 @@ package org.apache.cayenne;
 import org.apache.cayenne.access.StatementContext;
 import org.apache.cayenne.access.translator.TranslatedSQL;
 import org.apache.cayenne.access.translator.TranslatedStatement;
+import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.SQLTemplate;
@@ -80,7 +81,7 @@ public class CayenneSqlExceptionTest {
     @Test
     public void untranslatedRunHasNoStatement() {
         Query query = new SQLTemplate<>("SELECT * FROM ARTIST");
-        StatementContext context = new StatementContext(query, mock(QueryMetadata.class));
+        StatementContext context = new StatementContext(query, mock(QueryMetadata.class), mock(EntityResolver.class));
 
         CayenneSqlException e = new CayenneSqlException("Query exception.", context, new RuntimeException());
 
@@ -100,7 +101,7 @@ public class CayenneSqlExceptionTest {
     }
 
     private static StatementContext context(Query query, TranslatedStatement statement) {
-        StatementContext context = new StatementContext(query, mock(QueryMetadata.class));
+        StatementContext context = new StatementContext(query, mock(QueryMetadata.class), mock(EntityResolver.class));
         context.setTranslated(statement);
         return context;
     }

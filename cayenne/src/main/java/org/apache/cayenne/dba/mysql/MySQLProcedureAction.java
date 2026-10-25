@@ -47,7 +47,7 @@ class MySQLProcedureAction extends ProcedureAction {
 		processedResultSets = 0;
 
 		TranslatedProcedure translated = dataNode.getProcedureTranslator()
-				.translate(query, dataNode.getAdapter(), dataNode.getEntityResolver());
+				.translate(query, dataNode.getAdapter(), context.getResolver());
 
 		context.setTranslated(translated);
 

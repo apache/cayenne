@@ -91,18 +91,13 @@ public class AshwoodEntitySorter implements EntitySorter {
 			for (DbRelationship candidate : destination.getRelationships()) {
 				if (candidate.isForeignKey()) {
 					DbEntity origin = candidate.getTargetEntity();
-					boolean newReflexive = destination.equals(origin);
+					if (candidate.isReflexive()) {
+						reflexiveDbEntities.computeIfAbsent(destination, k -> new ArrayList<>(1)).add(candidate);
+					}
 
 					for (DbJoin join : candidate.getJoins()) {
 						DbAttribute targetAttribute = join.getTarget();
 						if (targetAttribute.isPrimaryKey()) {
-
-							if (newReflexive) {
-								List<DbRelationship> reflexiveRels = reflexiveDbEntities
-										.computeIfAbsent(destination, k -> new ArrayList<>(1));
-								reflexiveRels.add(candidate);
-								newReflexive = false;
-							}
 
 							List<DbAttribute> fks = referentialDigraph.getArc(origin, destination);
 							if (fks == null) {

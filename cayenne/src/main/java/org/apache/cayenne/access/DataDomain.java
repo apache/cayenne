@@ -200,8 +200,7 @@ public class DataDomain implements DataChannel {
     }
 
     /**
-     * Removes named DataMap from this DataDomain and any underlying DataNodes
-     * that include it.
+     * Removes named DataMap from this DataDomain, unlinking it from its DataNode.
      *
      * @since 3.1
      */
@@ -209,11 +208,6 @@ public class DataDomain implements DataChannel {
         DataMap map = getDataMap(mapName);
         if (map == null) {
             return;
-        }
-
-        // remove from data nodes
-        for (DataNode node : nodes.values()) {
-            node.removeDataMap(mapName);
         }
 
         nodesByDataMapName.remove(mapName);
@@ -232,8 +226,6 @@ public class DataDomain implements DataChannel {
     public void removeDataNode(String nodeName) {
         DataNode removed = nodes.remove(nodeName);
         if (removed != null) {
-            removed.setEntityResolver(null);
-            removed.setEntitySorter(null);
             nodesByDataMapName.values().removeIf(dataNode -> dataNode == removed);
         }
     }
@@ -254,17 +246,16 @@ public class DataDomain implements DataChannel {
     }
 
     /**
-     * Adds new DataNode.
+     * Adds a DataNode, routing the queries of the DataMaps to it. The maps are registered with the domain if they
+     * are not already.
+     *
+     * @since 6.0
      */
-    public void addNode(DataNode node) {
+    public void addNode(DataNode node, Collection<DataMap> dataMaps) {
 
-        // add node to name->node map
         nodes.put(node.getName(), node);
-        node.setEntityResolver(getEntityResolver());
-        node.setEntitySorter(entitySorter);
 
-        // add node to "ent name->node" map
-        for (DataMap map : node.getDataMaps()) {
+        for (DataMap map : dataMaps) {
             addDataMap(map);
             nodesByDataMapName.put(map.getName(), node);
         }
@@ -281,8 +272,8 @@ public class DataDomain implements DataChannel {
     }
 
     /**
-     * Returns a DataNode that should handle queries for all entities in a
-     * DataMap.
+     * Returns a DataNode that should handle queries for all entities in a DataMap: the node the map was added with,
+     * or the default node for a map not linked to any node.
      *
      * @since 1.1
      */
@@ -290,32 +281,12 @@ public class DataDomain implements DataChannel {
 
         DataNode node = nodesByDataMapName.get(map.getName());
         if (node == null) {
-
-            // see if one of the node states has changed, and the map is now
-            // linked...
-            for (DataNode n : getDataNodes()) {
-                for (DataMap m : n.getDataMaps()) {
-                    if (m == map) {
-                        nodesByDataMapName.put(map.getName(), n);
-                        node = n;
-                        break;
-                    }
-                }
-
-                if (node != null) {
-                    break;
-                }
-            }
-
-            if (node == null) {
-
-                if (defaultNode != null) {
-                    nodesByDataMapName.put(map.getName(), defaultNode);
-                    node = defaultNode;
-                } else {
-                    throw new CayenneRuntimeException("No DataNode configured for DataMap '%s'"
-                            + " and no default DataNode set", map.getName());
-                }
+            if (defaultNode != null) {
+                nodesByDataMapName.put(map.getName(), defaultNode);
+                node = defaultNode;
+            } else {
+                throw new CayenneRuntimeException("No DataNode configured for DataMap '%s'"
+                        + " and no default DataNode set", map.getName());
             }
         }
 

@@ -65,12 +65,12 @@ public class DataNodeQueriesIT {
     @Test
     public void createPkSupportForMapEntities() throws Exception {
 
-        DbEntity artistEnt = node.getEntityResolver().getDbEntity("ARTIST");
+        DbEntity artistEnt = env.resolver().getDbEntity("ARTIST");
         assertNotNull(node.getPkGenerator().generatePk(
                 node,
                 artistEnt.getPrimaryKeys().iterator().next()));
 
-        DbEntity exhibitEnt = node.getEntityResolver().getDbEntity("EXHIBIT");
+        DbEntity exhibitEnt = env.resolver().getDbEntity("EXHIBIT");
         assertNotNull(node.getPkGenerator().generatePk(
                 node,
                 exhibitEnt.getPrimaryKeys().iterator().next()));
@@ -88,7 +88,7 @@ public class DataNodeQueriesIT {
         bindings.put("dob", new Date(System.currentTimeMillis()));
         query.setParams(bindings);
 
-        StatementContext statementContext = StatementContexts.run(node, query);
+        StatementContext statementContext = StatementContexts.run(node, env.resolver(), query);
         assertNotNull(StatementContexts.counts(statementContext));
         assertEquals(1, StatementContexts.counts(statementContext)[0]);
 
@@ -106,7 +106,7 @@ public class DataNodeQueriesIT {
         String template = "SELECT #result('ARTIST_ID' 'int') FROM ARTIST ORDER BY ARTIST_ID";
         SQLTemplate query = new SQLTemplate(template);
 
-        StatementContext statementContext = StatementContexts.run(node, query);
+        StatementContext statementContext = StatementContexts.run(node, env.resolver(), query);
 
         List<DataRow> data = StatementContexts.rows(statementContext);
         assertEquals(4, data.size());
@@ -123,7 +123,7 @@ public class DataNodeQueriesIT {
         SQLTemplate query = new SQLTemplate(template);
         query.setColumnNamesCapitalization(CapsStrategy.UPPER);
 
-        StatementContext statementContext = StatementContexts.run(node, query);
+        StatementContext statementContext = StatementContexts.run(node, env.resolver(), query);
 
         List<DataRow> data = StatementContexts.rows(statementContext);
         assertEquals(4, data.size());
@@ -142,7 +142,7 @@ public class DataNodeQueriesIT {
         String template = "SELECT #result('ARTIST_ID' 'int' 'A') FROM ARTIST ORDER BY ARTIST_ID";
         Query query = new SQLTemplate(template);
 
-        StatementContext statementContext = StatementContexts.run(node, query);
+        StatementContext statementContext = StatementContexts.run(node, env.resolver(), query);
 
         List<DataRow> data = StatementContexts.rows(statementContext);
         assertEquals(4, data.size());
@@ -157,7 +157,7 @@ public class DataNodeQueriesIT {
                 + "\n"
                 + "VALUES (1, 'A')";
         Query template = new SQLTemplate(templateString);
-        StatementContexts.run(node, template);
+        StatementContexts.run(node, env.resolver(), template);
     }
 
     @Test
@@ -166,7 +166,7 @@ public class DataNodeQueriesIT {
                 + "\r\n"
                 + "VALUES (1, 'A')";
         Query template = new SQLTemplate(templateString);
-        StatementContexts.run(node, template);
+        StatementContexts.run(node, env.resolver(), template);
     }
 
     @Test
@@ -175,6 +175,6 @@ public class DataNodeQueriesIT {
                 + "\r"
                 + "VALUES (1, 'A')";
         Query template = new SQLTemplate(templateString);
-        StatementContexts.run(node, template);
+        StatementContexts.run(node, env.resolver(), template);
     }
 }

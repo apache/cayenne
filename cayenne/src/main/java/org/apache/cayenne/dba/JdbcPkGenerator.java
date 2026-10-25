@@ -20,15 +20,14 @@
 package org.apache.cayenne.dba;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.DataRow;
-import org.apache.cayenne.QueryResult;
-import org.apache.cayenne.SelectResult;
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.StatementContext;
+import org.apache.cayenne.access.jdbc.PSParameter;
+import org.apache.cayenne.access.jdbc.RSColumn;
+import org.apache.cayenne.access.translator.TranslatedSQL;
+import org.apache.cayenne.log.SQLLogger;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbKeyGenerator;
-import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.util.IDUtil;
 
 import java.sql.Connection;
@@ -53,25 +52,23 @@ public class JdbcPkGenerator implements PkGenerator {
     public static final int DEFAULT_PK_CACHE_SIZE = 20;
     static final long DEFAULT_PK_START_VALUE = 200;
 
-    protected final JdbcAdapter adapter;
-    protected ConcurrentMap<String, Queue<Long>> pkCache = new ConcurrentHashMap<>();
+    protected final ConcurrentMap<String, Queue<Long>> pkCache;
+
     protected int pkCacheSize = DEFAULT_PK_CACHE_SIZE;
     protected long pkStartValue = DEFAULT_PK_START_VALUE;
 
-    public JdbcPkGenerator(JdbcAdapter adapter) {
-        this.adapter = adapter;
+    public JdbcPkGenerator() {
+        this.pkCache = new ConcurrentHashMap<>();
     }
 
-    public JdbcAdapter getAdapter() {
-        return this.adapter;
-    }
-
+    @Override
     public void createAutoPk(DataNode node, List<DbEntity> dbEntities) {
+        DbAdapter adapter = node.getAdapter();
         // check if a table exists
 
         // create AUTO_PK_SUPPORT table
         if (!autoPkTableExists(node)) {
-            runUpdate(node, pkTableCreateString());
+            runUpdate(node, pkTableCreateString(adapter));
         }
 
         // delete any existing pk entries
@@ -85,10 +82,11 @@ public class JdbcPkGenerator implements PkGenerator {
         }
     }
 
-    public List<String> createAutoPkStatements(List<DbEntity> dbEntities) {
+    @Override
+    public List<String> createAutoPkStatements(DbAdapter adapter, List<DbEntity> dbEntities) {
         List<String> list = new ArrayList<>(dbEntities.size() + 2);
 
-        list.add(pkTableCreateString());
+        list.add(pkTableCreateString(adapter));
         list.add(pkDeleteString(dbEntities));
 
         for (DbEntity ent : dbEntities) {
@@ -101,21 +99,23 @@ public class JdbcPkGenerator implements PkGenerator {
     /**
      * Drops table named "AUTO_PK_SUPPORT" if it exists in the database.
      */
+    @Override
     public void dropAutoPk(DataNode node, List<DbEntity> dbEntities) {
+        DbAdapter adapter = node.getAdapter();
         if (autoPkTableExists(node)) {
-            runUpdate(node, dropAutoPkString());
+            runUpdate(node, dropAutoPkString(adapter));
         }
     }
 
-    public List<String> dropAutoPkStatements(List<DbEntity> dbEntities) {
+    @Override
+    public List<String> dropAutoPkStatements(DbAdapter adapter, List<DbEntity> dbEntities) {
         List<String> list = new ArrayList<>(1);
-        list.add(dropAutoPkString());
+        list.add(dropAutoPkString(adapter));
         return list;
     }
 
-    protected String pkTableCreateString() {
-        return "CREATE TABLE AUTO_PK_SUPPORT " +
-                "(TABLE_NAME CHAR(100) NOT NULL, NEXT_ID BIGINT NOT NULL, PRIMARY KEY(TABLE_NAME))";
+    protected String pkTableCreateString(DbAdapter adapter) {
+        return "CREATE TABLE AUTO_PK_SUPPORT (TABLE_NAME CHAR(100) NOT NULL, NEXT_ID BIGINT NOT NULL, PRIMARY KEY(TABLE_NAME))";
     }
 
     protected String pkDeleteString(List<DbEntity> dbEntities) {
@@ -145,7 +145,7 @@ public class JdbcPkGenerator implements PkGenerator {
         return "UPDATE AUTO_PK_SUPPORT SET NEXT_ID = NEXT_ID + " + pkCacheSize + " WHERE TABLE_NAME = '" + entName + '\'';
     }
 
-    protected String dropAutoPkString() {
+    protected String dropAutoPkString(DbAdapter adapter) {
         return "DROP TABLE AUTO_PK_SUPPORT";
     }
 
@@ -169,15 +169,64 @@ public class JdbcPkGenerator implements PkGenerator {
      * number of objects returned from update.
      */
     public int runUpdate(DataNode node, String sql) {
-        node.getSqlLogger().logMessage(sql);
-
         try (Connection con = node.getDataSource().getConnection()) {
-            try (Statement upd = con.createStatement()) {
-                return upd.executeUpdate(sql);
-            }
+            return executeUpdate(con, sql, node.getSqlLogger());
         } catch (SQLException e) {
             throw new CayenneRuntimeException("Error executing PK update: %s", e, sql);
         }
+    }
+
+    /**
+     * Runs a plain SQL update, logging it as a statement with its update count and execution time, the same way
+     * the SQL actions log their statements.
+     *
+     * @since 6.0
+     */
+    protected static int executeUpdate(Connection con, String sql, SQLLogger logger) throws SQLException {
+        TranslatedSQL statement = new TranslatedSQL(sql, new PSParameter[0], new RSColumn[0]);
+        long start = System.nanoTime();
+        try (Statement update = con.createStatement()) {
+            int count = update.executeUpdate(sql);
+            logger.logUpdate(statement, count, List.of(), elapsedMillis(start));
+            return count;
+        } catch (SQLException e) {
+            logger.logQueryError(statement, e, elapsedMillis(start));
+            throw e;
+        }
+    }
+
+    /**
+     * Runs a plain SQL select of a single long value, logging it as a statement with its row count and execution
+     * time, the same way the SQL actions log their statements. Returns null if the select returns no rows, and
+     * throws if it returns more than one.
+     *
+     * @since 6.0
+     */
+    protected static Long selectLong(Connection con, String sql, SQLLogger logger) throws SQLException {
+        TranslatedSQL statement = new TranslatedSQL(sql, new PSParameter[0], new RSColumn[0]);
+        long start = System.nanoTime();
+        try (Statement select = con.createStatement(); ResultSet rs = select.executeQuery(sql)) {
+            if (!rs.next()) {
+                logger.logSelect(statement, 0, elapsedMillis(start));
+                return null;
+            }
+
+            long value = rs.getLong(1);
+            if (rs.next()) {
+                logger.logSelect(statement, 2, elapsedMillis(start));
+                throw new CayenneRuntimeException("Expected one row, got more: %s", sql);
+            }
+
+            logger.logSelect(statement, 1, elapsedMillis(start));
+            return value;
+        } catch (SQLException e) {
+            logger.logQueryError(statement, e, elapsedMillis(start));
+            throw e;
+        }
+    }
+
+    private static long elapsedMillis(long startNanos) {
+        return (System.nanoTime() - startNanos) / 1_000_000;
     }
 
     @Override
@@ -246,44 +295,22 @@ public class JdbcPkGenerator implements PkGenerator {
      * @since 3.0
      */
     protected long longPkFromDatabase(DataNode node, DbEntity entity) {
-        String select = "SELECT #result('NEXT_ID' 'long' 'NEXT_ID') FROM AUTO_PK_SUPPORT WHERE TABLE_NAME = '"
-                + entity.getName() + '\'';
+        String select = "SELECT NEXT_ID FROM AUTO_PK_SUPPORT WHERE TABLE_NAME = '" + entity.getName() + '\'';
+        String update = pkUpdateString(entity.getName());
 
-        StatementContext selectContext = statementContext(select, node);
-        StatementContext updateContext = statementContext(pkUpdateString(entity.getName()), node);
+        // plain JDBC on a single connection, so that the select and the update share the transaction, if any
+        SQLLogger logger = node.getSqlLogger();
+        try (Connection con = node.getDataSource().getConnection()) {
+            Long id = selectLong(con, select, logger);
+            if (id == null) {
+                throw new CayenneRuntimeException("Error generating PK : entity not supported: %s", entity.getName());
+            }
 
-        try {
-            node.execute(List.of(selectContext, updateContext));
-        } catch (CayenneRuntimeException e) {
+            executeUpdate(con, update, logger);
+            return id;
+        } catch (SQLException e) {
             throw new CayenneRuntimeException("Error generating PK for entity '%s'.", e, entity.getName());
         }
-
-        Number id = null;
-        for (QueryResult result : selectContext.getResults()) {
-            if (result instanceof SelectResult<?>(List<?> rows)) {
-                if (rows.isEmpty()) {
-                    throw new CayenneRuntimeException("Error generating PK : entity not supported: %s",
-                            entity.getName());
-                }
-                if (rows.size() > 1) {
-                    throw new CayenneRuntimeException("Error generating PK : too many rows for entity: %s",
-                            entity.getName());
-                }
-                DataRow lastPk = (DataRow) rows.getFirst();
-                id = (Number) lastPk.get("NEXT_ID");
-            }
-        }
-
-        if (id == null) {
-            throw new CayenneRuntimeException("No key was retrieved for entity %s", entity.getName());
-        }
-
-        return id.longValue();
-    }
-
-    private static StatementContext statementContext(String sql, DataNode node) {
-        SQLTemplate<DataRow> query = SQLTemplate.dataRowQuery(sql);
-        return new StatementContext(query, query.getMetaData(node.getEntityResolver()));
     }
 
     /**
@@ -319,6 +346,7 @@ public class JdbcPkGenerator implements PkGenerator {
         this.pkStartValue = startValue;
     }
 
+    @Override
     public void reset() {
         pkCache.clear();
     }

@@ -27,6 +27,7 @@ import org.apache.cayenne.query.InsertBatchQuery;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
+import org.apache.cayenne.unit.DataNodes;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -44,10 +45,7 @@ public class BatchActionIT {
         // test with adapter that supports keys
         JdbcAdapter adapter = buildAdapter(true);
 
-        DataNode node = new DataNode();
-        node.setAdapter(adapter);
-        node.setEntityResolver(resolver);
-        node.setRowReaderFactory(mock(RowReaderFactory.class));
+        DataNode node = DataNodes.withAdapter(adapter, mock(RowReaderFactory.class));
 
         InsertBatchQuery batch2 = new InsertBatchQuery(resolver.getObjEntity(Artist.class).getDbEntity(), 5);
         assertFalse(new BatchAction(batch2, node, false).hasGeneratedKeys());
@@ -60,10 +58,7 @@ public class BatchActionIT {
         // test with adapter that does not support keys...
         JdbcAdapter adapter = buildAdapter(false);
 
-        DataNode node = new DataNode();
-        node.setAdapter(adapter);
-        node.setEntityResolver(resolver);
-        node.setRowReaderFactory(mock(RowReaderFactory.class));
+        DataNode node = DataNodes.withAdapter(adapter, mock(RowReaderFactory.class));
 
         InsertBatchQuery batch2 = new InsertBatchQuery(resolver.getObjEntity(Artist.class).getDbEntity(), 5);
         assertFalse(new BatchAction(batch2, node, false).hasGeneratedKeys());

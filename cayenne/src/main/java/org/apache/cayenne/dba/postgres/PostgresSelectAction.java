@@ -49,7 +49,7 @@ class PostgresSelectAction extends SelectAction {
 	protected void performAction(Connection connection, StatementContext context, TranslatedSelect translated)
 			throws Exception {
 
-		if (!connection.getAutoCommit() || !needsTransaction(translated)) {
+		if (!connection.getAutoCommit() || !needsTransaction(context, translated)) {
 			super.performAction(connection, context, translated);
 			return;
 		}
@@ -80,13 +80,13 @@ class PostgresSelectAction extends SelectAction {
 		return PostgresTimestampTzType.optimizeTimestampColumns(translated.resultColumns(), rs);
 	}
 
-	private boolean needsTransaction(TranslatedSelect translated) {
+	private boolean needsTransaction(StatementContext context, TranslatedSelect translated) {
 		// Two things in pgjdbc only work inside a transaction, and are silently degraded in autocommit mode:
 		//
 		// 1. A fetch size. pgjdbc implements it with a server-side cursor (a portal), and the server closes portals
 		//    when the transaction ends. The cursor is used only for a positive fetch size, hence the "> 0" check.
 		// 2. Large objects. They are read through the LO API, which is bound to the current transaction.
-		return queryMetadata.getStatementFetchSize() > 0 || readsLargeObjects(translated);
+		return context.getMetadata().getStatementFetchSize() > 0 || readsLargeObjects(translated);
 	}
 
 	private static boolean readsLargeObjects(TranslatedSelect translated) {

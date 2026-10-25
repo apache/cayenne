@@ -33,6 +33,7 @@ import org.apache.cayenne.cache.QueryCacheEntryFactory;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.query.EmbeddableResultSegment;
 import org.apache.cayenne.query.EntityResultSegment;
@@ -386,8 +387,9 @@ class DataDomainQueryAction implements QueryRouter {
     public void route(DataNode node, Query query, Query substitutedQuery) {
         // the operation has already resolved the metadata of its own query; a substituted query (e.g. a prefetch
         // query) is resolved here
-        QueryMetadata queryMetadata = query == this.query ? metadata : query.getMetaData(domain.getEntityResolver());
-        execContext.addStatementContext(node, new StatementContext(query, queryMetadata));
+        EntityResolver resolver = domain.getEntityResolver();
+        QueryMetadata queryMetadata = query == this.query ? metadata : query.getMetaData(resolver);
+        execContext.addStatementContext(node, new StatementContext(query, queryMetadata, resolver));
     }
 
     @Override

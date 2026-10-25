@@ -73,8 +73,6 @@ public class SQLTemplateAction implements SQLAction {
     public SQLTemplateAction(SQLTemplate<?> query, DataNode dataNode) {
         this.query = query;
         this.dataNode = dataNode;
-        this.queryMetadata = query.getMetaData(dataNode.getEntityResolver());
-        this.dbEntity = queryMetadata.getDbEntity();
         this.dbAdapter = dataNode.getAdapter();
     }
 
@@ -91,6 +89,9 @@ public class SQLTemplateAction implements SQLAction {
      */
     @Override
     public void performAction(Connection connection, StatementContext context) throws Exception {
+
+        this.queryMetadata = context.getMetadata();
+        this.dbEntity = queryMetadata.getDbEntity();
 
         String template = extractTemplateString();
 

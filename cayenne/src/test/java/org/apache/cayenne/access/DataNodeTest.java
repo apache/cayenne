@@ -21,153 +21,95 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dba.DbAdapterDetector;
 import org.apache.cayenne.dba.PkGenerator;
-import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.unit.DataNodes;
 import org.junit.jupiter.api.Test;
 
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
-import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class DataNodeTest {
 
+    private static DataNode node(DataNodeInitializer initializer, PkGenerator pkGenerator) {
+        return new DataNode(null, null, initializer, pkGenerator, null, null, null, null, null, null, null, null);
+    }
+
     @Test
     public void name() {
-        DataNode node = new DataNode();
-        assertNull(node.getName());
-
-        node.setName("tst_name");
-        assertEquals("tst_name", node.getName());
+        assertNull(DataNodes.named(null).getName());
+        assertEquals("tst_name", DataNodes.named("tst_name").getName());
     }
 
     @Test
-    public void entityResolver() {
-        DataNode node = new DataNode();
-        assertNull(node.getEntityResolver());
-
-        EntityResolver resolver = new EntityResolver();
-        node.setEntityResolver(resolver);
-        assertSame(resolver, node.getEntityResolver());
-    }
-
-    @Test
-    public void adapter() {
-        DataNode node = new DataNode();
+    public void bareNode() {
+        DataNode node = DataNodes.named(null);
         assertNull(node.getAdapter());
+        assertNull(node.getPkGenerator());
+        assertNull(node.getDataSource());
+    }
 
+    @Test
+    public void initializer() {
         DbAdapter a1 = mock(DbAdapter.class);
-        node.setAdapter(a1);
+        AtomicInteger initCount = new AtomicInteger();
+        DataNode node = node(() -> {
+            initCount.incrementAndGet();
+            return a1;
+        }, null);
+
+        // not initialized until the adapter is requested, then initialized once and cached
+        assertEquals(0, initCount.get());
         assertSame(a1, node.getAdapter());
-
-        DbAdapter a2 = mock(DbAdapter.class);
-        node.setAdapter(a2);
-        assertSame(a2, node.getAdapter());
-    }
-
-    private static DataSource dataSource() throws SQLException {
-        Connection connection = mock(Connection.class);
-        when(connection.getMetaData()).thenReturn(mock(DatabaseMetaData.class));
-        DataSource dataSource = mock(DataSource.class);
-        when(dataSource.getConnection()).thenReturn(connection);
-        return dataSource;
-    }
-
-    private static List<DbAdapterDetector> detectors(DbAdapter detected) {
-        return List.of(md -> detected);
+        assertSame(a1, node.getAdapter());
+        assertEquals(1, initCount.get());
     }
 
     @Test
-    public void adapterDetection() throws SQLException {
-        DataNode node = new DataNode();
-        DataSource dataSource = dataSource();
-        node.setDataSource(dataSource);
-
+    public void initializer_RetriedAfterFailure() {
         DbAdapter a1 = mock(DbAdapter.class);
-        node.setAdapterDetectors(detectors(a1));
+        AtomicInteger initCount = new AtomicInteger();
+        DataNode node = node(() -> {
+            if (initCount.incrementAndGet() == 1) {
+                throw new CayenneRuntimeException("DB is down");
+            }
+            return a1;
+        }, null);
 
-        // not detected until requested, then detected once and cached
-        verify(dataSource, never()).getConnection();
+        assertThrows(CayenneRuntimeException.class, node::getAdapter);
         assertSame(a1, node.getAdapter());
-        assertSame(a1, node.getAdapter());
-        verify(dataSource).getConnection();
+        assertEquals(2, initCount.get());
     }
 
     @Test
-    public void adapterDetection_ExplicitAdapterWins() throws SQLException {
-        DataNode node = new DataNode();
-        DataSource dataSource = dataSource();
-        node.setDataSource(dataSource);
-        node.setAdapterDetectors(detectors(mock(DbAdapter.class)));
-
-        DbAdapter explicit = mock(DbAdapter.class);
-        node.setAdapter(explicit);
-        assertSame(explicit, node.getAdapter());
-        verify(dataSource, never()).getConnection();
-    }
-
-    @Test
-    public void adapterDetection_NoDataSource() {
-        DataNode node = new DataNode();
-        node.setAdapterDetectors(detectors(mock(DbAdapter.class)));
+    public void initializer_NoAdapter() {
+        DataNode node = node(() -> null, null);
         assertThrows(CayenneRuntimeException.class, node::getAdapter);
     }
 
     @Test
-    public void pkGeneratorFromDetectedAdapter() throws SQLException {
-        DataNode node = new DataNode();
-        assertNull(node.getPkGenerator());
-
-        node.setDataSource(dataSource());
-        DbAdapter adapter = mock(DbAdapter.class);
+    public void pkGeneratorFromAdapter() {
         PkGenerator generator = mock(PkGenerator.class);
-        when(adapter.createPkGenerator()).thenReturn(generator);
-        node.setAdapterDetectors(detectors(adapter));
+        DataNode node = node(() -> adapterWithPkGenerator(generator), null);
 
+        // requesting the generator resolves the adapter
         assertSame(generator, node.getPkGenerator());
     }
 
     @Test
-    public void pkGeneratorFollowsAdapter() {
-        DataNode node = new DataNode();
-        assertNull(node.getPkGenerator());
-
-        PkGenerator g1 = mock(PkGenerator.class);
-        node.setAdapter(adapterWithPkGenerator(g1));
-        assertSame(g1, node.getPkGenerator());
-
-        PkGenerator g2 = mock(PkGenerator.class);
-        node.setAdapter(adapterWithPkGenerator(g2));
-        assertSame(g2, node.getPkGenerator());
-    }
-
-    @Test
-    public void pkGeneratorCustomRetainedAcrossAdapterChange() {
-        DataNode node = new DataNode();
-        node.setAdapter(adapterWithPkGenerator(mock(PkGenerator.class)));
-
+    public void pkGeneratorCustom() {
         PkGenerator custom = mock(PkGenerator.class);
-        node.setPkGenerator(custom);
-        assertSame(custom, node.getPkGenerator());
+        DataNode node = node(() -> adapterWithPkGenerator(mock(PkGenerator.class)), custom);
 
-        PkGenerator adapterDefault = mock(PkGenerator.class);
-        node.setAdapter(adapterWithPkGenerator(adapterDefault));
+        // the custom generator is used in place of the adapter default, before and after the adapter is resolved
         assertSame(custom, node.getPkGenerator());
-
-        // null restores the adapter default
-        node.setPkGenerator(null);
-        assertSame(adapterDefault, node.getPkGenerator());
+        node.getAdapter();
+        assertSame(custom, node.getPkGenerator());
     }
 
     private DbAdapter adapterWithPkGenerator(PkGenerator pkGenerator) {

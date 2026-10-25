@@ -33,6 +33,7 @@ import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.access.translator.TranslatedBatch;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.BatchQuery;
@@ -106,8 +107,8 @@ public class BatchAction extends BaseSQLAction {
 
         if (hasGeneratedKeys()) {
             // turn off batch mode if we generate keys but can't do so in a batch
-            return supportsGeneratedKeys(true) &&
-                    !dataNode.getEntitySorter().isReflexive(query.getDbEntity());
+            return supportsGeneratedKeys(true)
+                    && query.getDbEntity().getRelationships().stream().noneMatch(DbRelationship::isReflexive);
         }
 
         return true;
@@ -287,7 +288,8 @@ public class BatchAction extends BaseSQLAction {
                         columnName = "column_1";
                     }
                 }
-                ExtendedType type = dataNode.getAdapter().getExtendedTypes().getRegisteredType(typeForGeneratedPK(key));
+                ExtendedType type = dataNode.getAdapter().getExtendedTypes()
+                        .getRegisteredType(typeForGeneratedPK(context, key));
                 rowBuilder.columns(new RSColumn(columnName, key.getType(), columnName, type, null));
             } else {
                 rowBuilder.resultSet(keysRS);
@@ -359,9 +361,9 @@ public class BatchAction extends BaseSQLAction {
         }
     }
 
-    private String typeForGeneratedPK(DbAttribute key) {
+    private String typeForGeneratedPK(StatementContext context, DbAttribute key) {
         String entityName = getQuery().getRows().getFirst().getObjectId().getEntityName();
-        ObjEntity objEntity = dataNode.getEntityResolver().getObjEntity(entityName);
+        ObjEntity objEntity = context.getResolver().getObjEntity(entityName);
         if (objEntity != null) {
             ObjAttribute attributeForDbAttribute = objEntity.getAttributeForDbAttribute(key);
             if (attributeForDbAttribute != null) {

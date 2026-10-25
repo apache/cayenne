@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.unit.DataNodes;
 
 public class MockQueryRouter implements QueryRouter {
 
@@ -47,11 +48,11 @@ public class MockQueryRouter implements QueryRouter {
     }
 
     public DataNode nodeForDataMap(DataMap map) {
-        return new DataNode();
+        return DataNodes.named(null);
     }
 
     @Override
     public DataNode nodeForName(String name) {
-        return new DataNode();
+        return DataNodes.named(null);
     }
 }

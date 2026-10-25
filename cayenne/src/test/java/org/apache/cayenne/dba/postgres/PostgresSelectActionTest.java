@@ -74,13 +74,11 @@ public class PostgresSelectActionTest {
         when(metadata.getQueryTimeout()).thenReturn(QueryMetadata.QUERY_TIMEOUT_DEFAULT);
 
         Select<?> query = mock(Select.class);
-        when(query.getMetaData(any(EntityResolver.class))).thenReturn(metadata);
 
         RowReaderFactory rowReaderFactory = mock(RowReaderFactory.class);
         when(rowReaderFactory.rowReader(any(), any(), any(), any())).thenReturn(mock(RowReader.class));
 
         DataNode dataNode = mock(DataNode.class);
-        when(dataNode.getEntityResolver()).thenReturn(mock(EntityResolver.class));
         when(dataNode.getAdapter()).thenReturn(mock(DbAdapter.class));
         when(dataNode.getRowReaderFactory()).thenReturn(rowReaderFactory);
 
@@ -96,12 +94,18 @@ public class PostgresSelectActionTest {
         action = new PostgresSelectAction(query, dataNode);
     }
 
+    private StatementContext context() {
+        StatementContext context = mock(StatementContext.class);
+        when(context.getMetadata()).thenReturn(metadata);
+        return context;
+    }
+
     @Test
     public void fetchSizeOnAutoCommitConnectionRunsInTransaction() throws Exception {
         when(connection.getAutoCommit()).thenReturn(true);
         when(metadata.getStatementFetchSize()).thenReturn(10);
 
-        action.performAction(connection, mock(StatementContext.class), NO_LOBS);
+        action.performAction(connection, context(), NO_LOBS);
 
         InOrder inOrder = inOrder(connection, statement);
         inOrder.verify(connection).setAutoCommit(false);
@@ -117,7 +121,7 @@ public class PostgresSelectActionTest {
         when(connection.getAutoCommit()).thenReturn(true);
         when(metadata.getStatementFetchSize()).thenReturn(0);
 
-        action.performAction(connection, mock(StatementContext.class), NO_LOBS);
+        action.performAction(connection, context(), NO_LOBS);
 
         verify(statement, never()).setFetchSize(anyInt());
         verify(connection, never()).setAutoCommit(anyBoolean());
@@ -129,7 +133,7 @@ public class PostgresSelectActionTest {
         when(connection.getAutoCommit()).thenReturn(false);
         when(metadata.getStatementFetchSize()).thenReturn(10);
 
-        action.performAction(connection, mock(StatementContext.class), NO_LOBS);
+        action.performAction(connection, context(), NO_LOBS);
 
         // the transaction belongs to the caller: the fetch size is passed through, but nothing is committed here
         verify(statement).setFetchSize(10);
@@ -144,7 +148,7 @@ public class PostgresSelectActionTest {
         when(statement.executeQuery()).thenThrow(new RuntimeException("boom"));
 
         assertThrows(RuntimeException.class,
-                () -> action.performAction(connection, mock(StatementContext.class), NO_LOBS));
+                () -> action.performAction(connection, context(), NO_LOBS));
 
         InOrder inOrder = inOrder(connection);
         inOrder.verify(connection).setAutoCommit(false);

@@ -18,7 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.project.DataNodeDescriptor;
+
+import java.util.Collection;
 
 /**
  * A factory for creating DataNodes from descriptors.
@@ -27,5 +30,11 @@ import org.apache.cayenne.project.DataNodeDescriptor;
  */
 public interface DataNodeFactory {
 
-    DataNode createDataNode(String dataChannelName, DataNodeDescriptor nodeDescriptor);
+    /**
+     * Creates a node from its descriptor. The DataMaps are the ones the node is going to serve; the node itself has
+     * no use for them, but its initialization, such as a schema update, may.
+     *
+     * @since 6.0
+     */
+    DataNode createDataNode(String dataChannelName, DataNodeDescriptor nodeDescriptor, Collection<DataMap> dataMaps);
 }

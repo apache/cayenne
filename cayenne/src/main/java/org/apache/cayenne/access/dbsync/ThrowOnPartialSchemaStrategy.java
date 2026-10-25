@@ -19,11 +19,14 @@
 package org.apache.cayenne.access.dbsync;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.log.SQLLogger;
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -35,21 +38,41 @@ import java.util.List;
 /**
  * @since 3.0
  */
-public class ThrowOnPartialSchemaStrategy extends BaseSchemaUpdateStrategy {
+public class ThrowOnPartialSchemaStrategy implements SchemaUpdateStrategy {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(ThrowOnPartialSchemaStrategy.class);
 
-
     @Override
-    protected void processSchemaUpdate(DataNode dataNode) throws SQLException {
+    public void updateSchema(DbAdapter adapter, DataSource dataSource, Collection<DataMap> dataMaps, SQLLogger logger)
+            throws SQLException {
+
+        Collection<DbEntity> entities = dbEntities(dataMaps);
+        SchemaAnalyzer analyzer = analyze(dataSource, entities);
+
+        if (analyzer.getTableNoInDB().isEmpty() && analyzer.getErrorMessage() == null) {
+            LOGGER.info("Full schema is present");
+        } else {
+            LOGGER.info("Error - missing or partial schema detected");
+            throw new CayenneRuntimeException(mismatchMessage(analyzer, entities.size()));
+        }
+    }
+
+    static Collection<DbEntity> dbEntities(Collection<DataMap> dataMaps) {
+        Collection<DbEntity> entities = new ArrayList<>();
+        for (DataMap map : dataMaps) {
+            entities.addAll(map.getDbEntities());
+        }
+        return entities;
+    }
+
+    static SchemaAnalyzer analyze(DataSource dataSource, Collection<DbEntity> entities) {
 
         SchemaAnalyzer analyzer = new SchemaAnalyzer();
 
         List<String> schemas = new ArrayList<>();
         DatabaseMetaData md = null;
         try {
-
-            try (Connection connection = dataNode.getDataSource().getConnection()) {
+            try (Connection connection = dataSource.getConnection()) {
                 md = connection.getMetaData();
 
                 try (ResultSet rs = md.getSchemas()) {
@@ -65,8 +88,6 @@ public class ThrowOnPartialSchemaStrategy extends BaseSchemaUpdateStrategy {
             LOGGER.debug("Exception analyzing schema, ignoring", e);
         }
 
-        Collection<DbEntity> entities = dataNode.getEntityResolver().getDbEntities();
-
         boolean isIncluded = analyzer.compareTables(md, entities);
 
         if (isIncluded && analyzer.getErrorMessage() == null) {
@@ -77,29 +98,21 @@ public class ThrowOnPartialSchemaStrategy extends BaseSchemaUpdateStrategy {
             }
         }
 
-        processSchemaUpdate(dataNode, analyzer.getTableNoInDB(), analyzer.getErrorMessage(), entities.size());
+        return analyzer;
     }
 
-    protected void processSchemaUpdate(DataNode dataNode, List<String> mergerOnlyTable, String errorMessage, int entitiesSize)
-            throws SQLException {
+    static String mismatchMessage(SchemaAnalyzer analyzer, int entityCount) {
+        StringBuilder buffer = new StringBuilder("Schema mismatch detected");
 
-        if (mergerOnlyTable.size() == 0 && errorMessage == null) {
-            LOGGER.info("Full schema is present");
-        } else {
-            LOGGER.info("Error - missing or partial schema detected");
-            StringBuilder buffer = new StringBuilder("Schema mismatch detected");
-
-            if (errorMessage != null) {
-                buffer.append(": ").append(errorMessage);
-            } else if (mergerOnlyTable.size() == entitiesSize) {
-                buffer.append(": no schema found");
-            } else {
-                if (mergerOnlyTable.size() > 0) {
-                    buffer.append(": missing table '").append(mergerOnlyTable.get(0)).append('\'');
-                }
-            }
-
-            throw new CayenneRuntimeException(buffer.toString());
+        List<String> missingTables = analyzer.getTableNoInDB();
+        if (analyzer.getErrorMessage() != null) {
+            buffer.append(": ").append(analyzer.getErrorMessage());
+        } else if (missingTables.size() == entityCount) {
+            buffer.append(": no schema found");
+        } else if (!missingTables.isEmpty()) {
+            buffer.append(": missing table '").append(missingTables.getFirst()).append('\'');
         }
+
+        return buffer.toString();
     }
 }

@@ -174,7 +174,7 @@ public class DB2Adapter extends JdbcAdapter {
      */
     @Override
     public PkGenerator createPkGenerator() {
-        return new DB2PkGenerator(this);
+        return new DB2PkGenerator();
     }
 
     /**

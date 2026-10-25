@@ -49,7 +49,8 @@ public class DataNodeQueryExceptionsIT {
         };
 
         assertEquals(0, activeConnections());
-        assertThrows(CayenneRuntimeException.class, () -> StatementContexts.run(env.dataNode(), throwingSS));
+        assertThrows(CayenneRuntimeException.class,
+                () -> StatementContexts.run(env.dataNode(), env.resolver(), throwingSS));
 
         assertEquals(0, activeConnections());
     }
@@ -65,7 +66,7 @@ public class DataNodeQueryExceptionsIT {
         };
 
         assertEquals(0, activeConnections());
-        assertThrows(Error.class, () -> StatementContexts.run(env.dataNode(), throwingSS));
+        assertThrows(Error.class, () -> StatementContexts.run(env.dataNode(), env.resolver(), throwingSS));
 
         assertEquals(0, activeConnections());
     }

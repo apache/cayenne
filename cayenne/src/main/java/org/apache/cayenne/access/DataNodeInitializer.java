@@ -16,13 +16,23 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.access.dbsync;
+package org.apache.cayenne.access;
 
-import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.dba.DbAdapter;
 
-public class TstSchemaUpdateStrategy implements SchemaUpdateStrategy {
+/**
+ * A one-time initialization of a {@link DataNode}. Intended to postpone DB operations required for initial setup until
+ * the DataNode accessed for the first time. Keeping it lazy allows the stack to start when the DB is not available.
+ * A failed initialization is retried on the next use of the node.
+ *
+ * @since 6.0
+ */
+@FunctionalInterface
+public interface DataNodeInitializer {
 
-    @Override
-    public void updateSchema(DataNode dataNode) {
-    }
+    /**
+     * Initializes the node, returning its {@link DbAdapter}, either the one configured explicitly or the one detected
+     * off the DataSource. The node caches the adapter and makes no further calls to the initializer.
+     */
+    DbAdapter init();
 }

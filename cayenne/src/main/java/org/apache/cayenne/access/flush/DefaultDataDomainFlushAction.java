@@ -197,7 +197,7 @@ public class DefaultDataDomainFlushAction implements DataDomainFlushAction {
             QueryMetadata metadata = query.getMetaData(entityResolver);
             DataNode node = dataDomain.lookupDataNode(metadata.getDataMap());
             statementsByNode.computeIfAbsent(node, n -> new ArrayList<>())
-                    .add(new StatementContext(query, metadata));
+                    .add(new StatementContext(query, metadata, entityResolver));
         }
 
         statementsByNode.forEach(DataNode::execute);

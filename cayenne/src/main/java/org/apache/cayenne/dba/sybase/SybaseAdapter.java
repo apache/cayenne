@@ -100,7 +100,7 @@ public class SybaseAdapter extends JdbcAdapter {
      */
     @Override
     public PkGenerator createPkGenerator() {
-        return new SybasePkGenerator(this);
+        return new SybasePkGenerator();
     }
 
     /**

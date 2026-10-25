@@ -100,9 +100,7 @@ public class CayenneRuntimeBuilderIT {
 
         DataNode node = localRuntime.getDataDomain().getDefaultNode();
         assertNotNull(node);
-        assertEquals(1, node.getDataMaps().size());
-
-        assertSame(map, node.getDataMap("testmap"));
+        assertSame(node, localRuntime.getDataDomain().lookupDataNode(map));
     }
 
     @Test
@@ -125,9 +123,7 @@ public class CayenneRuntimeBuilderIT {
 
         DataNode node = localRuntime.getDataDomain().getDefaultNode();
         assertNotNull(node);
-        assertEquals(1, node.getDataMaps().size());
-
-        assertSame(map, node.getDataMap("testmap"));
+        assertSame(node, localRuntime.getDataDomain().lookupDataNode(map));
     }
 
     @Test

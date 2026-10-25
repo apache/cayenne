@@ -25,7 +25,6 @@ import org.apache.cayenne.DataRowLayout;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.JdbcPkGenerator;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.map.DbAttribute;
@@ -36,6 +35,7 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
+import org.apache.cayenne.map.DataMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -246,8 +246,7 @@ public class DataContextExtrasIT {
 
         // setup mockup PK generator that will blow on PK request
         // to emulate an exception
-        JdbcAdapter jdbcAdapter = env.adhocObjectFactory().newInstance(JdbcAdapter.class, JdbcAdapter.class.getName());
-        PkGenerator newGenerator = new JdbcPkGenerator(jdbcAdapter) {
+        PkGenerator newGenerator = new JdbcPkGenerator() {
 
             @Override
             public Object generatePk(DataNode node, DbAttribute pk) {
@@ -255,10 +254,26 @@ public class DataContextExtrasIT {
             }
         };
 
-        DataNode node = domain.getDataNodes().iterator().next();
-        PkGenerator oldGenerator = node.getPkGenerator();
+        // a node is immutable, so to install the generator, replace the node with a copy that has it
+        DataNode node = domain.getDefaultNode();
+        List<DataMap> maps = domain.getDataMaps().stream().filter(m -> domain.lookupDataNode(m) == node).toList();
+        DataNode replacement = new DataNode(
+                node.getName(),
+                node.getDataSource(),
+                node::getAdapter,
+                newGenerator,
+                node.getSqlLogger(),
+                node.getRowReaderFactory(),
+                node.getSelectTranslator(),
+                node.getProcedureTranslator(),
+                node.getSqlTemplateTranslator(),
+                node.getInsertBatchTranslator(),
+                node.getUpdateBatchTranslator(),
+                node.getDeleteBatchTranslator());
 
-        node.setPkGenerator(newGenerator);
+        domain.removeDataNode(node.getName());
+        domain.addNode(replacement, maps);
+        domain.setDefaultNode(replacement);
         try {
             assertThrows(CayenneRuntimeException.class, () -> {
                 Artist newArtist = context.newObject(Artist.class);
@@ -266,7 +281,9 @@ public class DataContextExtrasIT {
                 context.commitChanges();
             });
         } finally {
-            node.setPkGenerator(oldGenerator);
+            domain.removeDataNode(node.getName());
+            domain.addNode(node, maps);
+            domain.setDefaultNode(node);
         }
     }
 

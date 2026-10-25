@@ -19,16 +19,16 @@
 package org.apache.cayenne.access.dbsync;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.DbGenerator;
+import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.log.SQLLogger;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.SQLException;
+import javax.sql.DataSource;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * @since 3.0
@@ -37,60 +37,36 @@ public class ThrowOnPartialOrCreateSchemaStrategy extends ThrowOnPartialSchemaSt
 
     private final static Logger LOGGER = LoggerFactory.getLogger(ThrowOnPartialOrCreateSchemaStrategy.class);
 
-
     @Override
-    protected void processSchemaUpdate(
-            DataNode dataNode,
-            List<String> mergerOnlyTable,
-            String errorMessage,
-            int entitiesSize) throws SQLException {
+    public void updateSchema(DbAdapter adapter, DataSource dataSource, Collection<DataMap> dataMaps, SQLLogger logger) {
 
-        if (mergerOnlyTable.size() == 0 && errorMessage == null) {
+        Collection<DbEntity> entities = dbEntities(dataMaps);
+        SchemaAnalyzer analyzer = analyze(dataSource, entities);
+
+        if (analyzer.getTableNoInDB().isEmpty() && analyzer.getErrorMessage() == null) {
             LOGGER.info("Full schema is present");
-        }
-        else if (mergerOnlyTable.size() == entitiesSize) {
+        } else if (analyzer.getTableNoInDB().size() == entities.size()) {
             LOGGER.info("No schema detected, will create mapped tables");
-            generate(dataNode);
-        }
-        else {
+            generate(adapter, dataSource, dataMaps, logger);
+        } else {
             LOGGER.info("Error - partial schema detected");
-
-            StringBuilder buffer = new StringBuilder("Schema mismatch detected");
-
-            if (errorMessage != null) {
-                buffer.append(": ").append(errorMessage);
-            }
-            else {
-                if (mergerOnlyTable.size() > 0) {
-                    buffer
-                            .append(": missing table '")
-                            .append(mergerOnlyTable.get(0))
-                            .append('\'');
-                }
-            }
-
-            throw new CayenneRuntimeException(buffer.toString());
+            throw new CayenneRuntimeException(mismatchMessage(analyzer, entities.size()));
         }
     }
 
-    private void generate(DataNode dataNode) {
-        Collection<DataMap> map = dataNode.getDataMaps();
-        Iterator<DataMap> iterator = map.iterator();
-        while (iterator.hasNext()) {
-            DbGenerator gen = new DbGenerator(dataNode.getAdapter(), iterator.next(), 
-                    dataNode.getSqlLogger());
+    private void generate(DbAdapter adapter, DataSource dataSource, Collection<DataMap> dataMaps, SQLLogger logger) {
+        for (DataMap map : dataMaps) {
+            DbGenerator gen = new DbGenerator(adapter, map, logger);
             gen.setShouldCreateTables(true);
             gen.setShouldDropTables(false);
             gen.setShouldCreateFKConstraints(false);
             gen.setShouldCreatePKSupport(false);
             gen.setShouldDropPKSupport(false);
             try {
-                gen.runGenerator(dataNode.getDataSource());
-            }
-            catch (Exception e) {
+                gen.runGenerator(dataSource);
+            } catch (Exception e) {
                 throw new CayenneRuntimeException(e);
             }
         }
     }
-
 }

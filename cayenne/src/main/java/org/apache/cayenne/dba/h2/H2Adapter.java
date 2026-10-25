@@ -107,7 +107,7 @@ public class H2Adapter extends JdbcAdapter {
      */
     @Override
     public PkGenerator createPkGenerator() {
-        return new H2PkGenerator(this);
+        return new H2PkGenerator();
     }
 
     /**

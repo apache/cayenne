@@ -68,7 +68,6 @@ public class MySQLSelectActionTest {
         when(metadata.getQueryTimeout()).thenReturn(QueryMetadata.QUERY_TIMEOUT_DEFAULT);
 
         Select<?> query = mock(Select.class);
-        when(query.getMetaData(any(EntityResolver.class))).thenReturn(metadata);
 
         RowReaderFactory rowReaderFactory = mock(RowReaderFactory.class);
         when(rowReaderFactory.rowReader(any(), any(), any(), any())).thenReturn(mock(RowReader.class));
@@ -77,7 +76,6 @@ public class MySQLSelectActionTest {
         when(translator.translate(any(), any(), any())).thenReturn(SELECT);
 
         DataNode dataNode = mock(DataNode.class);
-        when(dataNode.getEntityResolver()).thenReturn(mock(EntityResolver.class));
         when(dataNode.getAdapter()).thenReturn(mock(DbAdapter.class));
         when(dataNode.getRowReaderFactory()).thenReturn(rowReaderFactory);
         when(dataNode.getSelectTranslator()).thenReturn(translator);
@@ -94,8 +92,10 @@ public class MySQLSelectActionTest {
         action = new MySQLSelectAction(query, dataNode);
     }
 
-    private static StatementContext context(boolean iterated, boolean exclusiveConnection) {
+    private StatementContext context(boolean iterated, boolean exclusiveConnection) {
         StatementContext context = mock(StatementContext.class);
+        when(context.getMetadata()).thenReturn(metadata);
+        when(context.getResolver()).thenReturn(mock(EntityResolver.class));
         when(context.isIteratedResult()).thenReturn(iterated);
         when(context.isExclusiveConnection()).thenReturn(exclusiveConnection);
         return context;

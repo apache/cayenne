@@ -201,7 +201,7 @@ public class JdbcAdapter implements DbAdapter {
      */
     @Override
     public PkGenerator createPkGenerator() {
-        return new JdbcPkGenerator(this);
+        return new JdbcPkGenerator();
     }
 
     /**

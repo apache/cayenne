@@ -213,7 +213,7 @@ public class BindDirectiveIT {
 		// ObjectContext?
 		SQLTemplate template = new SQLTemplate(templateString);
 		template.setParams(parameters);
-		StatementContext statementContext = StatementContexts.run(env.dataNode(), template);
+		StatementContext statementContext = StatementContexts.run(env.dataNode(), env.resolver(), template);
 
 		return ObjectSelect.dataRowQuery(Artist.class).selectOne(env.context());
 	}

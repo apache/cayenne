@@ -94,7 +94,8 @@ public class ResultDirectiveIT {
 	private Map<String, Object> selectForQuery(String sql) {
 		SQLTemplate template = new SQLTemplate(Artist.class, sql);
 		template.setColumnNamesCapitalization(CapsStrategy.UPPER);
-		StatementContext statementContext = StatementContexts.run(runtime.getDataDomain().getDefaultNode(), template);
+		StatementContext statementContext = StatementContexts.run(runtime.getDataDomain().getDefaultNode(),
+				runtime.getDataDomain().getEntityResolver(), template);
 
 		@SuppressWarnings("unchecked")
 		List<Map<String, Object>> data = StatementContexts.rows(statementContext);

@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.dba.h2;
 
-import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.SequencePkGenerator;
 import org.apache.cayenne.map.DbEntity;
 
@@ -30,12 +30,11 @@ import org.apache.cayenne.map.DbEntity;
  */
 public class H2PkGenerator extends SequencePkGenerator {
 
-    public H2PkGenerator(JdbcAdapter adapter) {
-        super(adapter);
+    public H2PkGenerator() {
     }
 
     @Override
-    protected String createSequenceString(DbEntity ent) {
+    protected String createSequenceString(DbAdapter adapter, DbEntity ent) {
         return "CREATE SEQUENCE " + adapter.getQuotingStrategy(ent).quotedFQN(ent.getCatalog(), ent.getSchema(),
                 sequenceName(ent)) + " START WITH " + pkStartValue + " INCREMENT BY " + pkCacheSize(ent) + " CACHE 1";
     }

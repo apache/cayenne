@@ -16,45 +16,34 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+
 package org.apache.cayenne.access.dbsync;
 
-import org.apache.cayenne.access.StatementContexts;
-import org.apache.cayenne.query.SQLTemplate;
 import org.junit.jupiter.api.Test;
-
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SchemaUpdateStrategyIT extends SchemaUpdateStrategyBase {
 
-    @Test
-	public void createIfNoSchemaStrategy() throws Exception {
+	@Test
+	public void createIfNoSchema() throws Exception {
+		CreateIfNoSchemaStrategy strategy = new CreateIfNoSchemaStrategy();
 
-		setStrategy(CreateIfNoSchemaStrategy.class);
-
-		String template = "SELECT #result('id' 'int') FROM SUS1";
-		SQLTemplate query = new SQLTemplate(template);
-
-		StatementContexts.run(node, query);
-		Map<String, Boolean> nameTables = tablesMap();
-		assertTrue(nameTables.get("SUS1"));
-
+		updateSchema(strategy);
+		assertTrue(tablesMap().get("SUS1"));
 		assertEquals(2, existingTables().size());
-		StatementContexts.run(node, query);
+
+		// a rerun on a full schema is a no-op
+		updateSchema(strategy);
 		assertEquals(2, existingTables().size());
 	}
 
-    @Test
-	public void noStandardSchema() throws Exception {
-		String template = "SELECT #result('ARTIST_ID' 'int') FROM ARTIST ORDER BY ARTIST_ID";
-		SQLTemplate query = new SQLTemplate(template);
+	@Test
+	public void createIfNoSchema_PartialSchemaLeftAlone() throws Exception {
+		createOneTable("SUS1");
 
-		setStrategy(TstSchemaUpdateStrategy.class);
-
-		StatementContexts.run(node, query);
-		assertTrue(node.getSchemaUpdateStrategy() instanceof TstSchemaUpdateStrategy);
+		updateSchema(new CreateIfNoSchemaStrategy());
+		assertEquals(1, existingTables().size());
 	}
-
 }

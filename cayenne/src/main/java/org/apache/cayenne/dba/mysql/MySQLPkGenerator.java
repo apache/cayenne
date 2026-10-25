@@ -21,7 +21,7 @@ package org.apache.cayenne.dba.mysql;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcPkGenerator;
 import org.apache.cayenne.log.SQLLogger;
 import org.apache.cayenne.map.DbEntity;
@@ -39,8 +39,7 @@ public class MySQLPkGenerator extends JdbcPkGenerator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MySQLPkGenerator.class);
 
-    public MySQLPkGenerator(JdbcAdapter adapter) {
-        super(adapter);
+    public MySQLPkGenerator() {
     }
 
     /**
@@ -127,12 +126,12 @@ public class MySQLPkGenerator extends JdbcPkGenerator {
     }
 
     @Override
-    protected String dropAutoPkString() {
+    protected String dropAutoPkString(DbAdapter adapter) {
         return "DROP TABLE IF EXISTS AUTO_PK_SUPPORT";
     }
 
     @Override
-    protected String pkTableCreateString() {
+    protected String pkTableCreateString(DbAdapter adapter) {
         return "CREATE TABLE IF NOT EXISTS AUTO_PK_SUPPORT " +
                 "(TABLE_NAME CHAR(100) NOT NULL, NEXT_ID BIGINT NOT NULL, UNIQUE (TABLE_NAME)) " +
                 "ENGINE=" + MySQLAdapter.DEFAULT_STORAGE_ENGINE;

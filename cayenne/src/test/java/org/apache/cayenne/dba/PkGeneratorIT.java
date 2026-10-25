@@ -51,7 +51,7 @@ public class PkGeneratorIT {
         accessStackAdapter = env.testDbAdapter();
         node = env.dataNode();
         pkGenerator = node.getPkGenerator();
-        paintingEntity = node.getEntityResolver().getDbEntity("PAINTING");
+        paintingEntity = env.resolver().getDbEntity("PAINTING");
 
         List<DbEntity> list = new ArrayList<DbEntity>();
         list.add(paintingEntity);

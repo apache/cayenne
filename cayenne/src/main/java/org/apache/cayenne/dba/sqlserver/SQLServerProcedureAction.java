@@ -56,7 +56,7 @@ public class SQLServerProcedureAction extends ProcedureAction {
 	public void performAction(Connection connection, StatementContext context) throws Exception {
 
 		TranslatedProcedure translated = dataNode.getProcedureTranslator()
-				.translate(query, dataNode.getAdapter(), dataNode.getEntityResolver());
+				.translate(query, dataNode.getAdapter(), context.getResolver());
 
 		context.setTranslated(translated);
 

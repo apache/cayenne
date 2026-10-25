@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.dba.oracle;
 
-import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.SequencePkGenerator;
 
 /**
@@ -27,8 +26,7 @@ import org.apache.cayenne.dba.SequencePkGenerator;
  */
 public class OraclePkGenerator extends SequencePkGenerator {
 
-    public OraclePkGenerator(JdbcAdapter adapter) {
-        super(adapter);
+    public OraclePkGenerator() {
     }
 
     @Override

@@ -23,6 +23,7 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.QueryResult;
 import org.apache.cayenne.SelectResult;
 import org.apache.cayenne.UpdateResult;
+import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
 
 import java.util.List;
@@ -39,15 +40,15 @@ public final class StatementContexts {
      * Creates a statement context for the query on the node without executing it, for tests that invoke a SQLAction
      * directly.
      */
-    public static StatementContext newRun(DataNode node, Query query) {
-        return new StatementContext(query, query.getMetaData(node.getEntityResolver()));
+    public static StatementContext newRun(DataNode node, EntityResolver resolver, Query query) {
+        return new StatementContext(query, query.getMetaData(resolver), resolver);
     }
 
     /**
      * Executes the query on the node, returning its statement context with the results.
      */
-    public static StatementContext run(DataNode node, Query query) {
-        StatementContext statementContext = newRun(node, query);
+    public static StatementContext run(DataNode node, EntityResolver resolver, Query query) {
+        StatementContext statementContext = newRun(node, resolver, query);
         node.execute(List.of(statementContext));
         return statementContext;
     }

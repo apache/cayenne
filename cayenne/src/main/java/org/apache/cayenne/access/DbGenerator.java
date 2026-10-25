@@ -171,8 +171,8 @@ public class DbGenerator {
 		}
 
 		PkGenerator pkGenerator = adapter.createPkGenerator();
-		dropPK = pkGenerator.dropAutoPkStatements(dbEntitiesRequiringAutoPK);
-		createPK = pkGenerator.createAutoPkStatements(dbEntitiesRequiringAutoPK);
+		dropPK = pkGenerator.dropAutoPkStatements(adapter, dbEntitiesRequiringAutoPK);
+		createPK = pkGenerator.createAutoPkStatements(adapter, dbEntitiesRequiringAutoPK);
 	}
 
 	/**

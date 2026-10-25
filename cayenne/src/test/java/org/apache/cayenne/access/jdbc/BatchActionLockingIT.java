@@ -35,6 +35,7 @@ import org.apache.cayenne.unit.jdbc.TestConnection;
 import org.apache.cayenne.testdo.locking.SimpleLockingTestEntity;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
+import org.apache.cayenne.unit.DataNodes;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
 import java.util.Arrays;
@@ -81,12 +82,9 @@ public class BatchActionLockingIT {
 
 		boolean generatesKeys = false;
 
-		DataNode node = new DataNode();
-		node.setAdapter(adapter);
-		node.setEntityResolver(resolver);
-		node.setRowReaderFactory(mock(RowReaderFactory.class));
+		DataNode node = DataNodes.withAdapter(adapter, mock(RowReaderFactory.class));
 		BatchAction action = new BatchAction(batchQuery, node, false);
-		StatementContext statementContext = StatementContexts.newRun(node, batchQuery);
+		StatementContext statementContext = StatementContexts.newRun(node, resolver, batchQuery);
 		statementContext.setTranslated(translated);
 		action.runAsIndividualQueries(mockConnection, statementContext, generatesKeys);
 		assertEquals(0, mockConnection.getNumberCommits());
@@ -120,12 +118,9 @@ public class BatchActionLockingIT {
 		mockConnection.prepareUpdateCount("DELETE", 0);
 
 		boolean generatesKeys = false;
-		DataNode node = new DataNode();
-		node.setAdapter(adapter);
-		node.setEntityResolver(resolver);
-		node.setRowReaderFactory(mock(RowReaderFactory.class));
+		DataNode node = DataNodes.withAdapter(adapter, mock(RowReaderFactory.class));
 		BatchAction action = new BatchAction(batchQuery, node, false);
-		StatementContext statementContext = StatementContexts.newRun(node, batchQuery);
+		StatementContext statementContext = StatementContexts.newRun(node, resolver, batchQuery);
 		statementContext.setTranslated(translated);
 		assertThrows(OptimisticLockException.class, () ->
 			action.runAsIndividualQueries(mockConnection, statementContext, generatesKeys));

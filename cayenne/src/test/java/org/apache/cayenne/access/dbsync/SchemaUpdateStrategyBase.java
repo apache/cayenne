@@ -34,6 +34,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -53,7 +54,7 @@ public class SchemaUpdateStrategyBase {
 	public void cleanUpDB() {
 		context = env.context();
 		node = env.dataNode();
-		DataMap map = node.getEntityResolver().getDataMap("sus-map");
+		DataMap map = env.resolver().getDataMap("sus-map");
 		for (String name : existingTables()) {
 
 			for (String drop : node.getAdapter().dropTableStatements(map.getDbEntity(name))) {
@@ -62,8 +63,9 @@ public class SchemaUpdateStrategyBase {
 		}
 	}
 
-	protected void setStrategy(Class<? extends SchemaUpdateStrategy> type) throws Exception {
-		node.setSchemaUpdateStrategy(type.getDeclaredConstructor().newInstance());
+	protected void updateSchema(SchemaUpdateStrategy strategy) throws SQLException {
+		DataMap map = env.resolver().getDataMap("sus-map");
+		strategy.updateSchema(node.getAdapter(), node.getDataSource(), List.of(map), node.getSqlLogger());
 	}
 
 	protected Collection<String> existingTables() {
@@ -78,13 +80,13 @@ public class SchemaUpdateStrategyBase {
 	}
 
 	protected void createOneTable(String entityName) {
-		DataMap map = node.getEntityResolver().getDataMap("sus-map");
+		DataMap map = env.resolver().getDataMap("sus-map");
 		String createTable = node.getAdapter().createTable(map.getDbEntity(entityName));
 		context.execute(new SQLTemplate(createTable));
 	}
 
 	protected Map<String, Boolean> tablesMap() {
-		DataMap map = node.getEntityResolver().getDataMap("sus-map");
+		DataMap map = env.resolver().getDataMap("sus-map");
 		Map<String, String> tables = new HashMap<>();
 
 		// add upper/lower case permutations

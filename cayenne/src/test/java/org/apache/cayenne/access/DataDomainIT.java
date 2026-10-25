@@ -27,7 +27,10 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
+import org.apache.cayenne.unit.DataNodes;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 
@@ -48,14 +51,12 @@ public class DataDomainIT {
         domain.setDefaultNode(null);
 
         DataMap m1 = new DataMap("m1");
-        DataNode n1 = new DataNode("n1");
-        n1.addDataMap(m1);
-        domain.addNode(n1);
+        DataNode n1 = DataNodes.named("n1");
+        domain.addNode(n1, List.of(m1));
 
         DataMap m2 = new DataMap("m2");
-        DataNode n2 = new DataNode("n2");
-        n2.addDataMap(m2);
-        domain.addNode(n2);
+        DataNode n2 = DataNodes.named("n2");
+        domain.addNode(n2, List.of(m2));
 
         assertSame(n1, domain.lookupDataNode(m1));
         assertSame(n2, domain.lookupDataNode(m2));
@@ -69,14 +70,13 @@ public class DataDomainIT {
         DataDomain domain = env.runtime().getDataDomain();
 
         DataMap m1 = new DataMap("m1");
-        DataNode n1 = new DataNode("n1");
-        n1.addDataMap(m1);
+        DataNode n1 = DataNodes.named("n1");
+        domain.addNode(n1, List.of(m1));
         domain.setDefaultNode(n1);
 
         DataMap m2 = new DataMap("m2");
-        DataNode n2 = new DataNode("n2");
-        n2.addDataMap(m2);
-        domain.addNode(n2);
+        DataNode n2 = DataNodes.named("n2");
+        domain.addNode(n2, List.of(m2));
 
         assertSame(n1, domain.lookupDataNode(m1));
         assertSame(n2, domain.lookupDataNode(m2));
@@ -89,11 +89,11 @@ public class DataDomainIT {
     public void nodes() throws Exception {
         DataDomain domain = env.runtime().getDataDomain();
         assertEquals(1, domain.getDataNodes().size());
-        DataNode node = new DataNode("1");
-        domain.addNode(node);
+        DataNode node = DataNodes.named("1");
+        domain.addNode(node, List.of());
         assertEquals(2, domain.getDataNodes().size());
-        node = new DataNode("2");
-        domain.addNode(node);
+        node = DataNodes.named("2");
+        domain.addNode(node, List.of());
         assertEquals(3, domain.getDataNodes().size());
     }
 
@@ -102,10 +102,8 @@ public class DataDomainIT {
         DataDomain domain = env.runtime().getDataDomain();
         assertNull(domain.getDataMap("map"));
 
-        DataNode node = new DataNode("1");
-        node.addDataMap(new DataMap("map"));
-
-        domain.addNode(node);
+        DataNode node = DataNodes.named("1");
+        domain.addNode(node, List.of(new DataMap("map")));
         assertNotNull(domain.getDataMap("map"));
     }
 

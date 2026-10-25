@@ -168,6 +168,41 @@ public class DbRelationshipTest {
     }
 
     @Test
+    public void isReflexive() {
+        DbRelationship relationship = relationship();
+        DbEntity source = relationship.getSourceEntity();
+
+        DbAttribute id = new DbAttribute("ID");
+        id.setPrimaryKey(true);
+        source.addAttribute(id);
+        source.addAttribute(new DbAttribute("PARENT_ID"));
+        source.addAttribute(new DbAttribute("NAME"));
+
+        // a FK to another entity
+        relationship.setForeignKey(true);
+        relationship.addJoin(new DbJoin(relationship, "PARENT_ID", "ID"));
+        assertFalse(relationship.isReflexive());
+
+        // a FK to the own PK
+        relationship.setTargetEntityName("A");
+        assertTrue(relationship.isReflexive());
+
+        // only the FK side is reflexive
+        relationship.setForeignKey(false);
+        assertFalse(relationship.isReflexive());
+        relationship.setForeignKey(true);
+
+        // a self-reference to a non-PK column
+        relationship.removeJoin(relationship.getJoins().getFirst());
+        relationship.addJoin(new DbJoin(relationship, "PARENT_ID", "NAME"));
+        assertFalse(relationship.isReflexive());
+
+        // no joins
+        relationship.removeJoin(relationship.getJoins().getFirst());
+        assertFalse(relationship.isReflexive());
+    }
+
+    @Test
     public void isToPKNoTargetPK() {
         DbRelationship relationship = relationship();
         relationship.getTargetEntity().addAttribute(new DbAttribute("NAME"));

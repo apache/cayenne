@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.dba.ingres;
 
-import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.SequencePkGenerator;
 
 /**
@@ -29,8 +28,7 @@ import org.apache.cayenne.dba.SequencePkGenerator;
  */
 public class IngresPkGenerator extends SequencePkGenerator {
 
-    public IngresPkGenerator(JdbcAdapter adapter) {
-        super(adapter);
+    public IngresPkGenerator() {
     }
 
     @Override

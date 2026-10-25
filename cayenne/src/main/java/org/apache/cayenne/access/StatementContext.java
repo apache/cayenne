@@ -26,6 +26,7 @@ import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.SelectResult;
 import org.apache.cayenne.access.translator.TranslatedStatement;
 import org.apache.cayenne.log.SQLLogger;
+import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryMetadata;
 
@@ -46,6 +47,7 @@ public final class StatementContext {
 
     private final Query query;
     private final QueryMetadata metadata;
+    private final EntityResolver resolver;
     private StatementLog log;
     private boolean iteratedResult;
     private boolean exclusiveConnection;
@@ -54,10 +56,15 @@ public final class StatementContext {
 
     /**
      * Creates a statement of a query, with a result read in full, i.e. not iterated.
+     *
+     * @param query    the query to execute.
+     * @param metadata the metadata of the query, resolved with the resolver.
+     * @param resolver the mapping the query is executed against, used by the SQL action to translate the query.
      */
-    public StatementContext(Query query, QueryMetadata metadata) {
+    public StatementContext(Query query, QueryMetadata metadata, EntityResolver resolver) {
         this.query = Objects.requireNonNull(query, "Null query");
         this.metadata = Objects.requireNonNull(metadata, "Null metadata");
+        this.resolver = Objects.requireNonNull(resolver, "Null resolver");
         this.results = new ArrayList<>(1);
     }
 
@@ -76,6 +83,14 @@ public final class StatementContext {
      */
     public QueryMetadata getMetadata() {
         return metadata;
+    }
+
+    /**
+     * Returns the mapping the statement is executed against, i.e. the EntityResolver of the DataDomain that routed
+     * the query to the node.
+     */
+    public EntityResolver getResolver() {
+        return resolver;
     }
 
     /**

@@ -19,15 +19,26 @@
 package org.apache.cayenne.access.dbsync;
 
 import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.log.SQLLogger;
+import org.apache.cayenne.map.DataMap;
 
+import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Collection;
 
 /**
- * A strategy for auto generating a database schema on the application startup.
- * 
+ * Defines a strategy to update a DB schema to match the DataMaps of a {@link DataNode}. Run once per node, as a part
+ * of the node initialization on its first use.
+ *
  * @since 3.0
  */
 public interface SchemaUpdateStrategy {
 
-    void updateSchema(DataNode dataNode) throws SQLException;
+    /**
+     * Checks and possibly updates the schema of the database behind the DataSource to match the DataMaps.
+     *
+     * @since 6.0
+     */
+    void updateSchema(DbAdapter adapter, DataSource dataSource, Collection<DataMap> dataMaps, SQLLogger logger) throws SQLException;
 }

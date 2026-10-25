@@ -98,7 +98,7 @@ public class IngresAdapter extends JdbcAdapter {
      */
     @Override
     public PkGenerator createPkGenerator() {
-        return new IngresPkGenerator(this);
+        return new IngresPkGenerator();
     }
 
     /**

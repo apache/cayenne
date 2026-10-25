@@ -35,6 +35,7 @@ import org.apache.cayenne.query.InsertBatchQuery;
 import org.apache.cayenne.testdo.generated.GeneratedColumnTestEntity;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
+import org.apache.cayenne.unit.DataNodes;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
@@ -65,10 +66,7 @@ public class BatchActionGeneratedIT {
         InsertBatchQuery batch1 = new InsertBatchQuery(resolver.getObjEntity(GeneratedColumnTestEntity.class)
                 .getDbEntity(), 5);
 
-        DataNode node = new DataNode();
-        node.setAdapter(adapter);
-        node.setEntityResolver(resolver);
-        node.setRowReaderFactory(mock(RowReaderFactory.class));
+        DataNode node = DataNodes.withAdapter(adapter, mock(RowReaderFactory.class));
 
         assertTrue(new BatchAction(batch1, node, false).hasGeneratedKeys());
     }
@@ -83,10 +81,7 @@ public class BatchActionGeneratedIT {
         InsertBatchQuery batch1 = new InsertBatchQuery(resolver.getObjEntity(GeneratedColumnTestEntity.class)
                 .getDbEntity(), 5);
 
-        DataNode node = new DataNode();
-        node.setAdapter(adapter);
-        node.setEntityResolver(resolver);
-        node.setRowReaderFactory(mock(RowReaderFactory.class));
+        DataNode node = DataNodes.withAdapter(adapter, mock(RowReaderFactory.class));
 
         assertTrue(new BatchAction(batch1, node, false).hasGeneratedKeys());
         assertFalse(new BatchAction(batch1, node, false).supportsGeneratedKeys(true));
@@ -104,14 +99,14 @@ public class BatchActionGeneratedIT {
         DataNode node = env.dataNode();
         Assumptions.assumeTrue(node.getAdapter().supportsGeneratedKeys(), "generated keys unsupported");
 
-        DbEntity entity = node.getEntityResolver().getObjEntity(GeneratedColumnTestEntity.class).getDbEntity();
+        DbEntity entity = env.resolver().getObjEntity(GeneratedColumnTestEntity.class).getDbEntity();
         InsertBatchQuery batch = new InsertBatchQuery(entity, 2);
         ObjectId id1 = ObjectId.of("GeneratedColumnTestEntity");
         ObjectId id2 = ObjectId.of("GeneratedColumnTestEntity");
         batch.add(new HashMap<>(Map.of("NAME", "g1")), id1);
         batch.add(new HashMap<>(Map.of("NAME", "g2")), id2);
 
-        StatementContext statementContext = StatementContexts.run(node, batch);
+        StatementContext statementContext = StatementContexts.run(node, env.resolver(), batch);
 
         // whether the rows ran as a batch or one by one, the statement reports update counts and the keys as DataRows
         List<DataRow> keys = new ArrayList<>();

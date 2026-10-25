@@ -119,7 +119,7 @@ public class MergerContext {
             }
 
             if (context.dataNode == null) {
-                dataNode(new DataNode());
+                syntheticDataNode(null, null);
             }
 
             if(context.nameGenerator == null) {
@@ -164,10 +164,9 @@ public class MergerContext {
         }
 
         public Builder syntheticDataNode(DataSource dataSource, DbAdapter adapter) {
-            DataNode dataNode = new DataNode();
-            dataNode.setDataSource(dataSource);
-            dataNode.setAdapter(adapter);
-            return dataNode(dataNode);
+            // a bare node, just a holder of the DataSource and the adapter for the tokens; no queries run through it
+            return dataNode(new DataNode(null, dataSource, () -> adapter, null,
+                    null, null, null, null, null, null, null, null));
         }
     }
 }

@@ -223,8 +223,7 @@ public class MergerOptionsDialog extends ProjectDialog {
         String lineEnd = batchTerminator != null ? "\n" + batchTerminator + "\n\n" : "\n\n";
 
         // tokens generate SQL in the context of a DataNode. No DataSource is needed, as nothing is executed here
-        DataNode node = new DataNode();
-        node.setAdapter(adapter);
+        DataNode node = new DataNode(null, null, () -> adapter, null, null, null, null, null, null, null, null, null);
 
         while (it.hasNext()) {
             MergerToken token = it.next();

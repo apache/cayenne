@@ -176,7 +176,7 @@ public class SQLServerAdapter extends JdbcAdapter {
      */
     @Override
     public PkGenerator createPkGenerator() {
-        return new SQLServerPkGenerator(this);
+        return new SQLServerPkGenerator();
     }
 
     /**

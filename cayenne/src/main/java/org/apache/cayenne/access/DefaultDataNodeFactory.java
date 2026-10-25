@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.CoreModule;
 import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
 import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
@@ -31,14 +32,19 @@ import org.apache.cayenne.RuntimeProperties;
 import org.apache.cayenne.datasource.CayenneDataSource;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.DbAdapterDetector;
+import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.log.SQLLogger;
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.query.DeleteBatchQuery;
 import org.apache.cayenne.query.InsertBatchQuery;
 import org.apache.cayenne.query.UpdateBatchQuery;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -80,36 +86,80 @@ public class DefaultDataNodeFactory implements DataNodeFactory {
     protected RuntimeProperties properties;
 
     @Override
-    public DataNode createDataNode(String channelName, DataNodeDescriptor descriptor) {
+    public DataNode createDataNode(String channelName, DataNodeDescriptor descriptor, Collection<DataMap> dataMaps) {
 
         DataSource dataSource = createDataSource(channelName, descriptor);
 
-        DataNode dataNode = doCreateDataNode(descriptor.name());
+        // an explicit adapter still goes through the initializer, so that the schema update runs on first use
+        DbAdapter adapter = descriptor.adapterType() != null
+                ? objectFactory.newInstance(DbAdapter.class, descriptor.adapterType(), false)
+                : null;
+        SchemaUpdateStrategy schemaUpdateStrategy = createSchemaUpdateStrategy(descriptor.schemaUpdateStrategyType());
+        DataNodeInitializer initializer =
+                () -> initDataNode(descriptor.name(), dataSource, adapter, schemaUpdateStrategy, dataMaps);
 
-        dataNode.setSQLLogger(sqlLogger);
-        dataNode.setRowReaderFactory(rowReaderFactory);
-        dataNode.setInsertBatchTranslator(insertBatchTranslator);
-        dataNode.setUpdateBatchTranslator(updateBatchTranslator);
-        dataNode.setDeleteBatchTranslator(deleteBatchTranslator);
-        dataNode.setSelectTranslator(selectTranslator);
-        dataNode.setProcedureTranslator(procedureTranslator);
-        dataNode.setSqlTemplateTranslator(sqlTemplateTranslator);
-
-        dataNode.setDataSource(dataSource);
-        dataNode.setSchemaUpdateStrategy(createSchemaUpdateStrategy(descriptor.schemaUpdateStrategyType()));
-
-        if (descriptor.adapterType() != null) {
-            dataNode.setAdapter(objectFactory.newInstance(DbAdapter.class, descriptor.adapterType(), false));
-        } else {
-            // detected off the DataSource on first use, so that the stack can start when the DB is not available
-            dataNode.setAdapterDetectors(adapterDetectors);
-        }
-
-        return dataNode;
+        return newDataNode(descriptor.name(), dataSource, initializer, descriptor.pkGenerator());
     }
 
-    protected DataNode doCreateDataNode(String name) {
-        return new DataNode(name);
+    /**
+     * Creates the node from its per-node parts, wiring in the services injected into the factory. A hook for the
+     * subclasses that need a DataNode subclass.
+     */
+    protected DataNode newDataNode(
+            String name,
+            DataSource dataSource,
+            DataNodeInitializer initializer,
+            PkGenerator pkGenerator) {
+
+        return new DataNode(
+                name,
+                dataSource,
+                initializer,
+                pkGenerator,
+                sqlLogger,
+                rowReaderFactory,
+                selectTranslator,
+                procedureTranslator,
+                sqlTemplateTranslator,
+                insertBatchTranslator,
+                updateBatchTranslator,
+                deleteBatchTranslator);
+    }
+
+    /**
+     * The first-use initialization of a node: detects the adapter off the raw DataSource, unless an explicit adapter
+     * is given, and runs the schema update strategy against the DataMaps of the node.
+     */
+    protected DbAdapter initDataNode(
+            String nodeName,
+            DataSource dataSource,
+            DbAdapter adapter,
+            SchemaUpdateStrategy schemaUpdateStrategy,
+            Collection<DataMap> dataMaps) {
+
+        DbAdapter resolved = adapter != null ? adapter : detectAdapter(nodeName, dataSource);
+
+        try {
+            schemaUpdateStrategy.updateSchema(resolved, dataSource, dataMaps, sqlLogger);
+        } catch (SQLException e) {
+            throw new CayenneRuntimeException("Error updating the schema of DataNode '%s': %s", e, nodeName,
+                    e.getLocalizedMessage());
+        }
+
+        return resolved;
+    }
+
+    /**
+     * Detects the DB type off the DataSource with the injected {@link DbAdapterDetector}s. The detection uses a
+     * connection of its own, outside the current transaction, if any.
+     */
+    protected DbAdapter detectAdapter(String nodeName, DataSource dataSource) {
+        try (Connection c = dataSource.getConnection()) {
+            return DbAdapterDetector.detect(c.getMetaData(), adapterDetectors);
+        } catch (SQLException e) {
+            throw new CayenneRuntimeException("Error detecting the DB type of DataNode '%s': %s", e, nodeName,
+                    e.getLocalizedMessage());
+        }
     }
 
     protected DataSource createDataSource(String channelName, DataNodeDescriptor descriptor) {

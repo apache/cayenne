@@ -62,7 +62,7 @@ public class JdbcPkGeneratorIT {
 
         DataNode node = env.dataNode();
 
-        DbEntity artistEntity = node.getEntityResolver().getObjEntity(Artist.class).getDbEntity();
+        DbEntity artistEntity = env.resolver().getObjEntity(Artist.class).getDbEntity();
         DbAttribute pkAttribute = artistEntity.getAttribute(Artist.ARTIST_ID_PK_COLUMN);
 
         JdbcPkGenerator pkGenerator = (JdbcPkGenerator) node.getPkGenerator();

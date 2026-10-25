@@ -55,17 +55,17 @@ public abstract class SequencePkGenerator extends JdbcPkGenerator {
 
     private static final String _SEQUENCE_PREFIX = "pk_";
 
-    protected SequencePkGenerator(JdbcAdapter adapter) {
-        super(adapter);
+    protected SequencePkGenerator() {
     }
 
     @Override
     public void createAutoPk(DataNode node, List<DbEntity> dbEntities) {
+        DbAdapter adapter = node.getAdapter();
         List<String> sequences = getExistingSequences(node);
         // create needed sequences
         for (DbEntity dbEntity : dbEntities) {
             if (!sequences.contains(sequenceName(dbEntity))) {
-                runUpdate(node, createSequenceString(dbEntity));
+                runUpdate(node, createSequenceString(adapter, dbEntity));
             }
         }
     }
@@ -74,10 +74,10 @@ public abstract class SequencePkGenerator extends JdbcPkGenerator {
      * Creates a list of CREATE SEQUENCE statements for the list of DbEntities.
      */
     @Override
-    public List<String> createAutoPkStatements(List<DbEntity> dbEntities) {
+    public List<String> createAutoPkStatements(DbAdapter adapter, List<DbEntity> dbEntities) {
         List<String> list = new ArrayList<>(dbEntities.size());
         for (DbEntity dbEntity : dbEntities) {
-            list.add(createSequenceString(dbEntity));
+            list.add(createSequenceString(adapter, dbEntity));
         }
 
         return list;
@@ -88,12 +88,13 @@ public abstract class SequencePkGenerator extends JdbcPkGenerator {
      */
     @Override
     public void dropAutoPk(DataNode node, List<DbEntity> dbEntities) {
+        DbAdapter adapter = node.getAdapter();
         List<String> sequences = getExistingSequences(node);
 
         // drop obsolete sequences
         for (DbEntity dbEntity : dbEntities) {
             if (sequences.contains(sequenceName(dbEntity))) {
-                runUpdate(node, dropSequenceString(dbEntity));
+                runUpdate(node, dropSequenceString(adapter, dbEntity));
             }
         }
     }
@@ -102,16 +103,16 @@ public abstract class SequencePkGenerator extends JdbcPkGenerator {
      * Creates a list of DROP SEQUENCE statements for the list of DbEntities.
      */
     @Override
-    public List<String> dropAutoPkStatements(List<DbEntity> dbEntities) {
+    public List<String> dropAutoPkStatements(DbAdapter adapter, List<DbEntity> dbEntities) {
         List<String> list = new ArrayList<>(dbEntities.size());
         for (DbEntity dbEntity : dbEntities) {
-            list.add(dropSequenceString(dbEntity));
+            list.add(dropSequenceString(adapter, dbEntity));
         }
 
         return list;
     }
 
-    protected String createSequenceString(DbEntity ent) {
+    protected String createSequenceString(DbAdapter adapter, DbEntity ent) {
         String seqFQN = adapter.getQuotingStrategy(ent).quotedFQN(ent.getCatalog(), ent.getSchema(), sequenceName(ent));
         return "CREATE SEQUENCE " + seqFQN + " START WITH " + pkStartValue + " INCREMENT BY " + pkCacheSize(ent);
     }
@@ -120,7 +121,7 @@ public abstract class SequencePkGenerator extends JdbcPkGenerator {
      * Returns a SQL string needed to drop any database objects associated with
      * automatic primary key generation process for a specific DbEntity.
      */
-    protected String dropSequenceString(DbEntity ent) {
+    protected String dropSequenceString(DbAdapter adapter, DbEntity ent) {
         String seqFQN = adapter.getQuotingStrategy(ent).quotedFQN(ent.getCatalog(), ent.getSchema(), sequenceName(ent));
         return "DROP SEQUENCE " + seqFQN;
     }
@@ -152,7 +153,7 @@ public abstract class SequencePkGenerator extends JdbcPkGenerator {
                 && pkGenerator.getGeneratorName() != null) {
             pkGeneratingSequenceName = pkGenerator.getGeneratorName();
         } else {
-            pkGeneratingSequenceName = adapter.getQuotingStrategy(entity).quotedFQN(entity.getCatalog(),
+            pkGeneratingSequenceName = node.getAdapter().getQuotingStrategy(entity).quotedFQN(entity.getCatalog(),
                     entity.getSchema(), sequenceName(entity));
         }
 

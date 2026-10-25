@@ -21,7 +21,7 @@ package org.apache.cayenne.dba.sybase;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcPkGenerator;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.tx.BaseTransaction;
@@ -41,12 +41,11 @@ import java.util.List;
  */
 public class SybasePkGenerator extends JdbcPkGenerator {
 
-	public SybasePkGenerator(JdbcAdapter adapter) {
-		super(adapter);
+	public SybasePkGenerator() {
 	}
 
 	@Override
-	protected String pkTableCreateString() {
+	protected String pkTableCreateString(DbAdapter adapter) {
 		return "CREATE TABLE AUTO_PK_SUPPORT (TABLE_NAME CHAR(100) NOT NULL, NEXT_ID DECIMAL(19,0) NOT NULL, PRIMARY KEY(TABLE_NAME))";
 	}
 
@@ -98,8 +97,8 @@ public class SybasePkGenerator extends JdbcPkGenerator {
 	}
 
 	@Override
-	public List<String> createAutoPkStatements(List<DbEntity> dbEntities) {
-		List<String> list = super.createAutoPkStatements(dbEntities);
+	public List<String> createAutoPkStatements(DbAdapter adapter, List<DbEntity> dbEntities) {
+		List<String> list = super.createAutoPkStatements(adapter, dbEntities);
 
 		// add stored procedure drop code
 		list.add(safePkProcDrop());
@@ -137,7 +136,7 @@ public class SybasePkGenerator extends JdbcPkGenerator {
 	}
 
 	@Override
-	public List<String> dropAutoPkStatements(List<DbEntity> dbEntities) {
+	public List<String> dropAutoPkStatements(DbAdapter adapter, List<DbEntity> dbEntities) {
 		List<String> list = new ArrayList<>();
 		list.add(safePkProcDrop());
 		list.add(safePkTableDrop());

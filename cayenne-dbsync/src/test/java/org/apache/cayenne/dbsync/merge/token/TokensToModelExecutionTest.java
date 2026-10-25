@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.dbsync.merge.token;
 
-import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dbsync.merge.context.MergerContext;
 import org.apache.cayenne.dbsync.merge.factory.DefaultMergerTokenFactory;
 import org.apache.cayenne.map.DataMap;
@@ -43,7 +42,7 @@ public class TokensToModelExecutionTest {
         assertTrue(dataMap.getDbEntityMap().isEmpty());
         assertTrue(dataMap.getObjEntityMap().isEmpty());
 
-        MergerContext context = MergerContext.builder(dataMap).dataNode(new DataNode()).build();
+        MergerContext context = MergerContext.builder(dataMap).build();
         new DefaultMergerTokenFactory().createCreateTableToModel(entity).execute(context);
 
         assertEquals(1, dataMap.getDbEntityMap().size());
@@ -64,7 +63,7 @@ public class TokensToModelExecutionTest {
         assertEquals(1, dataMap.getDbEntityMap().size());
         assertTrue(dataMap.getObjEntityMap().isEmpty());
 
-        MergerContext context = MergerContext.builder(dataMap).dataNode(new DataNode()).build();
+        MergerContext context = MergerContext.builder(dataMap).build();
         new DefaultMergerTokenFactory().createAddColumnToModel(entity, attr).execute(context);
 
         assertEquals(1, dataMap.getDbEntityMap().size());

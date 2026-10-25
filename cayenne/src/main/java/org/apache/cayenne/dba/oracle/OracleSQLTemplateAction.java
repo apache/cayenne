@@ -22,7 +22,6 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.StatementContext;
 import org.apache.cayenne.access.jdbc.SQLTemplateAction;
 import org.apache.cayenne.access.translator.TranslatedSQL;
-import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.SQLTemplate;
 
 import java.sql.Connection;
@@ -34,11 +33,8 @@ import java.sql.Statement;
  */
 class OracleSQLTemplateAction extends SQLTemplateAction {
 
-	protected DbEntity dbEntity;
-
 	OracleSQLTemplateAction(SQLTemplate<?> query, DataNode dataNode) {
 		super(query, dataNode);
-		this.dbEntity = query.getMetaData(dataNode.getEntityResolver()).getDbEntity();
 	}
 
 	@Override

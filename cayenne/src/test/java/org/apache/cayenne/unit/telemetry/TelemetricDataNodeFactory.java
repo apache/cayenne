@@ -19,18 +19,36 @@
 package org.apache.cayenne.unit.telemetry;
 
 import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.access.DataNodeInitializer;
 import org.apache.cayenne.access.DefaultDataNodeFactory;
 import org.apache.cayenne.access.StatementContext;
+import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
+import org.apache.cayenne.access.translator.BatchTranslator;
+import org.apache.cayenne.access.translator.ProcedureTranslator;
+import org.apache.cayenne.access.translator.SQLTemplateTranslator;
+import org.apache.cayenne.access.translator.SelectTranslator;
+import org.apache.cayenne.dba.PkGenerator;
+import org.apache.cayenne.log.SQLLogger;
+import org.apache.cayenne.query.DeleteBatchQuery;
+import org.apache.cayenne.query.InsertBatchQuery;
+import org.apache.cayenne.query.UpdateBatchQuery;
 import org.junit.jupiter.api.Assertions;
 
+import javax.sql.DataSource;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class TelemetricDataNodeFactory extends DefaultDataNodeFactory {
 
     @Override
-    protected DataNode doCreateDataNode(String name) {
-        return new TelemetricDataNode(name);
+    protected DataNode newDataNode(
+            String name,
+            DataSource dataSource,
+            DataNodeInitializer initializer,
+            PkGenerator pkGenerator) {
+        return new TelemetricDataNode(name, dataSource, initializer, pkGenerator, sqlLogger,
+                rowReaderFactory, selectTranslator, procedureTranslator, sqlTemplateTranslator,
+                insertBatchTranslator, updateBatchTranslator, deleteBatchTranslator);
     }
 
     static class TelemetricDataNode extends DataNode {
@@ -38,8 +56,22 @@ public class TelemetricDataNodeFactory extends DefaultDataNodeFactory {
         private final AtomicInteger queryCounter = new AtomicInteger();
         private volatile boolean blockingQueries;
 
-        public TelemetricDataNode(String name) {
-            super(name);
+        public TelemetricDataNode(
+                String name,
+                DataSource dataSource,
+                DataNodeInitializer initializer,
+                PkGenerator pkGenerator,
+                SQLLogger sqlLogger,
+                RowReaderFactory rowReaderFactory,
+                SelectTranslator selectTranslator,
+                ProcedureTranslator procedureTranslator,
+                SQLTemplateTranslator sqlTemplateTranslator,
+                BatchTranslator<InsertBatchQuery> insertBatchTranslator,
+                BatchTranslator<UpdateBatchQuery> updateBatchTranslator,
+                BatchTranslator<DeleteBatchQuery> deleteBatchTranslator) {
+            super(name, dataSource, initializer, pkGenerator, sqlLogger, rowReaderFactory, selectTranslator,
+                    procedureTranslator, sqlTemplateTranslator, insertBatchTranslator, updateBatchTranslator,
+                    deleteBatchTranslator);
         }
 
         @Override

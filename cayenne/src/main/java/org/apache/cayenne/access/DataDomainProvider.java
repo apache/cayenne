@@ -62,6 +62,7 @@ import org.apache.cayenne.tx.TransactionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -169,7 +170,10 @@ public class DataDomainProvider implements Provider<DataDomain> {
         dataNodeDescriptors.mapsByNode().forEach((n, maps) -> addDataNode(domain, n, maps));
 
         if (dataNodeDescriptors.defaultNode() != null) {
-            addDefaultDataNode(domain, dataNodeDescriptors.defaultNode());
+            Set<String> linkedMapNames = dataNodeDescriptors.mapsByNode().values().stream()
+                    .flatMap(Set::stream)
+                    .collect(Collectors.toSet());
+            addDefaultDataNode(domain, dataNodeDescriptors.defaultNode(), linkedMapNames);
         }
 
         for (DataChannelQueryFilter filter : queryFilters) {
@@ -188,38 +192,32 @@ public class DataDomainProvider implements Provider<DataDomain> {
     }
 
     protected void addDataNode(DataDomain domain, DataNodeDescriptor descriptor, Set<String> mapNames) {
-        DataNode node = dataNodeFactory.createDataNode(domain.getName(), descriptor);
+        List<DataMap> dataMaps = new ArrayList<>();
         for (String mn : mapNames) {
             DataMap dataMap = domain.getDataMap(mn);
             if (dataMap == null) {
                 LOGGER.info("DataNode '{}' is linked to a non-existing DataMap '{}', ignoring", descriptor.name(), mn);
-            }
-            else {
-                node.addDataMap(dataMap);
+            } else {
+                dataMaps.add(dataMap);
             }
         }
 
-        domain.addNode(node);
+        DataNode node = dataNodeFactory.createDataNode(domain.getName(), descriptor, dataMaps);
+        domain.addNode(node, dataMaps);
     }
 
-    protected void addDefaultDataNode(DataDomain domain, DataNodeDescriptor descriptor) {
+    /**
+     * Adds the default node, which takes ownership of every DataMap not explicitly linked to another node.
+     */
+    protected void addDefaultDataNode(DataDomain domain, DataNodeDescriptor descriptor, Set<String> linkedMapNames) {
         LOGGER.info("setting DataNode '{}' as default, used by all unlinked DataMaps", descriptor.name());
-        DataNode node = dataNodeFactory.createDataNode(domain.getName(), descriptor);
 
-        // the default node takes ownership of every DataMap not explicitly linked to another node.
-        // ("lookupDataNode" can't be used here - it throws instead of returning null for an unlinked map)
-        Set<String> linkedMaps = domain.getDataNodes().stream()
-                .flatMap(n -> n.getDataMaps().stream())
-                .map(DataMap::getName)
-                .collect(Collectors.toSet());
+        List<DataMap> dataMaps = domain.getDataMaps().stream()
+                .filter(m -> !linkedMapNames.contains(m.getName()))
+                .toList();
 
-        for (DataMap map : domain.getDataMaps()) {
-            if (!linkedMaps.contains(map.getName())) {
-                node.addDataMap(map);
-            }
-        }
-
-        domain.addNode(node);
+        DataNode node = dataNodeFactory.createDataNode(domain.getName(), descriptor, dataMaps);
+        domain.addNode(node, dataMaps);
         domain.setDefaultNode(node);
     }
 

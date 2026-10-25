@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.dba.db2;
 
-import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.SequencePkGenerator;
 import org.apache.cayenne.map.DbEntity;
 
@@ -29,8 +29,7 @@ public class DB2PkGenerator extends SequencePkGenerator {
 
     private static final String _SEQUENCE_PREFIX = "S_";
 
-    public DB2PkGenerator(JdbcAdapter adapter) {
-        super(adapter);
+    public DB2PkGenerator() {
     }
 
     @Override
@@ -54,13 +53,13 @@ public class DB2PkGenerator extends SequencePkGenerator {
     }
 
     @Override
-    protected String dropSequenceString(DbEntity entity) {
+    protected String dropSequenceString(DbAdapter adapter, DbEntity entity) {
         return "DROP SEQUENCE " + adapter.getQuotingStrategy(entity).quotedFQN(entity.getCatalog(), entity.getSchema(),
                 sequenceName(entity)) + " RESTRICT ";
     }
 
     @Override
-    protected String createSequenceString(DbEntity entity) {
+    protected String createSequenceString(DbAdapter adapter, DbEntity entity) {
         return "CREATE SEQUENCE " + adapter.getQuotingStrategy(entity).quotedFQN(entity.getCatalog(),
                 entity.getSchema(), sequenceName(entity)) + " AS BIGINT START WITH "
                 + pkStartValue + " INCREMENT BY " + getPkCacheSize() + " NO MAXVALUE NO CYCLE CACHE " + getPkCacheSize();

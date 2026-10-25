@@ -25,6 +25,7 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.SQLTemplate;
+import org.apache.cayenne.unit.DataNodes;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -47,7 +48,7 @@ public class OperationContextTest {
     }
 
     private static StatementContext newStatementContext(String sql) {
-        return new StatementContext(new SQLTemplate<>(sql), mock(QueryMetadata.class));
+        return new StatementContext(new SQLTemplate<>(sql), mock(QueryMetadata.class), mock(EntityResolver.class));
     }
 
     @Test
@@ -69,7 +70,7 @@ public class OperationContextTest {
 
     @Test
     public void addStatementContext() {
-        DataNode node = new DataNode("n1");
+        DataNode node = DataNodes.named("n1");
         OperationContext context = newContext(false);
         StatementContext statementContext = newStatementContext("SELECT 1");
 
@@ -82,7 +83,7 @@ public class OperationContextTest {
 
     @Test
     public void addedStatementsGetOperationFlags() {
-        DataNode node = new DataNode("n1");
+        DataNode node = DataNodes.named("n1");
         OperationContext context = newContext(true);
 
         StatementContext before = newStatementContext("1");
@@ -101,8 +102,8 @@ public class OperationContextTest {
 
     @Test
     public void statementsGroupedByNodeInOrder() {
-        DataNode n1 = new DataNode("n1");
-        DataNode n2 = new DataNode("n2");
+        DataNode n1 = DataNodes.named("n1");
+        DataNode n2 = DataNodes.named("n2");
         OperationContext context = newContext(false);
 
         StatementContext s1 = newStatementContext("1");
@@ -121,7 +122,7 @@ public class OperationContextTest {
     @Test
     public void clearStatementContexts() {
         OperationContext context = newContext(false);
-        context.addStatementContext(new DataNode("n1"), newStatementContext("1"));
+        context.addStatementContext(DataNodes.named("n1"), newStatementContext("1"));
 
         context.clearStatementContexts();
 

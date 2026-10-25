@@ -39,7 +39,7 @@ public class DropTableToDb extends AbstractToDbToken.Entity {
         // TODO: fix. some adapters drop the complete AUTO_PK_SUPPORT here
         /*
         sqls.addAll(node.getPkGenerator().dropAutoPkStatements(
-                Collections.singletonList(entity)));
+                node.getAdapter(), Collections.singletonList(entity)));
          */
         sqls.addAll(node.getAdapter().dropTableStatements(getEntity()));
         return sqls;

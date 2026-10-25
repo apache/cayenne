@@ -20,7 +20,6 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.SelectResult;
-import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
 import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
 import org.apache.cayenne.access.translator.BatchTranslator;
 import org.apache.cayenne.access.translator.ProcedureTranslator;
@@ -30,15 +29,12 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.log.SQLLogger;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.EntitySorter;
 import org.apache.cayenne.query.DeleteBatchQuery;
 import org.apache.cayenne.query.InsertBatchQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.UpdateBatchQuery;
 
 import javax.sql.DataSource;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +43,7 @@ public class MockDataNode extends DataNode {
 
     protected DataDomain domain;
     protected DataNode node;
+    protected List<DataMap> dataMaps;
     protected boolean wasDefaultNode;
 
     // mockup the actual results
@@ -58,9 +55,10 @@ public class MockDataNode extends DataNode {
         MockDataNode mockNode = new MockDataNode(node);
         mockNode.domain = domain;
         mockNode.wasDefaultNode = domain.getDefaultNode() == node;
+        mockNode.dataMaps = domain.getDataMaps().stream().filter(m -> domain.lookupDataNode(m) == node).toList();
 
         domain.removeDataNode(node.getName());
-        domain.addNode(mockNode);
+        domain.addNode(mockNode, mockNode.dataMaps);
 
         // queries for DataMaps not linked to a node are routed via the default node, so it must be intercepted as well
         if (mockNode.wasDefaultNode) {
@@ -71,6 +69,8 @@ public class MockDataNode extends DataNode {
     }
 
     public MockDataNode(DataNode node) {
+        // every accessor delegates to the wrapped node, so nothing is wired here
+        super(node.getName(), null, null, null, null, null, null, null, null, null, null, null);
         this.node = node;
     }
 
@@ -80,7 +80,7 @@ public class MockDataNode extends DataNode {
         }
 
         domain.removeDataNode(getName());
-        domain.addNode(node);
+        domain.addNode(node, dataMaps);
 
         if (wasDefaultNode) {
             domain.setDefaultNode(node);
@@ -117,11 +117,6 @@ public class MockDataNode extends DataNode {
     }
 
     @Override
-    public void addDataMap(DataMap map) {
-        node.addDataMap(map);
-    }
-
-    @Override
     public boolean equals(Object obj) {
         return node.equals(obj);
     }
@@ -137,33 +132,13 @@ public class MockDataNode extends DataNode {
     }
 
     @Override
-    public Collection getDataMaps() {
-        return node.getDataMaps();
-    }
-
-    @Override
     public DataSource getDataSource() {
         return node.getDataSource();
     }
 
     @Override
-    public EntityResolver getEntityResolver() {
-        return node.getEntityResolver();
-    }
-
-    @Override
-    public EntitySorter getEntitySorter() {
-        return node.getEntitySorter();
-    }
-
-    @Override
     public SQLLogger getSqlLogger() {
         return node.getSqlLogger();
-    }
-
-    @Override
-    public SchemaUpdateStrategy getSchemaUpdateStrategy() {
-        return node.getSchemaUpdateStrategy();
     }
 
     @Override
@@ -204,41 +179,6 @@ public class MockDataNode extends DataNode {
     @Override
     public String getName() {
         return node.getName();
-    }
-
-    @Override
-    public void removeDataMap(String mapName) {
-        node.removeDataMap(mapName);
-    }
-
-    @Override
-    public void setAdapter(DbAdapter adapter) {
-        node.setAdapter(adapter);
-    }
-
-    @Override
-    public void setDataMaps(Collection dataMaps) {
-        node.setDataMaps(dataMaps);
-    }
-
-    @Override
-    public void setDataSource(DataSource dataSource) {
-        node.setDataSource(dataSource);
-    }
-
-    @Override
-    public void setEntityResolver(EntityResolver entityResolver) {
-        node.setEntityResolver(entityResolver);
-    }
-
-    @Override
-    public void setEntitySorter(EntitySorter entitySorter) {
-        node.setEntitySorter(entitySorter);
-    }
-
-    @Override
-    public void setName(String name) {
-        node.setName(name);
     }
 
     @Override

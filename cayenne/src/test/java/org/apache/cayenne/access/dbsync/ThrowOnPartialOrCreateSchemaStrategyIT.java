@@ -16,14 +16,11 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+
 package org.apache.cayenne.access.dbsync;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.access.StatementContexts;
-import org.apache.cayenne.query.SQLTemplate;
 import org.junit.jupiter.api.Test;
-
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -31,45 +28,33 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ThrowOnPartialOrCreateSchemaStrategyIT extends SchemaUpdateStrategyBase {
 
-    @Test
-	public void mixedStrategyTableExist() throws Exception {
-
+	@Test
+	public void allTables() throws Exception {
 		createOneTable("SUS1");
 		createOneTable("SUS2");
 
-		String template = "SELECT #result('ARTIST_ID' 'int') FROM ARTIST ORDER BY ARTIST_ID";
-		SQLTemplate query = new SQLTemplate(template);
-
-		setStrategy(ThrowOnPartialOrCreateSchemaStrategy.class);
-		StatementContexts.run(node, query);
-	}
-
-    @Test
-	public void mixedStrategyTableNoExist() throws Exception {
-
-		String template = "SELECT #result('id' 'int') FROM SUS1";
-		SQLTemplate query = new SQLTemplate(template);
-
-		setStrategy(ThrowOnPartialOrCreateSchemaStrategy.class);
-
-		StatementContexts.run(node, query);
-		Map<String, Boolean> nameTables = tablesMap();
-		assertTrue(nameTables.get("SUS1"));
-		assertEquals(2, existingTables().size());
-
-		StatementContexts.run(node, query);
+		updateSchema(new ThrowOnPartialOrCreateSchemaStrategy());
 		assertEquals(2, existingTables().size());
 	}
 
-    @Test
-	public void mixedStrategyWithOneTable() throws Exception {
+	@Test
+	public void noTables() throws Exception {
+		ThrowOnPartialOrCreateSchemaStrategy strategy = new ThrowOnPartialOrCreateSchemaStrategy();
+
+		updateSchema(strategy);
+		assertTrue(tablesMap().get("SUS1"));
+		assertEquals(2, existingTables().size());
+
+		// a rerun on a full schema is a no-op
+		updateSchema(strategy);
+		assertEquals(2, existingTables().size());
+	}
+
+	@Test
+	public void oneTable() {
 		createOneTable("SUS1");
-		setStrategy(ThrowOnPartialOrCreateSchemaStrategy.class);
 
-		String template = "SELECT #result('ARTIST_ID' 'int') FROM ARTIST ORDER BY ARTIST_ID";
-		SQLTemplate query = new SQLTemplate(template);
-
-		assertThrows(CayenneRuntimeException.class, () ->
-			StatementContexts.run(node, query));
+		assertThrows(CayenneRuntimeException.class,
+				() -> updateSchema(new ThrowOnPartialOrCreateSchemaStrategy()));
 	}
 }

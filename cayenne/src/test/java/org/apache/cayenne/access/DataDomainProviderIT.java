@@ -25,7 +25,6 @@ import org.apache.cayenne.DataChannelSyncFilter;
 import org.apache.cayenne.DataChannelSyncFilterChain;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResult;
-import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
 import org.apache.cayenne.access.dbsync.ThrowOnPartialOrCreateSchemaStrategy;
 import org.apache.cayenne.access.lifecycle.LifecycleEventsManager;
 import org.apache.cayenne.project.DataNodeDescriptor;
@@ -123,15 +122,11 @@ public class DataDomainProviderIT {
         DataMap map1 = domain.getDataMap("map-db1");
         DataNode node1 = domain.getDataNode("node1");
         assertNotNull(node1);
-        assertEquals(1, node1.getDataMaps().size());
-        assertSame(map1, node1.getDataMaps().iterator().next());
         assertSame(node1, domain.lookupDataNode(map1));
 
         DataMap map2 = domain.getDataMap("map-db2");
         DataNode node2 = domain.getDataNode("node2");
         assertNotNull(node2);
-        assertEquals(1, node2.getDataMaps().size());
-        assertSame(map2, node2.getDataMaps().iterator().next());
         assertSame(node2, domain.lookupDataNode(map2));
     }
 
@@ -143,14 +138,6 @@ public class DataDomainProviderIT {
             assertNotNull(node.getDataSource());
             assertNotNull(node.getAdapter());
         }
-
-        // "node1" declares an explicit strategy, "node2" gets the default
-        assertEquals(
-                ThrowOnPartialOrCreateSchemaStrategy.class,
-                domain.getDataNode("node1").getSchemaUpdateStrategy().getClass());
-        assertEquals(
-                SkipSchemaUpdateStrategy.class,
-                domain.getDataNode("node2").getSchemaUpdateStrategy().getClass());
     }
 
     @Test
@@ -180,12 +167,7 @@ public class DataDomainProviderIT {
         assertSame(defaultNode, domain.getDataNode("default"));
 
         // "map-db1" stays with its own node, "map-db2" is taken over by the default node
-        assertEquals(1, node1.getDataMaps().size());
-        assertSame(linked, node1.getDataMaps().iterator().next());
         assertSame(node1, domain.lookupDataNode(linked));
-
-        assertEquals(1, defaultNode.getDataMaps().size());
-        assertSame(unlinked, defaultNode.getDataMaps().iterator().next());
         assertSame(defaultNode, domain.lookupDataNode(unlinked));
     }
 
@@ -201,9 +183,7 @@ public class DataDomainProviderIT {
         DataDomain domain = twoNodeRuntime.getDataDomain();
 
         // the missing DataMap is ignored, but the node itself is still a part of the domain
-        DataNode node1 = domain.getDataNode("node1");
-        assertNotNull(node1);
-        assertTrue(node1.getDataMaps().isEmpty());
+        assertNotNull(domain.getDataNode("node1"));
     }
 
     @Test

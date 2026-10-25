@@ -21,20 +21,15 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.CayenneSqlException;
-import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
 import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
 import org.apache.cayenne.access.translator.BatchTranslator;
 import org.apache.cayenne.access.translator.ProcedureTranslator;
 import org.apache.cayenne.access.translator.SQLTemplateTranslator;
 import org.apache.cayenne.access.translator.SelectTranslator;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dba.DbAdapterDetector;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.log.NoopSQLLogger;
 import org.apache.cayenne.log.SQLLogger;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.EntitySorter;
 import org.apache.cayenne.query.DeleteBatchQuery;
 import org.apache.cayenne.query.InsertBatchQuery;
 import org.apache.cayenne.query.UpdateBatchQuery;
@@ -47,11 +42,7 @@ import javax.sql.DataSource;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Logger;
 
 /**
@@ -61,63 +52,68 @@ import java.util.logging.Logger;
  */
 public class DataNode {
 
-    protected String name;
+    private final String name;
+    private final TransactionDataSource dataSource;
 
-    // may be detected lazily, as detecting the DB type requires DB access, and the stack must be able to start when
-    // the DB is not available
-    protected volatile DbAdapter adapter;
-    private List<DbAdapterDetector> adapterDetectors;
-    // when not installed by the user, created lazily from the adapter, as this may require resolving the adapter first
+    // resolved lazily by the initializer on first use, as this may require DB access, and the stack must be able to
+    // start when the DB is not available
+    private volatile DbAdapter adapter;
+    private DataNodeInitializer initializer;
+
+    // the custom generator from the constructor, or else the default generator of the adapter, created when the
+    // adapter is resolved
     private volatile PkGenerator pkGenerator;
-    // tells whether "pkGenerator" was installed by the user, and hence must not be replaced when the adapter changes
-    private boolean customPkGenerator;
 
-    protected EntityResolver entityResolver;
-    protected EntitySorter entitySorter;
-    protected SchemaUpdateStrategy schemaUpdateStrategy;
-    protected Map<String, DataMap> dataMaps;
-
-    private TransactionDataSource dataSource;
-    private SQLLogger sqlLogger;
-    private RowReaderFactory rowReaderFactory;
-    private BatchTranslator<InsertBatchQuery> insertBatchTranslator;
-    private BatchTranslator<UpdateBatchQuery> updateBatchTranslator;
-    private BatchTranslator<DeleteBatchQuery> deleteBatchTranslator;
-    private SelectTranslator selectTranslator;
-    private ProcedureTranslator procedureTranslator;
-    private SQLTemplateTranslator sqlTemplateTranslator;
+    private final SQLLogger sqlLogger;
+    private final RowReaderFactory rowReaderFactory;
+    private final SelectTranslator selectTranslator;
+    private final ProcedureTranslator procedureTranslator;
+    private final SQLTemplateTranslator sqlTemplateTranslator;
+    private final BatchTranslator<InsertBatchQuery> insertBatchTranslator;
+    private final BatchTranslator<UpdateBatchQuery> updateBatchTranslator;
+    private final BatchTranslator<DeleteBatchQuery> deleteBatchTranslator;
 
     /**
-     * Creates a new unnamed DataNode.
+     * Creates a new DataNode. A node is immutable once created: everything it needs is passed here, and the only
+     * state resolved later is the adapter, with its default PkGenerator unless a custom one is given, on the first
+     * use of the node.
+     *
+     * @since 6.0
      */
-    public DataNode() {
-        this(null);
-    }
-
-    /**
-     * Creates a new DataNode, assigning it a name.
-     */
-    public DataNode(String name) {
+    public DataNode(
+            String name,
+            DataSource dataSource,
+            DataNodeInitializer initializer,
+            PkGenerator pkGenerator,
+            SQLLogger sqlLogger,
+            RowReaderFactory rowReaderFactory,
+            SelectTranslator selectTranslator,
+            ProcedureTranslator procedureTranslator,
+            SQLTemplateTranslator sqlTemplateTranslator,
+            BatchTranslator<InsertBatchQuery> insertBatchTranslator,
+            BatchTranslator<UpdateBatchQuery> updateBatchTranslator,
+            BatchTranslator<DeleteBatchQuery> deleteBatchTranslator) {
 
         this.name = name;
-        this.dataMaps = new HashMap<>();
+        this.dataSource = dataSource != null ? new TransactionDataSource(this, dataSource) : null;
+        this.initializer = initializer;
+        this.pkGenerator = pkGenerator;
 
-        // make sure logger is not null
-        this.sqlLogger = NoopSQLLogger.getInstance();
+        this.sqlLogger = sqlLogger != null ? sqlLogger : NoopSQLLogger.getInstance();
+        this.rowReaderFactory = rowReaderFactory;
+        this.selectTranslator = selectTranslator;
+        this.procedureTranslator = procedureTranslator;
+        this.sqlTemplateTranslator = sqlTemplateTranslator;
+        this.insertBatchTranslator = insertBatchTranslator;
+        this.updateBatchTranslator = updateBatchTranslator;
+        this.deleteBatchTranslator = deleteBatchTranslator;
     }
 
     /**
-     * @since 3.0
+     * Returns node name. Name is used to uniquely identify DataNode within a DataDomain.
      */
-    public SchemaUpdateStrategy getSchemaUpdateStrategy() {
-        return schemaUpdateStrategy;
-    }
-
-    /**
-     * @since 3.0
-     */
-    public void setSchemaUpdateStrategy(SchemaUpdateStrategy schemaUpdateStrategy) {
-        this.schemaUpdateStrategy = schemaUpdateStrategy;
+    public String getName() {
+        return name;
     }
 
     /**
@@ -128,85 +124,39 @@ public class DataNode {
     }
 
     /**
-     * @since 3.1
-     */
-    public void setSQLLogger(SQLLogger logger) {
-        this.sqlLogger = logger;
-    }
-
-    /**
-     * Returns node name. Name is used to uniquely identify DataNode within a
-     * DataDomain.
-     */
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    /**
-     * Returns an unmodifiable collection of DataMaps handled by this DataNode.
-     */
-    public Collection<DataMap> getDataMaps() {
-        return Collections.unmodifiableCollection(dataMaps.values());
-    }
-
-    /**
-     * Returns datamap with specified name, null if none present
-     */
-    public DataMap getDataMap(String name) {
-        return dataMaps.get(name);
-    }
-
-    public void setDataMaps(Collection<DataMap> dataMaps) {
-        for (DataMap map : dataMaps) {
-            this.dataMaps.put(map.getName(), map);
-        }
-    }
-
-    /**
-     * Adds a DataMap to be handled by this node.
-     */
-    public void addDataMap(DataMap map) {
-        this.dataMaps.put(map.getName(), map);
-    }
-
-    public void removeDataMap(DataMap map) {
-        removeDataMap(map.getName());
-    }
-
-    public void removeDataMap(String mapName) {
-        dataMaps.remove(mapName);
-    }
-
-    /**
      * Returns DataSource used by this DataNode to obtain connections.
      */
     public DataSource getDataSource() {
-        // return the read-through wrapper, not the raw pool, so callers participate in schema
-        // updates and transaction connection sharing
+        // return the transaction-aware wrapper, not the raw pool, so callers share the connection of the current
+        // transaction
         return dataSource;
     }
 
-    public void setDataSource(DataSource dataSource) {
-        this.dataSource = new TransactionDataSource(this, dataSource);
-    }
-
     /**
-     * Returns DbAdapter object. This is a plugin that handles RDBMS vendor-specific features. When no adapter was set
-     * explicitly, it is detected off the node's DataSource with the {@link #setAdapterDetectors(List) detectors} on
-     * first access, and cached. So this call may access the DB and may fail if the DB is not available.
+     * Returns DbAdapter object. This is a plugin that handles RDBMS vendor-specific features. The adapter is resolved
+     * by the node's {@link DataNodeInitializer} on first access, and cached. So this call may access the DB and may
+     * fail if the DB is not available.
      */
     public DbAdapter getAdapter() {
         DbAdapter resolved = adapter;
-        if (resolved == null && adapterDetectors != null) {
+        if (resolved == null) {
             synchronized (this) {
+                // the initializer is read under the lock, as it is cleared once it has run
                 resolved = adapter;
-                if (resolved == null) {
-                    resolved = detectAdapter();
+                if (resolved == null && initializer != null) {
+                    resolved = initializer.init();
+                    if (resolved == null) {
+                        throw new CayenneRuntimeException("Initializer of DataNode '%s' returned no DbAdapter", name);
+                    }
+
+                    // "adapter" is the publication flag, so the generator must be in place before it is set
+                    if (pkGenerator == null) {
+                        pkGenerator = resolved.createPkGenerator();
+                    }
                     adapter = resolved;
+
+                    // the initializer has done its job, release whatever it holds on to
+                    initializer = null;
                 }
             }
         }
@@ -214,91 +164,26 @@ public class DataNode {
         return resolved;
     }
 
-    private DbAdapter detectAdapter() {
-        if (dataSource == null) {
-            throw new CayenneRuntimeException("Can't detect the adapter of DataNode '%s': no DataSource", name);
-        }
-
-        // detect off the raw DataSource, not off the transaction-aware wrapper: the wrapper runs the schema update
-        // strategy, which itself needs the adapter, and the detection connection must not join the current transaction
-        try (Connection c = dataSource.dataSource.getConnection()) {
-            return DbAdapterDetector.detect(c.getMetaData(), adapterDetectors);
-        } catch (SQLException e) {
-            throw new CayenneRuntimeException("Error detecting database type: " + e.getLocalizedMessage(), e);
-        }
-    }
-
     /**
-     * Installs the detectors to run once against the node's DataSource, on first {@link #getAdapter()} call. This
-     * defers DB type detection until the adapter is actually needed, allowing the stack to start when the DB is not
-     * available. An adapter set explicitly via {@link #setAdapter(DbAdapter)} takes precedence.
-     *
-     * @since 6.0
-     */
-    public void setAdapterDetectors(List<DbAdapterDetector> adapterDetectors) {
-        this.adapterDetectors = adapterDetectors;
-    }
-
-    public void setAdapter(DbAdapter adapter) {
-        this.adapter = adapter;
-
-        // a generator built for the old adapter is meaningless for the new one, so reset it to be lazily recreated
-        // on demand. A generator explicitly installed by the user is left alone.
-        if (!customPkGenerator) {
-            this.pkGenerator = null;
-        }
-    }
-
-    /**
-     * Returns the PkGenerator used by this node to generate primary keys. Unless an explicit generator was installed
-     * with {@link #setPkGenerator(PkGenerator)}, this is the default generator of the node's {@link DbAdapter}.
+     * Returns the PkGenerator used by this node to generate primary keys: the custom generator the node was created
+     * with, or else the default generator of the node's {@link DbAdapter}.
      *
      * @since 5.0
      */
     public PkGenerator getPkGenerator() {
 
-        // not creating the default generator until it is needed, as resolving the adapter may open a DB connection,
-        // and we must allow the stack to start when the DB is not available
+        // the default generator is created together with the adapter, which may still need to be resolved
         if (pkGenerator == null) {
-            synchronized (this) {
-                if (pkGenerator == null) {
-                    DbAdapter adapter = getAdapter();
-                    if (adapter != null) {
-                        pkGenerator = adapter.createPkGenerator();
-                    }
-                }
-            }
+            getAdapter();
         }
 
         return pkGenerator;
     }
 
     /**
-     * Installs a custom PkGenerator, overriding the default generator of the node's {@link DbAdapter}. A custom
-     * generator is retained across {@link #setAdapter(DbAdapter)} calls. Passing null restores the adapter default.
-     *
-     * @since 5.0
-     */
-    public void setPkGenerator(PkGenerator pkGenerator) {
-        if (pkGenerator != null) {
-            this.pkGenerator = pkGenerator;
-            this.customPkGenerator = true;
-        } else {
-            this.customPkGenerator = false;
-            this.pkGenerator = null;
-        }
-    }
-
-    /**
      * Executes the statements, in order, on a single Connection obtained from the internal DataSource. The SQL action
-     * of each statement fills its context with the translated statement and the results. A failure to obtain a
-     * connection is thrown as a CayenneRuntimeException; a failure of a statement is thrown as a
-     * {@link CayenneSqlException} carrying its context, unless the failure is a CayenneRuntimeException in its own
-     * right (e.g. an {@link OptimisticLockException}), which is rethrown as is. The statements after a failed one are
-     * not executed.
+     * of each statement fills its context with the translated statement and the results.
      *
-     * @param statementContexts the statements to execute, normally the ones routed to this node within an operation,
-     *                          i.e. this node's entry in {@link OperationContext#getStatementContexts()}.
      * @since 6.0
      */
     public void execute(List<StatementContext> statementContexts) {
@@ -311,9 +196,9 @@ public class DataNode {
                     statementContexts.size());
         }
 
-        // resolve the adapter before opening a connection, as a lazy adapter detection opens a connection of its own.
-        // Otherwise, we may end up with two connections open simultaneously, possibly hitting connection pool upper
-        // limit.
+        // initialize the node before opening a connection, as the lazy initialization (adapter detection, schema
+        // update) opens connections of its own. Otherwise, we may end up with two connections open simultaneously,
+        // possibly hitting connection pool upper limit.
         DbAdapter adapter = getAdapter();
 
         Transaction tx = BaseTransaction.getThreadTransaction();
@@ -357,43 +242,6 @@ public class DataNode {
         }
     }
 
-    /**
-     * Returns EntityResolver that handles DataMaps of this node.
-     */
-    public EntityResolver getEntityResolver() {
-        return entityResolver;
-    }
-
-    /**
-     * Sets EntityResolver. DataNode relies on externally set EntityResolver, so
-     * if the node is created outside of DataDomain stack, a valid
-     * EntityResolver must be provided explicitly.
-     *
-     * @since 1.1
-     */
-    public void setEntityResolver(EntityResolver entityResolver) {
-        this.entityResolver = entityResolver;
-    }
-
-    /**
-     * Returns an EntitySorter that sorts the entities of this node based on their mutual dependencies.
-     *
-     * @since 5.0
-     */
-    public EntitySorter getEntitySorter() {
-        return entitySorter;
-    }
-
-    /**
-     * Sets EntitySorter. DataNode relies on an externally set sorter, so if the node is created outside of the
-     * DataDomain stack, a valid EntitySorter must be provided explicitly.
-     *
-     * @since 5.0
-     */
-    public void setEntitySorter(EntitySorter entitySorter) {
-        this.entitySorter = entitySorter;
-    }
-
     @Override
     public String toString() {
         return new ToStringBuilder(this).append("name", getName()).toString();
@@ -407,24 +255,10 @@ public class DataNode {
     }
 
     /**
-     * @since 4.0
-     */
-    public void setRowReaderFactory(RowReaderFactory rowReaderFactory) {
-        this.rowReaderFactory = rowReaderFactory;
-    }
-
-    /**
      * @since 5.0
      */
     public BatchTranslator<InsertBatchQuery> getInsertBatchTranslator() {
         return insertBatchTranslator;
-    }
-
-    /**
-     * @since 5.0
-     */
-    public void setInsertBatchTranslator(BatchTranslator<InsertBatchQuery> insertBatchTranslator) {
-        this.insertBatchTranslator = insertBatchTranslator;
     }
 
     /**
@@ -437,22 +271,8 @@ public class DataNode {
     /**
      * @since 5.0
      */
-    public void setUpdateBatchTranslator(BatchTranslator<UpdateBatchQuery> updateBatchTranslator) {
-        this.updateBatchTranslator = updateBatchTranslator;
-    }
-
-    /**
-     * @since 5.0
-     */
     public BatchTranslator<DeleteBatchQuery> getDeleteBatchTranslator() {
         return deleteBatchTranslator;
-    }
-
-    /**
-     * @since 5.0
-     */
-    public void setDeleteBatchTranslator(BatchTranslator<DeleteBatchQuery> deleteBatchTranslator) {
-        this.deleteBatchTranslator = deleteBatchTranslator;
     }
 
     /**
@@ -465,13 +285,6 @@ public class DataNode {
     /**
      * @since 5.0
      */
-    public void setSqlTemplateTranslator(SQLTemplateTranslator sqlTemplateTranslator) {
-        this.sqlTemplateTranslator = sqlTemplateTranslator;
-    }
-
-    /**
-     * @since 5.0
-     */
     public SelectTranslator getSelectTranslator() {
         return selectTranslator;
     }
@@ -479,22 +292,8 @@ public class DataNode {
     /**
      * @since 5.0
      */
-    public void setSelectTranslator(SelectTranslator selectTranslator) {
-        this.selectTranslator = selectTranslator;
-    }
-
-    /**
-     * @since 5.0
-     */
     public ProcedureTranslator getProcedureTranslator() {
         return procedureTranslator;
-    }
-
-    /**
-     * @since 5.0
-     */
-    public void setProcedureTranslator(ProcedureTranslator procedureTranslator) {
-        this.procedureTranslator = procedureTranslator;
     }
 
     // a read-through DataSource that ensures returning the same connection
@@ -513,12 +312,6 @@ public class DataNode {
 
         @Override
         public Connection getConnection() throws SQLException {
-            // read the strategy from the node, as it may be set after this data source is created
-            SchemaUpdateStrategy schemaUpdateStrategy = dataNode.getSchemaUpdateStrategy();
-            if (schemaUpdateStrategy != null) {
-                schemaUpdateStrategy.updateSchema(dataNode);
-            }
-
             Transaction t = BaseTransaction.getThreadTransaction();
             return (t != null)
                     ? t.getOrCreateConnection(CONNECTION_RESOURCE_PREFIX + dataNode.getName(), dataSource)
@@ -527,12 +320,6 @@ public class DataNode {
 
         @Override
         public Connection getConnection(String username, String password) throws SQLException {
-            // read the strategy from the node, as it may be set after this data source is created
-            SchemaUpdateStrategy schemaUpdateStrategy = dataNode.getSchemaUpdateStrategy();
-            if (schemaUpdateStrategy != null) {
-                schemaUpdateStrategy.updateSchema(dataNode);
-            }
-
             Transaction t = BaseTransaction.getThreadTransaction();
             return (t != null)
                     ? t.getOrCreateConnection(CONNECTION_RESOURCE_PREFIX + dataNode.getName(), dataSource)

@@ -115,7 +115,7 @@ public class PostgresAdapter extends JdbcAdapter {
      */
     @Override
     public PkGenerator createPkGenerator() {
-        return new PostgresPkGenerator(this);
+        return new PostgresPkGenerator();
     }
 
     /**

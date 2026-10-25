@@ -23,6 +23,7 @@ import org.apache.cayenne.access.dbsync.CreateIfNoSchemaStrategy;
 import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
 import org.apache.cayenne.access.dbsync.ThrowOnPartialSchemaStrategy;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.PkGenerator;
 
 import javax.sql.DataSource;
 
@@ -35,7 +36,8 @@ public record DataNodeDescriptor(
         String name,
         DataSource dataSource,
         Class<? extends DbAdapter> adapterType,
-        Class<? extends SchemaUpdateStrategy> schemaUpdateStrategyType) {
+        Class<? extends SchemaUpdateStrategy> schemaUpdateStrategyType,
+        PkGenerator pkGenerator) {
 
     /**
      * @since 5.0
@@ -53,6 +55,7 @@ public record DataNodeDescriptor(
         private DataSource dataSource;
         private Class<? extends DbAdapter> adapterType;
         private Class<? extends SchemaUpdateStrategy> schemaUpdateStrategyType;
+        private PkGenerator pkGenerator;
 
         public Builder(String name) {
             this.name = name;
@@ -81,12 +84,23 @@ public record DataNodeDescriptor(
             return schemaUpdateStrategy(ThrowOnPartialSchemaStrategy.class);
         }
 
+        /**
+         * Installs a custom primary key generator, replacing the default generator of the node's adapter.
+         *
+         * @since 6.0
+         */
+        public Builder pkGenerator(PkGenerator pkGenerator) {
+            this.pkGenerator = pkGenerator;
+            return this;
+        }
+
         public DataNodeDescriptor build() {
             return new DataNodeDescriptor(
                     name,
                     dataSource,
                     adapterType,
-                    schemaUpdateStrategyType);
+                    schemaUpdateStrategyType,
+                    pkGenerator);
         }
     }
 }

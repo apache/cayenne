@@ -198,6 +198,10 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
         return channel.getDefaultNode();
     }
 
+    public EntityResolver resolver() {
+        return scope.runtime().getDataDomain().getEntityResolver();
+    }
+
     public void runWithQueriesBlocked(Runnable task) {
         TestTelemetry.runWithQueriesBlocked(scope.runtime(), task);
     }

@@ -45,7 +45,6 @@ import java.util.List;
 public class SelectAction extends BaseSQLAction {
 
     protected Select<?> query;
-    protected QueryMetadata queryMetadata;
 
     /**
      * @since 4.0
@@ -53,18 +52,19 @@ public class SelectAction extends BaseSQLAction {
     public SelectAction(Select<?> query, DataNode dataNode) {
         super(dataNode);
         this.query = query;
-        this.queryMetadata = query.getMetaData(dataNode.getEntityResolver());
     }
 
     @Override
     public void performAction(Connection connection, StatementContext context) throws Exception {
-        TranslatedSelect translated = dataNode.getSelectTranslator().translate(query, dataNode.getAdapter(), dataNode.getEntityResolver());
+        TranslatedSelect translated = dataNode.getSelectTranslator()
+                .translate(query, dataNode.getAdapter(), context.getResolver());
         performAction(connection, context, translated);
     }
 
     protected void performAction(Connection connection, StatementContext context, TranslatedSelect translated)
             throws Exception {
 
+        QueryMetadata queryMetadata = context.getMetadata();
         context.setTranslated(translated);
 
         DbAdapter adapter = dataNode.getAdapter();
@@ -101,8 +101,8 @@ public class SelectAction extends BaseSQLAction {
 
         ResultIterator<?> it = new RSIterator<>(statement, rs, rowReader);
         it = forIteratedResult(it, context, connection);
-        it = forSuppressedDistinct(it, translated);
-        it = forFetchLimit(it, translated);
+        it = forSuppressedDistinct(it, translated, queryMetadata);
+        it = forFetchLimit(it, translated, queryMetadata);
 
         // TODO: Should do something about closing ResultSet and
         // PreparedStatement in this method, instead of relying on
@@ -142,7 +142,7 @@ public class SelectAction extends BaseSQLAction {
      * @since 5.0
      */
     protected int statementFetchSize(StatementContext context) {
-        return queryMetadata.getStatementFetchSize();
+        return context.getMetadata().getStatementFetchSize();
     }
 
     private <T> ResultIterator<T> forIteratedResult(ResultIterator<T> iterator, StatementContext context,
@@ -154,7 +154,8 @@ public class SelectAction extends BaseSQLAction {
         return new ConnectionAwareResultIterator<>(iterator, connection);
     }
 
-    private <T> ResultIterator<T> forFetchLimit(ResultIterator<T> iterator, TranslatedSelect translated) {
+    private <T> ResultIterator<T> forFetchLimit(ResultIterator<T> iterator, TranslatedSelect translated,
+                                                QueryMetadata queryMetadata) {
         // wrap iterator in a fetch limit checker ... there are a few cases when
         // in-memory fetch limit is a noop, however in a general case this is
         // needed, as the SQL result count does not directly correspond to the
@@ -172,7 +173,8 @@ public class SelectAction extends BaseSQLAction {
         }
     }
 
-    private <T> ResultIterator<T> forSuppressedDistinct(ResultIterator<T> iterator, TranslatedSelect translated) {
+    private <T> ResultIterator<T> forSuppressedDistinct(ResultIterator<T> iterator, TranslatedSelect translated,
+                                                        QueryMetadata queryMetadata) {
         if (!translated.suppressingDistinct() ||
                 queryMetadata.isSuppressingDistinct()) {
             return iterator;

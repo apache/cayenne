@@ -181,7 +181,7 @@ public class CayenneRuntime {
             }
         }
 
-        return defaultNode.getDataSource();
+        return dataSource(defaultNode);
     }
 
     /**
@@ -204,6 +204,13 @@ public class CayenneRuntime {
             throw new IllegalArgumentException("Unknown DataNode name: " + dataNodeName);
         }
 
+        return dataSource(node);
+    }
+
+    private static DataSource dataSource(DataNode node) {
+        // initialize the node (adapter detection, schema update), so that the raw JDBC callers see the same DB state
+        // as the Cayenne queries
+        node.getAdapter();
         return node.getDataSource();
     }
 

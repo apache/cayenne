@@ -19,63 +19,62 @@
 package org.apache.cayenne.access.dbsync;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.DbGenerator;
+import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.log.SQLLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @since 3.0
  */
-public class CreateIfNoSchemaStrategy extends BaseSchemaUpdateStrategy {
+public class CreateIfNoSchemaStrategy implements SchemaUpdateStrategy {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(CreateIfNoSchemaStrategy.class);
 
-
     @Override
-    protected void processSchemaUpdate(DataNode dataNode) throws SQLException {
+    public void updateSchema(DbAdapter adapter, DataSource dataSource, Collection<DataMap> dataMaps, SQLLogger logger)
+            throws SQLException {
 
-        Map<String, Boolean> nameTables = getNameTablesInDB(dataNode);
-        Collection<DbEntity> entities = dataNode.getEntityResolver().getDbEntities();
+        Set<String> tablesInDB = tablesInDB(adapter, dataSource);
         boolean generate = true;
-        Iterator<DbEntity> it = entities.iterator();
-        while (it.hasNext()) {
-            if (nameTables.get(it.next().getName()) != null) {
-                generate = false;
-                break;
+        for (DataMap map : dataMaps) {
+            for (DbEntity entity : map.getDbEntities()) {
+                if (tablesInDB.contains(entity.getName())) {
+                    generate = false;
+                    break;
+                }
             }
         }
 
         if (generate) {
             LOGGER.info("No schema detected, will create mapped tables");
-            generate(dataNode);
+            generate(adapter, dataSource, dataMaps, logger);
         } else {
             LOGGER.info("Full or partial schema detected, skipping tables creation");
         }
     }
 
-    private void generate(DataNode dataNode) {
-        Collection<DataMap> map = dataNode.getDataMaps();
-        Iterator<DataMap> iterator = map.iterator();
-        while (iterator.hasNext()) {
-            DbGenerator gen = new DbGenerator(dataNode.getAdapter(), iterator.next(), dataNode.getSqlLogger());
+    private void generate(DbAdapter adapter, DataSource dataSource, Collection<DataMap> dataMaps, SQLLogger logger) {
+        for (DataMap map : dataMaps) {
+            DbGenerator gen = new DbGenerator(adapter, map, logger);
             gen.setShouldCreateTables(true);
             gen.setShouldDropTables(false);
             gen.setShouldCreateFKConstraints(true);
             gen.setShouldCreatePKSupport(true);
             gen.setShouldDropPKSupport(false);
             try {
-                gen.runGenerator(dataNode.getDataSource());
+                gen.runGenerator(dataSource);
             } catch (Exception e) {
                 throw new CayenneRuntimeException(e);
             }
@@ -85,21 +84,18 @@ public class CreateIfNoSchemaStrategy extends BaseSchemaUpdateStrategy {
     /**
      * Returns all the table names in database.
      */
-    protected Map<String, Boolean> getNameTablesInDB(DataNode dataNode) throws SQLException {
-        String tableLabel = dataNode.getAdapter().tableTypeForTable();
-        Map<String, Boolean> nameTables = new HashMap<>();
+    protected Set<String> tablesInDB(DbAdapter adapter, DataSource dataSource) throws SQLException {
+        String tableLabel = adapter.tableTypeForTable();
+        Set<String> tables = new HashSet<>();
 
-        try (Connection con = dataNode.getDataSource().getConnection();) {
-
-            try (ResultSet rs = con.getMetaData().getTables(null, null, "%", new String[]{tableLabel});) {
-
+        try (Connection con = dataSource.getConnection()) {
+            try (ResultSet rs = con.getMetaData().getTables(null, null, "%", new String[]{tableLabel})) {
                 while (rs.next()) {
-                    String name = rs.getString("TABLE_NAME");
-                    nameTables.put(name, false);
+                    tables.add(rs.getString("TABLE_NAME"));
                 }
             }
         }
 
-        return nameTables;
+        return tables;
     }
 }

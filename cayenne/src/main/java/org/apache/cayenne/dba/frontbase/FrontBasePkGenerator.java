@@ -20,16 +20,13 @@
 package org.apache.cayenne.dba.frontbase;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.DataRow;
-import org.apache.cayenne.QueryResult;
-import org.apache.cayenne.SelectResult;
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.StatementContext;
-import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcPkGenerator;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.query.SQLTemplate;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,8 +35,7 @@ import java.util.List;
  */
 public class FrontBasePkGenerator extends JdbcPkGenerator {
 
-    public FrontBasePkGenerator(JdbcAdapter adapter) {
-        super(adapter);
+    public FrontBasePkGenerator() {
         pkStartValue = 1000000;
     }
 
@@ -60,7 +56,7 @@ public class FrontBasePkGenerator extends JdbcPkGenerator {
     }
 
     @Override
-    public List<String> createAutoPkStatements(List<DbEntity> dbEntities) {
+    public List<String> createAutoPkStatements(DbAdapter adapter, List<DbEntity> dbEntities) {
         List<String> list = new ArrayList<>();
         for (DbEntity entity : dbEntities) {
             list.add(pkCreateString(entity.getName()));
@@ -73,7 +69,7 @@ public class FrontBasePkGenerator extends JdbcPkGenerator {
     }
 
     @Override
-    protected String pkTableCreateString() {
+    protected String pkTableCreateString(DbAdapter adapter) {
         return "";
     }
 
@@ -98,7 +94,7 @@ public class FrontBasePkGenerator extends JdbcPkGenerator {
     }
 
     @Override
-    protected String dropAutoPkString() {
+    protected String dropAutoPkString(DbAdapter adapter) {
         return "";
     }
 
@@ -108,23 +104,16 @@ public class FrontBasePkGenerator extends JdbcPkGenerator {
     @Override
     protected long longPkFromDatabase(DataNode node, DbEntity entity) {
 
-        String template = "SELECT #result('UNIQUE' 'long') FROM " + entity.getName();
+        String select = "SELECT UNIQUE FROM " + entity.getName();
 
-        SQLTemplate<DataRow> query = SQLTemplate.dataRowQuery(template);
-        StatementContext statementContext = new StatementContext(query, query.getMetaData(node.getEntityResolver()));
-        node.execute(List.of(statementContext));
-
-        long pk = 0;
-        for (QueryResult result : statementContext.getResults()) {
-            if (result instanceof SelectResult<?>(List<?> rows)) {
-                if (rows.size() != 1) {
-                    throw new CayenneRuntimeException("Error fetching PK. Expected one row, got %d", rows.size());
-                }
-
-                DataRow row = (DataRow) rows.getFirst();
-                pk = ((Number) row.get("UNIQUE")).longValue();
+        try (Connection con = node.getDataSource().getConnection()) {
+            Long pk = selectLong(con, select, node.getSqlLogger());
+            if (pk == null) {
+                throw new CayenneRuntimeException("Error fetching PK. Expected one row, got none");
             }
+            return pk;
+        } catch (SQLException e) {
+            throw new CayenneRuntimeException("Error generating PK for entity '%s'.", e, entity.getName());
         }
-        return pk;
     }
 }

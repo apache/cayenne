@@ -42,7 +42,7 @@ public class CreateTableToDb extends AbstractToDbToken.Entity {
         List<String> sqls = new ArrayList<>();
         if(needAutoPkSupport()) {
             sqls.addAll(node.getPkGenerator().createAutoPkStatements(
-                    Collections.singletonList(getEntity())));
+                    node.getAdapter(), Collections.singletonList(getEntity())));
         }
         sqls.add(node.getAdapter().createTable(getEntity()));
         return sqls;

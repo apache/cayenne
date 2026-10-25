@@ -101,7 +101,7 @@ public class SQLTemplateActionIT {
         SQLAction plan = node.getAdapter().getAction(template, node);
         assertTrue(plan instanceof SQLTemplateAction);
 
-        StatementContext statementContext = StatementContexts.newRun(node, template);
+        StatementContext statementContext = StatementContexts.newRun(node, env.resolver(), template);
 
         try (Connection c = CayenneTestsEnv.COMMON_SCHEMA.dataSource().getConnection();) {
             plan.performAction(c, statementContext);
@@ -158,7 +158,7 @@ public class SQLTemplateActionIT {
 
         SQLAction plan = node.getAdapter().getAction(template, node);
 
-        StatementContext statementContext = StatementContexts.newRun(node, template);
+        StatementContext statementContext = StatementContexts.newRun(node, env.resolver(), template);
 
         try (Connection c = CayenneTestsEnv.COMMON_SCHEMA.dataSource().getConnection();) {
             plan.performAction(c, statementContext);
@@ -188,7 +188,7 @@ public class SQLTemplateActionIT {
 
         SQLAction plan = node.getAdapter().getAction(template, node);
 
-        StatementContext statementContext = StatementContexts.newRun(node, template);
+        StatementContext statementContext = StatementContexts.newRun(node, env.resolver(), template);
 
         try (Connection c = CayenneTestsEnv.COMMON_SCHEMA.dataSource().getConnection();) {
             plan.performAction(c, statementContext);
@@ -218,7 +218,7 @@ public class SQLTemplateActionIT {
 
         SQLAction plan = node.getAdapter().getAction(template, node);
 
-        StatementContext statementContext = StatementContexts.newRun(node, template);
+        StatementContext statementContext = StatementContexts.newRun(node, env.resolver(), template);
 
         try (Connection c = CayenneTestsEnv.COMMON_SCHEMA.dataSource().getConnection();) {
             plan.performAction(c, statementContext);
@@ -249,7 +249,7 @@ public class SQLTemplateActionIT {
         SQLAction action = node.getAdapter().getAction(template, node);
 
         try (Connection c = CayenneTestsEnv.COMMON_SCHEMA.dataSource().getConnection();) {
-            StatementContext statementContext = StatementContexts.newRun(node, template);
+            StatementContext statementContext = StatementContexts.newRun(node, env.resolver(), template);
             action.performAction(c, statementContext);
 
             int[] batches = StatementContexts.counts(statementContext);
@@ -271,7 +271,7 @@ public class SQLTemplateActionIT {
         SQLAction action = node.getAdapter().getAction(template, node);
 
         try (Connection c = CayenneTestsEnv.COMMON_SCHEMA.dataSource().getConnection();) {
-            StatementContext statementContext = StatementContexts.newRun(node, template);
+            StatementContext statementContext = StatementContexts.newRun(node, env.resolver(), template);
             action.performAction(c, statementContext);
 
             int[] batches = StatementContexts.counts(statementContext);
@@ -301,7 +301,7 @@ public class SQLTemplateActionIT {
         assertSame(template, action.getQuery());
 
         try (Connection c = CayenneTestsEnv.COMMON_SCHEMA.dataSource().getConnection();) {
-            StatementContext statementContext = StatementContexts.newRun(node, template);
+            StatementContext statementContext = StatementContexts.newRun(node, env.resolver(), template);
             action.performAction(c, statementContext);
 
             int[] counts = StatementContexts.counts(statementContext);
@@ -312,7 +312,7 @@ public class SQLTemplateActionIT {
 
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
                 .orderBy("db:ARTIST_ID", SortOrder.ASCENDING);
-        StatementContext statementContext = StatementContexts.run(node, query);
+        StatementContext statementContext = StatementContexts.run(node, env.resolver(), query);
 
         List<DataRow> data = StatementContexts.rows(statementContext);
         assertEquals(1, data.size());
