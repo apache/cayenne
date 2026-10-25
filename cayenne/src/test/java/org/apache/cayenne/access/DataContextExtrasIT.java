@@ -251,7 +251,7 @@ public class DataContextExtrasIT {
         PkGenerator newGenerator = new JdbcPkGenerator(jdbcAdapter) {
 
             @Override
-            public Object generatePk(DataNode node, DbAttribute pk, Class<?> javaType) {
+            public Object generatePk(DataNode node, DbAttribute pk) {
                 throw new CayenneRuntimeException("Intentional");
             }
         };

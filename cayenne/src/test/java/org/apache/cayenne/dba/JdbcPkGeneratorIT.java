@@ -76,7 +76,7 @@ public class JdbcPkGeneratorIT {
         pkGenerator.createAutoPk(node, Collections.singletonList(artistEntity));
         pkGenerator.reset();
 
-        Object pk = pkGenerator.generatePk(node, pkAttribute, null);
+        Object pk = pkGenerator.generatePk(node, pkAttribute);
         assertInstanceOf(Long.class, pk);
         assertTrue((Long) pk > Integer.MAX_VALUE, "PK is too small: " + pk);
     }

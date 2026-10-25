@@ -23,8 +23,6 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
-import org.apache.cayenne.access.types.ValueObjectType;
-import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbKeyGenerator;
@@ -182,7 +180,7 @@ public class JdbcPkGenerator implements PkGenerator {
     }
 
     @Override
-    public Object generatePk(DataNode node, DbAttribute pk, Class<?> javaType) {
+    public Object generatePk(DataNode node, DbAttribute pk) {
 
         DbEntity entity = pk.getEntity();
 
@@ -226,17 +224,6 @@ public class JdbcPkGenerator implements PkGenerator {
             }
         }
 
-        if (javaType != null) {
-            ValueObjectTypeRegistry registry = node.getEntityResolver().getValueObjectTypeRegistry();
-            if (registry != null) {
-                ValueObjectType<Object, Long> converter = (ValueObjectType<Object, Long>) registry.getValueType(javaType);
-                if (converter != null) {
-                    return converter.toJavaObject(value);
-                }
-            }
-        }
-
-        // legacy behavior for plain numeric PKs
         if (pk.getType() == Types.BIGINT) {
             return value;
         } else {

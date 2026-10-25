@@ -26,6 +26,8 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.flush.operation.DbRowOpVisitor;
 import org.apache.cayenne.access.flush.operation.DeleteDbRowOp;
 import org.apache.cayenne.access.flush.operation.InsertDbRowOp;
+import org.apache.cayenne.access.types.ValueObjectType;
+import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.exp.DbPathExp;
 import org.apache.cayenne.map.DbAttribute;
@@ -139,10 +141,8 @@ class PermanentObjectIdVisitor implements DbRowOpVisitor<Void> {
 
             // finally, use database generation mechanism
             try {
-                Class<?> javaType = objAttr != null ? objAttr.getJavaClass() : null;
-
-                Object pkValue = pkGenerator.generatePk(lastNode, dbAttr, javaType);
-                idMap.put(dbAttrName, pkValue);
+                Object pkValue = pkGenerator.generatePk(lastNode, dbAttr);
+                idMap.put(dbAttrName, objAttr != null ? toAttributeType(pkValue, objAttr.getJavaClass()) : pkValue);
                 autoPkDone = true;
             } catch (Exception ex) {
                 throw new CayenneRuntimeException("Error generating PK: %s", ex, ex.getMessage());
@@ -150,4 +150,37 @@ class PermanentObjectIdVisitor implements DbRowOpVisitor<Void> {
         }
     }
 
+
+    /**
+     * Converts a generated key to the Java type of the ObjAttribute mapped to the PK, when that type is a value object
+     * type. A key of any other Java type is returned as is.
+     */
+    @SuppressWarnings("unchecked")
+    private Object toAttributeType(Object pkValue, Class<?> javaType) {
+        ValueObjectTypeRegistry registry = resolver.getValueObjectTypeRegistry();
+        if (registry == null) {
+            return pkValue;
+        }
+
+        ValueObjectType<Object, Object> converter = (ValueObjectType<Object, Object>) registry.getValueType(javaType);
+        if (converter == null) {
+            return pkValue;
+        }
+
+        return converter.toJavaObject(toTargetType(pkValue, converter.getTargetType()));
+    }
+
+    // a generated numeric key is a Long or an Integer depending on the PK column type, while the value object type
+    // converts from its own target type, so bring the number to that type before converting
+    private static Object toTargetType(Object pkValue, Class<?> targetType) {
+        if (pkValue instanceof Number number) {
+            if (targetType == Long.class) {
+                return number.longValue();
+            }
+            if (targetType == Integer.class) {
+                return number.intValue();
+            }
+        }
+        return pkValue;
+    }
 }

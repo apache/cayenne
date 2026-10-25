@@ -64,21 +64,11 @@ public interface PkGenerator {
     List<String> dropAutoPkStatements(List<DbEntity> dbEntities);
 
     /**
-     * Generates a unique and non-repeating primary key for specified PK attribute.
-     *
-     * @deprecated unused by the framework that relies on {@link #generatePk(DataNode, DbAttribute, Class)}
+     * Generates a unique and non-repeating primary key for the specified PK attribute, as a value of the attribute's
+     * JDBC type: a byte array for a binary PK, a Long for a BIGINT, an Integer for any other numeric PK. Converting
+     * the key to the Java type of a mapped ObjAttribute is up to the caller.
      */
-    @Deprecated(since = "5.0", forRemoval = true)
-    default Object generatePk(DataNode dataNode, DbAttribute pk) {
-        return generatePk(dataNode, pk, null);
-    }
-
-    /**
-     * Generates a unique and non-repeating primary key for the specified PK attribute
-     *
-     * @since 5.0
-     */
-    Object generatePk(DataNode dataNode, DbAttribute pk, Class<?> javaType);
+    Object generatePk(DataNode dataNode, DbAttribute pk);
 
     /**
      * Get an adapter associated with current PkGenerator
