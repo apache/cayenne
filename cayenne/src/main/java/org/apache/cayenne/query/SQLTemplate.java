@@ -61,17 +61,6 @@ import java.util.function.Function;
  * This way a single query can have multiple "dialects" specific to a given
  * database.
  * </p>
- * <h3>Query Root</h3>
- * <p>
- * The root of a SQLTemplate determines the DataNode that runs the SQL and, for a query fetching objects, their
- * entity. It is one of a persistent class ({@link #query(Class, String)}), an ObjEntity name
- * ({@link #entityQuery(String, String)}) or a DataMap name ({@link #dataRowQuery(String, String)}), and is fixed
- * when the query is created. A query with no root ({@link #SQLTemplate(String)}, {@link #dataRowQuery(String)})
- * runs on the DataNode set via {@link #setDataNodeName(String)}, or on the default DataNode.
- * </p>
- * 
- * @param <T> the type of the result elements. Depending on the query root and configuration, this may be a
- *            persistent object, a {@link DataRow}, a scalar or an {@code Object[]}.
  * @since 1.1
  */
 public class SQLTemplate<T> implements Select<T> {
