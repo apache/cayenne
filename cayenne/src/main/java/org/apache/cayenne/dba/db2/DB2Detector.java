@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.dba.ingres;
+package org.apache.cayenne.dba.db2;
 
 import org.apache.cayenne.dba.DbAdapterDetector;
 import org.apache.cayenne.dba.DbAdapter;
@@ -28,27 +28,23 @@ import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 
 /**
- * Detects Ingres database from JDBC metadata.
- * 
  * @since 1.2
  */
-public class IngresSniffer implements DbAdapterDetector {
+public class DB2Detector implements DbAdapterDetector {
 
-    protected AdhocObjectFactory objectFactory;
+    private final AdhocObjectFactory objectFactory;
 
-    public IngresSniffer(@Inject AdhocObjectFactory objectFactory) {
+    public DB2Detector(@Inject AdhocObjectFactory objectFactory) {
         this.objectFactory = objectFactory;
     }
 
     @Override
     public DbAdapter createAdapter(DatabaseMetaData md) throws SQLException {
         String dbName = md.getDatabaseProductName();
-        if (dbName == null || !dbName.toUpperCase().contains("INGRES")) {
+        if (dbName == null || !dbName.toUpperCase().contains("DB2")) {
             return null;
         }
 
-        return objectFactory.newInstance(
-                DbAdapter.class,
-                IngresAdapter.class.getName());
+        return objectFactory.newInstance(DbAdapter.class, DB2Adapter.class, false);
     }
 }

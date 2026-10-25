@@ -114,8 +114,8 @@ public class DbImportConfiguration {
     }
 
     /**
-     * Returns the name of a Java class implementing {@link DbAdapter}. This attribute is optional, the default is
-     * {@link org.apache.cayenne.dba.AutoAdapter}, i.e. Cayenne will try to guess the DB type.
+     * Returns the name of a Java class implementing {@link DbAdapter}. This attribute is optional. When it is not set,
+     * Cayenne detects the DB type and picks the adapter accordingly.
      */
     public String getAdapter() {
         return adapter;

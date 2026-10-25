@@ -291,11 +291,16 @@ public interface DbAdapter {
     QuotingStrategy getQuotingStrategy(DbEntity entity);
 
     /**
-     * Allows the users to get access to the adapter decorated by a given adapter.
+     * Returns this adapter. Used to be the way to get to the DB-specific adapter behind the auto-detecting one, but
+     * detection now installs the DB-specific adapter directly, so there is nothing to unwrap.
      *
+     * @deprecated use the adapter directly
      * @since 4.0
      */
-    DbAdapter unwrap();
+    @Deprecated(since = "6.0", forRemoval = true)
+    default DbAdapter unwrap() {
+        return this;
+    }
 
     /**
      * @return list of system catalogs

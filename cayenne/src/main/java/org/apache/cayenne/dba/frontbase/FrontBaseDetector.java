@@ -17,38 +17,36 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.dba.derby;
+package org.apache.cayenne.dba.frontbase;
+
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
 
 import org.apache.cayenne.dba.DbAdapterDetector;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
-
 /**
- * Creates a DerbyAdapter if Apache Derby database is detected.
- *
  * @since 1.2
  */
-public class DerbySniffer implements DbAdapterDetector {
+public class FrontBaseDetector implements DbAdapterDetector {
 
-    protected AdhocObjectFactory objectFactory;
+    private final AdhocObjectFactory objectFactory;
 
-    public DerbySniffer(@Inject AdhocObjectFactory objectFactory) {
+    public FrontBaseDetector(@Inject AdhocObjectFactory objectFactory) {
         this.objectFactory = objectFactory;
     }
 
     @Override
     public DbAdapter createAdapter(DatabaseMetaData md) throws SQLException {
         String dbName = md.getDatabaseProductName();
-        if (dbName == null || !dbName.toUpperCase().contains("APACHE DERBY")) {
+        if (dbName == null || !dbName.toUpperCase().contains("FRONTBASE")) {
             return null;
         }
 
         return objectFactory.newInstance(
                 DbAdapter.class,
-                DerbyAdapter.class.getName());
+                FrontBaseAdapter.class.getName());
     }
 }

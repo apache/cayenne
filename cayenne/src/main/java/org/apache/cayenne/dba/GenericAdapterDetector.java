@@ -16,38 +16,29 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+package org.apache.cayenne.dba;
 
-package org.apache.cayenne.dba.h2;
-
-import org.apache.cayenne.dba.DbAdapterDetector;
-import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 
 import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
 
 /**
- * @since 3.0
+ * A fallback detector that matches any database, producing the generic {@link JdbcAdapter}. It is registered first in
+ * the detector list, so that it is tried last, after all the DB-specific detectors.
+ *
+ * @since 6.0
  */
-public class H2Sniffer implements DbAdapterDetector {
+public class GenericAdapterDetector implements DbAdapterDetector {
 
-    protected AdhocObjectFactory objectFactory;
+    private final AdhocObjectFactory objectFactory;
 
-    public H2Sniffer(@Inject AdhocObjectFactory objectFactory) {
+    public GenericAdapterDetector(@Inject AdhocObjectFactory objectFactory) {
         this.objectFactory = objectFactory;
     }
 
     @Override
-    public DbAdapter createAdapter(DatabaseMetaData md) throws SQLException {
-        String dbName = md.getDatabaseProductName();
-        if (dbName == null || !dbName.toUpperCase().contains("H2")) {
-            return null;
-        }
-
-        return objectFactory.newInstance(
-                DbAdapter.class,
-                H2Adapter.class.getName());
+    public DbAdapter createAdapter(DatabaseMetaData md) {
+        return objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
     }
-
 }

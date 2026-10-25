@@ -18,12 +18,16 @@
  ****************************************************************/
 package org.apache.cayenne.dba;
 
+import org.apache.cayenne.CayenneRuntimeException;
+import org.slf4j.LoggerFactory;
+
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
+import java.util.List;
 
 /**
  * A factory interface providing DbAdapter based on JDBC metadata.
- * 
+ *
  * @since 3.1
  */
 public interface DbAdapterDetector {
@@ -34,4 +38,31 @@ public interface DbAdapterDetector {
      * multiple factories to be chained.
      */
     DbAdapter createAdapter(DatabaseMetaData md) throws SQLException;
+
+    /**
+     * Returns the adapter produced by the first detector matching the database described by the metadata, trying the
+     * detectors in reverse order.
+     *
+     * @since 6.0
+     */
+    static DbAdapter detect(DatabaseMetaData metaData, List<DbAdapterDetector> detectors) {
+
+        try {
+            // iterate in reverse order to allow custom detectors to take precedence over the default ones, and let
+            // the first JdbcAdapter detector to serve a fallback
+            for (int i = detectors.size() - 1; i >= 0; i--) {
+                DbAdapter adapter = detectors.get(i).createAdapter(metaData);
+                if (adapter != null) {
+                    LoggerFactory.getLogger(DbAdapterDetector.class).info("Detected database '{}', installed adapter: {}",
+                            metaData.getDatabaseProductName(), adapter.getClass().getName());
+                    return adapter;
+                }
+            }
+
+            throw new CayenneRuntimeException("No DbAdapterDetector matched the database: %s %s",
+                    metaData.getDatabaseProductName(), metaData.getDatabaseProductVersion());
+        } catch (SQLException e) {
+            throw new CayenneRuntimeException("Error detecting database type: " + e.getLocalizedMessage(), e);
+        }
+    }
 }

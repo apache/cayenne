@@ -69,10 +69,8 @@ public abstract class TestDbAdapter {
 
     public static TestDbAdapter of(DbAdapter adapter) {
 
-        DbAdapter realAdapter = adapter.unwrap();
-
         // the order of cases is important due to random adapter subclasses
-        return switch (realAdapter) {
+        return switch (adapter) {
             case FirebirdAdapter a -> new FirebirdTestDbAdapter(a);
             case OracleAdapter a -> new OracleTestDbAdapter(a);
             case DerbyAdapter a -> new DerbyTestDbAdapter(a);
@@ -87,7 +85,7 @@ public abstract class TestDbAdapter {
             case IngresAdapter a -> new IngresTestDbAdapter(a);
             case SQLiteAdapter a -> new SQLiteTestDbAdapter(a);
 
-            default -> throw new IllegalStateException("Unmapped adapter type: " + realAdapter.getClass().getName());
+            default -> throw new IllegalStateException("Unmapped adapter type: " + adapter.getClass().getName());
         };
     }
 

@@ -73,13 +73,11 @@ public class SQLTemplateAction implements SQLAction {
         this.dataNode = dataNode;
         this.queryMetadata = query.getMetaData(dataNode.getEntityResolver());
         this.dbEntity = queryMetadata.getDbEntity();
-
-        // using unwrapped adapter to check for the right SQL flavor...
-        this.dbAdapter = dataNode.getAdapter().unwrap();
+        this.dbAdapter = dataNode.getAdapter();
     }
 
     /**
-     * Returns unwrapped DbAdapter used to find correct SQL for a given DB.
+     * Returns the DbAdapter used to find the correct SQL for a given DB.
      */
     public DbAdapter getAdapter() {
         return dbAdapter;

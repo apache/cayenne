@@ -19,14 +19,16 @@
 
 package org.apache.cayenne.dbsync.reverse.configuration;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.CoreModule;
-import org.apache.cayenne.dba.DbAdapterDetector;
-import org.apache.cayenne.dba.AutoAdapter;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.DbAdapterDetector;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Objects;
 
@@ -47,11 +49,19 @@ public class DefaultDbAdapterFactory implements DbAdapterFactory {
 
     @Override
     public DbAdapter createAdapter(String adapterType, DataSource dataSource) {
+        return adapterType != null
+                ? objectFactory.newInstance(DbAdapter.class, adapterType)
+                : detectAdapter(dataSource);
+    }
 
-        // AutoAdapter must not be created via the object factory, so an explicit AutoAdapter is treated the same as
-        // no adapter at all (an explicit AutoAdapter is often passed from the cdbimport plugin)
-        return adapterType == null || AutoAdapter.class.getName().equals(adapterType)
-                ? new AutoAdapter(objectFactory, dataSource, detectors)
-                : objectFactory.newInstance(DbAdapter.class, adapterType);
+    private DbAdapter detectAdapter(DataSource dataSource) {
+
+        // tools use the adapter right away, so detection is done eagerly, upfront. This also avoids opening a
+        // detection connection in the middle of an import, which some drivers do not tolerate
+        try (Connection c = dataSource.getConnection()) {
+            return DbAdapterDetector.detect(c.getMetaData(), detectors);
+        } catch (SQLException e) {
+            throw new CayenneRuntimeException("Error detecting database type: " + e.getLocalizedMessage(), e);
+        }
     }
 }

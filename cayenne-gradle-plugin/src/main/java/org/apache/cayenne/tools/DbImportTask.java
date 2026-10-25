@@ -54,8 +54,8 @@ public class DbImportTask extends BaseCayenneTask {
 
     /**
      * Java class implementing org.apache.cayenne.dba.DbAdapter. This attribute
-     * is optional, the default is AutoAdapter, i.e. Cayenne would try to guess
-     * the DB type.
+     * is optional. When it is not set, Cayenne detects the DB type and picks
+     * the adapter accordingly.
      */
     @Input
     @Optional

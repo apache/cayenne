@@ -624,14 +624,4 @@ public class JdbcAdapter implements DbAdapter {
         return dataMap != null && dataMap.isQuotingSQLIdentifiers() ? quotingStrategy : QuotingStrategy.NONE;
     }
 
-    /**
-     * Simply returns this, as JdbcAdapter is not a wrapper.
-     *
-     * @since 4.0
-     */
-    @Override
-    public DbAdapter unwrap() {
-        return this;
-    }
-
 }

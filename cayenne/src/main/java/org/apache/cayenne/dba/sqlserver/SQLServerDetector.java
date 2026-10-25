@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.dba.hsqldb;
+package org.apache.cayenne.dba.sqlserver;
 
 import org.apache.cayenne.dba.DbAdapterDetector;
 import org.apache.cayenne.dba.DbAdapter;
@@ -28,25 +28,41 @@ import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 
 /**
- * Detects HSQLDB database from JDBC metadata.
+ * Detects SQLServer database from JDBC metadata.
  *
  * @since 1.2
  */
-public class HSQLDBSniffer implements DbAdapterDetector {
+public class SQLServerDetector implements DbAdapterDetector {
 
-    protected AdhocObjectFactory objectFactory;
+    private final AdhocObjectFactory objectFactory;
 
-    public HSQLDBSniffer(@Inject AdhocObjectFactory objectFactory) {
+    public SQLServerDetector(@Inject AdhocObjectFactory objectFactory) {
         this.objectFactory = objectFactory;
     }
 
     @Override
     public DbAdapter createAdapter(DatabaseMetaData md) throws SQLException {
         String dbName = md.getDatabaseProductName();
-        if (dbName == null || !dbName.toUpperCase().contains("HSQL")) {
+        if (dbName == null || !dbName.toUpperCase().contains("MICROSOFT SQL SERVER")) {
             return null;
         }
 
-        return objectFactory.newInstance(DbAdapter.class, HSQLDBAdapter.class.getName());
+        SQLServerAdapter adapter = objectFactory.newInstance(
+                SQLServerAdapter.class,
+                SQLServerAdapter.class.getName());
+        adapter.setVersion(md.getDatabaseMajorVersion());
+
+        // detect whether generated keys are supported
+        boolean generatedKeys = false;
+
+        try {
+            generatedKeys = md.supportsGetGeneratedKeys();
+        } catch (Throwable th) {
+            // catch exceptions resulting from incomplete JDBC3 implementation
+            // ** we have to catch Throwable, as unimplemented methods would result in
+            // "AbstractMethodError".
+        }
+        adapter.setSupportsGeneratedKeys(generatedKeys);
+        return adapter;
     }
 }

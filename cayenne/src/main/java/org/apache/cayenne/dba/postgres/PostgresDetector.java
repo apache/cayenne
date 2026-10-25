@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.dba.db2;
+package org.apache.cayenne.dba.postgres;
 
 import org.apache.cayenne.dba.DbAdapterDetector;
 import org.apache.cayenne.dba.DbAdapter;
@@ -30,21 +30,23 @@ import java.sql.SQLException;
 /**
  * @since 1.2
  */
-public class DB2Sniffer implements DbAdapterDetector {
+public class PostgresDetector implements DbAdapterDetector {
 
-    protected final AdhocObjectFactory objectFactory;
+    private final AdhocObjectFactory objectFactory;
 
-    public DB2Sniffer(@Inject AdhocObjectFactory objectFactory) {
+    public PostgresDetector(@Inject AdhocObjectFactory objectFactory) {
         this.objectFactory = objectFactory;
     }
 
     @Override
     public DbAdapter createAdapter(DatabaseMetaData md) throws SQLException {
         String dbName = md.getDatabaseProductName();
-        if (dbName == null || !dbName.toUpperCase().contains("DB2")) {
+        if (dbName == null || !dbName.toUpperCase().contains("POSTGRESQL")) {
             return null;
         }
 
-        return objectFactory.newInstance(DbAdapter.class, DB2Adapter.class, false);
+        return objectFactory.newInstance(
+                DbAdapter.class,
+                PostgresAdapter.class.getName());
     }
 }

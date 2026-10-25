@@ -27,6 +27,7 @@ import org.apache.cayenne.access.translator.ProcedureTranslator;
 import org.apache.cayenne.access.translator.SQLTemplateTranslator;
 import org.apache.cayenne.access.translator.SelectTranslator;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.DbAdapterDetector;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.log.NoopSQLLogger;
 import org.apache.cayenne.log.SQLLogger;
@@ -48,6 +49,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -59,19 +61,22 @@ import java.util.logging.Logger;
 public class DataNode {
 
     protected String name;
-    protected DbAdapter adapter;
+
+    // may be detected lazily, as detecting the DB type requires DB access, and the stack must be able to start when
+    // the DB is not available
+    protected volatile DbAdapter adapter;
+    private List<DbAdapterDetector> adapterDetectors;
+    // when not installed by the user, created lazily from the adapter, as this may require resolving the adapter first
+    private volatile PkGenerator pkGenerator;
+    // tells whether "pkGenerator" was installed by the user, and hence must not be replaced when the adapter changes
+    private boolean customPkGenerator;
+
     protected EntityResolver entityResolver;
     protected EntitySorter entitySorter;
     protected SchemaUpdateStrategy schemaUpdateStrategy;
     protected Map<String, DataMap> dataMaps;
 
-    // when not installed by the user, created lazily from the adapter, as this may require DB access (see AutoAdapter)
-    private volatile PkGenerator pkGenerator;
-
-    // tells whether "pkGenerator" was installed by the user, and hence must not be replaced when the adapter changes
-    private boolean customPkGenerator;
-
-    private DataSource dataSource;
+    private TransactionDataSource dataSource;
     private SQLLogger sqlLogger;
     private RowReaderFactory rowReaderFactory;
     private BatchTranslator<InsertBatchQuery> insertBatchTranslator;
@@ -189,10 +194,48 @@ public class DataNode {
     }
 
     /**
-     * Returns DbAdapter object. This is a plugin that handles RDBMS vendor-specific features.
+     * Returns DbAdapter object. This is a plugin that handles RDBMS vendor-specific features. When no adapter was set
+     * explicitly, it is detected off the node's DataSource with the {@link #setAdapterDetectors(List) detectors} on
+     * first access, and cached. So this call may access the DB and may fail if the DB is not available.
      */
     public DbAdapter getAdapter() {
-        return adapter;
+        DbAdapter resolved = adapter;
+        if (resolved == null && adapterDetectors != null) {
+            synchronized (this) {
+                resolved = adapter;
+                if (resolved == null) {
+                    resolved = detectAdapter();
+                    adapter = resolved;
+                }
+            }
+        }
+
+        return resolved;
+    }
+
+    private DbAdapter detectAdapter() {
+        if (dataSource == null) {
+            throw new CayenneRuntimeException("Can't detect the adapter of DataNode '%s': no DataSource", name);
+        }
+
+        // detect off the raw DataSource, not off the transaction-aware wrapper: the wrapper runs the schema update
+        // strategy, which itself needs the adapter, and the detection connection must not join the current transaction
+        try (Connection c = dataSource.dataSource.getConnection()) {
+            return DbAdapterDetector.detect(c.getMetaData(), adapterDetectors);
+        } catch (SQLException e) {
+            throw new CayenneRuntimeException("Error detecting database type: " + e.getLocalizedMessage(), e);
+        }
+    }
+
+    /**
+     * Installs the detectors to run once against the node's DataSource, on first {@link #getAdapter()} call. This
+     * defers DB type detection until the adapter is actually needed, allowing the stack to start when the DB is not
+     * available. An adapter set explicitly via {@link #setAdapter(DbAdapter)} takes precedence.
+     *
+     * @since 6.0
+     */
+    public void setAdapterDetectors(List<DbAdapterDetector> adapterDetectors) {
+        this.adapterDetectors = adapterDetectors;
     }
 
     public void setAdapter(DbAdapter adapter) {
@@ -213,12 +256,15 @@ public class DataNode {
      */
     public PkGenerator getPkGenerator() {
 
-        // not creating the default generator until it is needed, as AutoAdapter would open a DB connection to do it,
+        // not creating the default generator until it is needed, as resolving the adapter may open a DB connection,
         // and we must allow the stack to start when the DB is not available
-        if (pkGenerator == null && adapter != null) {
+        if (pkGenerator == null) {
             synchronized (this) {
                 if (pkGenerator == null) {
-                    pkGenerator = adapter.createPkGenerator();
+                    DbAdapter adapter = getAdapter();
+                    if (adapter != null) {
+                        pkGenerator = adapter.createPkGenerator();
+                    }
                 }
             }
         }
@@ -258,10 +304,10 @@ public class DataNode {
             throw new CayenneRuntimeException("Iterated queries are not allowed in a batch. Batch size: %d", listSize);
         }
 
-        // do this meaningless inexpensive operation to trigger AutoAdapter lazy initialization before opening a
-        // connection. Otherwise, we may end up with two connections open simultaneously, possibly hitting connection
-        // pool upper limit.
-        getAdapter().getExtendedTypes();
+        // resolve the adapter before opening a connection, as a lazy adapter detection opens a connection of its own.
+        // Otherwise, we may end up with two connections open simultaneously, possibly hitting connection pool upper
+        // limit.
+        DbAdapter adapter = getAdapter();
 
         OperationObserver instrumentedCallback = sqlLogger.isEnabled()
                 ? new LoggingObserver(callback, sqlLogger)
@@ -286,9 +332,7 @@ public class DataNode {
 
                 // catch exceptions for each individual query
                 try {
-                    getAdapter()
-                            .getAction(nextQuery, this)
-                            .performAction(connection, instrumentedCallback);
+                    adapter.getAction(nextQuery, this).performAction(connection, instrumentedCallback);
                 } catch (Exception queryEx) {
                     instrumentedCallback.nextQueryException(nextQuery, queryEx);
 

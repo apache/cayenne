@@ -29,7 +29,6 @@ import org.apache.cayenne.access.translator.SelectTranslator;
 import org.apache.cayenne.project.DataNodeDescriptor;
 import org.apache.cayenne.RuntimeProperties;
 import org.apache.cayenne.datasource.CayenneDataSource;
-import org.apache.cayenne.dba.AutoAdapter;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.DbAdapterDetector;
 import org.apache.cayenne.di.AdhocObjectFactory;
@@ -98,7 +97,13 @@ public class DefaultDataNodeFactory implements DataNodeFactory {
 
         dataNode.setDataSource(dataSource);
         dataNode.setSchemaUpdateStrategy(createSchemaUpdateStrategy(descriptor.schemaUpdateStrategyType()));
-        dataNode.setAdapter(createDbAdapter(descriptor.adapterType(), dataSource));
+
+        if (descriptor.adapterType() != null) {
+            dataNode.setAdapter(objectFactory.newInstance(DbAdapter.class, descriptor.adapterType(), false));
+        } else {
+            // detected off the DataSource on first use, so that the stack can start when the DB is not available
+            dataNode.setAdapterDetectors(adapterDetectors);
+        }
 
         return dataNode;
     }
@@ -111,12 +116,6 @@ public class DefaultDataNodeFactory implements DataNodeFactory {
         return descriptor.dataSource() != null
                 ? descriptor.dataSource()
                 : CayenneDataSource.fromProperties(properties.toMap(), channelName + "." + descriptor.name()).build();
-    }
-
-    protected DbAdapter createDbAdapter(Class<? extends DbAdapter> type, DataSource dataSource) {
-        return type != null
-                ? objectFactory.newInstance(DbAdapter.class, type, false)
-                : new AutoAdapter(objectFactory, dataSource, adapterDetectors);
     }
 
     protected SchemaUpdateStrategy createSchemaUpdateStrategy(Class<? extends SchemaUpdateStrategy> type) {

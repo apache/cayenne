@@ -17,36 +17,37 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.dba.frontbase;
-
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
+package org.apache.cayenne.dba.h2;
 
 import org.apache.cayenne.dba.DbAdapterDetector;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
+
 /**
- * @since 1.2
+ * @since 3.0
  */
-public class FrontBaseSniffer implements DbAdapterDetector {
+public class H2Detector implements DbAdapterDetector {
 
-    protected AdhocObjectFactory objectFactory;
+    private final AdhocObjectFactory objectFactory;
 
-    public FrontBaseSniffer(@Inject AdhocObjectFactory objectFactory) {
+    public H2Detector(@Inject AdhocObjectFactory objectFactory) {
         this.objectFactory = objectFactory;
     }
 
     @Override
     public DbAdapter createAdapter(DatabaseMetaData md) throws SQLException {
         String dbName = md.getDatabaseProductName();
-        if (dbName == null || !dbName.toUpperCase().contains("FRONTBASE")) {
+        if (dbName == null || !dbName.toUpperCase().contains("H2")) {
             return null;
         }
 
         return objectFactory.newInstance(
                 DbAdapter.class,
-                FrontBaseAdapter.class.getName());
+                H2Adapter.class.getName());
     }
+
 }

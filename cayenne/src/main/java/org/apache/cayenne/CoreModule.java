@@ -53,20 +53,21 @@ import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.commitlog.CommitLogFilter;
 import org.apache.cayenne.commitlog.meta.CommitLogEntityFactory;
 import org.apache.cayenne.commitlog.meta.IncludeAllCommitLogEntityFactory;
-import org.apache.cayenne.dba.db2.DB2Sniffer;
-import org.apache.cayenne.dba.derby.DerbySniffer;
-import org.apache.cayenne.dba.firebird.FirebirdSniffer;
-import org.apache.cayenne.dba.frontbase.FrontBaseSniffer;
-import org.apache.cayenne.dba.h2.H2Sniffer;
-import org.apache.cayenne.dba.hsqldb.HSQLDBSniffer;
-import org.apache.cayenne.dba.ingres.IngresSniffer;
-import org.apache.cayenne.dba.mariadb.MariaDBSniffer;
-import org.apache.cayenne.dba.mysql.MySQLSniffer;
-import org.apache.cayenne.dba.oracle.OracleSniffer;
-import org.apache.cayenne.dba.postgres.PostgresSniffer;
-import org.apache.cayenne.dba.sqlite.SQLiteSniffer;
-import org.apache.cayenne.dba.sqlserver.SQLServerSniffer;
-import org.apache.cayenne.dba.sybase.SybaseSniffer;
+import org.apache.cayenne.dba.db2.DB2Detector;
+import org.apache.cayenne.dba.derby.DerbyDetector;
+import org.apache.cayenne.dba.GenericAdapterDetector;
+import org.apache.cayenne.dba.firebird.FirebirdDetector;
+import org.apache.cayenne.dba.frontbase.FrontBaseDetector;
+import org.apache.cayenne.dba.h2.H2Detector;
+import org.apache.cayenne.dba.hsqldb.HSQLDBDetector;
+import org.apache.cayenne.dba.ingres.IngresDetector;
+import org.apache.cayenne.dba.mariadb.MariaDBDetector;
+import org.apache.cayenne.dba.mysql.MySQLDetector;
+import org.apache.cayenne.dba.oracle.OracleDetector;
+import org.apache.cayenne.dba.postgres.PostgresDetector;
+import org.apache.cayenne.dba.sqlite.SQLiteDetector;
+import org.apache.cayenne.dba.sqlserver.SQLServerDetector;
+import org.apache.cayenne.dba.sybase.SybaseDetector;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.ClassLoaderManager;
@@ -192,21 +193,22 @@ public class CoreModule implements Module {
                 .setProperty(RuntimeProperties.MAX_ID_QUALIFIER_SIZE_PROPERTY, DEFAULT_MAX_ID_QUALIFIER_SIZE)
                 .setProperty(RuntimeProperties.CONTEXTS_SYNC_PROPERTY, "false")
 
-                // known DbAdapter detectors in reverse order of popularity.
-                .addAdapterDetector(FirebirdSniffer.class)
-                .addAdapterDetector(FrontBaseSniffer.class)
-                .addAdapterDetector(IngresSniffer.class)
-                .addAdapterDetector(SQLiteSniffer.class)
-                .addAdapterDetector(DB2Sniffer.class)
-                .addAdapterDetector(H2Sniffer.class)
-                .addAdapterDetector(HSQLDBSniffer.class)
-                .addAdapterDetector(SybaseSniffer.class)
-                .addAdapterDetector(DerbySniffer.class)
-                .addAdapterDetector(SQLServerSniffer.class)
-                .addAdapterDetector(OracleSniffer.class)
-                .addAdapterDetector(PostgresSniffer.class)
-                .addAdapterDetector(MySQLSniffer.class)
-                .addAdapterDetector(MariaDBSniffer.class)
+                // the catch-all detector goes first, as detectors are tried in reverse order
+                .addAdapterDetector(GenericAdapterDetector.class)
+                .addAdapterDetector(FirebirdDetector.class)
+                .addAdapterDetector(FrontBaseDetector.class)
+                .addAdapterDetector(IngresDetector.class)
+                .addAdapterDetector(SQLiteDetector.class)
+                .addAdapterDetector(DB2Detector.class)
+                .addAdapterDetector(H2Detector.class)
+                .addAdapterDetector(HSQLDBDetector.class)
+                .addAdapterDetector(SybaseDetector.class)
+                .addAdapterDetector(DerbyDetector.class)
+                .addAdapterDetector(SQLServerDetector.class)
+                .addAdapterDetector(OracleDetector.class)
+                .addAdapterDetector(PostgresDetector.class)
+                .addAdapterDetector(MySQLDetector.class)
+                .addAdapterDetector(MariaDBDetector.class)
 
                 .addSyncFilter(TransactionFilter.class)
 

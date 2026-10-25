@@ -138,14 +138,7 @@ public class DefaultDbImportAction implements DbImportAction {
     }
 
     protected DbAdapter createAdapter(String adapterType, DataSource dataSource) throws Exception {
-        DbAdapter adapter = adapterFactory.createAdapter(adapterType, dataSource);
-
-        // Warm up the AutoAdapter by calling any method. This to avoid AutoAdapter opening a connection later in
-        // the middle of import to detect the DB type. Opening two connections in the same thread causes issues with
-        // some DBs (namely com.sap.cloud.db.jdbc:ngdbc:2.4.56)
-        adapter.unwrap();
-
-        return adapter;
+        return adapterFactory.createAdapter(adapterType, dataSource);
     }
 
     protected void commit(DbImportConfiguration config, DataMap sourceDataMap) throws Exception {

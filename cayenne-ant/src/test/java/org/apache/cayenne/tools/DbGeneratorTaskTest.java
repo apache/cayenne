@@ -19,8 +19,8 @@
 
 package org.apache.cayenne.tools;
 
-import org.apache.cayenne.dba.AutoAdapter;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.hsqldb.HSQLDBAdapter;
 import org.apache.cayenne.dba.sqlserver.SQLServerAdapter;
 import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
 import org.apache.cayenne.di.DIBootstrap;
@@ -29,10 +29,13 @@ import org.slf4j.Logger;
 import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class DbGeneratorTaskTest {
 
@@ -52,13 +55,19 @@ public class DbGeneratorTaskTest {
 
     @Test
     public void setAdapter() throws Exception {
+        DatabaseMetaData metaData = mock(DatabaseMetaData.class);
+        when(metaData.getDatabaseProductName()).thenReturn("HSQL Database Engine");
+        Connection connection = mock(Connection.class);
+        when(connection.getMetaData()).thenReturn(metaData);
         DataSource ds = mock(DataSource.class);
+        when(ds.getConnection()).thenReturn(connection);
+
         Injector injector = DIBootstrap.createInjector(new ToolsModule(mock(Logger.class)));
 
         DbGeneratorTask task = new DbGeneratorTask();
 
-        DbAdapter autoAdapter = task.getAdapter(injector, ds);
-        assertTrue(autoAdapter instanceof AutoAdapter);
+        DbAdapter detectedAdapter = task.getAdapter(injector, ds);
+        assertTrue(detectedAdapter instanceof HSQLDBAdapter);
 
         task.setAdapter(SQLServerAdapter.class.getName());
 

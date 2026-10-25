@@ -76,12 +76,14 @@ public class CayenneRuntimeLazyStartupTest {
         assertEquals(1, domain.getDataNodes().size());
 
         DataNode node = domain.getDataNodes().iterator().next();
-        assertNotNull(node.getAdapter());
         assertNotNull(node.getDataSource());
         assertNotNull(domain.getEntityResolver().getObjEntity(Artist.class));
         assertNotNull(domain.getEntityResolver().getClassDescriptor("Artist"));
 
         dataSource.assertNotAccessed();
+
+        // the adapter is detected on first access, and that is the first time the DataSource is touched
+        assertThrows(CayenneRuntimeException.class, node::getAdapter);
     }
 
     @Test

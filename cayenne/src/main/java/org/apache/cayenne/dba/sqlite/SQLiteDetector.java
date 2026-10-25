@@ -16,8 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
-package org.apache.cayenne.dba.oracle;
+package org.apache.cayenne.dba.sqlite;
 
 import org.apache.cayenne.dba.DbAdapterDetector;
 import org.apache.cayenne.dba.DbAdapter;
@@ -28,23 +27,27 @@ import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 
 /**
- * @since 1.2
+ * Detects SQLite database from JDBC metadata.
+ * 
+ * @since 3.0
  */
-public class OracleSniffer implements DbAdapterDetector {
+public class SQLiteDetector implements DbAdapterDetector {
 
-    protected AdhocObjectFactory objectFactory;
+    private final AdhocObjectFactory objectFactory;
 
-    public OracleSniffer(@Inject AdhocObjectFactory objectFactory) {
+    public SQLiteDetector(@Inject AdhocObjectFactory objectFactory) {
         this.objectFactory = objectFactory;
     }
 
     @Override
     public DbAdapter createAdapter(DatabaseMetaData md) throws SQLException {
         String dbName = md.getDatabaseProductName();
-        if (dbName == null || !dbName.toUpperCase().contains("ORACLE")) {
+        if (dbName == null || !dbName.toUpperCase().contains("SQLITE")) {
             return null;
         }
 
-        return objectFactory.newInstance(DbAdapter.class, OracleAdapter.class.getName());
+        return objectFactory.newInstance(
+                DbAdapter.class,
+                SQLiteAdapter.class.getName());
     }
 }

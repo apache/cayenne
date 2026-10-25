@@ -17,35 +17,38 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.dba.mariadb;
+package org.apache.cayenne.dba.ingres;
+
+import org.apache.cayenne.dba.DbAdapterDetector;
+import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.di.AdhocObjectFactory;
+import org.apache.cayenne.di.Inject;
 
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 
-import org.apache.cayenne.dba.DbAdapterDetector;
-import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dba.mysql.MySQLAdapter;
-import org.apache.cayenne.di.AdhocObjectFactory;
-import org.apache.cayenne.di.Inject;
+/**
+ * Detects Ingres database from JDBC metadata.
+ * 
+ * @since 1.2
+ */
+public class IngresDetector implements DbAdapterDetector {
 
-public class MariaDBSniffer implements DbAdapterDetector {
+    private final AdhocObjectFactory objectFactory;
 
-    public static final String DEFAULT_STORAGE_ENGINE = "InnoDB";
-    protected AdhocObjectFactory objectFactory;
-
-    public MariaDBSniffer(@Inject AdhocObjectFactory objectFactory) {
+    public IngresDetector(@Inject AdhocObjectFactory objectFactory) {
         this.objectFactory = objectFactory;
     }
 
     @Override
     public DbAdapter createAdapter(DatabaseMetaData md) throws SQLException {
         String dbName = md.getDatabaseProductName();
-        if(dbName == null || !dbName.toUpperCase().contains("MARIADB")) {
+        if (dbName == null || !dbName.toUpperCase().contains("INGRES")) {
             return null;
         }
 
-        MySQLAdapter adapter = objectFactory.newInstance(MySQLAdapter.class, MySQLAdapter.class.getName());
-        adapter.setStorageEngine(DEFAULT_STORAGE_ENGINE);
-        return adapter;
+        return objectFactory.newInstance(
+                DbAdapter.class,
+                IngresAdapter.class.getName());
     }
 }

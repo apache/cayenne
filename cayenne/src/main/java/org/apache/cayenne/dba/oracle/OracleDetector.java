@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.dba.sybase;
+package org.apache.cayenne.dba.oracle;
 
 import org.apache.cayenne.dba.DbAdapterDetector;
 import org.apache.cayenne.dba.DbAdapter;
@@ -28,30 +28,23 @@ import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 
 /**
- * Detects Sybase database from JDBC metadata.
- *
  * @since 1.2
  */
-public class SybaseSniffer implements DbAdapterDetector {
+public class OracleDetector implements DbAdapterDetector {
 
-    protected AdhocObjectFactory objectFactory;
+    private final AdhocObjectFactory objectFactory;
 
-    public SybaseSniffer(@Inject AdhocObjectFactory objectFactory) {
+    public OracleDetector(@Inject AdhocObjectFactory objectFactory) {
         this.objectFactory = objectFactory;
     }
 
     @Override
     public DbAdapter createAdapter(DatabaseMetaData md) throws SQLException {
-        // JTDS driver returns "sql server" for Sybase, so need to handle it differently
-        String driver = md.getDriverName();
-        if (driver != null && driver.toLowerCase().startsWith("jtds")) {
-            String url = md.getURL();
-            return url != null && url.toLowerCase().startsWith("jdbc:jtds:sybase:")
-                    ? objectFactory.newInstance(DbAdapter.class, SybaseAdapter.class.getName()) : null;
-        } else {
-            String dbName = md.getDatabaseProductName();
-            return dbName != null && dbName.toUpperCase().contains("ADAPTIVE SERVER")
-                    ? objectFactory.newInstance(DbAdapter.class, SybaseAdapter.class.getName()) : null;
+        String dbName = md.getDatabaseProductName();
+        if (dbName == null || !dbName.toUpperCase().contains("ORACLE")) {
+            return null;
         }
+
+        return objectFactory.newInstance(DbAdapter.class, OracleAdapter.class.getName());
     }
 }

@@ -31,7 +31,7 @@ import java.sql.Connection;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-public class SQLServerSnifferIT {
+public class SQLServerDetectorIT {
 
 	@RegisterExtension
 	static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
@@ -39,12 +39,12 @@ public class SQLServerSnifferIT {
 	@Test
 	public void createAdapter() throws Exception {
 
-		SQLServerSniffer sniffer = new SQLServerSniffer(env.adhocObjectFactory());
+		SQLServerDetector detector = new SQLServerDetector(env.adhocObjectFactory());
 
 		DbAdapter adapter;
 
 		try (Connection c = CayenneTestsEnv.COMMON_SCHEMA.dataSource().getConnection()) {
-			adapter = sniffer.createAdapter(c.getMetaData());
+			adapter = detector.createAdapter(c.getMetaData());
 		}
 
 		if (env.testDbAdapter() instanceof SQLServerTestDbAdapter) {

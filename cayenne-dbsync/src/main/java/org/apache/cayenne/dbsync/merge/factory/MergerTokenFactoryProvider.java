@@ -45,7 +45,7 @@ public class MergerTokenFactoryProvider {
     public MergerTokenFactory get(DbAdapter adapter) throws DIRuntimeException {
         // walk up the class hierarchy so adapter subclasses resolve to the
         // factory mapped against their parent (e.g. a custom HSQLDBAdapter subclass)
-        for (Class<?> c = adapter.unwrap().getClass(); DbAdapter.class.isAssignableFrom(c); c = c.getSuperclass()) {
+        for (Class<?> c = adapter.getClass(); DbAdapter.class.isAssignableFrom(c); c = c.getSuperclass()) {
             MergerTokenFactory factory = perAdapterValues.get(c.getName());
             if (factory != null) {
                 return factory;

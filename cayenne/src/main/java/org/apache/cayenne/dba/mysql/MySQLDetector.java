@@ -34,11 +34,11 @@ import java.sql.Statement;
  * 
  * @since 1.2
  */
-public class MySQLSniffer implements DbAdapterDetector {
+public class MySQLDetector implements DbAdapterDetector {
 
-	protected AdhocObjectFactory objectFactory;
+	private final AdhocObjectFactory objectFactory;
 
-	public MySQLSniffer(@Inject AdhocObjectFactory objectFactory) {
+	public MySQLDetector(@Inject AdhocObjectFactory objectFactory) {
 		this.objectFactory = objectFactory;
 	}
 

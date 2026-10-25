@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.dba.postgres;
+package org.apache.cayenne.dba.derby;
 
 import org.apache.cayenne.dba.DbAdapterDetector;
 import org.apache.cayenne.dba.DbAdapter;
@@ -28,25 +28,27 @@ import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 
 /**
+ * Creates a DerbyAdapter if Apache Derby database is detected.
+ *
  * @since 1.2
  */
-public class PostgresSniffer implements DbAdapterDetector {
+public class DerbyDetector implements DbAdapterDetector {
 
-    protected AdhocObjectFactory objectFactory;
+    private final AdhocObjectFactory objectFactory;
 
-    public PostgresSniffer(@Inject AdhocObjectFactory objectFactory) {
+    public DerbyDetector(@Inject AdhocObjectFactory objectFactory) {
         this.objectFactory = objectFactory;
     }
 
     @Override
     public DbAdapter createAdapter(DatabaseMetaData md) throws SQLException {
         String dbName = md.getDatabaseProductName();
-        if (dbName == null || !dbName.toUpperCase().contains("POSTGRESQL")) {
+        if (dbName == null || !dbName.toUpperCase().contains("APACHE DERBY")) {
             return null;
         }
 
         return objectFactory.newInstance(
                 DbAdapter.class,
-                PostgresAdapter.class.getName());
+                DerbyAdapter.class.getName());
     }
 }

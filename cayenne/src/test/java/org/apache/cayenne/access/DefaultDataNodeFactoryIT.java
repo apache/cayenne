@@ -18,13 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.RuntimeProperties;
 import org.apache.cayenne.CoreModule;
 import org.apache.cayenne.access.dbsync.CreateIfNoSchemaStrategy;
 import org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy;
 import org.apache.cayenne.project.DataNodeDescriptor;
 import org.apache.cayenne.datasource.ManagedPoolingDataSource;
-import org.apache.cayenne.dba.AutoAdapter;
+import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.CayenneRuntime;
@@ -36,9 +37,13 @@ import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class DefaultDataNodeFactoryIT {
 
@@ -149,12 +154,33 @@ public class DefaultDataNodeFactoryIT {
     }
 
     @Test
-    public void autoAdapterWhenNoAdapterInDescriptor() {
+    public void detectedAdapterWhenNoAdapterInDescriptor() {
         DataNode node = factory().createDataNode("channel", DataNodeDescriptor.of("n1")
                 .dataSource(CayenneTestsEnv.COMMON_SCHEMA.dataSource())
                 .build());
 
-        assertInstanceOf(AutoAdapter.class, node.getAdapter());
+        DbAdapter adapter = node.getAdapter();
+        assertNotNull(adapter);
+        assertSame(runtime.getDataDomain().getDefaultNode().getAdapter().getClass(), adapter.getClass(),
+                "Must detect the test DB adapter");
+
+        // resolved once and cached
+        assertSame(adapter, node.getAdapter());
+    }
+
+    @Test
+    public void adapterDetectionIsLazy() throws SQLException {
+        DataSource brokenDataSource = mock(DataSource.class);
+        when(brokenDataSource.getConnection()).thenThrow(new SQLException("DB is down"));
+
+        // the stack must start when the DB is not available...
+        DataNode node = factory().createDataNode("channel", DataNodeDescriptor.of("n1")
+                .dataSource(brokenDataSource)
+                .build());
+
+        // ... and fail only when the adapter is actually needed
+        assertThrows(CayenneRuntimeException.class, node::getAdapter);
+        verify(brokenDataSource).getConnection();
     }
 
     @Test

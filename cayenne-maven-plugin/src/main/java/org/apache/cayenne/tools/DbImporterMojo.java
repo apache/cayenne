@@ -55,10 +55,10 @@ public class DbImporterMojo extends AbstractMojo {
 
     /**
      * Java class implementing org.apache.cayenne.dba.DbAdapter. This attribute
-     * is optional, the default is AutoAdapter, i.e. Cayenne would try to guess
-     * the DB type.
+     * is optional. When it is not set, Cayenne detects the DB type and picks
+     * the adapter accordingly.
      */
-    @Parameter(defaultValue = "org.apache.cayenne.dba.AutoAdapter")
+    @Parameter
     private String adapter;
 
     /**
@@ -124,8 +124,8 @@ public class DbImporterMojo extends AbstractMojo {
         final DbImportConfigurationValidator validator = new DbImportConfigurationValidator(
                 dbImportConfig, config, injector);
 
-        // TODO: "validator.validate()" creates an AutoAdapter (which checks for DB type), then  "DbImportAction.execute()"
-        //   does it again. We need to make AutoAdapter a DI singleton to avoid this extra operation
+        // TODO: "validator.validate()" creates an adapter (detecting the DB type), then "DbImportAction.execute()"
+        //   does it again. The adapter should be created once and shared to avoid this extra operation
 
         try {
             validator.validate();

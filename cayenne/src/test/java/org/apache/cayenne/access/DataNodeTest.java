@@ -19,15 +19,26 @@
 
 package org.apache.cayenne.access;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.DbAdapterDetector;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.map.EntityResolver;
 import org.junit.jupiter.api.Test;
 
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class DataNodeTest {
@@ -63,6 +74,68 @@ public class DataNodeTest {
         DbAdapter a2 = mock(DbAdapter.class);
         node.setAdapter(a2);
         assertSame(a2, node.getAdapter());
+    }
+
+    private static DataSource dataSource() throws SQLException {
+        Connection connection = mock(Connection.class);
+        when(connection.getMetaData()).thenReturn(mock(DatabaseMetaData.class));
+        DataSource dataSource = mock(DataSource.class);
+        when(dataSource.getConnection()).thenReturn(connection);
+        return dataSource;
+    }
+
+    private static List<DbAdapterDetector> detectors(DbAdapter detected) {
+        return List.of(md -> detected);
+    }
+
+    @Test
+    public void adapterDetection() throws SQLException {
+        DataNode node = new DataNode();
+        DataSource dataSource = dataSource();
+        node.setDataSource(dataSource);
+
+        DbAdapter a1 = mock(DbAdapter.class);
+        node.setAdapterDetectors(detectors(a1));
+
+        // not detected until requested, then detected once and cached
+        verify(dataSource, never()).getConnection();
+        assertSame(a1, node.getAdapter());
+        assertSame(a1, node.getAdapter());
+        verify(dataSource).getConnection();
+    }
+
+    @Test
+    public void adapterDetection_ExplicitAdapterWins() throws SQLException {
+        DataNode node = new DataNode();
+        DataSource dataSource = dataSource();
+        node.setDataSource(dataSource);
+        node.setAdapterDetectors(detectors(mock(DbAdapter.class)));
+
+        DbAdapter explicit = mock(DbAdapter.class);
+        node.setAdapter(explicit);
+        assertSame(explicit, node.getAdapter());
+        verify(dataSource, never()).getConnection();
+    }
+
+    @Test
+    public void adapterDetection_NoDataSource() {
+        DataNode node = new DataNode();
+        node.setAdapterDetectors(detectors(mock(DbAdapter.class)));
+        assertThrows(CayenneRuntimeException.class, node::getAdapter);
+    }
+
+    @Test
+    public void pkGeneratorFromDetectedAdapter() throws SQLException {
+        DataNode node = new DataNode();
+        assertNull(node.getPkGenerator());
+
+        node.setDataSource(dataSource());
+        DbAdapter adapter = mock(DbAdapter.class);
+        PkGenerator generator = mock(PkGenerator.class);
+        when(adapter.createPkGenerator()).thenReturn(generator);
+        node.setAdapterDetectors(detectors(adapter));
+
+        assertSame(generator, node.getPkGenerator());
     }
 
     @Test

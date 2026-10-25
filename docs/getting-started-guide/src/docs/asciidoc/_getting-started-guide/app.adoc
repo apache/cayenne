@@ -102,7 +102,7 @@ Run the application again. The new output will show a few actual DB operations:
 
 ----
 ...
-[main] INFO org.apache.cayenne.dba.AutoAdapter - Detected and installed adapter:
+[main] INFO org.apache.cayenne.dba.DbAdapterDetector - Detected database 'MySQL', installed adapter:
     org.apache.cayenne.dba.mysql.MySQLAdapter
 [main] INFO cayenne-sql - tx started
 [main] INFO cayenne-sql - INSERT INTO cayenne_demo.artist(DATE_OF_BIRTH, NAME) VALUES(?, ?)

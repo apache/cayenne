@@ -162,7 +162,7 @@ Example - a typical class generation scenario, where pairs of classes are genera
 .^|adapter
 .^|String
 .^|No
-.^|A Java class name implementing org.apache.cayenne.dba.DbAdapter. This attribute is optional. If not specified, AutoAdapter is used, which will attempt to guess the DB type.
+.^|A Java class name implementing org.apache.cayenne.dba.DbAdapter. This attribute is optional. If not specified, Cayenne detects the DB type and picks the adapter accordingly.
 
 .^|dataSource
 .^|XML
