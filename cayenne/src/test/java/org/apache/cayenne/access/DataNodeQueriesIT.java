@@ -87,7 +87,7 @@ public class DataNodeQueriesIT {
         bindings.put("id", 1L);
         bindings.put("name", "a1");
         bindings.put("dob", new Date(System.currentTimeMillis()));
-        query.setParameters(bindings);
+        query.setParams(bindings);
 
         MockOperationObserver observer = new MockOperationObserver();
         node.performQueries(Collections.singletonList((Query) query), observer);

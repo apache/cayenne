@@ -33,11 +33,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.stream.Stream;
 
 /**
  * A query that executes unchanged (except for template preprocessing) "raw" SQL
@@ -78,8 +76,22 @@ import java.util.stream.Stream;
  */
 public class SQLTemplate<T> implements Select<T> {
 
-	private static final Function<Map<String, ?>, Map<String, ?>> nullMapTransformer = input ->
-			(input != null) ? input : Collections.emptyMap();
+	private final Class<T> persistentType;
+	private final String entityName;
+	private final String dataMapName;
+	private final SQLTemplateMetadata metaData;
+
+	protected String defaultTemplate;
+	protected Map<String, String> templates;
+	protected Map<String, ?> params;
+	protected List<Object> positionalParams;
+	protected CapsStrategy columnNamesCapitalization;
+	protected SQLResult result;
+	private String dataNodeName;
+	protected boolean returnGeneratedKeys;
+
+	private List<Class<?>> resultColumnsTypes;
+	private boolean useScalar;
 
 	/**
 	 * Creates a query fetching objects of the given persistent type, routed to the DataNode of the type's entity.
@@ -123,25 +135,6 @@ public class SQLTemplate<T> implements Select<T> {
 		return query;
 	}
 
-	// the root: at most one of the three is set
-	private final Class<T> persistentType;
-	private final String entityName;
-	private final String dataMapName;
-
-	protected String defaultTemplate;
-	protected Map<String, String> templates;
-	protected Map<String, ?>[] parameters;
-	protected List<Object> positionalParams;
-	protected CapsStrategy columnNamesCapitalization;
-	protected SQLResult result;
-	private String dataNodeName;
-	protected boolean returnGeneratedKeys;
-
-	private List<Class<?>> resultColumnsTypes;
-	private boolean useScalar;
-
-	SQLTemplateMetadata metaData = new SQLTemplateMetadata();
-
 	/**
 	 * Creates a query with no root. It is routed to the DataNode set via {@link #setDataNodeName(String)}, or to the
 	 * default DataNode, and the shape of its result, if it has one, is defined by
@@ -167,6 +160,7 @@ public class SQLTemplate<T> implements Select<T> {
 		this.entityName = entityName;
 		this.dataMapName = dataMapName;
 		this.defaultTemplate = sql;
+		this.metaData = new SQLTemplateMetadata();
 	}
 
 	public void setResultColumnsTypes(Class<?> ...types) {
@@ -244,36 +238,16 @@ public class SQLTemplate<T> implements Select<T> {
 	}
 
 	/**
-	 * Returns an iterator over parameter sets. Each element returned from the
-	 * iterator is a java.util.Map.
-	 */
-	@SuppressWarnings("unchecked")
-	public Iterator<Map<String, ?>> parametersIterator() {
-		return (parameters == null || parameters.length == 0)
-				? Collections.emptyIterator()
-				: Stream.of(parameters).map(nullMapTransformer).iterator();
-	}
-
-	/**
-	 * Returns the number of parameter sets.
-	 */
-	public int parametersSize() {
-		return (parameters != null) ? parameters.length : 0;
-	}
-
-	/**
-	 * Initializes named parameter of this query. Note that calling this method
+	 * Initializes named parameters of this query. Note that calling this method
 	 * will reset any positional parameters.
 	 * 
 	 * @since 4.0
 	 */
-	@SuppressWarnings("unchecked")
 	public void setParams(Map<String, ?> params) {
-
-		// since named parameters are specified, resetting positional
-		// parameters
+		// since named parameters are specified, resetting positional parameters
 		this.positionalParams = null;
-		setParameters(params);
+		// copy parameters so that later changes to the caller's map do not affect the query
+		this.params = params != null ? new HashMap<>(params) : null;
 	}
 
 	/**
@@ -307,17 +281,16 @@ public class SQLTemplate<T> implements Select<T> {
 	 * @since 4.0
 	 */
 	public void setParamsList(List<Object> params) {
-		// since positional parameters are specified, resetting named
-		// parameters
-		this.parameters = null;
+		// since positional parameters are specified, resetting named parameters
+		this.params = null;
 		this.positionalParams = params != null ? new ArrayList<>(params) : null;
 	}
 
 	/**
 	 * Returns a new query built using this query as a prototype and a new set
-	 * of parameters.
+	 * of named parameters.
 	 */
-	public SQLTemplate<T> queryWithParameters(Map<String, ?>... parameters) {
+	public SQLTemplate<T> queryWithParameters(Map<String, ?> parameters) {
 		// create a query replica
 		SQLTemplate<T> query = new SQLTemplate<>(persistentType, entityName, dataMapName, defaultTemplate);
 
@@ -326,7 +299,7 @@ public class SQLTemplate<T> implements Select<T> {
 		}
 
 		query.metaData.copyFromInfo(this.metaData);
-		query.setParameters(parameters);
+		query.setParams(parameters);
 		query.setColumnNamesCapitalization(this.getColumnNamesCapitalization());
 
 		return query;
@@ -470,8 +443,7 @@ public class SQLTemplate<T> implements Select<T> {
 	 * @since 4.0
 	 */
 	public Map<String, ?> getParams() {
-		Map<String, ?> map = (parameters != null && parameters.length > 0) ? parameters[0] : null;
-		return (map != null) ? map : Collections.emptyMap();
+		return params != null ? params : Collections.emptyMap();
 	}
 
 	/**
@@ -481,31 +453,6 @@ public class SQLTemplate<T> implements Select<T> {
 	 */
 	public List<Object> getPositionalParams() {
 		return positionalParams != null ? positionalParams : Collections.emptyList();
-	}
-
-	/**
-	 * Utility method to get the first set of parameters, since most queries
-	 * will only have one.
-	 */
-	public Map<String, ?> getParameters() {
-		return getParams();
-	}
-
-	/**
-	 * Utility method to initialize query with one or more sets of parameters.
-	 */
-	@SuppressWarnings("unchecked")
-	public void setParameters(Map<String, ?>... parameters) {
-
-		if (parameters == null) {
-			this.parameters = null;
-		} else {
-			// copy parameters so that later changes to the caller's maps do not affect the query
-			this.parameters = new Map[parameters.length];
-			for (int i = 0; i < parameters.length; i++) {
-				this.parameters[i] = parameters[i] != null ? new HashMap<>(parameters[i]) : new HashMap<>();
-			}
-		}
 	}
 
 	/**

@@ -57,6 +57,11 @@
 
    * `org.apache.cayenne.Validating` is deprecated in favor of `org.apache.cayenne.lifecycle.Validating`.
 
+*  Per [CAY-3062](https://issues.apache.org/jira/browse/CAY-3062) `SQLTemplate` no longer support multiple parameter sets. 
+   The varargs `setParameters(Map...)`, `queryWithParameters(Map...)`, `getParameters()`, `parametersIterator()` and
+   `parametersSize()` are removed. The preferred way to run raw SQL is `SQLSelect` / `SQLExec` that can be called multiple 
+   times, once per a set of parameters.
+
 ## What's New in 5.0
 
 This is a high-level overview of 5.0 changes. Check the next section for milestone-by-milestone upgrade instructions.

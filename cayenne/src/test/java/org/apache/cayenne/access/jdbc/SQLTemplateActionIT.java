@@ -94,7 +94,7 @@ public class SQLTemplateActionIT {
 
         Map<String, Object> bindings = new HashMap<>();
         bindings.put("id", 201L);
-        template.setParameters(bindings);
+        template.setParams(bindings);
 
         // must ensure the right SQLTemplateAction is created
 
@@ -154,7 +154,7 @@ public class SQLTemplateActionIT {
 
         Map<String, Object> bindings = new HashMap<>();
         bindings.put("id", 101);
-        template.setParameters(bindings);
+        template.setParams(bindings);
 
         SQLAction plan = node.getAdapter().getAction(template, node);
 
@@ -184,7 +184,7 @@ public class SQLTemplateActionIT {
 
         Map<String, Object> bindings = new HashMap<>();
         bindings.put("id", 101);
-        template.setParameters(bindings);
+        template.setParams(bindings);
 
         SQLAction plan = node.getAdapter().getAction(template, node);
 
@@ -214,7 +214,7 @@ public class SQLTemplateActionIT {
 
         Map<String, Object> bindings = new HashMap<>();
         bindings.put("id", 201);
-        template.setParameters(bindings);
+        template.setParams(bindings);
 
         SQLAction plan = node.getAdapter().getAction(template, node);
 
@@ -244,7 +244,7 @@ public class SQLTemplateActionIT {
         bindings.put("id", 1L);
         bindings.put("name", "a1");
         bindings.put("dob", new Date(System.currentTimeMillis()));
-        template.setParameters(bindings);
+        template.setParams(bindings);
 
         SQLAction action = node.getAdapter().getAction(template, node);
 
@@ -282,21 +282,16 @@ public class SQLTemplateActionIT {
     }
 
     @Test
-    public void executeUpdateBatch() throws Exception {
+    public void executeUpdateWithDollarSigns() throws Exception {
         String templateString = "INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME, DATE_OF_BIRTH) "
                 + "VALUES (#bind($id), #bind($name), #bind($dob 'DATE'))";
         SQLTemplate template = new SQLTemplate(templateString);
 
-        Map<String, Object> bindings1 = new HashMap<>();
-        bindings1.put("id", 1L);
-        bindings1.put("name", "a1");
-        bindings1.put("dob", new Date(System.currentTimeMillis()));
-
-        Map<String, Object> bindings2 = new HashMap<>();
-        bindings2.put("id", 33L);
-        bindings2.put("name", "a$$$$$");
-        bindings2.put("dob", new Date(System.currentTimeMillis()));
-        template.setParameters(bindings1, bindings2);
+        Map<String, Object> bindings = new HashMap<>();
+        bindings.put("id", 33L);
+        bindings.put("name", "a$$$$$");
+        bindings.put("dob", new Date(System.currentTimeMillis()));
+        template.setParams(bindings);
 
         SQLAction genericAction = node.getAdapter().getAction(template, node);
         assertTrue(genericAction instanceof SQLTemplateAction);
@@ -309,11 +304,10 @@ public class SQLTemplateActionIT {
             MockOperationObserver observer = new MockOperationObserver();
             action.performAction(c, observer);
 
-            int[] batches = observer.countsForQuery(template);
-            assertNotNull(batches);
-            assertEquals(2, batches.length);
-            assertEquals(1, batches[0]);
-            assertEquals(1, batches[1]);
+            int[] counts = observer.countsForQuery(template);
+            assertNotNull(counts);
+            assertEquals(1, counts.length);
+            assertEquals(1, counts[0]);
         }
 
         MockOperationObserver observer = new MockOperationObserver();
@@ -323,18 +317,10 @@ public class SQLTemplateActionIT {
 
         @SuppressWarnings("unchecked")
         List<DataRow> data = observer.rowsForQuery(query);
-        assertEquals(2, data.size());
-        DataRow row1 = data.get(0);
-        assertEquals(bindings1.get("id"), row1.get("ARTIST_ID"));
-        assertEquals(bindings1.get("name"), row1.get("ARTIST_NAME"));
-        // to compare dates we need to create the binding correctly
-        // assertEquals(bindings1.get("dob"), row.get("DATE_OF_BIRTH"));
-
-        DataRow row2 = data.get(1);
-        assertEquals(bindings2.get("id"), row2.get("ARTIST_ID"));
-        assertEquals(bindings2.get("name"), row2.get("ARTIST_NAME"));
-        // to compare dates we need to create the binding correctly
-        // assertEquals(bindings2.get("dob"), row2.get("DATE_OF_BIRTH"));
+        assertEquals(1, data.size());
+        DataRow row = data.get(0);
+        assertEquals(bindings.get("id"), row.get("ARTIST_ID"));
+        assertEquals(bindings.get("name"), row.get("ARTIST_NAME"));
     }
 
     @Test

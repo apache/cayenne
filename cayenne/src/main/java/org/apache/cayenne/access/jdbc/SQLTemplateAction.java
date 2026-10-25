@@ -49,9 +49,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Implements a strategy for execution of SQLTemplates.
@@ -102,66 +100,23 @@ public class SQLTemplateAction implements SQLAction {
             throw new CayenneRuntimeException("No template string configured for adapter " + dbAdapter.getClass().getName());
         }
 
+        // bind either positional or named parameters
+        TranslatedSQL compiled = query.getPositionalParams().isEmpty()
+                ? dataNode.getSqlTemplateTranslator().translate(template, query.getParams(), getAdapter())
+                : dataNode.getSqlTemplateTranslator().translate(template, query.getPositionalParams(), getAdapter());
+
+        callback.nextStatement(query, compiled);
+
         List<Number> counts = new ArrayList<>();
+        execute(connection, callback, compiled, counts);
 
-        // bind either positional or named parameters;
-        // for legacy reasons named parameters are processed as a batch.. this
-        // should go away after 4.0; newer positional parameter only support a
-        // single set of values.
-        if (query.getPositionalParams().isEmpty()) {
-            runWithNamedParameters(connection, callback, template, counts);
-        } else {
-            runWithPositionalParameters(connection, callback, template, counts);
-        }
-
-        // notify of combined counts of all queries inside SQLTemplate
-        // multiplied by the number of parameter sets...
+        // notify of combined counts of all statements inside SQLTemplate
         int[] ints = new int[counts.size()];
         for (int i = 0; i < ints.length; i++) {
             ints[i] = counts.get(i).intValue();
         }
 
         callback.nextBatchCount(query, ints);
-    }
-
-    private void runWithPositionalParameters(Connection connection, OperationObserver callback, String template,
-                                             Collection<Number> counts) throws Exception {
-
-        TranslatedSQL compiled = dataNode.getSqlTemplateTranslator().translate(template,
-                query.getPositionalParams(), getAdapter());
-
-        callback.nextStatement(query, compiled);
-
-        execute(connection, callback, compiled, counts);
-    }
-
-    private void runWithNamedParameters(
-            Connection connection,
-            OperationObserver callback,
-            String template,
-            Collection<Number> counts) throws Exception {
-
-        if (query.parametersSize() == 0) {
-            runParametersBatch(connection, callback, template, counts, Map.of());
-        } else {
-            Iterator<Map<String, ?>> it = query.parametersIterator();
-            while (it.hasNext()) {
-                runParametersBatch(connection, callback, template, counts, it.next());
-            }
-        }
-    }
-
-    private void runParametersBatch(
-            Connection connection,
-            OperationObserver callback,
-            String template,
-            Collection<Number> counts,
-            Map<String, ?> nextParameters) throws Exception {
-
-        TranslatedSQL compiled = dataNode.getSqlTemplateTranslator().translate(template, nextParameters, getAdapter());
-        callback.nextStatement(query, compiled);
-
-        execute(connection, callback, compiled, counts);
     }
 
     protected void execute(Connection connection, OperationObserver callback, TranslatedSQL compiled,

@@ -46,7 +46,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.Date;
@@ -384,48 +383,12 @@ public class DataContextIT {
 		map.put("aid", 33002);
 		map.put("price", 1.1);
 
-		// single batch of parameters
-		query.setParameters(map);
+		query.setParams(map);
 
 		int[] counts = ((UpdateResult) context.execute(query).getFirst()).counts();
 		assertNotNull(counts);
 		assertEquals(1, counts.length);
 		assertEquals(1, counts[0]);
-	}
-
-	@Test
-	public void performNonSelectingQueryCounts2() throws Exception {
-
-		createArtistsDataSet();
-
-		SQLTemplate query = new SQLTemplate(Painting.class,
-				"INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ARTIST_ID, ESTIMATED_PRICE) "
-						+ "VALUES ($pid, '$pt', $aid, #bind($price 'DECIMAL' 2))");
-
-		Map<String, Object>[] maps = new Map[3];
-		for (int i = 0; i < maps.length; i++) {
-			maps[i] = new HashMap<>();
-			maps[i].put("pid", 1 + i);
-			maps[i].put("pt", "P-" + i);
-			maps[i].put("aid", 33002);
-			maps[i].put("price", new BigDecimal("1." + i));
-		}
-
-		// single batch of parameters
-		query.setParameters(maps);
-
-		int[] counts = ((UpdateResult) context.execute(query).getFirst()).counts();
-		assertNotNull(counts);
-		assertEquals(maps.length, counts.length);
-		for (int i = 0; i < maps.length; i++) {
-			assertEquals(1, counts[i]);
-		}
-
-		SQLTemplate delete = new SQLTemplate(Painting.class, "delete from PAINTING");
-		counts = ((UpdateResult) context.execute(delete).getFirst()).counts();
-		assertNotNull(counts);
-		assertEquals(1, counts.length);
-		assertEquals(3, counts[0]);
 	}
 
 	@Test

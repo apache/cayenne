@@ -17,6 +17,7 @@ CAY-3055 DbRelationship.foreignKey
 CAY-3059 Remove APIs deprecated in 5.0
 CAY-3060 Remove support for callbacks XML mapping
 CAY-3061 Annotation-free lifecycle
+CAY-3062 SQLTemplate to stop supporting multiple parameter sets
 
 ----------------------------------
 Release: 5.0-RC1

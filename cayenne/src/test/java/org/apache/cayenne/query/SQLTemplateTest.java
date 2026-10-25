@@ -87,6 +87,37 @@ public class SQLTemplateTest {
 	}
 
 	@Test
+	public void params() {
+		SQLTemplate<Object> query = new SQLTemplate<>("SELECT");
+		assertTrue(query.getParams().isEmpty());
+
+		Map<String, Object> params = new HashMap<>();
+		params.put("a", "b");
+		query.setParams(params);
+		assertEquals(params, query.getParams());
+
+		// the query keeps its own copy
+		params.put("c", "d");
+		assertEquals(Map.of("a", "b"), query.getParams());
+
+		query.setParams(null);
+		assertTrue(query.getParams().isEmpty());
+	}
+
+	@Test
+	public void paramsResetPositionalParams() {
+		SQLTemplate<Object> query = new SQLTemplate<>("SELECT");
+		query.setParamsArray("x", "y");
+		assertEquals(Arrays.asList("x", "y"), query.getPositionalParams());
+
+		query.setParams(Map.of("a", "b"));
+		assertTrue(query.getPositionalParams().isEmpty());
+
+		query.setParamsArray("z");
+		assertTrue(query.getParams().isEmpty());
+	}
+
+	@Test
 	public void queryWithParametersKeepsRoot() {
 		SQLTemplate<Artist> q1 = SQLTemplate.query(Artist.class, "SELECT");
 		SQLTemplate<Artist> q2 = q1.queryWithParameters(Map.of("a", "b"));
