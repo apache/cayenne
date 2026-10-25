@@ -28,7 +28,6 @@ import org.apache.cayenne.dba.mysql.MySQLAdapter;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.access.lifecycle.LifecycleEventsManager;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -113,8 +112,8 @@ public class DataContextDecoratedStackIT {
         }
 
         @Override
-        public List<QueryResult> onQuery(ObjectContext context, Query query, boolean iteratedResult) {
-            return channel.onQuery(context, query, iteratedResult);
+        public List<QueryResult> onQuery(OperationContext context) {
+            return channel.onQuery(context);
         }
 
         @Override

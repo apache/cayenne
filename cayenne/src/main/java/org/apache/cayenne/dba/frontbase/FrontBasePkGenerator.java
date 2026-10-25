@@ -21,16 +21,16 @@ package org.apache.cayenne.dba.frontbase;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.QueryResult;
+import org.apache.cayenne.SelectResult;
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.OperationObserver;
+import org.apache.cayenne.access.StatementContext;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.JdbcPkGenerator;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLTemplate;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -110,24 +110,21 @@ public class FrontBasePkGenerator extends JdbcPkGenerator {
 
         String template = "SELECT #result('UNIQUE' 'long') FROM " + entity.getName();
 
-        final long[] pkHolder = new long[1];
-
         SQLTemplate<DataRow> query = SQLTemplate.dataRowQuery(template);
-        OperationObserver observer = new OperationObserver() {
+        StatementContext statementContext = new StatementContext(query, query.getMetaData(node.getEntityResolver()));
+        node.execute(List.of(statementContext));
 
-            @Override
-            public void nextRows(Query query, List<?> dataRows) {
-                if (dataRows.size() != 1) {
-                    throw new CayenneRuntimeException("Error fetching PK. Expected one row, got %d", dataRows.size());
+        long pk = 0;
+        for (QueryResult result : statementContext.getResults()) {
+            if (result instanceof SelectResult<?>(List<?> rows)) {
+                if (rows.size() != 1) {
+                    throw new CayenneRuntimeException("Error fetching PK. Expected one row, got %d", rows.size());
                 }
 
-                DataRow row = (DataRow) dataRows.getFirst();
-                Number pk = (Number) row.get("UNIQUE");
-                pkHolder[0] = pk.longValue();
+                DataRow row = (DataRow) rows.getFirst();
+                pk = ((Number) row.get("UNIQUE")).longValue();
             }
-        };
-
-        node.performQueries(Collections.singleton((Query) query), observer);
-        return pkHolder[0];
+        }
+        return pk;
     }
 }

@@ -19,7 +19,8 @@
 package org.apache.cayenne.dba.db2;
 
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.OperationObserver;
+import org.apache.cayenne.UpdateResult;
+import org.apache.cayenne.access.StatementContext;
 import org.apache.cayenne.access.jdbc.ProcedureAction;
 import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.access.translator.TranslatedProcedure;
@@ -39,7 +40,7 @@ class DB2ProcedureAction extends ProcedureAction {
 	}
 
 	@Override
-	public void performAction(Connection connection, OperationObserver observer) throws Exception {
+	public void performAction(Connection connection, StatementContext context) throws Exception {
 
 		// cloned from super except for result processing consistent with
 		// CAY-1874
@@ -49,15 +50,15 @@ class DB2ProcedureAction extends ProcedureAction {
 		TranslatedProcedure translated = dataNode.getProcedureTranslator()
 				.translate(query, dataNode.getAdapter(), dataNode.getEntityResolver());
 
-		observer.nextStatement(query, translated);
+		context.setTranslated(translated);
 
 		try (CallableStatement statement = connection.prepareCall(translated.sql());) {
-			initStatement(statement);
+			initStatement(statement, context);
 			bindParameters(statement, translated);
 			boolean hasResultSet = statement.execute();
 
 			// read out parameters
-			readProcedureOutParameters(statement, observer);
+			readProcedureOutParameters(statement, context);
 
 			// read the rest of the query
 			while (true) {
@@ -65,14 +66,14 @@ class DB2ProcedureAction extends ProcedureAction {
 
 					try (ResultSet rs = statement.getResultSet();) {
 						RSColumn[] columns = describeResultSet(rs, processedResultSets++);
-						readResultSet(rs, columns, query, observer);
+						readResultSet(rs, columns, context);
 					}
 				} else {
 					int updateCount = statement.getUpdateCount();
 					if (updateCount == -1) {
 						break;
 					}
-					observer.nextCount(query, updateCount);
+					context.addResult(new UpdateResult(new int[]{updateCount}));
 				}
 				hasResultSet = statement.getMoreResults();
 			}

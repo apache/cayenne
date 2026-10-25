@@ -20,7 +20,7 @@
 package org.apache.cayenne.dba.frontbase;
 
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.OperationObserver;
+import org.apache.cayenne.access.StatementContext;
 import org.apache.cayenne.access.translator.TranslatedSQL;
 import org.apache.cayenne.access.jdbc.SQLTemplateAction;
 import org.apache.cayenne.query.SQLTemplate;
@@ -42,11 +42,11 @@ public class FrontBaseTemplateAction extends SQLTemplateAction {
     }
 
     @Override
-    protected void execute(Connection connection, OperationObserver callback, TranslatedSQL compiled,
+    protected void execute(Connection connection, StatementContext context, TranslatedSQL compiled,
                  Collection<Number> updateCounts) throws SQLException, Exception {
 
         long t1 = System.currentTimeMillis();
-        boolean iteratedResult = callback.isIteratedResult();
+        boolean iteratedResult = context.isIteratedResult();
         PreparedStatement statement = connection.prepareStatement(compiled.sql());
 
         try {
@@ -58,7 +58,7 @@ public class FrontBaseTemplateAction extends SQLTemplateAction {
             if(query.isReturnGeneratedKeys()) {
                 ResultSet generatedKeysResultSet = statement.getGeneratedKeys();
                 if (generatedKeysResultSet != null) {
-                    processSelectResult(compiled, connection, statement, generatedKeysResultSet, callback, t1);
+                    processSelectResult(compiled, connection, statement, generatedKeysResultSet, context, t1);
                 }
             }
 
@@ -76,7 +76,7 @@ public class FrontBaseTemplateAction extends SQLTemplateAction {
                     if (resultSet != null) {
 
                         try {
-                            processSelectResult(compiled, connection, statement, resultSet, callback, t1);
+                            processSelectResult(compiled, connection, statement, resultSet, context, t1);
                         } finally {
                             if (!iteratedResult) {
                                 resultSet.close();

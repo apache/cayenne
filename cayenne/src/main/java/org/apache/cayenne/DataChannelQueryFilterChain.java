@@ -19,7 +19,7 @@
 
 package org.apache.cayenne;
 
-import org.apache.cayenne.query.Query;
+import org.apache.cayenne.access.OperationContext;
 
 import java.util.List;
 
@@ -30,6 +30,9 @@ import java.util.List;
  */
 public interface DataChannelQueryFilterChain {
 
-    List<QueryResult> onQuery(ObjectContext originatingContext, Query query, boolean iteratedResult);
+    /**
+     * @since 6.0
+     */
+    List<QueryResult> onQuery(OperationContext context);
 
 }

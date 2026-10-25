@@ -25,8 +25,9 @@ import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.ObjectDiff;
 import org.apache.cayenne.access.DataContextObjectStore;
+import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.ObjectStoreGraphDiff;
-import org.apache.cayenne.access.OperationObserver;
+import org.apache.cayenne.access.StatementContext;
 import org.apache.cayenne.access.flush.operation.DbRowOp;
 import org.apache.cayenne.access.flush.operation.DbRowOpMerger;
 import org.apache.cayenne.access.flush.operation.DbRowOpSorter;
@@ -40,16 +41,17 @@ import org.apache.cayenne.graph.CompoundDiff;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.QueryMetadata;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Default implementation of {@link DataDomainFlushAction}.
@@ -60,14 +62,12 @@ public class DefaultDataDomainFlushAction implements DataDomainFlushAction {
 
     protected final DataDomain dataDomain;
     protected final DbRowOpSorter dbRowOpSorter;
-    protected final OperationObserver observer;
     protected final DeleteDbRowOpFactory deleteDbRowOpFactory;
 
     protected DefaultDataDomainFlushAction(DataDomain dataDomain, DbRowOpSorter dbRowOpSorter,
                                            DeleteDbRowOpFactory deleteDbRowOpFactory) {
         this.dataDomain = dataDomain;
         this.dbRowOpSorter = dbRowOpSorter;
-        this.observer = new FlushObserver();
         this.deleteDbRowOpFactory = deleteDbRowOpFactory;
     }
 
@@ -192,11 +192,15 @@ public class DefaultDataDomainFlushAction implements DataDomainFlushAction {
      */
     protected void executeQueries(List<? extends Query> queries) {
         EntityResolver entityResolver = dataDomain.getEntityResolver();
-        queries.stream()
-                .collect(Collectors.groupingBy(query
-                        -> dataDomain.lookupDataNode(query.getMetaData(entityResolver).getDataMap())))
-                .forEach((node, nodeQueries)
-                        -> node.performQueries(nodeQueries, observer));
+        Map<DataNode, List<StatementContext>> statementsByNode = new LinkedHashMap<>();
+        for (Query query : queries) {
+            QueryMetadata metadata = query.getMetaData(entityResolver);
+            DataNode node = dataDomain.lookupDataNode(metadata.getDataMap());
+            statementsByNode.computeIfAbsent(node, n -> new ArrayList<>())
+                    .add(new StatementContext(query, metadata));
+        }
+
+        statementsByNode.forEach(DataNode::execute);
     }
 
     /**

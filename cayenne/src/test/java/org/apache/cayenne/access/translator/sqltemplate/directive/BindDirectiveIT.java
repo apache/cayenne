@@ -32,7 +32,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.cayenne.access.MockOperationObserver;
+import org.apache.cayenne.access.StatementContext;
+import org.apache.cayenne.access.StatementContexts;
 import org.apache.cayenne.dba.oracle.OracleAdapter;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.ObjectSelect;
@@ -212,8 +213,7 @@ public class BindDirectiveIT {
 		// ObjectContext?
 		SQLTemplate template = new SQLTemplate(templateString);
 		template.setParams(parameters);
-		MockOperationObserver observer = new MockOperationObserver();
-		env.dataNode().performQueries(Collections.singletonList(template), observer);
+		StatementContext statementContext = StatementContexts.run(env.dataNode(), template);
 
 		return ObjectSelect.dataRowQuery(Artist.class).selectOne(env.context());
 	}

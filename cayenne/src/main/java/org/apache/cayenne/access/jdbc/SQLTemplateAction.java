@@ -21,8 +21,10 @@ package org.apache.cayenne.access.jdbc;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ResultIterator;
+import org.apache.cayenne.SelectResult;
+import org.apache.cayenne.UpdateResult;
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.OperationObserver;
+import org.apache.cayenne.access.StatementContext;
 import org.apache.cayenne.access.jdbc.reader.RowReader;
 import org.apache.cayenne.access.translator.TranslatedSQL;
 import org.apache.cayenne.access.types.ExtendedType;
@@ -84,12 +86,11 @@ public class SQLTemplateAction implements SQLAction {
     }
 
     /**
-     * Runs a SQLTemplate query, collecting all results. If a callback expects
-     * an iterated result, result processing is stopped after the first
-     * ResultSet is encountered.
+     * Runs a SQLTemplate query, collecting all results. If the statement context expects an iterated result, result
+     * processing is stopped after the first ResultSet is encountered.
      */
     @Override
-    public void performAction(Connection connection, OperationObserver callback) throws Exception {
+    public void performAction(Connection connection, StatementContext context) throws Exception {
 
         String template = extractTemplateString();
 
@@ -103,25 +104,25 @@ public class SQLTemplateAction implements SQLAction {
                 ? dataNode.getSqlTemplateTranslator().translate(template, query.getParams(), getAdapter())
                 : dataNode.getSqlTemplateTranslator().translate(template, query.getPositionalParams(), getAdapter());
 
-        callback.nextStatement(query, compiled);
+        context.setTranslated(compiled);
 
         List<Number> counts = new ArrayList<>();
-        execute(connection, callback, compiled, counts);
+        execute(connection, context, compiled, counts);
 
-        // notify of combined counts of all statements inside SQLTemplate
+        // report the combined counts of all statements inside SQLTemplate
         int[] ints = new int[counts.size()];
         for (int i = 0; i < ints.length; i++) {
             ints[i] = counts.get(i).intValue();
         }
 
-        callback.nextBatchCount(query, ints);
+        context.addResult(new UpdateResult(ints));
     }
 
-    protected void execute(Connection connection, OperationObserver callback, TranslatedSQL compiled,
+    protected void execute(Connection connection, StatementContext context, TranslatedSQL compiled,
                            Collection<Number> updateCounts) throws Exception {
 
         long t1 = System.currentTimeMillis();
-        boolean iteratedResult = callback.isIteratedResult();
+        boolean iteratedResult = context.isIteratedResult();
         int generatedKeys = query.isReturnGeneratedKeys() ? Statement.RETURN_GENERATED_KEYS : Statement.NO_GENERATED_KEYS;
         PreparedStatement statement = connection.prepareStatement(compiled.sql(), generatedKeys);
 
@@ -134,7 +135,7 @@ public class SQLTemplateAction implements SQLAction {
             if (query.isReturnGeneratedKeys()) {
                 ResultSet generatedKeysResultSet = statement.getGeneratedKeys();
                 if (generatedKeysResultSet != null) {
-                    processSelectResult(compiled, connection, statement, generatedKeysResultSet, callback, t1);
+                    processSelectResult(compiled, connection, statement, generatedKeysResultSet, context, t1);
                 }
             }
 
@@ -152,7 +153,7 @@ public class SQLTemplateAction implements SQLAction {
                     if (resultSet != null) {
 
                         try {
-                            processSelectResult(compiled, connection, statement, resultSet, callback, t1);
+                            processSelectResult(compiled, connection, statement, resultSet, context, t1);
                         } finally {
                             if (!iteratedResult) {
                                 resultSet.close();
@@ -185,10 +186,10 @@ public class SQLTemplateAction implements SQLAction {
             TranslatedSQL compiled,
             Connection connection, Statement statement,
             ResultSet resultSet,
-            OperationObserver callback,
+            StatementContext context,
             long startTime) throws Exception {
 
-        boolean iteratedResult = callback.isIteratedResult();
+        boolean iteratedResult = context.isIteratedResult();
         RSColumn[] columns = rowBuilder(compiled, resultSet).build(dataNode.getAdapter().getExtendedTypes());
 
         RowReader<?> rowReader = dataNode.getRowReaderFactory()
@@ -203,7 +204,7 @@ public class SQLTemplateAction implements SQLAction {
 
         if (iteratedResult) {
             try {
-                callback.nextRows(query, it);
+                context.addResult(it);
             } catch (Exception ex) {
                 it.close();
                 throw ex;
@@ -214,7 +215,7 @@ public class SQLTemplateAction implements SQLAction {
             // maybe a cleaner flow is due here.
             List<?> resultRows = it.allRows();
 
-            callback.nextRows(query, resultRows);
+            context.addResult(new SelectResult<>(resultRows));
         }
     }
 

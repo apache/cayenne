@@ -23,9 +23,10 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.ResultIterator;
+import org.apache.cayenne.UpdateResult;
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.OptimisticLockException;
+import org.apache.cayenne.access.StatementContext;
 import org.apache.cayenne.access.jdbc.reader.RowReader;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
@@ -47,7 +48,6 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -78,7 +78,7 @@ public class BatchAction extends BaseSQLAction {
     }
 
     @Override
-    public void performAction(Connection connection, OperationObserver observer) throws Exception {
+    public void performAction(Connection connection, StatementContext context) throws Exception {
         DbAdapter adapter = dataNode.getAdapter();
         TranslatedBatch translated = switch (query) {
             case InsertBatchQuery insert -> dataNode.getInsertBatchTranslator().translate(insert, adapter);
@@ -87,15 +87,15 @@ public class BatchAction extends BaseSQLAction {
             case null, default -> throw new CayenneRuntimeException("Unsupported batch query: %s", query);
         };
 
-        observer.nextStatement(query, translated);
+        context.setTranslated(translated);
 
         boolean isBatch = canRunAsBatch();
         boolean generatesKeys = hasGeneratedKeys() && supportsGeneratedKeys(isBatch);
 
         if (isBatch) {
-            runAsBatch(connection, translated, observer, generatesKeys);
+            runAsBatch(connection, context, generatesKeys);
         } else {
-            runAsIndividualQueries(connection, translated, observer, generatesKeys);
+            runAsIndividualQueries(connection, context, generatesKeys);
         }
     }
 
@@ -113,12 +113,9 @@ public class BatchAction extends BaseSQLAction {
         return true;
     }
 
-    protected void runAsBatch(
-            Connection con,
-            TranslatedBatch translated,
-            OperationObserver delegate,
-            boolean generatesKeys) throws Exception {
+    protected void runAsBatch(Connection con, StatementContext context, boolean generatesKeys) throws Exception {
 
+        TranslatedBatch translated = (TranslatedBatch) context.getTranslated();
         String sql = translated.sql();
         DbAdapter adapter = dataNode.getAdapter();
 
@@ -135,10 +132,10 @@ public class BatchAction extends BaseSQLAction {
 
             // execute the whole batch
             int[] results = statement.executeBatch();
-            delegate.nextBatchCount(query, results);
+            context.addResult(new UpdateResult(results));
 
             if (generatesKeys) {
-                processGeneratedKeys(statement, delegate, query.getRows());
+                processGeneratedKeys(statement, context, query.getRows());
             }
         }
     }
@@ -146,11 +143,8 @@ public class BatchAction extends BaseSQLAction {
     /**
      * Executes batch as individual queries over the same prepared statement.
      */
-    protected void runAsIndividualQueries(
-            Connection connection,
-            TranslatedBatch translated,
-            OperationObserver delegate,
-            boolean generatesKeys) throws Exception {
+    protected void runAsIndividualQueries(Connection connection, StatementContext context, boolean generatesKeys)
+            throws Exception {
 
         if (query.getRows().isEmpty()) {
             return;
@@ -158,6 +152,7 @@ public class BatchAction extends BaseSQLAction {
 
         boolean useOptimisticLock = query.isUsingOptimisticLocking();
 
+        TranslatedBatch translated = (TranslatedBatch) context.getTranslated();
         String queryStr = translated.sql();
         DbAdapter adapter = dataNode.getAdapter();
 
@@ -176,10 +171,10 @@ public class BatchAction extends BaseSQLAction {
                     throw new OptimisticLockException(row.getObjectId(), query.getDbEntity(), row.getQualifier(), translated);
                 }
 
-                delegate.nextCount(query, updated);
+                context.addResult(new UpdateResult(new int[]{updated}));
 
                 if (generatesKeys) {
-                    processGeneratedKeys(statement, delegate, row);
+                    processGeneratedKeys(statement, context, row);
                 }
             }
         }
@@ -252,16 +247,20 @@ public class BatchAction extends BaseSQLAction {
      *
      * @since 4.0
      */
-    protected void processGeneratedKeys(Statement statement, OperationObserver observer, BatchQueryRow row)
+    protected void processGeneratedKeys(Statement statement, StatementContext context, BatchQueryRow row)
             throws SQLException {
-        processGeneratedKeys(statement, observer, Collections.singletonList(row));
+        processGeneratedKeys(statement, context, Collections.singletonList(row));
     }
 
     /**
+     * Reads the keys generated for the given rows, stores the generated primary key in the replacement id map of
+     * each row's temporary {@link ObjectId}, and reports the keys to the statement context. The ids are updated right
+     * away, as the rows inserted next may reference them via their foreign keys.
+     *
      * @since 4.2
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
-    protected void processGeneratedKeys(Statement statement, OperationObserver observer, List<BatchQueryRow> rows)
+    protected void processGeneratedKeys(Statement statement, StatementContext context, List<BatchQueryRow> rows)
             throws SQLException {
 
         ResultSet keysRS = statement.getGeneratedKeys();
@@ -297,22 +296,67 @@ public class BatchAction extends BaseSQLAction {
             this.keyColumns = rowBuilder.build(dataNode.getAdapter().getExtendedTypes());
         }
 
-        QueryMetadata metadata = query.getMetaData(dataNode.getEntityResolver());
+        QueryMetadata metadata = context.getMetadata();
         RowReader<?> rowReader = dataNode.getRowReaderFactory()
                 .rowReader(keyColumns, metadata.getResultSegments(), metadata, dataNode.getAdapter());
 
-        // generated keys are small (one row per inserted row), so materialize them here rather than passing a live,
-        // single-use iterator to the observer
+        // generated keys are small (one row per inserted row), so materialize them here rather than keeping a live,
+        // single-use iterator
         List<DataRow> keys;
         try (ResultIterator<?> iterator = new RSIterator(null, keysRS, rowReader)) {
             keys = (List<DataRow>) iterator.allRows();
         }
 
-        List<ObjectId> objectIds = new ArrayList<>(rows.size());
-        for (BatchQueryRow row : rows) {
-            objectIds.add(row.getObjectId());
+        applyGeneratedKeys(keys, rows);
+        context.addGeneratedKeys(keys);
+    }
+
+    /**
+     * Stores the generated primary key of each row in the replacement id map of the row's temporary ObjectId.
+     *
+     * @since 6.0
+     */
+    protected void applyGeneratedKeys(List<DataRow> keys, List<BatchQueryRow> rows) {
+
+        if (keys.size() != rows.size()) {
+            throw new CayenneRuntimeException("Mismatching number of generated PKs: expected %d, instead got %d",
+                    rows.size(), keys.size());
         }
-        observer.nextGeneratedRows(query, keys, objectIds);
+
+        for (int i = 0; i < keys.size(); i++) {
+            DataRow key = keys.get(i);
+
+            if (key.isEmpty()) {
+                throw new CayenneRuntimeException("Empty key generated.");
+            }
+
+            ObjectId idToUpdate = rows.get(i).getObjectId();
+            if (idToUpdate == null || !idToUpdate.isTemporary()) {
+                // why would this happen?
+                return;
+            }
+
+            for (DbAttribute attribute : query.getDbEntity().getGeneratedAttributes()) {
+
+                // batch can have generated attributes that are not PKs, e.g. columns with DB DEFAULT values. Ignore
+                // those.
+                if (attribute.isPrimaryKey()) {
+
+                    Object value = key.get(attribute.getName());
+
+                    // As of now (01/2005) many tested drivers don't provide decent descriptors of identity result
+                    // sets, so a data row may contain garbage labels.
+                    if (value == null) {
+                        value = key.values().iterator().next();
+                    }
+
+                    // I guess we should override any existing value, as generated key is the latest thing that
+                    // exists in the DB.
+                    idToUpdate.getReplacementIdMap().put(attribute.getName(), value);
+                    break;
+                }
+            }
+        }
     }
 
     private String typeForGeneratedPK(DbAttribute key) {

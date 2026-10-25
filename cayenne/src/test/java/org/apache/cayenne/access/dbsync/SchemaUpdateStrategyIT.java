@@ -18,13 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.access.dbsync;
 
-import org.apache.cayenne.access.MockOperationObserver;
-import org.apache.cayenne.access.OperationObserver;
-import org.apache.cayenne.query.Query;
+import org.apache.cayenne.access.StatementContexts;
 import org.apache.cayenne.query.SQLTemplate;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -40,14 +37,12 @@ public class SchemaUpdateStrategyIT extends SchemaUpdateStrategyBase {
 		String template = "SELECT #result('id' 'int') FROM SUS1";
 		SQLTemplate query = new SQLTemplate(template);
 
-		OperationObserver observer = new MockOperationObserver();
-
-		node.performQueries(Collections.singletonList((Query) query), observer);
+		StatementContexts.run(node, query);
 		Map<String, Boolean> nameTables = tablesMap();
 		assertTrue(nameTables.get("SUS1"));
 
 		assertEquals(2, existingTables().size());
-		node.performQueries(Collections.singletonList(query), observer);
+		StatementContexts.run(node, query);
 		assertEquals(2, existingTables().size());
 	}
 
@@ -55,11 +50,10 @@ public class SchemaUpdateStrategyIT extends SchemaUpdateStrategyBase {
 	public void noStandardSchema() throws Exception {
 		String template = "SELECT #result('ARTIST_ID' 'int') FROM ARTIST ORDER BY ARTIST_ID";
 		SQLTemplate query = new SQLTemplate(template);
-		MockOperationObserver observer = new MockOperationObserver();
 
 		setStrategy(TstSchemaUpdateStrategy.class);
 
-		node.performQueries(Collections.singletonList((Query) query), observer);
+		StatementContexts.run(node, query);
 		assertTrue(node.getSchemaUpdateStrategy() instanceof TstSchemaUpdateStrategy);
 	}
 

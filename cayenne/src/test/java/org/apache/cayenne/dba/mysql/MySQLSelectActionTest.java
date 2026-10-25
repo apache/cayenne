@@ -19,7 +19,7 @@
 package org.apache.cayenne.dba.mysql;
 
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.OperationObserver;
+import org.apache.cayenne.access.StatementContext;
 import org.apache.cayenne.access.jdbc.PSParameter;
 import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.access.jdbc.reader.RowReader;
@@ -94,18 +94,18 @@ public class MySQLSelectActionTest {
         action = new MySQLSelectAction(query, dataNode);
     }
 
-    private static OperationObserver observer(boolean iterated, boolean exclusiveConnection) {
-        OperationObserver observer = mock(OperationObserver.class);
-        when(observer.isIteratedResult()).thenReturn(iterated);
-        when(observer.isIteratorExclusiveConnection()).thenReturn(exclusiveConnection);
-        return observer;
+    private static StatementContext context(boolean iterated, boolean exclusiveConnection) {
+        StatementContext context = mock(StatementContext.class);
+        when(context.isIteratedResult()).thenReturn(iterated);
+        when(context.isExclusiveConnection()).thenReturn(exclusiveConnection);
+        return context;
     }
 
     @Test
     public void noFetchSizeOnListResultLeavesDriverDefault() throws Exception {
         when(metadata.getStatementFetchSize()).thenReturn(0);
 
-        action.performAction(connection, observer(false, false));
+        action.performAction(connection, context(false, false));
 
         verify(statement, never()).setFetchSize(anyInt());
     }
@@ -114,7 +114,7 @@ public class MySQLSelectActionTest {
     public void noFetchSizeOnIteratorWithExclusiveConnectionStreams() throws Exception {
         when(metadata.getStatementFetchSize()).thenReturn(0);
 
-        action.performAction(connection, observer(true, true));
+        action.performAction(connection, context(true, true));
 
         InOrder inOrder = inOrder(statement);
         inOrder.verify(statement).setFetchSize(Integer.MIN_VALUE);
@@ -125,7 +125,7 @@ public class MySQLSelectActionTest {
     public void noFetchSizeOnIteratorInCallerTransactionLeavesDriverDefault() throws Exception {
         when(metadata.getStatementFetchSize()).thenReturn(0);
 
-        action.performAction(connection, observer(true, false));
+        action.performAction(connection, context(true, false));
 
         verify(statement, never()).setFetchSize(anyInt());
     }
@@ -134,7 +134,7 @@ public class MySQLSelectActionTest {
     public void streamingFetchSizeOnListResultIsPassedThrough() throws Exception {
         when(metadata.getStatementFetchSize()).thenReturn(Integer.MIN_VALUE);
 
-        action.performAction(connection, observer(false, false));
+        action.performAction(connection, context(false, false));
 
         verify(statement).setFetchSize(Integer.MIN_VALUE);
     }
@@ -143,7 +143,7 @@ public class MySQLSelectActionTest {
     public void streamingFetchSizeOnIteratorInCallerTransactionIsPassedThrough() throws Exception {
         when(metadata.getStatementFetchSize()).thenReturn(Integer.MIN_VALUE);
 
-        action.performAction(connection, observer(true, false));
+        action.performAction(connection, context(true, false));
 
         verify(statement).setFetchSize(Integer.MIN_VALUE);
     }
@@ -152,7 +152,7 @@ public class MySQLSelectActionTest {
     public void positiveFetchSizeOnIteratorWithExclusiveConnectionIsPassedThrough() throws Exception {
         when(metadata.getStatementFetchSize()).thenReturn(100);
 
-        action.performAction(connection, observer(true, true));
+        action.performAction(connection, context(true, true));
 
         verify(statement).setFetchSize(100);
         verify(statement, never()).setFetchSize(Integer.MIN_VALUE);

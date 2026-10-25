@@ -19,7 +19,7 @@
 package org.apache.cayenne.dba.sqlite;
 
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.OperationObserver;
+import org.apache.cayenne.access.StatementContext;
 import org.apache.cayenne.access.translator.TranslatedSQL;
 import org.apache.cayenne.access.jdbc.SQLTemplateAction;
 import org.apache.cayenne.query.SQLTemplate;
@@ -45,8 +45,8 @@ class SQLiteSQLTemplateAction extends SQLTemplateAction {
      */
     @Override
     protected void execute(
-            Connection connection,
-            OperationObserver callback,
+                        Connection connection,
+            StatementContext context,
             TranslatedSQL compiled,
             Collection<Number> updateCounts) throws Exception {
 
@@ -55,7 +55,7 @@ class SQLiteSQLTemplateAction extends SQLTemplateAction {
                 && sql.substring(0, "SELECT".length()).equalsIgnoreCase("SELECT");
 
         long t1 = System.currentTimeMillis();
-        boolean iteratedResult = callback.isIteratedResult();
+        boolean iteratedResult = context.isIteratedResult();
         PreparedStatement statement = connection.prepareStatement(compiled.sql());
         try {
             bind(statement, compiled.bindings());
@@ -69,8 +69,8 @@ class SQLiteSQLTemplateAction extends SQLTemplateAction {
                             compiled,
                             connection,
                             statement,
-                            resultSet,
-                            callback,
+                                                        resultSet,
+                            context,
                             t1);
                 }
                 finally {

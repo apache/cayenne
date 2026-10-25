@@ -20,19 +20,14 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.CayenneSqlException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.EmbeddableObject;
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.ObjectId;
-import org.apache.cayenne.OutParametersResult;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.QueryResult;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.SelectResult;
-import org.apache.cayenne.UpdateResult;
 import org.apache.cayenne.access.lifecycle.LifecycleEventManager;
-import org.apache.cayenne.access.translator.TranslatedStatement;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.cache.QueryCacheEntryFactory;
 import org.apache.cayenne.di.AdhocObjectFactory;
@@ -56,13 +51,11 @@ import org.apache.cayenne.reflect.DefaultConstructor;
 import org.apache.cayenne.tx.BaseTransaction;
 import org.apache.cayenne.tx.ReadOnlyTransaction;
 import org.apache.cayenne.tx.Transaction;
-import org.apache.cayenne.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -72,18 +65,19 @@ import java.util.Set;
 import java.util.function.Function;
 
 /**
- * Performs query routing and execution. During execution phase intercepts
- * callbacks to the OperationObserver, remapping results to the original
- * pre-routed queries.
+ * Performs query routing and execution. Routes the query into {@link StatementContext}s of the
+ * {@link OperationContext}, executes them on their nodes, and assembles the response from their results, converting
+ * rows to objects.
  *
  * @since 1.2
  */
-class DataDomainQueryAction implements QueryRouter, OperationObserver {
+class DataDomainQueryAction implements QueryRouter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DataDomainQueryAction.class);
 
     private static final boolean DONE = true;
 
+    private final OperationContext execContext;
     private final DataContext context;
     private final DataDomain domain;
     private final Query query;
@@ -92,33 +86,25 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
 
     private List<QueryResult> response;
     private List<QueryResult> fullResponse;
-    private final boolean iteratedResult;
-    private boolean iteratorExclusiveConnection;
     private Map<CayennePath, List<?>> prefetchResultsByPath;
-    private Map<DataNode, Collection<Query>> queriesByNode;
-
-    // the latest statement reported via nextStatement, used to correlate a failure with a specific SQL statement
-    private TranslatedStatement statement;
 
     // True when using a caching strategy (shared or local cache), indicating lists are immutable and need copying
     private boolean cachedResult;
-    // True when results were found in cache (cache hit), false when fetched from database (cache miss or explicit refresh)
+    // True when results were found in the shared cache (cache hit), false when fetched from the database (cache miss
+    // or explicit refresh)
     private boolean cacheHit;
 
-    /*
-     * A constructor for the "new" way of performing a query via 'execute' with
-     * the result list created internally.
-     */
-    DataDomainQueryAction(ObjectContext context, DataDomain domain, Query query, boolean iteratedResult) {
+    DataDomainQueryAction(DataDomain domain, OperationContext execContext) {
+        ObjectContext context = execContext.getContext();
         if (context != null && !(context instanceof DataContext)) {
             throw new IllegalArgumentException("DataDomain can only work with DataContext. "
                     + "Unsupported context type: " + context);
         }
 
+        this.execContext = execContext;
         this.domain = domain;
-        this.query = query;
-        this.iteratedResult = iteratedResult;
-        this.metadata = query.getMetaData(domain.getEntityResolver());
+        this.query = execContext.getQuery();
+        this.metadata = execContext.getMetadata();
         this.context = (DataContext) context;
         this.objectFactory = domain.getObjectFactory();
     }
@@ -138,7 +124,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
     }
 
     private boolean interceptIteratedQuery() {
-        if (iteratedResult) {
+        if (execContext.isIteratedResult()) {
             validateIteratedQuery();
             performIteratedQuery();
             return DONE;
@@ -177,7 +163,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
             try {
                 // the transaction is unbound from the thread below, so nothing but the iterator will ever use its
                 // connection
-                iteratorExclusiveConnection = true;
+                execContext.setExclusiveConnection(true);
                 runQuery();
                 int index = firstIteratorIndex();
                 ResultIterator<?> it = (ResultIterator<?>) fullResponse.get(index);
@@ -298,11 +284,6 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
     }
 
     private void runQuery() {
-        // reset
-        this.fullResponse = new ArrayList<>();
-        this.response = this.fullResponse;
-        this.queriesByNode = null;
-
         // whether this is null or not will driver further decisions on how to process prefetched rows
         this.prefetchResultsByPath = metadata.getPrefetchTree() != null && !metadata.isFetchingDataRows()
                 ? new HashMap<>() : null;
@@ -311,11 +292,35 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         query.route(this, domain.getEntityResolver(), null);
 
         // run categorized queries
-        if (queriesByNode != null) {
-            for (Map.Entry<DataNode, Collection<Query>> entry : queriesByNode.entrySet()) {
-                DataNode nextNode = entry.getKey();
-                Collection<Query> nodeQueries = entry.getValue();
-                nextNode.performQueries(nodeQueries, this);
+        execContext.getStatementContexts().forEach(DataNode::execute);
+
+        this.fullResponse = collectResults();
+        this.response = this.fullResponse;
+    }
+
+    /**
+     * Assembles the response from the results of the statements, in the order they were routed. Rows selected by a
+     * prefetch query are filed by their prefetch path instead, to be joined to the main result during object
+     * conversion.
+     */
+    private List<QueryResult> collectResults() {
+        List<QueryResult> results = new ArrayList<>();
+        for (List<StatementContext> nodeStatementContexts : execContext.getStatementContexts().values()) {
+            for (StatementContext statementContext : nodeStatementContexts) {
+                collectResults(statementContext, results);
+            }
+        }
+        return results;
+    }
+
+    private void collectResults(StatementContext statementContext, List<QueryResult> results) {
+        for (QueryResult result : statementContext.getResults()) {
+            if (prefetchResultsByPath != null
+                    && result instanceof SelectResult<?> select
+                    && statementContext.getQuery() instanceof PrefetchSelectQuery<?> prefetchQuery) {
+                prefetchResultsByPath.put(prefetchQuery.getPrefetchPath(), select.objects());
+            } else {
+                results.add(result);
             }
         }
     }
@@ -379,19 +384,10 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
 
     @Override
     public void route(DataNode node, Query query, Query substitutedQuery) {
-        Collection<Query> queries = null;
-        if (queriesByNode == null) {
-            queriesByNode = new HashMap<>();
-        } else {
-            queries = queriesByNode.get(node);
-        }
-
-        if (queries == null) {
-            queries = new ArrayList<>(5);
-            queriesByNode.put(node, queries);
-        }
-
-        queries.add(query);
+        // the operation has already resolved the metadata of its own query; a substituted query (e.g. a prefetch
+        // query) is resolved here
+        QueryMetadata queryMetadata = query == this.query ? metadata : query.getMetaData(domain.getEntityResolver());
+        execContext.addStatementContext(node, new StatementContext(query, queryMetadata));
     }
 
     @Override
@@ -430,82 +426,6 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
         }
 
         return node;
-    }
-
-    @Override
-    public void nextCount(Query query, int resultCount) {
-        fullResponse.add(new UpdateResult(new int[]{resultCount}));
-    }
-
-    @Override
-    public void nextBatchCount(Query query, int[] resultCount) {
-        if (resultCount != null) {
-            fullResponse.add(new UpdateResult(resultCount));
-        }
-    }
-
-    @Override
-    public void nextRows(Query query, List<?> dataRows) {
-        // exclude prefetched rows in the main result
-        if (prefetchResultsByPath != null && query instanceof PrefetchSelectQuery<?> prefetchQuery) {
-            prefetchResultsByPath.put(prefetchQuery.getPrefetchPath(), dataRows);
-        } else {
-            fullResponse.add(new SelectResult<>(dataRows));
-        }
-    }
-
-    @Override
-    public void nextRows(Query q, ResultIterator<?> it) {
-        // exclude prefetched rows in the main result
-        if (prefetchResultsByPath != null && query instanceof PrefetchSelectQuery<?> prefetchQuery) {
-            prefetchResultsByPath.put(prefetchQuery.getPrefetchPath(), (List<?>) it);
-        } else {
-            fullResponse.add(it);
-        }
-    }
-
-    @Override
-    public void nextOutParameters(Query query, Map<String, ?> outParameters) {
-        fullResponse.add(new OutParametersResult(outParameters));
-    }
-
-    @Override
-    public void nextGeneratedRows(Query query, List<DataRow> keys, List<ObjectId> idsToUpdate) {
-        if (keys != null) {
-            nextRows(query, keys);
-        }
-    }
-
-    @Override
-    public void nextStatement(Query query, TranslatedStatement statement) {
-        this.statement = statement;
-    }
-
-    @Override
-    public void nextQueryException(Query query, Exception ex) {
-        // preserve meaningful Cayenne exceptions, even when they wrap a lower-level cause; only wrap raw lower-level
-        // failures in a CayenneSqlException so they can be correlated with the failing statement
-        Throwable unwound = Util.unwindException(ex, CayenneRuntimeException.class);
-
-        if (unwound instanceof CayenneRuntimeException cayenneException) {
-            throw cayenneException;
-        }
-        throw new CayenneSqlException("Query exception.", query, statement, unwound);
-    }
-
-    @Override
-    public void nextGlobalException(Exception e) {
-        throw new CayenneRuntimeException("Global exception.", Util.unwindException(e));
-    }
-
-    @Override
-    public boolean isIteratedResult() {
-        return iteratedResult;
-    }
-
-    @Override
-    public boolean isIteratorExclusiveConnection() {
-        return iteratorExclusiveConnection;
     }
 
     abstract static class ObjectConversionStrategy<T, R> {

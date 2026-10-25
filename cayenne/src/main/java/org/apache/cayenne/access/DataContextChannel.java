@@ -32,7 +32,6 @@ import org.apache.cayenne.graph.CompoundDiff;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.EntityResultSegment;
-import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.ResultSegment;
 import org.apache.cayenne.access.lifecycle.LifecycleEventsManager;
@@ -76,12 +75,20 @@ public record DataContextChannel(DataContext context) implements DataChannel {
     }
 
     @Override
-    public List<QueryResult> onQuery(ObjectContext childContext, Query query, boolean iteratedResult) {
-        DataContext child = checkChildContext(childContext);
+    public List<QueryResult> onQuery(OperationContext execContext) {
+        DataContext child = checkChildContext(execContext.getContext());
 
-        List<QueryResult> response = context.onQuery(query, iteratedResult, true);
-        QueryMetadata metadata = query.getMetaData(getEntityResolver());
+        // the parent context runs the query on its own behalf, registering the result objects with itself before
+        // they are transferred to the child, so it is the originating context for the rest of the stack
+        List<QueryResult> response;
+        execContext.setContext(context);
+        try {
+            response = context.onQuery(execContext, true);
+        } finally {
+            execContext.setContext(child);
+        }
 
+        QueryMetadata metadata = execContext.getMetadata();
         return metadata.isFetchingDataRows()
                 ? response
                 : transferObjectsToChildContext(child, response, metadata);

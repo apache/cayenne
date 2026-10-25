@@ -851,11 +851,11 @@ public class DataContext implements ObjectContext {
             throw new CayenneRuntimeException("Can't run query - parent DataChannel is not set.");
         }
 
-        return onQuery(resolved, iteratedResult, false);
+        return onQuery(new OperationContext(this, resolved, getEntityResolver(), iteratedResult), false);
     }
 
-    List<QueryResult> onQuery(Query query, boolean iteratedResult, boolean ignoreLocalCache) {
-        return new DataContextQueryAction(this, query, iteratedResult, ignoreLocalCache).execute();
+    List<QueryResult> onQuery(OperationContext context, boolean ignoreLocalCache) {
+        return new DataContextQueryAction(this, context, ignoreLocalCache).execute();
     }
 
     /**

@@ -22,7 +22,8 @@ package org.apache.cayenne.access.jdbc;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.MockOperationObserver;
+import org.apache.cayenne.access.StatementContext;
+import org.apache.cayenne.access.StatementContexts;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SQLAction;
@@ -39,7 +40,6 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.sql.Connection;
 import java.sql.Date;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -101,13 +101,13 @@ public class SQLTemplateActionIT {
         SQLAction plan = node.getAdapter().getAction(template, node);
         assertTrue(plan instanceof SQLTemplateAction);
 
-        MockOperationObserver observer = new MockOperationObserver();
+        StatementContext statementContext = StatementContexts.newRun(node, template);
 
         try (Connection c = CayenneTestsEnv.COMMON_SCHEMA.dataSource().getConnection();) {
-            plan.performAction(c, observer);
+            plan.performAction(c, statementContext);
         }
 
-        List<DataRow> rows = observer.rowsForQuery(template);
+        List<DataRow> rows = StatementContexts.rows(statementContext);
         assertNotNull(rows);
         assertEquals(1, rows.size());
         DataRow row = rows.get(0);
@@ -158,13 +158,13 @@ public class SQLTemplateActionIT {
 
         SQLAction plan = node.getAdapter().getAction(template, node);
 
-        MockOperationObserver observer = new MockOperationObserver();
+        StatementContext statementContext = StatementContexts.newRun(node, template);
 
         try (Connection c = CayenneTestsEnv.COMMON_SCHEMA.dataSource().getConnection();) {
-            plan.performAction(c, observer);
+            plan.performAction(c, statementContext);
         }
 
-        List<DataRow> rows = observer.rowsForQuery(template);
+        List<DataRow> rows = StatementContexts.rows(statementContext);
         assertNotNull(rows);
         assertEquals(1, rows.size());
         DataRow row = rows.get(0);
@@ -188,13 +188,13 @@ public class SQLTemplateActionIT {
 
         SQLAction plan = node.getAdapter().getAction(template, node);
 
-        MockOperationObserver observer = new MockOperationObserver();
+        StatementContext statementContext = StatementContexts.newRun(node, template);
 
         try (Connection c = CayenneTestsEnv.COMMON_SCHEMA.dataSource().getConnection();) {
-            plan.performAction(c, observer);
+            plan.performAction(c, statementContext);
         }
 
-        List<DataRow> rows = observer.rowsForQuery(template);
+        List<DataRow> rows = StatementContexts.rows(statementContext);
         assertNotNull(rows);
         assertEquals(1, rows.size());
         DataRow row = rows.get(0);
@@ -218,13 +218,13 @@ public class SQLTemplateActionIT {
 
         SQLAction plan = node.getAdapter().getAction(template, node);
 
-        MockOperationObserver observer = new MockOperationObserver();
+        StatementContext statementContext = StatementContexts.newRun(node, template);
 
         try (Connection c = CayenneTestsEnv.COMMON_SCHEMA.dataSource().getConnection();) {
-            plan.performAction(c, observer);
+            plan.performAction(c, statementContext);
         }
 
-        List<DataRow> rows = observer.rowsForQuery(template);
+        List<DataRow> rows = StatementContexts.rows(statementContext);
         assertNotNull(rows);
         assertEquals(1, rows.size());
         DataRow row = rows.get(0);
@@ -249,10 +249,10 @@ public class SQLTemplateActionIT {
         SQLAction action = node.getAdapter().getAction(template, node);
 
         try (Connection c = CayenneTestsEnv.COMMON_SCHEMA.dataSource().getConnection();) {
-            MockOperationObserver observer = new MockOperationObserver();
-            action.performAction(c, observer);
+            StatementContext statementContext = StatementContexts.newRun(node, template);
+            action.performAction(c, statementContext);
 
-            int[] batches = observer.countsForQuery(template);
+            int[] batches = StatementContexts.counts(statementContext);
             assertNotNull(batches);
             assertEquals(1, batches.length);
             assertEquals(1, batches[0]);
@@ -271,10 +271,10 @@ public class SQLTemplateActionIT {
         SQLAction action = node.getAdapter().getAction(template, node);
 
         try (Connection c = CayenneTestsEnv.COMMON_SCHEMA.dataSource().getConnection();) {
-            MockOperationObserver observer = new MockOperationObserver();
-            action.performAction(c, observer);
+            StatementContext statementContext = StatementContexts.newRun(node, template);
+            action.performAction(c, statementContext);
 
-            int[] batches = observer.countsForQuery(template);
+            int[] batches = StatementContexts.counts(statementContext);
             assertNotNull(batches);
             assertEquals(1, batches.length);
             assertEquals(4, batches[0]);
@@ -301,22 +301,20 @@ public class SQLTemplateActionIT {
         assertSame(template, action.getQuery());
 
         try (Connection c = CayenneTestsEnv.COMMON_SCHEMA.dataSource().getConnection();) {
-            MockOperationObserver observer = new MockOperationObserver();
-            action.performAction(c, observer);
+            StatementContext statementContext = StatementContexts.newRun(node, template);
+            action.performAction(c, statementContext);
 
-            int[] counts = observer.countsForQuery(template);
+            int[] counts = StatementContexts.counts(statementContext);
             assertNotNull(counts);
             assertEquals(1, counts.length);
             assertEquals(1, counts[0]);
         }
 
-        MockOperationObserver observer = new MockOperationObserver();
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
                 .orderBy("db:ARTIST_ID", SortOrder.ASCENDING);
-        node.performQueries(Collections.singletonList(query), observer);
+        StatementContext statementContext = StatementContexts.run(node, query);
 
-        @SuppressWarnings("unchecked")
-        List<DataRow> data = observer.rowsForQuery(query);
+        List<DataRow> data = StatementContexts.rows(statementContext);
         assertEquals(1, data.size());
         DataRow row = data.get(0);
         assertEquals(bindings.get("id"), row.get("ARTIST_ID"));

@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.docs.customquery;
 
-import org.apache.cayenne.access.OperationObserver;
+import org.apache.cayenne.access.StatementContext;
 import org.apache.cayenne.docs.persistent.Artist;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.ObjectSelect;
@@ -44,10 +44,10 @@ public class MyQuery implements Query {
         return new SQLAction() {
 
             @Override
-            public void performAction(Connection connection, OperationObserver observer)
+            public void performAction(Connection connection, StatementContext context)
                     throws SQLException, Exception {
                 // 1. do some JDBC work using provided connection...
-                // 2. push results back to Cayenne via OperationObserver
+                // 2. report the results to Cayenne via StatementContext.addResult(..)
             }
         };
     }

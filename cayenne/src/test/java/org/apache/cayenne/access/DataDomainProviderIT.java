@@ -32,7 +32,6 @@ import org.apache.cayenne.project.DataNodeDescriptor;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.query.Query;
 import org.apache.cayenne.CayenneRuntime;
 import org.apache.cayenne.testdo.db1.CrossdbM1E1;
 import org.apache.cayenne.unit.CayenneProjects;
@@ -291,9 +290,8 @@ public class DataDomainProviderIT {
     static class NoopQueryFilter implements DataChannelQueryFilter {
 
         @Override
-        public List<QueryResult> onQuery(ObjectContext originatingContext, Query query, boolean iteratedResult,
-                                         DataChannelQueryFilterChain filterChain) {
-            return filterChain.onQuery(originatingContext, query, iteratedResult);
+        public List<QueryResult> onQuery(OperationContext context, DataChannelQueryFilterChain filterChain) {
+            return filterChain.onQuery(context);
         }
     }
 

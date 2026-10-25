@@ -29,7 +29,6 @@ import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
 import java.lang.reflect.Method;
-import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -50,9 +49,7 @@ public class DataNodeQueryExceptionsIT {
         };
 
         assertEquals(0, activeConnections());
-        assertThrows(CayenneRuntimeException.class, () -> env.dataNode().performQueries(
-                Collections.singletonList(throwingSS),
-                new MockOperationObserver()));
+        assertThrows(CayenneRuntimeException.class, () -> StatementContexts.run(env.dataNode(), throwingSS));
 
         assertEquals(0, activeConnections());
     }
@@ -68,9 +65,7 @@ public class DataNodeQueryExceptionsIT {
         };
 
         assertEquals(0, activeConnections());
-        assertThrows(Error.class, () -> env.dataNode().performQueries(
-                Collections.singletonList(throwingSS),
-                new MockOperationObserver()));
+        assertThrows(Error.class, () -> StatementContexts.run(env.dataNode(), throwingSS));
 
         assertEquals(0, activeConnections());
     }

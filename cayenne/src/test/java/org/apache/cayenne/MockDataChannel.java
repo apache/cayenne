@@ -26,7 +26,7 @@ import java.util.List;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.query.Query;
+import org.apache.cayenne.access.OperationContext;
 import org.apache.cayenne.access.lifecycle.LifecycleEventsManager;
 
 /**
@@ -84,8 +84,8 @@ public class MockDataChannel implements DataChannel {
         return commitResponse;
     }
 
-    public List<QueryResult> onQuery(ObjectContext context, Query query, boolean iteratedResult) {
-        requestObjects.add(query);
+    public List<QueryResult> onQuery(OperationContext context) {
+        requestObjects.add(context.getQuery());
         return response;
     }
 

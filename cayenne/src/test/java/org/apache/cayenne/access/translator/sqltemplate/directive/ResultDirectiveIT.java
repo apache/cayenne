@@ -18,7 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.access.translator.sqltemplate.directive;
 
-import org.apache.cayenne.access.MockOperationObserver;
+import org.apache.cayenne.access.StatementContext;
+import org.apache.cayenne.access.StatementContexts;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.CayenneRuntime;
@@ -30,7 +31,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -94,11 +94,10 @@ public class ResultDirectiveIT {
 	private Map<String, Object> selectForQuery(String sql) {
 		SQLTemplate template = new SQLTemplate(Artist.class, sql);
 		template.setColumnNamesCapitalization(CapsStrategy.UPPER);
-		MockOperationObserver observer = new MockOperationObserver();
-		runtime.getDataDomain().getDefaultNode().performQueries(Collections.singletonList(template), observer);
+		StatementContext statementContext = StatementContexts.run(runtime.getDataDomain().getDefaultNode(), template);
 
 		@SuppressWarnings("unchecked")
-		List<Map<String, Object>> data = observer.rowsForQuery(template);
+		List<Map<String, Object>> data = StatementContexts.rows(statementContext);
 		assertEquals(1, data.size());
 		Map<String, Object> row = data.get(0);
 		return row;

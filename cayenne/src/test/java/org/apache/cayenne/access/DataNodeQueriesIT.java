@@ -32,7 +32,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Date;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -89,10 +88,9 @@ public class DataNodeQueriesIT {
         bindings.put("dob", new Date(System.currentTimeMillis()));
         query.setParams(bindings);
 
-        MockOperationObserver observer = new MockOperationObserver();
-        node.performQueries(Collections.singletonList((Query) query), observer);
-        assertNotNull(observer.countsForQuery(query));
-        assertEquals(1, observer.countsForQuery(query)[0]);
+        StatementContext statementContext = StatementContexts.run(node, query);
+        assertNotNull(StatementContexts.counts(statementContext));
+        assertEquals(1, StatementContexts.counts(statementContext)[0]);
 
         // check the data
 
@@ -108,10 +106,9 @@ public class DataNodeQueriesIT {
         String template = "SELECT #result('ARTIST_ID' 'int') FROM ARTIST ORDER BY ARTIST_ID";
         SQLTemplate query = new SQLTemplate(template);
 
-        MockOperationObserver observer = new MockOperationObserver();
-        node.performQueries(Collections.singletonList((Query) query), observer);
+        StatementContext statementContext = StatementContexts.run(node, query);
 
-        List<DataRow> data = observer.rowsForQuery(query);
+        List<DataRow> data = StatementContexts.rows(statementContext);
         assertEquals(4, data.size());
         DataRow row = data.get(2);
         assertEquals(1, row.size());
@@ -126,10 +123,9 @@ public class DataNodeQueriesIT {
         SQLTemplate query = new SQLTemplate(template);
         query.setColumnNamesCapitalization(CapsStrategy.UPPER);
 
-        MockOperationObserver observer = new MockOperationObserver();
-        node.performQueries(Collections.singletonList((Query) query), observer);
+        StatementContext statementContext = StatementContexts.run(node, query);
 
-        List<DataRow> data = observer.rowsForQuery(query);
+        List<DataRow> data = StatementContexts.rows(statementContext);
         assertEquals(4, data.size());
         DataRow row = data.get(2);
         assertEquals(3, row.size());
@@ -146,10 +142,9 @@ public class DataNodeQueriesIT {
         String template = "SELECT #result('ARTIST_ID' 'int' 'A') FROM ARTIST ORDER BY ARTIST_ID";
         Query query = new SQLTemplate(template);
 
-        MockOperationObserver observer = new MockOperationObserver();
-        node.performQueries(Collections.singletonList(query), observer);
+        StatementContext statementContext = StatementContexts.run(node, query);
 
-        List<DataRow> data = observer.rowsForQuery(query);
+        List<DataRow> data = StatementContexts.rows(statementContext);
         assertEquals(4, data.size());
         DataRow row = data.get(2);
         assertEquals(1, row.size());
@@ -162,9 +157,7 @@ public class DataNodeQueriesIT {
                 + "\n"
                 + "VALUES (1, 'A')";
         Query template = new SQLTemplate(templateString);
-        node.performQueries(
-                Collections.singletonList(template),
-                new MockOperationObserver());
+        StatementContexts.run(node, template);
     }
 
     @Test
@@ -173,9 +166,7 @@ public class DataNodeQueriesIT {
                 + "\r\n"
                 + "VALUES (1, 'A')";
         Query template = new SQLTemplate(templateString);
-        node.performQueries(
-                Collections.singletonList(template),
-                new MockOperationObserver());
+        StatementContexts.run(node, template);
     }
 
     @Test
@@ -184,8 +175,6 @@ public class DataNodeQueriesIT {
                 + "\r"
                 + "VALUES (1, 'A')";
         Query template = new SQLTemplate(templateString);
-        node.performQueries(
-                Collections.singletonList(template),
-                new MockOperationObserver());
+        StatementContexts.run(node, template);
     }
 }

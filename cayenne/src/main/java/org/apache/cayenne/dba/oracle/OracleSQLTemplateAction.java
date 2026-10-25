@@ -19,7 +19,7 @@
 package org.apache.cayenne.dba.oracle;
 
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.OperationObserver;
+import org.apache.cayenne.access.StatementContext;
 import org.apache.cayenne.access.jdbc.SQLTemplateAction;
 import org.apache.cayenne.access.translator.TranslatedSQL;
 import org.apache.cayenne.map.DbEntity;
@@ -43,7 +43,7 @@ class OracleSQLTemplateAction extends SQLTemplateAction {
 
 	@Override
 	protected void processSelectResult(TranslatedSQL compiled, Connection connection, Statement statement,
-									   ResultSet resultSet, OperationObserver callback, long startTime) throws Exception {
+									   ResultSet resultSet, StatementContext context, long startTime) throws Exception {
 
 		// wrap ResultSet to distinguish between Integer and BigDecimal for
 		// Oracle NUMBER
@@ -53,6 +53,6 @@ class OracleSQLTemplateAction extends SQLTemplateAction {
 			resultSet = new OracleResultSetWrapper(resultSet);
 		}
 
-		super.processSelectResult(compiled, connection, statement, resultSet, callback, startTime);
+		super.processSelectResult(compiled, connection, statement, resultSet, context, startTime);
 	}
 }

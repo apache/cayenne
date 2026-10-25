@@ -20,11 +20,11 @@
 package org.apache.cayenne;
 
 import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.access.OperationContext;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.event.EventSubject;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.query.Query;
 import org.apache.cayenne.access.lifecycle.LifecycleEventsManager;
 
 import java.util.Collection;
@@ -117,18 +117,19 @@ public interface DataChannel {
     }
 
     /**
-     * Executes a query, using provided <em>context</em> to register persistent objects if
-     * query returns any objects.
+     * Executes the query of the provided operation context, registering any result objects with the
+     * {@link OperationContext#getContext() ObjectContext} of the operation. If the operation asks for an
+     * {@link OperationContext#isIteratedResult() iterated result}, the select result is returned as a
+     * {@link ResultIterator} item, and the caller is responsible for closing it; otherwise it is fully read into a
+     * list.
      *
-     * @param context        an ObjectContext that originated the query, used to register result objects.
-     * @param query          a query to execute.
-     * @param iteratedResult if true, the result is returned as a {@link ResultIterator} item, and the caller is
-     *                       responsible for closing it. If false, the result is fully read into a list.
+     * @param context the context of the operation, carrying the query and the originating ObjectContext, and collecting
+     *            the statements run and their results on the way down the channel stack.
      * @return all result sets, update counts, iterators and OUT parameters of the execution, in the order they were
      * produced.
-     * @since 5.0
+     * @since 6.0
      */
-    List<QueryResult> onQuery(ObjectContext context, Query query, boolean iteratedResult);
+    List<QueryResult> onQuery(OperationContext context);
 
     /**
      * Invalidates objects with the given ids in this channel and all its parents, so that they are refetched on the

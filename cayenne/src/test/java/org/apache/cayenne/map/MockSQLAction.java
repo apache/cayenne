@@ -22,7 +22,7 @@ package org.apache.cayenne.map;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import org.apache.cayenne.access.OperationObserver;
+import org.apache.cayenne.access.StatementContext;
 import org.apache.cayenne.query.SQLAction;
 
 public class MockSQLAction implements SQLAction {
@@ -31,7 +31,7 @@ public class MockSQLAction implements SQLAction {
         super();
     }
 
-    public void performAction(Connection connection, OperationObserver observer)
+    public void performAction(Connection connection, StatementContext context)
             throws SQLException, Exception {
     }
 }

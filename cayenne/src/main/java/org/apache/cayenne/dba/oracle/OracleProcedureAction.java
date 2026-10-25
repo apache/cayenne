@@ -27,7 +27,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.OperationObserver;
+import org.apache.cayenne.OutParametersResult;
+import org.apache.cayenne.access.StatementContext;
 import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.access.jdbc.ProcedureAction;
 import org.apache.cayenne.dba.TypesMapping;
@@ -50,11 +51,11 @@ class OracleProcedureAction extends ProcedureAction {
 	 * Helper method that reads OUT parameters of a CallableStatement.
 	 */
 	@Override
-	protected void readProcedureOutParameters(CallableStatement statement, OperationObserver delegate)
+	protected void readProcedureOutParameters(CallableStatement statement, StatementContext context)
 			throws SQLException, Exception {
 
 		Map<String, Object> result = null;
-		List<ProcedureParameter> parameters = getProcedure().getCallParameters();
+		List<ProcedureParameter> parameters = context.getMetadata().getProcedure().getCallParameters();
 		for (int i = 0; i < parameters.size(); i++) {
 			ProcedureParameter parameter = parameters.get(i);
 
@@ -67,7 +68,7 @@ class OracleProcedureAction extends ProcedureAction {
 
 				try (ResultSet rs = (ResultSet) statement.getObject(i + 1);) {
 					RSColumn[] rsColumns = describeResultSet(rs, processedResultSets++);
-					readResultSet(rs, rsColumns, query, delegate);
+					readResultSet(rs, rsColumns, context);
 				}
 			}
 			// ==== end Oracle-specific part
@@ -85,7 +86,7 @@ class OracleProcedureAction extends ProcedureAction {
 		}
 
 		if (result != null) {
-			delegate.nextOutParameters(query, result);
+			context.addResult(new OutParametersResult(result));
 		}
 	}
 }

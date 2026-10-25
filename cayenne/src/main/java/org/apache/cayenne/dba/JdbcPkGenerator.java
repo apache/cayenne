@@ -21,12 +21,13 @@ package org.apache.cayenne.dba;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.QueryResult;
+import org.apache.cayenne.SelectResult;
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.OperationObserver;
+import org.apache.cayenne.access.StatementContext;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbKeyGenerator;
-import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.util.IDUtil;
 
@@ -245,17 +246,44 @@ public class JdbcPkGenerator implements PkGenerator {
      * @since 3.0
      */
     protected long longPkFromDatabase(DataNode node, DbEntity entity) {
-        String select = "SELECT #result('NEXT_ID' 'long' 'NEXT_ID') FROM AUTO_PK_SUPPORT "
-                + "WHERE TABLE_NAME = '" + entity.getName() + '\'';
+        String select = "SELECT #result('NEXT_ID' 'long' 'NEXT_ID') FROM AUTO_PK_SUPPORT WHERE TABLE_NAME = '"
+                + entity.getName() + '\'';
 
-        // run queries via DataNode to utilize its transactional behavior
-        List<Query> queries = new ArrayList<>(2);
-        queries.add(SQLTemplate.dataRowQuery(select));
-        queries.add(SQLTemplate.dataRowQuery(pkUpdateString(entity.getName())));
+        StatementContext selectContext = statementContext(select, node);
+        StatementContext updateContext = statementContext(pkUpdateString(entity.getName()), node);
 
-        PkRetrieveProcessor observer = new PkRetrieveProcessor(entity.getName());
-        node.performQueries(queries, observer);
-        return observer.getId();
+        try {
+            node.execute(List.of(selectContext, updateContext));
+        } catch (CayenneRuntimeException e) {
+            throw new CayenneRuntimeException("Error generating PK for entity '%s'.", e, entity.getName());
+        }
+
+        Number id = null;
+        for (QueryResult result : selectContext.getResults()) {
+            if (result instanceof SelectResult<?>(List<?> rows)) {
+                if (rows.isEmpty()) {
+                    throw new CayenneRuntimeException("Error generating PK : entity not supported: %s",
+                            entity.getName());
+                }
+                if (rows.size() > 1) {
+                    throw new CayenneRuntimeException("Error generating PK : too many rows for entity: %s",
+                            entity.getName());
+                }
+                DataRow lastPk = (DataRow) rows.getFirst();
+                id = (Number) lastPk.get("NEXT_ID");
+            }
+        }
+
+        if (id == null) {
+            throw new CayenneRuntimeException("No key was retrieved for entity %s", entity.getName());
+        }
+
+        return id.longValue();
+    }
+
+    private static StatementContext statementContext(String sql, DataNode node) {
+        SQLTemplate<DataRow> query = SQLTemplate.dataRowQuery(sql);
+        return new StatementContext(query, query.getMetaData(node.getEntityResolver()));
     }
 
     /**
@@ -293,52 +321,5 @@ public class JdbcPkGenerator implements PkGenerator {
 
     public void reset() {
         pkCache.clear();
-    }
-
-    static final class PkRetrieveProcessor implements OperationObserver {
-
-        Number id;
-        final String entityName;
-
-        PkRetrieveProcessor(String entityName) {
-            this.entityName = entityName;
-        }
-
-        public long getId() {
-            if (id == null) {
-                throw new CayenneRuntimeException("No key was retrieved for entity %s", entityName);
-            }
-
-            return id.longValue();
-        }
-
-        public void nextRows(Query query, List<?> dataRows) {
-            // process selected object, issue an update query
-            if (dataRows == null || dataRows.isEmpty()) {
-                throw new CayenneRuntimeException("Error generating PK : entity not supported: %s", entityName);
-            }
-
-            if (dataRows.size() > 1) {
-                throw new CayenneRuntimeException("Error generating PK : too many rows for entity: %s", entityName);
-            }
-
-            DataRow lastPk = (DataRow) dataRows.getFirst();
-            id = (Number) lastPk.get("NEXT_ID");
-        }
-
-        public void nextCount(Query query, int resultCount) {
-            if (resultCount != 1) {
-                throw new CayenneRuntimeException("Error generating PK for entity '%s': update count is wrong - %d"
-                        , entityName, resultCount);
-            }
-        }
-
-        public void nextQueryException(Query query, Exception ex) {
-            throw new CayenneRuntimeException("Error generating PK for entity '" + entityName + "'.", ex);
-        }
-
-        public void nextGlobalException(Exception ex) {
-            throw new CayenneRuntimeException("Error generating PK for entity: " + entityName, ex);
-        }
     }
 }

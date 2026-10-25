@@ -19,16 +19,14 @@
 
 package org.apache.cayenne.dba.sqlserver;
 
-import org.apache.cayenne.DataRow;
-import org.apache.cayenne.ObjectId;
-import org.apache.cayenne.ResultIterator;
+import org.apache.cayenne.SelectResult;
+import org.apache.cayenne.UpdateResult;
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.OperationObserver;
+import org.apache.cayenne.access.StatementContext;
 import org.apache.cayenne.access.jdbc.ProcedureAction;
 import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.access.translator.TranslatedProcedure;
 import org.apache.cayenne.query.ProcedureQuery;
-import org.apache.cayenne.query.Query;
 
 import java.sql.CallableStatement;
 import java.sql.Connection;
@@ -37,13 +35,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * ProcedureAction for SQLServer MS JDBC driver. Customizes OUT parameter
- * processing - it has to be done AFTER the ResultSets are read (note that jTDS
- * driver works fine with normal ProcedureAction).
+ * ProcedureAction for SQLServer MS JDBC driver. Customizes OUT parameter processing - it has to be done AFTER the
+ * ResultSets are read (note that jTDS driver works fine with normal ProcedureAction).
  * <p>
  * <i>See JIRA CAY-251 for details. </i>
  * </p>
- * 
+ *
  * @since 1.2
  */
 public class SQLServerProcedureAction extends ProcedureAction {
@@ -56,12 +53,12 @@ public class SQLServerProcedureAction extends ProcedureAction {
 	}
 
 	@Override
-	public void performAction(Connection connection, OperationObserver observer) throws Exception {
+	public void performAction(Connection connection, StatementContext context) throws Exception {
 
 		TranslatedProcedure translated = dataNode.getProcedureTranslator()
 				.translate(query, dataNode.getAdapter(), dataNode.getEntityResolver());
 
-		observer.nextStatement(query, translated);
+		context.setTranslated(translated);
 
 		try (CallableStatement statement = connection.prepareCall(translated.sql())) {
 			bindParameters(statement, translated);
@@ -72,121 +69,47 @@ public class SQLServerProcedureAction extends ProcedureAction {
 			// iterate until we exhaust all results
 			boolean hasResultSet = statement.execute();
 
-			// local observer to cache results and provide them to the external
-			// observer
-			// in the order consistent with other adapters.
-
-			Observer localObserver = new Observer(observer);
-
-			// read query, using local observer
+			// buffer the results locally to report them in the order consistent with other adapters: all result sets
+			// first, then all update counts, both after the OUT parameters
+			List<List<?>> results = new ArrayList<>();
+			List<Integer> counts = new ArrayList<>();
 
 			while (true) {
 				if (hasResultSet) {
-
 					try (ResultSet rs = statement.getResultSet()) {
 						RSColumn[] columns = describeResultSet(rs, processedResultSets++);
-						readResultSet(rs, columns, query, localObserver);
+						if (context.isIteratedResult()) {
+							// an iterator is handed over as is, and can't be reordered
+							readResultSet(rs, columns, context);
+						} else {
+							results.add(resultIterator(rs, columns, context).allRows());
+						}
 					}
 				} else {
 					int updateCount = statement.getUpdateCount();
 					if (updateCount == -1) {
 						break;
 					}
-					localObserver.nextCount(query, updateCount);
+					counts.add(updateCount);
 				}
 
 				hasResultSet = statement.getMoreResults();
 			}
 
-			// read out parameters to the main observer ... AFTER the main
-			// result set
+			// read out parameters ... AFTER the main result set
 			// TODO: I hope SQLServer does not support ResultSets as OUT
 			// parameters,
 			// otherwise
 			// the order of custom result descriptors will be messed up
-			readProcedureOutParameters(statement, observer);
+			readProcedureOutParameters(statement, context);
 
-			// add results back to main observer
-			localObserver.flushResults(query);
-		}
-	}
-
-	static class Observer implements OperationObserver {
-
-		List<List<?>> results;
-		List<Integer> counts;
-		OperationObserver observer;
-
-		Observer(OperationObserver observer) {
-			this.observer = observer;
-		}
-
-		void flushResults(Query query) {
-			if (results != null) {
-				for (List<?> result : results) {
-					observer.nextRows(query, result);
-				}
-				results = null;
+			// report the buffered results
+			for (List<?> result : results) {
+				context.addResult(new SelectResult<>(result));
 			}
-
-			if (counts != null) {
-				for (Integer count : counts) {
-					observer.nextCount(query, count);
-				}
-				counts = null;
+			for (Integer count : counts) {
+				context.addResult(new UpdateResult(new int[]{count}));
 			}
-		}
-
-		@Override
-		public void nextBatchCount(Query query, int[] resultCount) {
-			observer.nextBatchCount(query, resultCount);
-		}
-
-		@Override
-		public void nextCount(Query query, int resultCount) {
-			// does not delegate to wrapped observer
-			// but instead caches results locally.
-			if (counts == null) {
-				counts = new ArrayList<>();
-			}
-
-			counts.add(resultCount);
-		}
-
-		@Override
-		public void nextRows(Query query, List<?> dataRows) {
-			// does not delegate to wrapped observer
-			// but instead caches results locally.
-			if (results == null) {
-				results = new ArrayList<>();
-			}
-
-			results.add(dataRows);
-		}
-
-		@Override
-		public void nextRows(Query q, ResultIterator<?> it) {
-			observer.nextRows(q, it);
-		}
-
-		@Override
-		public void nextGlobalException(Exception ex) {
-			observer.nextGlobalException(ex);
-		}
-
-		@Override
-		public void nextGeneratedRows(Query query, List<DataRow> keys, List<ObjectId> idsToUpdate) {
-			observer.nextGeneratedRows(query, keys, idsToUpdate);
-		}
-
-		@Override
-		public void nextQueryException(Query query, Exception ex) {
-			observer.nextQueryException(query, ex);
-		}
-
-		@Override
-		public boolean isIteratedResult() {
-			return observer.isIteratedResult();
 		}
 	}
 }

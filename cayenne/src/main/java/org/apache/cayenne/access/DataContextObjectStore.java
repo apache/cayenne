@@ -504,7 +504,8 @@ public class DataContextObjectStore implements ObjectStore {
                 .where(ExpressionFactory.matchAllDbExp(oid.getIdSnapshot()))
                 .fetchDataRows();
 
-        List<?> rows = QueryResults.firstList(context.getChannel().onQuery(context, query, false));
+        OperationContext execContext = new OperationContext(context, query, context.getEntityResolver(), false);
+        List<?> rows = QueryResults.firstList(context.getChannel().onQuery(execContext));
         return switch (rows.size()) {
             case 0 -> null;
             case 1 -> (DataRow) rows.getFirst();

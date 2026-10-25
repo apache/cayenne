@@ -19,8 +19,8 @@
 
 package org.apache.cayenne;
 
+import org.apache.cayenne.access.OperationContext;
 import org.apache.cayenne.access.lifecycle.LifecycleEventsManager;
-import org.apache.cayenne.query.Query;
 
 import java.util.List;
 
@@ -30,11 +30,10 @@ import java.util.List;
  * <p>
  * Example: <pre>{@code
  * public class MyQueryFilter implements DataChannelQueryFilter {
- *     public List<QueryResult> onQuery(ObjectContext originatingContext, Query query, boolean iteratedResult,
- *                                      DataChannelQueryFilterChain filterChain) {
- *         System.out.println("Do something before query");
+ *     public List<QueryResult> onQuery(OperationContext context, DataChannelQueryFilterChain filterChain) {
+ *         System.out.println("Do something before query " + context.getQuery());
  *         // process query or return some custom response
- *         List<QueryResult> response = filterChain.onQuery(originatingContext, query, iteratedResult);
+ *         List<QueryResult> response = filterChain.onQuery(context);
  *         System.out.println("Do something after query");
  *         return response;
  *     }
@@ -49,14 +48,13 @@ import java.util.List;
 public interface DataChannelQueryFilter {
 
     /**
-     * @param originatingContext originating context of query
-     * @param query that is processed
-     * @param iteratedResult whether the result should be returned as a {@link ResultIterator} instead of a list
+     * @param context         the context of the query operation, carrying the query, the originating ObjectContext and,
+     *                    once the chain has run, the statements executed and their results
      * @param filterChain chain of query filters to invoke after this filter
      * @return query result items
+     * @since 6.0
      */
-    List<QueryResult> onQuery(ObjectContext originatingContext, Query query, boolean iteratedResult,
-                              DataChannelQueryFilterChain filterChain);
+    List<QueryResult> onQuery(OperationContext context, DataChannelQueryFilterChain filterChain);
 
     /**
      * Called once when the filter is added to the DataDomain, letting the filter register lifecycle event listeners,

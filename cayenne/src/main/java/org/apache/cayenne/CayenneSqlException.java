@@ -19,45 +19,57 @@
 
 package org.apache.cayenne;
 
+import org.apache.cayenne.access.StatementContext;
 import org.apache.cayenne.access.translator.TranslatedStatement;
 import org.apache.cayenne.query.Query;
 
 /**
  * An exception thrown when a failure occurs while executing a query statement or reading its results. It carries the
- * {@link Query} being executed and the {@link TranslatedStatement} that was being executed at the time of the failure,
- * and includes the statement's SQL in the exception message, so that a failure can be correlated with a specific query.
+ * {@link StatementContext} that failed, i.e. the {@link Query} being executed and the {@link TranslatedStatement} that
+ * was being executed at the time of the failure, and includes the statement's SQL in the exception message, so that a
+ * failure can be correlated with a specific query.
  *
  * @since 5.0
  */
 public class CayenneSqlException extends CayenneRuntimeException {
 
-    private final transient Query query;
-    private final transient TranslatedStatement statement;
+    private final transient StatementContext statementContext;
 
     /**
-     * Creates an exception for a failure that happened while executing the provided query and statement. The statement
-     * may be null if the failure occurred before a statement was translated.
+     * Creates an exception for a failure that happened while executing the provided statement. Its translated form may
+     * be null if the failure occurred before the statement was translated.
+     *
+     * @since 6.0
      */
-    public CayenneSqlException(String message, Query query, TranslatedStatement statement, Throwable cause) {
+    public CayenneSqlException(String message, StatementContext statementContext, Throwable cause) {
         // pass the pre-built message as a "%s" argument so that any "%" characters in the SQL (e.g. LIKE patterns)
         // are not interpreted as format specifiers by the superclass
-        super("%s", cause, buildMessage(message, statement));
-        this.query = query;
-        this.statement = statement;
+        super("%s", cause, buildMessage(message, statementContext != null ? statementContext.getTranslated() : null));
+        this.statementContext = statementContext;
+    }
+
+    /**
+     * Returns the context of the statement that failed: the query, the translated statement and the results produced
+     * before the failure. Null if the failure is not tied to a statement.
+     *
+     * @since 6.0
+     */
+    public StatementContext getStatementContext() {
+        return statementContext;
     }
 
     /**
      * Returns the query that was being executed when the failure occurred, or null if it is not known.
      */
     public Query getQuery() {
-        return query;
+        return statementContext != null ? statementContext.getQuery() : null;
     }
 
     /**
      * Returns the statement that was being executed when the failure occurred, or null if it is not known.
      */
     public TranslatedStatement getStatement() {
-        return statement;
+        return statementContext != null ? statementContext.getTranslated() : null;
     }
 
     private static String buildMessage(String message, TranslatedStatement statement) {

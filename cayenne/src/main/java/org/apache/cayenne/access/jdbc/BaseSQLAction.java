@@ -19,15 +19,15 @@
 
 package org.apache.cayenne.access.jdbc;
 
+import org.apache.cayenne.ResultIterator;
+import org.apache.cayenne.SelectResult;
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.OperationObserver;
+import org.apache.cayenne.access.StatementContext;
 import org.apache.cayenne.access.jdbc.reader.RowReader;
-import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.SQLAction;
 
 import java.sql.ResultSet;
-import java.util.List;
 
 /**
  * A convenience superclass for SQLAction implementations.
@@ -46,33 +46,40 @@ public abstract class BaseSQLAction implements SQLAction {
     }
 
     /**
-     * Helper method to process a ResultSet.
+     * Helper method to process a ResultSet, reporting it to the statement context as a list of rows, or as a
+     * ResultIterator if the context asks for an iterated result.
      */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    protected void readResultSet(ResultSet resultSet, RSColumn[] columns, Query query, OperationObserver delegate)
-            throws Exception {
+    protected void readResultSet(ResultSet resultSet, RSColumn[] columns, StatementContext context) throws Exception {
 
-        QueryMetadata metadata = query.getMetaData(dataNode.getEntityResolver());
+        ResultIterator<?> it = resultIterator(resultSet, columns, context);
 
-        RowReader<?> rowReader = dataNode.getRowReaderFactory()
-                .rowReader(columns, metadata.getResultSegments(), metadata, dataNode.getAdapter());
-
-        RSIterator resultReader = new RSIterator(null, resultSet, rowReader);
-
-        LimitResultIterator it = new LimitResultIterator(resultReader, getInMemoryOffset(metadata.getFetchOffset()),
-                metadata.getFetchLimit());
-
-        if (!delegate.isIteratedResult()) {
-            List resultRows = it.allRows();
-            delegate.nextRows(query, resultRows);
+        if (!context.isIteratedResult()) {
+            context.addResult(new SelectResult<>(it.allRows()));
         } else {
             try {
-                delegate.nextRows(query, it);
+                context.addResult(it);
             } catch (Exception ex) {
                 it.close();
                 throw ex;
             }
         }
+    }
+
+    /**
+     * Returns an iterator over the rows of a ResultSet, reading them per the statement's result mapping and applying
+     * its in-memory offset and limit. The ResultSet is left open to be closed by the caller.
+     *
+     * @since 6.0
+     */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    protected ResultIterator<?> resultIterator(ResultSet resultSet, RSColumn[] columns, StatementContext context) {
+        QueryMetadata metadata = context.getMetadata();
+        RowReader<?> rowReader = dataNode.getRowReaderFactory()
+                .rowReader(columns, metadata.getResultSegments(), metadata, dataNode.getAdapter());
+
+        RSIterator resultReader = new RSIterator(null, resultSet, rowReader);
+        return new LimitResultIterator(resultReader, getInMemoryOffset(metadata.getFetchOffset()),
+                metadata.getFetchLimit());
     }
 
     /**

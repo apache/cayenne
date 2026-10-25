@@ -19,7 +19,7 @@
 package org.apache.cayenne.dba.postgres;
 
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.OperationObserver;
+import org.apache.cayenne.access.StatementContext;
 import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.access.jdbc.SelectAction;
 import org.apache.cayenne.access.jdbc.PSParameter;
@@ -46,17 +46,18 @@ class PostgresSelectAction extends SelectAction {
 	}
 
 	@Override
-	protected void performAction(Connection connection, OperationObserver observer, TranslatedSelect translated) throws Exception {
+	protected void performAction(Connection connection, StatementContext context, TranslatedSelect translated)
+			throws Exception {
 
 		if (!connection.getAutoCommit() || !needsTransaction(translated)) {
-			super.performAction(connection, observer, translated);
+			super.performAction(connection, context, translated);
 			return;
 		}
 
 		// manual tx management for the cases listed in "needsTransaction"
 		connection.setAutoCommit(false);
 		try {
-			super.performAction(connection, observer, translated);
+			super.performAction(connection, context, translated);
 			connection.commit();
 		} catch (Exception e) {
 			try {

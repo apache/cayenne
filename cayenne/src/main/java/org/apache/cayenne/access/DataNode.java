@@ -20,6 +20,7 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.CayenneSqlException;
 import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
 import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
 import org.apache.cayenne.access.translator.BatchTranslator;
@@ -36,11 +37,11 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.EntitySorter;
 import org.apache.cayenne.query.DeleteBatchQuery;
 import org.apache.cayenne.query.InsertBatchQuery;
-import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.UpdateBatchQuery;
 import org.apache.cayenne.tx.BaseTransaction;
 import org.apache.cayenne.tx.Transaction;
 import org.apache.cayenne.util.ToStringBuilder;
+import org.apache.cayenne.util.Util;
 
 import javax.sql.DataSource;
 import java.io.PrintWriter;
@@ -289,19 +290,25 @@ public class DataNode {
     }
 
     /**
-     * Runs queries using Connection obtained from internal DataSource.
+     * Executes the statements, in order, on a single Connection obtained from the internal DataSource. The SQL action
+     * of each statement fills its context with the translated statement and the results. A failure to obtain a
+     * connection is thrown as a CayenneRuntimeException; a failure of a statement is thrown as a
+     * {@link CayenneSqlException} carrying its context, unless the failure is a CayenneRuntimeException in its own
+     * right (e.g. an {@link OptimisticLockException}), which is rethrown as is. The statements after a failed one are
+     * not executed.
      *
-     * @since 1.1
+     * @param statementContexts the statements to execute, normally the ones routed to this node within an operation,
+     *                          i.e. this node's entry in {@link OperationContext#getStatementContexts()}.
+     * @since 6.0
      */
-    public void performQueries(Collection<? extends Query> queries, OperationObserver callback) {
-
-        int listSize = queries.size();
-        if (listSize == 0) {
+    public void execute(List<StatementContext> statementContexts) {
+        if (statementContexts.isEmpty()) {
             return;
         }
 
-        if (callback.isIteratedResult() && listSize > 1) {
-            throw new CayenneRuntimeException("Iterated queries are not allowed in a batch. Batch size: %d", listSize);
+        if (statementContexts.size() > 1 && statementContexts.getFirst().isIteratedResult()) {
+            throw new CayenneRuntimeException("Iterated queries are not allowed in a batch. Batch size: %d",
+                    statementContexts.size());
         }
 
         // resolve the adapter before opening a connection, as a lazy adapter detection opens a connection of its own.
@@ -309,41 +316,38 @@ public class DataNode {
         // limit.
         DbAdapter adapter = getAdapter();
 
-        OperationObserver instrumentedCallback = sqlLogger.isEnabled()
-                ? new LoggingObserver(callback, sqlLogger)
-                : callback;
-
         Transaction tx = BaseTransaction.getThreadTransaction();
-        Connection connection;
 
+        Connection connection;
         try {
-            connection = dataSource.getConnection();
-        } catch (Exception globalEx) {
+            connection = getDataSource().getConnection();
+        } catch (Exception e) {
             if (tx != null) {
                 tx.setRollbackOnly();
             }
-
-            instrumentedCallback.nextGlobalException(globalEx);
-            return;
+            throw new CayenneRuntimeException("Global exception.", Util.unwindException(e));
         }
 
+        SQLLogger logger = getSqlLogger();
         try {
-            for (Query nextQuery : queries) {
-
-                // catch exceptions for each individual query
+            for (StatementContext statementContext : statementContexts) {
+                statementContext.setLogger(logger);
                 try {
-                    adapter.getAction(nextQuery, this).performAction(connection, instrumentedCallback);
-                } catch (Exception queryEx) {
-                    instrumentedCallback.nextQueryException(nextQuery, queryEx);
+                    adapter.getAction(statementContext.getQuery(), this).performAction(connection, statementContext);
+                    statementContext.logComplete();
+                } catch (Exception e) {
+                    statementContext.logError(e);
 
-                    if (tx != null) {
-                        tx.setRollbackOnly();
+                    // preserve meaningful Cayenne exceptions, even when they wrap a lower-level cause; only wrap raw
+                    // lower-level failures in a CayenneSqlException so they can be correlated with the failing
+                    // statement
+                    Throwable unwound = Util.unwindException(e, CayenneRuntimeException.class);
+                    if (unwound instanceof CayenneRuntimeException cayenneException) {
+                        throw cayenneException;
                     }
-                    break;
+                    throw new CayenneSqlException("Query exception.", statementContext, unwound);
                 }
             }
-
-            instrumentedCallback.onSuccess();
         } finally {
             try {
                 connection.close();

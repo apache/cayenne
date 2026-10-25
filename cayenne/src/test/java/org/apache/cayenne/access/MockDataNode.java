@@ -19,12 +19,23 @@
 
 package org.apache.cayenne.access;
 
+import org.apache.cayenne.SelectResult;
+import org.apache.cayenne.access.dbsync.SchemaUpdateStrategy;
+import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
+import org.apache.cayenne.access.translator.BatchTranslator;
+import org.apache.cayenne.access.translator.ProcedureTranslator;
+import org.apache.cayenne.access.translator.SQLTemplateTranslator;
+import org.apache.cayenne.access.translator.SelectTranslator;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.PkGenerator;
+import org.apache.cayenne.log.SQLLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.EntitySorter;
+import org.apache.cayenne.query.DeleteBatchQuery;
+import org.apache.cayenne.query.InsertBatchQuery;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.UpdateBatchQuery;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -91,25 +102,17 @@ public class MockDataNode extends DataNode {
     }
 
     @Override
-    public void performQueries(Collection queries, OperationObserver callback) {
-        runCount += queries.size();
+    public void execute(List<StatementContext> statementContexts) {
+        runCount += statementContexts.size();
 
         if (replaceResults) {
-            initWithPresetResults(queries, callback);
-        }
-        else {
-            node.performQueries(queries, callback);
-        }
-    }
-
-    private void initWithPresetResults(
-            Collection queries,
-            OperationObserver resultConsumer) {
-
-        // stick preset results to the consumer
-        for (Object o : queries) {
-            Query query = (Query) o;
-            resultConsumer.nextRows(query, (List) results.get(query));
+            // stick preset results to the statements
+            for (StatementContext statementContext : statementContexts) {
+                statementContext.addResult(new SelectResult<>((List) results.get(statementContext.getQuery())));
+            }
+        } else {
+            // execute here, with the delegate supplying all the parts
+            super.execute(statementContexts);
         }
     }
 
@@ -151,6 +154,51 @@ public class MockDataNode extends DataNode {
     @Override
     public EntitySorter getEntitySorter() {
         return node.getEntitySorter();
+    }
+
+    @Override
+    public SQLLogger getSqlLogger() {
+        return node.getSqlLogger();
+    }
+
+    @Override
+    public SchemaUpdateStrategy getSchemaUpdateStrategy() {
+        return node.getSchemaUpdateStrategy();
+    }
+
+    @Override
+    public RowReaderFactory getRowReaderFactory() {
+        return node.getRowReaderFactory();
+    }
+
+    @Override
+    public SelectTranslator getSelectTranslator() {
+        return node.getSelectTranslator();
+    }
+
+    @Override
+    public ProcedureTranslator getProcedureTranslator() {
+        return node.getProcedureTranslator();
+    }
+
+    @Override
+    public SQLTemplateTranslator getSqlTemplateTranslator() {
+        return node.getSqlTemplateTranslator();
+    }
+
+    @Override
+    public BatchTranslator<InsertBatchQuery> getInsertBatchTranslator() {
+        return node.getInsertBatchTranslator();
+    }
+
+    @Override
+    public BatchTranslator<UpdateBatchQuery> getUpdateBatchTranslator() {
+        return node.getUpdateBatchTranslator();
+    }
+
+    @Override
+    public BatchTranslator<DeleteBatchQuery> getDeleteBatchTranslator() {
+        return node.getDeleteBatchTranslator();
     }
 
     @Override

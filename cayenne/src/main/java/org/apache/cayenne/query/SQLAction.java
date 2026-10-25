@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.query;
 
-import org.apache.cayenne.access.OperationObserver;
+import org.apache.cayenne.access.StatementContext;
 
 import java.sql.Connection;
 
@@ -33,7 +33,10 @@ import java.sql.Connection;
 public interface SQLAction {
 
     /**
-     * Executes a query using a strategy defined by the implementation.
+     * Executes a query using a strategy defined by the implementation, reporting the translated statement and its
+     * results to the provided statement context.
+     *
+     * @since 6.0 takes a {@link StatementContext}
      */
-    void performAction(Connection connection, OperationObserver observer) throws Exception;
+    void performAction(Connection connection, StatementContext context) throws Exception;
 }

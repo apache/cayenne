@@ -20,7 +20,8 @@
 package org.apache.cayenne.access.jdbc;
 
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.MockOperationObserver;
+import org.apache.cayenne.access.StatementContext;
+import org.apache.cayenne.access.StatementContexts;
 import org.apache.cayenne.access.OptimisticLockException;
 import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
 import org.apache.cayenne.access.translator.batch.DeleteBatchTranslator;
@@ -85,7 +86,9 @@ public class BatchActionLockingIT {
 		node.setEntityResolver(resolver);
 		node.setRowReaderFactory(mock(RowReaderFactory.class));
 		BatchAction action = new BatchAction(batchQuery, node, false);
-		action.runAsIndividualQueries(mockConnection, translated, new MockOperationObserver(), generatesKeys);
+		StatementContext statementContext = StatementContexts.newRun(node, batchQuery);
+		statementContext.setTranslated(translated);
+		action.runAsIndividualQueries(mockConnection, statementContext, generatesKeys);
 		assertEquals(0, mockConnection.getNumberCommits());
 		assertEquals(0, mockConnection.getNumberRollbacks());
 	}
@@ -122,8 +125,10 @@ public class BatchActionLockingIT {
 		node.setEntityResolver(resolver);
 		node.setRowReaderFactory(mock(RowReaderFactory.class));
 		BatchAction action = new BatchAction(batchQuery, node, false);
+		StatementContext statementContext = StatementContexts.newRun(node, batchQuery);
+		statementContext.setTranslated(translated);
 		assertThrows(OptimisticLockException.class, () ->
-			action.runAsIndividualQueries(mockConnection, translated, new MockOperationObserver(), generatesKeys));
+			action.runAsIndividualQueries(mockConnection, statementContext, generatesKeys));
 		assertEquals(0, mockConnection.getNumberCommits());
 		assertEquals(0, mockConnection.getNumberRollbacks());
 	}

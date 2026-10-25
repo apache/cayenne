@@ -19,7 +19,7 @@
 package org.apache.cayenne.dba.postgres;
 
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.OperationObserver;
+import org.apache.cayenne.access.StatementContext;
 import org.apache.cayenne.access.jdbc.PSParameter;
 import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.access.jdbc.reader.RowReader;
@@ -101,7 +101,7 @@ public class PostgresSelectActionTest {
         when(connection.getAutoCommit()).thenReturn(true);
         when(metadata.getStatementFetchSize()).thenReturn(10);
 
-        action.performAction(connection, mock(OperationObserver.class), NO_LOBS);
+        action.performAction(connection, mock(StatementContext.class), NO_LOBS);
 
         InOrder inOrder = inOrder(connection, statement);
         inOrder.verify(connection).setAutoCommit(false);
@@ -117,7 +117,7 @@ public class PostgresSelectActionTest {
         when(connection.getAutoCommit()).thenReturn(true);
         when(metadata.getStatementFetchSize()).thenReturn(0);
 
-        action.performAction(connection, mock(OperationObserver.class), NO_LOBS);
+        action.performAction(connection, mock(StatementContext.class), NO_LOBS);
 
         verify(statement, never()).setFetchSize(anyInt());
         verify(connection, never()).setAutoCommit(anyBoolean());
@@ -129,7 +129,7 @@ public class PostgresSelectActionTest {
         when(connection.getAutoCommit()).thenReturn(false);
         when(metadata.getStatementFetchSize()).thenReturn(10);
 
-        action.performAction(connection, mock(OperationObserver.class), NO_LOBS);
+        action.performAction(connection, mock(StatementContext.class), NO_LOBS);
 
         // the transaction belongs to the caller: the fetch size is passed through, but nothing is committed here
         verify(statement).setFetchSize(10);
@@ -144,7 +144,7 @@ public class PostgresSelectActionTest {
         when(statement.executeQuery()).thenThrow(new RuntimeException("boom"));
 
         assertThrows(RuntimeException.class,
-                () -> action.performAction(connection, mock(OperationObserver.class), NO_LOBS));
+                () -> action.performAction(connection, mock(StatementContext.class), NO_LOBS));
 
         InOrder inOrder = inOrder(connection);
         inOrder.verify(connection).setAutoCommit(false);

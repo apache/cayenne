@@ -19,11 +19,10 @@
 package org.apache.cayenne.access.dbsync;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.access.MockOperationObserver;
+import org.apache.cayenne.access.StatementContexts;
 import org.apache.cayenne.query.SQLTemplate;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -42,7 +41,7 @@ public class ThrowOnPartialOrCreateSchemaStrategyIT extends SchemaUpdateStrategy
 		SQLTemplate query = new SQLTemplate(template);
 
 		setStrategy(ThrowOnPartialOrCreateSchemaStrategy.class);
-		node.performQueries(Collections.singletonList(query), new MockOperationObserver());
+		StatementContexts.run(node, query);
 	}
 
     @Test
@@ -53,12 +52,12 @@ public class ThrowOnPartialOrCreateSchemaStrategyIT extends SchemaUpdateStrategy
 
 		setStrategy(ThrowOnPartialOrCreateSchemaStrategy.class);
 
-		node.performQueries(Collections.singletonList(query), new MockOperationObserver());
+		StatementContexts.run(node, query);
 		Map<String, Boolean> nameTables = tablesMap();
 		assertTrue(nameTables.get("SUS1"));
 		assertEquals(2, existingTables().size());
 
-		node.performQueries(Collections.singletonList(query), new MockOperationObserver());
+		StatementContexts.run(node, query);
 		assertEquals(2, existingTables().size());
 	}
 
@@ -71,6 +70,6 @@ public class ThrowOnPartialOrCreateSchemaStrategyIT extends SchemaUpdateStrategy
 		SQLTemplate query = new SQLTemplate(template);
 
 		assertThrows(CayenneRuntimeException.class, () ->
-			node.performQueries(Collections.singletonList(query), new MockOperationObserver()));
+			StatementContexts.run(node, query));
 	}
 }

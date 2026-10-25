@@ -19,12 +19,10 @@
 package org.apache.cayenne.access.dbsync;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.access.MockOperationObserver;
-import org.apache.cayenne.query.Query;
+import org.apache.cayenne.access.StatementContexts;
 import org.apache.cayenne.query.SQLTemplate;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -35,18 +33,17 @@ public class ThrowOnPartialSchemaStrategyIT extends SchemaUpdateStrategyBase {
 
 		String template = "SELECT #result('ARTIST_ID' 'int') FROM ARTIST ORDER BY ARTIST_ID";
 		SQLTemplate query = new SQLTemplate(template);
-		MockOperationObserver observer = new MockOperationObserver();
 
 		setStrategy(ThrowOnPartialSchemaStrategy.class);
 
 		try {
-			node.performQueries(Collections.singletonList((Query) query), observer);
+			StatementContexts.run(node, query);
 		} catch (CayenneRuntimeException e) {
 			// expected
 		}
 
 		try {
-			node.performQueries(Collections.singletonList((Query) query), observer);
+			StatementContexts.run(node, query);
 		} catch (CayenneRuntimeException e) {
 			// expected
 		}
@@ -57,13 +54,12 @@ public class ThrowOnPartialSchemaStrategyIT extends SchemaUpdateStrategyBase {
 
 		String template = "SELECT #result('ARTIST_ID' 'int') FROM ARTIST ORDER BY ARTIST_ID";
 		SQLTemplate query = new SQLTemplate(template);
-		MockOperationObserver observer = new MockOperationObserver();
 
 		createOneTable("SUS1");
 		createOneTable("SUS2");
 
 		setStrategy(ThrowOnPartialSchemaStrategy.class);
-		node.performQueries(Collections.singletonList(query), observer);
+		StatementContexts.run(node, query);
 	}
 
     @Test
@@ -74,10 +70,9 @@ public class ThrowOnPartialSchemaStrategyIT extends SchemaUpdateStrategyBase {
 
 		String template = "SELECT #result('ARTIST_ID' 'int') FROM ARTIST ORDER BY ARTIST_ID";
 		SQLTemplate query = new SQLTemplate(template);
-		MockOperationObserver observer = new MockOperationObserver();
 
 		assertThrows(CayenneRuntimeException.class, () ->
-			node.performQueries(Collections.singletonList(query), observer));
+			StatementContexts.run(node, query));
 	}
 
 }

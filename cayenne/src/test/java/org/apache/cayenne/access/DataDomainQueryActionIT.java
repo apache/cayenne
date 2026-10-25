@@ -69,7 +69,8 @@ public class DataDomainQueryActionIT {
                 .pageSize(5);
 
 
-        new DataDomainQueryAction(env.context(), domain, query, false).execute();
+        OperationContext context = new OperationContext(env.context(), query, domain.getEntityResolver(), false);
+        new DataDomainQueryAction(domain, context).execute();
     }
 
 }

@@ -20,9 +20,9 @@
 package org.apache.cayenne.access.jdbc;
 
 import org.apache.cayenne.ResultIterator;
+import org.apache.cayenne.SelectResult;
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.OperationHints;
-import org.apache.cayenne.access.OperationObserver;
+import org.apache.cayenne.access.StatementContext;
 import org.apache.cayenne.access.jdbc.reader.RowReader;
 import org.apache.cayenne.access.translator.TranslatedSelect;
 import org.apache.cayenne.dba.DbAdapter;
@@ -57,14 +57,15 @@ public class SelectAction extends BaseSQLAction {
     }
 
     @Override
-    public void performAction(Connection connection, OperationObserver observer) throws Exception {
+    public void performAction(Connection connection, StatementContext context) throws Exception {
         TranslatedSelect translated = dataNode.getSelectTranslator().translate(query, dataNode.getAdapter(), dataNode.getEntityResolver());
-        performAction(connection, observer, translated);
+        performAction(connection, context, translated);
     }
 
-    protected void performAction(Connection connection, OperationObserver observer, TranslatedSelect translated) throws Exception {
+    protected void performAction(Connection connection, StatementContext context, TranslatedSelect translated)
+            throws Exception {
 
-        observer.nextStatement(query, translated);
+        context.setTranslated(translated);
 
         DbAdapter adapter = dataNode.getAdapter();
         PreparedStatement statement = connection.prepareStatement(translated.sql());
@@ -73,7 +74,7 @@ public class SelectAction extends BaseSQLAction {
             adapter.bindParameter(statement, p);
         }
 
-        int fetchSize = statementFetchSize(observer);
+        int fetchSize = statementFetchSize(context);
         if (fetchSize != 0) {
             statement.setFetchSize(fetchSize);
         }
@@ -99,7 +100,7 @@ public class SelectAction extends BaseSQLAction {
                 .rowReader(columns, translated.resultSetMapping(), queryMetadata, dataNode.getAdapter());
 
         ResultIterator<?> it = new RSIterator<>(statement, rs, rowReader);
-        it = forIteratedResult(it, observer, connection);
+        it = forIteratedResult(it, context, connection);
         it = forSuppressedDistinct(it, translated);
         it = forFetchLimit(it, translated);
 
@@ -107,9 +108,9 @@ public class SelectAction extends BaseSQLAction {
         // PreparedStatement in this method, instead of relying on
         // DefaultResultIterator to do that later
 
-        if (observer.isIteratedResult()) {
+        if (context.isIteratedResult()) {
             try {
-                observer.nextRows(query, it);
+                context.addResult(it);
             } catch (Exception ex) {
                 it.close();
                 throw ex;
@@ -122,7 +123,7 @@ public class SelectAction extends BaseSQLAction {
                 it.close();
             }
 
-            observer.nextRows(query, resultRows);
+            context.addResult(new SelectResult<>(resultRows));
         }
     }
 
@@ -135,17 +136,18 @@ public class SelectAction extends BaseSQLAction {
      * implementation returns the fetch size of the query, whatever it is. Adapter-specific subclasses may substitute
      * a default of their own when the query does not set one, but must always honor a non-zero query value.
      *
-     * @param hints whether the result is handed to the caller as a ResultIterator that outlives this action, and if
-     *              so, whether that iterator has the connection to itself until it is closed.
+     * @param context the statement context, telling whether the result is handed to the caller as a ResultIterator
+     *                that outlives this action, and if so, whether that iterator has the connection to itself until
+     *                it is closed.
      * @since 5.0
      */
-    protected int statementFetchSize(OperationHints hints) {
+    protected int statementFetchSize(StatementContext context) {
         return queryMetadata.getStatementFetchSize();
     }
 
-    private <T> ResultIterator<T> forIteratedResult(ResultIterator<T> iterator, OperationObserver observer,
+    private <T> ResultIterator<T> forIteratedResult(ResultIterator<T> iterator, StatementContext context,
                                                     Connection connection) {
-        if (!observer.isIteratedResult()) {
+        if (!context.isIteratedResult()) {
             return iterator;
         }
 

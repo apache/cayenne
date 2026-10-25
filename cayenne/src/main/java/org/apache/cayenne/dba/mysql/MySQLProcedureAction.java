@@ -19,7 +19,8 @@
 package org.apache.cayenne.dba.mysql;
 
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.OperationObserver;
+import org.apache.cayenne.UpdateResult;
+import org.apache.cayenne.access.StatementContext;
 import org.apache.cayenne.access.jdbc.ProcedureAction;
 import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.access.translator.TranslatedProcedure;
@@ -41,14 +42,14 @@ class MySQLProcedureAction extends ProcedureAction {
 	}
 
 	@Override
-	public void performAction(Connection connection, OperationObserver observer) throws Exception {
+	public void performAction(Connection connection, StatementContext context) throws Exception {
 
 		processedResultSets = 0;
 
 		TranslatedProcedure translated = dataNode.getProcedureTranslator()
 				.translate(query, dataNode.getAdapter(), dataNode.getEntityResolver());
 
-		observer.nextStatement(query, translated);
+		context.setTranslated(translated);
 
 		try (CallableStatement statement = connection.prepareCall(translated.sql());) {
 			bindParameters(statement, translated);
@@ -61,20 +62,20 @@ class MySQLProcedureAction extends ProcedureAction {
 			boolean firstResult = statement.execute();
 
 			// read out parameters
-			readProcedureOutParameters(statement, observer);
+			readProcedureOutParameters(statement, context);
 
 			// read first result
 			if (firstResult) {
-				processResultSet(statement, observer);
-			} else if (!processUpdate(statement, observer)) {
+				processResultSet(statement, context);
+			} else if (!processUpdate(statement, context)) {
 				return;
 			}
 
 			// read the rest of the query
 			while (true) {
 				if (statement.getMoreResults()) {
-					processResultSet(statement, observer);
-				} else if (!processUpdate(statement, observer)) {
+					processResultSet(statement, context);
+				} else if (!processUpdate(statement, context)) {
 					break;
 				}
 			}
@@ -82,12 +83,12 @@ class MySQLProcedureAction extends ProcedureAction {
 
 	}
 
-	private void processResultSet(CallableStatement statement, OperationObserver observer) throws Exception {
+	private void processResultSet(CallableStatement statement, StatementContext context) throws Exception {
 		ResultSet rs = Objects.requireNonNull(statement.getResultSet());
 
 		try {
 			RSColumn[] columns = describeResultSet(rs, processedResultSets++);
-			readResultSet(rs, columns, query, observer);
+			readResultSet(rs, columns, context);
 		} finally {
 			try {
 				rs.close();
@@ -96,12 +97,12 @@ class MySQLProcedureAction extends ProcedureAction {
 		}
 	}
 
-	private boolean processUpdate(CallableStatement statement, OperationObserver observer) throws Exception {
+	private boolean processUpdate(CallableStatement statement, StatementContext context) throws Exception {
 		int updateCount = statement.getUpdateCount();
 		if (updateCount == -1) {
 			return false;
 		}
-		observer.nextCount(query, updateCount);
+		context.addResult(new UpdateResult(new int[]{updateCount}));
 
 		return true;
 	}

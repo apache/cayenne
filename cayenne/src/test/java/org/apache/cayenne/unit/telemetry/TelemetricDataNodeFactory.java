@@ -19,12 +19,11 @@
 package org.apache.cayenne.unit.telemetry;
 
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.access.DefaultDataNodeFactory;
-import org.apache.cayenne.query.Query;
+import org.apache.cayenne.access.StatementContext;
 import org.junit.jupiter.api.Assertions;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class TelemetricDataNodeFactory extends DefaultDataNodeFactory {
@@ -44,12 +43,13 @@ public class TelemetricDataNodeFactory extends DefaultDataNodeFactory {
         }
 
         @Override
-        public void performQueries(Collection<? extends Query> queries, OperationObserver callback) {
+        public void execute(List<StatementContext> statementContexts) {
             if (blockingQueries) {
-                Assertions.fail("Query is unexpected: " + queries);
+                Assertions.fail("Query is unexpected: "
+                        + statementContexts.stream().map(StatementContext::getQuery).toList());
             }
-            super.performQueries(queries, callback);
-            queryCounter.addAndGet(queries.size());
+            super.execute(statementContexts);
+            queryCounter.addAndGet(statementContexts.size());
         }
 
         public int getQueriesCount() {

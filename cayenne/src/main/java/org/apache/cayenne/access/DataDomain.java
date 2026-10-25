@@ -41,7 +41,6 @@ import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.EntitySorter;
-import org.apache.cayenne.query.Query;
 import org.apache.cayenne.access.lifecycle.LifecycleEventsManager;
 import org.apache.cayenne.tx.BaseTransaction;
 import org.apache.cayenne.tx.Transaction;
@@ -353,9 +352,9 @@ public class DataDomain implements DataChannel {
      * @since 1.2
      */
     @Override
-    public List<QueryResult> onQuery(ObjectContext context, Query query, boolean iteratedResult) {
+    public List<QueryResult> onQuery(OperationContext context) {
         checkStopped();
-        return new DataDomainQueryFilterChain().onQuery(context, query, iteratedResult);
+        return new DataDomainQueryFilterChain().onQuery(context);
     }
 
     /**
@@ -409,12 +408,12 @@ public class DataDomain implements DataChannel {
         return new DataDomainRelationshipAction(this, context, sourceId, relationshipName).execute();
     }
 
-    List<QueryResult> onQueryNoFilters(ObjectContext originatingContext, Query query, boolean iteratedResult) {
+    List<QueryResult> onQueryNoFilters(OperationContext context) {
         // transaction note:
         // we don't wrap this code in transaction to reduce transaction scope to
         // just the DB operation for better performance ... query action will
         // start a transaction itself when and if needed
-        return new DataDomainQueryAction(originatingContext, DataDomain.this, query, iteratedResult).execute();
+        return new DataDomainQueryAction(this, context).execute();
     }
 
     /**
@@ -571,10 +570,10 @@ public class DataDomain implements DataChannel {
         }
 
         @Override
-        public List<QueryResult> onQuery(ObjectContext originatingContext, Query query, boolean iteratedResult) {
+        public List<QueryResult> onQuery(OperationContext context) {
             return --idx >= 0
-                    ? queryFilters.get(idx).onQuery(originatingContext, query, iteratedResult, this)
-                    : onQueryNoFilters(originatingContext, query, iteratedResult);
+                    ? queryFilters.get(idx).onQuery(context, this)
+                    : onQueryNoFilters(context);
         }
     }
 

@@ -20,14 +20,15 @@
 package org.apache.cayenne.access.jdbc;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.OutParametersResult;
+import org.apache.cayenne.UpdateResult;
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.OperationObserver;
+import org.apache.cayenne.access.StatementContext;
 import org.apache.cayenne.access.translator.TranslatedProcedure;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.TypesMapping;
-import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.query.ProcedureColumn;
 import org.apache.cayenne.query.ProcedureQuery;
@@ -66,17 +67,17 @@ public class ProcedureAction extends BaseSQLAction {
 	}
 
 	@Override
-	public void performAction(Connection connection, OperationObserver observer) throws Exception {
+	public void performAction(Connection connection, StatementContext context) throws Exception {
 
 		processedResultSets = 0;
 
 		TranslatedProcedure translated = dataNode.getProcedureTranslator()
 				.translate(query, dataNode.getAdapter(), dataNode.getEntityResolver());
 
-		observer.nextStatement(query, translated);
+		context.setTranslated(translated);
 
 		try (CallableStatement statement = connection.prepareCall(translated.sql())) {
-			initStatement(statement);
+			initStatement(statement, context);
 			bindParameters(statement, translated);
 
 			// stored procedure may contain a mixture of update counts and
@@ -95,7 +96,7 @@ public class ProcedureAction extends BaseSQLAction {
 			statement.execute();
 
 			// read out parameters
-			readProcedureOutParameters(statement, observer);
+			readProcedureOutParameters(statement, context);
 
 			// read the rest of the query
 			while (true) {
@@ -103,14 +104,14 @@ public class ProcedureAction extends BaseSQLAction {
 
 					try (ResultSet rs = statement.getResultSet()) {
 						RSColumn[] columns = describeResultSet(rs, processedResultSets++);
-						readResultSet(rs, columns, query, observer);
+						readResultSet(rs, columns, context);
 					}
 				} else {
 					int updateCount = statement.getUpdateCount();
 					if (updateCount == -1) {
 						break;
 					}
-					observer.nextCount(query, updateCount);
+					context.addResult(new UpdateResult(new int[]{updateCount}));
 				}
 			}
 		}
@@ -200,19 +201,12 @@ public class ProcedureAction extends BaseSQLAction {
 	}
 
 	/**
-	 * Returns stored procedure for an internal query.
-	 */
-	protected Procedure getProcedure() {
-		return query.getMetaData(dataNode.getEntityResolver()).getProcedure();
-	}
-
-	/**
 	 * Helper method that reads OUT parameters of a CallableStatement.
 	 */
-	protected void readProcedureOutParameters(CallableStatement statement, OperationObserver delegate) throws Exception {
+	protected void readProcedureOutParameters(CallableStatement statement, StatementContext context) throws Exception {
 
 		Map<String, Object> result = null;
-		List<ProcedureParameter> parameters = getProcedure().getCallParameters();
+		List<ProcedureParameter> parameters = context.getMetadata().getProcedure().getCallParameters();
 		for (int i = 0; i < parameters.size(); i++) {
 			ProcedureParameter parameter = parameters.get(i);
 
@@ -233,12 +227,12 @@ public class ProcedureAction extends BaseSQLAction {
 		}
 
 		if (result != null) {
-			delegate.nextOutParameters(query, result);
+			context.addResult(new OutParametersResult(result));
 		}
 	}
 
-	protected void initStatement(CallableStatement statement) throws Exception {
-		QueryMetadata queryMetadata = query.getMetaData(dataNode.getEntityResolver());
+	protected void initStatement(CallableStatement statement, StatementContext context) throws Exception {
+		QueryMetadata queryMetadata = context.getMetadata();
 		int statementFetchSize = queryMetadata.getStatementFetchSize();
 		if (statementFetchSize != 0) {
 			statement.setFetchSize(statementFetchSize);

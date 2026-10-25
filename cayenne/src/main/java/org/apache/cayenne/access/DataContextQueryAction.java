@@ -39,17 +39,17 @@ class DataContextQueryAction {
     private static final boolean DONE = true;
 
     private final DataContext context;
+    private final OperationContext execContext;
     private final Query query;
     private final QueryMetadata metadata;
-    private final boolean iteratedResult;
     private final boolean ignoreLocalCache;
     private List<QueryResult> response;
 
-    public DataContextQueryAction(DataContext context, Query query, boolean iteratedResult, boolean ignoreLocalCache) {
+    public DataContextQueryAction(DataContext context, OperationContext execContext, boolean ignoreLocalCache) {
         this.context = context;
-        this.query = query;
-        this.metadata = query.getMetaData(context.getEntityResolver());
-        this.iteratedResult = iteratedResult;
+        this.execContext = execContext;
+        this.query = execContext.getQuery();
+        this.metadata = execContext.getMetadata();
         this.ignoreLocalCache = ignoreLocalCache;
     }
 
@@ -67,7 +67,7 @@ class DataContextQueryAction {
     }
 
     private boolean interceptIteratedQuery() {
-        if (iteratedResult) {
+        if (execContext.isIteratedResult()) {
             runQuery();
             return DONE;
         }
@@ -180,6 +180,6 @@ class DataContextQueryAction {
      * Fetches data from the channel.
      */
     protected void runQuery() {
-        this.response = context.getChannel().onQuery(context, query, iteratedResult);
+        this.response = context.getChannel().onQuery(execContext);
     }
 }
