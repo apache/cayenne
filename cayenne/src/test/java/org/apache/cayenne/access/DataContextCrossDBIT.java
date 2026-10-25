@@ -52,19 +52,19 @@ public class DataContextCrossDBIT {
         CrossdbM2E2 o3 = context.newObject(CrossdbM2E2.class);
         o3.setName("o3");
 
-        o3.setToM1E1(o1);
-        o3.setToM2E1(o2);
+        o3.setM1E1(o1);
+        o3.setM2E1(o2);
         context.commitChanges();
 
         // update
         CrossdbM1E1 o11 = context.newObject(CrossdbM1E1.class);
         o11.setName("o11");
-        o3.setToM1E1(o11);
+        o3.setM1E1(o11);
         context.commitChanges();
 
         // update with existing
 
-        o3.setToM1E1(o1);
+        o3.setM1E1(o1);
         context.commitChanges();
     }
 }

@@ -77,9 +77,9 @@
 	<dbRelationship name="table7s" source="TABLE1" target="TABLE7" toMany="true">
 		<dbAttributePair source="ID" target="TABLE1_ID"/>
 	</dbRelationship>
-	<dbRelationship name="toTable1" source="TABLE7" target="TABLE1" foreignKey="true">
+	<dbRelationship name="table1" source="TABLE7" target="TABLE1" foreignKey="true">
 		<dbAttributePair source="TABLE1_ID" target="ID"/>
 	</dbRelationship>
 	<objRelationship name="table7s" source="Table1" target="Table7" deleteRule="deny" dbRelationshipPath="table7s"/>
-	<objRelationship name="toTable1" source="Table7" target="Table1" deleteRule="nullify" dbRelationshipPath="toTable1"/>
+	<objRelationship name="table1" source="Table7" target="Table1" deleteRule="nullify" dbRelationshipPath="table1"/>
 </dataMap>

@@ -67,7 +67,7 @@ public class DeleteRulesIT {
     public void noActionToOne() {
         DeleteRuleTest2 test2 = env.context().newObject(DeleteRuleTest2.class);
         DeleteRuleTest3 test3 = env.context().newObject(DeleteRuleTest3.class);
-        test3.setToDeleteRuleTest2(test2);
+        test3.setDeleteRuleTest2(test2);
         env.context().commitChanges();
 
         // must go on without exceptions...
@@ -79,7 +79,7 @@ public class DeleteRulesIT {
     public void noActionToMany() {
         DeleteRuleTest2 test2 = env.context().newObject(DeleteRuleTest2.class);
         DeleteRuleTest3 test3 = env.context().newObject(DeleteRuleTest3.class);
-        test3.setToDeleteRuleTest2(test2);
+        test3.setDeleteRuleTest2(test2);
         env.context().commitChanges();
 
         // must go on without exceptions...

@@ -63,7 +63,7 @@ public class NotExistsExpIT {
         assertThrows(ExpressionException.class, () -> {
 
             ObjectSelect<Painting> subQuery = ObjectSelect.query(Painting.class)
-                    .where(Painting.TO_ARTIST.eq(Artist.ARTIST_ID_PK_PROPERTY.enclosing()));
+                    .where(Painting.ARTIST.eq(Artist.ARTIST_ID_PK_PROPERTY.enclosing()));
 
             doEvaluateWithQuery(ExpressionFactory.notExists(subQuery));
     
@@ -72,36 +72,36 @@ public class NotExistsExpIT {
 
     @Test
     public void evaluateInMemoryNotExistsExpression() {
-        doEvaluateNoQuery(Artist.PAINTING_ARRAY.notExists());
+        doEvaluateNoQuery(Artist.PAINTINGS.notExists());
 
-        doEvaluateNoQuery(Artist.ARTIST_ID_PK_PROPERTY.eq(6L).andExp(Artist.PAINTING_ARRAY.notExists()));
+        doEvaluateNoQuery(Artist.ARTIST_ID_PK_PROPERTY.eq(6L).andExp(Artist.PAINTINGS.notExists()));
 
-        doEvaluateNoQuery(Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE).like("p%").notExists());
+        doEvaluateNoQuery(Artist.PAINTINGS.dot(Painting.PAINTING_TITLE).like("p%").notExists());
 
-        doEvaluateNoQuery(Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE).like("not_exists%").notExists());
+        doEvaluateNoQuery(Artist.PAINTINGS.dot(Painting.PAINTING_TITLE).like("not_exists%").notExists());
 
-        doEvaluateNoQuery(Artist.PAINTING_ARRAY.dot(Painting.TO_PAINTING_INFO).notExists());
+        doEvaluateNoQuery(Artist.PAINTINGS.dot(Painting.PAINTING_INFO).notExists());
 
-        doEvaluateNoQuery(Artist.PAINTING_ARRAY.dot(Painting.TO_GALLERY).notExists());
+        doEvaluateNoQuery(Artist.PAINTINGS.dot(Painting.GALLERY).notExists());
 
-        doEvaluateNoQuery(Artist.PAINTING_ARRAY.dot(Painting.TO_GALLERY).dot(Gallery.GALLERY_NAME).like("g%").notExists());
+        doEvaluateNoQuery(Artist.PAINTINGS.dot(Painting.GALLERY).dot(Gallery.GALLERY_NAME).like("g%").notExists());
 
-        doEvaluateNoQuery(Artist.PAINTING_ARRAY.dot(Painting.TO_GALLERY).dot(Gallery.GALLERY_NAME).like("not_exists%").notExists());
+        doEvaluateNoQuery(Artist.PAINTINGS.dot(Painting.GALLERY).dot(Gallery.GALLERY_NAME).like("not_exists%").notExists());
 
-        doEvaluateNoQuery(Artist.PAINTING_ARRAY.dot(Painting.TO_GALLERY).dot(Gallery.GALLERY_NAME).like("g%")
-                .andExp(Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE).like("p%"))
+        doEvaluateNoQuery(Artist.PAINTINGS.dot(Painting.GALLERY).dot(Gallery.GALLERY_NAME).like("g%")
+                .andExp(Artist.PAINTINGS.dot(Painting.PAINTING_TITLE).like("p%"))
                 .notExists());
 
-        doEvaluateNoQuery(Artist.PAINTING_ARRAY.dot(Painting.TO_GALLERY).dot(Gallery.GALLERY_NAME).like("not_exists%")
-                .andExp(Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE).like("p%"))
+        doEvaluateNoQuery(Artist.PAINTINGS.dot(Painting.GALLERY).dot(Gallery.GALLERY_NAME).like("not_exists%")
+                .andExp(Artist.PAINTINGS.dot(Painting.PAINTING_TITLE).like("p%"))
                 .notExists());
 
-        doEvaluateNoQuery(Artist.PAINTING_ARRAY.dot(Painting.TO_GALLERY).dot(Gallery.GALLERY_NAME).like("g%")
-                .andExp(Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE).like("not_exists%"))
+        doEvaluateNoQuery(Artist.PAINTINGS.dot(Painting.GALLERY).dot(Gallery.GALLERY_NAME).like("g%")
+                .andExp(Artist.PAINTINGS.dot(Painting.PAINTING_TITLE).like("not_exists%"))
                 .notExists());
 
-        doEvaluateNoQuery(Artist.PAINTING_ARRAY.dot(Painting.TO_GALLERY).dot(Gallery.GALLERY_NAME).like("not_exists%")
-                .andExp(Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE).like("not_exists%"))
+        doEvaluateNoQuery(Artist.PAINTINGS.dot(Painting.GALLERY).dot(Gallery.GALLERY_NAME).like("not_exists%")
+                .andExp(Artist.PAINTINGS.dot(Painting.PAINTING_TITLE).like("not_exists%"))
                 .notExists());
 
     }
@@ -112,9 +112,9 @@ public class NotExistsExpIT {
                 .select(env.context());
 
         List<Artist> artists = ObjectSelect.query(Artist.class)
-                .prefetch(Artist.PAINTING_ARRAY.outer().disjoint())
-                .prefetch(Artist.PAINTING_ARRAY.outer().dot(Painting.TO_PAINTING_INFO).disjoint())
-                .prefetch(Artist.PAINTING_ARRAY.outer().dot(Painting.TO_GALLERY).disjoint())
+                .prefetch(Artist.PAINTINGS.outer().disjoint())
+                .prefetch(Artist.PAINTINGS.outer().dot(Painting.PAINTING_INFO).disjoint())
+                .prefetch(Artist.PAINTINGS.outer().dot(Painting.GALLERY).disjoint())
                 .orderBy(Artist.ARTIST_ID_PK_PROPERTY.asc())
                 .select(env.context());
 
@@ -128,9 +128,9 @@ public class NotExistsExpIT {
         List<Artist> artistSelected = ObjectSelect.query(Artist.class).where(exp).select(env.context());
 
         List<Artist> artists = ObjectSelect.query(Artist.class)
-                .prefetch(Artist.PAINTING_ARRAY.disjoint())
-                .prefetch(Artist.PAINTING_ARRAY.dot(Painting.TO_PAINTING_INFO).disjoint())
-                .prefetch(Artist.PAINTING_ARRAY.dot(Painting.TO_GALLERY).disjoint())
+                .prefetch(Artist.PAINTINGS.disjoint())
+                .prefetch(Artist.PAINTINGS.dot(Painting.PAINTING_INFO).disjoint())
+                .prefetch(Artist.PAINTINGS.dot(Painting.GALLERY).disjoint())
                 .orderBy(Artist.ARTIST_ID_PK_PROPERTY.asc())
                 .select(env.context());
 

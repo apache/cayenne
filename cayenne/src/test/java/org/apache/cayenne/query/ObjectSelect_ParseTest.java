@@ -115,14 +115,14 @@ public class ObjectSelect_ParseTest {
     @Test
     public void orderByDefaultsAndInsensitive() {
         List<Ordering> orderings = orderings(ObjectSelect.parse(
-                "from Artist order by a, b insensitive, c desc insensitive, count(paintingArray) desc"));
+                "from Artist order by a, b insensitive, c desc insensitive, count(paintings) desc"));
 
         assertEquals(4, orderings.size());
         assertEquals(SortOrder.ASCENDING, orderings.get(0).getSortOrder());
         assertEquals(SortOrder.ASCENDING_INSENSITIVE, orderings.get(1).getSortOrder());
         assertEquals(SortOrder.DESCENDING_INSENSITIVE, orderings.get(2).getSortOrder());
         assertEquals(SortOrder.DESCENDING, orderings.get(3).getSortOrder());
-        assertEquals(Artist.PAINTING_ARRAY.count().getExpression(), orderings.get(3).getSortSpec());
+        assertEquals(Artist.PAINTINGS.count().getExpression(), orderings.get(3).getSortSpec());
     }
 
     @Test
@@ -266,33 +266,33 @@ public class ObjectSelect_ParseTest {
 
     @Test
     public void singleDistinctColumn() {
-        FluentSelect<?, ?> q = ObjectSelect.parse("select distinct paintingArray.paintingTitle from Artist");
+        FluentSelect<?, ?> q = ObjectSelect.parse("select distinct paintings.paintingTitle from Artist");
 
         ColumnSelect<?> columnSelect = assertInstanceOf(ColumnSelect.class, q);
         assertTrue(columnSelect.isSingleColumn());
         assertTrue(q.isDistinct());
-        assertEquals(Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE).getExpression(),
+        assertEquals(Artist.PAINTINGS.dot(Painting.PAINTING_TITLE).getExpression(),
                 columns(q).get(0).getExpression());
     }
 
     @Test
     public void selfWithAggregateAndHaving() {
         FluentSelect<?, ?> q = ObjectSelect.parse(
-                "select self, count(paintingArray) as n from Artist having count(paintingArray) > 2");
+                "select self, count(paintings) as n from Artist having count(paintings) > 2");
 
         List<Property<?>> columns = columns(q);
         assertEquals(2, columns.size());
         assertEquals(Artist.SELF.getExpression(), columns.get(0).getExpression());
-        assertEquals(Artist.PAINTING_ARRAY.count().getExpression(), columns.get(1).getExpression());
+        assertEquals(Artist.PAINTINGS.count().getExpression(), columns.get(1).getExpression());
         assertEquals("n", columns.get(1).getAlias());
-        assertEquals(Artist.PAINTING_ARRAY.count().gt(2L), ExpressionFactory.exp("count(paintingArray) > 2L"));
-        assertEquals(ExpressionFactory.exp("count(paintingArray) > 2"), q.getHaving());
+        assertEquals(Artist.PAINTINGS.count().gt(2L), ExpressionFactory.exp("count(paintings) > 2L"));
+        assertEquals(ExpressionFactory.exp("count(paintings) > 2"), q.getHaving());
     }
 
     @Test
     public void functionsAndOuterJoins() {
         List<Property<?>> columns = columns(ObjectSelect.parse(
-                "select year(dateOfBirth), upper(artistName), count(*), count(distinct(artistName)), toGallery+, "
+                "select year(dateOfBirth), upper(artistName), count(*), count(distinct(artistName)), gallery+, "
                         + "max(estimatedPrice) from Painting"));
 
         assertEquals(6, columns.size());
@@ -300,34 +300,34 @@ public class ObjectSelect_ParseTest {
         assertEquals(ExpressionFactory.exp("upper(artistName)"), columns.get(1).getExpression());
         assertEquals(ExpressionFactory.exp("count(*)"), columns.get(2).getExpression());
         assertEquals(ExpressionFactory.exp("count(distinct(artistName))"), columns.get(3).getExpression());
-        assertEquals(Painting.TO_GALLERY.outer().getExpression(), columns.get(4).getExpression());
+        assertEquals(Painting.GALLERY.outer().getExpression(), columns.get(4).getExpression());
         assertEquals(ExpressionFactory.exp("max(estimatedPrice)"), columns.get(5).getExpression());
     }
 
     @Test
     public void prefetch() {
         FluentSelect<?, ?> q = ObjectSelect.parse(
-                "from Artist where artistName = $name limit 10 prefetch paintingArray joint, "
-                        + "artistExhibitArray disjointById, paintingArray.toGallery", "X");
+                "from Artist where artistName = $name limit 10 prefetch paintings joint, "
+                        + "artistExhibits disjointById, paintings.gallery", "X");
 
         PrefetchTreeNode root = q.getPrefetches();
-        assertEquals(PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS, root.getNode("paintingArray").getSemantics());
+        assertEquals(PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS, root.getNode("paintings").getSemantics());
         assertEquals(PrefetchTreeNode.DISJOINT_BY_ID_PREFETCH_SEMANTICS,
-                root.getNode("artistExhibitArray").getSemantics());
-        assertEquals(PrefetchTreeNode.UNDEFINED_SEMANTICS, root.getNode("paintingArray.toGallery").getSemantics());
+                root.getNode("artistExhibits").getSemantics());
+        assertEquals(PrefetchTreeNode.UNDEFINED_SEMANTICS, root.getNode("paintings.gallery").getSemantics());
     }
 
     @Test
     public void existsSubquery() {
         FluentSelect<?, ?> q = ObjectSelect.parse(
-                "from Artist where exists (select self from Painting where toArtist = enclosing(self) "
+                "from Artist where exists (select self from Painting where artist = enclosing(self) "
                         + "and estimatedPrice > 1000)");
 
         assertInstanceOf(ExistsExp.class, q.getWhere());
         FluentSelect<?, ?> subquery = subquery(q.getWhere(), 0);
         assertInstanceOf(ObjectSelect.class, subquery);
         assertEquals("Painting", subquery.getEntityName());
-        Expression expected = Painting.TO_ARTIST.eq(Artist.SELF.enclosing())
+        Expression expected = Painting.ARTIST.eq(Artist.SELF.enclosing())
                 .andExp(ExpressionFactory.greaterExp("estimatedPrice", 1000));
         assertEquals(expected.toString(), subquery.getWhere().toString());
     }
@@ -336,7 +336,7 @@ public class ObjectSelect_ParseTest {
     public void multilineQuery() {
         FluentSelect<?, ?> q = ObjectSelect.parse("""
                 from Artist where exists (
-                    from Painting where toArtist = enclosing(self) and estimatedPrice > $price)
+                    from Painting where artist = enclosing(self) and estimatedPrice > $price)
                 order by artistName""", 1000);
 
         assertEquals("Painting", subquery(q.getWhere(), 0).getEntityName());
@@ -346,7 +346,7 @@ public class ObjectSelect_ParseTest {
     @Test
     public void notExistsSubquery() {
         FluentSelect<?, ?> q = ObjectSelect.parse(
-                "from Artist where artistName = 'a' and not exists (from Painting where toArtist = enclosing(self))");
+                "from Artist where artistName = 'a' and not exists (from Painting where artist = enclosing(self))");
 
         Expression notExists = (Expression) q.getWhere().getOperand(1);
         assertInstanceOf(NotExistsExp.class, notExists);
@@ -355,14 +355,14 @@ public class ObjectSelect_ParseTest {
 
     @Test
     public void existsPathIsPreserved() {
-        FluentSelect<?, ?> q = ObjectSelect.parse("from Artist where exists paintingArray and not exists (a = 1)");
-        assertEquals(ExpressionFactory.exp("exists paintingArray and not exists (a = 1)"), q.getWhere());
+        FluentSelect<?, ?> q = ObjectSelect.parse("from Artist where exists paintings and not exists (a = 1)");
+        assertEquals(ExpressionFactory.exp("exists paintings and not exists (a = 1)"), q.getWhere());
     }
 
     @Test
     public void inSubquery() {
         FluentSelect<?, ?> q = ObjectSelect.parse(
-                "from Painting where toArtist.artistName not in "
+                "from Painting where artist.artistName not in "
                         + "(select artistName from Artist where dateOfBirth < $d)", 5);
 
         assertInstanceOf(NotInExp.class, q.getWhere());
@@ -389,7 +389,7 @@ public class ObjectSelect_ParseTest {
     @Test
     public void subqueryInExpression() {
         Expression exp = ExpressionFactory.exp(
-                "artistName in (select toArtist.artistName from Painting where estimatedPrice > $p limit 5)", 100);
+                "artistName in (select artist.artistName from Painting where estimatedPrice > $p limit 5)", 100);
 
         FluentSelect<?, ?> subquery = subquery(exp, 1);
         assertEquals(ExpressionFactory.greaterExp("estimatedPrice", 100), subquery.getWhere());
@@ -399,7 +399,7 @@ public class ObjectSelect_ParseTest {
     @Test
     public void subqueryRejectsPrefetch() {
         assertThrows(ExpressionException.class, () -> ObjectSelect.parse(
-                "from Artist where exists (from Painting where toArtist = enclosing(self) prefetch toGallery)"));
+                "from Artist where exists (from Painting where artist = enclosing(self) prefetch gallery)"));
     }
 
     @Test
@@ -411,8 +411,8 @@ public class ObjectSelect_ParseTest {
 
     @Test
     public void selfAndEnclosingRoundTrip() {
-        Expression exp = Painting.TO_ARTIST.eq(Artist.SELF.enclosing());
-        assertEquals("toArtist = enclosing(self)", exp.toString());
+        Expression exp = Painting.ARTIST.eq(Artist.SELF.enclosing());
+        assertEquals("artist = enclosing(self)", exp.toString());
         assertEquals(exp.toString(), ExpressionFactory.exp(exp.toString()).toString());
 
         // "self" stays usable as a property name with a prefix

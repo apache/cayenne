@@ -77,7 +77,7 @@ public class IdPropertyIT {
     @Test
     public void filterDbRelated() {
         List<Artist> artists = ObjectSelect.query(Artist.class)
-                .where(Artist.PAINTING_ARRAY.dot(Painting.PAINTING_ID_PK_PROPERTY).gt(13))
+                .where(Artist.PAINTINGS.dot(Painting.PAINTING_ID_PK_PROPERTY).gt(13))
                 .select(context);
         assertEquals(3, artists.size());
     }
@@ -91,7 +91,7 @@ public class IdPropertyIT {
 
     @Test
     public void filterInMemoryRelated() {
-        Expression exp = Artist.PAINTING_ARRAY.dot(Painting.PAINTING_ID_PK_PROPERTY).gt(13);
+        Expression exp = Artist.PAINTINGS.dot(Painting.PAINTING_ID_PK_PROPERTY).gt(13);
         List<Artist> artists = exp
                 .filterObjects(ObjectSelect.query(Artist.class).select(context));
         assertEquals(3, artists.size());
@@ -111,12 +111,12 @@ public class IdPropertyIT {
     @Test
     public void orderingDbRelated() {
         List<Painting> paintings = ObjectSelect.query(Painting.class)
-                .orderBy(Painting.TO_ARTIST.dot(Artist.ARTIST_ID_PK_PROPERTY).asc())
+                .orderBy(Painting.ARTIST.dot(Artist.ARTIST_ID_PK_PROPERTY).asc())
                 .select(context);
 
         assertEquals(16, paintings.size());
-        assertEquals(1L, Cayenne.longPKForObject(paintings.get(0).getToArtist()));
-        assertEquals(4L, Cayenne.longPKForObject(paintings.get(15).getToArtist()));
+        assertEquals(1L, Cayenne.longPKForObject(paintings.get(0).getArtist()));
+        assertEquals(4L, Cayenne.longPKForObject(paintings.get(15).getArtist()));
     }
 
     @Test
@@ -134,11 +134,11 @@ public class IdPropertyIT {
     public void orderingInMemoryRelated() {
         List<Painting> paintings = ObjectSelect.query(Painting.class)
                 .select(context);
-        Painting.TO_ARTIST.dot(Artist.ARTIST_ID_PK_PROPERTY).asc().orderList(paintings);
+        Painting.ARTIST.dot(Artist.ARTIST_ID_PK_PROPERTY).asc().orderList(paintings);
 
         assertEquals(16, paintings.size());
-        assertEquals(1L, Cayenne.longPKForObject(paintings.get(0).getToArtist()));
-        assertEquals(4L, Cayenne.longPKForObject(paintings.get(15).getToArtist()));
+        assertEquals(1L, Cayenne.longPKForObject(paintings.get(0).getArtist()));
+        assertEquals(4L, Cayenne.longPKForObject(paintings.get(15).getArtist()));
     }
 
     @Test
@@ -155,7 +155,7 @@ public class IdPropertyIT {
 
     @Test
     public void columnQueryWithGroupBy() {
-        List<Object[]> ids = ObjectSelect.columnQuery(Artist.class, Artist.ARTIST_ID_PK_PROPERTY, Artist.PAINTING_ARRAY.count())
+        List<Object[]> ids = ObjectSelect.columnQuery(Artist.class, Artist.ARTIST_ID_PK_PROPERTY, Artist.PAINTINGS.count())
                 .orderBy(Artist.ARTIST_ID_PK_PROPERTY.asc())
                 .select(context);
         assertEquals(4, ids.size());
@@ -176,7 +176,7 @@ public class IdPropertyIT {
     @Test
     public void filterStringExpression() {
         List<Painting> paintings = ObjectSelect.query(Painting.class)
-                .where(ExpressionFactory.exp("dbid:toArtist.ARTIST_ID in (1)"))
+                .where(ExpressionFactory.exp("dbid:artist.ARTIST_ID in (1)"))
                 .select(context);
         assertEquals(4, paintings.size());
     }
@@ -187,24 +187,24 @@ public class IdPropertyIT {
         assertNotNull(artist);
 
         List<Painting> paintings = ObjectSelect.query(Painting.class)
-                .where(Painting.TO_ARTIST.dot(Artist.ARTIST_ID_PK_PROPERTY).eq(artist.getObjectId()))
+                .where(Painting.ARTIST.dot(Artist.ARTIST_ID_PK_PROPERTY).eq(artist.getObjectId()))
                 .select(context);
         assertEquals(4, paintings.size());
     }
 
     @Test
     public void evaluateObject() {
-        Expression exp = Painting.TO_ARTIST.dot(Artist.ARTIST_ID_PK_PROPERTY).getExpression();
+        Expression exp = Painting.ARTIST.dot(Artist.ARTIST_ID_PK_PROPERTY).getExpression();
         Painting painting = ObjectSelect.query(Painting.class).selectFirst(context);
         Object result = exp.evaluate(painting);
         assertNotNull(result);
         assertInstanceOf(Long.class, result);
-        assertEquals(painting.getToArtist().getObjectId().getIdSnapshot().get("ARTIST_ID"), result);
+        assertEquals(painting.getArtist().getObjectId().getIdSnapshot().get("ARTIST_ID"), result);
     }
 
     @Test
     public void evaluateCollection() {
-        Expression exp = Painting.TO_ARTIST.dot(Artist.ARTIST_ID_PK_PROPERTY).getExpression();
+        Expression exp = Painting.ARTIST.dot(Artist.ARTIST_ID_PK_PROPERTY).getExpression();
         List<Painting> paintings = ObjectSelect.query(Painting.class).select(context);
         Object result = exp.evaluate(paintings);
         assertNotNull(result);
@@ -213,13 +213,13 @@ public class IdPropertyIT {
         List<Long> ids = (List<Long>)result;
         assertEquals(paintings.size(), ids.size());
         for(int i=0; i<paintings.size(); i++) {
-            assertEquals(paintings.get(i).getToArtist().getObjectId().getIdSnapshot().get("ARTIST_ID"), ids.get(i));
+            assertEquals(paintings.get(i).getArtist().getObjectId().getIdSnapshot().get("ARTIST_ID"), ids.get(i));
         }
     }
 
     @Test
     public void evaluateEntity() {
-        Expression exp = Painting.TO_ARTIST.dot(Artist.ARTIST_ID_PK_PROPERTY).getExpression();
+        Expression exp = Painting.ARTIST.dot(Artist.ARTIST_ID_PK_PROPERTY).getExpression();
         ObjEntity painting = context.getEntityResolver().getObjEntity(Painting.class);
         Object result = exp.evaluate(painting);
         assertNotNull(result);

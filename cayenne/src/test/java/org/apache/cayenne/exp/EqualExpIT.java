@@ -50,10 +50,10 @@ public class EqualExpIT {
 
 		env.context().commitChanges();
 
-		p1.setToArtist(a1);
-		p2.setToArtist(a2);
+		p1.setArtist(a1);
+		p2.setArtist(a2);
 
-		Expression e = new EqualExp(ExpressionFactory.pathExp("toArtist"), a1);
+		Expression e = new EqualExp(ExpressionFactory.pathExp("artist"), a1);
 
 		assertTrue(e.match(p1));
 		assertFalse(e.match(p2));
@@ -68,10 +68,10 @@ public class EqualExpIT {
 		Painting p2 = env.context().newObject(Painting.class);
 		Painting p3 = env.context().newObject(Painting.class);
 
-		p1.setToArtist(a1);
-		p2.setToArtist(a2);
+		p1.setArtist(a1);
+		p2.setArtist(a2);
 
-		Expression e = new EqualExp(ExpressionFactory.pathExp("toArtist"), a1.getObjectId());
+		Expression e = new EqualExp(ExpressionFactory.pathExp("artist"), a1.getObjectId());
 
 		assertTrue(e.match(p1));
 		assertFalse(e.match(p2));
@@ -93,12 +93,12 @@ public class EqualExpIT {
 		p2.setPaintingTitle("p2");
 		p3.setPaintingTitle("p3");
 
-		p1.setToArtist(a1);
-		p2.setToArtist(a2);
+		p1.setArtist(a1);
+		p2.setArtist(a2);
 
 		env.context().commitChanges();
 
-		Expression e = new EqualExp(ExpressionFactory.pathExp("toArtist"), Cayenne.longPKForObject(a1));
+		Expression e = new EqualExp(ExpressionFactory.pathExp("artist"), Cayenne.longPKForObject(a1));
 
 		assertTrue(e.match(p1));
 		assertFalse(e.match(p2));

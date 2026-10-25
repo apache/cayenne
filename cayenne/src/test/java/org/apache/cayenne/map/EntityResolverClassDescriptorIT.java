@@ -88,7 +88,7 @@ public class EntityResolverClassDescriptorIT {
         ClassDescriptor descriptor = resolver.getClassDescriptor("MtTable1");
         assertNotNull(descriptor);
 
-        PropertyDescriptor p = descriptor.getProperty(MtTable1.TABLE2ARRAY.getName());
+        PropertyDescriptor p = descriptor.getProperty(MtTable1.TABLE2S.getName());
         assertTrue(p instanceof ArcProperty);
 
         ClassDescriptor target = ((ArcProperty) p).getTargetDescriptor();

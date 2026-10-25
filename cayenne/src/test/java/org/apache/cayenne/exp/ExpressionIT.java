@@ -55,24 +55,24 @@ public class ExpressionIT {
 		Artist a1 = env.context().newObject(Artist.class);
 		a1.setArtistName("Equals");
 		Painting p1 = env.context().newObject(Painting.class);
-		p1.setToArtist(a1);
+		p1.setArtist(a1);
 		p1.setPaintingTitle("painting1");
 
 		env.context().commitChanges();
 
 		assertNotSame(context2, env.context());
 
-		List<Painting> objects = ObjectSelect.query(Painting.class).where(Painting.TO_ARTIST.eq(a1)).select(context2);
+		List<Painting> objects = ObjectSelect.query(Painting.class).where(Painting.ARTIST.eq(a1)).select(context2);
 		assertEquals(1, objects.size());
 
 		// 2 same objects in different contexts
-		assertTrue(Painting.TO_ARTIST.eq(a1).match(objects.get(0)));
+		assertTrue(Painting.ARTIST.eq(a1).match(objects.get(0)));
 
 		// we change one object - so the objects are different now
 		// (PersistenceState different)
 		a1.setArtistName("newName");
 
-		assertTrue(Painting.TO_ARTIST.eq(a1).match(objects.get(0)));
+		assertTrue(Painting.ARTIST.eq(a1).match(objects.get(0)));
 
 		Artist a2 = env.context().newObject(Artist.class);
 		a2.setArtistName("Equals");
@@ -80,7 +80,7 @@ public class ExpressionIT {
 		env.context().commitChanges();
 
 		// 2 different objects in different contexts
-		assertFalse(Painting.TO_ARTIST.eq(a2).match(objects.get(0)));
+		assertFalse(Painting.ARTIST.eq(a2).match(objects.get(0)));
 	}
 
     @Test

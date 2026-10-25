@@ -61,7 +61,7 @@ public class DefaultObjectSelectTranslatorIT {
     @Test
     public void selectWithComplexWhere() {
         ObjectSelect<Artist> select = ObjectSelect.query(Artist.class).where(Artist.ARTIST_NAME.eq("artist")
-                .andExp(Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE).eq("painting")));
+                .andExp(Artist.PAINTINGS.dot(Painting.PAINTING_TITLE).eq("painting")));
 
         TranslatedSelect translator = new DbAdapterDelegatedSelectTranslator().translate(select, env.dataNode().getAdapter(), env.context().getEntityResolver());
 
@@ -136,7 +136,7 @@ public class DefaultObjectSelectTranslatorIT {
 
     @Test
     public void selectWithJointPrefetch() {
-        ObjectSelect<Painting> select = ObjectSelect.query(Painting.class).prefetch(Painting.TO_ARTIST.joint());
+        ObjectSelect<Painting> select = ObjectSelect.query(Painting.class).prefetch(Painting.ARTIST.joint());
 
         TranslatedSelect translator = new DbAdapterDelegatedSelectTranslator().translate(select, env.dataNode().getAdapter(), env.context().getEntityResolver());
 
@@ -165,9 +165,9 @@ public class DefaultObjectSelectTranslatorIT {
         assertEquals("GALLERY_ID", translator.resultColumns()[4].dataRowName());
         assertEquals("PAINTING_ID", translator.resultColumns()[5].dataRowName());
 
-        assertEquals("toArtist.ARTIST_ID", translator.resultColumns()[6].dataRowName());
-        assertEquals("toArtist.DATE_OF_BIRTH", translator.resultColumns()[7].dataRowName());
-        assertEquals("toArtist.ARTIST_NAME", translator.resultColumns()[8].dataRowName());
+        assertEquals("artist.ARTIST_ID", translator.resultColumns()[6].dataRowName());
+        assertEquals("artist.DATE_OF_BIRTH", translator.resultColumns()[7].dataRowName());
+        assertEquals("artist.ARTIST_NAME", translator.resultColumns()[8].dataRowName());
 
         assertTrue(translator.hasJoins());
         assertFalse(translator.suppressingDistinct());

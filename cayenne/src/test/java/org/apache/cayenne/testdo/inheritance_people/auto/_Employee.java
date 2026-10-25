@@ -28,12 +28,12 @@ public abstract class _Employee extends AbstractPerson {
 
     public static final NumericProperty<Float> SALARY = PropertyFactory.createNumeric("salary", Float.class);
     public static final ListProperty<Address> ADDRESSES = PropertyFactory.createList("addresses", Address.class);
-    public static final EntityProperty<Department> TO_DEPARTMENT = PropertyFactory.createEntity("toDepartment", Department.class);
+    public static final EntityProperty<Department> DEPARTMENT = PropertyFactory.createEntity("department", Department.class);
 
     protected Float salary;
 
     protected Object addresses;
-    protected Object toDepartment;
+    protected Object department;
 
     public void setSalary(Float salary) {
         beforePropertyWrite("salary", this.salary, salary);
@@ -58,12 +58,12 @@ public abstract class _Employee extends AbstractPerson {
         return (List<Address>)readProperty("addresses");
     }
 
-    public void setToDepartment(Department toDepartment) {
-        setToOneTarget("toDepartment", toDepartment, true);
+    public void setDepartment(Department department) {
+        setToOneTarget("department", department, true);
     }
 
-    public Department getToDepartment() {
-        return (Department)readProperty("toDepartment");
+    public Department getDepartment() {
+        return (Department)readProperty("department");
     }
 
     @Override
@@ -77,8 +77,8 @@ public abstract class _Employee extends AbstractPerson {
                 return this.salary;
             case "addresses":
                 return this.addresses;
-            case "toDepartment":
-                return this.toDepartment;
+            case "department":
+                return this.department;
             default:
                 return super.readPropertyDirectly(propName);
         }
@@ -97,8 +97,8 @@ public abstract class _Employee extends AbstractPerson {
             case "addresses":
                 this.addresses = val;
                 break;
-            case "toDepartment":
-                this.toDepartment = val;
+            case "department":
+                this.department = val;
                 break;
             default:
                 super.writePropertyDirectly(propName, val);

@@ -72,7 +72,7 @@ public class DataContextResolveRelationshipIT {
         assertEquals(1, tArtist.update().set("ARTIST_NAME", "a2").where("ARTIST_ID", 1).execute());
 
         env.runWithQueriesBlocked(() -> {
-            List<?> related = context.resolveRelationship(p.getObjectId(), Painting.TO_ARTIST.getName(), false);
+            List<?> related = context.resolveRelationship(p.getObjectId(), Painting.ARTIST.getName(), false);
             assertEquals(1, related.size());
             assertSame(a, related.getFirst());
         });
@@ -89,7 +89,7 @@ public class DataContextResolveRelationshipIT {
         Painting p = context.objectForPK(Painting.class, 1);
 
         env.runWithQueriesBlocked(() -> {
-            List<?> related = context.resolveRelationship(p.getObjectId(), Painting.TO_ARTIST.getName(), false);
+            List<?> related = context.resolveRelationship(p.getObjectId(), Painting.ARTIST.getName(), false);
             assertTrue(related.isEmpty());
         });
     }
@@ -105,7 +105,7 @@ public class DataContextResolveRelationshipIT {
 
         assertEquals(1, tPainting.update().set("PAINTING_TITLE", "p2").where("PAINTING_ID", 1).execute());
 
-        List<?> related = context.resolveRelationship(a.getObjectId(), Artist.PAINTING_ARRAY.getName(), false);
+        List<?> related = context.resolveRelationship(a.getObjectId(), Artist.PAINTINGS.getName(), false);
         assertEquals(1, related.size());
         assertSame(p, related.getFirst());
         assertEquals("p2", p.getPaintingTitle(), "To-many fetched from DB must refresh existing objects");
@@ -118,13 +118,13 @@ public class DataContextResolveRelationshipIT {
         tPainting.insert(2, "p2", 1);
 
         Artist a = context.objectForPK(Artist.class, 1);
-        assertEquals(2, a.getPaintingArray().size());
+        assertEquals(2, a.getPaintings().size());
 
         ObjectContext child = env.runtime().newContext(context);
         Artist childA = child.localObject(a);
 
         env.runWithQueriesBlocked(() -> {
-            List<? extends Persistent> related = child.getChannel().onRelationshipQuery(child, childA.getObjectId(), Artist.PAINTING_ARRAY.getName());
+            List<? extends Persistent> related = child.getChannel().onRelationshipQuery(child, childA.getObjectId(), Artist.PAINTINGS.getName());
             assertEquals(2, related.size());
             for (Persistent p : related) {
                 assertSame(child, p.getObjectContext());
@@ -138,7 +138,7 @@ public class DataContextResolveRelationshipIT {
         tPainting.insert(1, "p1", 1);
 
         Painting p = context.objectForPK(Painting.class, 1);
-        Artist a = p.getToArtist();
+        Artist a = p.getArtist();
         assertEquals("a1", a.getArtistName());
 
         ObjectContext child = env.runtime().newContext(context);
@@ -146,7 +146,7 @@ public class DataContextResolveRelationshipIT {
 
         env.runWithQueriesBlocked(() -> {
             List<? extends Persistent> related = child.getChannel().onRelationshipQuery(child, childP.getObjectId(),
-                    Painting.TO_ARTIST.getName());
+                    Painting.ARTIST.getName());
             assertEquals(1, related.size());
             assertSame(child, related.getFirst().getObjectContext());
             assertEquals(a.getObjectId(), related.getFirst().getObjectId());
@@ -159,7 +159,7 @@ public class DataContextResolveRelationshipIT {
         a.setArtistName("a1");
         Painting p = context.newObject(Painting.class);
         p.setPaintingTitle("p1");
-        a.addToPaintingArray(p);
+        a.addToPaintings(p);
 
         ObjectContext child = env.runtime().newContext(context);
         Artist childA = child.localObject(a);
@@ -167,7 +167,7 @@ public class DataContextResolveRelationshipIT {
         // a NEW object is unknown to the database, so its relationships must be resolved from the parent context
         env.runWithQueriesBlocked(() -> {
             List<? extends Persistent> related = child.getChannel().onRelationshipQuery(child, childA.getObjectId(),
-                    Artist.PAINTING_ARRAY.getName());
+                    Artist.PAINTINGS.getName());
             assertEquals(1, related.size());
             assertSame(child, related.getFirst().getObjectContext());
             assertEquals("p1", ((Painting) related.getFirst()).getPaintingTitle());
@@ -187,24 +187,24 @@ public class DataContextResolveRelationshipIT {
         p.setObjectId(ObjectId.of("Painting"));
 
         p.setPaintingTitle("p1");
-        p.setToArtist(a);
+        p.setArtist(a);
         context.commitChanges();
 
         // turn the committed object's to-one back into a fault
         context.invalidateObjects(p);
         p.getPaintingTitle();
-        assertTrue(p.readPropertyDirectly(Painting.TO_ARTIST.getName()) instanceof Fault);
+        assertTrue(p.readPropertyDirectly(Painting.ARTIST.getName()) instanceof Fault);
 
         p.readerThread = Thread.currentThread();
         Thread resolver = new Thread(() -> {
             p.await(p.faultRead);
-            p.getToArtist();
+            p.getArtist();
             p.resolved.countDown();
         }, "to-one-resolver");
         resolver.start();
 
         try {
-            List<?> related = context.resolveRelationship(p.getObjectId(), Painting.TO_ARTIST.getName(), false);
+            List<?> related = context.resolveRelationship(p.getObjectId(), Painting.ARTIST.getName(), false);
             assertEquals(1, related.size());
             assertSame(a, related.getFirst());
         } finally {
@@ -214,11 +214,11 @@ public class DataContextResolveRelationshipIT {
         }
 
         assertTrue(p.handedOff, "Reader thread never reached the to-one property");
-        assertSame(a, p.getToArtist());
+        assertSame(a, p.getArtist());
     }
 
     /**
-     * Pauses the first read of the "toArtist" property on the designated reader thread, until another thread
+     * Pauses the first read of the "artist" property on the designated reader thread, until another thread
      * signals that it has resolved the fault.
      */
     static class HandoffPainting extends Painting {
@@ -232,7 +232,7 @@ public class DataContextResolveRelationshipIT {
         public Object readPropertyDirectly(String propName) {
             Object value = super.readPropertyDirectly(propName);
 
-            if (Thread.currentThread() == readerThread && !handedOff && TO_ARTIST.getName().equals(propName)) {
+            if (Thread.currentThread() == readerThread && !handedOff && ARTIST.getName().equals(propName)) {
                 handedOff = true;
                 faultRead.countDown();
                 await(resolved);

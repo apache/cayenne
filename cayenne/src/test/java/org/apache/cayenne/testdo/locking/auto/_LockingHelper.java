@@ -23,11 +23,11 @@ public abstract class _LockingHelper extends PersistentObject {
     public static final String LOCKING_HELPER_ID_PK_COLUMN = "LOCKING_HELPER_ID";
 
     public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);
-    public static final EntityProperty<RelLockingTestEntity> TO_REL_LOCKING_TEST = PropertyFactory.createEntity("toRelLockingTest", RelLockingTestEntity.class);
+    public static final EntityProperty<RelLockingTestEntity> REL_LOCKING_TEST = PropertyFactory.createEntity("relLockingTest", RelLockingTestEntity.class);
 
     protected String name;
 
-    protected Object toRelLockingTest;
+    protected Object relLockingTest;
 
     public void setName(String name) {
         beforePropertyWrite("name", this.name, name);
@@ -39,12 +39,12 @@ public abstract class _LockingHelper extends PersistentObject {
         return this.name;
     }
 
-    public void setToRelLockingTest(RelLockingTestEntity toRelLockingTest) {
-        setToOneTarget("toRelLockingTest", toRelLockingTest, true);
+    public void setRelLockingTest(RelLockingTestEntity relLockingTest) {
+        setToOneTarget("relLockingTest", relLockingTest, true);
     }
 
-    public RelLockingTestEntity getToRelLockingTest() {
-        return (RelLockingTestEntity)readProperty("toRelLockingTest");
+    public RelLockingTestEntity getRelLockingTest() {
+        return (RelLockingTestEntity)readProperty("relLockingTest");
     }
 
     @Override
@@ -56,8 +56,8 @@ public abstract class _LockingHelper extends PersistentObject {
         switch(propName) {
             case "name":
                 return this.name;
-            case "toRelLockingTest":
-                return this.toRelLockingTest;
+            case "relLockingTest":
+                return this.relLockingTest;
             default:
                 return super.readPropertyDirectly(propName);
         }
@@ -73,8 +73,8 @@ public abstract class _LockingHelper extends PersistentObject {
             case "name":
                 this.name = (String)val;
                 break;
-            case "toRelLockingTest":
-                this.toRelLockingTest = val;
+            case "relLockingTest":
+                this.relLockingTest = val;
                 break;
             default:
                 super.writePropertyDirectly(propName, val);

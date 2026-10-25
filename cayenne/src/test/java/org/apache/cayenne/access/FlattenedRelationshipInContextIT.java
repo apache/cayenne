@@ -80,18 +80,18 @@ public class FlattenedRelationshipInContextIT {
         // mark as dirty for the purpose of the test...
         ft3.setPersistenceState(PersistenceState.MODIFIED);
 
-        assertTrue(ft3.readPropertyDirectly("toFT1") instanceof Fault);
+        assertTrue(ft3.readPropertyDirectly("ft1") instanceof Fault);
 
         // test that checking for modifications does not trigger a fault, and generally
         // works well
 
         ClassDescriptor d = context.getEntityResolver().getClassDescriptor(
                 "FlattenedTest3");
-        ArcProperty flattenedRel = (ArcProperty) d.getProperty("toFT1");
+        ArcProperty flattenedRel = (ArcProperty) d.getProperty("ft1");
 
         ObjectDiff diff = context.getObjectStore().registerDiff(ft3.getObjectId(), null);
         assertFalse(DataRowUtils.isToOneTargetModified(flattenedRel, ft3, diff));
-        assertTrue(ft3.readPropertyDirectly("toFT1") instanceof Fault);
+        assertTrue(ft3.readPropertyDirectly("ft1") instanceof Fault);
     }
 
 }

@@ -21,9 +21,9 @@
 	<dbRelationship name="generic2s" source="GENERIC1" target="GENERIC2" toMany="true">
 		<dbAttributePair source="ID" target="GENERIC1_ID"/>
 	</dbRelationship>
-	<dbRelationship name="toGeneric1" source="GENERIC2" target="GENERIC1" foreignKey="true">
+	<dbRelationship name="generic1" source="GENERIC2" target="GENERIC1" foreignKey="true">
 		<dbAttributePair source="GENERIC1_ID" target="ID"/>
 	</dbRelationship>
 	<objRelationship name="generic2s" source="Generic1" target="Generic2" deleteRule="cascade" dbRelationshipPath="generic2s"/>
-	<objRelationship name="toGeneric1" source="Generic2" target="Generic1" deleteRule="nullify" dbRelationshipPath="toGeneric1"/>
+	<objRelationship name="generic1" source="Generic2" target="Generic1" deleteRule="nullify" dbRelationshipPath="generic1"/>
 </dataMap>

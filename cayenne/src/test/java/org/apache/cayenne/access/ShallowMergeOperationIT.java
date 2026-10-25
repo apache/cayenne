@@ -64,15 +64,15 @@ public class ShallowMergeOperationIT {
 
         Artist _new = context.newObject(Artist.class);
         final Painting _newP = context.newObject(Painting.class);
-        _new.addToPaintingArray(_newP);
+        _new.addToPaintings(_newP);
 
         env.runWithQueriesBlocked(() -> {
             Painting painting = op.merge(_newP);
 
             assertEquals(PersistenceState.COMMITTED, painting.getPersistenceState());
-            assertNotNull(painting.getToArtist());
+            assertNotNull(painting.getArtist());
             assertEquals(PersistenceState.COMMITTED, painting
-                    .getToArtist()
+                    .getArtist()
                     .getPersistenceState());
         });
     }

@@ -29,14 +29,14 @@ public abstract class _Exhibit extends PersistentObject {
 
     public static final DateProperty<Date> CLOSING_DATE = PropertyFactory.createDate("closingDate", Date.class);
     public static final DateProperty<Date> OPENING_DATE = PropertyFactory.createDate("openingDate", Date.class);
-    public static final ListProperty<ArtistExhibit> ARTIST_EXHIBIT_ARRAY = PropertyFactory.createList("artistExhibitArray", ArtistExhibit.class);
-    public static final EntityProperty<Gallery> TO_GALLERY = PropertyFactory.createEntity("toGallery", Gallery.class);
+    public static final ListProperty<ArtistExhibit> ARTIST_EXHIBITS = PropertyFactory.createList("artistExhibits", ArtistExhibit.class);
+    public static final EntityProperty<Gallery> GALLERY = PropertyFactory.createEntity("gallery", Gallery.class);
 
     protected Date closingDate;
     protected Date openingDate;
 
-    protected Object artistExhibitArray;
-    protected Object toGallery;
+    protected Object artistExhibits;
+    protected Object gallery;
 
     public void setClosingDate(Date closingDate) {
         beforePropertyWrite("closingDate", this.closingDate, closingDate);
@@ -58,25 +58,25 @@ public abstract class _Exhibit extends PersistentObject {
         return this.openingDate;
     }
 
-    public void addToArtistExhibitArray(ArtistExhibit obj) {
-        addToManyTarget("artistExhibitArray", obj, true);
+    public void addToArtistExhibits(ArtistExhibit obj) {
+        addToManyTarget("artistExhibits", obj, true);
     }
 
-    public void removeFromArtistExhibitArray(ArtistExhibit obj) {
-        removeToManyTarget("artistExhibitArray", obj, true);
+    public void removeFromArtistExhibits(ArtistExhibit obj) {
+        removeToManyTarget("artistExhibits", obj, true);
     }
 
     @SuppressWarnings("unchecked")
-    public List<ArtistExhibit> getArtistExhibitArray() {
-        return (List<ArtistExhibit>)readProperty("artistExhibitArray");
+    public List<ArtistExhibit> getArtistExhibits() {
+        return (List<ArtistExhibit>)readProperty("artistExhibits");
     }
 
-    public void setToGallery(Gallery toGallery) {
-        setToOneTarget("toGallery", toGallery, true);
+    public void setGallery(Gallery gallery) {
+        setToOneTarget("gallery", gallery, true);
     }
 
-    public Gallery getToGallery() {
-        return (Gallery)readProperty("toGallery");
+    public Gallery getGallery() {
+        return (Gallery)readProperty("gallery");
     }
 
     @Override
@@ -90,10 +90,10 @@ public abstract class _Exhibit extends PersistentObject {
                 return this.closingDate;
             case "openingDate":
                 return this.openingDate;
-            case "artistExhibitArray":
-                return this.artistExhibitArray;
-            case "toGallery":
-                return this.toGallery;
+            case "artistExhibits":
+                return this.artistExhibits;
+            case "gallery":
+                return this.gallery;
             default:
                 return super.readPropertyDirectly(propName);
         }
@@ -112,11 +112,11 @@ public abstract class _Exhibit extends PersistentObject {
             case "openingDate":
                 this.openingDate = (Date)val;
                 break;
-            case "artistExhibitArray":
-                this.artistExhibitArray = val;
+            case "artistExhibits":
+                this.artistExhibits = val;
                 break;
-            case "toGallery":
-                this.toGallery = val;
+            case "gallery":
+                this.gallery = val;
                 break;
             default:
                 super.writePropertyDirectly(propName, val);

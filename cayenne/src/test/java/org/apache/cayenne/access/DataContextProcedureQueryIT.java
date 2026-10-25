@@ -85,13 +85,13 @@ public class DataContextProcedureQueryIT  {
 
         // check that price have doubled
         ObjectSelect<Artist> select = ObjectSelect.query(Artist.class)
-                .prefetch("paintingArray", PrefetchTreeNode.UNDEFINED_SEMANTICS);
+                .prefetch("paintings", PrefetchTreeNode.UNDEFINED_SEMANTICS);
 
         List<Artist> artists = select.select(env.context());
         assertEquals(1, artists.size());
 
         Artist a = artists.get(0);
-        Painting p = a.getPaintingArray().get(0);
+        Painting p = a.getPaintings().get(0);
         assertEquals(2000, p.getEstimatedPrice().intValue());
     }
 
@@ -121,13 +121,13 @@ public class DataContextProcedureQueryIT  {
 
         // check that price have doubled
         ObjectSelect<Artist> select = ObjectSelect.query(Artist.class)
-                .prefetch("paintingArray", PrefetchTreeNode.UNDEFINED_SEMANTICS);
+                .prefetch("paintings", PrefetchTreeNode.UNDEFINED_SEMANTICS);
 
         List<Artist> artists = select.select(env.context());
         assertEquals(1, artists.size());
 
         Artist a = artists.get(0);
-        Painting p = a.getPaintingArray().get(0);
+        Painting p = a.getPaintings().get(0);
         assertEquals(2000, p.getEstimatedPrice().intValue());
     }
 
@@ -150,7 +150,7 @@ public class DataContextProcedureQueryIT  {
         assertEquals(1, artists.size());
         DataRow artistRow = (DataRow) artists.get(0);
         Artist a = env.context().objectFromDataRow(Artist.class, uppercaseConverter(artistRow));
-        Painting p = a.getPaintingArray().get(0);
+        Painting p = a.getPaintings().get(0);
 
         // invalidate painting, it may have been updated in the proc
         env.context().invalidateObjects(p);
@@ -177,7 +177,7 @@ public class DataContextProcedureQueryIT  {
         assertEquals(1, artists.size());
         DataRow artistRow = (DataRow) artists.get(0);
         Artist a = env.context().objectFromDataRow(Artist.class, uppercaseConverter(artistRow));
-        Painting p = a.getPaintingArray().get(0);
+        Painting p = a.getPaintings().get(0);
 
         // invalidate painting, it may have been updated in the proc
         env.context().invalidateObjects(p);
@@ -204,7 +204,7 @@ public class DataContextProcedureQueryIT  {
         assertEquals(1, artists.size());
         DataRow artistRow = (DataRow) artists.get(0);
         Artist a = env.context().objectFromDataRow(Artist.class, uppercaseConverter(artistRow));
-        Painting p = a.getPaintingArray().get(0);
+        Painting p = a.getPaintings().get(0);
 
         // invalidate painting, it may have been updated in the proc
         env.context().invalidateObjects(p);
@@ -325,7 +325,7 @@ public class DataContextProcedureQueryIT  {
         assertNotNull(artists, "Null result from StoredProcedure.");
         assertEquals(1, artists.size());
         Artist a = (Artist) artists.get(0);
-        Painting p = a.getPaintingArray().get(0);
+        Painting p = a.getPaintings().get(0);
 
         // invalidate painting, it may have been updated in the proc
         env.context().invalidateObjects(p);
@@ -414,7 +414,7 @@ public class DataContextProcedureQueryIT  {
         p.setPaintingTitle("A Painting");
         // converting double to string prevents rounding weirdness...
         p.setEstimatedPrice(new BigDecimal("" + paintingPrice));
-        a.addToPaintingArray(p);
+        a.addToPaintings(p);
 
         env.context().commitChanges();
     }

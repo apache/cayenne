@@ -28,15 +28,15 @@ public abstract class _FlattenedTest3 extends PersistentObject {
     public static final String FT3_ID_PK_COLUMN = "FT3_ID";
 
     public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);
-    public static final ListProperty<FlattenedTest4> FT4ARRAY = PropertyFactory.createList("ft4Array", FlattenedTest4.class);
-    public static final EntityProperty<FlattenedTest1> TO_FT1 = PropertyFactory.createEntity("toFT1", FlattenedTest1.class);
-    public static final EntityProperty<FlattenedTest2> TO_FT2 = PropertyFactory.createEntity("toFT2", FlattenedTest2.class);
+    public static final ListProperty<FlattenedTest4> FT4S = PropertyFactory.createList("ft4s", FlattenedTest4.class);
+    public static final EntityProperty<FlattenedTest1> FT1 = PropertyFactory.createEntity("ft1", FlattenedTest1.class);
+    public static final EntityProperty<FlattenedTest2> FT2 = PropertyFactory.createEntity("ft2", FlattenedTest2.class);
 
     protected String name;
 
-    protected Object ft4Array;
-    protected Object toFT1;
-    protected Object toFT2;
+    protected Object ft4s;
+    protected Object ft1;
+    protected Object ft2;
 
     public void setName(String name) {
         beforePropertyWrite("name", this.name, name);
@@ -48,33 +48,33 @@ public abstract class _FlattenedTest3 extends PersistentObject {
         return this.name;
     }
 
-    public void addToFt4Array(FlattenedTest4 obj) {
-        addToManyTarget("ft4Array", obj, true);
+    public void addToFt4s(FlattenedTest4 obj) {
+        addToManyTarget("ft4s", obj, true);
     }
 
-    public void removeFromFt4Array(FlattenedTest4 obj) {
-        removeToManyTarget("ft4Array", obj, true);
+    public void removeFromFt4s(FlattenedTest4 obj) {
+        removeToManyTarget("ft4s", obj, true);
     }
 
     @SuppressWarnings("unchecked")
-    public List<FlattenedTest4> getFt4Array() {
-        return (List<FlattenedTest4>)readProperty("ft4Array");
+    public List<FlattenedTest4> getFt4s() {
+        return (List<FlattenedTest4>)readProperty("ft4s");
     }
 
-    public void setToFT1(FlattenedTest1 toFT1) {
-        setToOneTarget("toFT1", toFT1, true);
+    public void setFt1(FlattenedTest1 ft1) {
+        setToOneTarget("ft1", ft1, true);
     }
 
-    public FlattenedTest1 getToFT1() {
-        return (FlattenedTest1)readProperty("toFT1");
+    public FlattenedTest1 getFt1() {
+        return (FlattenedTest1)readProperty("ft1");
     }
 
-    public void setToFT2(FlattenedTest2 toFT2) {
-        setToOneTarget("toFT2", toFT2, true);
+    public void setFt2(FlattenedTest2 ft2) {
+        setToOneTarget("ft2", ft2, true);
     }
 
-    public FlattenedTest2 getToFT2() {
-        return (FlattenedTest2)readProperty("toFT2");
+    public FlattenedTest2 getFt2() {
+        return (FlattenedTest2)readProperty("ft2");
     }
 
     @Override
@@ -86,12 +86,12 @@ public abstract class _FlattenedTest3 extends PersistentObject {
         switch(propName) {
             case "name":
                 return this.name;
-            case "ft4Array":
-                return this.ft4Array;
-            case "toFT1":
-                return this.toFT1;
-            case "toFT2":
-                return this.toFT2;
+            case "ft4s":
+                return this.ft4s;
+            case "ft1":
+                return this.ft1;
+            case "ft2":
+                return this.ft2;
             default:
                 return super.readPropertyDirectly(propName);
         }
@@ -107,14 +107,14 @@ public abstract class _FlattenedTest3 extends PersistentObject {
             case "name":
                 this.name = (String)val;
                 break;
-            case "ft4Array":
-                this.ft4Array = val;
+            case "ft4s":
+                this.ft4s = val;
                 break;
-            case "toFT1":
-                this.toFT1 = val;
+            case "ft1":
+                this.ft1 = val;
                 break;
-            case "toFT2":
-                this.toFT2 = val;
+            case "ft2":
+                this.ft2 = val;
                 break;
             default:
                 super.writePropertyDirectly(propName, val);

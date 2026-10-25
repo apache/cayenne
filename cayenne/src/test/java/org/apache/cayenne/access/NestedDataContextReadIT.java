@@ -190,26 +190,26 @@ public class NestedDataContextReadIT {
         // test how different object states appear in the child on select
 
         Painting hollowTargetSrc = context.objectForPK(Painting.class, 33001);
-        Artist hollowTarget = hollowTargetSrc.getToArtist();
+        Artist hollowTarget = hollowTargetSrc.getArtist();
 
         Painting modifiedTargetSrc = context.objectForPK(Painting.class, 33002);
-        Artist modifiedTarget = modifiedTargetSrc.getToArtist();
+        Artist modifiedTarget = modifiedTargetSrc.getArtist();
         modifiedTarget.setArtistName("M1");
 
         final Painting deletedTargetSrc = context.objectForPK(Painting.class,
                 33003);
-        Artist deletedTarget = deletedTargetSrc.getToArtist();
-        deletedTargetSrc.setToArtist(null);
+        Artist deletedTarget = deletedTargetSrc.getArtist();
+        deletedTargetSrc.setArtist(null);
         context.deleteObjects(deletedTarget);
 
         Painting committedTargetSrc = context.objectForPK(Painting.class, 33004);
-        Artist committedTarget = committedTargetSrc.getToArtist();
+        Artist committedTarget = committedTargetSrc.getArtist();
         committedTarget.getArtistName();
 
         final Painting newTargetSrc = context.objectForPK(Painting.class, 33005);
         Artist newTarget = context.newObject(Artist.class);
         newTarget.setArtistName("N1");
-        newTargetSrc.setToArtist(newTarget);
+        newTargetSrc.setArtist(newTarget);
 
         assertEquals(PersistenceState.COMMITTED, hollowTargetSrc.getPersistenceState());
         assertEquals(PersistenceState.COMMITTED, modifiedTargetSrc.getPersistenceState());
@@ -233,12 +233,12 @@ public class NestedDataContextReadIT {
             Painting childHollowTargetSrc = childSources.get(0);
             assertSame(child, childHollowTargetSrc.getObjectContext());
 
-            Artist childHollowTarget = childHollowTargetSrc.getToArtist();
+            Artist childHollowTarget = childHollowTargetSrc.getArtist();
             assertNotNull(childHollowTarget);
             assertEquals(PersistenceState.HOLLOW, childHollowTarget.getPersistenceState());
             assertSame(child, childHollowTarget.getObjectContext());
 
-            Artist childModifiedTarget = childSources.get(1).getToArtist();
+            Artist childModifiedTarget = childSources.get(1).getArtist();
             assertEquals(PersistenceState.COMMITTED, childModifiedTarget.getPersistenceState());
             assertSame(child, childModifiedTarget.getObjectContext());
             assertEquals("M1", childModifiedTarget.getArtistName());
@@ -247,10 +247,10 @@ public class NestedDataContextReadIT {
             // make sure we got the right object...
             assertEquals(deletedTargetSrc.getObjectId(), childDeletedTargetSrc.getObjectId());
 
-            Artist childDeletedTarget = childDeletedTargetSrc.getToArtist();
+            Artist childDeletedTarget = childDeletedTargetSrc.getArtist();
             assertNull(childDeletedTarget);
 
-            Artist childCommittedTarget = childSources.get(3).getToArtist();
+            Artist childCommittedTarget = childSources.get(3).getArtist();
             assertEquals(PersistenceState.COMMITTED, childCommittedTarget.getPersistenceState());
             assertSame(child, childCommittedTarget.getObjectContext());
 
@@ -258,7 +258,7 @@ public class NestedDataContextReadIT {
             // make sure we got the right object...
             assertEquals(newTargetSrc.getObjectId(), childNewTargetSrc.getObjectId());
 
-            Artist childNewTarget = childNewTargetSrc.getToArtist();
+            Artist childNewTarget = childNewTargetSrc.getArtist();
             assertNotNull(childNewTarget);
             assertEquals(PersistenceState.COMMITTED, childNewTarget.getPersistenceState());
             assertSame(child, childNewTarget.getObjectContext());
@@ -279,7 +279,7 @@ public class NestedDataContextReadIT {
 
         List<Painting> results = ObjectSelect.query(Painting.class)
                 .orderBy(Painting.PAINTING_TITLE.asc())
-                .prefetch(Painting.TO_ARTIST.disjoint())
+                .prefetch(Painting.ARTIST.disjoint())
                 .select(child);
 
         env.runWithQueriesBlocked(() -> {
@@ -288,7 +288,7 @@ public class NestedDataContextReadIT {
                 assertEquals(PersistenceState.COMMITTED, o.getPersistenceState());
                 assertSame(child, o.getObjectContext());
 
-                Artist o1 = o.getToArtist();
+                Artist o1 = o.getArtist();
                 assertNotNull(o1);
                 assertEquals(PersistenceState.COMMITTED, o1.getPersistenceState());
                 assertSame(child, o1.getObjectContext());
@@ -305,7 +305,7 @@ public class NestedDataContextReadIT {
 
         List<Artist> results = ObjectSelect.query(Artist.class)
                 .orderBy(Artist.ARTIST_NAME.asc())
-                .prefetch(Artist.PAINTING_ARRAY.disjoint())
+                .prefetch(Artist.PAINTINGS.disjoint())
                 .select(child);
 
         env.runWithQueriesBlocked(() -> {
@@ -313,21 +313,21 @@ public class NestedDataContextReadIT {
             assertEquals(PersistenceState.COMMITTED, o1.getPersistenceState());
             assertSame(child, o1.getObjectContext());
 
-            List<Painting> children1 = o1.getPaintingArray();
+            List<Painting> children1 = o1.getPaintings();
             assertEquals(ToManyList.class, children1.getClass());
             assertEquals(2, children1.size());
 
             for (Painting o : children1) {
                 assertEquals(PersistenceState.COMMITTED, o.getPersistenceState());
                 assertSame(child, o.getObjectContext());
-                assertEquals(o1, o.getToArtist());
+                assertEquals(o1, o.getArtist());
             }
 
             Artist o2 = results.get(1);
             assertEquals(PersistenceState.COMMITTED, o2.getPersistenceState());
             assertSame(child, o2.getObjectContext());
 
-            List<Painting> children2 = o2.getPaintingArray();
+            List<Painting> children2 = o2.getPaintings();
             assertEquals(0, children2.size());
         });
     }

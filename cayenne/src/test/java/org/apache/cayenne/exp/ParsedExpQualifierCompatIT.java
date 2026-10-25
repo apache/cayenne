@@ -122,7 +122,7 @@ public class ParsedExpQualifierCompatIT {
         assertEquals(1, execute(Artist.class, parsed1).size());
 
         // test with prefetch... this type of expressions should work with prefetches
-        assertEquals(1, execute(Artist.class, parsed1, "paintingArray").size());
+        assertEquals(1, execute(Artist.class, parsed1, "paintings").size());
 
         Expression parsed2 = ExpressionFactory.exp("artistName=='artist3'");
         assertEquals(1, execute(Artist.class, parsed2).size());

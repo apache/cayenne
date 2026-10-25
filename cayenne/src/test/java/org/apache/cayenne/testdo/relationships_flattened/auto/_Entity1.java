@@ -21,17 +21,17 @@ public abstract class _Entity1 extends PersistentObject {
     public static final NumericIdProperty<Integer> ID_PK_PROPERTY = PropertyFactory.createNumericId("ID", "Entity1", Integer.class);
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final EntityProperty<Entity3> TO_ENTITY3 = PropertyFactory.createEntity("toEntity3", Entity3.class);
+    public static final EntityProperty<Entity3> ENTITY3 = PropertyFactory.createEntity("entity3", Entity3.class);
 
 
-    protected Object toEntity3;
+    protected Object entity3;
 
-    public void setToEntity3(Entity3 toEntity3) {
-        setToOneTarget("toEntity3", toEntity3, true);
+    public void setEntity3(Entity3 entity3) {
+        setToOneTarget("entity3", entity3, true);
     }
 
-    public Entity3 getToEntity3() {
-        return (Entity3)readProperty("toEntity3");
+    public Entity3 getEntity3() {
+        return (Entity3)readProperty("entity3");
     }
 
     @Override
@@ -41,8 +41,8 @@ public abstract class _Entity1 extends PersistentObject {
         }
 
         switch(propName) {
-            case "toEntity3":
-                return this.toEntity3;
+            case "entity3":
+                return this.entity3;
             default:
                 return super.readPropertyDirectly(propName);
         }
@@ -55,8 +55,8 @@ public abstract class _Entity1 extends PersistentObject {
         }
 
         switch (propName) {
-            case "toEntity3":
-                this.toEntity3 = val;
+            case "entity3":
+                this.entity3 = val;
                 break;
             default:
                 super.writePropertyDirectly(propName, val);

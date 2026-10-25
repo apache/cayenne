@@ -104,7 +104,7 @@ public class NestedDataContextPeerEventsIT {
 		Artist altA = env.context().newObject(Artist.class);
 
 		Painting p = env.context().newObject(Painting.class);
-		p.setToArtist(a);
+		p.setArtist(a);
 		p.setPaintingTitle("PPP");
 		a.setArtistName("X");
 		altA.setArtistName("Y");
@@ -119,8 +119,8 @@ public class NestedDataContextPeerEventsIT {
 		final Artist altA2 = peer2.localObject(altA);
 		Artist a2 = peer2.localObject(a);
 
-		p1.setToArtist(altA1);
-		assertSame(a2, p2.getToArtist());
+		p1.setArtist(altA1);
+		assertSame(a2, p2.getArtist());
 		peer1.commitChangesToParent();
 
 		// pause to let the context events propagate
@@ -128,7 +128,7 @@ public class NestedDataContextPeerEventsIT {
 
 			@Override
 			protected void assertResult() throws Exception {
-				assertEquals(altA2, p2.getToArtist());
+				assertEquals(altA2, p2.getArtist());
 
 				assertFalse(peer2.hasChanges(), "Peer data context became dirty on event processing");
 			}
@@ -143,7 +143,7 @@ public class NestedDataContextPeerEventsIT {
 		a.setArtistName("X");
 
 		Painting px = env.context().newObject(Painting.class);
-		px.setToArtist(a);
+		px.setArtist(a);
 		px.setPaintingTitle("PX");
 
 		Painting py = env.context().newObject(Painting.class);
@@ -161,17 +161,17 @@ public class NestedDataContextPeerEventsIT {
 		final Painting py2 = peer2.localObject(py);
 		final Artist a2 = peer2.localObject(a);
 
-		a1.addToPaintingArray(py1);
-		assertEquals(1, a2.getPaintingArray().size());
-		assertFalse(a2.getPaintingArray().contains(py2));
+		a1.addToPaintings(py1);
+		assertEquals(1, a2.getPaintings().size());
+		assertFalse(a2.getPaintings().contains(py2));
 		peer1.commitChangesToParent();
 		// pause to let the context events propagate
 		new ParallelTestContainer() {
 
 			@Override
 			protected void assertResult() throws Exception {
-				assertEquals(2, a2.getPaintingArray().size());
-				assertTrue(a2.getPaintingArray().contains(py2));
+				assertEquals(2, a2.getPaintings().size());
+				assertTrue(a2.getPaintings().contains(py2));
 
 				assertFalse(peer2.hasChanges(), "Peer data context became dirty on event processing");
 			}

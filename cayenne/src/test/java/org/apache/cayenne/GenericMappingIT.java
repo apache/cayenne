@@ -54,7 +54,7 @@ public class GenericMappingIT {
 
         Persistent g2 = env.context().newObject("Generic2");
         g2.writeProperty("name", "G2 Name");
-        g2.setToOneTarget("toGeneric1", g1, true);
+        g2.setToOneTarget("generic1", g1, true);
 
         env.context().commitChanges();
     }
@@ -83,7 +83,7 @@ public class GenericMappingIT {
 
         Persistent g2 = env.context().newObject("Generic2");
         g2.writeProperty("name", "G2 Name");
-        g2.setToOneTarget("toGeneric1", g1, true);
+        g2.setToOneTarget("generic1", g1, true);
 
         env.context().commitChanges();
 
@@ -92,7 +92,7 @@ public class GenericMappingIT {
 
         Persistent g11 = env.context().newObject("Generic1");
         g11.writeProperty("name", "G11 Name");
-        g2.setToOneTarget("toGeneric1", g11, true);
+        g2.setToOneTarget("generic1", g11, true);
 
         env.context().commitChanges();
 

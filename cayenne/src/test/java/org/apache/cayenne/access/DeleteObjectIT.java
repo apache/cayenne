@@ -141,7 +141,7 @@ public class DeleteObjectIT {
         createObjectsRelationshipCollectionDataSet();
 
         Artist artist = context.objectForPK(Artist.class, 1);
-        List<Painting> paintings = artist.getPaintingArray();
+        List<Painting> paintings = artist.getPaintings();
 
         assertEquals(3, paintings.size());
 
@@ -157,7 +157,7 @@ public class DeleteObjectIT {
         // as Painting -> Artist has Nullify rule, relationship list has to be
         // cleaned up,
         // and no exceptions thrown on concurrent modification...
-        ObjRelationship r = context.getEntityResolver().getObjEntity(Painting.class).getRelationship("toArtist");
+        ObjRelationship r = context.getEntityResolver().getObjEntity(Painting.class).getRelationship("artist");
         assertEquals(DeleteRule.NULLIFY, r.getDeleteRule());
         assertEquals(0, paintings.size());
 
@@ -171,7 +171,7 @@ public class DeleteObjectIT {
         createObjectsRelationshipCollectionDataSet();
 
         Artist artist = context.objectForPK(Artist.class, 1);
-        List<Painting> paintings = artist.getPaintingArray();
+        List<Painting> paintings = artist.getPaintings();
 
         assertEquals(3, paintings.size());
 
@@ -205,7 +205,7 @@ public class DeleteObjectIT {
         List<Painting> paintings = ObjectSelect.query(Painting.class).select(context);
 
         Painting p = paintings.get(0);
-        Artist a = p.getToArtist();
+        Artist a = p.getArtist();
 
         assertEquals(PersistenceState.HOLLOW, a.getPersistenceState());
         context.deleteObjects(a);

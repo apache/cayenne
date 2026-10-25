@@ -125,7 +125,7 @@ public class DataDomainCallbacksIT {
         Artist a1 = env.context().newObject(Artist.class);
         a1.setArtistName("XX");
         Painting p1 = env.context().newObject(Painting.class);
-        p1.setToArtist(a1);
+        p1.setArtist(a1);
         p1.setPaintingTitle("XXX");
         env.context().commitChanges();
 
@@ -134,7 +134,7 @@ public class DataDomainCallbacksIT {
         p1 = ObjectSelect.query(Painting.class).select(env.context()).get(0);
 
         // this should be a hollow object, so no callback just yet
-        a1 = p1.getToArtist();
+        a1 = p1.getArtist();
         assertEquals(PersistenceState.HOLLOW, a1.getPersistenceState());
         assertEquals(0, a1.getPostLoaded());
         assertNull(listener.getPublicCalledbackEntity());
@@ -155,16 +155,16 @@ public class DataDomainCallbacksIT {
         Artist a1 = env.context().newObject(Artist.class);
         a1.setArtistName("XX");
         Painting p1 = env.context().newObject(Painting.class);
-        p1.setToArtist(a1);
+        p1.setArtist(a1);
         p1.setPaintingTitle("XXX");
         env.context().commitChanges();
 
         p1 = ObjectSelect.query(Painting.class)
-                .prefetch(Painting.TO_ARTIST.disjoint())
+                .prefetch(Painting.ARTIST.disjoint())
                 .select(env.context()).get(0);
 
         // artist is prefetched here, and a callback must have been invoked
-        a1 = p1.getToArtist();
+        a1 = p1.getArtist();
         assertEquals(PersistenceState.COMMITTED, a1.getPersistenceState());
         assertEquals(1, a1.getPostLoaded());
         assertSame(a1, listener.getPublicCalledbackEntity());
@@ -211,7 +211,7 @@ public class DataDomainCallbacksIT {
         Artist a1 = env.context().newObject(Artist.class);
         a1.setArtistName("XX");
         Painting p1 = env.context().newObject(Painting.class);
-        p1.setToArtist(a1);
+        p1.setArtist(a1);
         p1.setPaintingTitle("XXX");
         env.context().commitChanges();
 
@@ -221,7 +221,7 @@ public class DataDomainCallbacksIT {
                 .select(context1).get(0);
 
         // this should be a hollow object, so no callback just yet
-        a1 = p1.getToArtist();
+        a1 = p1.getArtist();
         assertEquals(PersistenceState.HOLLOW, a1.getPersistenceState());
         assertEquals(0, a1.getPostLoaded());
         assertNull(listener.getPublicCalledbackEntity());

@@ -58,12 +58,12 @@ public class DataContextPrefetchExtras1IT  {
         createDataSet();
 
         ObjectSelect<Painting> query = ObjectSelect.query(Painting.class)
-                .prefetch(Painting.TO_PAINTING_INFO.disjoint());
+                .prefetch(Painting.PAINTING_INFO.disjoint());
 
         List<Painting> objects = query.select(env.context());
         assertFalse(objects.isEmpty());
         for (Painting p : objects) {
-            PaintingInfo pi = p.getToPaintingInfo();
+            PaintingInfo pi = p.getPaintingInfo();
             assertEquals(PersistenceState.COMMITTED, p.getPersistenceState());
             assertEquals(PersistenceState.COMMITTED, pi.getPersistenceState());
         }

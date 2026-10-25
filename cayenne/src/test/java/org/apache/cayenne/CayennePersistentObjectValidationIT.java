@@ -52,18 +52,18 @@ public class CayennePersistentObjectValidationIT {
         ValidationResult result = new ValidationResult();
         exhibit.validateForSave(result);
 
-        assertTrue(result.hasFailures(), "Validation of 'toGallery' should've failed.");
+        assertTrue(result.hasFailures(), "Validation of 'gallery' should've failed.");
         assertTrue(result.hasFailures(exhibit));
 
         List<ValidationFailure> failures = result.getFailures();
         assertEquals(1, failures.size());
 
         BeanValidationFailure failure = (BeanValidationFailure) failures.get(0);
-        assertEquals(Exhibit.TO_GALLERY.getName(), failure.getProperty());
+        assertEquals(Exhibit.GALLERY.getName(), failure.getProperty());
 
         // fix the problem and see if it goes away
         Gallery gallery = env.context().newObject(Gallery.class);
-        exhibit.setToGallery(gallery);
+        exhibit.setGallery(gallery);
         result = new ValidationResult();
         exhibit.validateForSave(result);
         assertFalse(result.hasFailures(), "No failures expected: " + result);

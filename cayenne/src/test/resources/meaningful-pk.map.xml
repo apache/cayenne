@@ -65,17 +65,17 @@
 	<dbRelationship name="dep2" source="MEANINGFUL_PK" target="MEANINGFUL_PK_DEP2">
 		<dbAttributePair source="PK" target="PK"/>
 	</dbRelationship>
-	<dbRelationship name="toMeaningfulPK" source="MEANINGFUL_PK_DEP" target="MEANINGFUL_PK_TEST1" foreignKey="true">
+	<dbRelationship name="meaningfulPK" source="MEANINGFUL_PK_DEP" target="MEANINGFUL_PK_TEST1" foreignKey="true">
 		<dbAttributePair source="MASTER_PK" target="PK_ATTRIBUTE"/>
 	</dbRelationship>
 	<dbRelationship name="meaningfulPk" source="MEANINGFUL_PK_DEP2" target="MEANINGFUL_PK" foreignKey="true">
 		<dbAttributePair source="PK" target="PK"/>
 	</dbRelationship>
-	<dbRelationship name="meaningfulPKDepArray" source="MEANINGFUL_PK_TEST1" target="MEANINGFUL_PK_DEP" toMany="true">
+	<dbRelationship name="meaningfulPKDeps" source="MEANINGFUL_PK_TEST1" target="MEANINGFUL_PK_DEP" toMany="true">
 		<dbAttributePair source="PK_ATTRIBUTE" target="MASTER_PK"/>
 	</dbRelationship>
-	<objRelationship name="toMeaningfulPK" source="MeaningfulPKDep" target="MeaningfulPKTest1" dbRelationshipPath="toMeaningfulPK"/>
-	<objRelationship name="meaningfulPKDepArray" source="MeaningfulPKTest1" target="MeaningfulPKDep" deleteRule="cascade" dbRelationshipPath="meaningfulPKDepArray"/>
+	<objRelationship name="meaningfulPK" source="MeaningfulPKDep" target="MeaningfulPKTest1" dbRelationshipPath="meaningfulPK"/>
+	<objRelationship name="meaningfulPKDeps" source="MeaningfulPKTest1" target="MeaningfulPKDep" deleteRule="cascade" dbRelationshipPath="meaningfulPKDeps"/>
 	<objRelationship name="meaningfulPkDep2s" source="MeaningfulPk" target="MeaningfulPkDep2" deleteRule="deny" dbRelationshipPath="dep2"/>
 	<objRelationship name="meaningfulPk" source="MeaningfulPkDep2" target="MeaningfulPk" deleteRule="nullify" dbRelationshipPath="meaningfulPk"/>
 </dataMap>

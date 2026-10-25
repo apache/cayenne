@@ -27,14 +27,14 @@ public abstract class _MeaningfulPKTest1 extends PersistentObject {
     public static final NumericProperty<Integer> INT_ATTRIBUTE = PropertyFactory.createNumeric("intAttribute", Integer.class);
     public static final NumericProperty<Integer> INT_NULLABLE_ATTRIBUTE = PropertyFactory.createNumeric("intNullableAttribute", Integer.class);
     public static final NumericProperty<Integer> PK_ATTRIBUTE = PropertyFactory.createNumeric("pkAttribute", Integer.class);
-    public static final ListProperty<MeaningfulPKDep> MEANINGFUL_PKDEP_ARRAY = PropertyFactory.createList("meaningfulPKDepArray", MeaningfulPKDep.class);
+    public static final ListProperty<MeaningfulPKDep> MEANINGFUL_PKDEPS = PropertyFactory.createList("meaningfulPKDeps", MeaningfulPKDep.class);
 
     protected String descr;
     protected int intAttribute;
     protected Integer intNullableAttribute;
     protected int pkAttribute;
 
-    protected Object meaningfulPKDepArray;
+    protected Object meaningfulPKDeps;
 
     public void setDescr(String descr) {
         beforePropertyWrite("descr", this.descr, descr);
@@ -79,17 +79,17 @@ public abstract class _MeaningfulPKTest1 extends PersistentObject {
         return this.pkAttribute;
     }
 
-    public void addToMeaningfulPKDepArray(MeaningfulPKDep obj) {
-        addToManyTarget("meaningfulPKDepArray", obj, true);
+    public void addToMeaningfulPKDeps(MeaningfulPKDep obj) {
+        addToManyTarget("meaningfulPKDeps", obj, true);
     }
 
-    public void removeFromMeaningfulPKDepArray(MeaningfulPKDep obj) {
-        removeToManyTarget("meaningfulPKDepArray", obj, true);
+    public void removeFromMeaningfulPKDeps(MeaningfulPKDep obj) {
+        removeToManyTarget("meaningfulPKDeps", obj, true);
     }
 
     @SuppressWarnings("unchecked")
-    public List<MeaningfulPKDep> getMeaningfulPKDepArray() {
-        return (List<MeaningfulPKDep>)readProperty("meaningfulPKDepArray");
+    public List<MeaningfulPKDep> getMeaningfulPKDeps() {
+        return (List<MeaningfulPKDep>)readProperty("meaningfulPKDeps");
     }
 
     @Override
@@ -107,8 +107,8 @@ public abstract class _MeaningfulPKTest1 extends PersistentObject {
                 return this.intNullableAttribute;
             case "pkAttribute":
                 return this.pkAttribute;
-            case "meaningfulPKDepArray":
-                return this.meaningfulPKDepArray;
+            case "meaningfulPKDeps":
+                return this.meaningfulPKDeps;
             default:
                 return super.readPropertyDirectly(propName);
         }
@@ -133,8 +133,8 @@ public abstract class _MeaningfulPKTest1 extends PersistentObject {
             case "pkAttribute":
                 this.pkAttribute = val == null ? 0 : (int)val;
                 break;
-            case "meaningfulPKDepArray":
-                this.meaningfulPKDepArray = val;
+            case "meaningfulPKDeps":
+                this.meaningfulPKDeps = val;
                 break;
             default:
                 super.writePropertyDirectly(propName, val);

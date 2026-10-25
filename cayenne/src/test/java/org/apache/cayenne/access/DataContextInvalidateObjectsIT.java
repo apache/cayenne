@@ -93,8 +93,8 @@ public class DataContextInvalidateObjectsIT {
         Artist a1 = artists.get(0);
         Artist a2 = artists.get(1);
 
-        assertEquals(2, a1.getPaintingArray().size());
-        assertEquals(0, a2.getPaintingArray().size());
+        assertEquals(2, a1.getPaintings().size());
+        assertEquals(0, a2.getPaintings().size());
 
         assertNotNull(context
                 .getChannel().getDataDomain()
@@ -119,9 +119,9 @@ public class DataContextInvalidateObjectsIT {
         assertEquals(PersistenceState.HOLLOW, a1.getPersistenceState());
         assertEquals(PersistenceState.HOLLOW, a2.getPersistenceState());
 
-        assertTrue(((ToManyHolder) a1.readProperty(Artist.PAINTING_ARRAY.getName()))
+        assertTrue(((ToManyHolder) a1.readProperty(Artist.PAINTINGS.getName()))
                 .isFault());
-        assertTrue(((ToManyHolder) a2.readProperty(Artist.PAINTING_ARRAY.getName()))
+        assertTrue(((ToManyHolder) a2.readProperty(Artist.PAINTINGS.getName()))
                 .isFault());
     }
 
@@ -136,8 +136,8 @@ public class DataContextInvalidateObjectsIT {
         Painting p1 = paints.get(0);
         Painting p2 = paints.get(1);
 
-        Artist a1 = p1.getToArtist();
-        assertSame(a1, p2.getToArtist());
+        Artist a1 = p1.getArtist();
+        assertSame(a1, p2.getArtist());
 
         assertNotNull(context
                 .getChannel().getDataDomain()
@@ -164,9 +164,9 @@ public class DataContextInvalidateObjectsIT {
         assertEquals(PersistenceState.HOLLOW, p1.getPersistenceState());
         assertEquals(PersistenceState.HOLLOW, p2.getPersistenceState());
 
-        assertNotSame(a1, p1.getToArtist());
-        assertNotSame(a1, p2.getToArtist());
-        assertEquals("b", p1.getToArtist().getArtistName());
+        assertNotSame(a1, p1.getArtist());
+        assertNotSame(a1, p2.getArtist());
+        assertEquals("b", p1.getArtist().getArtistName());
     }
 
     @Test
@@ -179,7 +179,7 @@ public class DataContextInvalidateObjectsIT {
 
         Artist a1 = artists.get(0);
 
-        assertEquals(2, a1.getPaintingArray().size());
+        assertEquals(2, a1.getPaintings().size());
 
         assertNotNull(context
                 .getChannel().getDataDomain()
@@ -195,7 +195,7 @@ public class DataContextInvalidateObjectsIT {
 
         assertEquals(PersistenceState.HOLLOW, a1.getPersistenceState());
 
-        assertTrue(((ToManyHolder) a1.readProperty(Artist.PAINTING_ARRAY.getName()))
+        assertTrue(((ToManyHolder) a1.readProperty(Artist.PAINTINGS.getName()))
                 .isFault());
     }
 
@@ -204,13 +204,13 @@ public class DataContextInvalidateObjectsIT {
         createRefreshObjectToManyDataSet();
 
         Artist a = context.objectForPK(Artist.class, 33001L);
-        assertEquals(2, a.getPaintingArray().size());
+        assertEquals(2, a.getPaintings().size());
 
         createRefreshObjectToManyUpdateDataSet();
 
         context.invalidateObjects(a);
         assertEquals(PersistenceState.HOLLOW, a.getPersistenceState());
-        assertEquals(1, a.getPaintingArray().size());
+        assertEquals(1, a.getPaintings().size());
     }
 
     @Test
@@ -229,8 +229,8 @@ public class DataContextInvalidateObjectsIT {
         Painting p1 = context.objectForPK(Painting.class, 33001);
 
         Painting p2 = paints.get(0);
-        Artist a1 = p2.getToArtist();
-        assertSame(a1, p1.getToArtist());
+        Artist a1 = p2.getArtist();
+        assertSame(a1, p1.getArtist());
 
         assertNotNull(context
                 .getChannel().getDataDomain()
@@ -260,10 +260,10 @@ public class DataContextInvalidateObjectsIT {
         assertEquals(PersistenceState.COMMITTED, p1.getPersistenceState());
         assertEquals(PersistenceState.COMMITTED, p2.getPersistenceState());
 
-        assertSame(a1, p1.getToArtist());
-        assertNotSame(a1, p2.getToArtist());
-        assertEquals("c", p1.getToArtist().getArtistName());
-        assertEquals("b", p2.getToArtist().getArtistName());
+        assertSame(a1, p1.getArtist());
+        assertNotSame(a1, p2.getArtist());
+        assertEquals("c", p1.getArtist().getArtistName());
+        assertEquals("b", p2.getArtist().getArtistName());
     }
 
     @Test
@@ -281,8 +281,8 @@ public class DataContextInvalidateObjectsIT {
         Painting p1 = context.objectForPK(Painting.class, 33001);
 
         Painting p2 = (Painting) paints.get(0);
-        Artist a1 = p2.getToArtist();
-        assertSame(a1, p1.getToArtist());
+        Artist a1 = p2.getArtist();
+        assertSame(a1, p1.getArtist());
 
         assertNotNull(context
                 .getChannel().getDataDomain()
@@ -312,10 +312,10 @@ public class DataContextInvalidateObjectsIT {
         assertEquals(PersistenceState.COMMITTED, p1.getPersistenceState());
         assertEquals(PersistenceState.COMMITTED, p2.getPersistenceState());
 
-        assertSame(a1, p1.getToArtist());
-        assertNotSame(a1, p2.getToArtist());
-        assertEquals("c", p1.getToArtist().getArtistName());
-        assertEquals("b", p2.getToArtist().getArtistName());
+        assertSame(a1, p1.getArtist());
+        assertNotSame(a1, p2.getArtist());
+        assertEquals("c", p1.getArtist().getArtistName());
+        assertEquals("b", p2.getArtist().getArtistName());
     }
 
     @Test
@@ -333,8 +333,8 @@ public class DataContextInvalidateObjectsIT {
         Painting p1 = context.objectForPK(Painting.class, 33001);
 
         Painting p2 = paints.get(0);
-        Artist a1 = p2.getToArtist();
-        assertSame(a1, p1.getToArtist());
+        Artist a1 = p2.getArtist();
+        assertSame(a1, p1.getArtist());
 
         assertNotNull(context
                 .getChannel().getDataDomain()
@@ -350,10 +350,10 @@ public class DataContextInvalidateObjectsIT {
 
         // results are served from cache and therefore are not refreshed
         context.select(q);
-        assertSame(a1, p1.getToArtist());
-        assertSame(a1, p2.getToArtist());
-        assertEquals("c", p1.getToArtist().getArtistName());
-        assertEquals("c", p2.getToArtist().getArtistName());
+        assertSame(a1, p1.getArtist());
+        assertSame(a1, p2.getArtist());
+        assertEquals("c", p1.getArtist().getArtistName());
+        assertEquals("c", p2.getArtist().getArtistName());
 
         // this should invalidate results for the next query run
         context.getChannel().getDataDomain().getQueryCache().removeGroup("X");
@@ -364,10 +364,10 @@ public class DataContextInvalidateObjectsIT {
         assertEquals(PersistenceState.COMMITTED, p1.getPersistenceState());
         assertEquals(PersistenceState.COMMITTED, p2.getPersistenceState());
 
-        assertSame(a1, p1.getToArtist());
-        assertNotSame(a1, p2.getToArtist());
-        assertEquals("c", p1.getToArtist().getArtistName());
-        assertEquals("b", p2.getToArtist().getArtistName());
+        assertSame(a1, p1.getArtist());
+        assertNotSame(a1, p2.getArtist());
+        assertEquals("c", p1.getArtist().getArtistName());
+        assertEquals("b", p2.getArtist().getArtistName());
     }
 
     @Test
@@ -379,8 +379,8 @@ public class DataContextInvalidateObjectsIT {
 
         Artist a1 = artists.get(0);
         Artist a2 = artists.get(1);
-        Painting p1 = a1.getPaintingArray().get(0);
-        Painting p2 = a1.getPaintingArray().get(0);
+        Painting p1 = a1.getPaintings().get(0);
+        Painting p2 = a1.getPaintings().get(0);
 
         assertNotNull(context
                 .getChannel().getDataDomain()

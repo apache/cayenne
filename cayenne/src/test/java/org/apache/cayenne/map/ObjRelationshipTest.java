@@ -49,7 +49,7 @@ public class ObjRelationshipTest {
         itemTable.addAttribute(new DbAttribute("MASTER_ID"));
         itemTable.addAttribute(new DbAttribute("MASTER_NAME"));
 
-        addDbRelationship(itemTable, "toMaster", "MASTER", "MASTER_ID", "ID", false).setForeignKey(true);
+        addDbRelationship(itemTable, "master", "MASTER", "MASTER_ID", "ID", false).setForeignKey(true);
         addDbRelationship(masterTable, "items", "ITEM", "ID", "MASTER_ID", true);
 
         // an FK to a non-PK column of the target
@@ -75,14 +75,14 @@ public class ObjRelationshipTest {
         addObjRelationship(twin, "master", "Master", "master");
 
         item = addObjEntity(map, "Item", "ITEM");
-        addObjRelationship(item, "toMaster", "Master", "toMaster");
+        addObjRelationship(item, "master", "Master", "master");
         addObjRelationship(item, "toMasterByName", "Master", "toMasterByName");
-        addObjRelationship(item, "toDetail", "Detail", "toMaster.detail");
+        addObjRelationship(item, "detail", "Detail", "master.detail");
     }
 
     @Test
     public void foreignKey() {
-        assertTrue(item.getRelationship("toMaster").isForeignKey());
+        assertTrue(item.getRelationship("master").isForeignKey());
         assertTrue(detail.getRelationship("master").isForeignKey());
 
         // the flag decides, not the target columns
@@ -91,7 +91,7 @@ public class ObjRelationshipTest {
         // to-many, master to dependent PK and flattened
         assertFalse(master.getRelationship("items").isForeignKey());
         assertFalse(master.getRelationship("detail").isForeignKey());
-        assertFalse(item.getRelationship("toDetail").isForeignKey());
+        assertFalse(item.getRelationship("detail").isForeignKey());
 
         // a PK-to-PK pair with no flag has no FK side
         assertFalse(master.getRelationship("twin").isForeignKey());
@@ -100,7 +100,7 @@ public class ObjRelationshipTest {
 
     @Test
     public void toPrimaryKey() {
-        assertTrue(item.getRelationship("toMaster").isToPrimaryKey());
+        assertTrue(item.getRelationship("master").isToPrimaryKey());
         assertTrue(detail.getRelationship("master").isToPrimaryKey());
 
         // the target columns decide, not the FK flag: both sides of a PK-to-PK one-to-one qualify
@@ -111,7 +111,7 @@ public class ObjRelationshipTest {
         // an FK to a non-PK column, to-many and flattened
         assertFalse(item.getRelationship("toMasterByName").isToPrimaryKey());
         assertFalse(master.getRelationship("items").isToPrimaryKey());
-        assertFalse(item.getRelationship("toDetail").isToPrimaryKey());
+        assertFalse(item.getRelationship("detail").isToPrimaryKey());
     }
 
     private static DbEntity addDbEntity(DataMap map, String name) {

@@ -80,17 +80,17 @@
 		<objAttribute name="key2" type="java.lang.String" dbAttributePath="KEY2"/>
 		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>
 	</objEntity>
-	<dbRelationship name="toCharPK" source="CHAR_FK_TEST" target="CHAR_PK_TEST" foreignKey="true">
+	<dbRelationship name="charPK" source="CHAR_FK_TEST" target="CHAR_PK_TEST" foreignKey="true">
 		<dbAttributePair source="FK_COL" target="PK_COL"/>
 	</dbRelationship>
 	<dbRelationship name="charFKs" source="CHAR_PK_TEST" target="CHAR_FK_TEST" toMany="true">
 		<dbAttributePair source="PK_COL" target="FK_COL"/>
 	</dbRelationship>
-	<dbRelationship name="toCompoundPk" source="COMPOUND_FK_TEST" target="COMPOUND_PK_TEST" foreignKey="true">
+	<dbRelationship name="compoundPk" source="COMPOUND_FK_TEST" target="COMPOUND_PK_TEST" foreignKey="true">
 		<dbAttributePair source="F_KEY1" target="KEY1"/>
 		<dbAttributePair source="F_KEY2" target="KEY2"/>
 	</dbRelationship>
-	<dbRelationship name="compoundFkArray" source="COMPOUND_PK_TEST" target="COMPOUND_FK_TEST" toMany="true">
+	<dbRelationship name="compoundFks" source="COMPOUND_PK_TEST" target="COMPOUND_FK_TEST" toMany="true">
 		<dbAttributePair source="KEY1" target="F_KEY1"/>
 		<dbAttributePair source="KEY2" target="F_KEY2"/>
 	</dbRelationship>
@@ -108,10 +108,10 @@
 		<dbAttributePair source="order_number" target="order_number"/>
 		<dbAttributePair source="order_line_number" target="order_line_number"/>
 	</dbRelationship>
-	<dbRelationship name="toA1" source="TWO_FK_B" target="TWO_FK_A" foreignKey="true">
+	<dbRelationship name="a1" source="TWO_FK_B" target="TWO_FK_A" foreignKey="true">
 		<dbAttributePair source="A_ID1" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="toA2" source="TWO_FK_B" target="TWO_FK_A" foreignKey="true">
+	<dbRelationship name="a2" source="TWO_FK_B" target="TWO_FK_A" foreignKey="true">
 		<dbAttributePair source="A_ID2" target="ID"/>
 	</dbRelationship>
 	<dbRelationship name="bs1" source="TWO_FK_A" target="TWO_FK_B" toMany="true">
@@ -120,12 +120,12 @@
 	<dbRelationship name="bs2" source="TWO_FK_A" target="TWO_FK_B" toMany="true">
 		<dbAttributePair source="ID" target="A_ID2"/>
 	</dbRelationship>
-	<objRelationship name="toCharPK" source="CharFkTestEntity" target="CharPkTestEntity" dbRelationshipPath="toCharPK"/>
+	<objRelationship name="charPK" source="CharFkTestEntity" target="CharPkTestEntity" dbRelationshipPath="charPK"/>
 	<objRelationship name="charFKs" source="CharPkTestEntity" target="CharFkTestEntity" dbRelationshipPath="charFKs"/>
-	<objRelationship name="toCompoundPk" source="CompoundFkTestEntity" target="CompoundPkTestEntity" dbRelationshipPath="toCompoundPk"/>
+	<objRelationship name="compoundPk" source="CompoundFkTestEntity" target="CompoundPkTestEntity" dbRelationshipPath="compoundPk"/>
 	<objRelationship name="lines" source="CompoundOrder" target="CompoundOrderLine" deleteRule="deny" dbRelationshipPath="lines"/>
 	<objRelationship name="info" source="CompoundOrderLine" target="CompoundOrderLineInfo" deleteRule="nullify" dbRelationshipPath="info"/>
 	<objRelationship name="order" source="CompoundOrderLine" target="CompoundOrder" deleteRule="nullify" dbRelationshipPath="order"/>
 	<objRelationship name="line" source="CompoundOrderLineInfo" target="CompoundOrderLine" deleteRule="nullify" dbRelationshipPath="line"/>
-	<objRelationship name="compoundFkArray" source="CompoundPkTestEntity" target="CompoundFkTestEntity" dbRelationshipPath="compoundFkArray"/>
+	<objRelationship name="compoundFks" source="CompoundPkTestEntity" target="CompoundFkTestEntity" dbRelationshipPath="compoundFks"/>
 </dataMap>

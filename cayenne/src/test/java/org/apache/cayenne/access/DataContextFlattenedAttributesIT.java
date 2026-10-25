@@ -131,7 +131,7 @@ public class DataContextFlattenedAttributesIT {
                     "painting" + id,
                     painting.getPaintingTitle(),
                     "CompoundPainting.getPaintingTitle(): " + painting.getPaintingTitle());
-            if (painting.getToPaintingInfo() == null) {
+            if (painting.getPaintingInfo() == null) {
                 assertNull(painting.getTextReview());
             } else {
                 assertEquals(
@@ -140,14 +140,14 @@ public class DataContextFlattenedAttributesIT {
                         "CompoundPainting.getTextReview(): " + painting.getTextReview());
             }
             assertEquals(
-                    painting.getToArtist().getArtistName(),
+                    painting.getArtist().getArtistName(),
                     painting.getArtistName(),
                     "CompoundPainting.getArtistName(): " + painting.getArtistName());
-            if (painting.getToGallery() == null) {
+            if (painting.getGallery() == null) {
                 assertNull(painting.getGalleryName());
             } else {
                 assertEquals(
-                        painting.getToGallery().getGalleryName(),
+                        painting.getGallery().getGalleryName(),
                         painting.getGalleryName(),
                         "CompoundPainting.getGalleryName(): " + painting.getGalleryName());
             }
@@ -177,7 +177,7 @@ public class DataContextFlattenedAttributesIT {
                     painting.getArtistName(),
                     "CompoundPainting.getArtistName(): " + painting.getArtistName());
             assertEquals(
-                    painting.getToGallery().getGalleryName(),
+                    painting.getGallery().getGalleryName(),
                     painting.getGalleryName(),
                     "CompoundPainting.getGalleryName(): " + painting.getGalleryName());
         }
@@ -378,8 +378,8 @@ public class DataContextFlattenedAttributesIT {
         // Should now only have one painting by artist2
         assertEquals(1, objects.size(), "Painting");
         // and that painting should have a valid gallery
-        assertNotNull(objects.get(0).getToGallery(), "Gallery is null");
-        assertNotNull(objects.get(0).getToGallery().getGalleryName(), "GalleryName is null");
+        assertNotNull(objects.get(0).getGallery(), "Gallery is null");
+        assertNotNull(objects.get(0).getGallery().getGalleryName(), "GalleryName is null");
         
         // There should be one less painting info now
         infoCount = ObjectSelect.query(PaintingInfo.class).selectCount(context);

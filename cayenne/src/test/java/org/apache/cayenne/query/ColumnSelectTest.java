@@ -98,8 +98,8 @@ public class ColumnSelectTest {
 
     @Test
     public void queryMinWithProperty() {
-        ColumnSelect<BigDecimal> q = ObjectSelect.query(Artist.class).min(Artist.PAINTING_ARRAY.dot(Painting.ESTIMATED_PRICE));
-        assertEquals(Collections.singletonList(Artist.PAINTING_ARRAY.dot(Painting.ESTIMATED_PRICE).min()), q.getColumns());
+        ColumnSelect<BigDecimal> q = ObjectSelect.query(Artist.class).min(Artist.PAINTINGS.dot(Painting.ESTIMATED_PRICE));
+        assertEquals(Collections.singletonList(Artist.PAINTINGS.dot(Painting.ESTIMATED_PRICE).min()), q.getColumns());
         assertNull(q.getHaving());
         assertNull(q.getWhere());
     }
@@ -108,13 +108,13 @@ public class ColumnSelectTest {
     public void columns() {
         ColumnSelect<?> q = new ColumnSelect<>();
         assertNull(q.getColumns());
-        q.columns(Artist.ARTIST_NAME, Artist.PAINTING_ARRAY);
-        assertEquals(Arrays.asList(Artist.ARTIST_NAME, Artist.PAINTING_ARRAY), q.getColumns());
+        q.columns(Artist.ARTIST_NAME, Artist.PAINTINGS);
+        assertEquals(Arrays.asList(Artist.ARTIST_NAME, Artist.PAINTINGS), q.getColumns());
 
         q = ObjectSelect.columnQuery(Artist.class, Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH);
         assertEquals(Arrays.asList(Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH), q.getColumns());
-        q.columns(Artist.PAINTING_ARRAY);
-        assertEquals(Arrays.asList(Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH, Artist.PAINTING_ARRAY), q.getColumns());
+        q.columns(Artist.PAINTINGS);
+        assertEquals(Arrays.asList(Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH, Artist.PAINTINGS), q.getColumns());
     }
 
     @Test
@@ -197,9 +197,9 @@ public class ColumnSelectTest {
 
         q.columns(Artist.ARTIST_NAME);
         q.columns(Artist.DATE_OF_BIRTH);
-        q.columns(Artist.PAINTING_ARRAY);
+        q.columns(Artist.PAINTINGS);
 
-        Collection<Property<?>> properties = Arrays.asList(Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH, Artist.PAINTING_ARRAY);
+        Collection<Property<?>> properties = Arrays.asList(Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH, Artist.PAINTINGS);
         assertEquals(properties, q.getColumns());
     }
 
@@ -209,12 +209,12 @@ public class ColumnSelectTest {
 
         assertNull(q.getColumns());
 
-        q.columns(Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH, Artist.PAINTING_ARRAY);
-        q.columns(Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH, Artist.PAINTING_ARRAY);
+        q.columns(Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH, Artist.PAINTINGS);
+        q.columns(Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH, Artist.PAINTINGS);
 
         Collection<Property<?>> properties = Arrays.asList(
-                Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH, Artist.PAINTING_ARRAY,
-                Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH, Artist.PAINTING_ARRAY); // should it be Set instead of List?
+                Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH, Artist.PAINTINGS,
+                Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH, Artist.PAINTINGS); // should it be Set instead of List?
         assertEquals(properties, q.getColumns());
     }
 
@@ -226,7 +226,7 @@ public class ColumnSelectTest {
 
         q.column(Artist.ARTIST_NAME);
         q.column(Artist.DATE_OF_BIRTH);
-        Property<Painting> paintings = Artist.PAINTING_ARRAY.flat();
+        Property<Painting> paintings = Artist.PAINTINGS.flat();
         q.column(paintings);
 
         Collection<Property<?>> properties = Collections.singletonList(paintings);

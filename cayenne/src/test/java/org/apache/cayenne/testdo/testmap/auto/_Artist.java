@@ -34,18 +34,18 @@ public abstract class _Artist extends PersistentObject {
 
     public static final StringProperty<String> ARTIST_NAME = PropertyFactory.createString("artistName", String.class);
     public static final DateProperty<Date> DATE_OF_BIRTH = PropertyFactory.createDate("dateOfBirth", Date.class);
-    public static final ListProperty<ArtistExhibit> ARTIST_EXHIBIT_ARRAY = PropertyFactory.createList("artistExhibitArray", ArtistExhibit.class);
-    public static final ListProperty<Award> AWARD_ARRAY = PropertyFactory.createList("awardArray", Award.class);
-    public static final ListProperty<ArtGroup> GROUP_ARRAY = PropertyFactory.createList("groupArray", ArtGroup.class);
-    public static final ListProperty<Painting> PAINTING_ARRAY = PropertyFactory.createList("paintingArray", Painting.class);
+    public static final ListProperty<ArtistExhibit> ARTIST_EXHIBITS = PropertyFactory.createList("artistExhibits", ArtistExhibit.class);
+    public static final ListProperty<Award> AWARDS = PropertyFactory.createList("awards", Award.class);
+    public static final ListProperty<ArtGroup> GROUPS = PropertyFactory.createList("groups", ArtGroup.class);
+    public static final ListProperty<Painting> PAINTINGS = PropertyFactory.createList("paintings", Painting.class);
 
     protected String artistName;
     protected Date dateOfBirth;
 
-    protected Object artistExhibitArray;
-    protected Object awardArray;
-    protected Object groupArray;
-    protected Object paintingArray;
+    protected Object artistExhibits;
+    protected Object awards;
+    protected Object groups;
+    protected Object paintings;
 
     public void setArtistName(String artistName) {
         beforePropertyWrite("artistName", this.artistName, artistName);
@@ -67,56 +67,56 @@ public abstract class _Artist extends PersistentObject {
         return this.dateOfBirth;
     }
 
-    public void addToArtistExhibitArray(ArtistExhibit obj) {
-        addToManyTarget("artistExhibitArray", obj, true);
+    public void addToArtistExhibits(ArtistExhibit obj) {
+        addToManyTarget("artistExhibits", obj, true);
     }
 
-    public void removeFromArtistExhibitArray(ArtistExhibit obj) {
-        removeToManyTarget("artistExhibitArray", obj, true);
-    }
-
-    @SuppressWarnings("unchecked")
-    public List<ArtistExhibit> getArtistExhibitArray() {
-        return (List<ArtistExhibit>)readProperty("artistExhibitArray");
-    }
-
-    public void addToAwardArray(Award obj) {
-        addToManyTarget("awardArray", obj, true);
-    }
-
-    public void removeFromAwardArray(Award obj) {
-        removeToManyTarget("awardArray", obj, true);
+    public void removeFromArtistExhibits(ArtistExhibit obj) {
+        removeToManyTarget("artistExhibits", obj, true);
     }
 
     @SuppressWarnings("unchecked")
-    public List<Award> getAwardArray() {
-        return (List<Award>)readProperty("awardArray");
+    public List<ArtistExhibit> getArtistExhibits() {
+        return (List<ArtistExhibit>)readProperty("artistExhibits");
     }
 
-    public void addToGroupArray(ArtGroup obj) {
-        addToManyTarget("groupArray", obj, true);
+    public void addToAwards(Award obj) {
+        addToManyTarget("awards", obj, true);
     }
 
-    public void removeFromGroupArray(ArtGroup obj) {
-        removeToManyTarget("groupArray", obj, true);
-    }
-
-    @SuppressWarnings("unchecked")
-    public List<ArtGroup> getGroupArray() {
-        return (List<ArtGroup>)readProperty("groupArray");
-    }
-
-    public void addToPaintingArray(Painting obj) {
-        addToManyTarget("paintingArray", obj, true);
-    }
-
-    public void removeFromPaintingArray(Painting obj) {
-        removeToManyTarget("paintingArray", obj, true);
+    public void removeFromAwards(Award obj) {
+        removeToManyTarget("awards", obj, true);
     }
 
     @SuppressWarnings("unchecked")
-    public List<Painting> getPaintingArray() {
-        return (List<Painting>)readProperty("paintingArray");
+    public List<Award> getAwards() {
+        return (List<Award>)readProperty("awards");
+    }
+
+    public void addToGroups(ArtGroup obj) {
+        addToManyTarget("groups", obj, true);
+    }
+
+    public void removeFromGroups(ArtGroup obj) {
+        removeToManyTarget("groups", obj, true);
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<ArtGroup> getGroups() {
+        return (List<ArtGroup>)readProperty("groups");
+    }
+
+    public void addToPaintings(Painting obj) {
+        addToManyTarget("paintings", obj, true);
+    }
+
+    public void removeFromPaintings(Painting obj) {
+        removeToManyTarget("paintings", obj, true);
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<Painting> getPaintings() {
+        return (List<Painting>)readProperty("paintings");
     }
 
     @Override
@@ -130,14 +130,14 @@ public abstract class _Artist extends PersistentObject {
                 return this.artistName;
             case "dateOfBirth":
                 return this.dateOfBirth;
-            case "artistExhibitArray":
-                return this.artistExhibitArray;
-            case "awardArray":
-                return this.awardArray;
-            case "groupArray":
-                return this.groupArray;
-            case "paintingArray":
-                return this.paintingArray;
+            case "artistExhibits":
+                return this.artistExhibits;
+            case "awards":
+                return this.awards;
+            case "groups":
+                return this.groups;
+            case "paintings":
+                return this.paintings;
             default:
                 return super.readPropertyDirectly(propName);
         }
@@ -156,17 +156,17 @@ public abstract class _Artist extends PersistentObject {
             case "dateOfBirth":
                 this.dateOfBirth = (Date)val;
                 break;
-            case "artistExhibitArray":
-                this.artistExhibitArray = val;
+            case "artistExhibits":
+                this.artistExhibits = val;
                 break;
-            case "awardArray":
-                this.awardArray = val;
+            case "awards":
+                this.awards = val;
                 break;
-            case "groupArray":
-                this.groupArray = val;
+            case "groups":
+                this.groups = val;
                 break;
-            case "paintingArray":
-                this.paintingArray = val;
+            case "paintings":
+                this.paintings = val;
                 break;
             default:
                 super.writePropertyDirectly(propName, val);

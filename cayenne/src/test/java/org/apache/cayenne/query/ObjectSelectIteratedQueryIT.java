@@ -80,7 +80,7 @@ public class ObjectSelectIteratedQueryIT {
     public void prefetchWithBatchIterator() {
         try (ResultBatchIterator<Painting> iterator = ObjectSelect
                 .query(Painting.class)
-                .prefetch(Painting.TO_ARTIST.joint())
+                .prefetch(Painting.ARTIST.joint())
                 .orderBy(Painting.PAINTING_ID_PK_PROPERTY.asc())
                 .batchIterator(context, 10)) {
             int count = 0;
@@ -90,7 +90,7 @@ public class ObjectSelectIteratedQueryIT {
                 for (Painting painting : paintings) {
                     //noinspection ConstantConditions
                     assertTrue(painting instanceof Painting);
-                    assertEquals("Test1", painting.getToArtist().readPropertyDirectly("artistName"));
+                    assertEquals("Test1", painting.getArtist().readPropertyDirectly("artistName"));
                 }
             }
             assertEquals(2, count);
@@ -101,7 +101,7 @@ public class ObjectSelectIteratedQueryIT {
     public void queryPrefetchJointWithIterator() {
         try (ResultIterator<Painting> iterator = ObjectSelect
                 .query(Painting.class)
-                .prefetch(Painting.TO_ARTIST.joint())
+                .prefetch(Painting.ARTIST.joint())
                 .orderBy(Painting.PAINTING_ID_PK_PROPERTY.asc())
                 .iterator(context)) {
             int count = 0;
@@ -110,7 +110,7 @@ public class ObjectSelectIteratedQueryIT {
                 Painting painting = iterator.nextRow();
                 //noinspection ConstantConditions
                 assertTrue(painting instanceof Painting);
-                assertEquals("Test1", painting.getToArtist().readPropertyDirectly("artistName"));
+                assertEquals("Test1", painting.getArtist().readPropertyDirectly("artistName"));
             }
             assertEquals(20, count);
         }
@@ -121,7 +121,7 @@ public class ObjectSelectIteratedQueryIT {
         assertThrows(CayenneRuntimeException.class, () -> {
             try (ResultIterator<Painting> iterator = ObjectSelect
                     .query(Painting.class)
-                    .prefetch(Painting.TO_ARTIST.disjoint())
+                    .prefetch(Painting.ARTIST.disjoint())
                     .iterator(context)) {
                 iterator.nextRow();
             }
@@ -133,7 +133,7 @@ public class ObjectSelectIteratedQueryIT {
         assertThrows(CayenneRuntimeException.class, () -> {
             try (ResultBatchIterator<Painting> iterator = ObjectSelect
                     .query(Painting.class)
-                    .prefetch(Painting.TO_ARTIST.disjoint())
+                    .prefetch(Painting.ARTIST.disjoint())
                     .batchIterator(context, 3)) {
                 iterator.next();
             }
@@ -157,7 +157,7 @@ public class ObjectSelectIteratedQueryIT {
     public void queryPrefetchDisjointByIdWithBIterator() {
         try (ResultIterator<Painting> iterator = ObjectSelect
                 .query(Painting.class)
-                .prefetch(Painting.TO_ARTIST.disjointById())
+                .prefetch(Painting.ARTIST.disjointById())
                 .orderBy(Painting.PAINTING_ID_PK_PROPERTY.asc())
                 .iterator(context)) {
             int count = 0;
@@ -166,7 +166,7 @@ public class ObjectSelectIteratedQueryIT {
                 Painting painting = iterator.nextRow();
                 //noinspection ConstantConditions
                 assertTrue(painting instanceof Painting);
-                assertEquals("Test1", painting.getToArtist().readPropertyDirectly("artistName"));
+                assertEquals("Test1", painting.getArtist().readPropertyDirectly("artistName"));
             }
             assertEquals(20, count);
         }
@@ -176,7 +176,7 @@ public class ObjectSelectIteratedQueryIT {
     public void queryPrefetchJointWithBatchIterator() {
         try (ResultBatchIterator<Painting> iterator = ObjectSelect
                 .query(Painting.class, "Painting")
-                .prefetch(Painting.TO_ARTIST.joint())
+                .prefetch(Painting.ARTIST.joint())
                 .orderBy(Painting.PAINTING_ID_PK_PROPERTY.asc())
                 .batchIterator(context, 5)) {
             int count = 0;
@@ -187,7 +187,7 @@ public class ObjectSelectIteratedQueryIT {
                 for (Painting painting : paintingList) {
                     paintingCounter++;
                     assertEquals("painting" + paintingCounter, painting.getPaintingTitle());
-                    assertEquals("Test1", painting.getToArtist().readPropertyDirectly("artistName"));
+                    assertEquals("Test1", painting.getArtist().readPropertyDirectly("artistName"));
                 }
             }
             assertEquals(4, count);
@@ -198,7 +198,7 @@ public class ObjectSelectIteratedQueryIT {
     public void QueryWithIterator() {
         try (ResultIterator<Painting> iterator = ObjectSelect
                 .query(Painting.class, "Painting")
-                .prefetch(Painting.TO_ARTIST.joint())
+                .prefetch(Painting.ARTIST.joint())
                 .orderBy(Painting.PAINTING_ID_PK_PROPERTY.asc())
                 .iterator(context)) {
             int count = 0;
@@ -208,7 +208,7 @@ public class ObjectSelectIteratedQueryIT {
                 Painting painting = iterator.nextRow();
                 paintingCounter++;
                 assertEquals("painting" + paintingCounter, painting.getPaintingTitle());
-                assertEquals("Test1", painting.getToArtist().readPropertyDirectly("artistName"));
+                assertEquals("Test1", painting.getArtist().readPropertyDirectly("artistName"));
             }
             assertEquals(20, count);
         }

@@ -60,7 +60,7 @@
 	<objEntity name="PersonNotes" className="org.apache.cayenne.testdo.inheritance_people.PersonNotes" dbEntityName="PERSON_NOTES">
 		<objAttribute name="notes" type="java.lang.String" dbAttributePath="NOTES"/>
 	</objEntity>
-	<dbRelationship name="toPerson" source="ADDRESS" target="PERSON" foreignKey="true">
+	<dbRelationship name="person" source="ADDRESS" target="PERSON" foreignKey="true">
 		<dbAttributePair source="PERSON_ID" target="PERSON_ID"/>
 	</dbRelationship>
 	<dbRelationship name="representatives" source="CLIENT_COMPANY" target="PERSON" toMany="true">
@@ -69,7 +69,7 @@
 	<dbRelationship name="employees" source="DEPARTMENT" target="PERSON" toMany="true">
 		<dbAttributePair source="DEPARTMENT_ID" target="DEPARTMENT_ID"/>
 	</dbRelationship>
-	<dbRelationship name="toManager" source="DEPARTMENT" target="PERSON" foreignKey="true">
+	<dbRelationship name="manager" source="DEPARTMENT" target="PERSON" foreignKey="true">
 		<dbAttributePair source="MANAGER_ID" target="PERSON_ID"/>
 	</dbRelationship>
 	<dbRelationship name="employeeAddresses" source="PERSON" target="ADDRESS" toMany="true">
@@ -81,23 +81,23 @@
 	<dbRelationship name="notes" source="PERSON" target="PERSON_NOTES" toMany="true">
 		<dbAttributePair source="PERSON_ID" target="PERSON_ID"/>
 	</dbRelationship>
-	<dbRelationship name="toClientCompany" source="PERSON" target="CLIENT_COMPANY" foreignKey="true">
+	<dbRelationship name="clientCompany" source="PERSON" target="CLIENT_COMPANY" foreignKey="true">
 		<dbAttributePair source="CLIENT_COMPANY_ID" target="CLIENT_COMPANY_ID"/>
 	</dbRelationship>
-	<dbRelationship name="toDepartment" source="PERSON" target="DEPARTMENT" foreignKey="true">
+	<dbRelationship name="department" source="PERSON" target="DEPARTMENT" foreignKey="true">
 		<dbAttributePair source="DEPARTMENT_ID" target="DEPARTMENT_ID"/>
 	</dbRelationship>
 	<dbRelationship name="person" source="PERSON_NOTES" target="PERSON" foreignKey="true">
 		<dbAttributePair source="PERSON_ID" target="PERSON_ID"/>
 	</dbRelationship>
 	<objRelationship name="notes" source="AbstractPerson" target="PersonNotes" deleteRule="nullify" dbRelationshipPath="notes"/>
-	<objRelationship name="toEmployee" source="Address" target="Employee" dbRelationshipPath="toPerson"/>
+	<objRelationship name="employee" source="Address" target="Employee" dbRelationshipPath="person"/>
 	<objRelationship name="representatives" source="ClientCompany" target="CustomerRepresentative" dbRelationshipPath="representatives"/>
-	<objRelationship name="toClientCompany" source="CustomerRepresentative" target="ClientCompany" dbRelationshipPath="toClientCompany"/>
+	<objRelationship name="clientCompany" source="CustomerRepresentative" target="ClientCompany" dbRelationshipPath="clientCompany"/>
 	<objRelationship name="employees" source="Department" target="Employee" dbRelationshipPath="employees"/>
-	<objRelationship name="toManager" source="Department" target="Manager" dbRelationshipPath="toManager"/>
+	<objRelationship name="manager" source="Department" target="Manager" dbRelationshipPath="manager"/>
 	<objRelationship name="addresses" source="Employee" target="Address" dbRelationshipPath="employeeAddresses"/>
-	<objRelationship name="toDepartment" source="Employee" target="Department" dbRelationshipPath="toDepartment"/>
+	<objRelationship name="department" source="Employee" target="Department" dbRelationshipPath="department"/>
 	<objRelationship name="managedDepartments" source="Manager" target="Department" dbRelationshipPath="managedDepartments"/>
 	<objRelationship name="person" source="PersonNotes" target="AbstractPerson" deleteRule="nullify" dbRelationshipPath="person"/>
 </dataMap>

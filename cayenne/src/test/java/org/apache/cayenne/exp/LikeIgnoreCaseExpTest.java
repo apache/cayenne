@@ -52,25 +52,25 @@ public class LikeIgnoreCaseExpTest {
 
 	@Test
 	public void evaluateWithCollection() {
-		Expression like = new LikeIgnoreCaseExp(ExpressionFactory.pathExp("paintingArray.paintingTitle"), "aBcD");
-		Expression notLike = new NotLikeIgnoreCaseExp(ExpressionFactory.pathExp("paintingArray.paintingTitle"), "aBcD");
+		Expression like = new LikeIgnoreCaseExp(ExpressionFactory.pathExp("paintings.paintingTitle"), "aBcD");
+		Expression notLike = new NotLikeIgnoreCaseExp(ExpressionFactory.pathExp("paintings.paintingTitle"), "aBcD");
 
 		Artist noMatch1 = new Artist();
-		noMatch1.writePropertyDirectly("paintingArray",
+		noMatch1.writePropertyDirectly("paintings",
 				Arrays.asList(createPainting("xyz"), createPainting("abc")));
 
 		assertFalse(like.match(noMatch1), "Failed: " + like);
 		assertTrue(notLike.match(noMatch1), "Failed: " + like);
 
 		Artist match1 = new Artist();
-		match1.writePropertyDirectly("paintingArray",
+		match1.writePropertyDirectly("paintings",
 				Arrays.asList(createPainting("AbCd"), createPainting("abcd")));
 
 		assertTrue(like.match(match1), "Failed: " + like);
 		assertFalse(notLike.match(match1), "Failed: " + like);
 
 		Artist match2 = new Artist();
-		match2.writePropertyDirectly("paintingArray",
+		match2.writePropertyDirectly("paintings",
 				Arrays.asList(createPainting("Xzy"), createPainting("abcd")));
 
 		assertTrue(like.match(match2), "Failed: " + like);

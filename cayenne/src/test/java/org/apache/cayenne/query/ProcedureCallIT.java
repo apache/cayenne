@@ -64,11 +64,11 @@ public class ProcedureCallIT {
         runProcedureCall(ProcedureCall.query(UPDATE_STORED_PROCEDURE).param("paintingPrice", 3000));
 
         // check that price have doubled
-        List<Artist> artists = ObjectSelect.query(Artist.class).prefetch(Artist.PAINTING_ARRAY.disjoint()).select(env.context());
+        List<Artist> artists = ObjectSelect.query(Artist.class).prefetch(Artist.PAINTINGS.disjoint()).select(env.context());
         assertEquals(1, artists.size());
 
         Artist a = artists.get(0);
-        Painting p = a.getPaintingArray().get(0);
+        Painting p = a.getPaintings().get(0);
         assertEquals(2000, p.getEstimatedPrice().intValue());
     }
 
@@ -84,11 +84,11 @@ public class ProcedureCallIT {
         runProcedureCall(ProcedureCall.query(UPDATE_STORED_PROCEDURE_NOPARAM));
 
         // check that price have doubled
-        List<Artist> artists = ObjectSelect.query(Artist.class).prefetch(Artist.PAINTING_ARRAY.disjoint()).select(env.context());
+        List<Artist> artists = ObjectSelect.query(Artist.class).prefetch(Artist.PAINTINGS.disjoint()).select(env.context());
         assertEquals(1, artists.size());
 
         Artist a = artists.get(0);
-        Painting p = a.getPaintingArray().get(0);
+        Painting p = a.getPaintings().get(0);
         assertEquals(2000, p.getEstimatedPrice().intValue());
     }
 
@@ -112,7 +112,7 @@ public class ProcedureCallIT {
         assertEquals(1, artists.size());
         DataRow artistRow = (DataRow) artists.get(0);
         Artist a = env.context().objectFromDataRow(Artist.class, uppercaseConverter(artistRow));
-        Painting p = a.getPaintingArray().get(0);
+        Painting p = a.getPaintings().get(0);
 
         // invalidate painting, it may have been updated in the proc
         env.context().invalidateObjects(p);
@@ -254,7 +254,7 @@ public class ProcedureCallIT {
         assertNotNull(artists, "Null result from StoredProcedure.");
         assertEquals(1, artists.size());
         Artist a = artists.get(0);
-        Painting p = a.getPaintingArray().get(0);
+        Painting p = a.getPaintings().get(0);
 
         // invalidate painting, it may have been updated in the proc
         env.context().invalidateObjects(p);
@@ -336,7 +336,7 @@ public class ProcedureCallIT {
         p.setPaintingTitle("A Painting");
         // converting double to string prevents rounding weirdness...
         p.setEstimatedPrice(new BigDecimal("" + paintingPrice));
-        a.addToPaintingArray(p);
+        a.addToPaintings(p);
 
         env.context().commitChanges();
     }

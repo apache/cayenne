@@ -24,37 +24,37 @@ public abstract class _DeleteRuleTest2 extends PersistentObject {
     public static final NumericIdProperty<Integer> DEL_RULE_TEST2_ID_PK_PROPERTY = PropertyFactory.createNumericId("DEL_RULE_TEST2_ID", "DeleteRuleTest2", Integer.class);
     public static final String DEL_RULE_TEST2_ID_PK_COLUMN = "DEL_RULE_TEST2_ID";
 
-    public static final ListProperty<DeleteRuleTest3> DELETE_RULE_TEST3ARRAY = PropertyFactory.createList("deleteRuleTest3Array", DeleteRuleTest3.class);
-    public static final ListProperty<DeleteRuleTest1> TEST1ARRAY = PropertyFactory.createList("test1Array", DeleteRuleTest1.class);
+    public static final ListProperty<DeleteRuleTest3> DELETE_RULE_TEST3S = PropertyFactory.createList("deleteRuleTest3s", DeleteRuleTest3.class);
+    public static final ListProperty<DeleteRuleTest1> TEST1S = PropertyFactory.createList("test1s", DeleteRuleTest1.class);
 
 
-    protected Object deleteRuleTest3Array;
-    protected Object test1Array;
+    protected Object deleteRuleTest3s;
+    protected Object test1s;
 
-    public void addToDeleteRuleTest3Array(DeleteRuleTest3 obj) {
-        addToManyTarget("deleteRuleTest3Array", obj, true);
+    public void addToDeleteRuleTest3s(DeleteRuleTest3 obj) {
+        addToManyTarget("deleteRuleTest3s", obj, true);
     }
 
-    public void removeFromDeleteRuleTest3Array(DeleteRuleTest3 obj) {
-        removeToManyTarget("deleteRuleTest3Array", obj, true);
-    }
-
-    @SuppressWarnings("unchecked")
-    public List<DeleteRuleTest3> getDeleteRuleTest3Array() {
-        return (List<DeleteRuleTest3>)readProperty("deleteRuleTest3Array");
-    }
-
-    public void addToTest1Array(DeleteRuleTest1 obj) {
-        addToManyTarget("test1Array", obj, true);
-    }
-
-    public void removeFromTest1Array(DeleteRuleTest1 obj) {
-        removeToManyTarget("test1Array", obj, true);
+    public void removeFromDeleteRuleTest3s(DeleteRuleTest3 obj) {
+        removeToManyTarget("deleteRuleTest3s", obj, true);
     }
 
     @SuppressWarnings("unchecked")
-    public List<DeleteRuleTest1> getTest1Array() {
-        return (List<DeleteRuleTest1>)readProperty("test1Array");
+    public List<DeleteRuleTest3> getDeleteRuleTest3s() {
+        return (List<DeleteRuleTest3>)readProperty("deleteRuleTest3s");
+    }
+
+    public void addToTest1s(DeleteRuleTest1 obj) {
+        addToManyTarget("test1s", obj, true);
+    }
+
+    public void removeFromTest1s(DeleteRuleTest1 obj) {
+        removeToManyTarget("test1s", obj, true);
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<DeleteRuleTest1> getTest1s() {
+        return (List<DeleteRuleTest1>)readProperty("test1s");
     }
 
     @Override
@@ -64,10 +64,10 @@ public abstract class _DeleteRuleTest2 extends PersistentObject {
         }
 
         switch(propName) {
-            case "deleteRuleTest3Array":
-                return this.deleteRuleTest3Array;
-            case "test1Array":
-                return this.test1Array;
+            case "deleteRuleTest3s":
+                return this.deleteRuleTest3s;
+            case "test1s":
+                return this.test1s;
             default:
                 return super.readPropertyDirectly(propName);
         }
@@ -80,11 +80,11 @@ public abstract class _DeleteRuleTest2 extends PersistentObject {
         }
 
         switch (propName) {
-            case "deleteRuleTest3Array":
-                this.deleteRuleTest3Array = val;
+            case "deleteRuleTest3s":
+                this.deleteRuleTest3s = val;
                 break;
-            case "test1Array":
-                this.test1Array = val;
+            case "test1s":
+                this.test1s = val;
                 break;
             default:
                 super.writePropertyDirectly(propName, val);

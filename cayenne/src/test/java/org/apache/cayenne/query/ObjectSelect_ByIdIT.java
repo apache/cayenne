@@ -278,16 +278,16 @@ public class ObjectSelect_ByIdIT {
         tPainting.insert(48, 3, "Two");
 
         Artist a3 = ObjectSelect.query(Artist.class).where(Artist.SELF.eqId(3))
-                .prefetch(Artist.PAINTING_ARRAY.joint())
+                .prefetch(Artist.PAINTINGS.joint())
                 .selectOne(env.context());
 
         env.runWithQueriesBlocked(() -> {
             assertNotNull(a3);
             assertEquals("artist3", a3.getArtistName());
-            assertEquals(2, a3.getPaintingArray().size());
+            assertEquals(2, a3.getPaintings().size());
 
-            a3.getPaintingArray().get(0).getPaintingTitle();
-            a3.getPaintingArray().get(1).getPaintingTitle();
+            a3.getPaintings().get(0).getPaintingTitle();
+            a3.getPaintings().get(1).getPaintingTitle();
         });
     }
 
@@ -303,12 +303,12 @@ public class ObjectSelect_ByIdIT {
         tPainting.insert(48, 3, "Two");
 
         Artist a3 = ObjectSelect.query(Artist.class).where(Artist.SELF.eqId(3))
-                .prefetch(Artist.PAINTING_ARRAY.disjoint())
+                .prefetch(Artist.PAINTINGS.disjoint())
                 .selectOne(env.context());
 
         env.runWithQueriesBlocked(() -> {
             assertNotNull(a3);
-            assertEquals(2, a3.getPaintingArray().size());
+            assertEquals(2, a3.getPaintings().size());
         });
     }
 

@@ -27,11 +27,11 @@ public abstract class _GeneratedColumnCompKey extends PersistentObject {
     public static final String PROPAGATED_PK_PK_COLUMN = "PROPAGATED_PK";
 
     public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);
-    public static final EntityProperty<GeneratedColumnCompMaster> TO_MASTER = PropertyFactory.createEntity("toMaster", GeneratedColumnCompMaster.class);
+    public static final EntityProperty<GeneratedColumnCompMaster> MASTER = PropertyFactory.createEntity("master", GeneratedColumnCompMaster.class);
 
     protected String name;
 
-    protected Object toMaster;
+    protected Object master;
 
     public void setName(String name) {
         beforePropertyWrite("name", this.name, name);
@@ -43,12 +43,12 @@ public abstract class _GeneratedColumnCompKey extends PersistentObject {
         return this.name;
     }
 
-    public void setToMaster(GeneratedColumnCompMaster toMaster) {
-        setToOneTarget("toMaster", toMaster, true);
+    public void setMaster(GeneratedColumnCompMaster master) {
+        setToOneTarget("master", master, true);
     }
 
-    public GeneratedColumnCompMaster getToMaster() {
-        return (GeneratedColumnCompMaster)readProperty("toMaster");
+    public GeneratedColumnCompMaster getMaster() {
+        return (GeneratedColumnCompMaster)readProperty("master");
     }
 
     @Override
@@ -60,8 +60,8 @@ public abstract class _GeneratedColumnCompKey extends PersistentObject {
         switch(propName) {
             case "name":
                 return this.name;
-            case "toMaster":
-                return this.toMaster;
+            case "master":
+                return this.master;
             default:
                 return super.readPropertyDirectly(propName);
         }
@@ -77,8 +77,8 @@ public abstract class _GeneratedColumnCompKey extends PersistentObject {
             case "name":
                 this.name = (String)val;
                 break;
-            case "toMaster":
-                this.toMaster = val;
+            case "master":
+                this.master = val;
                 break;
             default:
                 super.writePropertyDirectly(propName, val);

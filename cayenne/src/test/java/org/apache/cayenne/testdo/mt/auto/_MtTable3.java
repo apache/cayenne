@@ -29,13 +29,13 @@ public abstract class _MtTable3 extends PersistentObject {
     public static final BaseProperty<byte[]> BINARY_COLUMN = PropertyFactory.createBase("binaryColumn", byte[].class);
     public static final StringProperty<String> CHAR_COLUMN = PropertyFactory.createString("charColumn", String.class);
     public static final NumericProperty<Integer> INT_COLUMN = PropertyFactory.createNumeric("intColumn", Integer.class);
-    public static final ListProperty<MtTable2> TABLE2ARRAY = PropertyFactory.createList("table2Array", MtTable2.class);
+    public static final ListProperty<MtTable2> TABLE2S = PropertyFactory.createList("table2s", MtTable2.class);
 
     protected byte[] binaryColumn;
     protected String charColumn;
     protected Integer intColumn;
 
-    protected Object table2Array;
+    protected Object table2s;
 
     public void setBinaryColumn(byte[] binaryColumn) {
         beforePropertyWrite("binaryColumn", this.binaryColumn, binaryColumn);
@@ -67,17 +67,17 @@ public abstract class _MtTable3 extends PersistentObject {
         return this.intColumn;
     }
 
-    public void addToTable2Array(MtTable2 obj) {
-        addToManyTarget("table2Array", obj, true);
+    public void addToTable2s(MtTable2 obj) {
+        addToManyTarget("table2s", obj, true);
     }
 
-    public void removeFromTable2Array(MtTable2 obj) {
-        removeToManyTarget("table2Array", obj, true);
+    public void removeFromTable2s(MtTable2 obj) {
+        removeToManyTarget("table2s", obj, true);
     }
 
     @SuppressWarnings("unchecked")
-    public List<MtTable2> getTable2Array() {
-        return (List<MtTable2>)readProperty("table2Array");
+    public List<MtTable2> getTable2s() {
+        return (List<MtTable2>)readProperty("table2s");
     }
 
     @Override
@@ -93,8 +93,8 @@ public abstract class _MtTable3 extends PersistentObject {
                 return this.charColumn;
             case "intColumn":
                 return this.intColumn;
-            case "table2Array":
-                return this.table2Array;
+            case "table2s":
+                return this.table2s;
             default:
                 return super.readPropertyDirectly(propName);
         }
@@ -116,8 +116,8 @@ public abstract class _MtTable3 extends PersistentObject {
             case "intColumn":
                 this.intColumn = (Integer)val;
                 break;
-            case "table2Array":
-                this.table2Array = val;
+            case "table2s":
+                this.table2s = val;
                 break;
             default:
                 super.writePropertyDirectly(propName, val);

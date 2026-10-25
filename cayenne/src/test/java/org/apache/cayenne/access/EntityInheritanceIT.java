@@ -46,13 +46,13 @@ public class EntityInheritanceIT {
         RelatedEntity related = env.context().newObject(RelatedEntity.class);
 
         BaseEntity base = env.context().newObject(BaseEntity.class);
-        base.setToRelatedEntity(related);
+        base.setRelatedEntity(related);
 
         assertEquals(1, related.getBaseEntities().size());
         assertEquals(0, related.getSubEntities().size());
 
         SubEntity sub = env.context().newObject(SubEntity.class);
-        sub.setToRelatedEntity(related);
+        sub.setRelatedEntity(related);
 
         assertEquals(2, related.getBaseEntities().size());
 
@@ -76,7 +76,7 @@ public class EntityInheritanceIT {
         DirectToSubEntity direct = env.context().newObject(DirectToSubEntity.class);
 
         SubEntity sub = env.context().newObject(SubEntity.class);
-        sub.setToDirectToSubEntity(direct);
+        sub.setDirectToSubEntity(direct);
 
         assertEquals(1, direct.getSubEntities().size());
 
@@ -89,7 +89,7 @@ public class EntityInheritanceIT {
     public void cAY2091() {
         RelatedEntity related = env.context().newObject(RelatedEntity.class);
         SubEntity subEntity = env.context().newObject(SubEntity.class);
-        subEntity.setToRelatedEntity(related);
+        subEntity.setRelatedEntity(related);
         env.context().commitChanges();
 
         int subEntityId = Cayenne.intPKForObject(subEntity);

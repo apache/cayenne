@@ -23,11 +23,11 @@ public abstract class _CharFkTestEntity extends PersistentObject {
     public static final String PK_PK_COLUMN = "PK";
 
     public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);
-    public static final EntityProperty<CharPkTestEntity> TO_CHAR_PK = PropertyFactory.createEntity("toCharPK", CharPkTestEntity.class);
+    public static final EntityProperty<CharPkTestEntity> CHAR_PK = PropertyFactory.createEntity("charPK", CharPkTestEntity.class);
 
     protected String name;
 
-    protected Object toCharPK;
+    protected Object charPK;
 
     public void setName(String name) {
         beforePropertyWrite("name", this.name, name);
@@ -39,12 +39,12 @@ public abstract class _CharFkTestEntity extends PersistentObject {
         return this.name;
     }
 
-    public void setToCharPK(CharPkTestEntity toCharPK) {
-        setToOneTarget("toCharPK", toCharPK, true);
+    public void setCharPK(CharPkTestEntity charPK) {
+        setToOneTarget("charPK", charPK, true);
     }
 
-    public CharPkTestEntity getToCharPK() {
-        return (CharPkTestEntity)readProperty("toCharPK");
+    public CharPkTestEntity getCharPK() {
+        return (CharPkTestEntity)readProperty("charPK");
     }
 
     @Override
@@ -56,8 +56,8 @@ public abstract class _CharFkTestEntity extends PersistentObject {
         switch(propName) {
             case "name":
                 return this.name;
-            case "toCharPK":
-                return this.toCharPK;
+            case "charPK":
+                return this.charPK;
             default:
                 return super.readPropertyDirectly(propName);
         }
@@ -73,8 +73,8 @@ public abstract class _CharFkTestEntity extends PersistentObject {
             case "name":
                 this.name = (String)val;
                 break;
-            case "toCharPK":
-                this.toCharPK = val;
+            case "charPK":
+                this.charPK = val;
                 break;
             default:
                 super.writePropertyDirectly(propName, val);

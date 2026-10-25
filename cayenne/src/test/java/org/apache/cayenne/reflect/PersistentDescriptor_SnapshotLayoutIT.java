@@ -59,7 +59,7 @@ public class PersistentDescriptor_SnapshotLayoutIT {
 
     @Test
     public void attributesForeignKeysAndPk() {
-        // the FKs of "toArtist" and "toGallery" are columns, the to-dependent-PK "toPaintingInfo" contributes nothing
+        // the FKs of "artist" and "gallery" are columns, the to-dependent-PK "paintingInfo" contributes nothing
         DataRowLayout painting = layout("Painting");
         assertEquals(Set.of("PAINTING_ID", "PAINTING_TITLE", "PAINTING_DESCRIPTION", "ESTIMATED_PRICE", "ARTIST_ID",
                 "GALLERY_ID"), names(painting));
@@ -73,8 +73,8 @@ public class PersistentDescriptor_SnapshotLayoutIT {
     public void flattenedAttributesAndAdditionalPks() {
         Set<String> names = names(layout("CompoundPainting"));
         assertTrue(names.containsAll(List.of("PAINTING_ID", "PAINTING_TITLE", "ESTIMATED_PRICE",
-                "toArtist.ARTIST_NAME", "toGallery.GALLERY_NAME", "toPaintingInfo.TEXT_REVIEW",
-                "toArtist.ARTIST_ID", "toGallery.GALLERY_ID", "toPaintingInfo.PAINTING_ID")), names.toString());
+                "artist.ARTIST_NAME", "gallery.GALLERY_NAME", "paintingInfo.TEXT_REVIEW",
+                "artist.ARTIST_ID", "gallery.GALLERY_ID", "paintingInfo.PAINTING_ID")), names.toString());
     }
 
     @Test
@@ -89,7 +89,7 @@ public class PersistentDescriptor_SnapshotLayoutIT {
         artist.setArtistName("a");
         Painting painting = context.newObject(Painting.class);
         painting.setPaintingTitle("p");
-        painting.setToArtist(artist);
+        painting.setArtist(artist);
         context.commitChanges();
 
         // the keys of a snapshot come in the layout order
@@ -108,7 +108,7 @@ public class PersistentDescriptor_SnapshotLayoutIT {
         // to-one is a null FK, an uncommitted one and the object's own temporary id are missing columns
         Painting uncommitted = context.newObject(Painting.class);
         uncommitted.setPaintingTitle("u");
-        uncommitted.setToArtist(context.newObject(Artist.class));
+        uncommitted.setArtist(context.newObject(Artist.class));
         DataRow partial = ((DataContext) context).currentSnapshot(uncommitted);
         assertEquals(Set.of("PAINTING_TITLE", "PAINTING_DESCRIPTION", "ESTIMATED_PRICE", "GALLERY_ID"),
                 partial.keySet());

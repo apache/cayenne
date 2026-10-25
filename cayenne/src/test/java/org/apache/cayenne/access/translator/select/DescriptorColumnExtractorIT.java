@@ -40,12 +40,12 @@ public class DescriptorColumnExtractorIT {
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
     private final List<String> expectedFlattenedDbFields = List.of(
-            "toArtist.ARTIST_ID",
-            "toArtist.ARTIST_NAME",
-            "toGallery.GALLERY_ID",
-            "toGallery.GALLERY_NAME",
-            "toPaintingInfo.PAINTING_ID",
-            "toPaintingInfo.TEXT_REVIEW");
+            "artist.ARTIST_ID",
+            "artist.ARTIST_NAME",
+            "gallery.GALLERY_ID",
+            "gallery.GALLERY_NAME",
+            "paintingInfo.PAINTING_ID",
+            "paintingInfo.TEXT_REVIEW");
 
     @Test
     public void entityResultAddDbFieldsForFlattenedAttributes() {
@@ -67,7 +67,7 @@ public class DescriptorColumnExtractorIT {
                 .getDbFields(resolver)
                 .keySet()
                 .stream()
-                .filter(key -> key.startsWith("to"))
+                .filter(key -> key.contains("."))
                 .sorted()
                 .collect(Collectors.toList());
 

@@ -40,7 +40,7 @@ public class CDOReflexiveRelIT {
 
         ArtGroup childGroup1 = env.context().newObject(ArtGroup.class);
         childGroup1.setName("child1");
-        childGroup1.setToParentGroup(parentGroup);
+        childGroup1.setParentGroup(parentGroup);
 
         env.context().deleteObjects(parentGroup);
     }
@@ -52,7 +52,7 @@ public class CDOReflexiveRelIT {
 
         ArtGroup childGroup1 = env.context().newObject(ArtGroup.class);
         childGroup1.setName("child1");
-        childGroup1.setToParentGroup(parentGroup);
+        childGroup1.setParentGroup(parentGroup);
 
         env.context().commitChanges();
     }
@@ -64,7 +64,7 @@ public class CDOReflexiveRelIT {
 
         ArtGroup childGroup1 = env.context().newObject(ArtGroup.class);
         childGroup1.setName("child1");
-        childGroup1.setToParentGroup(parentGroup);
+        childGroup1.setParentGroup(parentGroup);
         env.context().commitChanges();
 
         env.context().deleteObjects(parentGroup);
@@ -80,9 +80,9 @@ public class CDOReflexiveRelIT {
 
         ArtGroup childGroup1 = env.context().newObject(ArtGroup.class);
         childGroup1.setName("child1");
-        childGroup1.setToParentGroup(parentGroup1);
+        childGroup1.setParentGroup(parentGroup1);
 
-        childGroup1.setToParentGroup(parentGroup2);
+        childGroup1.setParentGroup(parentGroup2);
 
         env.context().deleteObjects(parentGroup1);
         env.context().deleteObjects(parentGroup2);
@@ -97,8 +97,8 @@ public class CDOReflexiveRelIT {
 
         ArtGroup childGroup1 = env.context().newObject(ArtGroup.class);
         childGroup1.setName("child1");
-        childGroup1.setToParentGroup(parentGroup1);
-        childGroup1.setToParentGroup(parentGroup2);
+        childGroup1.setParentGroup(parentGroup1);
+        childGroup1.setParentGroup(parentGroup2);
         env.context().commitChanges();
 
         env.context().deleteObjects(parentGroup1);
@@ -115,9 +115,9 @@ public class CDOReflexiveRelIT {
 
         ArtGroup childGroup1 = env.context().newObject(ArtGroup.class);
         childGroup1.setName("child1");
-        childGroup1.setToParentGroup(parentGroup1);
+        childGroup1.setParentGroup(parentGroup1);
         env.context().commitChanges();
-        childGroup1.setToParentGroup(parentGroup2);
+        childGroup1.setParentGroup(parentGroup2);
         env.context().commitChanges();
     }
 
@@ -130,10 +130,10 @@ public class CDOReflexiveRelIT {
         // Check that the update and insert both work write
         ArtGroup childGroup1 = env.context().newObject(ArtGroup.class);
         childGroup1.setName("child1");
-        childGroup1.setToParentGroup(parentGroup);
+        childGroup1.setParentGroup(parentGroup);
         env.context().commitChanges();
 
-        childGroup1.setToParentGroup(null);
+        childGroup1.setParentGroup(null);
         env.context().commitChanges();
     }
 

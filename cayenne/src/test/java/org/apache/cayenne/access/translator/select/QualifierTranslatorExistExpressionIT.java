@@ -41,7 +41,7 @@ public class QualifierTranslatorExistExpressionIT {
     @Test
     public void existsSimplePath() {
         Expression exp = ExpressionFactory
-                .exp("paintingArray")
+                .exp("paintings")
                 .exists();
 
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class).where(exp);
@@ -62,7 +62,7 @@ public class QualifierTranslatorExistExpressionIT {
     @Test
     public void existsSimplePathParsed() {
         Expression exp = ExpressionFactory
-                .exp("exists paintingArray");
+                .exp("exists paintings");
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class).where(exp);
 
         SelectTranslatorContext context
@@ -99,7 +99,7 @@ public class QualifierTranslatorExistExpressionIT {
     @Test
     public void existsLongPathSimpleAttribute() {
         Expression exp = ExpressionFactory
-                .exp("paintingArray.paintingTitle")
+                .exp("paintings.paintingTitle")
                 .exists();
 
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class).where(exp);
@@ -120,7 +120,7 @@ public class QualifierTranslatorExistExpressionIT {
     @Test
     public void existsLongToOnePath() {
         Expression exp = ExpressionFactory
-                .exp("paintingArray.toGallery")
+                .exp("paintings.gallery")
                 .exists();
 
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class).where(exp);
@@ -141,7 +141,7 @@ public class QualifierTranslatorExistExpressionIT {
     @Test
     public void existsLongToManyPath() {
         Expression exp = ExpressionFactory
-                .exp("groupArray.childGroupsArray")
+                .exp("groups.childGroups")
                 .exists();
 
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class).where(exp);
@@ -164,7 +164,7 @@ public class QualifierTranslatorExistExpressionIT {
     @Test
     public void existsSimpleCondition() {
         Expression exp = ExpressionFactory
-                .exp("paintingArray.paintingTitle = 'test'")
+                .exp("paintings.paintingTitle = 'test'")
                 .exists();
 
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class).where(exp);
@@ -185,8 +185,8 @@ public class QualifierTranslatorExistExpressionIT {
     @Test
     public void existsAggConditionSameRoot() {
         Expression exp = ExpressionFactory
-                .exp("paintingArray.paintingTitle = 'test' " +
-                        "or paintingArray.paintingTitle = 'test2'")
+                .exp("paintings.paintingTitle = 'test' " +
+                        "or paintings.paintingTitle = 'test2'")
                 .exists();
 
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class).where(exp);
@@ -208,8 +208,8 @@ public class QualifierTranslatorExistExpressionIT {
     @Test
     public void existsAggConditionSameRootParser() {
         Expression exp = ExpressionFactory
-                .exp("exists (paintingArray.paintingTitle = 'test' " +
-                        "or paintingArray.paintingTitle = 'test2')");
+                .exp("exists (paintings.paintingTitle = 'test' " +
+                        "or paintings.paintingTitle = 'test2')");
 
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class).where(exp);
 
@@ -230,8 +230,8 @@ public class QualifierTranslatorExistExpressionIT {
     @Test
     public void existsAggConditionMultipleRoots() {
         Expression exp = ExpressionFactory
-                .exp("(paintingArray.paintingTitle = 'test' " +
-                        "or paintingArray.paintingTitle = 'test2') and groupArray.name = 'test'")
+                .exp("(paintings.paintingTitle = 'test' " +
+                        "or paintings.paintingTitle = 'test2') and groups.name = 'test'")
                 .exists();
 
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class).where(exp);
@@ -257,8 +257,8 @@ public class QualifierTranslatorExistExpressionIT {
     @Test
     public void existsAggDifferentRoots() {
         Expression exp = ExpressionFactory
-                .exp("paintingArray.paintingTitle = 'test' " +
-                        "and (groupArray.name = 'test' or paintingArray.paintingTitle = 'test2')")
+                .exp("paintings.paintingTitle = 'test' " +
+                        "and (groups.name = 'test' or paintings.paintingTitle = 'test2')")
                 .exists();
 
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class).where(exp);
@@ -291,8 +291,8 @@ public class QualifierTranslatorExistExpressionIT {
     @Test
     public void existsComplexConditionsDifferentRoots() {
         Expression exp = ExpressionFactory
-                .exp("(length(paintingArray.paintingTitle) in (1, 2, 3)) " +
-                    "or (length(groupArray.name) < 10)")
+                .exp("(length(paintings.paintingTitle) in (1, 2, 3)) " +
+                    "or (length(groups.name) < 10)")
                 .exists();
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class).where(exp);
 

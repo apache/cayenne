@@ -25,11 +25,11 @@ public abstract class _GeneratedColumnCompMaster extends PersistentObject {
     public static final String ID_PK_COLUMN = "ID";
 
     public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);
-    public static final ListProperty<GeneratedColumnCompKey> TO_DETAIL = PropertyFactory.createList("toDetail", GeneratedColumnCompKey.class);
+    public static final ListProperty<GeneratedColumnCompKey> DETAIL = PropertyFactory.createList("detail", GeneratedColumnCompKey.class);
 
     protected String name;
 
-    protected Object toDetail;
+    protected Object detail;
 
     public void setName(String name) {
         beforePropertyWrite("name", this.name, name);
@@ -41,17 +41,17 @@ public abstract class _GeneratedColumnCompMaster extends PersistentObject {
         return this.name;
     }
 
-    public void addToToDetail(GeneratedColumnCompKey obj) {
-        addToManyTarget("toDetail", obj, true);
+    public void addToDetail(GeneratedColumnCompKey obj) {
+        addToManyTarget("detail", obj, true);
     }
 
-    public void removeFromToDetail(GeneratedColumnCompKey obj) {
-        removeToManyTarget("toDetail", obj, true);
+    public void removeFromDetail(GeneratedColumnCompKey obj) {
+        removeToManyTarget("detail", obj, true);
     }
 
     @SuppressWarnings("unchecked")
-    public List<GeneratedColumnCompKey> getToDetail() {
-        return (List<GeneratedColumnCompKey>)readProperty("toDetail");
+    public List<GeneratedColumnCompKey> getDetail() {
+        return (List<GeneratedColumnCompKey>)readProperty("detail");
     }
 
     @Override
@@ -63,8 +63,8 @@ public abstract class _GeneratedColumnCompMaster extends PersistentObject {
         switch(propName) {
             case "name":
                 return this.name;
-            case "toDetail":
-                return this.toDetail;
+            case "detail":
+                return this.detail;
             default:
                 return super.readPropertyDirectly(propName);
         }
@@ -80,8 +80,8 @@ public abstract class _GeneratedColumnCompMaster extends PersistentObject {
             case "name":
                 this.name = (String)val;
                 break;
-            case "toDetail":
-                this.toDetail = val;
+            case "detail":
+                this.detail = val;
                 break;
             default:
                 super.writePropertyDirectly(propName, val);

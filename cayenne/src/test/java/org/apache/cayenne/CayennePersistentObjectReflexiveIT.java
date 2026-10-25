@@ -45,13 +45,13 @@ public class CayennePersistentObjectReflexiveIT {
             // and child is created and associated to "Parent"
             final Reflexive child = env.context().newObject(Reflexive.class);
             child.setName("childA"+i);
-            child.setToParent(parent);
+            child.setParent(parent);
 
             try {
                 env.context().commitChanges();
 
                 // unset parent so that DBCleaner.clean() will work correctly
-                child.setToParent(null);
+                child.setParent(null);
                 env.context().commitChanges();
             } catch (final Exception e) {
                 errors++;
@@ -82,18 +82,18 @@ public class CayennePersistentObjectReflexiveIT {
 
             final Reflexive parent = env.context().newObject(Reflexive.class);
             parent.setName("parentB"+i);
-            parent.setToOther(other);
+            parent.setOther(other);
 
             // and child is created and associated to "Parent"
             final Reflexive child = env.context().newObject(Reflexive.class);
             child.setName("childB"+i);
-            child.setToParent(parent);
+            child.setParent(parent);
 
             try {
                 env.context().commitChanges();
 
                 // unset parent so that DBCleaner.clean() will work correctly
-                child.setToParent(null);
+                child.setParent(null);
                 env.context().commitChanges();
             } catch (final Exception e) {
                 errors++;

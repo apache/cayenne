@@ -57,7 +57,7 @@ public class DataContextCompoundRelIT {
         CompoundPkTestEntity master = context.newObject(CompoundPkTestEntity.class);
         CompoundFkTestEntity detail = context.newObject(CompoundFkTestEntity.class);
 
-        master.addToCompoundFkArray(detail);
+        master.addToCompoundFks(detail);
         master.setName("m1");
         master.setKey1("key11");
         master.setKey2("key21");
@@ -71,7 +71,7 @@ public class DataContextCompoundRelIT {
         assertEquals(1, objs.size());
         assertEquals("m1", objs.get(0).getName());
 
-        List<CompoundFkTestEntity> details = objs.get(0).getCompoundFkArray();
+        List<CompoundFkTestEntity> details = objs.get(0).getCompoundFks();
         assertEquals(1, details.size());
         assertEquals("d1", details.get(0).getName());
     }
@@ -83,8 +83,8 @@ public class DataContextCompoundRelIT {
         CompoundFkTestEntity detail  = context.newObject(CompoundFkTestEntity.class);
         CompoundFkTestEntity detail1 = context.newObject(CompoundFkTestEntity.class);
 
-        master.addToCompoundFkArray(detail);
-        master1.addToCompoundFkArray(detail1);
+        master.addToCompoundFks(detail);
+        master1.addToCompoundFks(detail1);
 
         master.setName("m1");
         master.setKey1("key11");
@@ -101,7 +101,7 @@ public class DataContextCompoundRelIT {
         context.invalidateObjects(master, master1, detail, detail1);
 
         List<CompoundFkTestEntity> objs = ObjectSelect.query(CompoundFkTestEntity.class)
-                .where(CompoundFkTestEntity.TO_COMPOUND_PK.eq(master))
+                .where(CompoundFkTestEntity.COMPOUND_PK.eq(master))
                 .select(context1);
 
         assertEquals(1, objs.size());
@@ -143,8 +143,8 @@ public class DataContextCompoundRelIT {
         CompoundFkTestEntity detail  = context.newObject(CompoundFkTestEntity.class);
         CompoundFkTestEntity detail1 = context.newObject(CompoundFkTestEntity.class);
 
-        master.addToCompoundFkArray(detail);
-        master1.addToCompoundFkArray(detail1);
+        master.addToCompoundFks(detail);
+        master1.addToCompoundFks(detail1);
 
         master.setName("m1");
         master.setKey1("key11");
@@ -162,7 +162,7 @@ public class DataContextCompoundRelIT {
         context.invalidateObjects(master, master1, detail, detail1);
 
         List<CompoundPkTestEntity> objs = ObjectSelect.query(CompoundPkTestEntity.class)
-                .where(CompoundPkTestEntity.COMPOUND_FK_ARRAY.containsValue(detail1))
+                .where(CompoundPkTestEntity.COMPOUND_FKS.containsValue(detail1))
                 .select(context1);
 
         assertEquals(1, objs.size());

@@ -108,13 +108,13 @@ public class ObjRelationshipIT {
         ObjEntity paintingObjEnt = runtime.getDataDomain().getEntityResolver().getObjEntity("Painting");
 
         // start with "to many"
-        ObjRelationship r1 = artistObjEnt.getRelationship("paintingArray");
+        ObjRelationship r1 = artistObjEnt.getRelationship("paintings");
 
-        assertEquals("toArtist", r1.getReverseDbRelationshipPath().value());
+        assertEquals("artist", r1.getReverseDbRelationshipPath().value());
 
-        ObjRelationship r2 = paintingObjEnt.getRelationship("toArtist");
+        ObjRelationship r2 = paintingObjEnt.getRelationship("artist");
 
-        assertEquals("paintingArray", r2.getReverseDbRelationshipPath().value());
+        assertEquals("paintings", r2.getReverseDbRelationshipPath().value());
     }
 
     @Test
@@ -123,8 +123,8 @@ public class ObjRelationshipIT {
 
         ObjRelationship r = new ObjRelationship("r");
         r.setSourceEntity(artistObjEnt);
-        r.setDbRelationshipPath("paintingArray");
-        assertEquals("paintingArray", r.getDbRelationshipPath().value());
+        r.setDbRelationshipPath("paintings");
+        assertEquals("paintings", r.getDbRelationshipPath().value());
     }
 
     @Test
@@ -299,11 +299,11 @@ public class ObjRelationshipIT {
         ObjEntity paintingObjEnt = runtime.getDataDomain().getEntityResolver().getObjEntity("Painting");
 
         // start with "to many"
-        ObjRelationship r1 = artistObjEnt.getRelationship("paintingArray");
+        ObjRelationship r1 = artistObjEnt.getRelationship("paintings");
         ObjRelationship r2 = r1.getReverseRelationship();
 
         assertNotNull(r2);
-        assertSame(paintingObjEnt.getRelationship("toArtist"), r2);
+        assertSame(paintingObjEnt.getRelationship("artist"), r2);
     }
 
     @Test
@@ -312,11 +312,11 @@ public class ObjRelationshipIT {
         ObjEntity paintingEnt = runtime.getDataDomain().getEntityResolver().getObjEntity("Painting");
 
         // start with "to one"
-        ObjRelationship r1 = paintingEnt.getRelationship("toArtist");
+        ObjRelationship r1 = paintingEnt.getRelationship("artist");
         ObjRelationship r2 = r1.getReverseRelationship();
 
         assertNotNull(r2);
-        assertSame(artistEnt.getRelationship("paintingArray"), r2);
+        assertSame(artistEnt.getRelationship("paintings"), r2);
     }
 
     @Test
@@ -326,18 +326,18 @@ public class ObjRelationshipIT {
         ObjEntity artist = resolver.getObjEntity("Artist");
 
         // FK to PK
-        assertTrue(painting.getRelationship("toArtist").isForeignKey());
+        assertTrue(painting.getRelationship("artist").isForeignKey());
 
         // master to dependent PK: the key lives in the PAINTING_INFO row
-        assertFalse(painting.getRelationship("toPaintingInfo").isForeignKey());
+        assertFalse(painting.getRelationship("paintingInfo").isForeignKey());
 
         // dependent to master PK: the dependent PK is also the FK
         ObjEntity paintingInfo = resolver.getObjEntity("PaintingInfo");
         assertTrue(paintingInfo.getRelationship("painting").isForeignKey());
 
         // to-many and flattened
-        assertFalse(artist.getRelationship("paintingArray").isForeignKey());
-        assertFalse(artist.getRelationship("groupArray").isForeignKey());
+        assertFalse(artist.getRelationship("paintings").isForeignKey());
+        assertFalse(artist.getRelationship("groups").isForeignKey());
     }
 
     @Test
@@ -451,7 +451,7 @@ public class ObjRelationshipIT {
     @Test
     public void knownFlattenedRelationship() {
         ObjEntity artistEnt = runtime.getDataDomain().getEntityResolver().getObjEntity("Artist");
-        ObjRelationship theRel = artistEnt.getRelationship("groupArray");
+        ObjRelationship theRel = artistEnt.getRelationship("groups");
         assertNotNull(theRel);
         assertTrue(theRel.isFlattened());
     }

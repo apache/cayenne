@@ -88,13 +88,13 @@ public class AggregateExpInMemoryEvaluationIT {
     public void count() {
         List<Artist> artists = ObjectSelect.query(Artist.class)
                 .orderBy(Artist.ARTIST_ID_PK_PROPERTY.asc())
-                .prefetch(Artist.PAINTING_ARRAY.disjoint())
+                .prefetch(Artist.PAINTINGS.disjoint())
                 .select(context);
 
-        Expression countExp = Artist.PAINTING_ARRAY.count().getExpression();
+        Expression countExp = Artist.PAINTINGS.count().getExpression();
 
         for (Artist artist : artists) {
-            assertEquals(artist.getPaintingArray().size(), countExp.evaluate(artist));
+            assertEquals(artist.getPaintings().size(), countExp.evaluate(artist));
         }
     }
 
@@ -102,10 +102,10 @@ public class AggregateExpInMemoryEvaluationIT {
     public void max() {
         List<Artist> artists = ObjectSelect.query(Artist.class)
                 .orderBy(Artist.ARTIST_ID_PK_PROPERTY.asc())
-                .prefetch(Artist.PAINTING_ARRAY.disjoint())
+                .prefetch(Artist.PAINTINGS.disjoint())
                 .select(context);
 
-        Expression maxExp = Artist.PAINTING_ARRAY.dot(Painting.ESTIMATED_PRICE).max().getExpression();
+        Expression maxExp = Artist.PAINTINGS.dot(Painting.ESTIMATED_PRICE).max().getExpression();
 
         BigDecimal max0 = (BigDecimal) maxExp.evaluate(artists.get(0));
         BigDecimal expected0 = BigDecimal.valueOf(20000, 2);
@@ -124,10 +124,10 @@ public class AggregateExpInMemoryEvaluationIT {
     public void min() {
         List<Artist> artists = ObjectSelect.query(Artist.class)
                 .orderBy(Artist.ARTIST_ID_PK_PROPERTY.asc())
-                .prefetch(Artist.PAINTING_ARRAY.disjoint())
+                .prefetch(Artist.PAINTINGS.disjoint())
                 .select(context);
 
-        Expression minExp = Artist.PAINTING_ARRAY.dot(Painting.ESTIMATED_PRICE).min().getExpression();
+        Expression minExp = Artist.PAINTINGS.dot(Painting.ESTIMATED_PRICE).min().getExpression();
 
         BigDecimal min0 = (BigDecimal) minExp.evaluate(artists.get(0));
         BigDecimal expected0 = BigDecimal.valueOf(5000, 2);
@@ -145,11 +145,11 @@ public class AggregateExpInMemoryEvaluationIT {
     @Test
     public void avg() {
         List<Artist> artists = ObjectSelect.query(Artist.class)
-                .prefetch(Artist.PAINTING_ARRAY.disjoint())
+                .prefetch(Artist.PAINTINGS.disjoint())
                 .orderBy(Artist.ARTIST_ID_PK_PROPERTY.asc())
                 .select(context);
 
-        Expression avgExp = Artist.PAINTING_ARRAY.dot(Painting.ESTIMATED_PRICE).avg().getExpression();
+        Expression avgExp = Artist.PAINTINGS.dot(Painting.ESTIMATED_PRICE).avg().getExpression();
 
         Object avg0 = avgExp.evaluate(artists.get(0));
         assertEquals(125.0, avg0);
@@ -161,13 +161,13 @@ public class AggregateExpInMemoryEvaluationIT {
     @Test
     public void caseWhenFirstCondition() {
         Artist artist = ObjectSelect.query(Artist.class)
-                .prefetch(Artist.PAINTING_ARRAY.disjoint())
+                .prefetch(Artist.PAINTINGS.disjoint())
                 .orderBy(Artist.ARTIST_ID_PK_PROPERTY.asc())
                 .selectFirst(context);
 
         Expression caseWhenFirstCondition = caseWhen(
-                List.of(Artist.PAINTING_ARRAY.dot(Painting.ESTIMATED_PRICE).between(BigDecimal.ZERO, BigDecimal.valueOf(50)),
-                        Artist.PAINTING_ARRAY.dot(Painting.ESTIMATED_PRICE).between(BigDecimal.valueOf(51), BigDecimal.valueOf(100))),
+                List.of(Artist.PAINTINGS.dot(Painting.ESTIMATED_PRICE).between(BigDecimal.ZERO, BigDecimal.valueOf(50)),
+                        Artist.PAINTINGS.dot(Painting.ESTIMATED_PRICE).between(BigDecimal.valueOf(51), BigDecimal.valueOf(100))),
                 List.of(Artist.ARTIST_NAME.getExpression(),
                         Artist.DATE_OF_BIRTH.getExpression()),
                 Artist.ARTIST_ID_PK_PROPERTY.getExpression());
@@ -180,13 +180,13 @@ public class AggregateExpInMemoryEvaluationIT {
     @Test
     public void caseWhenSecondCondition() {
         Artist artist = ObjectSelect.query(Artist.class)
-                .prefetch(Artist.PAINTING_ARRAY.disjoint())
+                .prefetch(Artist.PAINTINGS.disjoint())
                 .orderBy(Artist.ARTIST_ID_PK_PROPERTY.asc())
                 .selectFirst(context);
 
         Expression caseWhenFirstCondition = caseWhen(
-                List.of(Artist.PAINTING_ARRAY.dot(Painting.ESTIMATED_PRICE).between(BigDecimal.ZERO, BigDecimal.valueOf(49)),
-                        Artist.PAINTING_ARRAY.dot(Painting.ESTIMATED_PRICE).between(BigDecimal.valueOf(51), BigDecimal.valueOf(100))),
+                List.of(Artist.PAINTINGS.dot(Painting.ESTIMATED_PRICE).between(BigDecimal.ZERO, BigDecimal.valueOf(49)),
+                        Artist.PAINTINGS.dot(Painting.ESTIMATED_PRICE).between(BigDecimal.valueOf(51), BigDecimal.valueOf(100))),
                 List.of(Artist.ARTIST_NAME.getExpression(),
                         Artist.DATE_OF_BIRTH.getExpression()),
                 Artist.ARTIST_ID_PK_PROPERTY.getExpression());
@@ -198,13 +198,13 @@ public class AggregateExpInMemoryEvaluationIT {
     @Test
     public void caseWhenDefaultCondition() {
         Artist artist = ObjectSelect.query(Artist.class)
-                .prefetch(Artist.PAINTING_ARRAY.disjoint())
+                .prefetch(Artist.PAINTINGS.disjoint())
                 .orderBy(Artist.ARTIST_ID_PK_PROPERTY.asc())
                 .selectFirst(context);
 
         Expression caseWhenDefaultCondition = caseWhen(
-                List.of(Artist.PAINTING_ARRAY.dot(Painting.ESTIMATED_PRICE).between(BigDecimal.ZERO, BigDecimal.valueOf(1)),
-                        Artist.PAINTING_ARRAY.dot(Painting.ESTIMATED_PRICE).between(BigDecimal.valueOf(2), BigDecimal.valueOf(3))),
+                List.of(Artist.PAINTINGS.dot(Painting.ESTIMATED_PRICE).between(BigDecimal.ZERO, BigDecimal.valueOf(1)),
+                        Artist.PAINTINGS.dot(Painting.ESTIMATED_PRICE).between(BigDecimal.valueOf(2), BigDecimal.valueOf(3))),
                 List.of(Artist.ARTIST_NAME.getExpression(),
                         Artist.DATE_OF_BIRTH.getExpression()),
                 Artist.ARTIST_ID_PK_PROPERTY.getExpression());
@@ -217,12 +217,12 @@ public class AggregateExpInMemoryEvaluationIT {
     @Test
     public void caseWhenNoResultNoDefault() {
         Artist artist = ObjectSelect.query(Artist.class)
-                .prefetch(Artist.PAINTING_ARRAY.disjoint())
+                .prefetch(Artist.PAINTINGS.disjoint())
                 .orderBy(Artist.ARTIST_ID_PK_PROPERTY.asc())
                 .selectFirst(context);
 
         Expression caseWhenNoResultNoDefault = caseWhen(
-                List.of(Artist.PAINTING_ARRAY.dot(Painting.ESTIMATED_PRICE).between(BigDecimal.ZERO, BigDecimal.valueOf(1))),
+                List.of(Artist.PAINTINGS.dot(Painting.ESTIMATED_PRICE).between(BigDecimal.ZERO, BigDecimal.valueOf(1))),
                 List.of(Artist.DATE_OF_BIRTH.getExpression())
         );
 

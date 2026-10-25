@@ -77,7 +77,7 @@ public class CayennePersistentObjectFlattenedRelIT {
         create1Artist1ArtGroupDataSet();
 
         Artist a1 = env.context().objectForPK(Artist.class, 33001);
-        List<ArtGroup> groupList = a1.getGroupArray();
+        List<ArtGroup> groupList = a1.getGroups();
         assertNotNull(groupList);
         assertEquals(0, groupList.size());
     }
@@ -88,7 +88,7 @@ public class CayennePersistentObjectFlattenedRelIT {
         create1Artist1ArtGroup1ArtistGroupDataSet();
 
         Artist a1 = env.context().objectForPK(Artist.class, 33001);
-        List<ArtGroup> groupList = a1.getGroupArray();
+        List<ArtGroup> groupList = a1.getGroups();
         assertNotNull(groupList);
         assertEquals(1, groupList.size());
         assertEquals(PersistenceState.COMMITTED, groupList.getFirst().getPersistenceState());
@@ -101,17 +101,17 @@ public class CayennePersistentObjectFlattenedRelIT {
         create1Artist1ArtGroupDataSet();
 
         Artist a1 = env.context().objectForPK(Artist.class, 33001);
-        assertEquals(0, a1.getGroupArray().size());
+        assertEquals(0, a1.getGroups().size());
 
         List<ArtGroup> results = ObjectSelect.query(ArtGroup.class).where(ArtGroup.NAME.eq("g1")).select(env.context());
         assertEquals(1, results.size());
 
         assertFalse(env.context().hasChanges());
         ArtGroup group = results.getFirst();
-        a1.addToGroupArray(group);
+        a1.addToGroups(group);
         assertTrue(env.context().hasChanges());
 
-        List<?> groupList = a1.getGroupArray();
+        List<?> groupList = a1.getGroups();
         assertEquals(1, groupList.size());
         assertEquals("g1", ((ArtGroup) groupList.getFirst()).getName());
 
@@ -124,7 +124,7 @@ public class CayennePersistentObjectFlattenedRelIT {
         // refetch artist with a different context
         ObjectContext context2 = runtime.newContext();
         a1 = context2.objectForPK(Artist.class, 33001);
-        groupList = a1.getGroupArray();
+        groupList = a1.getGroups();
         assertEquals(1, groupList.size());
         assertEquals("g1", ((ArtGroup) groupList.getFirst()).getName());
     }
@@ -140,9 +140,9 @@ public class CayennePersistentObjectFlattenedRelIT {
         assertEquals(1, results.size());
 
         ArtGroup group = results.getFirst();
-        a1.addToGroupArray(group);
+        a1.addToGroups(group);
 
-        List<?> groupList = a1.getGroupArray();
+        List<?> groupList = a1.getGroups();
         assertEquals(1, groupList.size());
         assertEquals("g1", ((ArtGroup) groupList.getFirst()).getName());
 
@@ -159,17 +159,17 @@ public class CayennePersistentObjectFlattenedRelIT {
 
         Artist a1 = env.context().objectForPK(Artist.class, 33001);
 
-        ArtGroup group = a1.getGroupArray().getFirst();
-        a1.removeFromGroupArray(group);
+        ArtGroup group = a1.getGroups().getFirst();
+        a1.removeFromGroups(group);
 
-        List<ArtGroup> groupList = a1.getGroupArray();
+        List<ArtGroup> groupList = a1.getGroups();
         assertEquals(0, groupList.size());
 
         // Ensure that the commit doesn't fail
         a1.getObjectContext().commitChanges();
 
         // and check again
-        groupList = a1.getGroupArray();
+        groupList = a1.getGroups();
         assertEquals(0, groupList.size());
     }
 
@@ -181,8 +181,8 @@ public class CayennePersistentObjectFlattenedRelIT {
         create1Artist1ArtGroup1ArtistGroupDataSet();
         Artist a1 = env.context().objectForPK(Artist.class, 33001);
 
-        ArtGroup group = a1.getGroupArray().getFirst();
-        a1.removeFromGroupArray(group); // Cause the delete of the link record
+        ArtGroup group = a1.getGroups().getFirst();
+        a1.removeFromGroups(group); // Cause the delete of the link record
 
         env.context().deleteObjects(a1); // Cause the deletion of the artist
 
@@ -199,8 +199,8 @@ public class CayennePersistentObjectFlattenedRelIT {
         assertEquals(1, results.size());
 
         ArtGroup group = results.getFirst();
-        a1.addToGroupArray(group);
-        group.removeFromArtistArray(a1);
+        a1.addToGroups(group);
+        group.removeFromArtists(a1);
 
         env.runWithQueriesBlocked(() -> env.context().commitChanges());
     }
@@ -216,12 +216,12 @@ public class CayennePersistentObjectFlattenedRelIT {
 
         ArtGroup g1 = (ArtGroup) results.get(0);
         ArtGroup g2 = (ArtGroup) results.get(1);
-        a1.addToGroupArray(g1);
-        a1.addToGroupArray(g2);
+        a1.addToGroups(g1);
+        a1.addToGroups(g2);
 
         // test that there is no delete query issued when a flattened join is first
         // added and then deleted AND there are some other changes (CAY-548)
-        a1.removeFromGroupArray(g1);
+        a1.removeFromGroups(g1);
 
         MockDataNode nodeWrapper = MockDataNode.interceptNode(
                 runtime.getDataDomain(),

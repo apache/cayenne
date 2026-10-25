@@ -52,38 +52,38 @@ public class DbRelationshipIT {
     @Test
     public void isForeignKey() {
         // FK to PK
-        assertTrue(paintingEnt.getRelationship("toArtist").isForeignKey());
+        assertTrue(paintingEnt.getRelationship("artist").isForeignKey());
 
         // to-many
-        assertFalse(artistEnt.getRelationship("paintingArray").isForeignKey());
+        assertFalse(artistEnt.getRelationship("paintings").isForeignKey());
 
         // master to dependent PK: the join is to the target PK, but the key lives in the target row
-        DbRelationship toPaintingInfo = paintingEnt.getRelationship("toPaintingInfo");
-        assertTrue(toPaintingInfo.isToPrimaryKey());
-        assertFalse(toPaintingInfo.isForeignKey());
+        DbRelationship paintingInfo = paintingEnt.getRelationship("paintingInfo");
+        assertTrue(paintingInfo.isToPrimaryKey());
+        assertFalse(paintingInfo.isForeignKey());
 
         // dependent to master PK: the dependent PK is also the FK
-        assertTrue(toPaintingInfo.getReverseRelationship().isForeignKey());
+        assertTrue(paintingInfo.getReverseRelationship().isForeignKey());
     }
 
     @Test
     public void getReverseRelationship1() throws Exception {
         // start with "to many"
-        DbRelationship r1 = artistEnt.getRelationship("paintingArray");
+        DbRelationship r1 = artistEnt.getRelationship("paintings");
         DbRelationship r2 = r1.getReverseRelationship();
 
         assertNotNull(r2);
-        assertSame(paintingEnt.getRelationship("toArtist"), r2);
+        assertSame(paintingEnt.getRelationship("artist"), r2);
     }
 
     @Test
     public void getReverseRelationship2() throws Exception {
         // start with "to one"
-        DbRelationship r1 = paintingEnt.getRelationship("toArtist");
+        DbRelationship r1 = paintingEnt.getRelationship("artist");
         DbRelationship r2 = r1.getReverseRelationship();
 
         assertNotNull(r2);
-        assertSame(artistEnt.getRelationship("paintingArray"), r2);
+        assertSame(artistEnt.getRelationship("paintings"), r2);
     }
 
     @Test

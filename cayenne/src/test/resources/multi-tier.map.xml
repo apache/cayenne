@@ -53,13 +53,13 @@
 	</objEntity>
 	<objEntity name="MtTable4" className="org.apache.cayenne.testdo.mt.MtTable4" dbEntityName="MT_TABLE4"/>
 	<objEntity name="MtTable5" className="org.apache.cayenne.testdo.mt.MtTable5" dbEntityName="MT_TABLE5"/>
-	<dbRelationship name="toTable4" source="MT_JOIN45" target="MT_TABLE4" foreignKey="true">
+	<dbRelationship name="table4" source="MT_JOIN45" target="MT_TABLE4" foreignKey="true">
 		<dbAttributePair source="TABLE4_ID" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="toTable5" source="MT_JOIN45" target="MT_TABLE5" foreignKey="true">
+	<dbRelationship name="table5" source="MT_JOIN45" target="MT_TABLE5" foreignKey="true">
 		<dbAttributePair source="TABLE5_ID" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="table2Array" source="MT_TABLE1" target="MT_TABLE2" toMany="true">
+	<dbRelationship name="table2s" source="MT_TABLE1" target="MT_TABLE2" toMany="true">
 		<dbAttributePair source="TABLE1_ID" target="TABLE1_ID"/>
 	</dbRelationship>
 	<dbRelationship name="table1" source="MT_TABLE2" target="MT_TABLE1" foreignKey="true">
@@ -68,7 +68,7 @@
 	<dbRelationship name="table3" source="MT_TABLE2" target="MT_TABLE3" foreignKey="true">
 		<dbAttributePair source="TABLE3_ID" target="TABLE3_ID"/>
 	</dbRelationship>
-	<dbRelationship name="table2Array" source="MT_TABLE3" target="MT_TABLE2" toMany="true">
+	<dbRelationship name="table2s" source="MT_TABLE3" target="MT_TABLE2" toMany="true">
 		<dbAttributePair source="TABLE3_ID" target="TABLE3_ID"/>
 	</dbRelationship>
 	<dbRelationship name="joins" source="MT_TABLE4" target="MT_JOIN45" toMany="true">
@@ -77,12 +77,12 @@
 	<dbRelationship name="joins" source="MT_TABLE5" target="MT_JOIN45" toMany="true">
 		<dbAttributePair source="ID" target="TABLE5_ID"/>
 	</dbRelationship>
-	<objRelationship name="table2Array" source="MtTable1" target="MtTable2" dbRelationshipPath="table2Array"/>
+	<objRelationship name="table2s" source="MtTable1" target="MtTable2" dbRelationshipPath="table2s"/>
 	<objRelationship name="table1" source="MtTable2" target="MtTable1" dbRelationshipPath="table1"/>
 	<objRelationship name="table3" source="MtTable2" target="MtTable3" deleteRule="nullify" dbRelationshipPath="table3"/>
-	<objRelationship name="table2Array" source="MtTable3" target="MtTable2" deleteRule="deny" dbRelationshipPath="table2Array"/>
-	<objRelationship name="table5s" source="MtTable4" target="MtTable5" dbRelationshipPath="joins.toTable5"/>
-	<objRelationship name="table4s" source="MtTable5" target="MtTable4" dbRelationshipPath="joins.toTable4"/>
+	<objRelationship name="table2s" source="MtTable3" target="MtTable2" deleteRule="deny" dbRelationshipPath="table2s"/>
+	<objRelationship name="table5s" source="MtTable4" target="MtTable5" dbRelationshipPath="joins.table5"/>
+	<objRelationship name="table4s" source="MtTable5" target="MtTable4" dbRelationshipPath="joins.table4"/>
 	<objectQuery name="AllMtTable1">
 		<ql><![CDATA[from MtTable1]]></ql>
 	</objectQuery>

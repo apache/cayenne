@@ -53,13 +53,13 @@ public class CDOOneDep2OneIT extends CayenneDOTestBase {
         Painting p1 = newPainting();
 
         // needed to save without errors
-        p1.setToArtist(a1);
+        p1.setArtist(a1);
 
         // *** TESTING THIS ***
         pi1.setPainting(p1);
 
         // test before save
-        assertSame(pi1, p1.getToPaintingInfo());
+        assertSame(pi1, p1.getPaintingInfo());
         assertSame(p1, pi1.getPainting());
 
         // do save
@@ -83,11 +83,11 @@ public class CDOOneDep2OneIT extends CayenneDOTestBase {
         Exhibit e1 = context.newObject(Exhibit.class);
         e1.setOpeningDate(new Timestamp(System.currentTimeMillis()));
         e1.setClosingDate(new Timestamp(System.currentTimeMillis()));
-        e1.setToGallery(g1);
+        e1.setGallery(g1);
 
         ArtistExhibit ae1 = context.newObject(ArtistExhibit.class);
-        ae1.setToArtist(a1);
-        ae1.setToExhibit(e1);
+        ae1.setArtist(a1);
+        ae1.setExhibit(e1);
 
         // *** TESTING THIS ***
         context.commitChanges();
@@ -114,9 +114,9 @@ public class CDOOneDep2OneIT extends CayenneDOTestBase {
         Painting p21 = pi2.getPainting();
         assertNotNull(p21);
         assertEquals(altPaintingName, p21.getPaintingTitle());
-        assertSame(pi2, p21.getToPaintingInfo());
+        assertSame(pi2, p21.getPaintingInfo());
         ByteArrayTypeTest.assertByteArraysEqual(paintingImage, p21
-                .getToPaintingInfo()
+                .getPaintingInfo()
                 .getImageBlob());
 
         Painting p22 = newPainting();
@@ -125,8 +125,8 @@ public class CDOOneDep2OneIT extends CayenneDOTestBase {
         pi2.setPainting(p22);
 
         // test before save
-        assertNull(p21.getToPaintingInfo());
-        assertSame(pi2, p22.getToPaintingInfo());
+        assertNull(p21.getPaintingInfo());
+        assertSame(pi2, p22.getPaintingInfo());
         assertSame(p22, pi2.getPainting());
         assertEquals(PersistenceState.MODIFIED, pi2.getPersistenceState());
 
@@ -139,7 +139,7 @@ public class CDOOneDep2OneIT extends CayenneDOTestBase {
         Painting p3 = pi3.getPainting();
         assertNotNull(p3);
         assertEquals(paintingName, p3.getPaintingTitle());
-        assertSame(pi3, p3.getToPaintingInfo());
+        assertSame(pi3, p3.getPaintingInfo());
 
         // test that object id was updated.
         assertEquals(pi2oid, pi3.getObjectId());
@@ -167,19 +167,19 @@ public class CDOOneDep2OneIT extends CayenneDOTestBase {
         Painting p21 = pi2.getPainting();
         assertNotNull(p21);
         assertEquals(altPaintingName, p21.getPaintingTitle());
-        assertSame(pi2, p21.getToPaintingInfo());
+        assertSame(pi2, p21.getPaintingInfo());
         ByteArrayTypeTest.assertByteArraysEqual(paintingImage, p21
-                .getToPaintingInfo()
+                .getPaintingInfo()
                 .getImageBlob());
 
         Painting p22 = newPainting();
 
         // *** TESTING THIS ***
-        p22.setToPaintingInfo(pi2);
+        p22.setPaintingInfo(pi2);
 
         // test before save
-        assertNull(p21.getToPaintingInfo());
-        assertSame(pi2, p22.getToPaintingInfo());
+        assertNull(p21.getPaintingInfo());
+        assertSame(pi2, p22.getPaintingInfo());
         assertSame(p22, pi2.getPainting());
         assertEquals(PersistenceState.MODIFIED, pi2.getPersistenceState());
 
@@ -192,7 +192,7 @@ public class CDOOneDep2OneIT extends CayenneDOTestBase {
         Painting p3 = pi3.getPainting();
         assertNotNull(p3);
         assertEquals(paintingName, p3.getPaintingTitle());
-        assertSame(pi3, p3.getToPaintingInfo());
+        assertSame(pi3, p3.getPaintingInfo());
 
         // test that object id was updated.
         assertEquals(pi2oid, pi3.getObjectId());

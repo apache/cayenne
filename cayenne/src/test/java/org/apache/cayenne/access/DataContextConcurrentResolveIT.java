@@ -113,10 +113,10 @@ public class DataContextConcurrentResolveIT {
         CountDownLatch start = new CountDownLatch(1);
 
         List<Runnable> readers = List.of(
-                () -> ObjectSelect.query(Painting.class).prefetch(Painting.TO_ARTIST.disjoint()).select(context),
-                () -> ObjectSelect.query(Painting.class).prefetch(Painting.TO_ARTIST.joint()).select(context),
+                () -> ObjectSelect.query(Painting.class).prefetch(Painting.ARTIST.disjoint()).select(context),
+                () -> ObjectSelect.query(Painting.class).prefetch(Painting.ARTIST.joint()).select(context),
                 () -> ObjectSelect.query(Painting.class).select(context),
-                () -> ObjectSelect.query(Artist.class).prefetch(Artist.PAINTING_ARRAY.disjoint()).select(context));
+                () -> ObjectSelect.query(Artist.class).prefetch(Artist.PAINTINGS.disjoint()).select(context));
 
         ExecutorService executor = Executors.newFixedThreadPool(READERS + 1);
         try {
@@ -174,9 +174,9 @@ public class DataContextConcurrentResolveIT {
         }
 
         // after the dust settles every object reflects the last statement that read it, and nothing is torn
-        for (Painting p : ObjectSelect.query(Painting.class).prefetch(Painting.TO_ARTIST.disjoint()).select(context)) {
+        for (Painting p : ObjectSelect.query(Painting.class).prefetch(Painting.ARTIST.disjoint()).select(context)) {
             checkConsistent(p, lastVersions);
-            assertTrue(p.readPropertyDirectly(Painting.TO_ARTIST.getName()) instanceof Artist);
+            assertTrue(p.readPropertyDirectly(Painting.ARTIST.getName()) instanceof Artist);
         }
     }
 
@@ -203,7 +203,7 @@ public class DataContextConcurrentResolveIT {
                         + " to " + version);
             }
 
-            Object artist = p.readPropertyDirectly(Painting.TO_ARTIST.getName());
+            Object artist = p.readPropertyDirectly(Painting.ARTIST.getName());
             if (artist instanceof Artist a) {
                 assertEquals(artistFor(n), Cayenne.intPKForObject(a),
                         "To-one of " + id + " comes from an older statement than its attributes");

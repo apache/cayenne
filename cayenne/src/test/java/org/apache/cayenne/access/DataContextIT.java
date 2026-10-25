@@ -172,7 +172,7 @@ public class DataContextIT {
 		// test FK relationship snapshotting
 		Painting p1 = new Painting();
 		context.registerNewObject(p1);
-		p1.setToArtist(artist);
+		p1.setArtist(artist);
 
 		DataRow s1 = context.currentSnapshot(p1);
 		assertEquals("Painting", s1.getEntityName());
@@ -196,14 +196,14 @@ public class DataContextIT {
         ObjectId eId = ObjectId.of("Exhibit", Exhibit.EXHIBIT_ID_PK_COLUMN, 2);
 		Exhibit e = (Exhibit) context.objectForPK(eId);
 
-		assertTrue(e.readPropertyDirectly(Exhibit.TO_GALLERY.getName()) instanceof Fault);
+		assertTrue(e.readPropertyDirectly(Exhibit.GALLERY.getName()) instanceof Fault);
 
 		DataRow snapshot = context.currentSnapshot(e);
 
 		// assert that after taking a snapshot, we have FK in, but the
 		// relationship
 		// is still a Fault
-		assertTrue(e.readPropertyDirectly(Exhibit.TO_GALLERY.getName()) instanceof Fault);
+		assertTrue(e.readPropertyDirectly(Exhibit.GALLERY.getName()) instanceof Fault);
 		assertEquals(33002, snapshot.get("GALLERY_ID"));
 	}
 
@@ -242,8 +242,8 @@ public class DataContextIT {
 		createArtistsAndPaintingsDataSet();
 
 		List<Painting> results = ObjectSelect.query(Painting.class)
-				.where(Painting.TO_ARTIST.dot(Artist.ARTIST_NAME).eq("artist2"))
-				.or(Painting.TO_ARTIST.dot(Artist.ARTIST_NAME).eq("artist4"))
+				.where(Painting.ARTIST.dot(Artist.ARTIST_NAME).eq("artist2"))
+				.or(Painting.ARTIST.dot(Artist.ARTIST_NAME).eq("artist4"))
 				.select(context);
 
 		assertEquals(2, results.size());
@@ -258,8 +258,8 @@ public class DataContextIT {
 		createArtistsAndPaintingsDataSet();
 
 		List<Painting> results = ObjectSelect.query(Painting.class)
-				.where(ExpressionFactory.matchDbExp("toArtist.ARTIST_NAME", "artist2"))
-				.or(ExpressionFactory.matchDbExp("toArtist.ARTIST_NAME", "artist4"))
+				.where(ExpressionFactory.matchDbExp("artist.ARTIST_NAME", "artist2"))
+				.or(ExpressionFactory.matchDbExp("artist.ARTIST_NAME", "artist4"))
 				.select(context);
 
 		assertEquals(2, results.size());
@@ -466,7 +466,7 @@ public class DataContextIT {
 
 		Painting painting = context.newObject(Painting.class);
 		painting.setPaintingTitle("paint");
-		a1.addToManyTarget("paintingArray", painting, true);
+		a1.addToManyTarget("paintings", painting, true);
 
 		assertEquals(PersistenceState.MODIFIED, a1.getPersistenceState());
 		context.commitChanges();

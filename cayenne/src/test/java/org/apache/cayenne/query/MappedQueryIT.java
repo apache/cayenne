@@ -165,7 +165,7 @@ public class MappedQueryIT {
         p.setPaintingTitle("A Painting");
         // converting double to string prevents rounding weirdness...
         p.setEstimatedPrice(new BigDecimal(1000));
-        a.addToPaintingArray(p);
+        a.addToPaintings(p);
 
         env.context().commitChanges();
 

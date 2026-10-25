@@ -35,31 +35,31 @@
 	<dbRelationship name="joins" source="DELETE_RULE_FLATB" target="DELETE_RULE_JOIN" toMany="true">
 		<dbAttributePair source="FLATB_ID" target="FLATB_ID"/>
 	</dbRelationship>
-	<dbRelationship name="toFlatA" source="DELETE_RULE_JOIN" target="DELETE_RULE_FLATA" foreignKey="true">
+	<dbRelationship name="flatA" source="DELETE_RULE_JOIN" target="DELETE_RULE_FLATA" foreignKey="true">
 		<dbAttributePair source="FLATA_ID" target="FLATA_ID"/>
 	</dbRelationship>
-	<dbRelationship name="toFlatB" source="DELETE_RULE_JOIN" target="DELETE_RULE_FLATB" foreignKey="true">
+	<dbRelationship name="flatB" source="DELETE_RULE_JOIN" target="DELETE_RULE_FLATB" foreignKey="true">
 		<dbAttributePair source="FLATB_ID" target="FLATB_ID"/>
 	</dbRelationship>
-	<dbRelationship name="deleteRuleTest3Array" source="DELETE_RULE_TEST1" target="DELETE_RULE_TEST3" toMany="true">
+	<dbRelationship name="deleteRuleTest3s" source="DELETE_RULE_TEST1" target="DELETE_RULE_TEST3" toMany="true">
 		<dbAttributePair source="DEL_RULE_TEST1_ID" target="DELETE_RULE_TEST_3_FK"/>
 	</dbRelationship>
 	<dbRelationship name="test2" source="DELETE_RULE_TEST1" target="DELETE_RULE_TEST2" foreignKey="true">
 		<dbAttributePair source="TEST2_ID" target="DEL_RULE_TEST2_ID"/>
 	</dbRelationship>
-	<dbRelationship name="deleteRuleTest3Array" source="DELETE_RULE_TEST2" target="DELETE_RULE_TEST3" toMany="true">
+	<dbRelationship name="deleteRuleTest3s" source="DELETE_RULE_TEST2" target="DELETE_RULE_TEST3" toMany="true">
 		<dbAttributePair source="DEL_RULE_TEST2_ID" target="DELETE_RULE_TEST_3_FK"/>
 	</dbRelationship>
-	<dbRelationship name="test1Array" source="DELETE_RULE_TEST2" target="DELETE_RULE_TEST1" toMany="true">
+	<dbRelationship name="test1s" source="DELETE_RULE_TEST2" target="DELETE_RULE_TEST1" toMany="true">
 		<dbAttributePair source="DEL_RULE_TEST2_ID" target="TEST2_ID"/>
 	</dbRelationship>
-	<dbRelationship name="toDeleteRuleTest2" source="DELETE_RULE_TEST3" target="DELETE_RULE_TEST2" foreignKey="true">
+	<dbRelationship name="deleteRuleTest2" source="DELETE_RULE_TEST3" target="DELETE_RULE_TEST2" foreignKey="true">
 		<dbAttributePair source="DELETE_RULE_TEST_3_FK" target="DEL_RULE_TEST2_ID"/>
 	</dbRelationship>
-	<objRelationship name="flatB" source="DeleteRuleFlatA" target="DeleteRuleFlatB" dbRelationshipPath="joins.toFlatB"/>
-	<objRelationship name="untitledRel" source="DeleteRuleFlatB" target="DeleteRuleFlatA" dbRelationshipPath="joins.toFlatA"/>
+	<objRelationship name="flatB" source="DeleteRuleFlatA" target="DeleteRuleFlatB" dbRelationshipPath="joins.flatB"/>
+	<objRelationship name="untitledRel" source="DeleteRuleFlatB" target="DeleteRuleFlatA" dbRelationshipPath="joins.flatA"/>
 	<objRelationship name="test2" source="DeleteRuleTest1" target="DeleteRuleTest2" deleteRule="deny" dbRelationshipPath="test2"/>
-	<objRelationship name="deleteRuleTest3Array" source="DeleteRuleTest2" target="DeleteRuleTest3" dbRelationshipPath="deleteRuleTest3Array"/>
-	<objRelationship name="test1Array" source="DeleteRuleTest2" target="DeleteRuleTest1" deleteRule="nullify" dbRelationshipPath="test1Array"/>
-	<objRelationship name="toDeleteRuleTest2" source="DeleteRuleTest3" target="DeleteRuleTest2" dbRelationshipPath="toDeleteRuleTest2"/>
+	<objRelationship name="deleteRuleTest3s" source="DeleteRuleTest2" target="DeleteRuleTest3" dbRelationshipPath="deleteRuleTest3s"/>
+	<objRelationship name="test1s" source="DeleteRuleTest2" target="DeleteRuleTest1" deleteRule="nullify" dbRelationshipPath="test1s"/>
+	<objRelationship name="deleteRuleTest2" source="DeleteRuleTest3" target="DeleteRuleTest2" dbRelationshipPath="deleteRuleTest2"/>
 </dataMap>

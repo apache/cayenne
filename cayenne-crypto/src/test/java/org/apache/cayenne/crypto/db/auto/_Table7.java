@@ -25,12 +25,12 @@ public abstract class _Table7 extends PersistentObject {
 
     public static final NumericProperty<Integer> CRYPTO_INT = PropertyFactory.createNumeric("cryptoInt", Integer.class);
     public static final StringProperty<String> CRYPTO_STRING = PropertyFactory.createString("cryptoString", String.class);
-    public static final EntityProperty<Table1> TO_TABLE1 = PropertyFactory.createEntity("toTable1", Table1.class);
+    public static final EntityProperty<Table1> TABLE1 = PropertyFactory.createEntity("table1", Table1.class);
 
     protected Integer cryptoInt;
     protected String cryptoString;
 
-    protected Object toTable1;
+    protected Object table1;
 
     public void setCryptoInt(int cryptoInt) {
         beforePropertyWrite("cryptoInt", this.cryptoInt, cryptoInt);
@@ -55,12 +55,12 @@ public abstract class _Table7 extends PersistentObject {
         return this.cryptoString;
     }
 
-    public void setToTable1(Table1 toTable1) {
-        setToOneTarget("toTable1", toTable1, true);
+    public void setTable1(Table1 table1) {
+        setToOneTarget("table1", table1, true);
     }
 
-    public Table1 getToTable1() {
-        return (Table1)readProperty("toTable1");
+    public Table1 getTable1() {
+        return (Table1)readProperty("table1");
     }
 
     @Override
@@ -74,8 +74,8 @@ public abstract class _Table7 extends PersistentObject {
                 return this.cryptoInt;
             case "cryptoString":
                 return this.cryptoString;
-            case "toTable1":
-                return this.toTable1;
+            case "table1":
+                return this.table1;
             default:
                 return super.readPropertyDirectly(propName);
         }
@@ -94,8 +94,8 @@ public abstract class _Table7 extends PersistentObject {
             case "cryptoString":
                 this.cryptoString = (String)val;
                 break;
-            case "toTable1":
-                this.toTable1 = val;
+            case "table1":
+                this.table1 = val;
                 break;
             default:
                 super.writePropertyDirectly(propName, val);

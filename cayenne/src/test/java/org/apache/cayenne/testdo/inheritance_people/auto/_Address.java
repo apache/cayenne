@@ -23,11 +23,11 @@ public abstract class _Address extends PersistentObject {
     public static final String ADDRESS_ID_PK_COLUMN = "ADDRESS_ID";
 
     public static final StringProperty<String> CITY = PropertyFactory.createString("city", String.class);
-    public static final EntityProperty<Employee> TO_EMPLOYEE = PropertyFactory.createEntity("toEmployee", Employee.class);
+    public static final EntityProperty<Employee> EMPLOYEE = PropertyFactory.createEntity("employee", Employee.class);
 
     protected String city;
 
-    protected Object toEmployee;
+    protected Object employee;
 
     public void setCity(String city) {
         beforePropertyWrite("city", this.city, city);
@@ -39,12 +39,12 @@ public abstract class _Address extends PersistentObject {
         return this.city;
     }
 
-    public void setToEmployee(Employee toEmployee) {
-        setToOneTarget("toEmployee", toEmployee, true);
+    public void setEmployee(Employee employee) {
+        setToOneTarget("employee", employee, true);
     }
 
-    public Employee getToEmployee() {
-        return (Employee)readProperty("toEmployee");
+    public Employee getEmployee() {
+        return (Employee)readProperty("employee");
     }
 
     @Override
@@ -56,8 +56,8 @@ public abstract class _Address extends PersistentObject {
         switch(propName) {
             case "city":
                 return this.city;
-            case "toEmployee":
-                return this.toEmployee;
+            case "employee":
+                return this.employee;
             default:
                 return super.readPropertyDirectly(propName);
         }
@@ -73,8 +73,8 @@ public abstract class _Address extends PersistentObject {
             case "city":
                 this.city = (String)val;
                 break;
-            case "toEmployee":
-                this.toEmployee = val;
+            case "employee":
+                this.employee = val;
                 break;
             default:
                 super.writePropertyDirectly(propName, val);

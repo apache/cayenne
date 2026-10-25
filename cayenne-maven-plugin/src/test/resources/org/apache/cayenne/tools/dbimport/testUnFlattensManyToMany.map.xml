@@ -40,15 +40,15 @@
     <dbRelationship name="aBs" source="A" target="A_B" toMany="true">
         <dbAttributePair source="ID" target="A_ID"/>
     </dbRelationship>
-    <dbRelationship name="toA" source="A_B" target="A" foreignKey="true">
+    <dbRelationship name="a" source="A_B" target="A" foreignKey="true">
         <dbAttributePair source="A_ID" target="ID"/>
     </dbRelationship>
-    <dbRelationship name="toB" source="A_B" target="B" foreignKey="true">
+    <dbRelationship name="b" source="A_B" target="B" foreignKey="true">
         <dbAttributePair source="B_ID" target="ID"/>
     </dbRelationship>
     <dbRelationship name="aBs" source="B" target="A_B" toMany="true">
         <dbAttributePair source="ID" target="B_ID"/>
     </dbRelationship>
-    <objRelationship name="toA" source="AB" target="A" deleteRule="nullify" dbRelationshipPath="toA"/>
+    <objRelationship name="a" source="AB" target="A" deleteRule="nullify" dbRelationshipPath="a"/>
     <objRelationship name="aBs" source="B" target="AB" deleteRule="deny" dbRelationshipPath="aBs"/>
 </dataMap>

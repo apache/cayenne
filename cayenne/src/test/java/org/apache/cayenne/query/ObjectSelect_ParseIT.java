@@ -114,7 +114,7 @@ public class ObjectSelect_ParseIT {
         assertEquals(5, names.size());
         assertEquals("artist1", names.get(0));
 
-        List<Object[]> columns = ObjectSelect.parseColumns("select artistName, count(paintingArray) from Artist "
+        List<Object[]> columns = ObjectSelect.parseColumns("select artistName, count(paintings) from Artist "
                 + "order by artistName").select(context);
         assertEquals(4, columns.size());
         assertEquals(2L, columns.get(0)[1]);
@@ -125,7 +125,7 @@ public class ObjectSelect_ParseIT {
         Artist artist2 = context.objectForPK(Artist.class, 2);
 
         List<Painting> paintings = select(
-                "from Painting where toArtist = $artist and estimatedPrice between $low and $high", artist2, 20, 100);
+                "from Painting where artist = $artist and estimatedPrice between $low and $high", artist2, 20, 100);
         assertEquals(1, paintings.size());
         assertEquals("painting5", paintings.get(0).getPaintingTitle());
     }
@@ -138,19 +138,19 @@ public class ObjectSelect_ParseIT {
 
     @Test
     public void outerJoinAndNull() {
-        List<Artist> artists = select("from Artist where paintingArray+ = null");
+        List<Artist> artists = select("from Artist where paintings+ = null");
         assertEquals(List.of("artist5"), names(artists));
     }
 
     @Test
     public void splitAliases() {
-        List<Artist> artists = select("from Artist where paintingArray#p1.paintingTitle = 'painting4' "
-                + "and paintingArray#p2.paintingTitle = 'painting8'");
+        List<Artist> artists = select("from Artist where paintings#p1.paintingTitle = 'painting4' "
+                + "and paintings#p2.paintingTitle = 'painting8'");
         assertEquals(List.of("artist1"), names(artists));
 
         // the same condition over a single join matches nothing
-        List<Artist> none = select("from Artist where paintingArray.paintingTitle = 'painting4' "
-                + "and paintingArray.paintingTitle = 'painting8'");
+        List<Artist> none = select("from Artist where paintings.paintingTitle = 'painting4' "
+                + "and paintings.paintingTitle = 'painting8'");
         assertEquals(0, none.size());
     }
 
@@ -165,14 +165,14 @@ public class ObjectSelect_ParseIT {
 
     @Test
     public void singleDistinctColumn() {
-        List<String> names = select("select distinct toGallery.galleryName from Painting");
+        List<String> names = select("select distinct gallery.galleryName from Painting");
         assertEquals(List.of("gallery1"), names);
     }
 
     @Test
     public void aggregatesWithHaving() {
-        List<Object[]> rows = select("select toArtist.artistName, sum(estimatedPrice), max(estimatedPrice) "
-                + "from Painting having sum(estimatedPrice) > $min order by toArtist.artistName", 70);
+        List<Object[]> rows = select("select artist.artistName, sum(estimatedPrice), max(estimatedPrice) "
+                + "from Painting having sum(estimatedPrice) > $min order by artist.artistName", 70);
 
         assertEquals(3, rows.size());
         assertEquals("artist1", rows.get(0)[0]);
@@ -190,8 +190,8 @@ public class ObjectSelect_ParseIT {
 
     @Test
     public void selfWithAggregate() {
-        List<Object[]> rows = select("select self, count(paintingArray+) as n from Artist "
-                + "order by count(paintingArray+), artistName desc");
+        List<Object[]> rows = select("select self, count(paintings+) as n from Artist "
+                + "order by count(paintings+), artistName desc");
 
         assertEquals(5, rows.size());
         assertEquals("artist5", assertInstanceOf(Artist.class, rows.get(0)[0]).getArtistName());
@@ -202,7 +202,7 @@ public class ObjectSelect_ParseIT {
 
     @Test
     public void relatedEntityColumns() {
-        List<Object[]> rows = select("select toGallery+, toArtist, self from Painting order by paintingTitle");
+        List<Object[]> rows = select("select gallery+, artist, self from Painting order by paintingTitle");
 
         assertEquals(8, rows.size());
 
@@ -218,8 +218,8 @@ public class ObjectSelect_ParseIT {
 
     @Test
     public void flatToManyColumn() {
-        List<Object[]> rows = select("select artistName, paintingArray from Artist where artistName = 'artist1' "
-                + "order by paintingArray.paintingTitle");
+        List<Object[]> rows = select("select artistName, paintings from Artist where artistName = 'artist1' "
+                + "order by paintings.paintingTitle");
 
         assertEquals(2, rows.size());
         assertEquals("artist1", rows.get(0)[0]);
@@ -230,15 +230,15 @@ public class ObjectSelect_ParseIT {
     @Test
     public void flatToManyColumnWithNoRelatedObjects() {
         // an entity column is an outer join, so an artist with no paintings is not filtered out
-        List<Object[]> rows = select("select artistName, paintingArray from Artist where artistName = 'artist5'");
+        List<Object[]> rows = select("select artistName, paintings from Artist where artistName = 'artist5'");
 
         assertEquals(1, rows.size());
         assertEquals("artist5", rows.get(0)[0]);
         assertNull(rows.get(0)[1]);
 
         // ... unless the qualifier says so
-        List<Object[]> none = select("select artistName, paintingArray from Artist "
-                + "where artistName = 'artist5' and exists paintingArray");
+        List<Object[]> none = select("select artistName, paintings from Artist "
+                + "where artistName = 'artist5' and exists paintings");
         assertEquals(0, none.size());
     }
 
@@ -255,16 +255,16 @@ public class ObjectSelect_ParseIT {
     @Test
     public void prefetch() {
         List<Artist> artists = select("from Artist where artistName = $name "
-                + "prefetch paintingArray joint, paintingArray.toGallery", "artist2");
+                + "prefetch paintings joint, paintings.gallery", "artist2");
 
         assertEquals(1, artists.size());
 
         env.runWithQueriesBlocked(() -> {
-            List<Painting> paintings = artists.get(0).getPaintingArray();
+            List<Painting> paintings = artists.get(0).getPaintings();
             assertEquals(2, paintings.size());
             for (Painting painting : paintings) {
                 assertEquals(PersistenceState.COMMITTED, painting.getPersistenceState());
-                assertEquals("gallery1", painting.getToGallery().getGalleryName());
+                assertEquals("gallery1", painting.getGallery().getGalleryName());
             }
         });
     }
@@ -272,7 +272,7 @@ public class ObjectSelect_ParseIT {
     @Test
     public void existsSubquery() {
         List<Artist> artists = select("from Artist where exists "
-                + "(select self from Painting where toArtist = enclosing(self) and estimatedPrice > $price) "
+                + "(select self from Painting where artist = enclosing(self) and estimatedPrice > $price) "
                 + "order by artistName", 65);
         assertEquals(List.of("artist1", "artist4"), names(artists));
     }
@@ -280,38 +280,38 @@ public class ObjectSelect_ParseIT {
     @Test
     public void notExistsSubquery() {
         List<Artist> artists = select(
-                "from Artist where not exists (from Painting where toArtist = enclosing(self))");
+                "from Artist where not exists (from Painting where artist = enclosing(self))");
         assertEquals(List.of("artist5"), names(artists));
     }
 
     @Test
     public void existsSubqueryWithHaving() {
         List<Artist> artists = select("from Artist where exists (select self from Painting "
-                + "where toArtist = enclosing(self) and estimatedPrice < 45 having count(*) > 1)");
+                + "where artist = enclosing(self) and estimatedPrice < 45 having count(*) > 1)");
         assertEquals(0, artists.size());
     }
 
     @Test
     public void existsPath() {
-        List<Artist> artists = select("from Artist where not exists paintingArray");
+        List<Artist> artists = select("from Artist where not exists paintings");
         assertEquals(List.of("artist5"), names(artists));
     }
 
     @Test
     public void inSubquery() {
         List<Artist> artists = select("from Artist where artistName in "
-                + "(select toArtist.artistName from Painting where estimatedPrice < $price) order by artistName", 25);
+                + "(select artist.artistName from Painting where estimatedPrice < $price) order by artistName", 25);
         assertEquals(List.of("artist2", "artist3"), names(artists));
 
         List<Artist> notIn = select("from Artist where artistName not in "
-                + "(select toArtist.artistName from Painting where estimatedPrice < 75) order by artistName");
+                + "(select artist.artistName from Painting where estimatedPrice < 75) order by artistName");
         assertEquals(List.of("artist5"), names(notIn));
     }
 
     @Test
     public void allAndAnySubqueries() {
         List<Painting> all = select("from Painting where estimatedPrice > all "
-                + "(select estimatedPrice from Painting where toArtist.artistName = 'artist4')");
+                + "(select estimatedPrice from Painting where artist.artistName = 'artist4')");
         assertEquals(1, all.size());
         assertEquals("painting8", all.get(0).getPaintingTitle());
 
@@ -324,7 +324,7 @@ public class ObjectSelect_ParseIT {
     @Test
     public void subqueryInExpression() {
         List<Artist> artists = ObjectSelect.query(Artist.class)
-                .where("exists (from Painting where toArtist = enclosing(self) and paintingTitle = $t)", "painting3")
+                .where("exists (from Painting where artist = enclosing(self) and paintingTitle = $t)", "painting3")
                 .select(context);
         assertEquals(List.of("artist4"), names(artists));
     }
@@ -333,7 +333,7 @@ public class ObjectSelect_ParseIT {
     public void cachedSubqueryParameters() {
         // a parameter of a nested select is a part of the cache key, so the two queries don't share the cached result
         String query = "from Artist where exists "
-                + "(from Painting where toArtist = enclosing(self) and estimatedPrice > $price) order by artistName";
+                + "(from Painting where artist = enclosing(self) and estimatedPrice > $price) order by artistName";
 
         List<Artist> over65 = ObjectSelect.parse(Artist.class, query, 65).localCache().select(context);
         assertEquals(List.of("artist1", "artist4"), names(over65));

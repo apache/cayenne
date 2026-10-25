@@ -39,8 +39,8 @@ public class ObjRelationshipValidatorTest {
     private ObjRelationship groups;
     private ObjRelationship artists;
     private ObjRelationship paintings;
-    private ObjRelationship toArtist;
-    private ObjRelationship toGallery;
+    private ObjRelationship paintingArtist;
+    private ObjRelationship paintingGallery;
     private ObjRelationship galleryPaintings;
 
     @BeforeEach
@@ -62,16 +62,16 @@ public class ObjRelationshipValidatorTest {
         artistGroup.addAttribute(groupId);
 
         addDbRelationship(artist, "artistGroups", "ARTIST_GROUP", "ARTIST_ID", "ARTIST_ID", true, false);
-        addDbRelationship(artistGroup, "toArtist", "ARTIST", "ARTIST_ID", "ARTIST_ID", false, true);
+        addDbRelationship(artistGroup, "artist", "ARTIST", "ARTIST_ID", "ARTIST_ID", false, true);
         addDbRelationship(group, "artistGroups", "ARTIST_GROUP", "GROUP_ID", "GROUP_ID", true, false);
-        addDbRelationship(artistGroup, "toGroup", "GROUP", "GROUP_ID", "GROUP_ID", false, true);
+        addDbRelationship(artistGroup, "group", "GROUP", "GROUP_ID", "GROUP_ID", false, true);
 
         // a plain FK to PK
         addDbRelationship(artist, "paintings", "PAINTING", "ARTIST_ID", "ARTIST_ID", true, false);
-        addDbRelationship(painting, "toArtist", "ARTIST", "ARTIST_ID", "ARTIST_ID", false, true);
+        addDbRelationship(painting, "artist", "ARTIST", "ARTIST_ID", "ARTIST_ID", false, true);
 
         // a FK to a non-PK column
-        addDbRelationship(painting, "toGallery", "GALLERY", "GALLERY_NAME", "GALLERY_NAME", false, true);
+        addDbRelationship(painting, "gallery", "GALLERY", "GALLERY_NAME", "GALLERY_NAME", false, true);
         addDbRelationship(gallery, "paintings", "PAINTING", "GALLERY_NAME", "GALLERY_NAME", true, false);
 
         ObjEntity artistEntity = addObjEntity(map, "Artist", "ARTIST");
@@ -79,11 +79,11 @@ public class ObjRelationshipValidatorTest {
         ObjEntity galleryEntity = addObjEntity(map, "Gallery", "GALLERY");
         ObjEntity paintingEntity = addObjEntity(map, "Painting", "PAINTING");
 
-        groups = addObjRelationship(artistEntity, "groups", "Group", "artistGroups.toGroup");
-        artists = addObjRelationship(groupEntity, "artists", "Artist", "artistGroups.toArtist");
+        groups = addObjRelationship(artistEntity, "groups", "Group", "artistGroups.group");
+        artists = addObjRelationship(groupEntity, "artists", "Artist", "artistGroups.artist");
         paintings = addObjRelationship(artistEntity, "paintings", "Painting", "paintings");
-        toArtist = addObjRelationship(paintingEntity, "toArtist", "Artist", "toArtist");
-        toGallery = addObjRelationship(paintingEntity, "toGallery", "Gallery", "toGallery");
+        paintingArtist = addObjRelationship(paintingEntity, "artist", "Artist", "artist");
+        paintingGallery = addObjRelationship(paintingEntity, "gallery", "Gallery", "gallery");
         galleryPaintings = addObjRelationship(galleryEntity, "paintings", "Painting", "paintings");
     }
 
@@ -96,12 +96,12 @@ public class ObjRelationshipValidatorTest {
     @Test
     public void fkToPkIsNotReported() {
         assertFalse(hasFailure(paintings, "join not to PK"));
-        assertFalse(hasFailure(toArtist, "join not to PK"));
+        assertFalse(hasFailure(paintingArtist, "join not to PK"));
     }
 
     @Test
     public void joinNotToPkOnEitherSideIsReported() {
-        assertTrue(hasFailure(toGallery, "join not to PK"));
+        assertTrue(hasFailure(paintingGallery, "join not to PK"));
         assertTrue(hasFailure(galleryPaintings, "join not to PK"));
     }
 

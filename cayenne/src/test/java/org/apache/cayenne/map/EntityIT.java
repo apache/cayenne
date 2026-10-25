@@ -120,17 +120,17 @@ public class EntityIT {
     public void resolveAttributeNotLast() {
         ObjEntity galleryEnt = env.runtime().getDataDomain().getEntityResolver().getObjEntity("Gallery");
         assertThrows(ExpressionException.class,
-                () -> galleryEnt.resolvePath(CayennePath.of("galleryName.paintingArray")));
+                () -> galleryEnt.resolvePath(CayennePath.of("galleryName.paintings")));
     }
 
     @Test
     public void resolveObjPathExpandedAlias() {
         ObjEntity artistEnt = env.runtime().getDataDomain().getEntityResolver().getObjEntity("Artist");
         List<Object> components = artistEnt.resolvePath(
-                CayennePath.of("a.paintingTitle").expandAliases(Map.of("a", "paintingArray")));
+                CayennePath.of("a.paintingTitle").expandAliases(Map.of("a", "paintings")));
 
         assertEquals(2, components.size());
-        assertSame(artistEnt.getRelationship("paintingArray"), components.get(0));
+        assertSame(artistEnt.getRelationship("paintings"), components.get(0));
         assertSame(artistEnt.getDataMap().getObjEntity("Painting").getAttribute("paintingTitle"), components.get(1));
     }
 

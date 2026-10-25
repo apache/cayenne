@@ -23,11 +23,11 @@ public abstract class _MeaningfulFK extends PersistentObject {
     public static final String MEANIGNFUL_FK_ID_PK_COLUMN = "MEANIGNFUL_FK_ID";
 
     public static final NumericProperty<Integer> RELATIONSHIP_HELPER_ID = PropertyFactory.createNumeric("relationshipHelperID", Integer.class);
-    public static final EntityProperty<RelationshipHelper> TO_RELATIONSHIP_HELPER = PropertyFactory.createEntity("toRelationshipHelper", RelationshipHelper.class);
+    public static final EntityProperty<RelationshipHelper> RELATIONSHIP_HELPER = PropertyFactory.createEntity("relationshipHelper", RelationshipHelper.class);
 
     protected int relationshipHelperID;
 
-    protected Object toRelationshipHelper;
+    protected Object relationshipHelper;
 
     public void setRelationshipHelperID(int relationshipHelperID) {
         beforePropertyWrite("relationshipHelperID", this.relationshipHelperID, relationshipHelperID);
@@ -39,12 +39,12 @@ public abstract class _MeaningfulFK extends PersistentObject {
         return this.relationshipHelperID;
     }
 
-    public void setToRelationshipHelper(RelationshipHelper toRelationshipHelper) {
-        setToOneTarget("toRelationshipHelper", toRelationshipHelper, true);
+    public void setRelationshipHelper(RelationshipHelper relationshipHelper) {
+        setToOneTarget("relationshipHelper", relationshipHelper, true);
     }
 
-    public RelationshipHelper getToRelationshipHelper() {
-        return (RelationshipHelper)readProperty("toRelationshipHelper");
+    public RelationshipHelper getRelationshipHelper() {
+        return (RelationshipHelper)readProperty("relationshipHelper");
     }
 
     @Override
@@ -56,8 +56,8 @@ public abstract class _MeaningfulFK extends PersistentObject {
         switch(propName) {
             case "relationshipHelperID":
                 return this.relationshipHelperID;
-            case "toRelationshipHelper":
-                return this.toRelationshipHelper;
+            case "relationshipHelper":
+                return this.relationshipHelper;
             default:
                 return super.readPropertyDirectly(propName);
         }
@@ -73,8 +73,8 @@ public abstract class _MeaningfulFK extends PersistentObject {
             case "relationshipHelperID":
                 this.relationshipHelperID = val == null ? 0 : (int)val;
                 break;
-            case "toRelationshipHelper":
-                this.toRelationshipHelper = val;
+            case "relationshipHelper":
+                this.relationshipHelper = val;
                 break;
             default:
                 super.writePropertyDirectly(propName, val);

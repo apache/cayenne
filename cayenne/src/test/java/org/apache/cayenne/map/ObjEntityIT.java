@@ -117,29 +117,29 @@ public class ObjEntityIT {
         ObjEntity artistE = env.runtime().getDataDomain().getEntityResolver().getObjEntity("Artist");
 
         Map<String, String> aliases = new HashMap<>();
-        aliases.put("a", "paintingArray.toGallery");
+        aliases.put("a", "paintings.gallery");
 
         ObjEntity paintingE = artistE.getDataMap().getObjEntity("Painting");
 
         Object lastAttribute = artistE
-                .resolvePath(CayennePath.of("paintingArray.paintingTitle").expandAliases(aliases))
+                .resolvePath(CayennePath.of("paintings.paintingTitle").expandAliases(aliases))
                 .getLast();
         assertSame(paintingE.getAttribute("paintingTitle"), lastAttribute);
 
         Object lastRelationship = artistE
-                .resolvePath(CayennePath.of("paintingArray.toGallery").expandAliases(aliases))
+                .resolvePath(CayennePath.of("paintings.gallery").expandAliases(aliases))
                 .getLast();
-        assertSame(paintingE.getRelationship("toGallery"), lastRelationship);
+        assertSame(paintingE.getRelationship("gallery"), lastRelationship);
 
         Object lastLeftJoinRelationship = artistE
-                .resolvePath(CayennePath.of("paintingArray+.toGallery+").expandAliases(aliases))
+                .resolvePath(CayennePath.of("paintings+.gallery+").expandAliases(aliases))
                 .getLast();
-        assertSame(paintingE.getRelationship("toGallery"), lastLeftJoinRelationship);
+        assertSame(paintingE.getRelationship("gallery"), lastLeftJoinRelationship);
 
         Object lastAliasedRelationship = artistE
                 .resolvePath(CayennePath.of("a").expandAliases(aliases))
                 .getLast();
-        assertSame(paintingE.getRelationship("toGallery"), lastAliasedRelationship);
+        assertSame(paintingE.getRelationship("gallery"), lastAliasedRelationship);
     }
 
     @Test
@@ -272,7 +272,7 @@ public class ObjEntityIT {
         DbEntity dae = ae.getDbEntity();
 
         assertNull(ae.getRelationshipForDbRelationship(new DbRelationship()));
-        assertNotNull(ae.getRelationshipForDbRelationship(dae.getRelationship("paintingArray")));
+        assertNotNull(ae.getRelationshipForDbRelationship(dae.getRelationship("paintings")));
     }
 
     @Test
@@ -287,18 +287,18 @@ public class ObjEntityIT {
     public void translateToRelatedEntityIndependentPath() throws Exception {
         ObjEntity artistE = env.runtime().getDataDomain().getEntityResolver().getObjEntity(Artist.class);
 
-        Expression e1 = ExpressionFactory.exp("paintingArray");
-        Expression translated = artistE.translateToRelatedEntity(e1, "artistExhibitArray");
-        assertEquals(ExpressionFactory.exp("db:toArtist.paintingArray"), translated, "failure: " + translated);
+        Expression e1 = ExpressionFactory.exp("paintings");
+        Expression translated = artistE.translateToRelatedEntity(e1, "artistExhibits");
+        assertEquals(ExpressionFactory.exp("db:artist.paintings"), translated, "failure: " + translated);
     }
 
     @Test
     public void translateToRelatedEntityTrimmedPath() throws Exception {
         ObjEntity artistE = env.runtime().getDataDomain().getEntityResolver().getObjEntity(Artist.class);
 
-        Expression e1 = ExpressionFactory.exp("artistExhibitArray.toExhibit");
-        Expression translated = artistE.translateToRelatedEntity(e1, "artistExhibitArray");
-        assertEquals(ExpressionFactory.exp("db:toArtist.artistExhibitArray.toExhibit"),
+        Expression e1 = ExpressionFactory.exp("artistExhibits.exhibit");
+        Expression translated = artistE.translateToRelatedEntity(e1, "artistExhibits");
+        assertEquals(ExpressionFactory.exp("db:artist.artistExhibits.exhibit"),
                 translated, "failure: " + translated);
     }
 
@@ -306,20 +306,20 @@ public class ObjEntityIT {
     public void translateToRelatedEntitySplitHalfWay() throws Exception {
         ObjEntity artistE = env.runtime().getDataDomain().getEntityResolver().getObjEntity(Artist.class);
 
-        Expression e1 = ExpressionFactory.exp("paintingArray.toPaintingInfo.textReview");
-        Expression translated = artistE.translateToRelatedEntity(e1, "paintingArray.toGallery");
+        Expression e1 = ExpressionFactory.exp("paintings.paintingInfo.textReview");
+        Expression translated = artistE.translateToRelatedEntity(e1, "paintings.gallery");
         assertEquals(
-                ExpressionFactory.exp("db:paintingArray.toArtist.paintingArray.toPaintingInfo.TEXT_REVIEW"), translated,
+                ExpressionFactory.exp("db:paintings.artist.paintings.paintingInfo.TEXT_REVIEW"), translated,
                 "failure: " + translated);
     }
 
     @Test
     public void translateToRelatedEntityMatchingPath() throws Exception {
         ObjEntity artistE = env.runtime().getDataDomain().getEntityResolver().getObjEntity(Artist.class);
-        Expression e1 = ExpressionFactory.exp("artistExhibitArray.toExhibit");
-        Expression translated = artistE.translateToRelatedEntity(e1, "artistExhibitArray.toExhibit");
+        Expression e1 = ExpressionFactory.exp("artistExhibits.exhibit");
+        Expression translated = artistE.translateToRelatedEntity(e1, "artistExhibits.exhibit");
         assertEquals(
-                ExpressionFactory.exp("db:artistExhibitArray.toArtist.artistExhibitArray.toExhibit"), translated,
+                ExpressionFactory.exp("db:artistExhibits.artist.artistExhibits.exhibit"), translated,
                 "failure: " + translated);
     }
 
@@ -327,10 +327,10 @@ public class ObjEntityIT {
     public void translateToRelatedEntityMultiplePaths() throws Exception {
         ObjEntity artistE = env.runtime().getDataDomain().getEntityResolver().getObjEntity(Artist.class);
 
-        Expression e1 = ExpressionFactory.exp("paintingArray = $p and artistExhibitArray.toExhibit.closingDate = $d");
-        Expression translated = artistE.translateToRelatedEntity(e1, "artistExhibitArray");
-        assertEquals(ExpressionFactory.exp("db:toArtist.paintingArray = $p "
-                + "and db:toArtist.artistExhibitArray.toExhibit.CLOSING_DATE = $d"), translated,
+        Expression e1 = ExpressionFactory.exp("paintings = $p and artistExhibits.exhibit.closingDate = $d");
+        Expression translated = artistE.translateToRelatedEntity(e1, "artistExhibits");
+        assertEquals(ExpressionFactory.exp("db:artist.paintings = $p "
+                + "and db:artist.artistExhibits.exhibit.CLOSING_DATE = $d"), translated,
                 "failure: " + translated);
     }
 
@@ -338,9 +338,9 @@ public class ObjEntityIT {
     public void translateToRelatedEntityOuterJoin_Flattened() throws Exception {
         ObjEntity artistE = env.runtime().getDataDomain().getEntityResolver().getObjEntity(Artist.class);
 
-        Expression e1 = ExpressionFactory.exp("groupArray+.name");
-        Expression translated = artistE.translateToRelatedEntity(e1, "artistExhibitArray");
-        assertEquals(ExpressionFactory.exp("db:toArtist.artistGroupArray+.toGroup+.NAME"), translated,
+        Expression e1 = ExpressionFactory.exp("groups+.name");
+        Expression translated = artistE.translateToRelatedEntity(e1, "artistExhibits");
+        assertEquals(ExpressionFactory.exp("db:artist.artistGroups+.group+.NAME"), translated,
                 "failure: " + translated);
     }
 

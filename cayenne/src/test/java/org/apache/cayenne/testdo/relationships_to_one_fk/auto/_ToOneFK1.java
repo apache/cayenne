@@ -21,17 +21,17 @@ public abstract class _ToOneFK1 extends PersistentObject {
     public static final NumericIdProperty<Integer> TO_ONE_FK1_PK_PK_PROPERTY = PropertyFactory.createNumericId("TO_ONE_FK1_PK", "ToOneFK1", Integer.class);
     public static final String TO_ONE_FK1_PK_PK_COLUMN = "TO_ONE_FK1_PK";
 
-    public static final EntityProperty<ToOneFK2> TO_PK = PropertyFactory.createEntity("toPK", ToOneFK2.class);
+    public static final EntityProperty<ToOneFK2> PK = PropertyFactory.createEntity("pk", ToOneFK2.class);
 
 
-    protected Object toPK;
+    protected Object pk;
 
-    public void setToPK(ToOneFK2 toPK) {
-        setToOneTarget("toPK", toPK, true);
+    public void setPk(ToOneFK2 pk) {
+        setToOneTarget("pk", pk, true);
     }
 
-    public ToOneFK2 getToPK() {
-        return (ToOneFK2)readProperty("toPK");
+    public ToOneFK2 getPk() {
+        return (ToOneFK2)readProperty("pk");
     }
 
     @Override
@@ -41,8 +41,8 @@ public abstract class _ToOneFK1 extends PersistentObject {
         }
 
         switch(propName) {
-            case "toPK":
-                return this.toPK;
+            case "pk":
+                return this.pk;
             default:
                 return super.readPropertyDirectly(propName);
         }
@@ -55,8 +55,8 @@ public abstract class _ToOneFK1 extends PersistentObject {
         }
 
         switch (propName) {
-            case "toPK":
-                this.toPK = val;
+            case "pk":
+                this.pk = val;
                 break;
             default:
                 super.writePropertyDirectly(propName, val);

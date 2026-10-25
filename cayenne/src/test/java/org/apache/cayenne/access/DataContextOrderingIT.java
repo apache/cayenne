@@ -91,18 +91,18 @@ public class DataContextOrderingIT  {
         Painting p1 = env.context().newObject(Painting.class);
         p1.setEstimatedPrice(new BigDecimal(1));
         p1.setPaintingTitle("Y");
-        a1.addToPaintingArray(p1);
+        a1.addToPaintings(p1);
 
         Painting p2 = env.context().newObject(Painting.class);
         p2.setEstimatedPrice(new BigDecimal(2));
         p2.setPaintingTitle("X");
-        a2.addToPaintingArray(p2);
+        a2.addToPaintings(p2);
 
         env.context().commitChanges();
 
         ObjectSelect<Artist> query1 = ObjectSelect.query(Artist.class)
                 // per CAY-1074, adding a to-many join to expression messes up the ordering
-                .and(Artist.PAINTING_ARRAY.ne((List<Painting>) null))
+                .and(Artist.PAINTINGS.ne((List<Painting>) null))
                 .orderBy(Artist.ARTIST_NAME.desc(), (Artist.DATE_OF_BIRTH.desc()));
 
         List<Artist> list1 = query1.select(env.context());

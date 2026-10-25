@@ -24,27 +24,27 @@ public abstract class _ArtistExhibit extends PersistentObject {
     public static final NumericIdProperty<Integer> EXHIBIT_ID_PK_PROPERTY = PropertyFactory.createNumericId("EXHIBIT_ID", "ArtistExhibit", Integer.class);
     public static final String EXHIBIT_ID_PK_COLUMN = "EXHIBIT_ID";
 
-    public static final EntityProperty<Artist> TO_ARTIST = PropertyFactory.createEntity("toArtist", Artist.class);
-    public static final EntityProperty<Exhibit> TO_EXHIBIT = PropertyFactory.createEntity("toExhibit", Exhibit.class);
+    public static final EntityProperty<Artist> ARTIST = PropertyFactory.createEntity("artist", Artist.class);
+    public static final EntityProperty<Exhibit> EXHIBIT = PropertyFactory.createEntity("exhibit", Exhibit.class);
 
 
-    protected Object toArtist;
-    protected Object toExhibit;
+    protected Object artist;
+    protected Object exhibit;
 
-    public void setToArtist(Artist toArtist) {
-        setToOneTarget("toArtist", toArtist, true);
+    public void setArtist(Artist artist) {
+        setToOneTarget("artist", artist, true);
     }
 
-    public Artist getToArtist() {
-        return (Artist)readProperty("toArtist");
+    public Artist getArtist() {
+        return (Artist)readProperty("artist");
     }
 
-    public void setToExhibit(Exhibit toExhibit) {
-        setToOneTarget("toExhibit", toExhibit, true);
+    public void setExhibit(Exhibit exhibit) {
+        setToOneTarget("exhibit", exhibit, true);
     }
 
-    public Exhibit getToExhibit() {
-        return (Exhibit)readProperty("toExhibit");
+    public Exhibit getExhibit() {
+        return (Exhibit)readProperty("exhibit");
     }
 
     @Override
@@ -54,10 +54,10 @@ public abstract class _ArtistExhibit extends PersistentObject {
         }
 
         switch(propName) {
-            case "toArtist":
-                return this.toArtist;
-            case "toExhibit":
-                return this.toExhibit;
+            case "artist":
+                return this.artist;
+            case "exhibit":
+                return this.exhibit;
             default:
                 return super.readPropertyDirectly(propName);
         }
@@ -70,11 +70,11 @@ public abstract class _ArtistExhibit extends PersistentObject {
         }
 
         switch (propName) {
-            case "toArtist":
-                this.toArtist = val;
+            case "artist":
+                this.artist = val;
                 break;
-            case "toExhibit":
-                this.toExhibit = val;
+            case "exhibit":
+                this.exhibit = val;
                 break;
             default:
                 super.writePropertyDirectly(propName, val);

@@ -23,11 +23,11 @@ public abstract class _BinaryPKTest2 extends PersistentObject {
     public static final String ID_PK_COLUMN = "ID";
 
     public static final StringProperty<String> DETAIL_NAME = PropertyFactory.createString("detailName", String.class);
-    public static final EntityProperty<BinaryPKTest1> TO_BINARY_PKMASTER = PropertyFactory.createEntity("toBinaryPKMaster", BinaryPKTest1.class);
+    public static final EntityProperty<BinaryPKTest1> BINARY_PKMASTER = PropertyFactory.createEntity("binaryPKMaster", BinaryPKTest1.class);
 
     protected String detailName;
 
-    protected Object toBinaryPKMaster;
+    protected Object binaryPKMaster;
 
     public void setDetailName(String detailName) {
         beforePropertyWrite("detailName", this.detailName, detailName);
@@ -39,12 +39,12 @@ public abstract class _BinaryPKTest2 extends PersistentObject {
         return this.detailName;
     }
 
-    public void setToBinaryPKMaster(BinaryPKTest1 toBinaryPKMaster) {
-        setToOneTarget("toBinaryPKMaster", toBinaryPKMaster, true);
+    public void setBinaryPKMaster(BinaryPKTest1 binaryPKMaster) {
+        setToOneTarget("binaryPKMaster", binaryPKMaster, true);
     }
 
-    public BinaryPKTest1 getToBinaryPKMaster() {
-        return (BinaryPKTest1)readProperty("toBinaryPKMaster");
+    public BinaryPKTest1 getBinaryPKMaster() {
+        return (BinaryPKTest1)readProperty("binaryPKMaster");
     }
 
     @Override
@@ -56,8 +56,8 @@ public abstract class _BinaryPKTest2 extends PersistentObject {
         switch(propName) {
             case "detailName":
                 return this.detailName;
-            case "toBinaryPKMaster":
-                return this.toBinaryPKMaster;
+            case "binaryPKMaster":
+                return this.binaryPKMaster;
             default:
                 return super.readPropertyDirectly(propName);
         }
@@ -73,8 +73,8 @@ public abstract class _BinaryPKTest2 extends PersistentObject {
             case "detailName":
                 this.detailName = (String)val;
                 break;
-            case "toBinaryPKMaster":
-                this.toBinaryPKMaster = val;
+            case "binaryPKMaster":
+                this.binaryPKMaster = val;
                 break;
             default:
                 super.writePropertyDirectly(propName, val);

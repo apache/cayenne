@@ -139,9 +139,9 @@ public class PrefetchProcessorTreeBuilderIT {
         Map<CayennePath, List<?>> extraRows = new HashMap<>();
 
         PrefetchTreeNode tree = new PrefetchTreeNode();
-        tree.addPath(Artist.PAINTING_ARRAY.getName()).setPhantom(false);
-        tree.addPath(Artist.PAINTING_ARRAY.dot(Painting.TO_GALLERY).dot(Gallery.EXHIBIT_ARRAY).getName()).setPhantom(false);
-        tree.addPath(Artist.ARTIST_EXHIBIT_ARRAY.getName()).setPhantom(false);
+        tree.addPath(Artist.PAINTINGS.getName()).setPhantom(false);
+        tree.addPath(Artist.PAINTINGS.dot(Painting.GALLERY).dot(Gallery.EXHIBITS).getName()).setPhantom(false);
+        tree.addPath(Artist.ARTIST_EXHIBITS.getName()).setPhantom(false);
 
         QueryMetadata metadata = new MockQueryMetadata() {
 
@@ -189,28 +189,28 @@ public class PrefetchProcessorTreeBuilderIT {
         assertSame(mainRows, n1.getDataRows());
         assertSame(descriptor.getEntity(), n1.getResolver().getEntity());
 
-        PrefetchProcessorNode n2 = (PrefetchProcessorNode) n1.getNode("paintingArray");
+        PrefetchProcessorNode n2 = (PrefetchProcessorNode) n1.getNode("paintings");
         assertNotNull(n2);
         assertSame(e2, n2.getResolver().getEntity());
         assertFalse(n2.isPhantom());
         assertTrue(n2.isPartitionedByParent());
 
         PrefetchProcessorNode n3 = (PrefetchProcessorNode) n1
-                .getNode("paintingArray.toGallery");
+                .getNode("paintings.gallery");
         assertNotNull(n3);
         assertSame(e3, n3.getResolver().getEntity());
         assertTrue(n3.isPhantom());
         assertTrue(n3.isPartitionedByParent());
 
         PrefetchProcessorNode n4 = (PrefetchProcessorNode) n1
-                .getNode("paintingArray.toGallery.exhibitArray");
+                .getNode("paintings.gallery.exhibits");
         assertNotNull(n4);
         assertSame(e4, n4.getResolver().getEntity());
         assertFalse(n4.isPhantom());
         assertTrue(n4.isPartitionedByParent());
 
         PrefetchProcessorNode n5 = (PrefetchProcessorNode) n1
-                .getNode("artistExhibitArray");
+                .getNode("artistExhibits");
         assertNotNull(n5);
         assertSame(e5, n5.getResolver().getEntity());
         assertFalse(n5.isPhantom());

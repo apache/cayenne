@@ -23,11 +23,11 @@ public abstract class _Award extends GenericPersistentObject {
     public static final String AWARD_ID_PK_COLUMN = "AWARD_ID";
 
     public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);
-    public static final EntityProperty<Artist> TO_ARTIST = PropertyFactory.createEntity("toArtist", Artist.class);
+    public static final EntityProperty<Artist> ARTIST = PropertyFactory.createEntity("artist", Artist.class);
 
     protected String name;
 
-    protected Object toArtist;
+    protected Object artist;
 
     public void setName(String name) {
         beforePropertyWrite("name", this.name, name);
@@ -39,12 +39,12 @@ public abstract class _Award extends GenericPersistentObject {
         return this.name;
     }
 
-    public void setToArtist(Artist toArtist) {
-        setToOneTarget("toArtist", toArtist, true);
+    public void setArtist(Artist artist) {
+        setToOneTarget("artist", artist, true);
     }
 
-    public Artist getToArtist() {
-        return (Artist)readProperty("toArtist");
+    public Artist getArtist() {
+        return (Artist)readProperty("artist");
     }
 
     @Override
@@ -56,8 +56,8 @@ public abstract class _Award extends GenericPersistentObject {
         switch(propName) {
             case "name":
                 return this.name;
-            case "toArtist":
-                return this.toArtist;
+            case "artist":
+                return this.artist;
             default:
                 return super.readPropertyDirectly(propName);
         }
@@ -73,8 +73,8 @@ public abstract class _Award extends GenericPersistentObject {
             case "name":
                 this.name = (String)val;
                 break;
-            case "toArtist":
-                this.toArtist = val;
+            case "artist":
+                this.artist = val;
                 break;
             default:
                 super.writePropertyDirectly(propName, val);

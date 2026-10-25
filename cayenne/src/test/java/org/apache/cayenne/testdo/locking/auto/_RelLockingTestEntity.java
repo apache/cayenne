@@ -28,12 +28,12 @@ public abstract class _RelLockingTestEntity extends PersistentObject {
 
     public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);
     public static final ListProperty<LockingHelper> LOCKING_HELPERS = PropertyFactory.createList("lockingHelpers", LockingHelper.class);
-    public static final EntityProperty<SimpleLockingTestEntity> TO_SIMPLE_LOCKING_TEST = PropertyFactory.createEntity("toSimpleLockingTest", SimpleLockingTestEntity.class);
+    public static final EntityProperty<SimpleLockingTestEntity> SIMPLE_LOCKING_TEST = PropertyFactory.createEntity("simpleLockingTest", SimpleLockingTestEntity.class);
 
     protected String name;
 
     protected Object lockingHelpers;
-    protected Object toSimpleLockingTest;
+    protected Object simpleLockingTest;
 
     public void setName(String name) {
         beforePropertyWrite("name", this.name, name);
@@ -58,12 +58,12 @@ public abstract class _RelLockingTestEntity extends PersistentObject {
         return (List<LockingHelper>)readProperty("lockingHelpers");
     }
 
-    public void setToSimpleLockingTest(SimpleLockingTestEntity toSimpleLockingTest) {
-        setToOneTarget("toSimpleLockingTest", toSimpleLockingTest, true);
+    public void setSimpleLockingTest(SimpleLockingTestEntity simpleLockingTest) {
+        setToOneTarget("simpleLockingTest", simpleLockingTest, true);
     }
 
-    public SimpleLockingTestEntity getToSimpleLockingTest() {
-        return (SimpleLockingTestEntity)readProperty("toSimpleLockingTest");
+    public SimpleLockingTestEntity getSimpleLockingTest() {
+        return (SimpleLockingTestEntity)readProperty("simpleLockingTest");
     }
 
     @Override
@@ -77,8 +77,8 @@ public abstract class _RelLockingTestEntity extends PersistentObject {
                 return this.name;
             case "lockingHelpers":
                 return this.lockingHelpers;
-            case "toSimpleLockingTest":
-                return this.toSimpleLockingTest;
+            case "simpleLockingTest":
+                return this.simpleLockingTest;
             default:
                 return super.readPropertyDirectly(propName);
         }
@@ -97,8 +97,8 @@ public abstract class _RelLockingTestEntity extends PersistentObject {
             case "lockingHelpers":
                 this.lockingHelpers = val;
                 break;
-            case "toSimpleLockingTest":
-                this.toSimpleLockingTest = val;
+            case "simpleLockingTest":
+                this.simpleLockingTest = val;
                 break;
             default:
                 super.writePropertyDirectly(propName, val);

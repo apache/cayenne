@@ -102,7 +102,7 @@ public class ColumnSelect_UntypedColumnsIT {
 
     @Test
     public void toOnePathIsAnEntityColumn() {
-        List<Object[]> rows = ObjectSelect.columnQuery(Painting.class, untyped("paintingTitle"), untyped("toArtist"))
+        List<Object[]> rows = ObjectSelect.columnQuery(Painting.class, untyped("paintingTitle"), untyped("artist"))
                 .orderBy(Painting.PAINTING_TITLE.asc())
                 .select(context);
 
@@ -114,7 +114,7 @@ public class ColumnSelect_UntypedColumnsIT {
 
     @Test
     public void toManyPathIsAFlatEntityColumn() {
-        List<Object[]> rows = ObjectSelect.columnQuery(Artist.class, untyped("artistName"), untyped("paintingArray"))
+        List<Object[]> rows = ObjectSelect.columnQuery(Artist.class, untyped("artistName"), untyped("paintings"))
                 .where(Artist.ARTIST_NAME.eq("artist1"))
                 .select(context);
 
@@ -122,7 +122,7 @@ public class ColumnSelect_UntypedColumnsIT {
         for (Object[] row : rows) {
             assertEquals("artist1", row[0]);
             Painting painting = assertInstanceOf(Painting.class, row[1]);
-            assertEquals("artist1", painting.getToArtist().getArtistName());
+            assertEquals("artist1", painting.getArtist().getArtistName());
         }
     }
 
@@ -131,7 +131,7 @@ public class ColumnSelect_UntypedColumnsIT {
         env.table("ARTIST", "ARTIST_ID", "ARTIST_NAME").insert(5, "artist5");
 
         // an outer join: the root row is preserved with a null related object
-        List<Object[]> rows = ObjectSelect.columnQuery(Artist.class, untyped("artistName"), untyped("paintingArray"))
+        List<Object[]> rows = ObjectSelect.columnQuery(Artist.class, untyped("artistName"), untyped("paintings"))
                 .where(Artist.ARTIST_NAME.eq("artist5"))
                 .select(context);
         assertEquals(1, rows.size());
@@ -144,7 +144,7 @@ public class ColumnSelect_UntypedColumnsIT {
         env.table("PAINTING", "PAINTING_ID", "PAINTING_TITLE").insert(9, "painting9");
 
         // an outer join: the root row is preserved with a null related object
-        List<Object[]> rows = ObjectSelect.columnQuery(Painting.class, untyped("paintingTitle"), untyped("toArtist"))
+        List<Object[]> rows = ObjectSelect.columnQuery(Painting.class, untyped("paintingTitle"), untyped("artist"))
                 .where(Painting.PAINTING_TITLE.eq("painting9"))
                 .select(context);
         assertEquals(1, rows.size());
@@ -154,7 +154,7 @@ public class ColumnSelect_UntypedColumnsIT {
 
     @Test
     public void typedToManyPathIsAFlatEntityColumn() {
-        List<Object[]> rows = ObjectSelect.columnQuery(Artist.class, Artist.ARTIST_NAME, Artist.PAINTING_ARRAY)
+        List<Object[]> rows = ObjectSelect.columnQuery(Artist.class, Artist.ARTIST_NAME, Artist.PAINTINGS)
                 .where(Artist.ARTIST_NAME.eq("artist1"))
                 .select(context);
 
@@ -162,17 +162,17 @@ public class ColumnSelect_UntypedColumnsIT {
         for (Object[] row : rows) {
             assertEquals("artist1", row[0]);
             Painting painting = assertInstanceOf(Painting.class, row[1]);
-            assertEquals("artist1", painting.getToArtist().getArtistName());
+            assertEquals("artist1", painting.getArtist().getArtistName());
         }
     }
 
     @Test
     public void typedToManyPathIsRejectedAsASingleColumn() {
         // the declared result type would be a List<Painting> per row, that the query can't deliver
-        assertThrows(CayenneRuntimeException.class, () -> ObjectSelect.columnQuery(Artist.class, Artist.PAINTING_ARRAY));
-        assertThrows(CayenneRuntimeException.class, () -> ObjectSelect.query(Artist.class).column(Artist.PAINTING_ARRAY));
+        assertThrows(CayenneRuntimeException.class, () -> ObjectSelect.columnQuery(Artist.class, Artist.PAINTINGS));
+        assertThrows(CayenneRuntimeException.class, () -> ObjectSelect.query(Artist.class).column(Artist.PAINTINGS));
 
-        List<Painting> paintings = ObjectSelect.columnQuery(Artist.class, Artist.PAINTING_ARRAY.flat())
+        List<Painting> paintings = ObjectSelect.columnQuery(Artist.class, Artist.PAINTINGS.flat())
                 .where(Artist.ARTIST_NAME.eq("artist1"))
                 .select(context);
         assertEquals(2, paintings.size());
@@ -209,7 +209,7 @@ public class ColumnSelect_UntypedColumnsIT {
     @Test
     public void mixedTypedAndUntypedColumns() {
         List<Object[]> rows = ObjectSelect.columnQuery(Artist.class, Artist.ARTIST_NAME, untyped("dateOfBirth"),
-                        Artist.PAINTING_ARRAY.count())
+                        Artist.PAINTINGS.count())
                 .orderBy(Artist.ARTIST_NAME.asc())
                 .select(context);
 
@@ -223,7 +223,7 @@ public class ColumnSelect_UntypedColumnsIT {
     public void resultSetMappingCarriesResolvedTypes() {
         ColumnSelect<Object[]> query = ObjectSelect.columnQuery(Painting.class,
                 untyped("paintingTitle"),
-                untyped("toArtist"),
+                untyped("artist"),
                 Painting.ESTIMATED_PRICE,
                 PropertyFactory.createBase(FunctionExpressionFactory.countExp(), null),
                 PropertyFactory.createBase(FunctionExpressionFactory.currentTimestamp(), null));

@@ -73,9 +73,9 @@ public class DataContextBinaryPKIT {
         context.invalidateObjects(master, detail);
 
         BinaryPKTest2 fetchedDetail = ObjectSelect.query(BinaryPKTest2.class).selectFirst(context);
-        assertNotNull(fetchedDetail.readPropertyDirectly("toBinaryPKMaster"));
+        assertNotNull(fetchedDetail.readPropertyDirectly("binaryPKMaster"));
 
-        BinaryPKTest1 fetchedMaster = fetchedDetail.getToBinaryPKMaster();
+        BinaryPKTest1 fetchedMaster = fetchedDetail.getBinaryPKMaster();
         assertNotNull(fetchedMaster);
         assertEquals(PersistenceState.HOLLOW, fetchedMaster.getPersistenceState());
         assertEquals("master1", fetchedMaster.getName());

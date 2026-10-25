@@ -23,12 +23,12 @@
 	</objEntity>
 	<objEntity name="OnewayTable3" className="org.apache.cayenne.testdo.oneway.OnewayTable3" dbEntityName="oneway_table3"/>
 	<objEntity name="OnewayTable4" className="org.apache.cayenne.testdo.oneway.OnewayTable4" dbEntityName="oneway_table4"/>
-	<dbRelationship name="toOneOneWayDb" source="oneway_table2" target="oneway_table1" foreignKey="true">
+	<dbRelationship name="oneOneWayDb" source="oneway_table2" target="oneway_table1" foreignKey="true">
 		<dbAttributePair source="TABLE1_ID" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="toManyOneWayDb" source="oneway_table3" target="oneway_table4" toMany="true">
+	<dbRelationship name="manyOneWayDb" source="oneway_table3" target="oneway_table4" toMany="true">
 		<dbAttributePair source="ID" target="TABLE3_ID"/>
 	</dbRelationship>
-	<objRelationship name="toOneOneWayDb" source="OnewayTable2" target="OnewayTable1" deleteRule="nullify" dbRelationshipPath="toOneOneWayDb"/>
-	<objRelationship name="toManyOneWayDb" source="OnewayTable3" target="OnewayTable4" deleteRule="nullify" dbRelationshipPath="toManyOneWayDb"/>
+	<objRelationship name="oneOneWayDb" source="OnewayTable2" target="OnewayTable1" deleteRule="nullify" dbRelationshipPath="oneOneWayDb"/>
+	<objRelationship name="manyOneWayDb" source="OnewayTable3" target="OnewayTable4" deleteRule="nullify" dbRelationshipPath="manyOneWayDb"/>
 </dataMap>

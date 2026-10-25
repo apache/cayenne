@@ -104,10 +104,10 @@ public class CircularDependencyIT {
         e1.setName("e1 #" + 1);
         e2.setName("e2 #" + 2);
 
-        e1.setToParent(e2);
+        e1.setParent(e2);
         env.context().commitChanges();
 
-        e2.setToParent(e1);
+        e2.setParent(e1);
         env.context().commitChanges();
     }
 }

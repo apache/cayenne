@@ -13,6 +13,6 @@
 	<dbRelationship name="listOfM2E2" source="CROSSDB_M1E1" target="CROSSDB_M2E2" toMany="true">
 		<dbAttributePair source="ID" target="M1E1_ID"/>
 	</dbRelationship>
-	<objRelationship name="flattened" source="CrossdbM1E1" target="CrossdbM2E1" deleteRule="deny" dbRelationshipPath="listOfM2E2.toM2E1"/>
+	<objRelationship name="flattened" source="CrossdbM1E1" target="CrossdbM2E1" deleteRule="deny" dbRelationshipPath="listOfM2E2.m2E1"/>
 	<objRelationship name="listOfM2E2" source="CrossdbM1E1" target="CrossdbM2E2" dbRelationshipPath="listOfM2E2"/>
 </dataMap>

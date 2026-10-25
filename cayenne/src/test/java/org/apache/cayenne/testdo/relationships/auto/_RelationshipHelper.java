@@ -29,13 +29,13 @@ public abstract class _RelationshipHelper extends PersistentObject {
     public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);
     public static final ListProperty<FkOfDifferentType> FKS_OF_DIFFERENT_TYPE = PropertyFactory.createList("fksOfDifferentType", FkOfDifferentType.class);
     public static final ListProperty<MeaningfulFK> MEANIGFUL_FKS = PropertyFactory.createList("meanigfulFKs", MeaningfulFK.class);
-    public static final ListProperty<ReflexiveAndToOne> REFLEXIVE_AND_TO_ONE_ARRAY = PropertyFactory.createList("reflexiveAndToOneArray", ReflexiveAndToOne.class);
+    public static final ListProperty<ReflexiveAndToOne> REFLEXIVE_AND_TO_ONES = PropertyFactory.createList("reflexiveAndToOnes", ReflexiveAndToOne.class);
 
     protected String name;
 
     protected Object fksOfDifferentType;
     protected Object meanigfulFKs;
-    protected Object reflexiveAndToOneArray;
+    protected Object reflexiveAndToOnes;
 
     public void setName(String name) {
         beforePropertyWrite("name", this.name, name);
@@ -73,17 +73,17 @@ public abstract class _RelationshipHelper extends PersistentObject {
         return (List<MeaningfulFK>)readProperty("meanigfulFKs");
     }
 
-    public void addToReflexiveAndToOneArray(ReflexiveAndToOne obj) {
-        addToManyTarget("reflexiveAndToOneArray", obj, true);
+    public void addToReflexiveAndToOnes(ReflexiveAndToOne obj) {
+        addToManyTarget("reflexiveAndToOnes", obj, true);
     }
 
-    public void removeFromReflexiveAndToOneArray(ReflexiveAndToOne obj) {
-        removeToManyTarget("reflexiveAndToOneArray", obj, true);
+    public void removeFromReflexiveAndToOnes(ReflexiveAndToOne obj) {
+        removeToManyTarget("reflexiveAndToOnes", obj, true);
     }
 
     @SuppressWarnings("unchecked")
-    public List<ReflexiveAndToOne> getReflexiveAndToOneArray() {
-        return (List<ReflexiveAndToOne>)readProperty("reflexiveAndToOneArray");
+    public List<ReflexiveAndToOne> getReflexiveAndToOnes() {
+        return (List<ReflexiveAndToOne>)readProperty("reflexiveAndToOnes");
     }
 
     @Override
@@ -99,8 +99,8 @@ public abstract class _RelationshipHelper extends PersistentObject {
                 return this.fksOfDifferentType;
             case "meanigfulFKs":
                 return this.meanigfulFKs;
-            case "reflexiveAndToOneArray":
-                return this.reflexiveAndToOneArray;
+            case "reflexiveAndToOnes":
+                return this.reflexiveAndToOnes;
             default:
                 return super.readPropertyDirectly(propName);
         }
@@ -122,8 +122,8 @@ public abstract class _RelationshipHelper extends PersistentObject {
             case "meanigfulFKs":
                 this.meanigfulFKs = val;
                 break;
-            case "reflexiveAndToOneArray":
-                this.reflexiveAndToOneArray = val;
+            case "reflexiveAndToOnes":
+                this.reflexiveAndToOnes = val;
                 break;
             default:
                 super.writePropertyDirectly(propName, val);

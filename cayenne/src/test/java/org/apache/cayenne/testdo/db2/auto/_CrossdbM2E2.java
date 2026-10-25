@@ -24,13 +24,13 @@ public abstract class _CrossdbM2E2 extends PersistentObject {
     public static final String ID_PK_COLUMN = "ID";
 
     public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);
-    public static final EntityProperty<CrossdbM1E1> TO_M1E1 = PropertyFactory.createEntity("toM1E1", CrossdbM1E1.class);
-    public static final EntityProperty<CrossdbM2E1> TO_M2E1 = PropertyFactory.createEntity("toM2E1", CrossdbM2E1.class);
+    public static final EntityProperty<CrossdbM1E1> M1E1 = PropertyFactory.createEntity("m1E1", CrossdbM1E1.class);
+    public static final EntityProperty<CrossdbM2E1> M2E1 = PropertyFactory.createEntity("m2E1", CrossdbM2E1.class);
 
     protected String name;
 
-    protected Object toM1E1;
-    protected Object toM2E1;
+    protected Object m1E1;
+    protected Object m2E1;
 
     public void setName(String name) {
         beforePropertyWrite("name", this.name, name);
@@ -42,20 +42,20 @@ public abstract class _CrossdbM2E2 extends PersistentObject {
         return this.name;
     }
 
-    public void setToM1E1(CrossdbM1E1 toM1E1) {
-        setToOneTarget("toM1E1", toM1E1, true);
+    public void setM1E1(CrossdbM1E1 m1E1) {
+        setToOneTarget("m1E1", m1E1, true);
     }
 
-    public CrossdbM1E1 getToM1E1() {
-        return (CrossdbM1E1)readProperty("toM1E1");
+    public CrossdbM1E1 getM1E1() {
+        return (CrossdbM1E1)readProperty("m1E1");
     }
 
-    public void setToM2E1(CrossdbM2E1 toM2E1) {
-        setToOneTarget("toM2E1", toM2E1, true);
+    public void setM2E1(CrossdbM2E1 m2E1) {
+        setToOneTarget("m2E1", m2E1, true);
     }
 
-    public CrossdbM2E1 getToM2E1() {
-        return (CrossdbM2E1)readProperty("toM2E1");
+    public CrossdbM2E1 getM2E1() {
+        return (CrossdbM2E1)readProperty("m2E1");
     }
 
     @Override
@@ -67,10 +67,10 @@ public abstract class _CrossdbM2E2 extends PersistentObject {
         switch(propName) {
             case "name":
                 return this.name;
-            case "toM1E1":
-                return this.toM1E1;
-            case "toM2E1":
-                return this.toM2E1;
+            case "m1E1":
+                return this.m1E1;
+            case "m2E1":
+                return this.m2E1;
             default:
                 return super.readPropertyDirectly(propName);
         }
@@ -86,11 +86,11 @@ public abstract class _CrossdbM2E2 extends PersistentObject {
             case "name":
                 this.name = (String)val;
                 break;
-            case "toM1E1":
-                this.toM1E1 = val;
+            case "m1E1":
+                this.m1E1 = val;
                 break;
-            case "toM2E1":
-                this.toM2E1 = val;
+            case "m2E1":
+                this.m2E1 = val;
                 break;
             default:
                 super.writePropertyDirectly(propName, val);

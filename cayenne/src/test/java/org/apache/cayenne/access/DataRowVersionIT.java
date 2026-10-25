@@ -96,30 +96,30 @@ public class DataRowVersionIT {
     @Test
     public void jointPrefetchSharesVersionWithRoot() {
         List<Painting> paintings = ObjectSelect.query(Painting.class)
-                .prefetch(Painting.TO_ARTIST.joint())
+                .prefetch(Painting.ARTIST.joint())
                 .select(context);
         assertEquals(3, paintings.size());
 
         long version = paintings.getFirst().getSnapshotVersion();
         for (Painting p : paintings) {
             assertEquals(version, p.getSnapshotVersion());
-            assertEquals(version, p.getToArtist().getSnapshotVersion());
+            assertEquals(version, p.getArtist().getSnapshotVersion());
         }
     }
 
     @Test
     public void disjointPrefetchIsALaterStatement() {
         List<Painting> paintings = ObjectSelect.query(Painting.class)
-                .prefetch(Painting.TO_ARTIST.disjoint())
+                .prefetch(Painting.ARTIST.disjoint())
                 .select(context);
         assertEquals(3, paintings.size());
 
         long rootVersion = paintings.getFirst().getSnapshotVersion();
-        long prefetchVersion = paintings.getFirst().getToArtist().getSnapshotVersion();
+        long prefetchVersion = paintings.getFirst().getArtist().getSnapshotVersion();
         assertTrue(prefetchVersion > rootVersion, rootVersion + " -> " + prefetchVersion);
         for (Painting p : paintings) {
             assertEquals(rootVersion, p.getSnapshotVersion());
-            assertEquals(prefetchVersion, p.getToArtist().getSnapshotVersion());
+            assertEquals(prefetchVersion, p.getArtist().getSnapshotVersion());
         }
     }
 
@@ -131,7 +131,7 @@ public class DataRowVersionIT {
         b.setArtistName("a5");
         Painting p = context.newObject(Painting.class);
         p.setPaintingTitle("p4");
-        p.setToArtist(a);
+        p.setArtist(a);
         context.commitChanges();
 
         long version = a.getSnapshotVersion();

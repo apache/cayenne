@@ -120,7 +120,7 @@ public class EntityPropertyIdIT {
     @Test
     public void toOneEqIdMap() {
         CompoundFkTestEntity o = ObjectSelect.query(CompoundFkTestEntity.class)
-                .where(CompoundFkTestEntity.TO_COMPOUND_PK.eqIdMap(PK_2)).selectOne(env.context());
+                .where(CompoundFkTestEntity.COMPOUND_PK.eqIdMap(PK_2)).selectOne(env.context());
         assertNotNull(o);
         assertEquals("FK2", o.getName());
     }
@@ -128,7 +128,7 @@ public class EntityPropertyIdIT {
     @Test
     public void toOneIdMapsIn() {
         List<CompoundFkTestEntity> list = ObjectSelect.query(CompoundFkTestEntity.class)
-                .where(CompoundFkTestEntity.TO_COMPOUND_PK.idMapsIn(PK_1, PK_2))
+                .where(CompoundFkTestEntity.COMPOUND_PK.idMapsIn(PK_1, PK_2))
                 .orderBy(CompoundFkTestEntity.NAME.asc()).select(env.context());
         assertEquals(2, list.size());
         assertEquals("FK1", list.getFirst().getName());
@@ -138,7 +138,7 @@ public class EntityPropertyIdIT {
     public void toOneObjectIdsIn() {
         ObjectId id1 = ObjectId.of("CompoundPkTestEntity", PK_1);
         List<CompoundFkTestEntity> list = ObjectSelect.query(CompoundFkTestEntity.class)
-                .where(CompoundFkTestEntity.TO_COMPOUND_PK.objectIdsIn(id1)).select(env.context());
+                .where(CompoundFkTestEntity.COMPOUND_PK.objectIdsIn(id1)).select(env.context());
         assertEquals(1, list.size());
         assertEquals("FK1", list.getFirst().getName());
     }

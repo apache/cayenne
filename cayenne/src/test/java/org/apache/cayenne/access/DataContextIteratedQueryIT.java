@@ -174,7 +174,7 @@ public class DataContextIteratedQueryIT {
 
                 // try instantiating an object and fetching its relationships
                 Artist artist = context.objectFromDataRow(Artist.class, row);
-                List<Painting> paintings = artist.getPaintingArray();
+                List<Painting> paintings = artist.getPaintings();
                 assertNotNull(paintings);
                 assertEquals(1, paintings.size(), "Expected one painting for artist: " + artist);
             }
@@ -231,7 +231,7 @@ public class DataContextIteratedQueryIT {
                 .iterator(ObjectSelect.query(Artist.class))) {
             while (it.hasNextRow()) {
                 Artist artist =  it.nextRow();
-                List<Painting> paintings = artist.getPaintingArray();
+                List<Painting> paintings = artist.getPaintings();
                 assertNotNull(paintings);
                 assertEquals(1, paintings.size(), "Expected one painting for artist: " + artist);
             }
@@ -252,7 +252,7 @@ public class DataContextIteratedQueryIT {
 
                 Painting painting = context.newObject(Painting.class);
                 painting.setPaintingTitle("P_" + artist.getArtistName());
-                painting.setToArtist(artist);
+                painting.setArtist(artist);
                 context.commitChanges();
             }
         }
@@ -336,7 +336,7 @@ public class DataContextIteratedQueryIT {
                 for (Artist artist : it) {
                     // resolving a to-many fault runs a query on the connection of the caller transaction while
                     // the iterator's ResultSet is still open on it
-                    assertEquals(1, artist.getPaintingArray().size(), "Expected one painting for " + artist);
+                    assertEquals(1, artist.getPaintings().size(), "Expected one painting for " + artist);
                     c++;
                 }
             }
@@ -358,7 +358,7 @@ public class DataContextIteratedQueryIT {
                 for (Artist artist : it) {
                     // a regular (non-iterated) select per row, on the same connection as the open iterator
                     List<Painting> paintings = ObjectSelect.query(Painting.class)
-                            .where(Painting.TO_ARTIST.eq(artist))
+                            .where(Painting.ARTIST.eq(artist))
                             .select(context);
                     assertEquals(1, paintings.size());
                     c++;
@@ -376,11 +376,11 @@ public class DataContextIteratedQueryIT {
 
         // a disjoint-by-id prefetch runs a separate query for each iterated row
         try (ResultIterator<Artist> it = ObjectSelect.query(Artist.class)
-                .prefetch(Artist.PAINTING_ARRAY.disjointById())
+                .prefetch(Artist.PAINTINGS.disjointById())
                 .iterator(context)) {
             int c = 0;
             for (Artist artist : it) {
-                assertEquals(1, artist.getPaintingArray().size(), "Expected one painting for " + artist);
+                assertEquals(1, artist.getPaintings().size(), "Expected one painting for " + artist);
                 c++;
             }
             assertEquals(7, c);
@@ -396,10 +396,10 @@ public class DataContextIteratedQueryIT {
         int count = txManager.performInTransaction(() -> {
             int c = 0;
             try (ResultIterator<Artist> it = ObjectSelect.query(Artist.class)
-                    .prefetch(Artist.PAINTING_ARRAY.disjointById())
+                    .prefetch(Artist.PAINTINGS.disjointById())
                     .iterator(context)) {
                 for (Artist artist : it) {
-                    assertEquals(1, artist.getPaintingArray().size(), "Expected one painting for " + artist);
+                    assertEquals(1, artist.getPaintings().size(), "Expected one painting for " + artist);
                     c++;
                 }
             }
@@ -420,7 +420,7 @@ public class DataContextIteratedQueryIT {
             for (Artist artist : it) {
                 Painting painting = writeContext.newObject(Painting.class);
                 painting.setPaintingTitle("Copy of " + artist.getArtistName());
-                painting.setToArtist(writeContext.localObject(artist));
+                painting.setArtist(writeContext.localObject(artist));
                 writeContext.commitChanges();
             }
         }
@@ -442,7 +442,7 @@ public class DataContextIteratedQueryIT {
                     // the commit joins the caller transaction, i.e. runs on the connection of the open iterator
                     Painting painting = writeContext.newObject(Painting.class);
                     painting.setPaintingTitle("Copy of " + artist.getArtistName());
-                    painting.setToArtist(writeContext.localObject(artist));
+                    painting.setArtist(writeContext.localObject(artist));
                     writeContext.commitChanges();
                     c++;
                 }
@@ -465,7 +465,7 @@ public class DataContextIteratedQueryIT {
                 for (Artist artist : batch) {
                     Painting painting = writeContext.newObject(Painting.class);
                     painting.setPaintingTitle("Copy of " + artist.getArtistName());
-                    painting.setToArtist(writeContext.localObject(artist));
+                    painting.setArtist(writeContext.localObject(artist));
                 }
                 writeContext.commitChanges();
             }

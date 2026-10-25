@@ -64,23 +64,23 @@ public class CDOOneToOneFKIT {
     public void readRelationship() {
         ToOneFK2 src = context.newObject(ToOneFK2.class);
         ToOneFK1 target = context.newObject(ToOneFK1.class);
-        src.setToOneToFK(target);
+        src.setOneToFK(target);
         context.commitChanges();
 
         context.invalidateObjects(src, target);
 
         ToOneFK2 src1 = (ToOneFK2) context.objectForPK(src.getObjectId());
-        assertNotNull(src1.getToOneToFK());
+        assertNotNull(src1.getOneToFK());
         // resolve HOLLOW
-        assertSame(src1, src1.getToOneToFK().getToPK());
+        assertSame(src1, src1.getOneToFK().getPk());
 
-        context.invalidateObjects(src1, src1.getToOneToFK());
+        context.invalidateObjects(src1, src1.getOneToFK());
 
         ToOneFK1 target2 = (ToOneFK1) context.objectForPK(target.getObjectId());
-        assertNotNull(target2.getToPK());
+        assertNotNull(target2.getPk());
 
         // resolve HOLLOW
-        assertSame(target2, target2.getToPK().getToOneToFK());
+        assertSame(target2, target2.getPk().getOneToFK());
     }
 
     @Test
@@ -92,7 +92,7 @@ public class CDOOneToOneFKIT {
         ToOneFK2 src2 = refetch(context1, src);
 
         // *** TESTING THIS ***
-        assertNull(src2.getToOneToFK());
+        assertNull(src2.getOneToFK());
     }
 
     @Test
@@ -102,17 +102,17 @@ public class CDOOneToOneFKIT {
 
         // test database data
         ToOneFK2 src2 = refetch(context1, src);
-        assertNull(src2.getToOneToFK());
+        assertNull(src2.getOneToFK());
         assertEquals(src.getObjectId(), src2.getObjectId());
 
         // *** TESTING THIS ***
-        src2.setToOneToFK(null);
-        assertNull(src2.getToOneToFK());
+        src2.setOneToFK(null);
+        assertNull(src2.getOneToFK());
 
         context.commitChanges();
 
         src2 = refetch(context1, src);
-        assertNull(src2.getToOneToFK());
+        assertNull(src2.getOneToFK());
         assertEquals(src.getObjectId(), src2.getObjectId());
     }
 
@@ -124,17 +124,17 @@ public class CDOOneToOneFKIT {
         ToOneFK1 target = context.newObject(ToOneFK1.class);
 
         // *** TESTING THIS ***
-        src.setToOneToFK(target);
+        src.setOneToFK(target);
 
         // test before save
-        assertSame(target, src.getToOneToFK());
+        assertSame(target, src.getOneToFK());
 
         // do save
         context.commitChanges();
 
         // test database data
         ToOneFK2 src2 = refetch(context1, src);
-        ToOneFK1 target2 = src2.getToOneToFK();
+        ToOneFK1 target2 = src2.getOneToFK();
         assertNotNull(target2);
         assertEquals(src.getObjectId(), src2.getObjectId());
         assertEquals(target.getObjectId(), target2.getObjectId());
@@ -146,17 +146,17 @@ public class CDOOneToOneFKIT {
         ToOneFK1 target = context.newObject(ToOneFK1.class);
 
         // *** TESTING THIS ***
-        src.setToOneToFK(target);
+        src.setOneToFK(target);
 
         // test before save
-        assertSame(target, src.getToOneToFK());
+        assertSame(target, src.getOneToFK());
 
         // do save
         context.commitChanges();
 
         // test database data
         ToOneFK2 src2 = refetch(context1, src);
-        ToOneFK1 target2 = src2.getToOneToFK();
+        ToOneFK1 target2 = src2.getOneToFK();
         assertNotNull(target2);
         assertEquals(src.getObjectId(), src2.getObjectId());
         assertEquals(target.getObjectId(), target2.getObjectId());
@@ -166,33 +166,33 @@ public class CDOOneToOneFKIT {
     public void takeObjectSnapshotDependentFault() throws Exception {
         ToOneFK2 src = context.newObject(ToOneFK2.class);
         ToOneFK1 target = context.newObject(ToOneFK1.class);
-        src.setToOneToFK(target);
+        src.setOneToFK(target);
         context.commitChanges();
 
         ToOneFK2 src2 = refetch(context1, src);
 
-        assertTrue(src2.readPropertyDirectly("toOneToFK") instanceof Fault);
+        assertTrue(src2.readPropertyDirectly("oneToFK") instanceof Fault);
 
         // test that taking a snapshot does not trigger a fault, and generally works well
         context.currentSnapshot(src2);
-        assertTrue(src2.readPropertyDirectly("toOneToFK") instanceof Fault);
+        assertTrue(src2.readPropertyDirectly("oneToFK") instanceof Fault);
     }
 
     @Test
     public void delete() throws Exception {
         ToOneFK2 src = context.newObject(ToOneFK2.class);
         ToOneFK1 target = context.newObject(ToOneFK1.class);
-        src.setToOneToFK(target);
+        src.setOneToFK(target);
         context.commitChanges();
 
-        src.setToOneToFK(null);
+        src.setOneToFK(null);
         context.deleteObjects(target);
         context.commitChanges();
 
         // test database data
 
         ToOneFK2 src2 = refetch(context1, src);
-        assertNull(src.getToOneToFK());
+        assertNull(src.getOneToFK());
         assertEquals(src.getObjectId(), src2.getObjectId());
     }
 }

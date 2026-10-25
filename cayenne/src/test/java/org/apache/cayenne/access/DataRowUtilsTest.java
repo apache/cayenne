@@ -68,7 +68,7 @@ public class DataRowUtilsTest {
         addDbRelationship(itemTag, "toItem", "ITEM", "ID", "ID", false).setForeignKey(true);
         addDbRelationship(itemTable, "itemTags", "ITEM_TAG", "ID", "ID", true);
 
-        addDbRelationship(itemTable, "toMaster", "MASTER", "MASTER_ID", "ID", false).setForeignKey(true);
+        addDbRelationship(itemTable, "master", "MASTER", "MASTER_ID", "ID", false).setForeignKey(true);
         addDbRelationship(master, "items", "ITEM", "ID", "MASTER_ID", true);
         addDbRelationship(itemTable, "toCategory", "CATEGORY", "CATEGORY_ID", "ID", false).setForeignKey(true);
 
@@ -105,11 +105,11 @@ public class DataRowUtilsTest {
         addObjRelationship(itemTagEntity, "toItem", "Item", "toItem");
 
         item = addObjEntity(map, "Item", "ITEM");
-        addObjRelationship(item, "toMaster", "Master", "toMaster");
+        addObjRelationship(item, "master", "Master", "master");
         addObjRelationship(item, "toCategory", "Category", "toCategory");
         addObjRelationship(item, "toCategoryByName", "Category", "toCategoryByName");
         addObjRelationship(item, "toQualifiedCategory", "QualifiedCategory", "toCategory");
-        addObjRelationship(item, "toDetail", "Detail", "toMaster.detail");
+        addObjRelationship(item, "detail", "Detail", "master.detail");
 
         addObjRelationship(masterEntity, "items", "Item", "items");
         addObjRelationship(masterEntity, "detail", "Detail", "detail");
@@ -129,7 +129,7 @@ public class DataRowUtilsTest {
         assertFalse(determined(item, "toCategoryByName"));
 
         // the FK says that a Master row exists, but not whether it is a Master or a SubMaster
-        assertFalse(determined(item, "toMaster"));
+        assertFalse(determined(item, "master"));
         assertFalse(determined(detail, "master"));
 
         // an existing target row may still be filtered out by the target qualifier
@@ -139,7 +139,7 @@ public class DataRowUtilsTest {
         ObjEntity master = resolver.getObjEntity("Master");
         assertFalse(determined(master, "items"));
         assertFalse(determined(master, "detail"));
-        assertFalse(determined(item, "toDetail"));
+        assertFalse(determined(item, "detail"));
 
         // a PK-to-PK pair with no FK flag has no side that guarantees the target
         assertFalse(determined(master, "twin"));

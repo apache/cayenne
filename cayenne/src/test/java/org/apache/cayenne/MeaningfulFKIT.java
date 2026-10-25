@@ -55,7 +55,7 @@ public class MeaningfulFKIT {
         MeaningfulFK testObject = env.context().newObject(MeaningfulFK.class);
 
         RelationshipHelper related = env.context().newObject(RelationshipHelper.class);
-        testObject.setToRelationshipHelper(related);
+        testObject.setRelationshipHelper(related);
 
         ValidationResult validation = new ValidationResult();
         testObject.validateForSave(validation);
@@ -67,7 +67,7 @@ public class MeaningfulFKIT {
         MeaningfulFK testObject = env.context().newObject(MeaningfulFK.class);
 
         RelationshipHelper related = env.context().newObject(RelationshipHelper.class);
-        testObject.setToRelationshipHelper(related);
+        testObject.setRelationshipHelper(related);
 
         env.context().commitChanges();
 

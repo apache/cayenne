@@ -11,8 +11,8 @@
 	<objEntity name="MyArtGroup" className="org.apache.cayenne.testdo.cgen2.MyArtGroup" dbEntityName="MYARTGROUP">
 		<objAttribute name="custom" type="java.lang.String" dbAttributePath="CUSTOM"/>
 	</objEntity>
-	<dbRelationship name="toParentArtGroup" source="MYARTGROUP" target="ARTGROUP" foreignKey="true" toMany="false">
+	<dbRelationship name="parentArtGroup" source="MYARTGROUP" target="ARTGROUP" foreignKey="true" toMany="false">
 		<dbAttributePair source="MY_PARENT_GROUP_ID" target="GROUP_ID"/>
 	</dbRelationship>
-	<objRelationship name="toParentGroup" source="MyArtGroup" target="ArtGroup" deleteRule="nullify" dbRelationshipPath="toParentArtGroup"/>
+	<objRelationship name="parentGroup" source="MyArtGroup" target="ArtGroup" deleteRule="nullify" dbRelationshipPath="parentArtGroup"/>
 </dataMap>

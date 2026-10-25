@@ -126,8 +126,8 @@ public class DataContextRefreshingIT {
         Painting painting = (Painting) context.select(
                 ObjectSelect.query(Painting.class)).get(0);
 
-        assertNotNull(painting.getToArtist());
-        assertEquals("artist2", painting.getToArtist().getArtistName());
+        assertNotNull(painting.getArtist());
+        assertEquals("artist2", painting.getArtist().getArtistName());
 
         assertEquals(1, tPainting.update().set("ARTIST_ID", null, Types.BIGINT).execute());
 
@@ -136,7 +136,7 @@ public class DataContextRefreshingIT {
                 .select(ObjectSelect.query(Painting.class))
                 .get(0);
         assertNotNull(painting);
-        assertNull(painting.getToArtist());
+        assertNull(painting.getArtist());
     }
 
     @Test
@@ -146,7 +146,7 @@ public class DataContextRefreshingIT {
         Painting painting = (Painting) context.select(
                 ObjectSelect.query(Painting.class)).get(0);
 
-        Artist artistBefore = painting.getToArtist();
+        Artist artistBefore = painting.getArtist();
         assertNotNull(artistBefore);
         assertEquals("artist2", artistBefore.getArtistName());
 
@@ -157,7 +157,7 @@ public class DataContextRefreshingIT {
                 .select(ObjectSelect.query(Painting.class))
                 .get(0);
         assertNotNull(painting);
-        assertEquals("artist3", painting.getToArtist().getArtistName());
+        assertEquals("artist3", painting.getArtist().getArtistName());
     }
 
     @Test
@@ -167,7 +167,7 @@ public class DataContextRefreshingIT {
         Painting painting = (Painting) context.select(
                 ObjectSelect.query(Painting.class)).get(0);
 
-        assertNull(painting.getToArtist());
+        assertNull(painting.getArtist());
 
         assertEquals(1, tPainting.update().set("ARTIST_ID", 5).execute());
 
@@ -176,7 +176,7 @@ public class DataContextRefreshingIT {
                 .select(ObjectSelect.query(Painting.class))
                 .get(0);
         assertNotNull(painting);
-        assertEquals("artist2", painting.getToArtist().getArtistName());
+        assertEquals("artist2", painting.getArtist().getArtistName());
     }
 
     @Test
@@ -184,12 +184,12 @@ public class DataContextRefreshingIT {
         createSingleArtistAndPaintingDataSet();
 
         Painting painting = ObjectSelect.query(Painting.class).selectFirst(context);
-        Artist artist = painting.getToArtist();
+        Artist artist = painting.getArtist();
         assertNotNull(artist);
 
         // select without prefetch: the FK did not change, so the resolved target must survive the refresh
         painting = ObjectSelect.query(Painting.class).selectFirst(context);
-        assertSame(artist, painting.readPropertyDirectly(Painting.TO_ARTIST.getName()));
+        assertSame(artist, painting.readPropertyDirectly(Painting.ARTIST.getName()));
     }
 
     @Test
@@ -197,15 +197,15 @@ public class DataContextRefreshingIT {
         createSingleArtistAndPaintingDataSet();
 
         Painting painting = ObjectSelect.query(Painting.class).selectFirst(context);
-        Artist artist = painting.getToArtist();
+        Artist artist = painting.getArtist();
         assertNotNull(artist);
 
         // unlike a plain refetch, invalidation forgets the arcs even when the FK did not change
         context.invalidateObjects(painting);
         painting = ObjectSelect.query(Painting.class).selectFirst(context);
         assertEquals(PersistenceState.COMMITTED, painting.getPersistenceState());
-        assertInstanceOf(Fault.class, painting.readPropertyDirectly(Painting.TO_ARTIST.getName()));
-        assertSame(artist, painting.getToArtist());
+        assertInstanceOf(Fault.class, painting.readPropertyDirectly(Painting.ARTIST.getName()));
+        assertSame(artist, painting.getArtist());
     }
 
     @Test
@@ -214,12 +214,12 @@ public class DataContextRefreshingIT {
         tPaintingInfo.insert(4, "review");
 
         Painting painting = ObjectSelect.query(Painting.class).selectFirst(context);
-        PaintingInfo info = painting.getToPaintingInfo();
+        PaintingInfo info = painting.getPaintingInfo();
         assertNotNull(info);
 
         // the source row says nothing about the presence of a dependent row, so the arc must be refaulted
         painting = ObjectSelect.query(Painting.class).selectFirst(context);
-        assertInstanceOf(Fault.class, painting.readPropertyDirectly(Painting.TO_PAINTING_INFO.getName()));
+        assertInstanceOf(Fault.class, painting.readPropertyDirectly(Painting.PAINTING_INFO.getName()));
     }
 
     @Test
@@ -227,14 +227,14 @@ public class DataContextRefreshingIT {
         createSingleArtistAndPaintingDataSet();
 
         ROArtist artist = ObjectSelect.query(ROArtist.class)
-                .prefetch(ROArtist.PAINTING_ARRAY.disjoint())
+                .prefetch(ROArtist.PAINTINGS.disjoint())
                 .selectFirst(context);
-        ToManyHolder<?> paintings = (ToManyHolder<?>) artist.readPropertyDirectly(ROArtist.PAINTING_ARRAY.getName());
+        ToManyHolder<?> paintings = (ToManyHolder<?>) artist.readPropertyDirectly(ROArtist.PAINTINGS.getName());
         assertFalse(paintings.isFault());
 
         // select without prefetch: a COMMITTED object keeps its to-many lists, read-only or not
         artist = ObjectSelect.query(ROArtist.class).selectFirst(context);
-        assertSame(paintings, artist.readPropertyDirectly(ROArtist.PAINTING_ARRAY.getName()));
+        assertSame(paintings, artist.readPropertyDirectly(ROArtist.PAINTINGS.getName()));
         assertFalse(paintings.isFault());
     }
 
@@ -243,14 +243,14 @@ public class DataContextRefreshingIT {
         createSingleArtistAndPaintingDataSet();
 
         ROArtist artist = ObjectSelect.query(ROArtist.class)
-                .prefetch(ROArtist.PAINTING_ARRAY.disjoint())
+                .prefetch(ROArtist.PAINTINGS.disjoint())
                 .selectFirst(context);
-        ToManyHolder<?> paintings = (ToManyHolder<?>) artist.readPropertyDirectly(ROArtist.PAINTING_ARRAY.getName());
+        ToManyHolder<?> paintings = (ToManyHolder<?>) artist.readPropertyDirectly(ROArtist.PAINTINGS.getName());
         assertFalse(paintings.isFault());
 
         context.invalidateObjects(artist);
         artist = ObjectSelect.query(ROArtist.class).selectFirst(context);
-        paintings = (ToManyHolder<?>) artist.readPropertyDirectly(ROArtist.PAINTING_ARRAY.getName());
+        paintings = (ToManyHolder<?>) artist.readPropertyDirectly(ROArtist.PAINTINGS.getName());
         assertTrue(paintings.isFault());
     }
 
@@ -260,7 +260,7 @@ public class DataContextRefreshingIT {
 
         Artist artist = (Artist) context.select(ObjectSelect.query(Artist.class)).get(
                 0);
-        assertEquals(artist.getPaintingArray().size(), 1);
+        assertEquals(artist.getPaintings().size(), 1);
 
         assertEquals(1, tPainting
                 .delete()
@@ -269,13 +269,13 @@ public class DataContextRefreshingIT {
 
         // select without prefetch
         artist = (Artist) context.select(ObjectSelect.query(Artist.class)).get(0);
-        assertEquals(artist.getPaintingArray().size(), 1);
+        assertEquals(artist.getPaintings().size(), 1);
 
         // select using relationship prefetching
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
-                .prefetch(Artist.PAINTING_ARRAY.disjoint());
+                .prefetch(Artist.PAINTINGS.disjoint());
         artist = (Artist) context.select(query).get(0);
-        assertEquals(0, artist.getPaintingArray().size());
+        assertEquals(0, artist.getPaintings().size());
     }
 
     @Test
@@ -285,19 +285,19 @@ public class DataContextRefreshingIT {
 
         Artist artist = (Artist) context.select(ObjectSelect.query(Artist.class)).get(
                 0);
-        assertEquals(artist.getPaintingArray().size(), 0);
+        assertEquals(artist.getPaintings().size(), 0);
 
         tPainting.insert(5, "p", 5, 1000);
 
         // select without prefetch
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class);
         artist = (Artist) context.select(query).get(0);
-        assertEquals(artist.getPaintingArray().size(), 0);
+        assertEquals(artist.getPaintings().size(), 0);
 
         // select using relationship prefetching
-        query.prefetch(Artist.PAINTING_ARRAY.disjoint());
+        query.prefetch(Artist.PAINTINGS.disjoint());
         artist = (Artist) context.select(query).get(0);
-        assertEquals(artist.getPaintingArray().size(), 1);
+        assertEquals(artist.getPaintings().size(), 1);
     }
 
     @Test
@@ -325,13 +325,13 @@ public class DataContextRefreshingIT {
 
         Painting painting = (Painting) context.select(ObjectSelect.query(Painting.class)).get(0);
 
-        assertNotNull(painting.getToArtist());
-        assertEquals("artist2", painting.getToArtist().getArtistName());
+        assertNotNull(painting.getArtist());
+        assertEquals("artist2", painting.getArtist().getArtistName());
 
         assertEquals(1, tPainting.update().set("ARTIST_ID", null, Types.BIGINT).execute());
 
         context.invalidateObjects(painting);
-        assertNull(painting.getToArtist());
+        assertNull(painting.getArtist());
     }
 
     @Test
@@ -340,15 +340,15 @@ public class DataContextRefreshingIT {
 
         Painting painting = (Painting) context.select(
                 ObjectSelect.query(Painting.class)).get(0);
-        Artist artistBefore = painting.getToArtist();
+        Artist artistBefore = painting.getArtist();
         assertNotNull(artistBefore);
         assertEquals("artist2", artistBefore.getArtistName());
 
         assertEquals(1, tPainting.update().set("ARTIST_ID", 6).execute());
 
         context.invalidateObjects(painting);
-        assertNotSame(artistBefore, painting.getToArtist());
-        assertEquals("artist3", painting.getToArtist().getArtistName());
+        assertNotSame(artistBefore, painting.getArtist());
+        assertEquals("artist3", painting.getArtist().getArtistName());
     }
 
     @Test
@@ -357,13 +357,13 @@ public class DataContextRefreshingIT {
 
         Painting painting = (Painting) context.select(
                 ObjectSelect.query(Painting.class)).get(0);
-        assertNull(painting.getToArtist());
+        assertNull(painting.getArtist());
 
         assertEquals(1, tPainting.update().set("ARTIST_ID", 5).execute());
 
         context.invalidateObjects(painting);
-        assertNotNull(painting.getToArtist());
-        assertEquals("artist2", painting.getToArtist().getArtistName());
+        assertNotNull(painting.getArtist());
+        assertEquals("artist2", painting.getArtist().getArtistName());
     }
 
     @Test
@@ -371,12 +371,12 @@ public class DataContextRefreshingIT {
         createSingleArtistAndPaintingDataSet();
 
         Artist artist = (Artist) context.select(ObjectSelect.query(Artist.class)).get(0);
-        assertEquals(artist.getPaintingArray().size(), 1);
+        assertEquals(artist.getPaintings().size(), 1);
 
         assertEquals(1, tPainting.delete().execute());
 
         context.invalidateObjects(artist);
-        assertEquals(artist.getPaintingArray().size(), 0);
+        assertEquals(artist.getPaintings().size(), 0);
     }
 
     @Test
@@ -385,13 +385,13 @@ public class DataContextRefreshingIT {
         createSingleArtistDataSet();
 
         Artist artist = (Artist) context.select(ObjectSelect.query(Artist.class)).get(0);
-        assertEquals(artist.getPaintingArray().size(), 0);
+        assertEquals(artist.getPaintings().size(), 0);
 
         tPainting.insert(4, "p", 5, 1000);
 
-        assertEquals(artist.getPaintingArray().size(), 0);
+        assertEquals(artist.getPaintings().size(), 0);
         context.invalidateObjects(artist);
-        assertEquals(artist.getPaintingArray().size(), 1);
+        assertEquals(artist.getPaintings().size(), 1);
     }
 
     @Test
@@ -423,7 +423,7 @@ public class DataContextRefreshingIT {
 
         Painting painting = (Painting) context
                 .select(ObjectSelect.query(Painting.class)).get(0);
-        final Artist artist = painting.getToArtist();
+        final Artist artist = painting.getArtist();
         assertEquals(PersistenceState.HOLLOW, artist.getPersistenceState());
         assertNull(artist.readPropertyDirectly("artistName"));
 

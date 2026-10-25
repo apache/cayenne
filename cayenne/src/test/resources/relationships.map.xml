@@ -62,16 +62,16 @@
 	<dbRelationship name="relationshipHelper" source="FK_OF_DIFFERENT_TYPE" target="RELATIONSHIP_HELPER" foreignKey="true">
 		<dbAttributePair source="RELATIONSHIP_HELPER_FK" target="RELATIONSHIP_HELPER_ID"/>
 	</dbRelationship>
-	<dbRelationship name="toRelationshipHelper" source="MEANINGFUL_FK" target="RELATIONSHIP_HELPER" foreignKey="true">
+	<dbRelationship name="relationshipHelper" source="MEANINGFUL_FK" target="RELATIONSHIP_HELPER" foreignKey="true">
 		<dbAttributePair source="RELATIONSHIP_HELPER_ID" target="RELATIONSHIP_HELPER_ID"/>
 	</dbRelationship>
 	<dbRelationship name="children" source="REFLEXIVE_AND_TO_ONE" target="REFLEXIVE_AND_TO_ONE" toMany="true">
 		<dbAttributePair source="REFLEXIVE_AND_TO_ONE_ID" target="PARENT_ID"/>
 	</dbRelationship>
-	<dbRelationship name="toHelper" source="REFLEXIVE_AND_TO_ONE" target="RELATIONSHIP_HELPER" foreignKey="true">
+	<dbRelationship name="helper" source="REFLEXIVE_AND_TO_ONE" target="RELATIONSHIP_HELPER" foreignKey="true">
 		<dbAttributePair source="RELATIONSHIP_HELPER_ID" target="RELATIONSHIP_HELPER_ID"/>
 	</dbRelationship>
-	<dbRelationship name="toParent" source="REFLEXIVE_AND_TO_ONE" target="REFLEXIVE_AND_TO_ONE" foreignKey="true">
+	<dbRelationship name="parent" source="REFLEXIVE_AND_TO_ONE" target="REFLEXIVE_AND_TO_ONE" foreignKey="true">
 		<dbAttributePair source="PARENT_ID" target="REFLEXIVE_AND_TO_ONE_ID"/>
 	</dbRelationship>
 	<dbRelationship name="fksOfDifferentType" source="RELATIONSHIP_HELPER" target="FK_OF_DIFFERENT_TYPE" toMany="true">
@@ -80,7 +80,7 @@
 	<dbRelationship name="meanigfulFKs" source="RELATIONSHIP_HELPER" target="MEANINGFUL_FK" toMany="true">
 		<dbAttributePair source="RELATIONSHIP_HELPER_ID" target="RELATIONSHIP_HELPER_ID"/>
 	</dbRelationship>
-	<dbRelationship name="reflexiveAndToOneArray" source="RELATIONSHIP_HELPER" target="REFLEXIVE_AND_TO_ONE" toMany="true">
+	<dbRelationship name="reflexiveAndToOnes" source="RELATIONSHIP_HELPER" target="REFLEXIVE_AND_TO_ONE" toMany="true">
 		<dbAttributePair source="RELATIONSHIP_HELPER_ID" target="RELATIONSHIP_HELPER_ID"/>
 	</dbRelationship>
 	<objRelationship name="e2" source="CYCLE_E1" target="CYCLE_E2" deleteRule="nullify" dbRelationshipPath="e2"/>
@@ -88,11 +88,11 @@
 	<objRelationship name="e1" source="CYCLE_E2" target="CYCLE_E1" deleteRule="nullify" dbRelationshipPath="e1"/>
 	<objRelationship name="e1s" source="CYCLE_E2" target="CYCLE_E1" deleteRule="deny" dbRelationshipPath="e1s"/>
 	<objRelationship name="relationshipHelper" source="FkOfDifferentType" target="RelationshipHelper" dbRelationshipPath="relationshipHelper"/>
-	<objRelationship name="toRelationshipHelper" source="MeaningfulFK" target="RelationshipHelper" dbRelationshipPath="toRelationshipHelper"/>
+	<objRelationship name="relationshipHelper" source="MeaningfulFK" target="RelationshipHelper" dbRelationshipPath="relationshipHelper"/>
 	<objRelationship name="children" source="ReflexiveAndToOne" target="ReflexiveAndToOne" dbRelationshipPath="children"/>
-	<objRelationship name="toHelper" source="ReflexiveAndToOne" target="RelationshipHelper" dbRelationshipPath="toHelper"/>
-	<objRelationship name="toParent" source="ReflexiveAndToOne" target="ReflexiveAndToOne" dbRelationshipPath="toParent"/>
+	<objRelationship name="helper" source="ReflexiveAndToOne" target="RelationshipHelper" dbRelationshipPath="helper"/>
+	<objRelationship name="parent" source="ReflexiveAndToOne" target="ReflexiveAndToOne" dbRelationshipPath="parent"/>
 	<objRelationship name="fksOfDifferentType" source="RelationshipHelper" target="FkOfDifferentType" dbRelationshipPath="fksOfDifferentType"/>
 	<objRelationship name="meanigfulFKs" source="RelationshipHelper" target="MeaningfulFK" dbRelationshipPath="meanigfulFKs"/>
-	<objRelationship name="reflexiveAndToOneArray" source="RelationshipHelper" target="ReflexiveAndToOne" dbRelationshipPath="reflexiveAndToOneArray"/>
+	<objRelationship name="reflexiveAndToOnes" source="RelationshipHelper" target="ReflexiveAndToOne" dbRelationshipPath="reflexiveAndToOnes"/>
 </dataMap>

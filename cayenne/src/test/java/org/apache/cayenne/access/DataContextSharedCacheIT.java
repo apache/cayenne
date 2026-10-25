@@ -387,11 +387,11 @@ public class DataContextSharedCacheIT {
 
         Painting painting1 = (Painting) context.newObject("Painting");
         painting1.setPaintingTitle("p1");
-        painting1.setToArtist(artist);
+        painting1.setArtist(artist);
 
         Painting painting2 = (Painting) context.newObject("Painting");
         painting2.setPaintingTitle("p2");
-        painting2.setToArtist(artist);
+        painting2.setArtist(artist);
 
         context.commitChanges();
 
@@ -406,17 +406,17 @@ public class DataContextSharedCacheIT {
         assertEquals(artist.getArtistName(), altArtist.getArtistName());
         assertEquals(painting1.getPaintingTitle(), altPainting1.getPaintingTitle());
         assertEquals(painting2.getPaintingTitle(), altPainting2.getPaintingTitle());
-        assertEquals(2, altArtist.getPaintingArray().size());
+        assertEquals(2, altArtist.getPaintings().size());
         assertEquals(PersistenceState.COMMITTED, altArtist.getPersistenceState());
         assertEquals(PersistenceState.COMMITTED, altPainting1.getPersistenceState());
         assertEquals(PersistenceState.COMMITTED, altPainting2.getPersistenceState());
 
         // make sure toOne relationships from Paintings
         // are resolved...
-        altPainting1.getToArtist();
-        altPainting2.getToArtist();
-        assertSame(altArtist, altPainting1.readPropertyDirectly("toArtist"));
-        assertSame(altArtist, altPainting2.readPropertyDirectly("toArtist"));
+        altPainting1.getArtist();
+        altPainting2.getArtist();
+        assertSame(altArtist, altPainting1.readPropertyDirectly("artist"));
+        assertSame(altArtist, altPainting2.readPropertyDirectly("artist"));
 
         // delete painting
         context.deleteObjects(painting1);
@@ -438,7 +438,7 @@ public class DataContextSharedCacheIT {
                         altPainting1.getPersistenceState());
                 assertEquals(PersistenceState.COMMITTED, altArtist.getPersistenceState());
 
-                Collection<Painting> list = altArtist.getPaintingArray();
+                Collection<Painting> list = altArtist.getPaintings();
                 assertEquals(1, list.size());
                 assertFalse(list.contains(altPainting1));
             }
@@ -456,7 +456,7 @@ public class DataContextSharedCacheIT {
 
         Painting painting1 = (Painting) context.newObject("Painting");
         painting1.setPaintingTitle("p1");
-        painting1.setToArtist(artist);
+        painting1.setArtist(artist);
 
         context.commitChanges();
 
@@ -469,14 +469,14 @@ public class DataContextSharedCacheIT {
 
         assertEquals(artist.getArtistName(), altArtist.getArtistName());
         assertEquals(painting1.getPaintingTitle(), altPainting1.getPaintingTitle());
-        assertEquals(1, altArtist.getPaintingArray().size());
+        assertEquals(1, altArtist.getPaintings().size());
         assertEquals(PersistenceState.COMMITTED, altArtist.getPersistenceState());
         assertEquals(PersistenceState.COMMITTED, altPainting1.getPersistenceState());
 
         // insert new painting and add to artist
         Painting painting2 = (Painting) context.newObject("Painting");
         painting2.setPaintingTitle("p2");
-        painting2.setToArtist(artist);
+        painting2.setArtist(artist);
         context.commitChanges();
 
         // check peer artist
@@ -487,13 +487,13 @@ public class DataContextSharedCacheIT {
 
             @Override
             protected void assertResult() throws Exception {
-                Object value = altArtist.readPropertyDirectly("paintingArray");
+                Object value = altArtist.readPropertyDirectly("paintings");
                 assertTrue(value instanceof ToManyList, "Unexpected: " + value);
                 assertTrue(((ToManyList) value).isFault());
             }
         };
         helper.runTest(2000);
-        List<Painting> list = altArtist.getPaintingArray();
+        List<Painting> list = altArtist.getPaintings();
         assertEquals(2, list.size());
     }
 

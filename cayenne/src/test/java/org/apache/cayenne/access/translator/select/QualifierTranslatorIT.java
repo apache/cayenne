@@ -65,7 +65,7 @@ public class QualifierTranslatorIT {
         assertNotNull(testEntity);
 
         ObjectSelect<CompoundFkTestEntity> query = ObjectSelect.query(CompoundFkTestEntity.class)
-                .where(CompoundFkTestEntity.TO_COMPOUND_PK.eq(testEntity))
+                .where(CompoundFkTestEntity.COMPOUND_PK.eq(testEntity))
                 .and(CompoundFkTestEntity.NAME.like("test%"))
                 .and(CompoundFkTestEntity.NAME.contains("a"));
 
@@ -91,8 +91,8 @@ public class QualifierTranslatorIT {
         assertEquals(2, testEntity.size());
 
         ObjectSelect<CompoundFkTestEntity> query = ObjectSelect.query(CompoundFkTestEntity.class)
-                .where(CompoundFkTestEntity.TO_COMPOUND_PK.eq(testEntity.get(0)))
-                .or(CompoundFkTestEntity.TO_COMPOUND_PK.eq(testEntity.get(1)));
+                .where(CompoundFkTestEntity.COMPOUND_PK.eq(testEntity.get(0)))
+                .or(CompoundFkTestEntity.COMPOUND_PK.eq(testEntity.get(1)));
 
         SelectTranslatorContext context
                 = new SelectTranslatorContext(query, runtime.getDataDomain().getDefaultNode().getAdapter(), env.context().getEntityResolver(), null);

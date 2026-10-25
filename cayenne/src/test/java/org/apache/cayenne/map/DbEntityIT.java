@@ -194,18 +194,18 @@ public class DbEntityIT {
     public void translateToRelatedEntityIndependentPath() {
         DbEntity artistE = env.runtime().getDataDomain().getEntityResolver().getDbEntity("ARTIST");
 
-        Expression e1 = ExpressionFactory.exp("db:paintingArray");
-        Expression translated = artistE.translateToRelatedEntity(e1, "artistExhibitArray");
-        assertEquals(ExpressionFactory.exp("db:toArtist.paintingArray"), translated, "failure: " + translated);
+        Expression e1 = ExpressionFactory.exp("db:paintings");
+        Expression translated = artistE.translateToRelatedEntity(e1, "artistExhibits");
+        assertEquals(ExpressionFactory.exp("db:artist.paintings"), translated, "failure: " + translated);
     }
 
     @Test
     public void translateToRelatedEntityTrimmedPath() {
         DbEntity artistE = env.runtime().getDataDomain().getEntityResolver().getDbEntity("ARTIST");
 
-        Expression e1 = ExpressionFactory.exp("db:artistExhibitArray.toExhibit");
-        Expression translated = artistE.translateToRelatedEntity(e1, "artistExhibitArray");
-        assertEquals(ExpressionFactory.exp("db:toArtist.artistExhibitArray.toExhibit"),
+        Expression e1 = ExpressionFactory.exp("db:artistExhibits.exhibit");
+        Expression translated = artistE.translateToRelatedEntity(e1, "artistExhibits");
+        assertEquals(ExpressionFactory.exp("db:artist.artistExhibits.exhibit"),
                 translated, "failure: " + translated);
     }
 
@@ -213,10 +213,10 @@ public class DbEntityIT {
     public void translateToRelatedEntitySplitHalfWay() {
         DbEntity artistE = env.runtime().getDataDomain().getEntityResolver().getDbEntity("ARTIST");
 
-        Expression e1 = ExpressionFactory.exp("db:paintingArray.toPaintingInfo.TEXT_REVIEW");
-        Expression translated = artistE.translateToRelatedEntity(e1, "paintingArray.toGallery");
+        Expression e1 = ExpressionFactory.exp("db:paintings.paintingInfo.TEXT_REVIEW");
+        Expression translated = artistE.translateToRelatedEntity(e1, "paintings.gallery");
         assertEquals(
-                ExpressionFactory.exp("db:paintingArray.toArtist.paintingArray.toPaintingInfo.TEXT_REVIEW"), translated,
+                ExpressionFactory.exp("db:paintings.artist.paintings.paintingInfo.TEXT_REVIEW"), translated,
                 "failure: " + translated);
     }
 
@@ -224,11 +224,11 @@ public class DbEntityIT {
     public void translateToRelatedEntityMatchingPath() {
         DbEntity artistE = env.runtime().getDataDomain().getEntityResolver().getDbEntity("ARTIST");
 
-        Expression e1 = ExpressionFactory.exp("db:artistExhibitArray.toExhibit");
-        Expression translated = artistE.translateToRelatedEntity(e1, "artistExhibitArray.toExhibit");
+        Expression e1 = ExpressionFactory.exp("db:artistExhibits.exhibit");
+        Expression translated = artistE.translateToRelatedEntity(e1, "artistExhibits.exhibit");
 
         assertEquals(
-                ExpressionFactory.exp("db:artistExhibitArray.toArtist.artistExhibitArray.toExhibit"), translated,
+                ExpressionFactory.exp("db:artistExhibits.artist.artistExhibits.exhibit"), translated,
                 "failure: " + translated);
     }
 
@@ -236,10 +236,10 @@ public class DbEntityIT {
     public void translateToRelatedEntityToOne() {
         DbEntity paintingE = env.runtime().getDataDomain().getEntityResolver().getDbEntity("PAINTING");
 
-        Expression e1 = ExpressionFactory.exp("db:toArtist.ARTIST_NAME = 'aa'");
-        Expression translated = paintingE.translateToRelatedEntity(e1, "toArtist");
+        Expression e1 = ExpressionFactory.exp("db:artist.ARTIST_NAME = 'aa'");
+        Expression translated = paintingE.translateToRelatedEntity(e1, "artist");
 
-        assertEquals(ExpressionFactory.exp("db:paintingArray.toArtist.ARTIST_NAME = 'aa'"), translated,
+        assertEquals(ExpressionFactory.exp("db:paintings.artist.ARTIST_NAME = 'aa'"), translated,
                 "failure: " + translated);
     }
 }

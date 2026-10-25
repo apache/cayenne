@@ -94,7 +94,7 @@ public class DataContextObjectStoreDiffRetainingIT {
         // snapshot is not retained... in testing this I am leaving some flexibility for
         // the framework to retain a snapshot when it deems appropriate...
 
-        a.addToPaintingArray(context.newObject(Painting.class));
+        a.addToPaintings(context.newObject(Painting.class));
         a.setArtistName("some other name");
         assertNotNull(objectStore
                 .getChangesByObjectId()

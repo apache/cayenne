@@ -67,7 +67,7 @@ public class CAY_194IT {
 
         ReflexiveAndToOne o2 = context.newObject(ReflexiveAndToOne.class);
         o2.setName("o2");
-        o2.setToParent(o1);
+        o2.setParent(o1);
 
         context.commitChanges();
 
@@ -91,16 +91,16 @@ public class CAY_194IT {
 
         ReflexiveAndToOne o2 = context.newObject(ReflexiveAndToOne.class);
         o2.setName("o2");
-        o2.setToParent(o1);
+        o2.setParent(o1);
 
         context.commitChanges();
 
         List<ReflexiveAndToOne> children = ObjectSelect.query(ReflexiveAndToOne.class)
-                .where(ReflexiveAndToOne.TO_PARENT.eq(o1)).select(context);
+                .where(ReflexiveAndToOne.PARENT.eq(o1)).select(context);
         assertEquals(1, children.size());
         assertSame(o2, children.get(0));
 
-        o2.setToParent(null);
+        o2.setParent(null);
         context.commitChanges();
     }
 }

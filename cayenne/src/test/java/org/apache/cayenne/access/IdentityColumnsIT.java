@@ -148,7 +148,7 @@ public class IdentityColumnsIT {
 
         GeneratedColumnDep d = env.context().newObject(GeneratedColumnDep.class);
         d.setName("d");
-        d.setToMaster(m);
+        d.setMaster(m);
         env.context().commitChanges();
 
         env.context().invalidateObjects(m, d);
@@ -156,7 +156,7 @@ public class IdentityColumnsIT {
         env.context().prepareForAccess(d, null, false);
 
         // this line caused CAY-422 error
-        d.getToMaster();
+        d.getMaster();
 
         d.setName("new name");
         env.context().commitChanges();
@@ -225,11 +225,11 @@ public class IdentityColumnsIT {
 
             GeneratedColumnCompKey dep1 = env.context().newObject(GeneratedColumnCompKey.class);
             dep1.setName(depName1);
-            dep1.setToMaster(master);
+            dep1.setMaster(master);
 
             GeneratedColumnCompKey dep2 = env.context().newObject(GeneratedColumnCompKey.class);
             dep2.setName(depName2);
-            dep2.setToMaster(master);
+            dep2.setMaster(master);
 
             env.context().commitChanges();
 
@@ -265,7 +265,7 @@ public class IdentityColumnsIT {
 
         GeneratedColumnDep dependent = env.context().newObject(GeneratedColumnDep.class);
         dependent.setName("aaa");
-        dependent.setToMaster(master1);
+        dependent.setMaster(master1);
 
         env.context().commitChanges();
 
@@ -274,7 +274,7 @@ public class IdentityColumnsIT {
         master2.setName("bbb");
 
         // TESTING THIS
-        dependent.setToMaster(master2);
+        dependent.setMaster(master2);
         env.context().commitChanges();
 
         int id1 = Cayenne.intPKForObject(master2);
@@ -306,7 +306,7 @@ public class IdentityColumnsIT {
 
         GeneratedColumnDep dependent = idObject.getObjectContext().newObject(GeneratedColumnDep.class);
         dependent.setName("aaa");
-        dependent.setToMaster(idObject);
+        dependent.setMaster(idObject);
 
         env.context().commitChanges();
 

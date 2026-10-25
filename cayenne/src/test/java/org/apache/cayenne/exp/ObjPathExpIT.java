@@ -35,7 +35,7 @@ public class ObjPathExpIT {
 
 	@Test
 	public void evaluate_ObjEntity() {
-		ObjPathExp node = new ObjPathExp("paintingArray.paintingTitle");
+		ObjPathExp node = new ObjPathExp("paintings.paintingTitle");
 
 		ObjEntity ae = env.context().getEntityResolver().getObjEntity(Artist.class);
 
@@ -45,7 +45,7 @@ public class ObjPathExpIT {
 
 	@Test
 	public void evaluate_ObjEntity_Outer() {
-		ObjPathExp node = new ObjPathExp("paintingArray+.paintingTitle");
+		ObjPathExp node = new ObjPathExp("paintings+.paintingTitle");
 
 		ObjEntity ae = env.context().getEntityResolver().getObjEntity(Artist.class);
 

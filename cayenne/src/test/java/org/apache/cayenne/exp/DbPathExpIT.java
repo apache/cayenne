@@ -54,7 +54,7 @@ public class DbPathExpIT {
 
 	@Test
 	public void evaluate_DbEntity() {
-		Expression e = ExpressionFactory.exp("db:paintingArray.PAINTING_TITLE");
+		Expression e = ExpressionFactory.exp("db:paintings.PAINTING_TITLE");
 
 		ObjEntity ae = env.context().getEntityResolver().getObjEntity(Artist.class);
 		DbEntity ade = ae.getDbEntity();
@@ -81,14 +81,14 @@ public class DbPathExpIT {
 		p2.setPaintingTitle("p2");
 		p3.setPaintingTitle("p3");
 
-		p1.setToArtist(a1);
-		p2.setToArtist(a2);
+		p1.setArtist(a1);
+		p2.setArtist(a2);
 
 		env.context().commitChanges();
 
 		Expression attributeOnlyPath = new DbPathExp("PAINTING_TITLE");
-		Expression singleStepPath = new DbPathExp("toArtist.ARTIST_NAME");
-		Expression multiStepPath = new DbPathExp("toArtist.paintingArray.PAINTING_TITLE");
+		Expression singleStepPath = new DbPathExp("artist.ARTIST_NAME");
+		Expression multiStepPath = new DbPathExp("artist.paintings.PAINTING_TITLE");
 
 		// attribute only path
 		assertEquals(p1.getPaintingTitle(), attributeOnlyPath.evaluate(p1));

@@ -76,7 +76,7 @@ public class CayennePersistentObjectRelationshipsIT {
         createArtistWithPaintingDataSet();
 
         Painting p1 = env.context().objectForPK(Painting.class, 6);
-        assertEquals("aX", p1.readNestedProperty("toArtist.artistName"));
+        assertEquals("aX", p1.readNestedProperty("artist.artistName"));
     }
 
     @Test
@@ -84,7 +84,7 @@ public class CayennePersistentObjectRelationshipsIT {
         createArtistWithPaintingDataSet();
 
         Painting p1 = env.context().objectForPK(Painting.class, 6);
-        assertInstanceOf(List.class, p1.getToArtist().readNestedProperty("paintingArray"));
+        assertInstanceOf(List.class, p1.getArtist().readNestedProperty("paintings"));
     }
 
     @Test
@@ -92,12 +92,12 @@ public class CayennePersistentObjectRelationshipsIT {
         createArtistWithPaintingDataSet();
 
         Painting p1 = env.context().objectForPK(Painting.class, 6);
-        Artist a1 = p1.getToArtist();
+        Artist a1 = p1.getArtist();
 
         assertNotNull(a1);
         assertEquals("aX", a1.getArtistName());
 
-        List<Painting> paintings = a1.getPaintingArray();
+        List<Painting> paintings = a1.getPaintings();
         assertEquals(1, paintings.size());
         Painting p2 = paintings.getFirst();
         assertSame(p1, p2);
@@ -108,7 +108,7 @@ public class CayennePersistentObjectRelationshipsIT {
         createArtistWithPaintingDataSet();
 
         Painting p1 = env.context().objectForPK(Painting.class, 6);
-        Artist a1 = p1.getToArtist();
+        Artist a1 = p1.getArtist();
 
         assertNotNull(a1);
         assertEquals(PersistenceState.HOLLOW, a1.getPersistenceState());
@@ -125,7 +125,7 @@ public class CayennePersistentObjectRelationshipsIT {
         Painting p1 = pi1.getPainting();
         p1.getPaintingTitle();
 
-        Artist a1 = p1.getToArtist();
+        Artist a1 = p1.getArtist();
 
         assertNotNull(a1);
         assertEquals(PersistenceState.HOLLOW, a1.getPersistenceState());
@@ -138,7 +138,7 @@ public class CayennePersistentObjectRelationshipsIT {
         createArtistWithPaintingDataSet();
 
         Painting p1 = env.context().objectForPK(Painting.class, 6);
-        Gallery g1 = p1.getToGallery();
+        Gallery g1 = p1.getGallery();
         assertNull(g1);
     }
 
@@ -147,7 +147,7 @@ public class CayennePersistentObjectRelationshipsIT {
         createArtistWithPaintingDataSet();
 
         Artist a1 = env.context().objectForPK(Artist.class, 8);
-        List<Painting> plist = a1.getPaintingArray();
+        List<Painting> plist = a1.getPaintings();
 
         assertNotNull(plist);
         assertEquals(1, plist.size());
@@ -161,7 +161,7 @@ public class CayennePersistentObjectRelationshipsIT {
         tArtist.insert(11, "aX");
 
         Artist a1 = env.context().objectForPK(Artist.class, 11);
-        List<Painting> plist = a1.getPaintingArray();
+        List<Painting> plist = a1.getPaintings();
 
         assertNotNull(plist);
         assertEquals(0, plist.size());
@@ -175,10 +175,10 @@ public class CayennePersistentObjectRelationshipsIT {
 
         ArtGroup childGroup1 = env.context().newObject(ArtGroup.class);
         childGroup1.setName("child1");
-        childGroup1.setToParentGroup(parentGroup);
+        childGroup1.setParentGroup(parentGroup);
         env.context().commitChanges();
 
-        childGroup1.setToParentGroup(null);
+        childGroup1.setParentGroup(null);
         env.context().commitChanges();
     }
 
@@ -191,11 +191,11 @@ public class CayennePersistentObjectRelationshipsIT {
         ArtGroup parentGroup = env.context().newObject(ArtGroup.class);
         parentGroup.setName("parent");
 
-        childGroup1.setToParentGroup(parentGroup);
+        childGroup1.setParentGroup(parentGroup);
 
         env.context().commitChanges();
 
-        childGroup1.setToParentGroup(null);
+        childGroup1.setParentGroup(null);
         env.context().commitChanges();
     }
 
@@ -209,18 +209,18 @@ public class CayennePersistentObjectRelationshipsIT {
         ArtGroup parentGroup = env.context().newObject(ArtGroup.class);
         parentGroup.setName("parent");
 
-        childGroup1.setToParentGroup(parentGroup);
+        childGroup1.setParentGroup(parentGroup);
 
         ArtGroup childGroup2 = env.context().newObject(ArtGroup.class);
         childGroup2.setName("child2");
-        childGroup2.setToParentGroup(parentGroup);
+        childGroup2.setParentGroup(parentGroup);
 
         env.context().commitChanges();
 
-        childGroup1.setToParentGroup(null);
+        childGroup1.setParentGroup(null);
         env.context().commitChanges();
 
-        childGroup2.setToParentGroup(null);
+        childGroup2.setParentGroup(null);
         env.context().commitChanges();
     }
 
@@ -234,18 +234,18 @@ public class CayennePersistentObjectRelationshipsIT {
         ArtGroup parentGroup = env.context().newObject(ArtGroup.class);
         parentGroup.setName("parent");
 
-        childGroup1.setToParentGroup(parentGroup);
+        childGroup1.setParentGroup(parentGroup);
 
         ArtGroup childGroup2 = env.context().newObject(ArtGroup.class);
         childGroup2.setName("subchild");
-        childGroup2.setToParentGroup(childGroup1);
+        childGroup2.setParentGroup(childGroup1);
 
         env.context().commitChanges();
 
-        childGroup1.setToParentGroup(null);
+        childGroup1.setParentGroup(null);
         env.context().commitChanges();
 
-        childGroup2.setToParentGroup(null);
+        childGroup2.setParentGroup(null);
         env.context().commitChanges();
     }
 
@@ -259,12 +259,12 @@ public class CayennePersistentObjectRelationshipsIT {
         Painting painting = runtime.newContext().newObject(Painting.class);
 
         // Check setting a toOne relationship
-        assertThrows(CayenneRuntimeException.class, () -> painting.setToArtist(artist));
-        assertNull(painting.getToArtist()); // Make sure it wasn't set
+        assertThrows(CayenneRuntimeException.class, () -> painting.setArtist(artist));
+        assertNull(painting.getArtist()); // Make sure it wasn't set
 
         // Now try the reverse (toMany) relationship
-        assertThrows(CayenneRuntimeException.class, () -> artist.addToPaintingArray(painting));
-        assertEquals(0, artist.getPaintingArray().size());
+        assertThrows(CayenneRuntimeException.class, () -> artist.addToPaintings(painting));
+        assertEquals(0, artist.getPaintings().size());
     }
 
     @Test
@@ -277,7 +277,7 @@ public class CayennePersistentObjectRelationshipsIT {
         // Cause an update and an insert that need correct ordering
         Painting painting = env.context().newObject(Painting.class);
         painting.setPaintingTitle("a painting");
-        artist.addToPaintingArray(painting);
+        artist.addToPaintings(painting);
 
         env.context().commitChanges();
 
@@ -289,9 +289,9 @@ public class CayennePersistentObjectRelationshipsIT {
     public void newToMany() {
         Artist artist = env.context().newObject(Artist.class);
         artist.setArtistName("test");
-        assertInstanceOf(ToManyList.class, artist.readPropertyDirectly("paintingArray"));
+        assertInstanceOf(ToManyList.class, artist.readPropertyDirectly("paintings"));
 
-        ToManyList<?> list = (ToManyList<?>) artist.readPropertyDirectly("paintingArray");
+        ToManyList<?> list = (ToManyList<?>) artist.readPropertyDirectly("paintings");
         assertFalse(list.isFault());
 
         env.context().commitChanges();
@@ -307,10 +307,10 @@ public class CayennePersistentObjectRelationshipsIT {
 
         // create and then immediately delete a to-many relationship value
         Painting object2 = env.context().newObject(Painting.class);
-        artist.addToPaintingArray(object2);
-        artist.removeFromPaintingArray(object2);
+        artist.addToPaintings(object2);
+        artist.removeFromPaintings(object2);
         env.context().deleteObject(object2);
-        assertEquals(1, artist.getPaintingArray().size());
+        assertEquals(1, artist.getPaintings().size());
 
         artist.setArtistName("updated artist name"); // this will force the commit to actually execute some SQL
         env.context().commitChanges();
@@ -324,12 +324,12 @@ public class CayennePersistentObjectRelationshipsIT {
 
         Painting object2 = env.context().newObject(Painting.class);
         object2.setPaintingTitle("Title");
-        object2.setToArtist(artist);
-        object2.setToArtist(null);
+        object2.setArtist(artist);
+        object2.setArtist(null);
         env.context().commitChanges();
         
         env.context().invalidateObjects(object2);
-        assertNull(object2.getToArtist());
+        assertNull(object2.getArtist());
     }
     
 }

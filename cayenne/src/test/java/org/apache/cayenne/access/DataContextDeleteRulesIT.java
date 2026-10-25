@@ -63,19 +63,19 @@ public class DataContextDeleteRulesIT {
 
     @Test
     public void nullifyToOne() {
-        // ArtGroup toParentGroup
+        // ArtGroup parentGroup
         ArtGroup parentGroup = (ArtGroup) context.newObject("ArtGroup");
         parentGroup.setName("Parent");
 
         ArtGroup childGroup = (ArtGroup) context.newObject("ArtGroup");
         childGroup.setName("Child");
-        parentGroup.addToChildGroupsArray(childGroup);
+        parentGroup.addToChildGroups(childGroup);
 
         // Check to make sure that the relationships are both exactly correct
         // before starting. We're not really testing this, but it is imperative
         // that it is correct before testing the real details.
-        assertEquals(parentGroup, childGroup.getToParentGroup());
-        assertTrue(parentGroup.getChildGroupsArray().contains(childGroup));
+        assertEquals(parentGroup, childGroup.getParentGroup());
+        assertTrue(parentGroup.getChildGroups().contains(childGroup));
 
         // Always good to commit before deleting... bad things happen otherwise
         context.commitChanges();
@@ -83,9 +83,9 @@ public class DataContextDeleteRulesIT {
         context.deleteObjects(childGroup);
 
         // The things we are testing.
-        assertFalse(parentGroup.getChildGroupsArray().contains(childGroup));
+        assertFalse(parentGroup.getChildGroups().contains(childGroup));
         // Although deleted, the property should be null (good cleanup policy)
-        // assertNull(childGroup.getToParentGroup());
+        // assertNull(childGroup.getParentGroup());
 
         // And be sure that the commit works afterwards, just for sanity
         context.commitChanges();
@@ -97,13 +97,13 @@ public class DataContextDeleteRulesIT {
      */
     @Test
     public void cascadeToManyFlattened() {
-        // testing Artist.groupArray relationship
+        // testing Artist.groups relationship
         ArtGroup aGroup = context.newObject(ArtGroup.class);
         aGroup.setName("Group Name");
         Artist anArtist = context.newObject(Artist.class);
         anArtist.setArtistName("A Name");
-        anArtist.addToGroupArray(aGroup);
-        assertTrue(anArtist.getGroupArray().contains(aGroup));
+        anArtist.addToGroups(aGroup);
+        assertTrue(anArtist.getGroups().contains(aGroup));
 
         context.commitChanges();
 
@@ -115,7 +115,7 @@ public class DataContextDeleteRulesIT {
         context.deleteObjects(anArtist);
 
         assertEquals(PersistenceState.DELETED, aGroup.getPersistenceState());
-        assertFalse(anArtist.getGroupArray().contains(aGroup));
+        assertFalse(anArtist.getGroups().contains(aGroup));
         context.commitChanges();
 
         List<?> joins2 = context.select(checkQuery);
@@ -128,18 +128,18 @@ public class DataContextDeleteRulesIT {
      */
     @Test
     public void nullifyToManyFlattened() {
-        // testing ArtGroup.artistArray relationship
+        // testing ArtGroup.artists relationship
         ArtGroup aGroup = context.newObject(ArtGroup.class);
         aGroup.setName("Group Name");
         Artist anArtist = context.newObject(Artist.class);
         anArtist.setArtistName("A Name");
-        aGroup.addToArtistArray(anArtist);
+        aGroup.addToArtists(anArtist);
 
         context.commitChanges();
 
         // Preconditions
-        assertTrue(aGroup.getArtistArray().contains(anArtist));
-        assertTrue(anArtist.getGroupArray().contains(aGroup));
+        assertTrue(aGroup.getArtists().contains(anArtist));
+        assertTrue(anArtist.getGroups().contains(aGroup));
 
         SQLTemplate checkQuery = new SQLTemplate(Artist.class, "SELECT * FROM ARTIST_GROUP");
         checkQuery.setFetchingDataRows(true);
@@ -147,7 +147,7 @@ public class DataContextDeleteRulesIT {
         assertEquals(1, joins1.size());
 
         context.deleteObjects(aGroup);
-        assertFalse(anArtist.getGroupArray().contains(aGroup));
+        assertFalse(anArtist.getGroups().contains(aGroup));
         context.commitChanges();
 
         List<?> joins2 = context.select(checkQuery);
@@ -156,38 +156,38 @@ public class DataContextDeleteRulesIT {
 
     @Test
     public void nullifyToMany() {
-        // ArtGroup childGroupsArray
+        // ArtGroup childGroups
         ArtGroup parentGroup = (ArtGroup) context.newObject("ArtGroup");
         parentGroup.setName("Parent");
 
         ArtGroup childGroup = (ArtGroup) context.newObject("ArtGroup");
         childGroup.setName("Child");
-        parentGroup.addToChildGroupsArray(childGroup);
+        parentGroup.addToChildGroups(childGroup);
 
         // Preconditions - good to check to be sure
-        assertEquals(parentGroup, childGroup.getToParentGroup());
-        assertTrue(parentGroup.getChildGroupsArray().contains(childGroup));
+        assertEquals(parentGroup, childGroup.getParentGroup());
+        assertTrue(parentGroup.getChildGroups().contains(childGroup));
 
         context.commitChanges();
 
         context.deleteObjects(parentGroup);
 
         // The things we are testing.
-        assertNull(childGroup.getToParentGroup());
+        assertNull(childGroup.getParentGroup());
 
         // Although deleted, the property should be null (good cleanup policy)
-        // assertFalse(parentGroup.getChildGroupsArray().contains(childGroup));
+        // assertFalse(parentGroup.getChildGroups().contains(childGroup));
         context.commitChanges();
     }
 
     @Test
     public void cascadeToOne() {
-        // Painting toPaintingInfo
+        // Painting paintingInfo
         Painting painting = (Painting) context.newObject("Painting");
         painting.setPaintingTitle("A Title");
 
         PaintingInfo info = (PaintingInfo) context.newObject("PaintingInfo");
-        painting.setToPaintingInfo(info);
+        painting.setPaintingInfo(info);
 
         // Must commit before deleting.. this relationship is dependent,
         // and everything must be committed for certain things to work
@@ -198,13 +198,13 @@ public class DataContextDeleteRulesIT {
         // info must also be deleted
         assertEquals(PersistenceState.DELETED, info.getPersistenceState());
         assertNull(info.getPainting());
-        assertNull(painting.getToPaintingInfo());
+        assertNull(painting.getPaintingInfo());
         context.commitChanges();
     }
 
     @Test
     public void cascadeToMany() {
-        // Artist artistExhibitArray
+        // Artist artistExhibits
         Artist anArtist = (Artist) context.newObject("Artist");
         anArtist.setArtistName("A Name");
         Exhibit anExhibit = (Exhibit) context.newObject("Exhibit");
@@ -215,12 +215,12 @@ public class DataContextDeleteRulesIT {
         Gallery gallery = (Gallery) context.newObject("Gallery");
         gallery.setGalleryName("A Name");
 
-        anExhibit.setToGallery(gallery);
+        anExhibit.setGallery(gallery);
 
         ArtistExhibit artistExhibit = (ArtistExhibit) context.newObject("ArtistExhibit");
 
-        artistExhibit.setToArtist(anArtist);
-        artistExhibit.setToExhibit(anExhibit);
+        artistExhibit.setArtist(anArtist);
+        artistExhibit.setExhibit(anExhibit);
         context.commitChanges();
 
         context.deleteObjects(anArtist);
@@ -228,18 +228,18 @@ public class DataContextDeleteRulesIT {
         // Test that the link record was deleted, and removed from the
         // relationship
         assertEquals(PersistenceState.DELETED, artistExhibit.getPersistenceState());
-        assertFalse(anArtist.getArtistExhibitArray().contains(artistExhibit));
+        assertFalse(anArtist.getArtistExhibits().contains(artistExhibit));
         context.commitChanges();
     }
 
     @Test
     public void denyToMany() {
-        // Gallery paintingArray
+        // Gallery paintings
         Gallery gallery = (Gallery) context.newObject("Gallery");
         gallery.setGalleryName("A Name");
         Painting painting = (Painting) context.newObject("Painting");
         painting.setPaintingTitle("A Title");
-        gallery.addToPaintingArray(painting);
+        gallery.addToPaintings(painting);
         context.commitChanges();
 
         assertThrows(Exception.class, () -> context.deleteObjects(gallery));

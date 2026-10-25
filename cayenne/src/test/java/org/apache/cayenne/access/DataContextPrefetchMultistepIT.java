@@ -126,14 +126,14 @@ public class DataContextPrefetchMultistepIT  {
 
         List<Gallery> galleries = ObjectSelect.query(Gallery.class)
                 .where(Gallery.GALLERY_NAME.eq("gallery2"))
-                .prefetch(Gallery.EXHIBIT_ARRAY.dot(Exhibit.ARTIST_EXHIBIT_ARRAY).disjoint())
+                .prefetch(Gallery.EXHIBITS.dot(Exhibit.ARTIST_EXHIBITS).disjoint())
                 .select(context);
         assertEquals(1, galleries.size());
 
         Gallery g2 = galleries.get(0);
 
         // this relationship wasn't explicitly prefetched....
-        Object list = g2.readPropertyDirectly("exhibitArray");
+        Object list = g2.readPropertyDirectly("exhibits");
         assertTrue(list instanceof Fault);
 
         // however the target objects must be resolved
@@ -152,16 +152,16 @@ public class DataContextPrefetchMultistepIT  {
 
         List<Gallery> galleries = ObjectSelect.query(Gallery.class)
                 .where(Gallery.GALLERY_NAME.eq("gallery2"))
-                .prefetch(Gallery.EXHIBIT_ARRAY.disjoint())
-                .prefetch(Gallery.EXHIBIT_ARRAY.dot(Exhibit.ARTIST_EXHIBIT_ARRAY).disjoint())
+                .prefetch(Gallery.EXHIBITS.disjoint())
+                .prefetch(Gallery.EXHIBITS.dot(Exhibit.ARTIST_EXHIBITS).disjoint())
                 .select(context);
         assertEquals(1, galleries.size());
 
         Gallery g2 = galleries.get(0);
 
         // this relationship should be resolved
-        assertTrue(g2.readPropertyDirectly("exhibitArray") instanceof ToManyHolder);
-        List<Exhibit> exhibits = (List<Exhibit>) g2.readPropertyDirectly("exhibitArray");
+        assertTrue(g2.readPropertyDirectly("exhibits") instanceof ToManyHolder);
+        List<Exhibit> exhibits = (List<Exhibit>) g2.readPropertyDirectly("exhibits");
         assertFalse(((ToManyHolder) exhibits).isFault());
         assertEquals(1, exhibits.size());
 
@@ -169,8 +169,8 @@ public class DataContextPrefetchMultistepIT  {
         assertEquals(PersistenceState.COMMITTED, e1.getPersistenceState());
 
         // this to-many must also be resolved
-        assertTrue(e1.readPropertyDirectly("artistExhibitArray") instanceof ToManyHolder);
-        List<ArtistExhibit> aexhibits = (List<ArtistExhibit>) e1.readPropertyDirectly("artistExhibitArray");
+        assertTrue(e1.readPropertyDirectly("artistExhibits") instanceof ToManyHolder);
+        List<ArtistExhibit> aexhibits = (List<ArtistExhibit>) e1.readPropertyDirectly("artistExhibits");
         assertFalse(((ToManyHolder) aexhibits).isFault());
         assertEquals(1, exhibits.size());
 
@@ -184,16 +184,16 @@ public class DataContextPrefetchMultistepIT  {
 
         List<Gallery> galleries = ObjectSelect.query(Gallery.class)
                 .where(Gallery.GALLERY_NAME.eq("gallery2"))
-                .prefetch(Gallery.EXHIBIT_ARRAY.joint())
-                .prefetch(Gallery.EXHIBIT_ARRAY.dot(Exhibit.ARTIST_EXHIBIT_ARRAY).disjoint())
+                .prefetch(Gallery.EXHIBITS.joint())
+                .prefetch(Gallery.EXHIBITS.dot(Exhibit.ARTIST_EXHIBITS).disjoint())
                 .select(context);
         assertEquals(1, galleries.size());
 
         Gallery g2 = galleries.get(0);
 
         // this relationship should be resolved
-        assertTrue(g2.readPropertyDirectly("exhibitArray") instanceof ToManyHolder);
-        List<Exhibit> exhibits = (List<Exhibit>) g2.readPropertyDirectly("exhibitArray");
+        assertTrue(g2.readPropertyDirectly("exhibits") instanceof ToManyHolder);
+        List<Exhibit> exhibits = (List<Exhibit>) g2.readPropertyDirectly("exhibits");
         assertFalse(((ToManyHolder) exhibits).isFault());
         assertEquals(1, exhibits.size());
 
@@ -201,8 +201,8 @@ public class DataContextPrefetchMultistepIT  {
         assertEquals(PersistenceState.COMMITTED, e1.getPersistenceState());
 
         // this to-many must also be resolved
-        assertTrue(e1.readPropertyDirectly("artistExhibitArray") instanceof ToManyHolder);
-        List<ArtistExhibit> aexhibits = (List<ArtistExhibit>) e1.readPropertyDirectly("artistExhibitArray");
+        assertTrue(e1.readPropertyDirectly("artistExhibits") instanceof ToManyHolder);
+        List<ArtistExhibit> aexhibits = (List<ArtistExhibit>) e1.readPropertyDirectly("artistExhibits");
         assertFalse(((ToManyHolder) aexhibits).isFault());
         assertEquals(2, aexhibits.size());
 
@@ -216,16 +216,16 @@ public class DataContextPrefetchMultistepIT  {
 
         ObjectSelect<Gallery> gallerySelect = ObjectSelect.query(Gallery.class)
                 .where(Gallery.GALLERY_NAME.eq("gallery2"))
-                .prefetch(Gallery.EXHIBIT_ARRAY.disjoint())
-                .prefetch(Gallery.EXHIBIT_ARRAY.dot(Exhibit.ARTIST_EXHIBIT_ARRAY).joint());
+                .prefetch(Gallery.EXHIBITS.disjoint())
+                .prefetch(Gallery.EXHIBITS.dot(Exhibit.ARTIST_EXHIBITS).joint());
         List<Gallery> galleries = gallerySelect.select(context);
         assertEquals(1, galleries.size());
 
         Gallery g2 = galleries.get(0);
 
         // this relationship should be resolved
-        assertTrue(g2.readPropertyDirectly("exhibitArray") instanceof ToManyHolder);
-        List<Exhibit> exhibits = (List<Exhibit>) g2.readPropertyDirectly("exhibitArray");
+        assertTrue(g2.readPropertyDirectly("exhibits") instanceof ToManyHolder);
+        List<Exhibit> exhibits = (List<Exhibit>) g2.readPropertyDirectly("exhibits");
         assertFalse(((ToManyHolder) exhibits).isFault());
         assertEquals(1, exhibits.size());
 
@@ -233,8 +233,8 @@ public class DataContextPrefetchMultistepIT  {
         assertEquals(PersistenceState.COMMITTED, e1.getPersistenceState());
 
         // this to-many must also be resolved
-        assertTrue(e1.readPropertyDirectly("artistExhibitArray") instanceof ToManyHolder);
-        List<ArtistExhibit> aexhibits = (List<ArtistExhibit>) e1.readPropertyDirectly("artistExhibitArray");
+        assertTrue(e1.readPropertyDirectly("artistExhibits") instanceof ToManyHolder);
+        List<ArtistExhibit> aexhibits = (List<ArtistExhibit>) e1.readPropertyDirectly("artistExhibits");
         assertFalse(((ToManyHolder) aexhibits).isFault());
         assertEquals(2, aexhibits.size());
 
@@ -248,16 +248,16 @@ public class DataContextPrefetchMultistepIT  {
 
         List<Gallery> galleries = ObjectSelect.query(Gallery.class)
                 .where(Gallery.GALLERY_NAME.eq("gallery2"))
-                .prefetch(Gallery.PAINTING_ARRAY.disjoint())
-                .prefetch(Gallery.PAINTING_ARRAY.dot(Painting.TO_ARTIST).disjoint())
+                .prefetch(Gallery.PAINTINGS.disjoint())
+                .prefetch(Gallery.PAINTINGS.dot(Painting.ARTIST).disjoint())
                 .select(context);
         assertEquals(1, galleries.size());
 
         Gallery g2 = galleries.get(0);
 
         // this relationship should be resolved
-        assertTrue(g2.readPropertyDirectly(Gallery.PAINTING_ARRAY.getName()) instanceof ToManyHolder);
-        List<Painting> exhibits = (List<Painting>) g2.readPropertyDirectly(Gallery.PAINTING_ARRAY.getName());
+        assertTrue(g2.readPropertyDirectly(Gallery.PAINTINGS.getName()) instanceof ToManyHolder);
+        List<Painting> exhibits = (List<Painting>) g2.readPropertyDirectly(Gallery.PAINTINGS.getName());
         assertFalse(((ToManyHolder) exhibits).isFault());
         assertEquals(0, exhibits.size());
     }
@@ -267,16 +267,16 @@ public class DataContextPrefetchMultistepIT  {
         createGalleriesAndArtists();
 
         List<Gallery> galleries = ObjectSelect.query(Gallery.class)
-                .prefetch(Gallery.PAINTING_ARRAY.disjoint())
-                .prefetch(Gallery.PAINTING_ARRAY.dot(Painting.TO_ARTIST).disjoint())
+                .prefetch(Gallery.PAINTINGS.disjoint())
+                .prefetch(Gallery.PAINTINGS.dot(Painting.ARTIST).disjoint())
                 .select(context);
         assertEquals(3, galleries.size());
 
         Gallery g = galleries.get(0);
 
         // this relationship should be resolved
-        assertTrue(g.readPropertyDirectly(Gallery.PAINTING_ARRAY.getName()) instanceof ToManyHolder);
-        List<Painting> exhibits = (List<Painting>) g.readPropertyDirectly(Gallery.PAINTING_ARRAY.getName());
+        assertTrue(g.readPropertyDirectly(Gallery.PAINTINGS.getName()) instanceof ToManyHolder);
+        List<Painting> exhibits = (List<Painting>) g.readPropertyDirectly(Gallery.PAINTINGS.getName());
         assertFalse(((ToManyHolder) exhibits).isFault());
         assertEquals(0, exhibits.size());
     }
@@ -288,11 +288,11 @@ public class DataContextPrefetchMultistepIT  {
 
         Painting painting = context.newObject(Painting.class);
         painting.setPaintingTitle("Guernica");
-        artist.addToPaintingArray(painting);
+        artist.addToPaintings(painting);
 
         Gallery gallery = context.newObject(Gallery.class);
         gallery.setGalleryName("MOMA");
-        painting.setToGallery(gallery);
+        painting.setGallery(gallery);
 
         context.commitChanges();
         return gallery;
@@ -302,137 +302,137 @@ public class DataContextPrefetchMultistepIT  {
     public void prefetchAcross2RelationshipsKeepingBoth_JointAndJoint() {
         Gallery gallery = createArtistWithPaintingInGallery();
 
-        assertNotNull(gallery.getPaintingArray().get(0).getToArtist());
+        assertNotNull(gallery.getPaintings().get(0).getArtist());
 
         // Prefetch the artist through the two relationships
         ObjectSelect.query(Gallery.class)
-                .prefetch(Gallery.PAINTING_ARRAY.joint())
-                .prefetch(Gallery.PAINTING_ARRAY.dot(Painting.TO_ARTIST).joint())
+                .prefetch(Gallery.PAINTINGS.joint())
+                .prefetch(Gallery.PAINTINGS.dot(Painting.ARTIST).joint())
                 .select(context);
 
-        assertNotNull(gallery.getPaintingArray().get(0).getToArtist());
+        assertNotNull(gallery.getPaintings().get(0).getArtist());
     }
 
     @Test
     public void prefetchAcross2RelationshipsKeepingBoth_JointAndDisjoint() {
         Gallery gallery = createArtistWithPaintingInGallery();
 
-        assertNotNull(gallery.getPaintingArray().get(0).getToArtist());
+        assertNotNull(gallery.getPaintings().get(0).getArtist());
 
         ObjectContext objectContext = runtime.newContext();
 
         // Prefetch the artist through the two relationships
         Gallery gallery2 = ObjectSelect.query(Gallery.class)
-                .prefetch(Gallery.PAINTING_ARRAY.joint())
-                .prefetch(Gallery.PAINTING_ARRAY.dot(Painting.TO_ARTIST).disjoint())
+                .prefetch(Gallery.PAINTINGS.joint())
+                .prefetch(Gallery.PAINTINGS.dot(Painting.ARTIST).disjoint())
                 .selectOne(objectContext);
 
-        assertNotNull(gallery2.getPaintingArray().get(0).getToArtist());
-        assertNotNull(gallery.getPaintingArray().get(0).getToArtist());
+        assertNotNull(gallery2.getPaintings().get(0).getArtist());
+        assertNotNull(gallery.getPaintings().get(0).getArtist());
     }
 
     @Test
     public void prefetchAcross2RelationshipsKeepingBoth_JointAndDisjointById() {
         Gallery gallery = createArtistWithPaintingInGallery();
 
-        assertNotNull(gallery.getPaintingArray().get(0).getToArtist());
+        assertNotNull(gallery.getPaintings().get(0).getArtist());
 
         // Prefetch the artist through the two relationships
         ObjectSelect.query(Gallery.class)
-                .prefetch(Gallery.PAINTING_ARRAY.joint())
-                .prefetch(Gallery.PAINTING_ARRAY.dot(Painting.TO_ARTIST).disjointById())
+                .prefetch(Gallery.PAINTINGS.joint())
+                .prefetch(Gallery.PAINTINGS.dot(Painting.ARTIST).disjointById())
                 .select(context);
 
-        assertNotNull(gallery.getPaintingArray().get(0).getToArtist());
+        assertNotNull(gallery.getPaintings().get(0).getArtist());
     }
 
     @Test
     public void prefetchAcross2RelationshipsKeepingBoth_DisjointAndJoint() {
         Gallery gallery = createArtistWithPaintingInGallery();
 
-        assertNotNull(gallery.getPaintingArray().get(0).getToArtist());
+        assertNotNull(gallery.getPaintings().get(0).getArtist());
 
         // Prefetch the artist through the two relationships
         ObjectSelect.query(Gallery.class)
-                .prefetch(Gallery.PAINTING_ARRAY.disjoint())
-                .prefetch(Gallery.PAINTING_ARRAY.dot(Painting.TO_ARTIST).joint())
+                .prefetch(Gallery.PAINTINGS.disjoint())
+                .prefetch(Gallery.PAINTINGS.dot(Painting.ARTIST).joint())
                 .select(context);
 
-        assertNotNull(gallery.getPaintingArray().get(0).getToArtist());
+        assertNotNull(gallery.getPaintings().get(0).getArtist());
     }
 
     @Test
     public void prefetchAcross2RelationshipsKeepingBoth_DisjointAndDisjoint() {
         Gallery gallery = createArtistWithPaintingInGallery();
 
-        assertNotNull(gallery.getPaintingArray().get(0).getToArtist());
+        assertNotNull(gallery.getPaintings().get(0).getArtist());
 
         // Prefetch the artist through the two relationships
         ObjectSelect.query(Gallery.class)
-                .prefetch(Gallery.PAINTING_ARRAY.disjoint())
-                .prefetch(Gallery.PAINTING_ARRAY.dot(Painting.TO_ARTIST).disjoint())
+                .prefetch(Gallery.PAINTINGS.disjoint())
+                .prefetch(Gallery.PAINTINGS.dot(Painting.ARTIST).disjoint())
                 .select(context);
 
-        assertNotNull(gallery.getPaintingArray().get(0).getToArtist());
+        assertNotNull(gallery.getPaintings().get(0).getArtist());
     }
 
     @Test
     public void prefetchAcross2RelationshipsKeepingBoth_DisjointAndDisjointById() {
         Gallery gallery = createArtistWithPaintingInGallery();
 
-        assertNotNull(gallery.getPaintingArray().get(0).getToArtist());
+        assertNotNull(gallery.getPaintings().get(0).getArtist());
 
         // Prefetch the artist through the two relationships
         ObjectSelect.query(Gallery.class)
-                .prefetch(Gallery.PAINTING_ARRAY.disjoint())
-                .prefetch(Gallery.PAINTING_ARRAY.dot(Painting.TO_ARTIST).disjointById())
+                .prefetch(Gallery.PAINTINGS.disjoint())
+                .prefetch(Gallery.PAINTINGS.dot(Painting.ARTIST).disjointById())
                 .select(context);
 
-        assertNotNull(gallery.getPaintingArray().get(0).getToArtist());
+        assertNotNull(gallery.getPaintings().get(0).getArtist());
     }
 
     @Test
     public void prefetchAcross2RelationshipsKeepingBoth_DisjointByIdAndJoint() {
         Gallery gallery = createArtistWithPaintingInGallery();
 
-        assertNotNull(gallery.getPaintingArray().get(0).getToArtist());
+        assertNotNull(gallery.getPaintings().get(0).getArtist());
 
         // Prefetch the artist through the two relationships
         ObjectSelect.query(Gallery.class)
-                .prefetch(Gallery.PAINTING_ARRAY.disjointById())
-                .prefetch(Gallery.PAINTING_ARRAY.dot(Painting.TO_ARTIST).joint())
+                .prefetch(Gallery.PAINTINGS.disjointById())
+                .prefetch(Gallery.PAINTINGS.dot(Painting.ARTIST).joint())
                 .select(context);
 
-        assertNotNull(gallery.getPaintingArray().get(0).getToArtist());
+        assertNotNull(gallery.getPaintings().get(0).getArtist());
     }
 
     @Test
     public void prefetchAcross2RelationshipsKeepingBoth_DisjointByIdAndDisjoint() {
         Gallery gallery = createArtistWithPaintingInGallery();
 
-        assertNotNull(gallery.getPaintingArray().get(0).getToArtist());
+        assertNotNull(gallery.getPaintings().get(0).getArtist());
 
         // Prefetch the artist through the two relationships
         ObjectSelect.query(Gallery.class)
-                .prefetch(Gallery.PAINTING_ARRAY.disjointById())
-                .prefetch(Gallery.PAINTING_ARRAY.dot(Painting.TO_ARTIST).disjoint())
+                .prefetch(Gallery.PAINTINGS.disjointById())
+                .prefetch(Gallery.PAINTINGS.dot(Painting.ARTIST).disjoint())
                 .select(context);
 
-        assertNotNull(gallery.getPaintingArray().get(0).getToArtist());
+        assertNotNull(gallery.getPaintings().get(0).getArtist());
     }
 
     @Test
     public void prefetchAcross2RelationshipsKeepingBoth_DisjointByIdAndDisjointById() {
         Gallery gallery = createArtistWithPaintingInGallery();
 
-        assertNotNull(gallery.getPaintingArray().get(0).getToArtist());
+        assertNotNull(gallery.getPaintings().get(0).getArtist());
 
         // Prefetch the artist through the two relationships
         ObjectSelect.query(Gallery.class)
-                .prefetch(Gallery.PAINTING_ARRAY.disjointById())
-                .prefetch(Gallery.PAINTING_ARRAY.dot(Painting.TO_ARTIST).disjointById())
+                .prefetch(Gallery.PAINTINGS.disjointById())
+                .prefetch(Gallery.PAINTINGS.dot(Painting.ARTIST).disjointById())
                 .select(context);
 
-        assertNotNull(gallery.getPaintingArray().get(0).getToArtist());
+        assertNotNull(gallery.getPaintings().get(0).getArtist());
     }
 }

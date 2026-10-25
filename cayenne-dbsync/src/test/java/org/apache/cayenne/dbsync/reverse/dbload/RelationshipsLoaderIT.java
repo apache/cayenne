@@ -101,10 +101,10 @@ public class RelationshipsLoaderIT extends BaseLoaderIT {
         DbEntity fkEntity = getDbEntity("COMPOUND_FK_TEST");
         assertNotNull(fkEntity, "COMPOUND_FK_TEST entity was not loaded");
 
-        List<DbRelationship> toCompoundPk = relationshipsTo(fkEntity, "COMPOUND_PK_TEST");
-        assertEquals(1, toCompoundPk.size(),
+        List<DbRelationship> compoundPk = relationshipsTo(fkEntity, "COMPOUND_PK_TEST");
+        assertEquals(1, compoundPk.size(),
                 "The 2-column FK must produce a single to-one relationship, not one per column");
-        assertEquals(2, toCompoundPk.get(0).getJoins().size(),
+        assertEquals(2, compoundPk.get(0).getJoins().size(),
                 "The relationship must carry both FK column joins");
 
         // the reverse (to-many) relationship must be a single compound relationship as well
@@ -138,18 +138,18 @@ public class RelationshipsLoaderIT extends BaseLoaderIT {
         DbEntity bEntity = getDbEntity("TWO_FK_B");
         assertNotNull(bEntity, "TWO_FK_B entity was not loaded");
 
-        List<DbRelationship> toA = relationshipsTo(bEntity, "TWO_FK_A");
-        assertEquals(2, toA.size(), "Two independent FKs must produce two separate relationships");
-        for (DbRelationship rel : toA) {
+        List<DbRelationship> a = relationshipsTo(bEntity, "TWO_FK_A");
+        assertEquals(2, a.size(), "Two independent FKs must produce two separate relationships");
+        for (DbRelationship rel : a) {
             assertEquals(1, rel.getJoins().size(), "Each single-column FK relationship must have exactly one join");
         }
 
         DbEntity aEntity = getDbEntity("TWO_FK_A");
         assertNotNull(aEntity, "TWO_FK_A entity was not loaded");
 
-        List<DbRelationship> toB = relationshipsTo(aEntity, "TWO_FK_B");
-        assertEquals(2, toB.size(), "Two independent FKs must produce two separate reverse relationships");
-        for (DbRelationship rel : toB) {
+        List<DbRelationship> b = relationshipsTo(aEntity, "TWO_FK_B");
+        assertEquals(2, b.size(), "Two independent FKs must produce two separate reverse relationships");
+        for (DbRelationship rel : b) {
             assertEquals(1, rel.getJoins().size(), "Each reverse relationship must have exactly one join");
         }
     }

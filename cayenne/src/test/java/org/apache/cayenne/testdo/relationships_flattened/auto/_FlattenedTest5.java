@@ -23,11 +23,11 @@ public abstract class _FlattenedTest5 extends PersistentObject {
     public static final String FT5_ID_PK_COLUMN = "FT5_ID";
 
     public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);
-    public static final EntityProperty<FlattenedTest1> TO_FT1 = PropertyFactory.createEntity("toFT1", FlattenedTest1.class);
+    public static final EntityProperty<FlattenedTest1> FT1 = PropertyFactory.createEntity("ft1", FlattenedTest1.class);
 
     protected String name;
 
-    protected Object toFT1;
+    protected Object ft1;
 
     public void setName(String name) {
         beforePropertyWrite("name", this.name, name);
@@ -39,12 +39,12 @@ public abstract class _FlattenedTest5 extends PersistentObject {
         return this.name;
     }
 
-    public void setToFT1(FlattenedTest1 toFT1) {
-        setToOneTarget("toFT1", toFT1, true);
+    public void setFt1(FlattenedTest1 ft1) {
+        setToOneTarget("ft1", ft1, true);
     }
 
-    public FlattenedTest1 getToFT1() {
-        return (FlattenedTest1)readProperty("toFT1");
+    public FlattenedTest1 getFt1() {
+        return (FlattenedTest1)readProperty("ft1");
     }
 
     @Override
@@ -56,8 +56,8 @@ public abstract class _FlattenedTest5 extends PersistentObject {
         switch(propName) {
             case "name":
                 return this.name;
-            case "toFT1":
-                return this.toFT1;
+            case "ft1":
+                return this.ft1;
             default:
                 return super.readPropertyDirectly(propName);
         }
@@ -73,8 +73,8 @@ public abstract class _FlattenedTest5 extends PersistentObject {
             case "name":
                 this.name = (String)val;
                 break;
-            case "toFT1":
-                this.toFT1 = val;
+            case "ft1":
+                this.ft1 = val;
                 break;
             default:
                 super.writePropertyDirectly(propName, val);

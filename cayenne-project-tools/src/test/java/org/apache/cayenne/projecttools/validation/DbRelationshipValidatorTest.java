@@ -33,8 +33,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DbRelationshipValidatorTest {
 
-    private DbRelationship toDetail;
-    private DbRelationship toMaster;
+    private DbRelationship masterToDetail;
+    private DbRelationship detailToMaster;
     private DbRelationship itemToMaster;
     private DbRelationship items;
 
@@ -48,11 +48,11 @@ public class DbRelationshipValidatorTest {
         item.addAttribute(new DbAttribute("MASTER_ID"));
 
         // a one-to-one over a shared PK
-        toDetail = addDbRelationship(master, "detail", "DETAIL", "ID", "ID");
-        toMaster = addDbRelationship(detail, "master", "MASTER", "ID", "ID");
+        masterToDetail = addDbRelationship(master, "detail", "DETAIL", "ID", "ID");
+        detailToMaster = addDbRelationship(detail, "master", "MASTER", "ID", "ID");
 
         // a plain FK to PK
-        itemToMaster = addDbRelationship(item, "toMaster", "MASTER", "MASTER_ID", "ID");
+        itemToMaster = addDbRelationship(item, "master", "MASTER", "MASTER_ID", "ID");
         itemToMaster.setForeignKey(true);
         items = addDbRelationship(master, "items", "ITEM", "ID", "MASTER_ID");
         items.setToMany(true);
@@ -60,15 +60,15 @@ public class DbRelationshipValidatorTest {
 
     @Test
     public void oneToOneWithoutForeignKeyIsReported() {
-        assertTrue(hasFailure(toDetail, "neither it nor its reverse"));
-        assertTrue(hasFailure(toMaster, "neither it nor its reverse"));
+        assertTrue(hasFailure(masterToDetail, "neither it nor its reverse"));
+        assertTrue(hasFailure(detailToMaster, "neither it nor its reverse"));
     }
 
     @Test
     public void oneToOneWithForeignKeyIsNotReported() {
-        toMaster.setForeignKey(true);
-        assertFalse(hasFailure(toDetail, "neither it nor its reverse"));
-        assertFalse(hasFailure(toMaster, "neither it nor its reverse"));
+        detailToMaster.setForeignKey(true);
+        assertFalse(hasFailure(masterToDetail, "neither it nor its reverse"));
+        assertFalse(hasFailure(detailToMaster, "neither it nor its reverse"));
     }
 
     @Test
@@ -86,10 +86,10 @@ public class DbRelationshipValidatorTest {
 
     @Test
     public void oneToOneWithForeignKeyOnBothSidesIsReported() {
-        toDetail.setForeignKey(true);
-        toMaster.setForeignKey(true);
-        assertTrue(hasFailure(toDetail, "both marked"));
-        assertTrue(hasFailure(toMaster, "both marked"));
+        masterToDetail.setForeignKey(true);
+        detailToMaster.setForeignKey(true);
+        assertTrue(hasFailure(masterToDetail, "both marked"));
+        assertTrue(hasFailure(detailToMaster, "both marked"));
     }
 
     @Test

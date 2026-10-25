@@ -28,12 +28,12 @@ public abstract class _ROArtist extends PersistentObject {
 
     public static final StringProperty<String> ARTIST_NAME = PropertyFactory.createString("artistName", String.class);
     public static final DateProperty<Date> DATE_OF_BIRTH = PropertyFactory.createDate("dateOfBirth", Date.class);
-    public static final ListProperty<Painting> PAINTING_ARRAY = PropertyFactory.createList("paintingArray", Painting.class);
+    public static final ListProperty<Painting> PAINTINGS = PropertyFactory.createList("paintings", Painting.class);
 
     protected String artistName;
     protected Date dateOfBirth;
 
-    protected Object paintingArray;
+    protected Object paintings;
 
     public String getArtistName() {
         beforePropertyRead("artistName");
@@ -46,8 +46,8 @@ public abstract class _ROArtist extends PersistentObject {
     }
 
     @SuppressWarnings("unchecked")
-    public List<Painting> getPaintingArray() {
-        return (List<Painting>)readProperty("paintingArray");
+    public List<Painting> getPaintings() {
+        return (List<Painting>)readProperty("paintings");
     }
 
     @Override
@@ -61,8 +61,8 @@ public abstract class _ROArtist extends PersistentObject {
                 return this.artistName;
             case "dateOfBirth":
                 return this.dateOfBirth;
-            case "paintingArray":
-                return this.paintingArray;
+            case "paintings":
+                return this.paintings;
             default:
                 return super.readPropertyDirectly(propName);
         }
@@ -81,8 +81,8 @@ public abstract class _ROArtist extends PersistentObject {
             case "dateOfBirth":
                 this.dateOfBirth = (Date)val;
                 break;
-            case "paintingArray":
-                this.paintingArray = val;
+            case "paintings":
+                this.paintings = val;
                 break;
             default:
                 super.writePropertyDirectly(propName, val);

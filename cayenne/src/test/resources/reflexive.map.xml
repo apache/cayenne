@@ -25,14 +25,14 @@
 	<dbRelationship name="children" source="REFLEXIVE" target="REFLEXIVE" toMany="true">
 		<dbAttributePair source="ID" target="PARENT_ID"/>
 	</dbRelationship>
-	<dbRelationship name="toOther" source="REFLEXIVE" target="OTHER" foreignKey="true">
+	<dbRelationship name="other" source="REFLEXIVE" target="OTHER" foreignKey="true">
 		<dbAttributePair source="OTHER_ID" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="toParent" source="REFLEXIVE" target="REFLEXIVE" foreignKey="true">
+	<dbRelationship name="parent" source="REFLEXIVE" target="REFLEXIVE" foreignKey="true">
 		<dbAttributePair source="PARENT_ID" target="ID"/>
 	</dbRelationship>
 	<objRelationship name="reflexives" source="Other" target="Reflexive" dbRelationshipPath="reflexives"/>
 	<objRelationship name="children" source="Reflexive" target="Reflexive" dbRelationshipPath="children"/>
-	<objRelationship name="toOther" source="Reflexive" target="Other" dbRelationshipPath="toOther"/>
-	<objRelationship name="toParent" source="Reflexive" target="Reflexive" dbRelationshipPath="toParent"/>
+	<objRelationship name="other" source="Reflexive" target="Other" dbRelationshipPath="other"/>
+	<objRelationship name="parent" source="Reflexive" target="Reflexive" dbRelationshipPath="parent"/>
 </dataMap>

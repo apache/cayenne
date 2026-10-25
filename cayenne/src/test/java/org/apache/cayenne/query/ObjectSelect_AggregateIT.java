@@ -174,7 +174,7 @@ public class ObjectSelect_AggregateIT {
     @Test
     public void selectRelationshipCount() throws Exception {
         long count = ObjectSelect.query(Artist.class)
-                .column(Artist.PAINTING_ARRAY.count())
+                .column(Artist.PAINTINGS.count())
                 .where(Artist.ARTIST_NAME.eq("artist1"))
                 .selectOne(context);
         assertEquals(4L, count);
@@ -183,7 +183,7 @@ public class ObjectSelect_AggregateIT {
     @Test
     public void selectRelationshipCountWithAnotherField() throws Exception {
         Object[] result = ObjectSelect.query(Artist.class)
-                .columns(Artist.ARTIST_NAME, Artist.PAINTING_ARRAY.count())
+                .columns(Artist.ARTIST_NAME, Artist.PAINTINGS.count())
                 .where(Artist.ARTIST_NAME.eq("artist1"))
                 .selectOne(context);
         assertEquals("artist1", result[0]);
@@ -193,27 +193,27 @@ public class ObjectSelect_AggregateIT {
     @Test
     public void orderByCount() {
         List<Artist> artists = ObjectSelect.query(Artist.class)
-                .orderBy(Artist.PAINTING_ARRAY.outer().count().desc())
-                .prefetch(Artist.PAINTING_ARRAY.disjoint())
+                .orderBy(Artist.PAINTINGS.outer().count().desc())
+                .prefetch(Artist.PAINTINGS.disjoint())
                 .select(context);
 
         assertEquals(20, artists.size());
 
-        assertEquals(5, artists.get(0).getPaintingArray().size());
+        assertEquals(5, artists.get(0).getPaintings().size());
         assertEquals("artist2", artists.get(0).getArtistName());
-        assertEquals(4, artists.get(1).getPaintingArray().size());
-        assertEquals(4, artists.get(2).getPaintingArray().size());
+        assertEquals(4, artists.get(1).getPaintings().size());
+        assertEquals(4, artists.get(2).getPaintings().size());
 
-        assertEquals(0, artists.get(17).getPaintingArray().size());
-        assertEquals(0, artists.get(18).getPaintingArray().size());
-        assertEquals(0, artists.get(19).getPaintingArray().size());
+        assertEquals(0, artists.get(17).getPaintings().size());
+        assertEquals(0, artists.get(18).getPaintings().size());
+        assertEquals(0, artists.get(19).getPaintings().size());
     }
 
     @Test
     public void orderByAvg() {
         List<Artist> artists = ObjectSelect.query(Artist.class)
-                .orderBy(Artist.PAINTING_ARRAY.dot(Painting.ESTIMATED_PRICE).avg().asc())
-                .prefetch(Artist.PAINTING_ARRAY.disjoint())
+                .orderBy(Artist.PAINTINGS.dot(Painting.ESTIMATED_PRICE).avg().asc())
+                .prefetch(Artist.PAINTINGS.disjoint())
                 .select(context);
 
         assertEquals(5, artists.size());

@@ -80,7 +80,7 @@ public class DataContextCommitIT {
         // commit a mix of new and modified
         Painting p = context.newObject(Painting.class);
         p.setPaintingTitle("PT");
-        p.setToArtist(a);
+        p.setArtist(a);
         a.setArtistName("Test_");
 
         ObjectId beforeId = p.getObjectId();

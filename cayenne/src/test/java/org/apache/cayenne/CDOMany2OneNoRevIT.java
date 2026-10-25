@@ -43,9 +43,9 @@ public class CDOMany2OneNoRevIT {
         p1.setPaintingTitle("p");
 
         // TESTING THIS
-        p1.setToArtist(a1);
+        p1.setArtist(a1);
 
-        assertSame(a1, p1.getToArtist());
+        assertSame(a1, p1.getArtist());
 
         env.context().commitChanges();
         ObjectId aid = a1.getObjectId();
@@ -53,7 +53,7 @@ public class CDOMany2OneNoRevIT {
         env.context().invalidateObjects(a1, p1);
 
         Painting1 p2 = (Painting1) env.context().objectForPK(pid);
-        Artist a2 = p2.getToArtist();
+        Artist a2 = p2.getArtist();
         assertNotNull(a2);
         assertEquals(aid, a2.getObjectId());
     }

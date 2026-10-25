@@ -157,17 +157,17 @@ public class QueryCacheIT {
 
         Painting p = context1.newObject(Painting.class);
         p.setPaintingTitle("painting");
-        p.setToArtist(a);
+        p.setArtist(a);
 
         context1.commitChanges();
 
         // Query with shared cache AND prefetch
         ObjectSelect<Painting> query = ObjectSelect.query(Painting.class)
-                .prefetch(Painting.TO_ARTIST.disjoint())
+                .prefetch(Painting.ARTIST.disjoint())
                 .sharedCache();
 
         Painting result1 = query.selectFirst(context1);
-        assertEquals("artist", result1.getToArtist().getArtistName(), "should populate shared cache");
+        assertEquals("artist", result1.getArtist().getArtistName(), "should populate shared cache");
 
         // Modify the artist name in memory and on disk
         a.setArtistName("modified");
@@ -175,13 +175,13 @@ public class QueryCacheIT {
 
         // Non-cached query should see the change
         Painting result2 = ObjectSelect.query(Painting.class)
-                .prefetch(Painting.TO_ARTIST.disjoint())
+                .prefetch(Painting.ARTIST.disjoint())
                 .selectFirst(context1);
-        assertEquals("modified", result2.getToArtist().getArtistName(), "should be no cache used");
+        assertEquals("modified", result2.getArtist().getArtistName(), "should be no cache used");
 
         // Re-run cached query with prefetch - should still see the newer data
         Painting result3 = query.selectFirst(context1);
-        assertEquals("modified", result3.getToArtist().getArtistName(),
+        assertEquals("modified", result3.getArtist().getArtistName(),
                 "should use shared cache with prefetch, but shouldn't wipe out newer in-memory data");
     }
     
@@ -193,17 +193,17 @@ public class QueryCacheIT {
 
         Painting p = context1.newObject(Painting.class);
         p.setPaintingTitle("painting");
-        p.setToArtist(a);
+        p.setArtist(a);
 
         context1.commitChanges();
 
         // Query with shared cache AND prefetch to load the artist
         ObjectSelect<Painting> query = ObjectSelect.query(Painting.class)
-                .prefetch(Painting.TO_ARTIST.disjoint())
+                .prefetch(Painting.ARTIST.disjoint())
                 .sharedCache();
 
         Painting result1 = query.selectFirst(context1);
-        Artist artist1 = result1.getToArtist();
+        Artist artist1 = result1.getArtist();
         assertEquals("artist", artist1.getArtistName(), "should populate shared cache");
 
         // Modify the prefetched artist object directly (simulate in-memory change)
@@ -212,7 +212,7 @@ public class QueryCacheIT {
 
         // Re-run cached query - should NOT clobber the in-memory modification
         Painting result2 = query.selectFirst(context1);
-        Artist artist2 = result2.getToArtist();
+        Artist artist2 = result2.getArtist();
 
         // Should be the same object instances (from context)
         assertEquals(result1, result2, "should be same painting object in context");

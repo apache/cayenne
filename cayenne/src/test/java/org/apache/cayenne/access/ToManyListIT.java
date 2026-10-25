@@ -41,14 +41,14 @@ public class ToManyListIT {
 
     private ToManyList createForNewArtist() {
         Artist artist = env.context().newObject(Artist.class);
-        return new ToManyList(artist, Artist.PAINTING_ARRAY.getName());
+        return new ToManyList(artist, Artist.PAINTINGS.getName());
     }
 
     private ToManyList createForExistingArtist() {
         Artist artist = env.context().newObject(Artist.class);
         artist.setArtistName("aa");
         env.context().commitChanges();
-        return new ToManyList(artist, Artist.PAINTING_ARRAY.getName());
+        return new ToManyList(artist, Artist.PAINTINGS.getName());
     }
 
     @Test
@@ -110,7 +110,7 @@ public class ToManyListIT {
         // list being tested is a separate copy from
         // the relationship list that Artist has, so adding a painting
         // here will not add the painting to the array being tested
-        ((Artist) list.relationshipOwner).addToPaintingArray(p1);
+        ((Artist) list.relationshipOwner).addToPaintings(p1);
         env.context().commitChanges();
 
         // immediately tag Artist as MODIFIED, since we are messing up with relationship
@@ -147,8 +147,8 @@ public class ToManyListIT {
         // list being tested is a separate copy from
         // the relationship list that Artist has, so adding a painting
         // here will not add the painting to the array being tested
-        ((Artist) list.relationshipOwner).addToPaintingArray(p1);
-        ((Artist) list.relationshipOwner).addToPaintingArray(p2);
+        ((Artist) list.relationshipOwner).addToPaintings(p1);
+        ((Artist) list.relationshipOwner).addToPaintings(p2);
         env.context().commitChanges();
 
         // immediately tag Artist as MODIFIED, since we are messing up with relationship
@@ -163,7 +163,7 @@ public class ToManyListIT {
         assertTrue(addedToUnresolved(list).contains(p1));
 
         // now delete p2 and resolve list
-        ((Artist) list.relationshipOwner).removeFromPaintingArray(p2);
+        ((Artist) list.relationshipOwner).removeFromPaintings(p2);
         env.context().deleteObjects(p2);
         env.context().commitChanges();
 
@@ -193,14 +193,14 @@ public class ToManyListIT {
         env.context().commitChanges();
         env.context().invalidateObjects(artist);
 
-        ToManyList list = (ToManyList) artist.getPaintingArray();
+        ToManyList list = (ToManyList) artist.getPaintings();
         assertTrue(list.isFault(), "List must be unresolved...");
 
         Painting p2 = env.context().newObject(Painting.class);
         p2.setPaintingTitle("p2");
 
-        artist.addToPaintingArray(p1);
-        artist.addToPaintingArray(p2);
+        artist.addToPaintings(p1);
+        artist.addToPaintings(p2);
         assertTrue(list.isFault(), "List must be unresolved...");
 
         env.context().commitChanges();
@@ -221,16 +221,16 @@ public class ToManyListIT {
 
         Painting p1 = env.context().newObject(Painting.class);
         p1.setPaintingTitle("p1");
-        artist.addToPaintingArray(p1);
+        artist.addToPaintings(p1);
         env.context().commitChanges();
         env.context().invalidateObjects(artist);
 
-        ToManyList list = (ToManyList) artist.getPaintingArray();
+        ToManyList list = (ToManyList) artist.getPaintings();
         assertTrue(list.isFault(), "List must be unresolved...");
 
         Painting p2 = env.context().newObject(Painting.class);
 
-        artist.addToPaintingArray(p2);
+        artist.addToPaintings(p2);
         assertTrue(list.isFault(), "List must be unresolved...");
         assertTrue(addedToUnresolved(list).contains(p2));
 

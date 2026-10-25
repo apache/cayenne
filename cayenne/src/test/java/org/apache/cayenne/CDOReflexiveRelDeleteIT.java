@@ -45,15 +45,15 @@ public class CDOReflexiveRelDeleteIT {
 
         childGroup1 = env.context().newObject(ArtGroup.class);
         childGroup1.setName("child1");
-        childGroup1.setToParentGroup(parentGroup);
+        childGroup1.setParentGroup(parentGroup);
 
         childGroup2 = env.context().newObject(ArtGroup.class);
         childGroup2.setName("child2");
-        childGroup2.setToParentGroup(parentGroup);
+        childGroup2.setParentGroup(parentGroup);
 
         childGroup3 = env.context().newObject(ArtGroup.class);
         childGroup3.setName("subchild");
-        childGroup3.setToParentGroup(childGroup1);
+        childGroup3.setParentGroup(childGroup1);
 
         env.context().commitChanges();
     }

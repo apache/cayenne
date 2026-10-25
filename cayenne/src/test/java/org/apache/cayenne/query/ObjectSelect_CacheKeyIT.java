@@ -220,7 +220,7 @@ public class ObjectSelect_CacheKeyIT {
 
     private static ObjectSelect<Painting> paintingsOver(int price) {
         return ObjectSelect.query(Painting.class)
-                .where(Painting.TO_ARTIST.eq(Artist.SELF.enclosing()))
+                .where(Painting.ARTIST.eq(Artist.SELF.enclosing()))
                 .and(ExpressionFactory.greaterExp("estimatedPrice", price));
     }
 
@@ -267,19 +267,19 @@ public class ObjectSelect_CacheKeyIT {
     public void uniqueKeyInSubquery() {
         ObjectSelect<Painting> q1 = ObjectSelect.query(Painting.class)
                 .localCache()
-                .where(Painting.TO_ARTIST.dot(Artist.ARTIST_NAME).in(artistNamesLike("a%")));
+                .where(Painting.ARTIST.dot(Artist.ARTIST_NAME).in(artistNamesLike("a%")));
 
         ObjectSelect<Painting> q2 = ObjectSelect.query(Painting.class)
                 .localCache()
-                .where(Painting.TO_ARTIST.dot(Artist.ARTIST_NAME).in(artistNamesLike("a%")));
+                .where(Painting.ARTIST.dot(Artist.ARTIST_NAME).in(artistNamesLike("a%")));
 
         ObjectSelect<Painting> differentQualifier = ObjectSelect.query(Painting.class)
                 .localCache()
-                .where(Painting.TO_ARTIST.dot(Artist.ARTIST_NAME).in(artistNamesLike("b%")));
+                .where(Painting.ARTIST.dot(Artist.ARTIST_NAME).in(artistNamesLike("b%")));
 
         ObjectSelect<Painting> differentColumn = ObjectSelect.query(Painting.class)
                 .localCache()
-                .where(Painting.TO_ARTIST.dot(Artist.ARTIST_NAME).in(ObjectSelect
+                .where(Painting.ARTIST.dot(Artist.ARTIST_NAME).in(ObjectSelect
                         .columnQuery(Artist.class, Artist.ARTIST_NAME.upper())
                         .where(Artist.ARTIST_NAME.like("a%"))));
 

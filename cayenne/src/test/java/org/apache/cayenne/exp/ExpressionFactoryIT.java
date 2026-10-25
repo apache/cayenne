@@ -57,21 +57,21 @@ public class ExpressionFactoryIT {
         p1.setPaintingTitle("p1");
         p2.setPaintingTitle("p2");
         p3.setPaintingTitle("p3");
-        artist.addToPaintingArray(p1);
-        artist.addToPaintingArray(p2);
+        artist.addToPaintings(p1);
+        artist.addToPaintings(p2);
 
         env.context().commitChanges();
 
-        assertTrue(ExpressionFactory.matchExp("paintingArray", p1).match(artist));
-        assertFalse(ExpressionFactory.matchExp("paintingArray", p3).match(artist));
-        assertTrue(ExpressionFactory.noMatchExp("paintingArray", p1).match(artist)); // changed to align with SQL
-        assertTrue(ExpressionFactory.noMatchExp("paintingArray", p3).match(artist));
+        assertTrue(ExpressionFactory.matchExp("paintings", p1).match(artist));
+        assertFalse(ExpressionFactory.matchExp("paintings", p3).match(artist));
+        assertTrue(ExpressionFactory.noMatchExp("paintings", p1).match(artist)); // changed to align with SQL
+        assertTrue(ExpressionFactory.noMatchExp("paintings", p3).match(artist));
 
-        assertTrue(ExpressionFactory.matchExp("paintingArray.paintingTitle", "p1").match(artist));
-        assertFalse(ExpressionFactory.matchExp("paintingArray.paintingTitle", "p3").match(artist));
-        assertTrue(ExpressionFactory.noMatchExp("paintingArray.paintingTitle", "p1")
+        assertTrue(ExpressionFactory.matchExp("paintings.paintingTitle", "p1").match(artist));
+        assertFalse(ExpressionFactory.matchExp("paintings.paintingTitle", "p3").match(artist));
+        assertTrue(ExpressionFactory.noMatchExp("paintings.paintingTitle", "p1")
                            .match(artist)); // changed to align with SQL
-        assertTrue(ExpressionFactory.noMatchExp("paintingArray.paintingTitle", "p3").match(artist));
+        assertTrue(ExpressionFactory.noMatchExp("paintings.paintingTitle", "p3").match(artist));
 
         assertTrue(ExpressionFactory.inExp("paintingTitle", "p1").match(p1));
         assertFalse(ExpressionFactory.notInExp("paintingTitle", "p3").match(p3));
@@ -85,10 +85,10 @@ public class ExpressionFactoryIT {
         p1.setPaintingTitle("p1");
         Painting p2 = env.context().newObject(Painting.class);
         p2.setPaintingTitle("p2");
-        a1.addToPaintingArray(p1);
-        a1.addToPaintingArray(p2);
+        a1.addToPaintings(p1);
+        a1.addToPaintings(p2);
 
-        Expression in = ExpressionFactory.inExp("paintingArray", p1);
+        Expression in = ExpressionFactory.inExp("paintings", p1);
         assertTrue(in.match(a1));
     }
 
@@ -154,21 +154,21 @@ public class ExpressionFactoryIT {
         g1.setGalleryName("g1");
         g2.setGalleryName("g2");
 
-        artist1.addToPaintingArray(p1);
-        artist1.addToPaintingArray(p2);
-        artist2.addToPaintingArray(p3);
+        artist1.addToPaintings(p1);
+        artist1.addToPaintings(p2);
+        artist2.addToPaintings(p3);
 
-        g1.addToPaintingArray(p1);
-        g1.addToPaintingArray(p3);
-        g2.addToPaintingArray(p2);
+        g1.addToPaintings(p1);
+        g1.addToPaintings(p3);
+        g2.addToPaintings(p2);
 
         env.context().commitChanges();
 
         List<Artist> objArtists = ObjectSelect.query(Artist.class)
-                .where(ExpressionFactory.matchAllExp("|paintingArray.toGallery.galleryName", "g1", "g2"))
+                .where(ExpressionFactory.matchAllExp("|paintings.gallery.galleryName", "g1", "g2"))
                 .select(env.context());
         List<Artist> dbArtists = ObjectSelect.query(Artist.class)
-                .where(ExpressionFactory.matchAllExp("db:|paintingArray.toGallery.GALLERY_NAME", "g1", "g2"))
+                .where(ExpressionFactory.matchAllExp("db:|paintings.gallery.GALLERY_NAME", "g1", "g2"))
                 .select(env.context());
         assertFalse(objArtists.isEmpty());
         assertEquals(objArtists, dbArtists);
@@ -188,16 +188,16 @@ public class ExpressionFactoryIT {
         p2.setPaintingTitle("p2");
         p3.setPaintingTitle("p3");
 
-        artist1.addToPaintingArray(p1);
-        artist1.addToPaintingArray(p2);
-        artist2.addToPaintingArray(p3);
+        artist1.addToPaintings(p1);
+        artist1.addToPaintings(p2);
+        artist2.addToPaintings(p3);
 
         env.context().commitChanges();
 
         List<Artist> objArtists = ObjectSelect.query(Artist.class)
-                .where(ExpressionFactory.matchAllExp("|paintingArray", p1, p2)).select(env.context());
+                .where(ExpressionFactory.matchAllExp("|paintings", p1, p2)).select(env.context());
         List<Artist> dbArtists = ObjectSelect.query(Artist.class)
-                .where(ExpressionFactory.matchAllExp("db:|paintingArray", p1, p2)).select(env.context());
+                .where(ExpressionFactory.matchAllExp("db:|paintings", p1, p2)).select(env.context());
         assertFalse(objArtists.isEmpty());
         assertEquals(objArtists, dbArtists);
     }
@@ -216,16 +216,16 @@ public class ExpressionFactoryIT {
         aw2.setName("aw2");
         aw3.setName("aw3");
 
-        artist1.addToAwardArray(aw1);
-        artist1.addToAwardArray(aw2);
-        artist2.addToAwardArray(aw3);
+        artist1.addToAwards(aw1);
+        artist1.addToAwards(aw2);
+        artist2.addToAwards(aw3);
 
         env.context().commitChanges();
 
         List<Artist> objArtists = ObjectSelect.query(Artist.class)
-                .where(ExpressionFactory.matchAllExp("|awardArray", aw1, aw2)).select(env.context());
+                .where(ExpressionFactory.matchAllExp("|awards", aw1, aw2)).select(env.context());
         List<Artist> dbArtists = ObjectSelect.query(Artist.class)
-                .where(ExpressionFactory.matchAllExp("db:|artistAwardArray", aw1, aw2)).select(env.context());
+                .where(ExpressionFactory.matchAllExp("db:|artistAwards", aw1, aw2)).select(env.context());
         assertFalse(objArtists.isEmpty());
         assertEquals(objArtists, dbArtists);
     }
@@ -242,17 +242,17 @@ public class ExpressionFactoryIT {
         ag1.setName("ag1");
         ag2.setName("ag2");
 
-        a1.addToGroupArray(ag1);
-        a2.addToGroupArray(ag1);
-        a2.addToGroupArray(ag2);
+        a1.addToGroups(ag1);
+        a2.addToGroups(ag1);
+        a2.addToGroups(ag2);
 
         env.context().commitChanges();
 
         List<Artist> objArtists = ObjectSelect.query(Artist.class)
-                .where(ExpressionFactory.matchAllExp("|groupArray", ag1, ag2))
+                .where(ExpressionFactory.matchAllExp("|groups", ag1, ag2))
                 .select(env.context());
         List<Artist> dbArtists = ObjectSelect.query(Artist.class)
-                .where(ExpressionFactory.matchAllExp("db:|artistGroupArray.toGroup", ag1, ag2))
+                .where(ExpressionFactory.matchAllExp("db:|artistGroups.group", ag1, ag2))
                 .select(env.context());
         assertFalse(objArtists.isEmpty());
         assertEquals(objArtists, dbArtists);

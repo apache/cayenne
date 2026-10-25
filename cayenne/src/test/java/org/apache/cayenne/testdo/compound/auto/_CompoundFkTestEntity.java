@@ -23,11 +23,11 @@ public abstract class _CompoundFkTestEntity extends PersistentObject {
     public static final String PKEY_PK_COLUMN = "PKEY";
 
     public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);
-    public static final EntityProperty<CompoundPkTestEntity> TO_COMPOUND_PK = PropertyFactory.createEntity("toCompoundPk", CompoundPkTestEntity.class);
+    public static final EntityProperty<CompoundPkTestEntity> COMPOUND_PK = PropertyFactory.createEntity("compoundPk", CompoundPkTestEntity.class);
 
     protected String name;
 
-    protected Object toCompoundPk;
+    protected Object compoundPk;
 
     public void setName(String name) {
         beforePropertyWrite("name", this.name, name);
@@ -39,12 +39,12 @@ public abstract class _CompoundFkTestEntity extends PersistentObject {
         return this.name;
     }
 
-    public void setToCompoundPk(CompoundPkTestEntity toCompoundPk) {
-        setToOneTarget("toCompoundPk", toCompoundPk, true);
+    public void setCompoundPk(CompoundPkTestEntity compoundPk) {
+        setToOneTarget("compoundPk", compoundPk, true);
     }
 
-    public CompoundPkTestEntity getToCompoundPk() {
-        return (CompoundPkTestEntity)readProperty("toCompoundPk");
+    public CompoundPkTestEntity getCompoundPk() {
+        return (CompoundPkTestEntity)readProperty("compoundPk");
     }
 
     @Override
@@ -56,8 +56,8 @@ public abstract class _CompoundFkTestEntity extends PersistentObject {
         switch(propName) {
             case "name":
                 return this.name;
-            case "toCompoundPk":
-                return this.toCompoundPk;
+            case "compoundPk":
+                return this.compoundPk;
             default:
                 return super.readPropertyDirectly(propName);
         }
@@ -73,8 +73,8 @@ public abstract class _CompoundFkTestEntity extends PersistentObject {
             case "name":
                 this.name = (String)val;
                 break;
-            case "toCompoundPk":
-                this.toCompoundPk = val;
+            case "compoundPk":
+                this.compoundPk = val;
                 break;
             default:
                 super.writePropertyDirectly(propName, val);

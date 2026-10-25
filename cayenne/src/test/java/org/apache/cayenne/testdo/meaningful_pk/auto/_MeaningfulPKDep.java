@@ -23,12 +23,12 @@ public abstract class _MeaningfulPKDep extends PersistentObject {
 
     public static final StringProperty<String> DESCR = PropertyFactory.createString("descr", String.class);
     public static final NumericProperty<Integer> PK = PropertyFactory.createNumeric("pk", Integer.class);
-    public static final EntityProperty<MeaningfulPKTest1> TO_MEANINGFUL_PK = PropertyFactory.createEntity("toMeaningfulPK", MeaningfulPKTest1.class);
+    public static final EntityProperty<MeaningfulPKTest1> MEANINGFUL_PK = PropertyFactory.createEntity("meaningfulPK", MeaningfulPKTest1.class);
 
     protected String descr;
     protected int pk;
 
-    protected Object toMeaningfulPK;
+    protected Object meaningfulPK;
 
     public void setDescr(String descr) {
         beforePropertyWrite("descr", this.descr, descr);
@@ -50,12 +50,12 @@ public abstract class _MeaningfulPKDep extends PersistentObject {
         return this.pk;
     }
 
-    public void setToMeaningfulPK(MeaningfulPKTest1 toMeaningfulPK) {
-        setToOneTarget("toMeaningfulPK", toMeaningfulPK, true);
+    public void setMeaningfulPK(MeaningfulPKTest1 meaningfulPK) {
+        setToOneTarget("meaningfulPK", meaningfulPK, true);
     }
 
-    public MeaningfulPKTest1 getToMeaningfulPK() {
-        return (MeaningfulPKTest1)readProperty("toMeaningfulPK");
+    public MeaningfulPKTest1 getMeaningfulPK() {
+        return (MeaningfulPKTest1)readProperty("meaningfulPK");
     }
 
     @Override
@@ -69,8 +69,8 @@ public abstract class _MeaningfulPKDep extends PersistentObject {
                 return this.descr;
             case "pk":
                 return this.pk;
-            case "toMeaningfulPK":
-                return this.toMeaningfulPK;
+            case "meaningfulPK":
+                return this.meaningfulPK;
             default:
                 return super.readPropertyDirectly(propName);
         }
@@ -89,8 +89,8 @@ public abstract class _MeaningfulPKDep extends PersistentObject {
             case "pk":
                 this.pk = val == null ? 0 : (int)val;
                 break;
-            case "toMeaningfulPK":
-                this.toMeaningfulPK = val;
+            case "meaningfulPK":
+                this.meaningfulPK = val;
                 break;
             default:
                 super.writePropertyDirectly(propName, val);

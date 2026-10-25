@@ -127,7 +127,7 @@ public class ColumnSelectIT {
 
     @Test
     public void selectRelationshipCount() throws Exception {
-        Object[] result = Artist.SELF.columnQuery(Artist.DATE_OF_BIRTH, Artist.PAINTING_ARRAY.count())
+        Object[] result = Artist.SELF.columnQuery(Artist.DATE_OF_BIRTH, Artist.PAINTINGS.count())
                 .orderBy(Artist.DATE_OF_BIRTH.asc())
                 .selectFirst(context);
         assertEquals(dateFormat.parse("1/1/17"), result[0]);
@@ -228,7 +228,7 @@ public class ColumnSelectIT {
         try {
             result = ObjectSelect.query(Artist.class)
                     .columns(Artist.ARTIST_NAME)
-                    .having(Artist.PAINTING_ARRAY.count().gt(4L))
+                    .having(Artist.PAINTINGS.count().gt(4L))
                     .selectOne(context);
         } catch (CayenneRuntimeException ex) {
             if(testDbAdapter.supportsExpressionInHaving()) {
@@ -243,7 +243,7 @@ public class ColumnSelectIT {
 
     @Test
     public void selectRelationshipCountHaving() {
-        NumericProperty<Long> paintingCount = Artist.PAINTING_ARRAY.count();
+        NumericProperty<Long> paintingCount = Artist.PAINTINGS.count();
 
         Object[] result = null;
         try {
@@ -268,7 +268,7 @@ public class ColumnSelectIT {
             return;
         }
 
-        NumericProperty<Long> paintingCount = Artist.PAINTING_ARRAY.count();
+        NumericProperty<Long> paintingCount = Artist.PAINTINGS.count();
         context.getEntityResolver().getDataMap("testmap").setQuotingSQLIdentifiers(true);
 
         Object[] result = null;
@@ -316,7 +316,7 @@ public class ColumnSelectIT {
         BigDecimal avg = new BigDecimal(BigInteger.valueOf(1290L), 2);
         BigDecimal sum = new BigDecimal(258);
 
-        NumericProperty<BigDecimal> estimatedPrice = Artist.PAINTING_ARRAY.dot(Painting.ESTIMATED_PRICE);
+        NumericProperty<BigDecimal> estimatedPrice = Artist.PAINTINGS.dot(Painting.ESTIMATED_PRICE);
         Object[] minMaxAvgPrice = ObjectSelect.query(Artist.class)
                 .where(estimatedPrice.gte(min))
                 .min(estimatedPrice)
@@ -341,7 +341,7 @@ public class ColumnSelectIT {
         BigDecimal sum = new BigDecimal(258);
         BigDecimal count = new BigDecimal(20);
 
-        NumericProperty<BigDecimal> estimatedPrice = Artist.PAINTING_ARRAY.dot(Painting.ESTIMATED_PRICE);
+        NumericProperty<BigDecimal> estimatedPrice = Artist.PAINTINGS.dot(Painting.ESTIMATED_PRICE);
         Object[] minMaxAvgPrice = ObjectSelect.query(Artist.class)
                 .where(estimatedPrice.gte(min))
                 .aggregate(estimatedPrice, "min", BigDecimal.class)
@@ -443,7 +443,7 @@ public class ColumnSelectIT {
     @Test
     public void selectFirst_RelColumns() {
         // set shorter than painting_array.paintingTitle alias as some DBs doesn't support dot in alias
-        StringProperty<String> paintingTitle = Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE).alias("paintingTitle");
+        StringProperty<String> paintingTitle = Artist.PAINTINGS.dot(Painting.PAINTING_TITLE).alias("paintingTitle");
 
         Object[] a = Artist.SELF.columnQuery(Artist.ARTIST_NAME, paintingTitle)
                 .orderBy(paintingTitle.asc())
@@ -455,7 +455,7 @@ public class ColumnSelectIT {
     @Test
     public void selectFirst_RelColumn() {
         // set shorter than painting_array.paintingTitle alias as some DBs doesn't support dot in alias
-        StringProperty<String> paintingTitle = Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE).alias("paintingTitle");
+        StringProperty<String> paintingTitle = Artist.PAINTINGS.dot(Painting.PAINTING_TITLE).alias("paintingTitle");
 
         String a = Artist.SELF.columnQuery(paintingTitle)
                 .orderBy(paintingTitle.asc())
@@ -466,7 +466,7 @@ public class ColumnSelectIT {
 
     @Test
     public void selectFirst_RelColumnWithFunction() {
-        StringProperty<String> altTitle = Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE)
+        StringProperty<String> altTitle = Artist.PAINTINGS.dot(Painting.PAINTING_TITLE)
                 .substring(7, 3).concat(" ", Artist.ARTIST_NAME)
                 .alias("altTitle");
 
@@ -483,11 +483,11 @@ public class ColumnSelectIT {
     public void aliasOrder() {
         // test that all table aliases are correct
         List<Object[]> result = Artist.SELF.columnQuery(
-                Artist.PAINTING_ARRAY.outer().count(),
+                Artist.PAINTINGS.outer().count(),
                 Artist.SELF,
-                Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE),
+                Artist.PAINTINGS.dot(Painting.PAINTING_TITLE),
                 Artist.SELF,
-                Artist.PAINTING_ARRAY.dot(Painting.TO_GALLERY).dot(Gallery.GALLERY_NAME),
+                Artist.PAINTINGS.dot(Painting.GALLERY).dot(Gallery.GALLERY_NAME),
                 Artist.ARTIST_NAME,
                 Artist.SELF
         ).select(context);
@@ -604,7 +604,7 @@ public class ColumnSelectIT {
     @Test
     public void pageSizeScalars() {
         List<Object[]> a = Artist.SELF
-                .columnQuery(Artist.ARTIST_NAME.trim(), Artist.DATE_OF_BIRTH, Artist.PAINTING_ARRAY.count())
+                .columnQuery(Artist.ARTIST_NAME.trim(), Artist.DATE_OF_BIRTH, Artist.PAINTINGS.count())
                 .pageSize(10)
                 .select(context);
         assertNotNull(a);
@@ -649,7 +649,7 @@ public class ColumnSelectIT {
     @Test
     public void pageSizeObjectAndScalars() {
         List<Object[]> a = Artist.SELF
-                .columnQuery(Artist.ARTIST_NAME, Artist.SELF, Artist.PAINTING_ARRAY.count())
+                .columnQuery(Artist.ARTIST_NAME, Artist.SELF, Artist.PAINTINGS.count())
                 .pageSize(10)
                 .select(context);
         assertNotNull(a);
@@ -667,7 +667,7 @@ public class ColumnSelectIT {
     @Test
     public void pageSizeObjects() {
         List<Object[]> a = Artist.SELF
-                .columnQuery(Artist.ARTIST_NAME, Artist.SELF, Artist.PAINTING_ARRAY.flat())
+                .columnQuery(Artist.ARTIST_NAME, Artist.SELF, Artist.PAINTINGS.flat())
                 .pageSize(10)
                 .select(context);
 
@@ -693,8 +693,8 @@ public class ColumnSelectIT {
     @Test
     public void objectColumnWithJointPrefetch() {
         List<Object[]> result = Artist.SELF
-                .columnQuery(Artist.SELF, Artist.DATE_OF_BIRTH, Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE))
-                .prefetch(Artist.PAINTING_ARRAY.joint())
+                .columnQuery(Artist.SELF, Artist.DATE_OF_BIRTH, Artist.PAINTINGS.dot(Painting.PAINTING_TITLE))
+                .prefetch(Artist.PAINTINGS.joint())
                 .select(context);
 
         checkPrefetchResults(result);
@@ -703,8 +703,8 @@ public class ColumnSelectIT {
     @Test
     public void objectColumnWithDisjointPrefetch() {
         List<Object[]> result = Artist.SELF
-                .columnQuery(Artist.SELF, Artist.DATE_OF_BIRTH, Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE))
-                .prefetch(Artist.PAINTING_ARRAY.disjoint())
+                .columnQuery(Artist.SELF, Artist.DATE_OF_BIRTH, Artist.PAINTINGS.dot(Painting.PAINTING_TITLE))
+                .prefetch(Artist.PAINTINGS.disjoint())
                 .select(context);
 
         checkPrefetchResults(result);
@@ -713,8 +713,8 @@ public class ColumnSelectIT {
     @Test
     public void objectColumnWithDisjointByIdPrefetch() {
         List<Object[]> result = Artist.SELF
-                .columnQuery(Artist.SELF, Artist.DATE_OF_BIRTH, Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE))
-                .prefetch(Artist.PAINTING_ARRAY.disjointById())
+                .columnQuery(Artist.SELF, Artist.DATE_OF_BIRTH, Artist.PAINTINGS.dot(Painting.PAINTING_TITLE))
+                .prefetch(Artist.PAINTINGS.disjointById())
                 .select(context);
 
         checkPrefetchResults(result);
@@ -729,7 +729,7 @@ public class ColumnSelectIT {
             Artist artist = (Artist)next[0];
             assertEquals(PersistenceState.COMMITTED, artist.getPersistenceState());
 
-            Object paintingsArr = artist.readPropertyDirectly(Artist.PAINTING_ARRAY.getName());
+            Object paintingsArr = artist.readPropertyDirectly(Artist.PAINTINGS.getName());
             assertFalse(paintingsArr instanceof Fault);
             assertTrue(((List)paintingsArr).size() > 0);
         }
@@ -737,8 +737,8 @@ public class ColumnSelectIT {
 
     @Test
     public void aggregateColumnWithJointPrefetch() {
-        List<Object[]> result = Artist.SELF.columnQuery(Artist.SELF, Artist.PAINTING_ARRAY.count())
-                .prefetch(Artist.PAINTING_ARRAY.joint())
+        List<Object[]> result = Artist.SELF.columnQuery(Artist.SELF, Artist.PAINTINGS.count())
+                .prefetch(Artist.PAINTINGS.joint())
                 .select(context);
 
         checkAggregatePrefetchResults(result);
@@ -746,8 +746,8 @@ public class ColumnSelectIT {
 
     @Test
     public void aggregateColumnWithDisjointPrefetch() {
-        List<Object[]> result = Artist.SELF.columnQuery(Artist.SELF, Artist.PAINTING_ARRAY.count())
-                .prefetch(Artist.PAINTING_ARRAY.disjoint())
+        List<Object[]> result = Artist.SELF.columnQuery(Artist.SELF, Artist.PAINTINGS.count())
+                .prefetch(Artist.PAINTINGS.disjoint())
                 .select(context);
 
         checkAggregatePrefetchResults(result);
@@ -755,8 +755,8 @@ public class ColumnSelectIT {
 
     @Test
     public void aggregateColumnWithDisjointByIdPrefetch() {
-        List<Object[]> result = Artist.SELF.columnQuery(Artist.SELF, Artist.PAINTING_ARRAY.count())
-                .prefetch(Artist.PAINTING_ARRAY.disjointById())
+        List<Object[]> result = Artist.SELF.columnQuery(Artist.SELF, Artist.PAINTINGS.count())
+                .prefetch(Artist.PAINTINGS.disjointById())
                 .select(context);
 
         checkAggregatePrefetchResults(result);
@@ -770,7 +770,7 @@ public class ColumnSelectIT {
             Artist artist = (Artist)next[0];
             assertEquals(PersistenceState.COMMITTED, artist.getPersistenceState());
 
-            Object paintingsArr = artist.readPropertyDirectly(Artist.PAINTING_ARRAY.getName());
+            Object paintingsArr = artist.readPropertyDirectly(Artist.PAINTINGS.getName());
             assertFalse(paintingsArr instanceof Fault);
             assertEquals(((List) paintingsArr).size(), (long) next[1]);
         }
@@ -779,14 +779,14 @@ public class ColumnSelectIT {
     @Test
     public void objectSelectWithJointPrefetch() {
         List<Artist> result = Artist.SELF.columnQuery(Artist.SELF)
-                .prefetch(Artist.PAINTING_ARRAY.joint())
+                .prefetch(Artist.PAINTINGS.joint())
                 .select(context);
         assertEquals(20, result.size());
 
         for(Artist artist : result) {
             assertEquals(PersistenceState.COMMITTED, artist.getPersistenceState());
 
-            Object paintingsArr = artist.readPropertyDirectly(Artist.PAINTING_ARRAY.getName());
+            Object paintingsArr = artist.readPropertyDirectly(Artist.PAINTINGS.getName());
             assertFalse(paintingsArr instanceof Fault);
         }
     }
@@ -794,13 +794,13 @@ public class ColumnSelectIT {
     @Test
     public void objectWithDisjointPrefetch() {
         List<Artist> result = Artist.SELF.columnQuery(Artist.SELF)
-                .prefetch(Artist.PAINTING_ARRAY.disjoint())
+                .prefetch(Artist.PAINTINGS.disjoint())
                 .select(context);
         assertEquals(20, result.size());
         for(Artist artist : result) {
             assertEquals(PersistenceState.COMMITTED, artist.getPersistenceState());
 
-            Object paintingsArr = artist.readPropertyDirectly(Artist.PAINTING_ARRAY.getName());
+            Object paintingsArr = artist.readPropertyDirectly(Artist.PAINTINGS.getName());
             assertFalse(paintingsArr instanceof Fault);
         }
     }
@@ -808,13 +808,13 @@ public class ColumnSelectIT {
     @Test
     public void objectWithDisjointByIdPrefetch() {
         List<Artist> result = Artist.SELF.columnQuery(Artist.SELF)
-                .prefetch(Artist.PAINTING_ARRAY.disjointById())
+                .prefetch(Artist.PAINTINGS.disjointById())
                 .select(context);
         assertEquals(20, result.size());
         for(Artist artist : result) {
             assertEquals(PersistenceState.COMMITTED, artist.getPersistenceState());
 
-            Object paintingsArr = artist.readPropertyDirectly(Artist.PAINTING_ARRAY.getName());
+            Object paintingsArr = artist.readPropertyDirectly(Artist.PAINTINGS.getName());
             assertFalse(paintingsArr instanceof Fault);
         }
     }
@@ -826,7 +826,7 @@ public class ColumnSelectIT {
     @Test
     public void objectColumn() {
         List<Object[]> result = ObjectSelect.query(Artist.class)
-                .columns(Artist.SELF, Artist.ARTIST_NAME, Artist.PAINTING_ARRAY.count())
+                .columns(Artist.SELF, Artist.ARTIST_NAME, Artist.PAINTINGS.count())
                 .select(context);
         assertEquals(5, result.size());
 
@@ -841,7 +841,7 @@ public class ColumnSelectIT {
     @Test
     public void objectColumnToOne() {
         List<Object[]> result = ObjectSelect.query(Painting.class)
-                .columns(Painting.PAINTING_TITLE, Painting.TO_ARTIST, Painting.TO_GALLERY)
+                .columns(Painting.PAINTING_TITLE, Painting.ARTIST, Painting.GALLERY)
                 .select(context);
         assertEquals(21, result.size());
 
@@ -857,7 +857,7 @@ public class ColumnSelectIT {
     public void objectColumnToOneAsObjPath() {
 
         List<Object[]> result = ObjectSelect.query(Painting.class)
-                .columns(Painting.PAINTING_TITLE, Painting.TO_ARTIST, Painting.TO_GALLERY)
+                .columns(Painting.PAINTING_TITLE, Painting.ARTIST, Painting.GALLERY)
                 .select(context);
         assertEquals(21, result.size());
 
@@ -872,7 +872,7 @@ public class ColumnSelectIT {
     @Test
     public void objectColumnToMany() {
         List<Object[]> result = ObjectSelect.query(Artist.class)
-                .columns(Artist.SELF, Artist.PAINTING_ARRAY.flat(), Artist.PAINTING_ARRAY.dot(Painting.TO_GALLERY))
+                .columns(Artist.SELF, Artist.PAINTINGS.flat(), Artist.PAINTINGS.dot(Painting.GALLERY))
                 .select(context);
         // 21 paintings of 5 artists, plus 15 artists with no paintings
         assertEquals(36, result.size());
@@ -896,7 +896,7 @@ public class ColumnSelectIT {
         // We should fail here as actual result will be just distinct paintings' ids.
         assertThrows(CayenneRuntimeException.class, () -> {
             List<List<Painting>> result = ObjectSelect.query(Artist.class)
-                    .column(Artist.PAINTING_ARRAY).select(context);
+                    .column(Artist.PAINTINGS).select(context);
             assertEquals(21, result.size());
         });
     }
@@ -930,7 +930,7 @@ public class ColumnSelectIT {
                 .selectFirst(context);
         List<Painting> result = ObjectSelect.query(Painting.class)
                 .column(Painting.SELF)
-                .where(Painting.TO_ARTIST.eq(artist))
+                .where(Painting.ARTIST.eq(artist))
                 .select(context);
         assertEquals(4, result.size());
     }
@@ -968,12 +968,12 @@ public class ColumnSelectIT {
         tPaintings.insert(22, "painting10", 21, 1, 23);
 
         List<Object[]> result = ObjectSelect
-                .columnQuery(Artist.class, Artist.ARTIST_NAME, Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE))
+                .columnQuery(Artist.class, Artist.ARTIST_NAME, Artist.PAINTINGS.dot(Painting.PAINTING_TITLE))
                 .select(context);
         assertEquals(21, result.size());
 
         List<Object[]> result2 = ObjectSelect
-                .columnQuery(Artist.class, Artist.ARTIST_NAME, Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE))
+                .columnQuery(Artist.class, Artist.ARTIST_NAME, Artist.PAINTINGS.dot(Painting.PAINTING_TITLE))
                 .distinct()
                 .select(context);
         assertEquals(result.size(), result2.size());
@@ -982,7 +982,7 @@ public class ColumnSelectIT {
         }
 
         result = ObjectSelect
-                .columnQuery(Artist.class, Artist.ARTIST_NAME, Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE))
+                .columnQuery(Artist.class, Artist.ARTIST_NAME, Artist.PAINTINGS.dot(Painting.PAINTING_TITLE))
                 .suppressDistinct()
                 .select(context);
         assertEquals(22, result.size());
@@ -1062,7 +1062,7 @@ public class ColumnSelectIT {
         Painting painting = ObjectSelect.query(Painting.class).selectFirst(context);
 
         Artist artist = ObjectSelect.query(Artist.class)
-                .where(Artist.PAINTING_ARRAY.containsValue(painting))
+                .where(Artist.PAINTINGS.containsValue(painting))
                 .and(Artist.DATE_OF_BIRTH.year().gt(1950))
                 .and(Artist.ARTIST_NAME.like("artist%"))
                 .selectOne(context);
@@ -1074,7 +1074,7 @@ public class ColumnSelectIT {
     public void pkSelect2() {
         List<Object[]> results = ObjectSelect.columnQuery(Artist.class,
                         Artist.SELF,
-                        Artist.PAINTING_ARRAY.dot(Painting.TO_ARTIST).dot(Artist.ARTIST_ID_PK_PROPERTY))
+                        Artist.PAINTINGS.dot(Painting.ARTIST).dot(Artist.ARTIST_ID_PK_PROPERTY))
                 .where(Artist.ARTIST_ID_PK_PROPERTY.eq(1L))
                 .pageSize(1)
                 .select(context);
@@ -1092,17 +1092,17 @@ public class ColumnSelectIT {
         Exhibit exhibit = context.newObject(Exhibit.class);
         exhibit.setOpeningDate(new Date());
         exhibit.setClosingDate(new Date());
-        artistExhibit.setToArtist(artist);
-        artistExhibit.setToExhibit(exhibit);
+        artistExhibit.setArtist(artist);
+        artistExhibit.setExhibit(exhibit);
         Gallery gallery = context.newObject(Gallery.class);
         gallery.setGalleryName("Test");
-        exhibit.setToGallery(gallery);
+        exhibit.setGallery(gallery);
         context.commitChanges();
 
         List<Object[]> results = ObjectSelect.columnQuery(Artist.class,
                         Artist.ARTIST_NAME,
                         Artist.SELF,
-                        Artist.ARTIST_EXHIBIT_ARRAY.dot(ArtistExhibit.ARTIST_ID_PK_PROPERTY))
+                        Artist.ARTIST_EXHIBITS.dot(ArtistExhibit.ARTIST_ID_PK_PROPERTY))
                 .where(Artist.ARTIST_ID_PK_PROPERTY.eq(1L))
                 .pageSize(1)
                 .select(context);

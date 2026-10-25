@@ -72,20 +72,20 @@ public class CDOOne2ManyIT {
 
         Painting p1 = env.context().newObject(Painting.class);
         p1.setPaintingTitle("1");
-        a1.addToPaintingArray(p1);
+        a1.addToPaintings(p1);
 
         Painting p2 = env.context().newObject(Painting.class);
         p2.setPaintingTitle("2");
-        a1.addToPaintingArray(p2);
+        a1.addToPaintings(p2);
 
         Painting p3 = env.context().newObject(Painting.class);
         p3.setPaintingTitle("3");
-        a1.addToPaintingArray(p3);
+        a1.addToPaintings(p3);
 
         env.context().commitChanges();
 
         // do select
-        Expression e = ExpressionFactory.matchDbExp("paintingArray", p2);
+        Expression e = ExpressionFactory.matchDbExp("paintings", p2);
 
         // *** TESTING THIS ***
         List<Artist> artists = ObjectSelect.query(Artist.class).where(e).select(env.context());
@@ -105,20 +105,20 @@ public class CDOOne2ManyIT {
 
         Painting p1 = env.context().newObject(Painting.class);
         p1.setPaintingTitle("1");
-        a1.addToPaintingArray(p1);
+        a1.addToPaintings(p1);
 
         Painting p2 = env.context().newObject(Painting.class);
         p2.setPaintingTitle("2");
-        a1.addToPaintingArray(p2);
+        a1.addToPaintings(p2);
 
         Painting p3 = env.context().newObject(Painting.class);
         p3.setPaintingTitle("3");
-        a1.addToPaintingArray(p3);
+        a1.addToPaintings(p3);
 
         env.context().commitChanges();
 
         // do select
-        Expression e = ExpressionFactory.matchExp("paintingArray", p2);
+        Expression e = ExpressionFactory.matchExp("paintings", p2);
 
         // *** TESTING THIS ***
         List<Artist> artists = ObjectSelect.query(Artist.class).where(e).select(env.context());
@@ -135,11 +135,11 @@ public class CDOOne2ManyIT {
         p1.setPaintingTitle("1");
 
         // *** TESTING THIS ***
-        a1.addToPaintingArray(p1);
+        a1.addToPaintings(p1);
 
         // test before save
-        assertSame(p1, a1.getPaintingArray().get(0));
-        assertSame(a1, p1.getToArtist());
+        assertSame(p1, a1.getPaintings().get(0));
+        assertSame(a1, p1.getArtist());
 
         env.context().commitChanges();
 
@@ -163,16 +163,16 @@ public class CDOOne2ManyIT {
 
         Painting p1 = env.context().newObject(Painting.class);
         p1.setPaintingTitle("1");
-        a1.addToPaintingArray(p1);
+        a1.addToPaintings(p1);
 
         Painting p2 = env.context().newObject(Painting.class);
         p2.setPaintingTitle("2");
-        a1.addToPaintingArray(p2);
+        a1.addToPaintings(p2);
 
         // test before save
-        assertEquals(2, a1.getPaintingArray().size());
-        assertSame(a1, p1.getToArtist());
-        assertSame(a1, p2.getToArtist());
+        assertEquals(2, a1.getPaintings().size());
+        assertSame(a1, p1.getArtist());
+        assertSame(a1, p2.getArtist());
 
         env.context().commitChanges();
 
@@ -180,7 +180,7 @@ public class CDOOne2ManyIT {
 
         // test database data
         Artist a2 = ObjectSelect.query(Artist.class).selectOne(context2);
-        assertEquals(2, a2.getPaintingArray().size());
+        assertEquals(2, a2.getPaintings().size());
     }
 
     @Test
@@ -190,7 +190,7 @@ public class CDOOne2ManyIT {
 
         Painting p1 = env.context().newObject(Painting.class);
         p1.setPaintingTitle("1");
-        a1.addToPaintingArray(p1);
+        a1.addToPaintings(p1);
 
         env.context().commitChanges();
 
@@ -198,14 +198,14 @@ public class CDOOne2ManyIT {
 
         // test database data
         Artist a2 = ObjectSelect.query(Artist.class).selectOne(context2);
-        Painting p2 = a2.getPaintingArray().get(0);
+        Painting p2 = a2.getPaintings().get(0);
 
         // *** TESTING THIS ***
-        a2.removeFromPaintingArray(p2);
+        a2.removeFromPaintings(p2);
 
         // test before save
-        assertEquals(0, a2.getPaintingArray().size());
-        assertNull(p2.getToGallery());
+        assertEquals(0, a2.getPaintings().size());
+        assertNull(p2.getGallery());
 
         // do save II
         context2.commitChanges();
@@ -213,10 +213,10 @@ public class CDOOne2ManyIT {
         ObjectContext context3 = runtime.newContext();
 
         Painting p3 = ObjectSelect.query(Painting.class).selectOne(context3);
-        assertNull(p3.getToArtist());
+        assertNull(p3.getArtist());
 
         Artist a3 = ObjectSelect.query(Artist.class).selectOne(context3);
-        assertEquals(0, a3.getPaintingArray().size());
+        assertEquals(0, a3.getPaintings().size());
     }
 
     @Test
@@ -226,11 +226,11 @@ public class CDOOne2ManyIT {
 
         Painting p01 = env.context().newObject(Painting.class);
         p01.setPaintingTitle("1");
-        a1.addToPaintingArray(p01);
+        a1.addToPaintings(p01);
 
         Painting p02 = env.context().newObject(Painting.class);
         p02.setPaintingTitle("2");
-        a1.addToPaintingArray(p02);
+        a1.addToPaintings(p02);
 
         env.context().commitChanges();
 
@@ -238,15 +238,15 @@ public class CDOOne2ManyIT {
 
         // test database data
         Artist a2 = ObjectSelect.query(Artist.class).selectOne(context2);
-        assertEquals(2, a2.getPaintingArray().size());
-        Painting p2 = a2.getPaintingArray().get(0);
+        assertEquals(2, a2.getPaintings().size());
+        Painting p2 = a2.getPaintings().get(0);
 
         // *** TESTING THIS ***
-        a2.removeFromPaintingArray(p2);
+        a2.removeFromPaintings(p2);
 
         // test before save
-        assertEquals(1, a2.getPaintingArray().size());
-        assertNull(p2.getToArtist());
+        assertEquals(1, a2.getPaintings().size());
+        assertNull(p2.getArtist());
 
         // do save II
         context2.commitChanges();
@@ -254,7 +254,7 @@ public class CDOOne2ManyIT {
         ObjectContext context3 = runtime.newContext();
 
         Artist a3 = ObjectSelect.query(Artist.class).selectOne(context3);
-        assertEquals(1, a3.getPaintingArray().size());
+        assertEquals(1, a3.getPaintings().size());
     }
 
     @Test
@@ -266,7 +266,7 @@ public class CDOOne2ManyIT {
         g1.setGalleryName("Tyu");
 
         Exhibit e1 = env.context().newObject(Exhibit.class);
-        e1.setToGallery(g1);
+        e1.setGallery(g1);
         e1.setOpeningDate(new Date());
         e1.setClosingDate(new Date());
 
@@ -274,12 +274,12 @@ public class CDOOne2ManyIT {
 
         // *** TESTING THIS ***
         ArtistExhibit ae1 = env.context().newObject(ArtistExhibit.class);
-        e1.addToArtistExhibitArray(ae1);
-        a1.addToArtistExhibitArray(ae1);
+        e1.addToArtistExhibits(ae1);
+        a1.addToArtistExhibits(ae1);
 
         // check before save
-        assertSame(e1, ae1.getToExhibit());
-        assertSame(a1, ae1.getToArtist());
+        assertSame(e1, ae1.getExhibit());
+        assertSame(a1, ae1.getArtist());
 
         // save
         // test "assertion" is that commit succeeds (PK of ae1 was set properly)
@@ -295,27 +295,27 @@ public class CDOOne2ManyIT {
         Gallery g1 = env.context().newObject(Gallery.class);
         g1.setGalleryName("yTW");
 
-        p1.setToGallery(g1);
+        p1.setGallery(g1);
 
         env.context().commitChanges();
         ObjectContext context2 = runtime.newContext();
 
         // test database data
         Painting p2 = ObjectSelect.query(Painting.class).selectOne(context2);
-        Gallery g21 = p2.getToGallery();
+        Gallery g21 = p2.getGallery();
         assertNotNull(g21);
         assertEquals("yTW", g21.getGalleryName());
-        assertEquals(1, g21.getPaintingArray().size());
-        assertSame(p2, g21.getPaintingArray().get(0));
+        assertEquals(1, g21.getPaintings().size());
+        assertSame(p2, g21.getPaintings().get(0));
 
         Gallery g22 = context2.newObject(Gallery.class);
         g22.setGalleryName("rE");
-        g22.addToPaintingArray(p2);
+        g22.addToPaintings(p2);
 
         // test before save
-        assertEquals(0, g21.getPaintingArray().size());
-        assertEquals(1, g22.getPaintingArray().size());
-        assertSame(p2, g22.getPaintingArray().get(0));
+        assertEquals(0, g21.getPaintings().size());
+        assertEquals(1, g22.getPaintings().size());
+        assertSame(p2, g22.getPaintings().get(0));
 
         // do save II
         context2.commitChanges();
@@ -323,11 +323,11 @@ public class CDOOne2ManyIT {
         ObjectContext context3 = runtime.newContext();
 
         Painting p3 = ObjectSelect.query(Painting.class).selectOne(context3);
-        Gallery g3 = p3.getToGallery();
+        Gallery g3 = p3.getGallery();
         assertNotNull(g3);
         assertEquals("rE", g3.getGalleryName());
-        assertEquals(1, g3.getPaintingArray().size());
-        assertSame(p3, g3.getPaintingArray().get(0));
+        assertEquals(1, g3.getPaintings().size());
+        assertSame(p3, g3.getPaintings().get(0));
     }
 
     @Test
@@ -339,24 +339,24 @@ public class CDOOne2ManyIT {
         Gallery g1 = env.context().newObject(Gallery.class);
         g1.setGalleryName("yTW");
 
-        p1.setToGallery(g1);
+        p1.setGallery(g1);
 
         env.context().commitChanges();
         ObjectContext context2 = runtime.newContext();
 
         // test database data
         Painting p2 = ObjectSelect.query(Painting.class).selectOne(context2);
-        Gallery g21 = p2.getToGallery();
+        Gallery g21 = p2.getGallery();
         assertNotNull(g21);
         assertEquals("yTW", g21.getGalleryName());
-        assertEquals(1, g21.getPaintingArray().size());
-        assertSame(p2, g21.getPaintingArray().get(0));
+        assertEquals(1, g21.getPaintings().size());
+        assertSame(p2, g21.getPaintings().get(0));
 
-        g21.addToPaintingArray(p2);
+        g21.addToPaintings(p2);
 
         // test before save
-        assertEquals(2, g21.getPaintingArray().size());
-        assertSame(p2, g21.getPaintingArray().get(0));
+        assertEquals(2, g21.getPaintings().size());
+        assertSame(p2, g21.getPaintings().get(0));
 
         // do save II
         context2.commitChanges();
@@ -364,10 +364,10 @@ public class CDOOne2ManyIT {
         ObjectContext context3 = runtime.newContext();
 
         Painting p3 = ObjectSelect.query(Painting.class).selectOne(context3);
-        Gallery g3 = p3.getToGallery();
+        Gallery g3 = p3.getGallery();
         assertNotNull(g3);
         assertEquals("yTW", g3.getGalleryName());
-        assertEquals(1, g3.getPaintingArray().size());
-        assertSame(p3, g3.getPaintingArray().get(0));
+        assertEquals(1, g3.getPaintings().size());
+        assertSame(p3, g3.getPaintings().get(0));
     }
 }

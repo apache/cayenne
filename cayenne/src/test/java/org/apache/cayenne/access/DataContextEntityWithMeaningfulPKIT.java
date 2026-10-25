@@ -115,7 +115,7 @@ public class DataContextEntityWithMeaningfulPKIT {
         List<MeaningfulPKTest1> objects = ObjectSelect.query(MeaningfulPKTest1.class).select(context);
         assertEquals(1, objects.size());
         obj = objects.get(0);
-        assertEquals(0, obj.getMeaningfulPKDepArray().size());
+        assertEquals(0, obj.getMeaningfulPKDeps().size());
     }
 
     @Test
@@ -127,7 +127,7 @@ public class DataContextEntityWithMeaningfulPKIT {
 
         // must be able to set reverse relationship
         MeaningfulPKDep dep = context.newObject(MeaningfulPKDep.class);
-        dep.setToMeaningfulPK(obj);
+        dep.setMeaningfulPK(obj);
         context.commitChanges();
     }
 
@@ -221,7 +221,7 @@ public class DataContextEntityWithMeaningfulPKIT {
 
         // must be able to set reverse relationship
         MeaningfulPKDep dep = context.newObject(MeaningfulPKDep.class);
-        dep.setToMeaningfulPK(obj);
+        dep.setMeaningfulPK(obj);
         dep.setPk(10);
         context.commitChanges();
 
@@ -233,7 +233,7 @@ public class DataContextEntityWithMeaningfulPKIT {
         obj2.setDescr("bbb");
 
         MeaningfulPKDep dep2 = context.newObject(MeaningfulPKDep.class);
-        dep2.setToMeaningfulPK(obj2);
+        dep2.setMeaningfulPK(obj2);
         dep2.setPk(10);
         context.commitChanges();
     }
@@ -264,13 +264,13 @@ public class DataContextEntityWithMeaningfulPKIT {
         context.commitChanges();
 
         MeaningfulPKDep dep = context.newObject(MeaningfulPKDep.class);
-        dep.setToMeaningfulPK(obj);
+        dep.setMeaningfulPK(obj);
         dep.setPk(10);
         context.commitChanges();
 
         // this would fail as the DefaultDbRowOpSorter unable to deal with the meaningful PK update
         assertThrows(CayenneRuntimeException.class, () -> {
-            dep.setToMeaningfulPK(null);
+            dep.setMeaningfulPK(null);
             obj.setPkAttribute(1002);
             context.commitChanges();
         });

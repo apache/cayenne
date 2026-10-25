@@ -27,14 +27,14 @@ public abstract class _Reflexive extends PersistentObject {
 
     public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);
     public static final ListProperty<Reflexive> CHILDREN = PropertyFactory.createList("children", Reflexive.class);
-    public static final EntityProperty<Other> TO_OTHER = PropertyFactory.createEntity("toOther", Other.class);
-    public static final EntityProperty<Reflexive> TO_PARENT = PropertyFactory.createEntity("toParent", Reflexive.class);
+    public static final EntityProperty<Other> OTHER = PropertyFactory.createEntity("other", Other.class);
+    public static final EntityProperty<Reflexive> PARENT = PropertyFactory.createEntity("parent", Reflexive.class);
 
     protected String name;
 
     protected Object children;
-    protected Object toOther;
-    protected Object toParent;
+    protected Object other;
+    protected Object parent;
 
     public void setName(String name) {
         beforePropertyWrite("name", this.name, name);
@@ -59,20 +59,20 @@ public abstract class _Reflexive extends PersistentObject {
         return (List<Reflexive>)readProperty("children");
     }
 
-    public void setToOther(Other toOther) {
-        setToOneTarget("toOther", toOther, true);
+    public void setOther(Other other) {
+        setToOneTarget("other", other, true);
     }
 
-    public Other getToOther() {
-        return (Other)readProperty("toOther");
+    public Other getOther() {
+        return (Other)readProperty("other");
     }
 
-    public void setToParent(Reflexive toParent) {
-        setToOneTarget("toParent", toParent, true);
+    public void setParent(Reflexive parent) {
+        setToOneTarget("parent", parent, true);
     }
 
-    public Reflexive getToParent() {
-        return (Reflexive)readProperty("toParent");
+    public Reflexive getParent() {
+        return (Reflexive)readProperty("parent");
     }
 
     @Override
@@ -86,10 +86,10 @@ public abstract class _Reflexive extends PersistentObject {
                 return this.name;
             case "children":
                 return this.children;
-            case "toOther":
-                return this.toOther;
-            case "toParent":
-                return this.toParent;
+            case "other":
+                return this.other;
+            case "parent":
+                return this.parent;
             default:
                 return super.readPropertyDirectly(propName);
         }
@@ -108,11 +108,11 @@ public abstract class _Reflexive extends PersistentObject {
             case "children":
                 this.children = val;
                 break;
-            case "toOther":
-                this.toOther = val;
+            case "other":
+                this.other = val;
                 break;
-            case "toParent":
-                this.toParent = val;
+            case "parent":
+                this.parent = val;
                 break;
             default:
                 super.writePropertyDirectly(propName, val);

@@ -28,12 +28,12 @@ public abstract class _Department extends PersistentObject {
 
     public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);
     public static final ListProperty<Employee> EMPLOYEES = PropertyFactory.createList("employees", Employee.class);
-    public static final EntityProperty<Manager> TO_MANAGER = PropertyFactory.createEntity("toManager", Manager.class);
+    public static final EntityProperty<Manager> MANAGER = PropertyFactory.createEntity("manager", Manager.class);
 
     protected String name;
 
     protected Object employees;
-    protected Object toManager;
+    protected Object manager;
 
     public void setName(String name) {
         beforePropertyWrite("name", this.name, name);
@@ -58,12 +58,12 @@ public abstract class _Department extends PersistentObject {
         return (List<Employee>)readProperty("employees");
     }
 
-    public void setToManager(Manager toManager) {
-        setToOneTarget("toManager", toManager, true);
+    public void setManager(Manager manager) {
+        setToOneTarget("manager", manager, true);
     }
 
-    public Manager getToManager() {
-        return (Manager)readProperty("toManager");
+    public Manager getManager() {
+        return (Manager)readProperty("manager");
     }
 
     @Override
@@ -77,8 +77,8 @@ public abstract class _Department extends PersistentObject {
                 return this.name;
             case "employees":
                 return this.employees;
-            case "toManager":
-                return this.toManager;
+            case "manager":
+                return this.manager;
             default:
                 return super.readPropertyDirectly(propName);
         }
@@ -97,8 +97,8 @@ public abstract class _Department extends PersistentObject {
             case "employees":
                 this.employees = val;
                 break;
-            case "toManager":
-                this.toManager = val;
+            case "manager":
+                this.manager = val;
                 break;
             default:
                 super.writePropertyDirectly(propName, val);

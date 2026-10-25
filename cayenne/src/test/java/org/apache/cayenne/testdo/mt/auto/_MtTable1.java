@@ -26,12 +26,12 @@ public abstract class _MtTable1 extends PersistentObject {
 
     public static final StringProperty<String> GLOBAL_ATTRIBUTE1 = PropertyFactory.createString("globalAttribute1", String.class);
     public static final StringProperty<String> SERVER_ATTRIBUTE1 = PropertyFactory.createString("serverAttribute1", String.class);
-    public static final ListProperty<MtTable2> TABLE2ARRAY = PropertyFactory.createList("table2Array", MtTable2.class);
+    public static final ListProperty<MtTable2> TABLE2S = PropertyFactory.createList("table2s", MtTable2.class);
 
     protected String globalAttribute1;
     protected String serverAttribute1;
 
-    protected Object table2Array;
+    protected Object table2s;
 
     public void setGlobalAttribute1(String globalAttribute1) {
         beforePropertyWrite("globalAttribute1", this.globalAttribute1, globalAttribute1);
@@ -53,17 +53,17 @@ public abstract class _MtTable1 extends PersistentObject {
         return this.serverAttribute1;
     }
 
-    public void addToTable2Array(MtTable2 obj) {
-        addToManyTarget("table2Array", obj, true);
+    public void addToTable2s(MtTable2 obj) {
+        addToManyTarget("table2s", obj, true);
     }
 
-    public void removeFromTable2Array(MtTable2 obj) {
-        removeToManyTarget("table2Array", obj, true);
+    public void removeFromTable2s(MtTable2 obj) {
+        removeToManyTarget("table2s", obj, true);
     }
 
     @SuppressWarnings("unchecked")
-    public List<MtTable2> getTable2Array() {
-        return (List<MtTable2>)readProperty("table2Array");
+    public List<MtTable2> getTable2s() {
+        return (List<MtTable2>)readProperty("table2s");
     }
 
     @Override
@@ -77,8 +77,8 @@ public abstract class _MtTable1 extends PersistentObject {
                 return this.globalAttribute1;
             case "serverAttribute1":
                 return this.serverAttribute1;
-            case "table2Array":
-                return this.table2Array;
+            case "table2s":
+                return this.table2s;
             default:
                 return super.readPropertyDirectly(propName);
         }
@@ -97,8 +97,8 @@ public abstract class _MtTable1 extends PersistentObject {
             case "serverAttribute1":
                 this.serverAttribute1 = (String)val;
                 break;
-            case "table2Array":
-                this.table2Array = val;
+            case "table2s":
+                this.table2s = val;
                 break;
             default:
                 super.writePropertyDirectly(propName, val);

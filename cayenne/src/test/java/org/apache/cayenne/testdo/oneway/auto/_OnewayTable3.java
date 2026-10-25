@@ -23,22 +23,22 @@ public abstract class _OnewayTable3 extends PersistentObject {
     public static final NumericIdProperty<Integer> ID_PK_PROPERTY = PropertyFactory.createNumericId("ID", "OnewayTable3", Integer.class);
     public static final String ID_PK_COLUMN = "ID";
 
-    public static final ListProperty<OnewayTable4> TO_MANY_ONE_WAY_DB = PropertyFactory.createList("toManyOneWayDb", OnewayTable4.class);
+    public static final ListProperty<OnewayTable4> MANY_ONE_WAY_DB = PropertyFactory.createList("manyOneWayDb", OnewayTable4.class);
 
 
-    protected Object toManyOneWayDb;
+    protected Object manyOneWayDb;
 
-    public void addToToManyOneWayDb(OnewayTable4 obj) {
-        addToManyTarget("toManyOneWayDb", obj, true);
+    public void addToManyOneWayDb(OnewayTable4 obj) {
+        addToManyTarget("manyOneWayDb", obj, true);
     }
 
-    public void removeFromToManyOneWayDb(OnewayTable4 obj) {
-        removeToManyTarget("toManyOneWayDb", obj, true);
+    public void removeFromManyOneWayDb(OnewayTable4 obj) {
+        removeToManyTarget("manyOneWayDb", obj, true);
     }
 
     @SuppressWarnings("unchecked")
-    public List<OnewayTable4> getToManyOneWayDb() {
-        return (List<OnewayTable4>)readProperty("toManyOneWayDb");
+    public List<OnewayTable4> getManyOneWayDb() {
+        return (List<OnewayTable4>)readProperty("manyOneWayDb");
     }
 
     @Override
@@ -48,8 +48,8 @@ public abstract class _OnewayTable3 extends PersistentObject {
         }
 
         switch(propName) {
-            case "toManyOneWayDb":
-                return this.toManyOneWayDb;
+            case "manyOneWayDb":
+                return this.manyOneWayDb;
             default:
                 return super.readPropertyDirectly(propName);
         }
@@ -62,8 +62,8 @@ public abstract class _OnewayTable3 extends PersistentObject {
         }
 
         switch (propName) {
-            case "toManyOneWayDb":
-                this.toManyOneWayDb = val;
+            case "manyOneWayDb":
+                this.manyOneWayDb = val;
                 break;
             default:
                 super.writePropertyDirectly(propName, val);

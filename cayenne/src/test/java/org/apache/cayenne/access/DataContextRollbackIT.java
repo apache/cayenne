@@ -46,19 +46,19 @@ public class DataContextRollbackIT  {
 
         Painting p1 = (Painting) env.context().newObject("Painting");
         p1.setPaintingTitle("p1");
-        p1.setToArtist(artist);
+        p1.setArtist(artist);
 
         Painting p2 = (Painting) env.context().newObject("Painting");
         p2.setPaintingTitle("p2");
-        p2.setToArtist(artist);
+        p2.setArtist(artist);
 
         Painting p3 = (Painting) env.context().newObject("Painting");
         p3.setPaintingTitle("p3");
-        p3.setToArtist(artist);
+        p3.setArtist(artist);
 
         // before:
-        assertEquals(artist, p1.getToArtist());
-        assertEquals(3, artist.getPaintingArray().size());
+        assertEquals(artist, p1.getArtist());
+        assertEquals(3, artist.getPaintings().size());
 
         env.context().rollbackChanges();
 
@@ -101,7 +101,7 @@ public class DataContextRollbackIT  {
 
         Painting painting = (Painting) env.context().newObject("Painting");
         painting.setPaintingTitle(paintingTitle);
-        painting.setToArtist(artist);
+        painting.setArtist(artist);
 
         env.context().rollbackChanges();
 
@@ -129,19 +129,19 @@ public class DataContextRollbackIT  {
         artist.setArtistName(artistName);
         Painting painting = (Painting) env.context().newObject("Painting");
         painting.setPaintingTitle(paintingTitle);
-        painting.setToArtist(artist);
+        painting.setArtist(artist);
         env.context().commitChanges();
 
-        painting.setToArtist(null);
-        assertEquals(0, artist.getPaintingArray().size());
+        painting.setArtist(null);
+        assertEquals(0, artist.getPaintings().size());
         env.context().rollbackChanges();
 
-        assertTrue(((ToManyHolder) artist.getPaintingArray()).isFault());
-        assertEquals(1, artist.getPaintingArray().size());
-        assertEquals(artist, painting.getToArtist());
+        assertTrue(((ToManyHolder) artist.getPaintings()).isFault());
+        assertEquals(1, artist.getPaintings().size());
+        assertEquals(artist, painting.getArtist());
 
         // Check that the reverse relationship was handled
-        assertEquals(1, artist.getPaintingArray().size());
+        assertEquals(1, artist.getPaintings().size());
         env.context().commitChanges();
 
         DataContext freshContext = (DataContext) env.runtime().newContext();
@@ -155,7 +155,7 @@ public class DataContextRollbackIT  {
         Painting queriedPainting = (Painting) queryResults.get(0);
 
         // NB: This is an easier comparison than manually fetching artist
-        assertEquals(artistName, queriedPainting.getToArtist().getArtistName());
+        assertEquals(artistName, queriedPainting.getArtist().getArtistName());
     }
 
     @Test

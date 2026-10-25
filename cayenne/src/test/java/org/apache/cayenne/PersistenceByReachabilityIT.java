@@ -47,7 +47,7 @@ public class PersistenceByReachabilityIT {
         Painting persistentDO = env.context().newObject(Painting.class);
 
         Artist transientDO = new Artist();
-        persistentDO.setToOneTarget(Painting.TO_ARTIST.getName(), transientDO, false);
+        persistentDO.setToOneTarget(Painting.ARTIST.getName(), transientDO, false);
 
         assertEquals(PersistenceState.NEW, transientDO.getPersistenceState());
     }
@@ -57,7 +57,7 @@ public class PersistenceByReachabilityIT {
         Painting transientDO = env.context().newObject(Painting.class);
 
         Artist persistentDO = new Artist();
-        transientDO.setToOneTarget(Painting.TO_ARTIST.getName(), persistentDO, false);
+        transientDO.setToOneTarget(Painting.ARTIST.getName(), persistentDO, false);
 
         assertEquals(PersistenceState.NEW, transientDO.getPersistenceState());
     }
@@ -70,7 +70,7 @@ public class PersistenceByReachabilityIT {
 
         // this is the case where exception must be thrown as DataContexts are different
         assertThrows(CayenneRuntimeException.class,
-                () -> doC1.setToOneTarget(Painting.TO_ARTIST.getName(), doC2, false));
+                () -> doC1.setToOneTarget(Painting.ARTIST.getName(), doC2, false));
     }
 
     @Test
@@ -80,7 +80,7 @@ public class PersistenceByReachabilityIT {
 
         // this is the case where exception must be thrown as DataContexts are different
         assertThrows(CayenneRuntimeException.class,
-                () -> doC2.addToManyTarget(Artist.PAINTING_ARRAY.getName(), doC1, false));
+                () -> doC2.addToManyTarget(Artist.PAINTINGS.getName(), doC1, false));
     }
 
     @Test
@@ -88,7 +88,7 @@ public class PersistenceByReachabilityIT {
         Painting transientDO = env.context().newObject(Painting.class);
 
         Artist persistentDO = new Artist();
-        persistentDO.addToManyTarget(Artist.PAINTING_ARRAY.getName(), transientDO, false);
+        persistentDO.addToManyTarget(Artist.PAINTINGS.getName(), transientDO, false);
 
         assertEquals(PersistenceState.NEW, transientDO.getPersistenceState());
     }
@@ -98,7 +98,7 @@ public class PersistenceByReachabilityIT {
         Painting persistentDO = env.context().newObject(Painting.class);
 
         Artist transientDO = new Artist();
-        transientDO.addToManyTarget(Artist.PAINTING_ARRAY.getName(), persistentDO, false);
+        transientDO.addToManyTarget(Artist.PAINTINGS.getName(), persistentDO, false);
 
         assertEquals(PersistenceState.NEW, transientDO.getPersistenceState());
     }

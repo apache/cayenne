@@ -93,12 +93,12 @@ public class CDOMany2OneIT {
         Gallery g = env.context().newObject(Gallery.class);
         g.setGalleryName("G1");
 
-        p.setToArtist(a);
-        p.setToGallery(g);
+        p.setArtist(a);
+        p.setGallery(g);
         env.context().commitChanges();
 
-        p.setToArtist(null);
-        p.setToGallery(null);
+        p.setArtist(null);
+        p.setGallery(null);
 
         env.context().commitChanges();
 
@@ -121,11 +121,11 @@ public class CDOMany2OneIT {
         Artist a1 = env.context().objectForPK(Artist.class, 8);
 
         List<ROPainting> paints = ObjectSelect.query(ROPainting.class)
-                .where(ROPainting.TO_ARTIST.eq(a1)).select(env.context());
+                .where(ROPainting.ARTIST.eq(a1)).select(env.context());
         assertEquals(1, paints.size());
 
         ROPainting rop1 = paints.get(0);
-        assertSame(a1, rop1.getToArtist());
+        assertSame(a1, rop1.getArtist());
     }
 
     @Test
@@ -136,15 +136,15 @@ public class CDOMany2OneIT {
         Artist a1 = env.context().objectForPK(Artist.class, 8);
 
         List<ROPainting> paints = ObjectSelect.query(ROPainting.class)
-                .where(ROPainting.TO_ARTIST.eq(a1)).select(env.context());
+                .where(ROPainting.ARTIST.eq(a1)).select(env.context());
         assertEquals(1, paints.size());
 
         ROPainting rop1 = paints.get(0);
-        assertNotNull(rop1.getToArtist());
+        assertNotNull(rop1.getArtist());
 
         // trigger fetch
-        rop1.getToArtist().getArtistName();
-        assertEquals(PersistenceState.COMMITTED, rop1.getToArtist().getPersistenceState());
+        rop1.getArtist().getArtistName();
+        assertEquals(PersistenceState.COMMITTED, rop1.getArtist().getPersistenceState());
     }
 
     @Test
@@ -155,7 +155,7 @@ public class CDOMany2OneIT {
         Painting p1 = env.context().objectForPK(Painting.class, 6);
 
         List<Painting> paints = ObjectSelect.query(Painting.class)
-                .where(Painting.TO_ARTIST.eq(a1)).select(env.context());
+                .where(Painting.ARTIST.eq(a1)).select(env.context());
         assertEquals(1, paints.size());
         assertSame(p1, paints.get(0));
     }
@@ -169,7 +169,7 @@ public class CDOMany2OneIT {
         Gallery g1 = env.context().objectForPK(Gallery.class, 11);
 
         List<Artist> artists = ObjectSelect.query(Artist.class)
-                .where(Artist.PAINTING_ARRAY.dot(Painting.TO_GALLERY).eq(g1))
+                .where(Artist.PAINTINGS.dot(Painting.GALLERY).eq(g1))
                 .select(env.context());
         assertEquals(1, artists.size());
         assertSame(a1, artists.get(0));
@@ -183,11 +183,11 @@ public class CDOMany2OneIT {
         Painting p1 = env.context().newObject(Painting.class);
         p1.setPaintingTitle("xa");
 
-        p1.setToArtist(a1);
+        p1.setArtist(a1);
 
-        assertSame(a1, p1.getToArtist());
-        assertEquals(1, a1.getPaintingArray().size());
-        assertSame(p1, a1.getPaintingArray().get(0));
+        assertSame(a1, p1.getArtist());
+        assertEquals(1, a1.getPaintings().size());
+        assertSame(p1, a1.getPaintings().get(0));
 
         env.context().commitChanges();
 
@@ -203,7 +203,7 @@ public class CDOMany2OneIT {
         Gallery g1 = env.context().newObject(Gallery.class);
         g1.setGalleryName("yT");
 
-        p1.setToGallery(g1);
+        p1.setGallery(g1);
 
         // do save
         env.context().commitChanges();
@@ -212,13 +212,13 @@ public class CDOMany2OneIT {
 
         // test database data
         Painting p2 = ObjectSelect.query(Painting.class).selectOne(context2);
-        Gallery g2 = p2.getToGallery();
+        Gallery g2 = p2.getGallery();
 
-        p2.setToGallery(null);
+        p2.setGallery(null);
 
         // test before save
-        assertEquals(0, g2.getPaintingArray().size());
-        assertNull(p2.getToGallery());
+        assertEquals(0, g2.getPaintings().size());
+        assertNull(p2.getGallery());
 
         // do save II
         context2.commitChanges();
@@ -226,7 +226,7 @@ public class CDOMany2OneIT {
         ObjectContext context3 = runtime.newContext();
 
         Painting p3 = ObjectSelect.query(Painting.class).selectOne(context3);
-        assertNull(p3.getToGallery());
+        assertNull(p3.getGallery());
     }
 
     @Test
@@ -238,27 +238,27 @@ public class CDOMany2OneIT {
         Gallery g1 = env.context().newObject(Gallery.class);
         g1.setGalleryName("yTW");
 
-        p1.setToGallery(g1);
+        p1.setGallery(g1);
 
         env.context().commitChanges();
         ObjectContext context2 = runtime.newContext();
 
         // test database data
         Painting p2 = ObjectSelect.query(Painting.class).selectOne(context2);
-        Gallery g21 = p2.getToGallery();
+        Gallery g21 = p2.getGallery();
         assertNotNull(g21);
         assertEquals("yTW", g21.getGalleryName());
-        assertEquals(1, g21.getPaintingArray().size());
-        assertSame(p2, g21.getPaintingArray().get(0));
+        assertEquals(1, g21.getPaintings().size());
+        assertSame(p2, g21.getPaintings().get(0));
 
         Gallery g22 = context2.newObject(Gallery.class);
         g22.setGalleryName("rE");
-        p2.setToGallery(g22);
+        p2.setGallery(g22);
 
         // test before save
-        assertEquals(0, g21.getPaintingArray().size());
-        assertEquals(1, g22.getPaintingArray().size());
-        assertSame(p2, g22.getPaintingArray().get(0));
+        assertEquals(0, g21.getPaintings().size());
+        assertEquals(1, g22.getPaintings().size());
+        assertSame(p2, g22.getPaintings().get(0));
 
         // do save II
         context2.commitChanges();
@@ -266,11 +266,11 @@ public class CDOMany2OneIT {
         ObjectContext context3 = runtime.newContext();
 
         Painting p3 = ObjectSelect.query(Painting.class).selectOne(context3);
-        Gallery g3 = p3.getToGallery();
+        Gallery g3 = p3.getGallery();
         assertNotNull(g3);
         assertEquals("rE", g3.getGalleryName());
-        assertEquals(1, g3.getPaintingArray().size());
-        assertSame(p3, g3.getPaintingArray().get(0));
+        assertEquals(1, g3.getPaintings().size());
+        assertSame(p3, g3.getPaintings().get(0));
     }
 
     @Test
@@ -286,26 +286,26 @@ public class CDOMany2OneIT {
 
         // test database data
         Painting p2 = ObjectSelect.query(Painting.class).selectOne(context2);
-        assertNull(p2.getToGallery());
+        assertNull(p2.getGallery());
 
         Gallery g2 = context2.newObject(Gallery.class);
         g2.setGalleryName("rE");
 
-        p2.setToGallery(g2);
+        p2.setGallery(g2);
 
         // test before save
-        assertEquals(1, g2.getPaintingArray().size());
-        assertSame(p2, g2.getPaintingArray().get(0));
+        assertEquals(1, g2.getPaintings().size());
+        assertSame(p2, g2.getPaintings().get(0));
 
         // do save II
         context2.commitChanges();
         ObjectContext context3 = runtime.newContext();
 
         Painting p3 = ObjectSelect.query(Painting.class).selectOne(context3);
-        Gallery g3 = p3.getToGallery();
+        Gallery g3 = p3.getGallery();
         assertNotNull(g3);
         assertEquals("rE", g3.getGalleryName());
-        assertEquals(1, g3.getPaintingArray().size());
-        assertSame(p3, g3.getPaintingArray().get(0));
+        assertEquals(1, g3.getPaintings().size());
+        assertSame(p3, g3.getPaintings().get(0));
     }
 }

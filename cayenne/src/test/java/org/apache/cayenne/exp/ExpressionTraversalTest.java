@@ -47,44 +47,44 @@ public class ExpressionTraversalTest {
 
 	@Test
 	public void unary_Negative3() {
-		doExpressionTest("-toGallery.paintingArray.estimatedPrice", 2, 1);
+		doExpressionTest("-gallery.paintings.estimatedPrice", 2, 1);
 	}
 
 	@Test
 	public void binary_In1() {
-		doExpressionTest("toGallery.galleryName in ('g1', 'g2', 'g3')", 3, 2);
+		doExpressionTest("gallery.galleryName in ('g1', 'g2', 'g3')", 3, 2);
 	}
 
 	@Test
 	public void binary_In2() {
-		Expression exp = ExpressionFactory.inExp("toGallery.galleryName", Arrays.asList("g1", "g2", "g3"));
+		Expression exp = ExpressionFactory.inExp("gallery.galleryName", Arrays.asList("g1", "g2", "g3"));
 		doExpressionTest(exp, 3, 2);
 	}
 
 	@Test
 	public void binary_In3() {
-		Expression exp = ExpressionFactory.inExp("toGallery.galleryName", "g1", "g2", "g3");
+		Expression exp = ExpressionFactory.inExp("gallery.galleryName", "g1", "g2", "g3");
 		doExpressionTest(exp, 3, 2);
 	}
 
 	@Test
 	public void binary_Like() {
-		doExpressionTest("toGallery.galleryName like 'a%'", 2, 2);
+		doExpressionTest("gallery.galleryName like 'a%'", 2, 2);
 	}
 
 	@Test
 	public void binary_LikeIgnoreCase() {
-		doExpressionTest("toGallery.galleryName likeIgnoreCase 'a%'", 2, 2);
+		doExpressionTest("gallery.galleryName likeIgnoreCase 'a%'", 2, 2);
 	}
 
 	@Test
 	public void binary_IsNull() {
-		doExpressionTest("toGallery.galleryName = null", 2, 2);
+		doExpressionTest("gallery.galleryName = null", 2, 2);
 	}
 
 	@Test
 	public void binary_IsNotNull() {
-		doExpressionTest("toGallery.galleryName != null", 2, 2);
+		doExpressionTest("gallery.galleryName != null", 2, 2);
 	}
 
 	@Test

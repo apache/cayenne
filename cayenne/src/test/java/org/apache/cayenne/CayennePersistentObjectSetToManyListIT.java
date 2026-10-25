@@ -70,27 +70,27 @@ public class CayennePersistentObjectSetToManyListIT {
 		Artist a1 = env.context().objectForPK(Artist.class, 8);
 		assertNotNull(a1);
 
-		List<ROPainting> paints = ObjectSelect.query(ROPainting.class).where(ROPainting.TO_ARTIST.eq(a1))
+		List<ROPainting> paints = ObjectSelect.query(ROPainting.class).where(ROPainting.ARTIST.eq(a1))
 				.select(env.context());
 
 		assertEquals(3, paints.size());
 
 		ROPainting rop1 = paints.get(0);
-		assertSame(a1, rop1.getToArtist());
+		assertSame(a1, rop1.getArtist());
 	}
 
 	@Test
 	public void setEmptyList1() {
 		Artist artist = env.context().objectForPK(Artist.class, 8);
-		artist.setToManyTarget(Artist.PAINTING_ARRAY.getName(), new ArrayList<ROPainting>(0), true);
-		List<Painting> paints = artist.getPaintingArray();
+		artist.setToManyTarget(Artist.PAINTINGS.getName(), new ArrayList<ROPainting>(0), true);
+		List<Painting> paints = artist.getPaintings();
 		assertEquals(0, paints.size());
 	}
 
 	@Test
 	public void setEmptyList2() {
 		Artist artist = env.context().objectForPK(Artist.class, 8);
-		assertThrows(IllegalArgumentException.class, () -> artist.setToManyTarget(Artist.PAINTING_ARRAY.getName(), null, true));
+		assertThrows(IllegalArgumentException.class, () -> artist.setToManyTarget(Artist.PAINTINGS.getName(), null, true));
 	}
 
 	@Test
@@ -116,7 +116,7 @@ public class CayennePersistentObjectSetToManyListIT {
 		Artist artist = env.context().objectForPK(Artist.class, 8);
 
 		// copy the paintings list. Replacing paintings wont change the copy
-		List<Painting> oldPaints = new ArrayList<>(artist.getPaintingArray());
+		List<Painting> oldPaints = new ArrayList<>(artist.getPaintings());
 
 		Painting paintX = new Painting();
 		paintX.setPaintingTitle("pantingX");
@@ -125,13 +125,13 @@ public class CayennePersistentObjectSetToManyListIT {
 		Painting paintZ = new Painting();
 		paintZ.setPaintingTitle("paintingZ");
 
-		List<? extends Persistent> returnList = artist.setToManyTarget(Artist.PAINTING_ARRAY.getName(),
+		List<? extends Persistent> returnList = artist.setToManyTarget(Artist.PAINTINGS.getName(),
 				Arrays.asList(paintX, paintY, paintZ), true);
 
 		assertEquals(3, returnList.size());
 		assertTrue(returnList.containsAll(oldPaints));
 
-		List<Painting> newPaints = artist.getPaintingArray();
+		List<Painting> newPaints = artist.getPaintings();
 
 		assertEquals(3, newPaints.size());
 		for (Painting oldPaint : oldPaints) {
@@ -143,19 +143,19 @@ public class CayennePersistentObjectSetToManyListIT {
 	@Test
 	public void samePaintings() {
 		Artist artist = env.context().objectForPK(Artist.class, 8);
-		List<Painting> oldPaints = new ArrayList<>(artist.getPaintingArray());
+		List<Painting> oldPaints = new ArrayList<>(artist.getPaintings());
 
 		Painting paint6 = env.context().objectForPK(Painting.class, 6);
 		Painting paint7 = env.context().objectForPK(Painting.class, 7);
 		Painting paint8 = env.context().objectForPK(Painting.class, 8);
 
 		List<Painting> newPaints = Arrays.asList(paint6, paint7, paint8);
-		List<? extends Persistent> returnList = artist.setToManyTarget(Artist.PAINTING_ARRAY.getName(), newPaints,
+		List<? extends Persistent> returnList = artist.setToManyTarget(Artist.PAINTINGS.getName(), newPaints,
 				true);
 
 		assertEquals(0, returnList.size());
 
-		newPaints = artist.getPaintingArray();
+		newPaints = artist.getPaintings();
 		// testing if oldPaints and newPaints contain the same objects
 		assertEquals(3, newPaints.size());
 		assertEquals(3, oldPaints.size());
@@ -165,7 +165,7 @@ public class CayennePersistentObjectSetToManyListIT {
 	@Test
 	public void oldPlusNewPaintings() {
 		Artist artist = env.context().objectForPK(Artist.class, 8);
-		List<Painting> oldPaints = artist.getPaintingArray();
+		List<Painting> oldPaints = artist.getPaintings();
 
 		List<Painting> newPaints = new ArrayList<>(6);
 		newPaints.addAll(oldPaints);
@@ -181,9 +181,9 @@ public class CayennePersistentObjectSetToManyListIT {
 		newPaints.add(paintY);
 		newPaints.add(paintZ);
 
-		artist.setToManyTarget(Artist.PAINTING_ARRAY.getName(), newPaints, true);
+		artist.setToManyTarget(Artist.PAINTINGS.getName(), newPaints, true);
 
-		List<Painting> newPaints2 = artist.getPaintingArray();
+		List<Painting> newPaints2 = artist.getPaintings();
 		Painting paint6 = env.context().objectForPK(Painting.class, 6);
 		Painting paint7 = env.context().objectForPK(Painting.class, 7);
 		Painting paint8 = env.context().objectForPK(Painting.class, 8);
@@ -203,9 +203,9 @@ public class CayennePersistentObjectSetToManyListIT {
 
 		List<Painting> newPaints = new ArrayList<>();
 
-		Painting paint6 = artist.getPaintingArray().get(0);
-		Painting paint7 = artist.getPaintingArray().get(1);
-		Painting paint8 = artist.getPaintingArray().get(2);
+		Painting paint6 = artist.getPaintings().get(0);
+		Painting paint7 = artist.getPaintings().get(1);
+		Painting paint8 = artist.getPaintings().get(2);
 		Painting paintX = new Painting();
 		paintX.setPaintingTitle("pantingX");
 		Painting paintY = new Painting();
@@ -217,12 +217,12 @@ public class CayennePersistentObjectSetToManyListIT {
 		newPaints.add(paintY);
 
 		List<? extends Persistent> returnList = artist
-				.setToManyTarget(Artist.PAINTING_ARRAY.getName(), newPaints, true);
+				.setToManyTarget(Artist.PAINTINGS.getName(), newPaints, true);
 
 		assertEquals(1, returnList.size());
 		assertSame(paint8, returnList.get(0));
 
-		List<Painting> newPaints2 = artist.getPaintingArray();
+		List<Painting> newPaints2 = artist.getPaintings();
 
 		assertEquals(4, newPaints2.size());
 		assertTrue(newPaints2.contains(paintX));
@@ -237,8 +237,8 @@ public class CayennePersistentObjectSetToManyListIT {
 	@Test
 	public void relationCollectionTypeList() {
 		Artist artist = env.context().objectForPK(Artist.class, 8);
-		assertTrue(artist.readProperty(Artist.PAINTING_ARRAY.getName()) instanceof List);
-		assertDoesNotThrow(() -> artist.setToManyTarget(Artist.PAINTING_ARRAY.getName(), new ArrayList<Painting>(0), true));
-		assertEquals(0, artist.getPaintingArray().size());
+		assertTrue(artist.readProperty(Artist.PAINTINGS.getName()) instanceof List);
+		assertDoesNotThrow(() -> artist.setToManyTarget(Artist.PAINTINGS.getName(), new ArrayList<Painting>(0), true));
+		assertEquals(0, artist.getPaintings().size());
 	}
 }

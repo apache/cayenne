@@ -32,12 +32,12 @@
     </objEntity>
     <objEntity name="Parent" className="Parent" dbEntityName="PARENT">
     </objEntity>
-    <dbRelationship name="toParent" source="CHILD" target="PARENT" foreignKey="true">
+    <dbRelationship name="parent" source="CHILD" target="PARENT" foreignKey="true">
         <dbAttributePair source="PARENT_ID" target="ID"/>
     </dbRelationship>
-    <dbRelationship name="toParent" source="PARENT" target="CHILD">
+    <dbRelationship name="parent" source="PARENT" target="CHILD">
         <dbAttributePair source="ID" target="PARENT_ID"/>
     </dbRelationship>
-    <objRelationship name="toParent" source="Child" target="Parent" deleteRule="nullify" dbRelationshipPath="toParent"/>
-    <objRelationship name="toParent" source="Parent" target="Child" deleteRule="nullify" dbRelationshipPath="toParent"/>
+    <objRelationship name="parent" source="Child" target="Parent" deleteRule="nullify" dbRelationshipPath="parent"/>
+    <objRelationship name="parent" source="Parent" target="Child" deleteRule="nullify" dbRelationshipPath="parent"/>
 </dataMap>

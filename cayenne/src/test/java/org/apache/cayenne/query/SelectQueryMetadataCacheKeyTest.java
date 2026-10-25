@@ -221,12 +221,12 @@ public class SelectQueryMetadataCacheKeyTest {
         PrefetchTreeNode prefetchTreeNode;
 
         prefetchTreeNode = new PrefetchTreeNode();
-        prefetchTreeNode.merge(Artist.PAINTING_ARRAY.joint());
+        prefetchTreeNode.merge(Artist.PAINTINGS.joint());
         prefetchTreeNode.traverse(newPrefetchProcessor());
         String s1 = cacheKey.toString();
 
         prefetchTreeNode = new PrefetchTreeNode();
-        prefetchTreeNode.merge(Artist.PAINTING_ARRAY.joint());
+        prefetchTreeNode.merge(Artist.PAINTINGS.joint());
         prefetchTreeNode.traverse(newPrefetchProcessor());
         String s2 = cacheKey.toString();
 
@@ -239,22 +239,22 @@ public class SelectQueryMetadataCacheKeyTest {
         PrefetchTreeNode prefetchTreeNode;
 
         prefetchTreeNode = new PrefetchTreeNode();
-        prefetchTreeNode.merge(Artist.PAINTING_ARRAY.joint());
+        prefetchTreeNode.merge(Artist.PAINTINGS.joint());
         prefetchTreeNode.traverse(newPrefetchProcessor());
         String s1 = cacheKey.toString();
 
         prefetchTreeNode = new PrefetchTreeNode();
-        prefetchTreeNode.merge(Artist.PAINTING_ARRAY.disjoint());
+        prefetchTreeNode.merge(Artist.PAINTINGS.disjoint());
         prefetchTreeNode.traverse(newPrefetchProcessor());
         String s2 = cacheKey.toString();
 
         prefetchTreeNode = new PrefetchTreeNode();
-        prefetchTreeNode.merge(Artist.PAINTING_ARRAY.disjointById());
+        prefetchTreeNode.merge(Artist.PAINTINGS.disjointById());
         prefetchTreeNode.traverse(newPrefetchProcessor());
         String s3 = cacheKey.toString();
 
         prefetchTreeNode = new PrefetchTreeNode();
-        prefetchTreeNode.merge(Artist.PAINTING_ARRAY.disjoint());
+        prefetchTreeNode.merge(Artist.PAINTINGS.disjoint());
         prefetchTreeNode.traverse(newPrefetchProcessor());
         String s4 = cacheKey.toString();
 
@@ -268,27 +268,27 @@ public class SelectQueryMetadataCacheKeyTest {
         PrefetchTreeNode prefetchTreeNode;
 
         prefetchTreeNode = new PrefetchTreeNode();
-        prefetchTreeNode.merge(Artist.PAINTING_ARRAY.joint());
+        prefetchTreeNode.merge(Artist.PAINTINGS.joint());
         prefetchTreeNode.traverse(newPrefetchProcessor());
         String s1 = cacheKey.toString();
 
         prefetchTreeNode = new PrefetchTreeNode();
-        prefetchTreeNode.merge(Artist.PAINTING_ARRAY.joint());
-        prefetchTreeNode.merge(Artist.GROUP_ARRAY.joint());
+        prefetchTreeNode.merge(Artist.PAINTINGS.joint());
+        prefetchTreeNode.merge(Artist.GROUPS.joint());
         prefetchTreeNode.traverse(newPrefetchProcessor());
         String s2 = cacheKey.toString();
 
         prefetchTreeNode = new PrefetchTreeNode();
-        prefetchTreeNode.merge(Artist.PAINTING_ARRAY.joint());
-        prefetchTreeNode.merge(Artist.GROUP_ARRAY.joint());
-        prefetchTreeNode.merge(Artist.ARTIST_EXHIBIT_ARRAY.joint());
+        prefetchTreeNode.merge(Artist.PAINTINGS.joint());
+        prefetchTreeNode.merge(Artist.GROUPS.joint());
+        prefetchTreeNode.merge(Artist.ARTIST_EXHIBITS.joint());
         prefetchTreeNode.traverse(newPrefetchProcessor());
         String s3 = cacheKey.toString();
 
         prefetchTreeNode = new PrefetchTreeNode();
-        prefetchTreeNode.merge(Artist.PAINTING_ARRAY.joint());
-        prefetchTreeNode.merge(Artist.GROUP_ARRAY.joint());
-        prefetchTreeNode.merge(Artist.ARTIST_EXHIBIT_ARRAY.joint());
+        prefetchTreeNode.merge(Artist.PAINTINGS.joint());
+        prefetchTreeNode.merge(Artist.GROUPS.joint());
+        prefetchTreeNode.merge(Artist.ARTIST_EXHIBITS.joint());
         prefetchTreeNode.traverse(newPrefetchProcessor());
         String s4 = cacheKey.toString();
 
@@ -302,22 +302,22 @@ public class SelectQueryMetadataCacheKeyTest {
         PrefetchTreeNode prefetchTreeNode;
 
         prefetchTreeNode = new PrefetchTreeNode();
-        prefetchTreeNode.merge(Artist.PAINTING_ARRAY.joint());
+        prefetchTreeNode.merge(Artist.PAINTINGS.joint());
         prefetchTreeNode.traverse(newPrefetchProcessor());
         String s1 = cacheKey.toString();
 
         prefetchTreeNode = new PrefetchTreeNode();
-        prefetchTreeNode.merge(Artist.PAINTING_ARRAY.dot(Painting.TO_ARTIST).joint());
+        prefetchTreeNode.merge(Artist.PAINTINGS.dot(Painting.ARTIST).joint());
         prefetchTreeNode.traverse(newPrefetchProcessor());
         String s2 = cacheKey.toString();
 
         prefetchTreeNode = new PrefetchTreeNode();
-        prefetchTreeNode.merge(Artist.PAINTING_ARRAY.dot(Painting.TO_ARTIST).dot(Artist.GROUP_ARRAY).joint());
+        prefetchTreeNode.merge(Artist.PAINTINGS.dot(Painting.ARTIST).dot(Artist.GROUPS).joint());
         prefetchTreeNode.traverse(newPrefetchProcessor());
         String s3 = cacheKey.toString();
 
         prefetchTreeNode = new PrefetchTreeNode();
-        prefetchTreeNode.merge(Artist.PAINTING_ARRAY.dot(Painting.TO_ARTIST).dot(Artist.GROUP_ARRAY).joint());
+        prefetchTreeNode.merge(Artist.PAINTINGS.dot(Painting.ARTIST).dot(Artist.GROUPS).joint());
         prefetchTreeNode.traverse(newPrefetchProcessor());
         String s4 = cacheKey.toString();
 

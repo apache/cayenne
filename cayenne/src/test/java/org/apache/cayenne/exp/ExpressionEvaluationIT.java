@@ -109,7 +109,7 @@ public class ExpressionEvaluationIT {
 
     @Test
     public void likeIgnoreCase() {
-        Expression exp = Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE)
+        Expression exp = Artist.PAINTINGS.dot(Painting.PAINTING_TITLE)
                 .likeIgnoreCase("painting%");
 
         compareSqlAndEval(exp, 5);
@@ -117,7 +117,7 @@ public class ExpressionEvaluationIT {
 
     @Test
     public void notLikeIgnoreCase() {
-        Expression exp = Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE)
+        Expression exp = Artist.PAINTINGS.dot(Painting.PAINTING_TITLE)
                 .likeIgnoreCase("PaInTing%");
 
         compareSqlAndEval(exp, 5);
@@ -125,7 +125,7 @@ public class ExpressionEvaluationIT {
 
     @Test
     public void like() {
-        Expression exp = Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE)
+        Expression exp = Artist.PAINTINGS.dot(Painting.PAINTING_TITLE)
                 .like("painting%");
 
         compareSqlAndEval(exp, 5);
@@ -133,7 +133,7 @@ public class ExpressionEvaluationIT {
 
     @Test
     public void notLike() {
-        Expression exp = Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE)
+        Expression exp = Artist.PAINTINGS.dot(Painting.PAINTING_TITLE)
                 .like("painting%");
 
         compareSqlAndEval(exp, 5);
@@ -141,7 +141,7 @@ public class ExpressionEvaluationIT {
 
     @Test
     public void equal() {
-        Expression exp = Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE)
+        Expression exp = Artist.PAINTINGS.dot(Painting.PAINTING_TITLE)
                 .eq("painting1");
 
         compareSqlAndEval(exp, 1);
@@ -149,7 +149,7 @@ public class ExpressionEvaluationIT {
 
     @Test
     public void notEqual1() {
-        Expression exp = Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE)
+        Expression exp = Artist.PAINTINGS.dot(Painting.PAINTING_TITLE)
                 .ne("painting1");
 
         compareSqlAndEval(exp, 5);
@@ -157,7 +157,7 @@ public class ExpressionEvaluationIT {
 
     @Test
     public void notEqual2() {
-        Expression exp = Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE)
+        Expression exp = Artist.PAINTINGS.dot(Painting.PAINTING_TITLE)
                 .ne("painting11");
 
         compareSqlAndEval(exp, 5);
@@ -165,7 +165,7 @@ public class ExpressionEvaluationIT {
 
     @Test
     public void notEqual3() {
-        Expression exp = Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE)
+        Expression exp = Artist.PAINTINGS.dot(Painting.PAINTING_TITLE)
                 .ne("zyz");
 
         compareSqlAndEval(exp, 5);
@@ -173,7 +173,7 @@ public class ExpressionEvaluationIT {
 
     @Test
     public void between() {
-        Expression exp = Artist.PAINTING_ARRAY.dot(Painting.ESTIMATED_PRICE)
+        Expression exp = Artist.PAINTINGS.dot(Painting.ESTIMATED_PRICE)
                 .between(new BigDecimal(300), new BigDecimal(600));
 
         compareSqlAndEval(exp, 4);
@@ -182,7 +182,7 @@ public class ExpressionEvaluationIT {
     @Test
     public void notBetween() {
         Expression exp = ExpressionFactory.notBetweenExp(
-                "paintingArray.estimatedPrice",
+                "paintings.estimatedPrice",
                 new BigDecimal(300), new BigDecimal(600));
 
         compareSqlAndEval(exp, 5);
@@ -190,7 +190,7 @@ public class ExpressionEvaluationIT {
 
     @Test
     public void greater() {
-        Expression exp = Artist.PAINTING_ARRAY.dot(Painting.ESTIMATED_PRICE)
+        Expression exp = Artist.PAINTINGS.dot(Painting.ESTIMATED_PRICE)
                 .gt(new BigDecimal(799));
 
         compareSqlAndEval(exp, 3);
@@ -198,7 +198,7 @@ public class ExpressionEvaluationIT {
 
     @Test
     public void greaterEqual() {
-        Expression exp = Artist.PAINTING_ARRAY.dot(Painting.ESTIMATED_PRICE)
+        Expression exp = Artist.PAINTINGS.dot(Painting.ESTIMATED_PRICE)
                 .gte(new BigDecimal(800));
 
         compareSqlAndEval(exp, 3);
@@ -206,7 +206,7 @@ public class ExpressionEvaluationIT {
 
     @Test
     public void in() {
-        Expression exp = Artist.PAINTING_ARRAY.dot(Painting.ESTIMATED_PRICE)
+        Expression exp = Artist.PAINTINGS.dot(Painting.ESTIMATED_PRICE)
                 .in(new BigDecimal(800), new BigDecimal(300), new BigDecimal(700));
 
         compareSqlAndEval(exp, 2);
@@ -214,7 +214,7 @@ public class ExpressionEvaluationIT {
 
     @Test
     public void inEmpty() {
-        Expression exp = Artist.PAINTING_ARRAY.dot(Painting.ESTIMATED_PRICE)
+        Expression exp = Artist.PAINTINGS.dot(Painting.ESTIMATED_PRICE)
                 .in(Collections.emptyList());
 
         compareSqlAndEval(exp, 0);
@@ -222,7 +222,7 @@ public class ExpressionEvaluationIT {
 
     @Test
     public void notIn() {
-        Expression exp = Artist.PAINTING_ARRAY.dot(Painting.ESTIMATED_PRICE)
+        Expression exp = Artist.PAINTINGS.dot(Painting.ESTIMATED_PRICE)
                 .nin(new BigDecimal(800), new BigDecimal(200), new BigDecimal(300), new BigDecimal(400), new BigDecimal(700));
 
         compareSqlAndEval(exp, 3);
@@ -230,7 +230,7 @@ public class ExpressionEvaluationIT {
 
     @Test
     public void notInEmpty() {
-        Expression exp = Artist.PAINTING_ARRAY.dot(Painting.ESTIMATED_PRICE)
+        Expression exp = Artist.PAINTINGS.dot(Painting.ESTIMATED_PRICE)
                 .nin(Collections.emptyList());
 
         compareSqlAndEval(exp, 6);
@@ -238,7 +238,7 @@ public class ExpressionEvaluationIT {
 
     @Test
     public void less() {
-        Expression exp = Artist.PAINTING_ARRAY.dot(Painting.ESTIMATED_PRICE)
+        Expression exp = Artist.PAINTINGS.dot(Painting.ESTIMATED_PRICE)
                 .lt(new BigDecimal(801));
 
         compareSqlAndEval(exp, 5);
@@ -246,7 +246,7 @@ public class ExpressionEvaluationIT {
 
     @Test
     public void lessOrEqual() {
-        Expression exp = Artist.PAINTING_ARRAY.dot(Painting.ESTIMATED_PRICE)
+        Expression exp = Artist.PAINTINGS.dot(Painting.ESTIMATED_PRICE)
                 .lte(new BigDecimal(800));
 
         compareSqlAndEval(exp, 5);
@@ -254,7 +254,7 @@ public class ExpressionEvaluationIT {
 
     @Test
     public void collectionWithNull() {
-        Expression exp = Artist.PAINTING_ARRAY.dot(Painting.ESTIMATED_PRICE)
+        Expression exp = Artist.PAINTINGS.dot(Painting.ESTIMATED_PRICE)
                 .lt(new BigDecimal(200));
 
         compareSqlAndEval(exp, 1);
@@ -371,7 +371,7 @@ public class ExpressionEvaluationIT {
         List<Artist> filteredInSQL = ObjectSelect.query(Artist.class).where(exp).orderBy(ordering).select(context);
         // apply exp to in-memory collection
         List<Artist> filteredInMemory = exp.filterObjects(
-                ObjectSelect.query(Artist.class).prefetch(Artist.PAINTING_ARRAY.disjoint()).select(context)
+                ObjectSelect.query(Artist.class).prefetch(Artist.PAINTINGS.disjoint()).select(context)
         );
         ordering.orderList(filteredInMemory);
 

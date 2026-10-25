@@ -48,7 +48,7 @@ public class CDOReflexiveRelICustomSorterIT {
 
         ArtGroup childGroup1 = context.newObject(ArtGroup.class);
         childGroup1.setName("child1");
-        childGroup1.setToParentGroup(parentGroup);
+        childGroup1.setParentGroup(parentGroup);
 
         context.deleteObjects(parentGroup);
     }
@@ -61,7 +61,7 @@ public class CDOReflexiveRelICustomSorterIT {
 
         ArtGroup childGroup1 = context.newObject(ArtGroup.class);
         childGroup1.setName("child1");
-        childGroup1.setToParentGroup(parentGroup);
+        childGroup1.setParentGroup(parentGroup);
 
         context.commitChanges();
     }
@@ -74,7 +74,7 @@ public class CDOReflexiveRelICustomSorterIT {
 
         ArtGroup childGroup1 = context.newObject(ArtGroup.class);
         childGroup1.setName("child1");
-        childGroup1.setToParentGroup(parentGroup);
+        childGroup1.setParentGroup(parentGroup);
         context.commitChanges();
 
         context.deleteObjects(parentGroup);
@@ -91,9 +91,9 @@ public class CDOReflexiveRelICustomSorterIT {
 
         ArtGroup childGroup1 = context.newObject(ArtGroup.class);
         childGroup1.setName("child1");
-        childGroup1.setToParentGroup(parentGroup1);
+        childGroup1.setParentGroup(parentGroup1);
 
-        childGroup1.setToParentGroup(parentGroup2);
+        childGroup1.setParentGroup(parentGroup2);
 
         context.deleteObjects(parentGroup1);
         context.deleteObjects(parentGroup2);
@@ -109,8 +109,8 @@ public class CDOReflexiveRelICustomSorterIT {
 
         ArtGroup childGroup1 = context.newObject(ArtGroup.class);
         childGroup1.setName("child1");
-        childGroup1.setToParentGroup(parentGroup1);
-        childGroup1.setToParentGroup(parentGroup2);
+        childGroup1.setParentGroup(parentGroup1);
+        childGroup1.setParentGroup(parentGroup2);
         context.commitChanges();
 
         context.deleteObjects(parentGroup1);
@@ -128,9 +128,9 @@ public class CDOReflexiveRelICustomSorterIT {
 
         ArtGroup childGroup1 = context.newObject(ArtGroup.class);
         childGroup1.setName("child1");
-        childGroup1.setToParentGroup(parentGroup1);
+        childGroup1.setParentGroup(parentGroup1);
         context.commitChanges();
-        childGroup1.setToParentGroup(parentGroup2);
+        childGroup1.setParentGroup(parentGroup2);
         context.commitChanges();
     }
 
@@ -143,10 +143,10 @@ public class CDOReflexiveRelICustomSorterIT {
 
         ArtGroup childGroup1 = context.newObject(ArtGroup.class);
         childGroup1.setName("child1");
-        childGroup1.setToParentGroup(parentGroup);
+        childGroup1.setParentGroup(parentGroup);
         context.commitChanges();
 
-        childGroup1.setToParentGroup(null);
+        childGroup1.setParentGroup(null);
         context.commitChanges();
     }
 
@@ -178,15 +178,15 @@ public class CDOReflexiveRelICustomSorterIT {
 
         Painting painting = context.newObject(Painting.class);
         painting.setPaintingTitle("painting1");
-        painting.setToArtist(artist1);
-        painting.setToGallery(gallery);
+        painting.setArtist(artist1);
+        painting.setGallery(gallery);
 
         CompoundPaintingLongNames compoundPaintingLongNames = context.newObject(CompoundPaintingLongNames.class);
         compoundPaintingLongNames.setPaintingTitle(painting.getPaintingTitle());
         compoundPaintingLongNames.setGalleryLongName(gallery.getGalleryName());
         compoundPaintingLongNames.setArtistLongName(artist1.getArtistName());
-        compoundPaintingLongNames.setToGallery(gallery);
-        compoundPaintingLongNames.setToArtist(artist1);
+        compoundPaintingLongNames.setGallery(gallery);
+        compoundPaintingLongNames.setArtist(artist1);
         context.commitChanges();
 
         Gallery updatedGallery = ObjectSelect.query(Gallery.class).selectFirst(context);

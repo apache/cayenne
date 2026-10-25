@@ -80,7 +80,7 @@ public class ColumnSelect_EntityColumnJoinsIT {
     @Test
     public void toMany() {
         List<Object[]> rows = ObjectSelect
-                .columnQuery(Artist.class, Artist.ARTIST_NAME, Artist.PAINTING_ARRAY.flat())
+                .columnQuery(Artist.class, Artist.ARTIST_NAME, Artist.PAINTINGS.flat())
                 .select(context);
 
         assertEquals(9, rows.size());
@@ -90,7 +90,7 @@ public class ColumnSelect_EntityColumnJoinsIT {
     @Test
     public void toMany_Untyped() {
         List<Object[]> rows = ObjectSelect
-                .columnQuery(Artist.class, untyped("artistName"), untyped("paintingArray"))
+                .columnQuery(Artist.class, untyped("artistName"), untyped("paintings"))
                 .select(context);
 
         assertEquals(9, rows.size());
@@ -100,7 +100,7 @@ public class ColumnSelect_EntityColumnJoinsIT {
     @Test
     public void toMany_SingleColumn() {
         List<Painting> paintings = ObjectSelect
-                .columnQuery(Artist.class, Artist.PAINTING_ARRAY.flat())
+                .columnQuery(Artist.class, Artist.PAINTINGS.flat())
                 .select(context);
 
         assertEquals(9, paintings.size());
@@ -110,7 +110,7 @@ public class ColumnSelect_EntityColumnJoinsIT {
     @Test
     public void toMany_Paginated() {
         List<Object[]> rows = ObjectSelect
-                .columnQuery(Artist.class, Artist.ARTIST_NAME, Artist.PAINTING_ARRAY.flat())
+                .columnQuery(Artist.class, Artist.ARTIST_NAME, Artist.PAINTINGS.flat())
                 .pageSize(3)
                 .select(context);
 
@@ -121,7 +121,7 @@ public class ColumnSelect_EntityColumnJoinsIT {
     @Test
     public void toMany_QualifierOnRoot() {
         List<Object[]> rows = ObjectSelect
-                .columnQuery(Artist.class, Artist.ARTIST_NAME, Artist.PAINTING_ARRAY.flat())
+                .columnQuery(Artist.class, Artist.ARTIST_NAME, Artist.PAINTINGS.flat())
                 .where(Artist.ARTIST_NAME.in("artist1", "artist5"))
                 .select(context);
 
@@ -132,8 +132,8 @@ public class ColumnSelect_EntityColumnJoinsIT {
     @Test
     public void toMany_OrderingOnTheSamePath() {
         List<Object[]> rows = ObjectSelect
-                .columnQuery(Artist.class, Artist.ARTIST_NAME, Artist.PAINTING_ARRAY.flat())
-                .orderBy(Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE).asc())
+                .columnQuery(Artist.class, Artist.ARTIST_NAME, Artist.PAINTINGS.flat())
+                .orderBy(Artist.PAINTINGS.dot(Painting.PAINTING_TITLE).asc())
                 .select(context);
 
         assertEquals(9, rows.size());
@@ -144,8 +144,8 @@ public class ColumnSelect_EntityColumnJoinsIT {
     public void toMany_QualifierOnTheSamePath() {
         // the join is shared with the qualifier, that is the one to filter the rows
         List<Object[]> rows = ObjectSelect
-                .columnQuery(Artist.class, Artist.ARTIST_NAME, Artist.PAINTING_ARRAY.flat())
-                .where(Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE).like("painting%"))
+                .columnQuery(Artist.class, Artist.ARTIST_NAME, Artist.PAINTINGS.flat())
+                .where(Artist.PAINTINGS.dot(Painting.PAINTING_TITLE).like("painting%"))
                 .select(context);
 
         assertEquals(8, rows.size());
@@ -156,8 +156,8 @@ public class ColumnSelect_EntityColumnJoinsIT {
         // Unlike "like" above, "is null" gives different results for inner and outer joins. No painting has a null
         // title, so the inner join of the qualifier matches nothing, while an outer join would've matched "artist5".
         List<Object[]> rows = ObjectSelect
-                .columnQuery(Artist.class, Artist.ARTIST_NAME, Artist.PAINTING_ARRAY.flat())
-                .where(Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE).isNull())
+                .columnQuery(Artist.class, Artist.ARTIST_NAME, Artist.PAINTINGS.flat())
+                .where(Artist.PAINTINGS.dot(Painting.PAINTING_TITLE).isNull())
                 .select(context);
 
         assertEquals(0, rows.size());
@@ -167,8 +167,8 @@ public class ColumnSelect_EntityColumnJoinsIT {
     public void toMany_OuterQualifierOnTheSamePath() {
         // an explicitly outer path in the qualifier is a join of its own, and it does match "artist5"
         List<Object[]> rows = ObjectSelect
-                .columnQuery(Artist.class, Artist.ARTIST_NAME, Artist.PAINTING_ARRAY.flat())
-                .where(Artist.PAINTING_ARRAY.outer().dot(Painting.PAINTING_TITLE).isNull())
+                .columnQuery(Artist.class, Artist.ARTIST_NAME, Artist.PAINTINGS.flat())
+                .where(Artist.PAINTINGS.outer().dot(Painting.PAINTING_TITLE).isNull())
                 .select(context);
 
         assertEquals(1, rows.size());
@@ -178,8 +178,8 @@ public class ColumnSelect_EntityColumnJoinsIT {
     @Test
     public void toMany_ExistsQualifier() {
         List<Object[]> rows = ObjectSelect
-                .columnQuery(Artist.class, Artist.ARTIST_NAME, Artist.PAINTING_ARRAY.flat())
-                .where(Artist.PAINTING_ARRAY.exists())
+                .columnQuery(Artist.class, Artist.ARTIST_NAME, Artist.PAINTINGS.flat())
+                .where(Artist.PAINTINGS.exists())
                 .select(context);
 
         assertEquals(8, rows.size());
@@ -189,7 +189,7 @@ public class ColumnSelect_EntityColumnJoinsIT {
     public void toManyThenToOne() {
         // DISTINCT is in effect, so there's a row per artist: artists 2 and 4 have paintings in a gallery
         List<Object[]> rows = ObjectSelect
-                .columnQuery(Artist.class, Artist.ARTIST_NAME, Artist.PAINTING_ARRAY.dot(Painting.TO_GALLERY))
+                .columnQuery(Artist.class, Artist.ARTIST_NAME, Artist.PAINTINGS.dot(Painting.GALLERY))
                 .select(context);
 
         assertEquals(5, rows.size());
@@ -202,7 +202,7 @@ public class ColumnSelect_EntityColumnJoinsIT {
     public void toOneThenToMany() {
         // 5 paintings in a gallery, each paired with the 5 paintings of that gallery, plus 4 paintings with no gallery
         List<Object[]> rows = ObjectSelect
-                .columnQuery(Painting.class, Painting.PAINTING_TITLE, untyped("toGallery.paintingArray"))
+                .columnQuery(Painting.class, Painting.PAINTING_TITLE, untyped("gallery.paintings"))
                 .select(context);
 
         assertEquals(29, rows.size());
@@ -212,7 +212,7 @@ public class ColumnSelect_EntityColumnJoinsIT {
     @Test
     public void toOne() {
         List<Object[]> rows = ObjectSelect
-                .columnQuery(Painting.class, Painting.PAINTING_TITLE, Painting.TO_ARTIST)
+                .columnQuery(Painting.class, Painting.PAINTING_TITLE, Painting.ARTIST)
                 .select(context);
 
         assertEquals(9, rows.size());
@@ -222,8 +222,8 @@ public class ColumnSelect_EntityColumnJoinsIT {
     @Test
     public void toOne_QualifierOnTheSamePath() {
         List<Object[]> rows = ObjectSelect
-                .columnQuery(Painting.class, Painting.PAINTING_TITLE, Painting.TO_ARTIST)
-                .where(Painting.TO_ARTIST.dot(Artist.ARTIST_NAME).like("artist%"))
+                .columnQuery(Painting.class, Painting.PAINTING_TITLE, Painting.ARTIST)
+                .where(Painting.ARTIST.dot(Artist.ARTIST_NAME).like("artist%"))
                 .select(context);
 
         assertEquals(8, rows.size());
@@ -234,8 +234,8 @@ public class ColumnSelect_EntityColumnJoinsIT {
         // no artist has a null name, so the inner join of the qualifier matches nothing, while an outer join
         // would've matched "painting9"
         List<Object[]> rows = ObjectSelect
-                .columnQuery(Painting.class, Painting.PAINTING_TITLE, Painting.TO_ARTIST)
-                .where(Painting.TO_ARTIST.dot(Artist.ARTIST_NAME).isNull())
+                .columnQuery(Painting.class, Painting.PAINTING_TITLE, Painting.ARTIST)
+                .where(Painting.ARTIST.dot(Artist.ARTIST_NAME).isNull())
                 .select(context);
 
         assertEquals(0, rows.size());
@@ -244,12 +244,12 @@ public class ColumnSelect_EntityColumnJoinsIT {
     @Test
     public void scalarColumnsAndAggregatesUseInnerJoins() {
         List<Object[]> scalars = ObjectSelect
-                .columnQuery(Artist.class, Artist.ARTIST_NAME, Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE))
+                .columnQuery(Artist.class, Artist.ARTIST_NAME, Artist.PAINTINGS.dot(Painting.PAINTING_TITLE))
                 .select(context);
         assertEquals(8, scalars.size());
 
         List<Object[]> counts = ObjectSelect
-                .columnQuery(Artist.class, Artist.ARTIST_NAME, Artist.PAINTING_ARRAY.count())
+                .columnQuery(Artist.class, Artist.ARTIST_NAME, Artist.PAINTINGS.count())
                 .select(context);
         assertEquals(4, counts.size());
     }

@@ -59,7 +59,7 @@ public class DataContextEntityWithMeaningfulPKAndCustomDbRowOpSorterIT {
 
         // must be able to set reverse relationship
         MeaningfulPKDep dep = env.context().newObject(MeaningfulPKDep.class);
-        dep.setToMeaningfulPK(obj);
+        dep.setMeaningfulPK(obj);
         dep.setPk(10);
         env.context().commitChanges();
 
@@ -71,7 +71,7 @@ public class DataContextEntityWithMeaningfulPKAndCustomDbRowOpSorterIT {
         obj2.setDescr("bbb");
 
         MeaningfulPKDep dep2 = env.context().newObject(MeaningfulPKDep.class);
-        dep2.setToMeaningfulPK(obj2);
+        dep2.setMeaningfulPK(obj2);
         dep2.setPk(10);
         env.context().commitChanges();
     }
@@ -85,18 +85,18 @@ public class DataContextEntityWithMeaningfulPKAndCustomDbRowOpSorterIT {
         env.context().commitChanges();
 
         MeaningfulPKDep dep = env.context().newObject(MeaningfulPKDep.class);
-        dep.setToMeaningfulPK(obj);
+        dep.setMeaningfulPK(obj);
         dep.setPk(10);
         env.context().commitChanges();
 
         // check that operations are sorted correctly
-        dep.setToMeaningfulPK(null);
+        dep.setMeaningfulPK(null);
         obj.setPkAttribute(1002);
         env.context().commitChanges();
 
         // set relationship with a new PK
         dep.setDescr("test");
-        dep.setToMeaningfulPK(obj);
+        dep.setMeaningfulPK(obj);
         env.context().commitChanges();
     }
 

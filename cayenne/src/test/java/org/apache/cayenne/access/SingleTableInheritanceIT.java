@@ -130,7 +130,7 @@ public class SingleTableInheritanceIT extends PeopleTestBase {
 
         // fetch on leaf, but match on a super attribute
         List<Employee> results = ObjectSelect.query(Employee.class)
-                .prefetch(Employee.TO_DEPARTMENT.disjoint())
+                .prefetch(Employee.DEPARTMENT.disjoint())
                 .and(AbstractPerson.NAME.eq("E2"))
                 .select(context);
         assertEquals(1, results.size());
@@ -290,7 +290,7 @@ public class SingleTableInheritanceIT extends PeopleTestBase {
 
         CustomerRepresentative rep = context.newObject(CustomerRepresentative.class);
         rep.setName("Joe Schmoe");
-        rep.setToClientCompany(company);
+        rep.setClientCompany(company);
         rep.setPersonType("C");
 
         Employee employee = context.newObject(Employee.class);
@@ -319,7 +319,7 @@ public class SingleTableInheritanceIT extends PeopleTestBase {
 
         assertEquals(1, addresses.size());
         Address address = (Address) addresses.get(0);
-        assertSame(Employee.class, address.getToEmployee().getClass());
+        assertSame(Employee.class, address.getEmployee().getClass());
     }
 
     /**
@@ -334,7 +334,7 @@ public class SingleTableInheritanceIT extends PeopleTestBase {
 
         assertEquals(1, addresses.size());
         Address address = (Address) addresses.get(0);
-        Employee e = address.getToEmployee();
+        Employee e = address.getEmployee();
 
         assertSame(Manager.class, e.getClass());
     }
@@ -348,7 +348,7 @@ public class SingleTableInheritanceIT extends PeopleTestBase {
 
         assertEquals(1, addresses.size());
         Address address = addresses.get(0);
-        Employee e = address.getToEmployee();
+        Employee e = address.getEmployee();
 
         // CAY-592 - make sure modification of the address in a parallel context
         // doesn't mess up the Manager
@@ -356,9 +356,9 @@ public class SingleTableInheritanceIT extends PeopleTestBase {
         e = (Employee) context2.objectForPK(e.getObjectId());
         address = e.getAddresses().get(0);
 
-        assertSame(e, address.getToEmployee());
+        assertSame(e, address.getEmployee());
         address.setCity("XYZ");
-        assertSame(e, address.getToEmployee());
+        assertSame(e, address.getEmployee());
     }
 
     /**

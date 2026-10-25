@@ -45,7 +45,7 @@ public class FluentSelectPrefetchRouterActionQualifiedEntityIT extends PeopleTes
     public void prefetchEmployee() {
         ObjEntity departmentEntity = resolver.getObjEntity(Department.class);
         ObjectSelect<Employee> query = ObjectSelect.query(Employee.class).where(Employee.NAME.eq("abc"))
-                .prefetch(Employee.TO_DEPARTMENT.disjoint());
+                .prefetch(Employee.DEPARTMENT.disjoint());
 
         FluentSelectPrefetchRouterAction action = new FluentSelectPrefetchRouterAction();
 
@@ -65,7 +65,7 @@ public class FluentSelectPrefetchRouterActionQualifiedEntityIT extends PeopleTes
         ObjEntity departmentEntity = resolver.getObjEntity(Department.class);
 
         ObjectSelect<Manager> query = ObjectSelect.query(Manager.class).where(Employee.NAME.eq("abc"))
-                .prefetch(Manager.TO_DEPARTMENT.disjoint());
+                .prefetch(Manager.DEPARTMENT.disjoint());
 
         FluentSelectPrefetchRouterAction action = new FluentSelectPrefetchRouterAction();
 

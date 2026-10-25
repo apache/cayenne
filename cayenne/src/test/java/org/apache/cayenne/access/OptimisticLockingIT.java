@@ -438,12 +438,12 @@ public class OptimisticLockingIT {
         RelLockingTestEntity object = allObjects.get(0);
 
         // set to-one relationship to null and save
-        SimpleLockingTestEntity object1 = object.getToSimpleLockingTest();
-        object.setToSimpleLockingTest(null);
+        SimpleLockingTestEntity object1 = object.getSimpleLockingTest();
+        object.setSimpleLockingTest(null);
         context.commitChanges();
 
         // change to-one relationship to non-null and save... should lock on null value
-        object.setToSimpleLockingTest(object1);
+        object.setSimpleLockingTest(object1);
         context.commitChanges();
     }
 
@@ -465,7 +465,7 @@ public class OptimisticLockingIT {
         // change relationship and save... no optimistic lock failure expected
         SimpleLockingTestEntity object1 = context
                 .newObject(SimpleLockingTestEntity.class);
-        object.setToSimpleLockingTest(object1);
+        object.setSimpleLockingTest(object1);
         context.commitChanges();
 
         // change row underneath, change description and save... optimistic lock failure

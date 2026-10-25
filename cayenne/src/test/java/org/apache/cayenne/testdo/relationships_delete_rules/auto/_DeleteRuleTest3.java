@@ -21,17 +21,17 @@ public abstract class _DeleteRuleTest3 extends PersistentObject {
     public static final NumericIdProperty<Integer> DELETE_RULE_TEST_3_ID_PK_PROPERTY = PropertyFactory.createNumericId("DELETE_RULE_TEST_3_ID", "DeleteRuleTest3", Integer.class);
     public static final String DELETE_RULE_TEST_3_ID_PK_COLUMN = "DELETE_RULE_TEST_3_ID";
 
-    public static final EntityProperty<DeleteRuleTest2> TO_DELETE_RULE_TEST2 = PropertyFactory.createEntity("toDeleteRuleTest2", DeleteRuleTest2.class);
+    public static final EntityProperty<DeleteRuleTest2> DELETE_RULE_TEST2 = PropertyFactory.createEntity("deleteRuleTest2", DeleteRuleTest2.class);
 
 
-    protected Object toDeleteRuleTest2;
+    protected Object deleteRuleTest2;
 
-    public void setToDeleteRuleTest2(DeleteRuleTest2 toDeleteRuleTest2) {
-        setToOneTarget("toDeleteRuleTest2", toDeleteRuleTest2, true);
+    public void setDeleteRuleTest2(DeleteRuleTest2 deleteRuleTest2) {
+        setToOneTarget("deleteRuleTest2", deleteRuleTest2, true);
     }
 
-    public DeleteRuleTest2 getToDeleteRuleTest2() {
-        return (DeleteRuleTest2)readProperty("toDeleteRuleTest2");
+    public DeleteRuleTest2 getDeleteRuleTest2() {
+        return (DeleteRuleTest2)readProperty("deleteRuleTest2");
     }
 
     @Override
@@ -41,8 +41,8 @@ public abstract class _DeleteRuleTest3 extends PersistentObject {
         }
 
         switch(propName) {
-            case "toDeleteRuleTest2":
-                return this.toDeleteRuleTest2;
+            case "deleteRuleTest2":
+                return this.deleteRuleTest2;
             default:
                 return super.readPropertyDirectly(propName);
         }
@@ -55,8 +55,8 @@ public abstract class _DeleteRuleTest3 extends PersistentObject {
         }
 
         switch (propName) {
-            case "toDeleteRuleTest2":
-                this.toDeleteRuleTest2 = val;
+            case "deleteRuleTest2":
+                this.deleteRuleTest2 = val;
                 break;
             default:
                 super.writePropertyDirectly(propName, val);

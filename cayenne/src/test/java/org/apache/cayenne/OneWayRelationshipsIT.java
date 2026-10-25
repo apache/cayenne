@@ -63,7 +63,7 @@ public class OneWayRelationshipsIT {
 
 		OnewayTable1 t1 = env.context().newObject(OnewayTable1.class);
 		OnewayTable2 t2 = env.context().newObject(OnewayTable2.class);
-		t2.setToOneOneWayDb(t1);
+		t2.setOneOneWayDb(t1);
 
 		env.context().commitChanges();
 
@@ -83,12 +83,12 @@ public class OneWayRelationshipsIT {
 		OnewayTable1 t12 = env.context().objectForPK(OnewayTable1.class, 2);
 		OnewayTable2 t2 = env.context().objectForPK(OnewayTable2.class, 1);
 
-		assertSame(t11, t2.getToOneOneWayDb());
+		assertSame(t11, t2.getOneOneWayDb());
 
-		t2.setToOneOneWayDb(t12);
+		t2.setOneOneWayDb(t12);
 		env.context().commitChanges();
 
-		assertSame(t12, t2.getToOneOneWayDb());
+		assertSame(t12, t2.getOneOneWayDb());
 
 		int t2FK = t2Helper.getInt("TABLE1_ID");
 		assertEquals(2, t2FK);
@@ -103,12 +103,12 @@ public class OneWayRelationshipsIT {
 		OnewayTable1 t11 = env.context().objectForPK(OnewayTable1.class, 1);
 		OnewayTable2 t2 = env.context().objectForPK(OnewayTable2.class, 1);
 
-		assertSame(t11, t2.getToOneOneWayDb());
+		assertSame(t11, t2.getOneOneWayDb());
 
-		t2.setToOneOneWayDb(null);
+		t2.setOneOneWayDb(null);
 		env.context().commitChanges();
 
-		assertNull(t2.getToOneOneWayDb());
+		assertNull(t2.getOneOneWayDb());
 
 		Object t2FK = t2Helper.getObject("TABLE1_ID");
 		assertNull(t2FK);
@@ -119,7 +119,7 @@ public class OneWayRelationshipsIT {
 
 		OnewayTable3 t3 = env.context().newObject(OnewayTable3.class);
 		OnewayTable4 t4 = env.context().newObject(OnewayTable4.class);
-		t3.addToToManyOneWayDb(t4);
+		t3.addToManyOneWayDb(t4);
 
 		env.context().commitChanges();
 
@@ -136,16 +136,16 @@ public class OneWayRelationshipsIT {
 		t4Helper.insert(1, 1);
 
 		OnewayTable3 t3 = env.context().objectForPK(OnewayTable3.class, 1);
-		assertEquals(1, t3.getToManyOneWayDb().size());
+		assertEquals(1, t3.getManyOneWayDb().size());
 
 		OnewayTable4 t41 = env.context().objectForPK(OnewayTable4.class, 1);
-		assertTrue(t3.getToManyOneWayDb().contains(t41));
+		assertTrue(t3.getManyOneWayDb().contains(t41));
 
 		OnewayTable4 t42 = env.context().newObject(OnewayTable4.class);
-		t3.addToToManyOneWayDb(t42);
+		t3.addToManyOneWayDb(t42);
 		env.context().commitChanges();
 
-		assertEquals(2, t3.getToManyOneWayDb().size());
+		assertEquals(2, t3.getManyOneWayDb().size());
 
 		SQLSelect<Integer> fksQuery = SQLSelect.scalarQuery("SELECT TABLE3_ID FROM oneway_table4",
 				"oneway-rels",Integer.class);
@@ -164,17 +164,17 @@ public class OneWayRelationshipsIT {
 		t4Helper.insert(1, 1).insert(2, null);
 
 		OnewayTable3 t3 = env.context().objectForPK(OnewayTable3.class, 1);
-		assertEquals(1, t3.getToManyOneWayDb().size());
+		assertEquals(1, t3.getManyOneWayDb().size());
 
 		OnewayTable4 t41 = env.context().objectForPK(OnewayTable4.class, 1);
-		assertTrue(t3.getToManyOneWayDb().contains(t41));
+		assertTrue(t3.getManyOneWayDb().contains(t41));
 
 		OnewayTable4 t42 = env.context().objectForPK(OnewayTable4.class, 2);
 
-		t3.addToToManyOneWayDb(t42);
+		t3.addToManyOneWayDb(t42);
 		env.context().commitChanges();
 
-		assertEquals(2, t3.getToManyOneWayDb().size());
+		assertEquals(2, t3.getManyOneWayDb().size());
 
 		SQLSelect<Integer> fksQuery = SQLSelect.scalarQuery("SELECT TABLE3_ID FROM oneway_table4",
 				"oneway-rels", Integer.class);
@@ -193,18 +193,18 @@ public class OneWayRelationshipsIT {
 		t4Helper.insert(1, 1).insert(2, 1);
 
 		OnewayTable3 t3 = env.context().objectForPK(OnewayTable3.class, 1);
-		assertEquals(2, t3.getToManyOneWayDb().size());
+		assertEquals(2, t3.getManyOneWayDb().size());
 
 		OnewayTable4 t41 = env.context().objectForPK(OnewayTable4.class, 1);
-		assertTrue(t3.getToManyOneWayDb().contains(t41));
+		assertTrue(t3.getManyOneWayDb().contains(t41));
 
 		OnewayTable4 t42 = env.context().objectForPK(OnewayTable4.class, 2);
-		assertTrue(t3.getToManyOneWayDb().contains(t42));
+		assertTrue(t3.getManyOneWayDb().contains(t42));
 
-		t3.removeFromToManyOneWayDb(t42);
+		t3.removeFromManyOneWayDb(t42);
 		env.context().commitChanges();
 
-		assertEquals(1, t3.getToManyOneWayDb().size());
+		assertEquals(1, t3.getManyOneWayDb().size());
 
 		SQLSelect<Integer> fksQuery = SQLSelect.scalarQuery("SELECT TABLE3_ID FROM oneway_table4",
 				"oneway-rels", Integer.class);

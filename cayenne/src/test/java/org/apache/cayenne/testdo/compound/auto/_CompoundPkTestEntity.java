@@ -26,13 +26,13 @@ public abstract class _CompoundPkTestEntity extends PersistentObject {
     public static final StringProperty<String> KEY1 = PropertyFactory.createString("key1", String.class);
     public static final StringProperty<String> KEY2 = PropertyFactory.createString("key2", String.class);
     public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);
-    public static final ListProperty<CompoundFkTestEntity> COMPOUND_FK_ARRAY = PropertyFactory.createList("compoundFkArray", CompoundFkTestEntity.class);
+    public static final ListProperty<CompoundFkTestEntity> COMPOUND_FKS = PropertyFactory.createList("compoundFks", CompoundFkTestEntity.class);
 
     protected String key1;
     protected String key2;
     protected String name;
 
-    protected Object compoundFkArray;
+    protected Object compoundFks;
 
     public void setKey1(String key1) {
         beforePropertyWrite("key1", this.key1, key1);
@@ -64,17 +64,17 @@ public abstract class _CompoundPkTestEntity extends PersistentObject {
         return this.name;
     }
 
-    public void addToCompoundFkArray(CompoundFkTestEntity obj) {
-        addToManyTarget("compoundFkArray", obj, true);
+    public void addToCompoundFks(CompoundFkTestEntity obj) {
+        addToManyTarget("compoundFks", obj, true);
     }
 
-    public void removeFromCompoundFkArray(CompoundFkTestEntity obj) {
-        removeToManyTarget("compoundFkArray", obj, true);
+    public void removeFromCompoundFks(CompoundFkTestEntity obj) {
+        removeToManyTarget("compoundFks", obj, true);
     }
 
     @SuppressWarnings("unchecked")
-    public List<CompoundFkTestEntity> getCompoundFkArray() {
-        return (List<CompoundFkTestEntity>)readProperty("compoundFkArray");
+    public List<CompoundFkTestEntity> getCompoundFks() {
+        return (List<CompoundFkTestEntity>)readProperty("compoundFks");
     }
 
     @Override
@@ -90,8 +90,8 @@ public abstract class _CompoundPkTestEntity extends PersistentObject {
                 return this.key2;
             case "name":
                 return this.name;
-            case "compoundFkArray":
-                return this.compoundFkArray;
+            case "compoundFks":
+                return this.compoundFks;
             default:
                 return super.readPropertyDirectly(propName);
         }
@@ -113,8 +113,8 @@ public abstract class _CompoundPkTestEntity extends PersistentObject {
             case "name":
                 this.name = (String)val;
                 break;
-            case "compoundFkArray":
-                this.compoundFkArray = val;
+            case "compoundFks":
+                this.compoundFks = val;
                 break;
             default:
                 super.writePropertyDirectly(propName, val);

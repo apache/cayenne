@@ -87,7 +87,7 @@ public class DataContextMaxIdQualifierIT {
 
             int queriesCount = env.runWithQueryCounter(() ->
                     ObjectSelect.query(Artist.class)
-                            .prefetch(Artist.PAINTING_ARRAY.disjointById())
+                            .prefetch(Artist.PAINTINGS.disjointById())
                             .select(env.context()));
 
             assertEquals(11, queriesCount);
@@ -109,7 +109,7 @@ public class DataContextMaxIdQualifierIT {
             int queriesCount = env.runWithQueryCounter(() -> {
                 List<Painting> paintings = query.select(env.context());
                 for (Painting painting : paintings) {
-                    painting.getToArtist();
+                    painting.getArtist();
                 }
             });
 
@@ -139,7 +139,7 @@ public class DataContextMaxIdQualifierIT {
             int queriesCount = env.runWithQueryCounter(() -> {
                 List<Painting> paintings = query.select(env.context());
                 for (Painting painting : paintings) {
-                    painting.getToArtist();
+                    painting.getArtist();
                 }
             });
 
@@ -166,7 +166,7 @@ public class DataContextMaxIdQualifierIT {
 
             int queriesCount = env.runWithQueryCounter(() ->
                     ObjectSelect.query(Artist.class)
-                            .prefetch(Artist.PAINTING_ARRAY.disjointById())
+                            .prefetch(Artist.PAINTINGS.disjointById())
                             .select(env.context()));
 
             assertEquals(2, queriesCount);
@@ -199,7 +199,7 @@ public class DataContextMaxIdQualifierIT {
 
             int queriesCount = env.runWithQueryCounter(() ->
                     ObjectSelect.query(Artist.class)
-                            .prefetch(Artist.PAINTING_ARRAY.disjointById())
+                            .prefetch(Artist.PAINTINGS.disjointById())
                             .select(env.context()));
 
             assertEquals(2, queriesCount);

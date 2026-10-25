@@ -24,13 +24,13 @@ public abstract class _BaseEntity extends PersistentObject {
     public static final String BASE_ENTITY_ID_PK_COLUMN = "BASE_ENTITY_ID";
 
     public static final StringProperty<String> ENTITY_TYPE = PropertyFactory.createString("entityType", String.class);
-    public static final EntityProperty<DirectToSubEntity> TO_DIRECT_TO_SUB_ENTITY = PropertyFactory.createEntity("toDirectToSubEntity", DirectToSubEntity.class);
-    public static final EntityProperty<RelatedEntity> TO_RELATED_ENTITY = PropertyFactory.createEntity("toRelatedEntity", RelatedEntity.class);
+    public static final EntityProperty<DirectToSubEntity> DIRECT_TO_SUB_ENTITY = PropertyFactory.createEntity("directToSubEntity", DirectToSubEntity.class);
+    public static final EntityProperty<RelatedEntity> RELATED_ENTITY = PropertyFactory.createEntity("relatedEntity", RelatedEntity.class);
 
     protected String entityType;
 
-    protected Object toDirectToSubEntity;
-    protected Object toRelatedEntity;
+    protected Object directToSubEntity;
+    protected Object relatedEntity;
 
     public void setEntityType(String entityType) {
         beforePropertyWrite("entityType", this.entityType, entityType);
@@ -42,20 +42,20 @@ public abstract class _BaseEntity extends PersistentObject {
         return this.entityType;
     }
 
-    public void setToDirectToSubEntity(DirectToSubEntity toDirectToSubEntity) {
-        setToOneTarget("toDirectToSubEntity", toDirectToSubEntity, true);
+    public void setDirectToSubEntity(DirectToSubEntity directToSubEntity) {
+        setToOneTarget("directToSubEntity", directToSubEntity, true);
     }
 
-    public DirectToSubEntity getToDirectToSubEntity() {
-        return (DirectToSubEntity)readProperty("toDirectToSubEntity");
+    public DirectToSubEntity getDirectToSubEntity() {
+        return (DirectToSubEntity)readProperty("directToSubEntity");
     }
 
-    public void setToRelatedEntity(RelatedEntity toRelatedEntity) {
-        setToOneTarget("toRelatedEntity", toRelatedEntity, true);
+    public void setRelatedEntity(RelatedEntity relatedEntity) {
+        setToOneTarget("relatedEntity", relatedEntity, true);
     }
 
-    public RelatedEntity getToRelatedEntity() {
-        return (RelatedEntity)readProperty("toRelatedEntity");
+    public RelatedEntity getRelatedEntity() {
+        return (RelatedEntity)readProperty("relatedEntity");
     }
 
     @Override
@@ -67,10 +67,10 @@ public abstract class _BaseEntity extends PersistentObject {
         switch(propName) {
             case "entityType":
                 return this.entityType;
-            case "toDirectToSubEntity":
-                return this.toDirectToSubEntity;
-            case "toRelatedEntity":
-                return this.toRelatedEntity;
+            case "directToSubEntity":
+                return this.directToSubEntity;
+            case "relatedEntity":
+                return this.relatedEntity;
             default:
                 return super.readPropertyDirectly(propName);
         }
@@ -86,11 +86,11 @@ public abstract class _BaseEntity extends PersistentObject {
             case "entityType":
                 this.entityType = (String)val;
                 break;
-            case "toDirectToSubEntity":
-                this.toDirectToSubEntity = val;
+            case "directToSubEntity":
+                this.directToSubEntity = val;
                 break;
-            case "toRelatedEntity":
-                this.toRelatedEntity = val;
+            case "relatedEntity":
+                this.relatedEntity = val;
                 break;
             default:
                 super.writePropertyDirectly(propName, val);

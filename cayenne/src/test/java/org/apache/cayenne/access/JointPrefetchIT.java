@@ -98,14 +98,14 @@ public class JointPrefetchIT {
         final List<Painting> objects = ObjectSelect.query(Painting.class)
                 .limit(2).offset(0)
                 .orderBy("db:PAINTING_ID", SortOrder.ASCENDING)
-                .prefetch(Painting.TO_ARTIST.joint())
+                .prefetch(Painting.ARTIST.joint())
                 .select(context);
 
         env.runWithQueriesBlocked(() -> {
             assertEquals(2, objects.size());
 
             for (Painting p : objects) {
-                Artist target = p.getToArtist();
+                Artist target = p.getArtist();
                 assertNotNull(target);
                 assertEquals(PersistenceState.COMMITTED, target.getPersistenceState());
             }
@@ -119,7 +119,7 @@ public class JointPrefetchIT {
         final List<Artist> objects = ObjectSelect.query(Artist.class)
                 .limit(2).offset(0)
                 .orderBy(Artist.ARTIST_ID_PK_PROPERTY.asc())
-                .prefetch(Artist.PAINTING_ARRAY.joint())
+                .prefetch(Artist.PAINTINGS.joint())
                 .select(context);
 
         env.runWithQueriesBlocked(() -> {
@@ -128,7 +128,7 @@ public class JointPrefetchIT {
             assertEquals(1, objects.size());
 
             for (Artist a : objects) {
-                List<Painting> targets = a.getPaintingArray();
+                List<Painting> targets = a.getPaintings();
                 assertNotNull(targets);
                 for (Painting p : targets) {
                     assertEquals(PersistenceState.COMMITTED, p.getPersistenceState());
@@ -144,7 +144,7 @@ public class JointPrefetchIT {
         // query with to-many joint prefetches
         final List<DataRow> rows = ObjectSelect.dataRowQuery(Painting.class)
                 .orderBy("db:PAINTING_ID", SortOrder.ASCENDING)
-                .prefetch(Painting.TO_ARTIST.joint())
+                .prefetch(Painting.ARTIST.joint())
                 .select(context);
 
         env.runWithQueriesBlocked(() -> {
@@ -162,8 +162,8 @@ public class JointPrefetchIT {
                 assertTrue(row.containsKey("GALLERY_ID"), row + "");
                 assertTrue(row.containsKey("PAINTING_TITLE"), row + "");
                 assertTrue(row.containsKey("ESTIMATED_PRICE"), row + "");
-                assertTrue(row.containsKey("toArtist.ARTIST_NAME"), row + "");
-                assertTrue(row.containsKey("toArtist.DATE_OF_BIRTH"), row + "");
+                assertTrue(row.containsKey("artist.ARTIST_NAME"), row + "");
+                assertTrue(row.containsKey("artist.DATE_OF_BIRTH"), row + "");
             }
         });
     }
@@ -176,17 +176,17 @@ public class JointPrefetchIT {
         SQLTemplate q = new SQLTemplate(
                 Artist.class,
                 "SELECT distinct "
-                        + "#result('ESTIMATED_PRICE' 'BigDecimal' '' 'paintingArray.ESTIMATED_PRICE'), "
-                        + "#result('PAINTING_TITLE' 'String' '' 'paintingArray.PAINTING_TITLE'), "
-                        + "#result('GALLERY_ID' 'int' '' 'paintingArray.GALLERY_ID'), "
-                        + "#result('PAINTING_ID' 'int' '' 'paintingArray.PAINTING_ID'), "
+                        + "#result('ESTIMATED_PRICE' 'BigDecimal' '' 'paintings.ESTIMATED_PRICE'), "
+                        + "#result('PAINTING_TITLE' 'String' '' 'paintings.PAINTING_TITLE'), "
+                        + "#result('GALLERY_ID' 'int' '' 'paintings.GALLERY_ID'), "
+                        + "#result('PAINTING_ID' 'int' '' 'paintings.PAINTING_ID'), "
                         + "#result('ARTIST_NAME' 'String'), "
                         + "#result('DATE_OF_BIRTH' 'java.util.Date'), "
                         + "#result('t0.ARTIST_ID' 'int' '' 'ARTIST_ID') "
                         + "FROM ARTIST t0, PAINTING t1 "
                         + "WHERE t0.ARTIST_ID = t1.ARTIST_ID");
 
-        q.addPrefetch(Artist.PAINTING_ARRAY.joint());
+        q.addPrefetch(Artist.PAINTINGS.joint());
         q.setFetchingDataRows(false);
 
         @SuppressWarnings("unchecked")
@@ -197,7 +197,7 @@ public class JointPrefetchIT {
             assertEquals(2, objects.size());
 
             for (Artist a : objects) {
-                List<Painting> list = a.getPaintingArray();
+                List<Painting> list = a.getPaintings();
 
                 assertNotNull(list);
                 assertFalse(((ToManyHolder) list).isFault());
@@ -219,13 +219,13 @@ public class JointPrefetchIT {
         // query with to-many joint prefetches
         final List<Painting> objects = ObjectSelect.query(Painting.class)
                 .orderBy("db:PAINTING_ID", SortOrder.ASCENDING)
-                .prefetch(Painting.TO_ARTIST.joint())
+                .prefetch(Painting.ARTIST.joint())
                 .select(context);
 
         env.runWithQueriesBlocked(() -> {
             assertEquals(3, objects.size());
             for (Painting p : objects) {
-                Artist target = p.getToArtist();
+                Artist target = p.getArtist();
                 assertNotNull(target);
                 assertEquals(PersistenceState.COMMITTED, target.getPersistenceState());
             }
@@ -260,13 +260,13 @@ public class JointPrefetchIT {
         dateOfBirth.setType("java.sql.Date");
         try {
              List<Painting> objects = ObjectSelect.query(Painting.class)
-                    .prefetch(Painting.TO_ARTIST.joint())
+                    .prefetch(Painting.ARTIST.joint())
                     .select(context);
 
             env.runWithQueriesBlocked(() -> {
                 assertEquals(1, objects.size());
                 for (Painting p : objects) {
-                    Artist a = p.getToArtist();
+                    Artist a = p.getArtist();
                     assertNotNull(a);
                     assertNotNull(a.getDateOfBirth());
                     assertTrue(Date.class.isAssignableFrom(a.getDateOfBirth().getClass()), a.getDateOfBirth().getClass().getName());
@@ -283,14 +283,14 @@ public class JointPrefetchIT {
 
         // query with to-many joint prefetches
          List<Artist> objects = ObjectSelect.query(Artist.class)
-                .prefetch(Artist.PAINTING_ARRAY.joint())
+                .prefetch(Artist.PAINTINGS.joint())
                 .select(context);
 
         env.runWithQueriesBlocked(() -> {
             assertEquals(3, objects.size());
 
             for (Artist a : objects) {
-                List<Painting> list = a.getPaintingArray();
+                List<Painting> list = a.getPaintings();
 
                 assertNotNull(list);
                 assertFalse(((ToManyHolder) list).isFault());
@@ -311,14 +311,14 @@ public class JointPrefetchIT {
         // query with to-many joint prefetches and qualifier that doesn't match prefetch....
          List<Artist> objects = ObjectSelect.query(Artist.class)
                 .where(Artist.ARTIST_NAME.eq("artist1"))
-                .prefetch(Artist.PAINTING_ARRAY.joint())
+                .prefetch(Artist.PAINTINGS.joint())
                 .select(context);
 
         env.runWithQueriesBlocked(() -> {
             assertEquals(1, objects.size());
 
             Artist a = objects.getFirst();
-            List<Painting> list = a.getPaintingArray();
+            List<Painting> list = a.getPaintings();
 
             assertNotNull(list);
             assertFalse(((ToManyHolder) list).isFault());
@@ -348,14 +348,14 @@ public class JointPrefetchIT {
 
         // query with to-many joint prefetches
          List<Artist> objects = ObjectSelect.query(Artist.class)
-                .prefetch(Artist.PAINTING_ARRAY.dot(Painting.TO_GALLERY).joint())
+                .prefetch(Artist.PAINTINGS.dot(Painting.GALLERY).joint())
                 .select(context);
 
         env.runWithQueriesBlocked(() -> {
             assertEquals(3, objects.size());
 
             for (Artist a : objects) {
-                ToManyHolder list = (ToManyHolder) a.getPaintingArray();
+                ToManyHolder list = (ToManyHolder) a.getPaintings();
 
                 assertNotNull(list);
 
@@ -380,23 +380,23 @@ public class JointPrefetchIT {
         createJointPrefetchDataSet();
 
         List<Artist> objects = SQLSelect.query(Artist.class, "SELECT "
-                + "#result('ESTIMATED_PRICE' 'BigDecimal' '' 'paintingArray.ESTIMATED_PRICE'), "
-                + "#result('PAINTING_TITLE' 'String' '' 'paintingArray.PAINTING_TITLE'), "
-                + "#result('GALLERY_ID' 'int' '' 'paintingArray.GALLERY_ID'), "
-                + "#result('PAINTING_ID' 'int' '' 'paintingArray.PAINTING_ID'), "
+                + "#result('ESTIMATED_PRICE' 'BigDecimal' '' 'paintings.ESTIMATED_PRICE'), "
+                + "#result('PAINTING_TITLE' 'String' '' 'paintings.PAINTING_TITLE'), "
+                + "#result('GALLERY_ID' 'int' '' 'paintings.GALLERY_ID'), "
+                + "#result('PAINTING_ID' 'int' '' 'paintings.PAINTING_ID'), "
                 + "#result('ARTIST_NAME' 'String'), "
                 + "#result('DATE_OF_BIRTH' 'java.util.Date'), "
                 + "#result('t0.ARTIST_ID' 'int' '' 'ARTIST_ID') "
                 + "FROM ARTIST t0, PAINTING t1 "
                 + "WHERE t0.ARTIST_ID = t1.ARTIST_ID")
-                .addPrefetch(Artist.PAINTING_ARRAY.joint())
+                .addPrefetch(Artist.PAINTINGS.joint())
                 .select(context);
 
         env.runWithQueriesBlocked(() -> {
             assertEquals(2, objects.size());
 
             for (Artist artist : objects) {
-                List<Painting> paintings = artist.getPaintingArray();
+                List<Painting> paintings = artist.getPaintings();
                 assertFalse(paintings.isEmpty());
                 for (Painting painting : paintings) {
                     assertEquals(PersistenceState.COMMITTED, painting.getPersistenceState());
@@ -410,11 +410,11 @@ public class JointPrefetchIT {
     public void jointPrefetchSQLSelectNestedJoint() throws Exception {
         createJointPrefetchDataSet();
         SQLSelect.query(Artist.class, "SELECT "
-                + "#result('GALLERY_ID' 'int' '' 'paintingArray.toGallery.GALLERY_ID'),"
-                + "#result('GALLERY_NAME' 'String' '' 'paintingArray.toGallery.GALLERY_NAME'),"
+                + "#result('GALLERY_ID' 'int' '' 'paintings.gallery.GALLERY_ID'),"
+                + "#result('GALLERY_NAME' 'String' '' 'paintings.gallery.GALLERY_NAME'),"
                 + "#result('t0.ARTIST_ID' 'int' '' 'ARTIST_ID') "
                 + "FROM ARTIST t0, GALLERY t2 ")
-                .addPrefetch(Artist.PAINTING_ARRAY.dot(Painting.TO_GALLERY).joint())
+                .addPrefetch(Artist.PAINTINGS.dot(Painting.GALLERY).joint())
                 .select(context);
         env.runWithQueriesBlocked(() -> {
             Persistent g1 = context.getObjectStore().getObject(
@@ -438,27 +438,27 @@ public class JointPrefetchIT {
                 .selectFirst(context);
 
         // create pending arc diff
-        painting.setToArtist(artist);
+        painting.setArtist(artist);
 
         // refresh the painting (should preserve pending arc diff)
         ObjectSelect.query(Painting.class)
                 .where(Painting.PAINTING_TITLE.eq("P_artist21"))
                 .selectFirst(context);
-        assertEquals(artist, painting.getToArtist());
+        assertEquals(artist, painting.getArtist());
 
         // refresh the artist (should preserve pending arc diff)
         ObjectSelect.query(Artist.class)
                 .where(Artist.ARTIST_NAME.eq("artist1"))
                 .selectFirst(context);
-        assertEquals(artist, painting.getToArtist());
+        assertEquals(artist, painting.getArtist());
 
         // refresh them both together (should preserve pending arc diff)
         ObjectSelect.query(Painting.class)
                 .where(Painting.PAINTING_TITLE.eq("P_artist21"))
-                .prefetch(Painting.TO_ARTIST.joint())
+                .prefetch(Painting.ARTIST.joint())
                 .selectFirst(context);
 
-        assertEquals(artist, painting.getToArtist());
+        assertEquals(artist, painting.getArtist());
     }
 
     @Test
@@ -474,28 +474,28 @@ public class JointPrefetchIT {
                 .selectFirst(context);
 
         // create pending arc diff
-        artist.addToPaintingArray(painting);
+        artist.addToPaintings(painting);
 
         // refresh the painting (should preserve pending arc diff)
         ObjectSelect.query(Painting.class)
                 .where(Painting.PAINTING_TITLE.eq("P_artist21"))
                 .selectFirst(context);
-        assertEquals(3, artist.getPaintingArray().size());
-        assertTrue(artist.getPaintingArray().contains(painting));
+        assertEquals(3, artist.getPaintings().size());
+        assertTrue(artist.getPaintings().contains(painting));
 
         // refresh the artist (should preserve pending arc diff)
         ObjectSelect.query(Artist.class)
                 .where(Artist.ARTIST_NAME.eq("artist1"))
                 .selectFirst(context);
-        assertEquals(3, artist.getPaintingArray().size());
-        assertTrue(artist.getPaintingArray().contains(painting));
+        assertEquals(3, artist.getPaintings().size());
+        assertTrue(artist.getPaintings().contains(painting));
 
         // refresh them both together (should preserve pending arc diff)
         ObjectSelect.query(Artist.class)
                 .where(Artist.ARTIST_NAME.eq("artist1"))
-                .prefetch(Artist.PAINTING_ARRAY.joint())
+                .prefetch(Artist.PAINTINGS.joint())
                 .select(context);
-        assertEquals(3, artist.getPaintingArray().size());
-        assertTrue(artist.getPaintingArray().contains(painting));
+        assertEquals(3, artist.getPaintings().size());
+        assertTrue(artist.getPaintings().contains(painting));
     }
 }

@@ -65,26 +65,26 @@ public class TranslateExpressionIT {
     @Test
     public void prefetchWithTranslatedExp() {
         List<Painting> result = ObjectSelect.query(Painting.class)
-                .where(Painting.TO_ARTIST
-                        .dot(Artist.PAINTING_ARRAY)
+                .where(Painting.ARTIST
+                        .dot(Artist.PAINTINGS)
                         .dot(Painting.PAINTING_TITLE).like("painting7"))
                 .and(Painting.PAINTING_TITLE.like("painting2"))
-                .prefetch(Painting.TO_ARTIST.disjoint())
+                .prefetch(Painting.ARTIST.disjoint())
                 .select(context);
         assertEquals(1, result.size());
-        assertEquals("artist3", result.get(0).getToArtist().getArtistName());
+        assertEquals("artist3", result.get(0).getArtist().getArtistName());
     }
 
     @Test
     public void prefetchWithTheSamePrefetchAndQualifier() {
         List<Painting> result = ObjectSelect.query(Painting.class)
-                .where(Painting.TO_GALLERY
-                        .dot(Gallery.PAINTING_ARRAY)
+                .where(Painting.GALLERY
+                        .dot(Gallery.PAINTINGS)
                         .dot(Painting.PAINTING_TITLE)
                         .eq("painting1"))
                 .and(Painting.PAINTING_TITLE.like("painting2"))
-                .prefetch(Painting.TO_GALLERY.disjoint())
-                .prefetch(Painting.TO_GALLERY.dot(Gallery.PAINTING_ARRAY).disjoint())
+                .prefetch(Painting.GALLERY.disjoint())
+                .prefetch(Painting.GALLERY.dot(Gallery.PAINTINGS).disjoint())
                 .select(context);
         assertEquals(1, result.size());
         assertEquals("painting2", result.get(0).getPaintingTitle());
@@ -93,61 +93,61 @@ public class TranslateExpressionIT {
     @Test
     public void translateExpression() {
         ObjEntity entity = context.getEntityResolver().getObjEntity("Painting");
-        Expression expression = ExpressionFactory.pathExp("toArtist.paintingArray");
+        Expression expression = ExpressionFactory.pathExp("artist.paintings");
         Expression translatedExpression = entity
-                .translateToRelatedEntity(expression, "toArtist");
+                .translateToRelatedEntity(expression, "artist");
         assertEquals(ExpressionFactory
-                .dbPathExp("paintingArray.toArtist.paintingArray"),
+                .dbPathExp("paintings.artist.paintings"),
                 translatedExpression);
     }
 
     @Test
     public void relationshipPathEqualsToInput() {
         ObjEntity entity = context.getEntityResolver().getObjEntity("Painting");
-        Expression expression = ExpressionFactory.pathExp("toArtist");
+        Expression expression = ExpressionFactory.pathExp("artist");
         Expression translatedExpression = entity
-                .translateToRelatedEntity(expression, "toArtist");
-        assertEquals(ExpressionFactory.dbPathExp("paintingArray.toArtist"),
+                .translateToRelatedEntity(expression, "artist");
+        assertEquals(ExpressionFactory.dbPathExp("paintings.artist"),
                 translatedExpression);
     }
 
     @Test
     public void relationshipNoneLeadingParts() {
         ObjEntity entity = context.getEntityResolver().getObjEntity("Painting");
-        Expression expression = ExpressionFactory.pathExp("toGallery");
+        Expression expression = ExpressionFactory.pathExp("gallery");
         Expression translatedExpression = entity
-                .translateToRelatedEntity(expression, "toArtist");
-        assertEquals(ExpressionFactory.dbPathExp("paintingArray.toGallery"),
+                .translateToRelatedEntity(expression, "artist");
+        assertEquals(ExpressionFactory.dbPathExp("paintings.gallery"),
                 translatedExpression);
     }
 
     @Test
     public void relationshipSomeLeadingParts() {
         ObjEntity entity = context.getEntityResolver().getObjEntity("Painting");
-        Expression expression = ExpressionFactory.pathExp("toGallery");
+        Expression expression = ExpressionFactory.pathExp("gallery");
         Expression translatedExpression = entity
-                .translateToRelatedEntity(expression, "toArtist.paintingArray.toGallery");
-        assertEquals(ExpressionFactory.dbPathExp("paintingArray.toArtist.paintingArray.toGallery"),
+                .translateToRelatedEntity(expression, "artist.paintings.gallery");
+        assertEquals(ExpressionFactory.dbPathExp("paintings.artist.paintings.gallery"),
                 translatedExpression);
     }
 
     @Test
     public void compQualifier() {
         ObjEntity entity = context.getEntityResolver().getObjEntity("Painting");
-        Expression expression = ExpressionFactory.pathExp("toArtist.artistExhibitArray.toExhibit");
+        Expression expression = ExpressionFactory.pathExp("artist.artistExhibits.exhibit");
         Expression translatedExpression = entity
-                .translateToRelatedEntity(expression, "toGallery");
-        assertEquals(ExpressionFactory.dbPathExp("paintingArray.toArtist.artistExhibitArray.toExhibit"),
+                .translateToRelatedEntity(expression, "gallery");
+        assertEquals(ExpressionFactory.dbPathExp("paintings.artist.artistExhibits.exhibit"),
                 translatedExpression);
     }
 
     @Test
     public void compQualifierAndPref() {
         ObjEntity entity = context.getEntityResolver().getObjEntity("Artist");
-        Expression expression = ExpressionFactory.pathExp("paintingArray.toGallery");
+        Expression expression = ExpressionFactory.pathExp("paintings.gallery");
         Expression translatedExpression = entity
-                .translateToRelatedEntity(expression, "artistExhibitArray.toExhibit");
-        assertEquals(ExpressionFactory.dbPathExp("artistExhibitArray.toArtist.paintingArray.toGallery"),
+                .translateToRelatedEntity(expression, "artistExhibits.exhibit");
+        assertEquals(ExpressionFactory.dbPathExp("artistExhibits.artist.paintings.gallery"),
                 translatedExpression);
     }
 }

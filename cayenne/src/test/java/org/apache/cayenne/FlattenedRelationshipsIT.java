@@ -177,21 +177,21 @@ public class FlattenedRelationshipsIT {
         obj02.setName("t02");
         obj031.setName("t031");
         obj032.setName("t032");
-        obj02.setToFT1(obj01);
-        obj02.addToFt3Array(obj031);
-        obj02.addToFt3Array(obj032);
+        obj02.setFt1(obj01);
+        obj02.addToFt3s(obj031);
+        obj02.addToFt3s(obj032);
 
         obj11.setName("t11");
         obj131.setName("t131");
         obj12.setName("t12");
-        obj12.addToFt3Array(obj131);
-        obj12.setToFT1(obj11);
+        obj12.addToFt3s(obj131);
+        obj12.setFt1(obj11);
 
         context.commitChanges();
 
         // test 1: qualify on flattened attribute
         List<FlattenedTest1> objects1 = ObjectSelect.query(FlattenedTest1.class)
-                .where(FlattenedTest1.FT3ARRAY.dot(FlattenedTest3.NAME).eq("t031"))
+                .where(FlattenedTest1.FT3S.dot(FlattenedTest3.NAME).eq("t031"))
                 .select(context);
 
         assertEquals(1, objects1.size());
@@ -199,7 +199,7 @@ public class FlattenedRelationshipsIT {
 
         // test 2: qualify on flattened relationship
         List<FlattenedTest1> objects2 = ObjectSelect.query(FlattenedTest1.class)
-                .where(FlattenedTest1.FT3ARRAY.containsValue(obj131))
+                .where(FlattenedTest1.FT3S.containsValue(obj131))
                 .select(context);
 
         assertEquals(1, objects2.size());
@@ -216,8 +216,8 @@ public class FlattenedRelationshipsIT {
         FlattenedTest3 ft3 = (FlattenedTest3) context.newObject("FlattenedTest3");
         ft3.setName("FT3Name");
 
-        ft2.setToFT1(ft1);
-        ft2.addToFt3Array(ft3);
+        ft2.setFt1(ft1);
+        ft2.addToFt3s(ft3);
         context.commitChanges();
 
         context.invalidateObjects(ft1, ft2, ft3);
@@ -228,7 +228,7 @@ public class FlattenedRelationshipsIT {
         assertEquals(1, results.size());
 
         FlattenedTest3 fetchedFT3 = results.get(0);
-        FlattenedTest1 fetchedFT1 = fetchedFT3.getToFT1();
+        FlattenedTest1 fetchedFT1 = fetchedFT3.getFt1();
         assertEquals("FT1Name", fetchedFT1.getName());
     }
 
@@ -241,13 +241,13 @@ public class FlattenedRelationshipsIT {
         assertEquals(1, ft3s.size());
         FlattenedTest3 ft3 = ft3s.get(0);
 
-        assertTrue(ft3.readPropertyDirectly("toFT1") instanceof Fault);
+        assertTrue(ft3.readPropertyDirectly("ft1") instanceof Fault);
 
         // test that taking a snapshot does not trigger a fault, and generally works well
         DataRow snapshot = context.currentSnapshot(ft3);
 
         assertEquals("ft3", snapshot.get("NAME"));
-        assertTrue(ft3.readPropertyDirectly("toFT1") instanceof Fault);
+        assertTrue(ft3.readPropertyDirectly("ft1") instanceof Fault);
 
     }
 
@@ -260,11 +260,11 @@ public class FlattenedRelationshipsIT {
         assertEquals(1, ft3s.size());
         FlattenedTest3 ft3 = ft3s.get(0);
 
-        assertTrue(ft3.readPropertyDirectly("toFT1") instanceof Fault);
+        assertTrue(ft3.readPropertyDirectly("ft1") instanceof Fault);
 
         // refetch
         ObjectSelect.query(FlattenedTest3.class).select(context);
-        assertTrue(ft3.readPropertyDirectly("toFT1") instanceof Fault);
+        assertTrue(ft3.readPropertyDirectly("ft1") instanceof Fault);
     }
 
     @Test
@@ -290,12 +290,12 @@ public class FlattenedRelationshipsIT {
 
         FlattenedTest5 ft5 = context.newObject(FlattenedTest5.class);
         ft5.setName("FT5");
-        ft5.setToFT1(ft1);
+        ft5.setFt1(ft1);
 
         context.commitChanges();
 
         FlattenedTest5 ft5Persisted = ObjectSelect.query(FlattenedTest5.class).selectFirst(context);
-        assertEquals(ft1, ft5Persisted.getToFT1());
+        assertEquals(ft1, ft5Persisted.getFt1());
     }
 
     /**
@@ -323,16 +323,16 @@ public class FlattenedRelationshipsIT {
         flattenedTest1.setName("f1");
         FlattenedTest3 flattenedTest3 = context.newObject(FlattenedTest3.class);
         flattenedTest3.setName("f3");
-        flattenedTest3.setToFT1(flattenedTest1);
+        flattenedTest3.setFt1(flattenedTest1);
 
         context.commitChanges();
 
         List<FlattenedTest3> flattenedTest3s = ObjectSelect.query(FlattenedTest3.class)
-                .prefetch(FlattenedTest3.TO_FT1.disjoint())
+                .prefetch(FlattenedTest3.FT1.disjoint())
                 .select(context);
         assertEquals(1, flattenedTest3s.size());
         assertEquals("f3", flattenedTest3s.get(0).getName());
-        assertEquals("f1", flattenedTest3s.get(0).getToFT1().getName());
+        assertEquals("f1", flattenedTest3s.get(0).getFt1().getName());
     }
 
     @Test
@@ -349,14 +349,14 @@ public class FlattenedRelationshipsIT {
     public void testSecondToOneToFk() {
         Entity1 entity1 = context.newObject(Entity1.class);
         Entity3 entity3 = context.newObject(Entity3.class);
-        entity1.setToEntity3(entity3);
+        entity1.setEntity3(entity3);
         context.commitChanges();
 
         List<Entity1> entity1s = ObjectSelect.query(Entity1.class)
-                .prefetch(Entity1.TO_ENTITY3.disjoint())
+                .prefetch(Entity1.ENTITY3.disjoint())
                 .select(context);
         assertEquals(1, entity1s.size());
-        assertNotNull(entity1s.get(0).getToEntity3());
+        assertNotNull(entity1s.get(0).getEntity3());
     }
 
     @Test
@@ -379,14 +379,14 @@ public class FlattenedRelationshipsIT {
         flattenedTest1.setName("f1");
         FlattenedTest5 flattenedTest5 = context.newObject(FlattenedTest5.class);
         flattenedTest5.setName("f5");
-        flattenedTest1.addToFt5Array(flattenedTest5);
+        flattenedTest1.addToFt5s(flattenedTest5);
         context.commitChanges();
 
         List<FlattenedTest1> flattenedTest1s = ObjectSelect.query(FlattenedTest1.class)
-                .prefetch(FlattenedTest1.FT5ARRAY.disjoint())
+                .prefetch(FlattenedTest1.FT5S.disjoint())
                 .select(context);
         assertEquals(1, flattenedTest1s.size());
-        assertEquals(1, flattenedTest1s.get(0).getFt5Array().size());
+        assertEquals(1, flattenedTest1s.get(0).getFt5s().size());
     }
 
     @Test
@@ -395,14 +395,14 @@ public class FlattenedRelationshipsIT {
         flattenedTest5.setName("f5");
         FlattenedTest1 flattenedTest1 = context.newObject(FlattenedTest1.class);
         flattenedTest1.setName("f1");
-        flattenedTest5.setToFT1(flattenedTest1);
+        flattenedTest5.setFt1(flattenedTest1);
         context.commitChanges();
 
         List<FlattenedTest5> flattenedTest5s = ObjectSelect.query(FlattenedTest5.class)
-                .prefetch(FlattenedTest5.TO_FT1.disjoint())
+                .prefetch(FlattenedTest5.FT1.disjoint())
                 .select(context);
         assertEquals(1, flattenedTest5s.size());
         assertEquals("f5", flattenedTest5s.get(0).getName());
-        assertEquals("f1", flattenedTest5s.get(0).getToFT1().getName());
+        assertEquals("f1", flattenedTest5s.get(0).getFt1().getName());
     }
 }

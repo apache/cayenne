@@ -62,16 +62,16 @@
 	<objEntity name="GeneratedReflexive" className="org.apache.cayenne.testdo.generated.GeneratedReflexive" dbEntityName="GENERATED_REFLEXIVE" superClassName="org.apache.cayenne.GenericPersistentObject">
 		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>
 	</objEntity>
-	<dbRelationship name="toMaster" source="GENERATED_COLUMN_COMP_KEY" target="GENERATED_COLUMN_COMP_M" foreignKey="true">
+	<dbRelationship name="master" source="GENERATED_COLUMN_COMP_KEY" target="GENERATED_COLUMN_COMP_M" foreignKey="true">
 		<dbAttributePair source="PROPAGATED_PK" target="ID"/>
 	</dbRelationship>
-	<dbRelationship name="toDetail" source="GENERATED_COLUMN_COMP_M" target="GENERATED_COLUMN_COMP_KEY" toMany="true">
+	<dbRelationship name="detail" source="GENERATED_COLUMN_COMP_M" target="GENERATED_COLUMN_COMP_KEY" toMany="true">
 		<dbAttributePair source="ID" target="PROPAGATED_PK"/>
 	</dbRelationship>
-	<dbRelationship name="toMaster" source="GENERATED_COLUMN_DEP" target="GENERATED_COLUMN_TEST" foreignKey="true">
+	<dbRelationship name="master" source="GENERATED_COLUMN_DEP" target="GENERATED_COLUMN_TEST" foreignKey="true">
 		<dbAttributePair source="GENERATED_COLUMN_FK" target="GENERATED_COLUMN"/>
 	</dbRelationship>
-	<dbRelationship name="toDep" source="GENERATED_COLUMN_TEST" target="GENERATED_COLUMN_DEP">
+	<dbRelationship name="dep" source="GENERATED_COLUMN_TEST" target="GENERATED_COLUMN_DEP">
 		<dbAttributePair source="GENERATED_COLUMN" target="GENERATED_COLUMN_FK"/>
 	</dbRelationship>
 	<dbRelationship name="join" source="GENERATED_F1" target="GENERATED_JOIN" toMany="true">
@@ -89,10 +89,10 @@
 	<dbRelationship name="next" source="GENERATED_REFLEXIVE" target="GENERATED_REFLEXIVE" foreignKey="true">
 		<dbAttributePair source="REF_ID" target="ID"/>
 	</dbRelationship>
-	<objRelationship name="toMaster" source="GeneratedColumnCompKey" target="GeneratedColumnCompMaster" dbRelationshipPath="toMaster"/>
-	<objRelationship name="toDetail" source="GeneratedColumnCompMaster" target="GeneratedColumnCompKey" dbRelationshipPath="toDetail"/>
-	<objRelationship name="toMaster" source="GeneratedColumnDep" target="GeneratedColumnTestEntity" dbRelationshipPath="toMaster"/>
-	<objRelationship name="toDep" source="GeneratedColumnTestEntity" target="GeneratedColumnDep" dbRelationshipPath="toDep"/>
+	<objRelationship name="master" source="GeneratedColumnCompKey" target="GeneratedColumnCompMaster" dbRelationshipPath="master"/>
+	<objRelationship name="detail" source="GeneratedColumnCompMaster" target="GeneratedColumnCompKey" dbRelationshipPath="detail"/>
+	<objRelationship name="master" source="GeneratedColumnDep" target="GeneratedColumnTestEntity" dbRelationshipPath="master"/>
+	<objRelationship name="dep" source="GeneratedColumnTestEntity" target="GeneratedColumnDep" dbRelationshipPath="dep"/>
 	<objRelationship name="f2" source="GeneratedF1" target="GeneratedF2" deleteRule="nullify" dbRelationshipPath="join.f2"/>
 	<objRelationship name="f1" source="GeneratedF2" target="GeneratedF1" deleteRule="nullify" dbRelationshipPath="join.f1"/>
 	<objRelationship name="next" source="GeneratedReflexive" target="GeneratedReflexive" deleteRule="nullify" dbRelationshipPath="next"/>

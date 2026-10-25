@@ -175,13 +175,13 @@ public class FunctionExpressionFactoryTest {
         assertEquals(new ScalarExp("abc"), exp1.getOperand(1));
         assertEquals(Artist.DATE_OF_BIRTH.getExpression(), exp1.getOperand(2));
 
-        Expression exp2 = FunctionExpressionFactory.concatExp(Artist.ARTIST_NAME.getName(), Artist.DATE_OF_BIRTH.getName(), Artist.PAINTING_ARRAY.getName());
+        Expression exp2 = FunctionExpressionFactory.concatExp(Artist.ARTIST_NAME.getName(), Artist.DATE_OF_BIRTH.getName(), Artist.PAINTINGS.getName());
         assertTrue(exp2 instanceof ConcatExp);
         assertEquals(3, exp2.getOperandCount());
 
         assertEquals(Artist.ARTIST_NAME.getExpression(), exp2.getOperand(0));
         assertEquals(Artist.DATE_OF_BIRTH.getExpression(), exp2.getOperand(1));
-        assertEquals(Artist.PAINTING_ARRAY.getExpression(), exp2.getOperand(2));
+        assertEquals(Artist.PAINTINGS.getExpression(), exp2.getOperand(2));
     }
 
     @Test

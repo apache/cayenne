@@ -345,7 +345,7 @@ public class DataContextExtrasIT {
 
         Painting p1 = context.newObject(Painting.class);
         p1.setPaintingTitle("XXX");
-        a1.addToPaintingArray(p1);
+        a1.addToPaintings(p1);
         a1.resetValidationFlags();
         context.commitChanges();
 
@@ -379,13 +379,13 @@ public class DataContextExtrasIT {
 
         Painting p1 = objects.getFirst();
 
-        Artist oldArtist = p1.getToArtist();
+        Artist oldArtist = p1.getArtist();
         Artist newArtist = context.objectForPK(Artist.class, 33002);
 
         assertNotSame(oldArtist, newArtist);
 
-        p1.setToArtist(newArtist);
-        p1.setToArtist(oldArtist);
+        p1.setArtist(newArtist);
+        p1.setArtist(oldArtist);
 
         context.commitChanges();
 
@@ -404,13 +404,13 @@ public class DataContextExtrasIT {
 
         Painting p1 = objects.getFirst();
 
-        Artist oldArtist = p1.getToArtist();
+        Artist oldArtist = p1.getArtist();
         Artist newArtist = context.objectForPK(Artist.class, 33002);
 
         assertNotSame(oldArtist, newArtist);
 
-        p1.setToArtist(newArtist);
-        p1.setToArtist(oldArtist);
+        p1.setArtist(newArtist);
+        p1.setArtist(oldArtist);
 
         p1.resetValidationFlags();
         context.commitChanges();

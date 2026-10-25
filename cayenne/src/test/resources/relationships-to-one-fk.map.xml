@@ -12,12 +12,12 @@
 	</dbEntity>
 	<objEntity name="ToOneFK1" className="org.apache.cayenne.testdo.relationships_to_one_fk.ToOneFK1" dbEntityName="TO_ONE_FK1"/>
 	<objEntity name="ToOneFK2" className="org.apache.cayenne.testdo.relationships_to_one_fk.ToOneFK2" dbEntityName="TO_ONE_FK2"/>
-	<dbRelationship name="toPK" source="TO_ONE_FK1" target="TO_ONE_FK2" foreignKey="true">
+	<dbRelationship name="pk" source="TO_ONE_FK1" target="TO_ONE_FK2" foreignKey="true">
 		<dbAttributePair source="TO_ONE_FK1_FK" target="TO_ONE_FK2_PK"/>
 	</dbRelationship>
-	<dbRelationship name="toOneToFK" source="TO_ONE_FK2" target="TO_ONE_FK1">
+	<dbRelationship name="oneToFK" source="TO_ONE_FK2" target="TO_ONE_FK1">
 		<dbAttributePair source="TO_ONE_FK2_PK" target="TO_ONE_FK1_FK"/>
 	</dbRelationship>
-	<objRelationship name="toPK" source="ToOneFK1" target="ToOneFK2" dbRelationshipPath="toPK"/>
-	<objRelationship name="toOneToFK" source="ToOneFK2" target="ToOneFK1" dbRelationshipPath="toOneToFK"/>
+	<objRelationship name="pk" source="ToOneFK1" target="ToOneFK2" dbRelationshipPath="pk"/>
+	<objRelationship name="oneToFK" source="ToOneFK2" target="ToOneFK1" dbRelationshipPath="oneToFK"/>
 </dataMap>

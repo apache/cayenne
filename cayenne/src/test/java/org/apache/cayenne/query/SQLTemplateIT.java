@@ -437,7 +437,7 @@ public class SQLTemplateIT {
 
 		String sql = "SELECT p.* FROM PAINTING p";
 		SQLTemplate q1 = new SQLTemplate(Painting.class, sql);
-		q1.addPrefetch(Painting.TO_ARTIST.disjointById());
+		q1.addPrefetch(Painting.ARTIST.disjointById());
 		q1.setColumnNamesCapitalization(CapsStrategy.UPPER);
 
 		@SuppressWarnings("unchecked")
@@ -445,7 +445,7 @@ public class SQLTemplateIT {
 
 		env.runWithQueriesBlocked(() -> {
 			for(Painting painting : paintings) {
-				assertEquals(PersistenceState.COMMITTED, painting.getToArtist().getPersistenceState());
+				assertEquals(PersistenceState.COMMITTED, painting.getArtist().getPersistenceState());
 			}
 		});
 	}
@@ -455,7 +455,7 @@ public class SQLTemplateIT {
 		assertThrows(CayenneRuntimeException.class, () -> {
 			String sql = "SELECT p.* FROM PAINTING p";
 			SQLTemplate q1 = new SQLTemplate(Painting.class, sql);
-			q1.addPrefetch(Painting.TO_ARTIST.disjoint());
+			q1.addPrefetch(Painting.ARTIST.disjoint());
 		});
 	}
 }

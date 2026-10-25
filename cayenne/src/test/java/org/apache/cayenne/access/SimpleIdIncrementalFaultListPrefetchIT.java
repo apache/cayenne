@@ -94,7 +94,7 @@ public class SimpleIdIncrementalFaultListPrefetchIT {
 
         List<Artist> result = ObjectSelect.query(Artist.class)
                 .orderBy(Artist.ARTIST_NAME.asc())
-                .prefetch(Artist.PAINTING_ARRAY.joint())
+                .prefetch(Artist.PAINTINGS.joint())
                 .pageSize(3)
                 .select(env.context());
 
@@ -106,7 +106,7 @@ public class SimpleIdIncrementalFaultListPrefetchIT {
         List<String> names = new ArrayList<>();
         for (Artist a : result) {
             names.add(a.getArtistName());
-            List<Painting> paintings = a.getPaintingArray();
+            List<Painting> paintings = a.getPaintings();
             assertFalse(((ToManyHolder) paintings).isFault());
             assertEquals(3, paintings.size());
         }
@@ -136,7 +136,7 @@ public class SimpleIdIncrementalFaultListPrefetchIT {
 
         ObjectSelect<Artist> q = ObjectSelect.query(Artist.class)
                 .where(Artist.ARTIST_NAME.like("artist1%"))
-                .prefetch("paintingArray", PrefetchTreeNode.UNDEFINED_SEMANTICS)
+                .prefetch("paintings", PrefetchTreeNode.UNDEFINED_SEMANTICS)
                 .pageSize(3);
 
         final IncrementalFaultList<?> result = (IncrementalFaultList) env.context()
@@ -168,7 +168,7 @@ public class SimpleIdIncrementalFaultListPrefetchIT {
 
         ObjectSelect<Artist> q = ObjectSelect.query(Artist.class)
                 .where(Artist.ARTIST_NAME.like("artist1%"))
-                .prefetch("paintingArray", PrefetchTreeNode.UNDEFINED_SEMANTICS)
+                .prefetch("paintings", PrefetchTreeNode.UNDEFINED_SEMANTICS)
                 .pageSize(3);
 
         IncrementalFaultList result = (IncrementalFaultList) env.context().select(q);
@@ -182,7 +182,7 @@ public class SimpleIdIncrementalFaultListPrefetchIT {
         for (int i = 3; i < 6; i++) {
             Artist a = (Artist) result.get(i);
 
-            List paintings = a.getPaintingArray();
+            List paintings = a.getPaintings();
             assertFalse(((ToManyHolder) paintings).isFault());
             assertEquals(1, paintings.size());
         }
@@ -197,7 +197,7 @@ public class SimpleIdIncrementalFaultListPrefetchIT {
 
         ObjectSelect<Painting> q = ObjectSelect.query(Painting.class)
                 .pageSize(3)
-                .prefetch("toArtist", PrefetchTreeNode.UNDEFINED_SEMANTICS);
+                .prefetch("artist", PrefetchTreeNode.UNDEFINED_SEMANTICS);
 
         IncrementalFaultList<?> result = (IncrementalFaultList<Painting>) env.context().select(q);
 
@@ -205,7 +205,7 @@ public class SimpleIdIncrementalFaultListPrefetchIT {
         final Persistent p1 = (Persistent) result.get(q.getPageSize());
 
         env.runWithQueriesBlocked(() -> {
-            Object toOnePrefetch = p1.readNestedProperty("toArtist");
+            Object toOnePrefetch = p1.readNestedProperty("artist");
             assertNotNull(toOnePrefetch);
             assertInstanceOf(Persistent.class, toOnePrefetch, "Expected Persistent, got: " + toOnePrefetch.getClass().getName());
 

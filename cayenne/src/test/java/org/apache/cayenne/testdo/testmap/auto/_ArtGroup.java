@@ -26,15 +26,15 @@ public abstract class _ArtGroup extends PersistentObject {
     public static final String GROUP_ID_PK_COLUMN = "GROUP_ID";
 
     public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);
-    public static final ListProperty<Artist> ARTIST_ARRAY = PropertyFactory.createList("artistArray", Artist.class);
-    public static final ListProperty<ArtGroup> CHILD_GROUPS_ARRAY = PropertyFactory.createList("childGroupsArray", ArtGroup.class);
-    public static final EntityProperty<ArtGroup> TO_PARENT_GROUP = PropertyFactory.createEntity("toParentGroup", ArtGroup.class);
+    public static final ListProperty<Artist> ARTISTS = PropertyFactory.createList("artists", Artist.class);
+    public static final ListProperty<ArtGroup> CHILD_GROUPS = PropertyFactory.createList("childGroups", ArtGroup.class);
+    public static final EntityProperty<ArtGroup> PARENT_GROUP = PropertyFactory.createEntity("parentGroup", ArtGroup.class);
 
     protected String name;
 
-    protected Object artistArray;
-    protected Object childGroupsArray;
-    protected Object toParentGroup;
+    protected Object artists;
+    protected Object childGroups;
+    protected Object parentGroup;
 
     public void setName(String name) {
         beforePropertyWrite("name", this.name, name);
@@ -46,38 +46,38 @@ public abstract class _ArtGroup extends PersistentObject {
         return this.name;
     }
 
-    public void addToArtistArray(Artist obj) {
-        addToManyTarget("artistArray", obj, true);
+    public void addToArtists(Artist obj) {
+        addToManyTarget("artists", obj, true);
     }
 
-    public void removeFromArtistArray(Artist obj) {
-        removeToManyTarget("artistArray", obj, true);
-    }
-
-    @SuppressWarnings("unchecked")
-    public List<Artist> getArtistArray() {
-        return (List<Artist>)readProperty("artistArray");
-    }
-
-    public void addToChildGroupsArray(ArtGroup obj) {
-        addToManyTarget("childGroupsArray", obj, true);
-    }
-
-    public void removeFromChildGroupsArray(ArtGroup obj) {
-        removeToManyTarget("childGroupsArray", obj, true);
+    public void removeFromArtists(Artist obj) {
+        removeToManyTarget("artists", obj, true);
     }
 
     @SuppressWarnings("unchecked")
-    public List<ArtGroup> getChildGroupsArray() {
-        return (List<ArtGroup>)readProperty("childGroupsArray");
+    public List<Artist> getArtists() {
+        return (List<Artist>)readProperty("artists");
     }
 
-    public void setToParentGroup(ArtGroup toParentGroup) {
-        setToOneTarget("toParentGroup", toParentGroup, true);
+    public void addToChildGroups(ArtGroup obj) {
+        addToManyTarget("childGroups", obj, true);
     }
 
-    public ArtGroup getToParentGroup() {
-        return (ArtGroup)readProperty("toParentGroup");
+    public void removeFromChildGroups(ArtGroup obj) {
+        removeToManyTarget("childGroups", obj, true);
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<ArtGroup> getChildGroups() {
+        return (List<ArtGroup>)readProperty("childGroups");
+    }
+
+    public void setParentGroup(ArtGroup parentGroup) {
+        setToOneTarget("parentGroup", parentGroup, true);
+    }
+
+    public ArtGroup getParentGroup() {
+        return (ArtGroup)readProperty("parentGroup");
     }
 
     @Override
@@ -89,12 +89,12 @@ public abstract class _ArtGroup extends PersistentObject {
         switch(propName) {
             case "name":
                 return this.name;
-            case "artistArray":
-                return this.artistArray;
-            case "childGroupsArray":
-                return this.childGroupsArray;
-            case "toParentGroup":
-                return this.toParentGroup;
+            case "artists":
+                return this.artists;
+            case "childGroups":
+                return this.childGroups;
+            case "parentGroup":
+                return this.parentGroup;
             default:
                 return super.readPropertyDirectly(propName);
         }
@@ -110,14 +110,14 @@ public abstract class _ArtGroup extends PersistentObject {
             case "name":
                 this.name = (String)val;
                 break;
-            case "artistArray":
-                this.artistArray = val;
+            case "artists":
+                this.artists = val;
                 break;
-            case "childGroupsArray":
-                this.childGroupsArray = val;
+            case "childGroups":
+                this.childGroups = val;
                 break;
-            case "toParentGroup":
-                this.toParentGroup = val;
+            case "parentGroup":
+                this.parentGroup = val;
                 break;
             default:
                 super.writePropertyDirectly(propName, val);

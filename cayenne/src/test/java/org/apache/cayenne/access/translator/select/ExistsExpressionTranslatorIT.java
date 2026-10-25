@@ -59,7 +59,7 @@ public class ExistsExpressionTranslatorIT {
 
     @Test
     public void simplePath() {
-        Expression exp = ExpressionFactory.exp("paintingArray").exists();
+        Expression exp = ExpressionFactory.exp("paintings").exists();
         Expression translated = new ExistsExpressionTranslator(translatorContext, exp).translate();
 
         assertNotNull(translated);
@@ -75,7 +75,7 @@ public class ExistsExpressionTranslatorIT {
 
     @Test
     public void simpleLongPath() {
-        Expression exp = ExpressionFactory.exp("paintingArray.toGallery").exists();
+        Expression exp = ExpressionFactory.exp("paintings.gallery").exists();
         Expression translated = new ExistsExpressionTranslator(translatorContext, exp).translate();
 
         assertNotNull(translated);
@@ -83,7 +83,7 @@ public class ExistsExpressionTranslatorIT {
 
     @Test
     public void simpleCondition() {
-        Expression exp = ExpressionFactory.exp("paintingArray.paintingTitle = 'test'").exists();
+        Expression exp = ExpressionFactory.exp("paintings.paintingTitle = 'test'").exists();
         Expression translated = new ExistsExpressionTranslator(translatorContext, exp).translate();
 
         assertNotNull(translated);
@@ -91,8 +91,8 @@ public class ExistsExpressionTranslatorIT {
 
     @Test
     public void simpleConditionsSameRoot() {
-        Expression exp = ExpressionFactory.exp("paintingArray.paintingTitle = 'test' " +
-                "or paintingArray.paintingTitle = 'test2'").exists();
+        Expression exp = ExpressionFactory.exp("paintings.paintingTitle = 'test' " +
+                "or paintings.paintingTitle = 'test2'").exists();
         Expression translated = new ExistsExpressionTranslator(translatorContext, exp).translate();
 
         assertNotNull(translated);
@@ -100,8 +100,8 @@ public class ExistsExpressionTranslatorIT {
 
     @Test
     public void simpleConditionsDifferentRoots() {
-        Expression exp = ExpressionFactory.exp("paintingArray.paintingTitle = 'test' " +
-                "or groupArray.name = 'test'").exists();
+        Expression exp = ExpressionFactory.exp("paintings.paintingTitle = 'test' " +
+                "or groups.name = 'test'").exists();
         Expression translated = new ExistsExpressionTranslator(translatorContext, exp).translate();
 
         assertNotNull(translated);
@@ -109,7 +109,7 @@ public class ExistsExpressionTranslatorIT {
 
     @Test
     public void complexCondition() {
-        Expression exp = ExpressionFactory.exp("length(paintingArray.paintingTitle) in (1, 2, 3)").exists();
+        Expression exp = ExpressionFactory.exp("length(paintings.paintingTitle) in (1, 2, 3)").exists();
         Expression translated = new ExistsExpressionTranslator(translatorContext, exp).translate();
 
         assertNotNull(translated);
@@ -117,8 +117,8 @@ public class ExistsExpressionTranslatorIT {
 
     @Test
     public void complexConditionsSameRoot() {
-        Expression exp = ExpressionFactory.exp("(length(paintingArray.paintingTitle) in (1, 2, 3)) " +
-                "or (paintingArray.estimatedPrice > 10000)").exists();
+        Expression exp = ExpressionFactory.exp("(length(paintings.paintingTitle) in (1, 2, 3)) " +
+                "or (paintings.estimatedPrice > 10000)").exists();
         Expression translated = new ExistsExpressionTranslator(translatorContext, exp).translate();
 
         assertNotNull(translated);
@@ -126,8 +126,8 @@ public class ExistsExpressionTranslatorIT {
 
     @Test
     public void complexConditionsDifferentRoots() {
-        Expression exp = ExpressionFactory.exp("(length(paintingArray.paintingTitle) in (1, 2, 3)) " +
-                "or (length(groupArray.name) < 10)").exists();
+        Expression exp = ExpressionFactory.exp("(length(paintings.paintingTitle) in (1, 2, 3)) " +
+                "or (length(groups.name) < 10)").exists();
         Expression translated = new ExistsExpressionTranslator(translatorContext, exp).translate();
 
         assertNotNull(translated);
@@ -144,7 +144,7 @@ public class ExistsExpressionTranslatorIT {
 
     @Test
     public void dbPath() {
-        Expression exp = ExpressionFactory.exp("db:PAINTING_ARRAY").exists();
+        Expression exp = ExpressionFactory.exp("db:PAINTINGS").exists();
 
         translatorContext = mock(SelectTranslatorContext.class);
         DbEntity dbArtist = env.context().getEntityResolver().getDbEntity("ARTIST");
@@ -154,6 +154,6 @@ public class ExistsExpressionTranslatorIT {
         Expression translated = new ExistsExpressionTranslator(translatorContext, exp).translate();
 
         assertNotNull(translated);
-        assertEquals("db:PAINTING_ARRAY != null", translated.toString());
+        assertEquals("db:PAINTINGS != null", translated.toString());
     }
 }

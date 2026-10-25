@@ -209,7 +209,7 @@ public class ObjectSelect_RunIT {
 	@Test
 	public void select_Having() {
 		List<Artist> artists = ObjectSelect.query(Artist.class)
-				.having(Artist.PAINTING_ARRAY.count().gt(3L))
+				.having(Artist.PAINTINGS.count().gt(3L))
 				.select(context);
 
 		assertEquals(5, artists.size());
@@ -219,7 +219,7 @@ public class ObjectSelect_RunIT {
 	public void select_Where_Having() {
 		List<Artist> artists = ObjectSelect.query(Artist.class)
 				.where(Artist.ARTIST_NAME.eq("artist1"))
-				.having(Artist.PAINTING_ARRAY.count().gt(3L))
+				.having(Artist.PAINTINGS.count().gt(3L))
 				.select(context);
 
 		assertEquals(1, artists.size());
@@ -228,7 +228,7 @@ public class ObjectSelect_RunIT {
 	@Test
 	public void cay_2092() {
 		List<Artist> artists = ObjectSelect.query(Artist.class)
-				.orderBy(Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE).asc())
+				.orderBy(Artist.PAINTINGS.dot(Painting.PAINTING_TITLE).asc())
 				.pageSize(5)
 				.select(context);
 		// just read everything to trigger page resolving

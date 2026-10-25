@@ -103,14 +103,14 @@ public class DataContextDisjointByIdPrefetchIT {
         createArtistWithTwoPaintingsDataSet();
 
         List<Artist> result = ObjectSelect.query(Artist.class)
-                .prefetch(Artist.PAINTING_ARRAY.disjointById())
+                .prefetch(Artist.PAINTINGS.disjointById())
                 .select(context);
 
         env.runWithQueriesBlocked(() -> {
             assertFalse(result.isEmpty());
             Artist b1 = result.get(0);
             @SuppressWarnings("unchecked")
-            List<Painting> toMany = (List<Painting>) b1.readPropertyDirectly(Artist.PAINTING_ARRAY.getName());
+            List<Painting> toMany = (List<Painting>) b1.readPropertyDirectly(Artist.PAINTINGS.getName());
             assertNotNull(toMany);
             assertFalse(((ToManyHolder) toMany).isFault());
             assertEquals(2, toMany.size());
@@ -135,7 +135,7 @@ public class DataContextDisjointByIdPrefetchIT {
                         + "#result('DATE_OF_BIRTH' 'java.util.Date'), "
                         + "#result('t0.ARTIST_ID' 'int' '' 'ARTIST_ID') "
                         + "FROM ARTIST t0")
-                .addPrefetch(Artist.PAINTING_ARRAY.disjointById())
+                .addPrefetch(Artist.PAINTINGS.disjointById())
                 .select(context);
 
         env.runWithQueriesBlocked(() -> {
@@ -143,7 +143,7 @@ public class DataContextDisjointByIdPrefetchIT {
             Artist b1 = result.get(0);
 
             @SuppressWarnings("unchecked")
-            List<Painting> toMany = (List<Painting>) b1.readPropertyDirectly(Artist.PAINTING_ARRAY.getName());
+            List<Painting> toMany = (List<Painting>) b1.readPropertyDirectly(Artist.PAINTINGS.getName());
             assertNotNull(toMany);
             assertFalse(((ToManyHolder) toMany).isFault());
             assertEquals(2, toMany.size());
@@ -164,15 +164,15 @@ public class DataContextDisjointByIdPrefetchIT {
         createArtistWithTwoPaintingsDataSet();
 
         final List<Painting> result = ObjectSelect.query(Painting.class)
-                .prefetch(Painting.TO_ARTIST.disjointById())
+                .prefetch(Painting.ARTIST.disjointById())
                 .select(context);
 
         env.runWithQueriesBlocked(() -> {
             assertFalse(result.isEmpty());
             Painting b1 = result.get(0);
-            assertNotNull(b1.getToArtist());
-            assertEquals(PersistenceState.COMMITTED, b1.getToArtist().getPersistenceState());
-            assertEquals("X", b1.getToArtist().getArtistName());
+            assertNotNull(b1.getArtist());
+            assertEquals(PersistenceState.COMMITTED, b1.getArtist().getPersistenceState());
+            assertEquals("X", b1.getArtist().getArtistName());
         });
     }
 
@@ -188,7 +188,7 @@ public class DataContextDisjointByIdPrefetchIT {
                         + "#result('PAINTING_ID' 'int'), "
                         + "#result('ARTIST_ID' 'int') "
                         + "FROM PAINTING")
-                .addPrefetch(Painting.TO_ARTIST.disjointById())
+                .addPrefetch(Painting.ARTIST.disjointById())
                 .select(context);
 
         env.runWithQueriesBlocked(() -> {
@@ -196,9 +196,9 @@ public class DataContextDisjointByIdPrefetchIT {
             Painting p1 = result.get(0);
             assertEquals(PersistenceState.COMMITTED, p1.getPersistenceState());
 
-            assertNotNull(p1.getToArtist());
-            assertEquals(PersistenceState.COMMITTED, p1.getToArtist().getPersistenceState());
-            assertEquals("X", p1.getToArtist().getArtistName());
+            assertNotNull(p1.getArtist());
+            assertEquals(PersistenceState.COMMITTED, p1.getArtist().getPersistenceState());
+            assertEquals("X", p1.getArtist().getArtistName());
         });
     }
 
@@ -210,7 +210,7 @@ public class DataContextDisjointByIdPrefetchIT {
         // the second has 2. So we are expecting exactly 9 snapshots in the data
         // row store after performing the query.
         final List<Artist> bags = ObjectSelect.query(Artist.class)
-                .prefetch(Artist.PAINTING_ARRAY.disjointById())
+                .prefetch(Artist.PAINTINGS.disjointById())
                 .orderBy("db:" + Artist.ARTIST_ID_PK_COLUMN, SortOrder.ASCENDING)
                 .limit(2)
                 .select(context);
@@ -219,12 +219,12 @@ public class DataContextDisjointByIdPrefetchIT {
 
             assertEquals(2, bags.size());
 
-            assertEquals(5, bags.get(0).getPaintingArray().size());
-            assertEquals(2, bags.get(1).getPaintingArray().size());
+            assertEquals(5, bags.get(0).getPaintings().size());
+            assertEquals(2, bags.get(1).getPaintings().size());
 
             for (Artist b : bags) {
                 b.getArtistName();
-                for (Painting bx : b.getPaintingArray()) {
+                for (Painting bx : b.getPaintings()) {
                     bx.getPaintingTitle();
                 }
             }
@@ -236,13 +236,13 @@ public class DataContextDisjointByIdPrefetchIT {
         createTwoPaintingsWithInfosDataSet();
 
         List<Painting> result = ObjectSelect.query(Painting.class)
-                .prefetch(Painting.TO_PAINTING_INFO.disjointById())
+                .prefetch(Painting.PAINTING_INFO.disjointById())
                 .select(context);
         env.runWithQueriesBlocked(() -> {
             assertFalse(result.isEmpty());
             List<String> boxColors = new ArrayList<>();
             for (Painting box : result) {
-                PaintingInfo info = (PaintingInfo) box.readPropertyDirectly(Painting.TO_PAINTING_INFO.getName());
+                PaintingInfo info = (PaintingInfo) box.readPropertyDirectly(Painting.PAINTING_INFO.getName());
                 assertNotNull(info);
                 boxColors.add(info.getTextReview());
                 assertEquals(PersistenceState.COMMITTED, info.getPersistenceState());

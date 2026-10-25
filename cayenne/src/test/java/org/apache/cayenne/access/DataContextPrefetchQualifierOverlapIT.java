@@ -55,14 +55,14 @@ public class DataContextPrefetchQualifierOverlapIT  {
         createTwoArtistsThreePaintingsDataSet();
 
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
-                .and(Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE).like("AB%"))
-                .prefetch(Artist.PAINTING_ARRAY.disjoint());
+                .and(Artist.PAINTINGS.dot(Painting.PAINTING_TITLE).like("AB%"))
+                .prefetch(Artist.PAINTINGS.disjoint());
 
         List<Artist> result = query.select(env.context());
         assertEquals(1, result.size());
 
         Artist a = result.get(0);
-        assertEquals(3, a.getPaintingArray().size());
+        assertEquals(3, a.getPaintings().size());
     }
 
     @Test
@@ -70,14 +70,14 @@ public class DataContextPrefetchQualifierOverlapIT  {
         createTwoArtistsThreePaintingsDataSet();
 
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
-                .and(Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE).like("AB%"))
-                .prefetch(Artist.PAINTING_ARRAY.joint());
+                .and(Artist.PAINTINGS.dot(Painting.PAINTING_TITLE).like("AB%"))
+                .prefetch(Artist.PAINTINGS.joint());
 
         List<Artist> result = query.select(env.context());
         assertEquals(1, result.size());
 
         Artist a = result.get(0);
-        assertEquals(3, a.getPaintingArray().size());
+        assertEquals(3, a.getPaintings().size());
     }
 
     @Test
@@ -85,8 +85,8 @@ public class DataContextPrefetchQualifierOverlapIT  {
         createTwoArtistsThreePaintingsDataSet();
 
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
-                .and(ExpressionFactory.likeExp("paintingArray+.paintingTitle", "AB%"))
-                .prefetch(Artist.PAINTING_ARRAY.joint())
+                .and(ExpressionFactory.likeExp("paintings+.paintingTitle", "AB%"))
+                .prefetch(Artist.PAINTINGS.joint())
                 .or(Artist.ARTIST_NAME.like("A%"))
                 .orderBy(Artist.ARTIST_NAME.asc());
 
@@ -94,9 +94,9 @@ public class DataContextPrefetchQualifierOverlapIT  {
         assertEquals(2, result.size());
 
         Artist a = result.get(0);
-        assertEquals(3, a.getPaintingArray().size());
+        assertEquals(3, a.getPaintings().size());
 
         Artist a1 = result.get(1);
-        assertEquals(0, a1.getPaintingArray().size());
+        assertEquals(0, a1.getPaintings().size());
     }
 }

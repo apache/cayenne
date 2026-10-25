@@ -62,8 +62,8 @@ public class DataDomainQueryActionIT {
         p.setPaintingTitle("sample");
 
         ObjectSelect<Painting> query = ObjectSelect.query(Painting.class)
-                .prefetch(Painting.TO_GALLERY.disjoint())
-                .prefetch(Painting.TO_ARTIST.disjoint())
+                .prefetch(Painting.GALLERY.disjoint())
+                .prefetch(Painting.ARTIST.disjoint())
                 .orderBy(Painting.PAINTING_TITLE.asc())
                 .cacheStrategy(QueryCacheStrategy.SHARED_CACHE)
                 .pageSize(5);

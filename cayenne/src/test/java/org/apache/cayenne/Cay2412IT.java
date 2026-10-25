@@ -62,41 +62,41 @@ public class Cay2412IT {
     @Test
     public void joinPrefetch() {
         Artist artist0 = ObjectSelect.query(Artist.class)
-                .prefetch(Artist.PAINTING_ARRAY.joint())
+                .prefetch(Artist.PAINTINGS.joint())
                 .localCache("test")
                 .selectOne(context);
-        assertEquals(3, artist0.getPaintingArray().size());
+        assertEquals(3, artist0.getPaintings().size());
 
         Artist artist1 = ObjectSelect.query(Artist.class)
-                .prefetch(Artist.PAINTING_ARRAY.joint())
+                .prefetch(Artist.PAINTINGS.joint())
                 .selectFirst(context);
-        assertEquals(1, artist1.getPaintingArray().size()); // <-- wrong assertion, but expected
+        assertEquals(1, artist1.getPaintings().size()); // <-- wrong assertion, but expected
 
         Artist artist2 = ObjectSelect.query(Artist.class)
-                .prefetch(Artist.PAINTING_ARRAY.joint())
+                .prefetch(Artist.PAINTINGS.joint())
                 .localCache("test")
                 .selectOne(context);
-        assertEquals(3, artist2.getPaintingArray().size()); // <-- assertion failure here, got 1 instead of 3
+        assertEquals(3, artist2.getPaintings().size()); // <-- assertion failure here, got 1 instead of 3
     }
 
     @Test
     public void disjointByIdPrefetch() {
         Artist artist0 = ObjectSelect.query(Artist.class)
-                .prefetch(Artist.PAINTING_ARRAY.disjointById())
+                .prefetch(Artist.PAINTINGS.disjointById())
                 .localCache("test")
                 .selectOne(context);
-        assertEquals(3, artist0.getPaintingArray().size());
+        assertEquals(3, artist0.getPaintings().size());
 
         Artist artist1 = ObjectSelect.query(Artist.class)
-                .prefetch(Artist.PAINTING_ARRAY.disjointById())
+                .prefetch(Artist.PAINTINGS.disjointById())
                 .selectFirst(context);
-        assertEquals(3, artist1.getPaintingArray().size());
+        assertEquals(3, artist1.getPaintings().size());
 
         Artist artist2 = ObjectSelect.query(Artist.class)
-                .prefetch(Artist.PAINTING_ARRAY.disjointById())
+                .prefetch(Artist.PAINTINGS.disjointById())
                 .localCache("test")
                 .selectOne(context);
-        assertEquals(3, artist2.getPaintingArray().size());
+        assertEquals(3, artist2.getPaintings().size());
     }
 
 }

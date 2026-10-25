@@ -35,8 +35,8 @@
 	<dbRelationship name="entities" source="RELATED_ENTITY" target="BASE_ENTITY" toMany="true">
 		<dbAttributePair source="RELATED_ENTITY_ID" target="RELATED_ENTITY_ID"/>
 	</dbRelationship>
-	<objRelationship name="toDirectToSubEntity" source="BaseEntity" target="DirectToSubEntity" deleteRule="nullify" dbRelationshipPath="directToSubEntities"/>
-	<objRelationship name="toRelatedEntity" source="BaseEntity" target="RelatedEntity" deleteRule="nullify" dbRelationshipPath="relatedEntities"/>
+	<objRelationship name="directToSubEntity" source="BaseEntity" target="DirectToSubEntity" deleteRule="nullify" dbRelationshipPath="directToSubEntities"/>
+	<objRelationship name="relatedEntity" source="BaseEntity" target="RelatedEntity" deleteRule="nullify" dbRelationshipPath="relatedEntities"/>
 	<objRelationship name="subEntities" source="DirectToSubEntity" target="SubEntity" dbRelationshipPath="subEntity"/>
 	<objRelationship name="baseEntities" source="RelatedEntity" target="BaseEntity" dbRelationshipPath="entities"/>
 	<objRelationship name="subEntities" source="RelatedEntity" target="SubEntity" dbRelationshipPath="entities"/>

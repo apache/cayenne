@@ -139,7 +139,7 @@ public class DataContextPrefetchIT {
         createTwoArtistsAndTwoPaintingsDataSet();
 
         ObjectSelect<Artist> q = ObjectSelect.query(Artist.class)
-                .prefetch("paintingArray", PrefetchTreeNode.UNDEFINED_SEMANTICS);
+                .prefetch("paintings", PrefetchTreeNode.UNDEFINED_SEMANTICS);
 
         final List<Artist> artists = q.select(context);
 
@@ -149,7 +149,7 @@ public class DataContextPrefetchIT {
 
             for (int i = 0; i < 2; i++) {
                 Artist a = artists.get(i);
-                List<?> toMany = (List<?>) a.readPropertyDirectly("paintingArray");
+                List<?> toMany = (List<?>) a.readPropertyDirectly("paintings");
                 assertNotNull(toMany);
                 assertFalse(((ToManyHolder) toMany).isFault());
                 assertEquals(1, toMany.size());
@@ -170,7 +170,7 @@ public class DataContextPrefetchIT {
         Expression e = ExpressionFactory.exp("artistName = $name1 or artistName = $name2");
         ObjectSelect<Artist> q = ObjectSelect.query(Artist.class)
                 .where(e.params(params))
-                .prefetch(Artist.PAINTING_ARRAY.disjoint());
+                .prefetch(Artist.PAINTINGS.disjoint());
 
         final List<Artist> artists = q.select(context);
 
@@ -179,7 +179,7 @@ public class DataContextPrefetchIT {
             assertEquals(2, artists.size());
 
             Artist a1 = artists.getFirst();
-            List<?> toMany = (List<?>) a1.readPropertyDirectly(Artist.PAINTING_ARRAY.getName());
+            List<?> toMany = (List<?>) a1.readPropertyDirectly(Artist.PAINTINGS.getName());
             assertNotNull(toMany);
             assertFalse(((ToManyHolder) toMany).isFault());
             assertEquals(1, toMany.size());
@@ -188,7 +188,7 @@ public class DataContextPrefetchIT {
             assertEquals("p_" + a1.getArtistName(), p1.getPaintingTitle());
 
             Artist a2 = artists.get(1);
-            List<?> toMany2 = (List<?>) a2.readPropertyDirectly(Artist.PAINTING_ARRAY.getName());
+            List<?> toMany2 = (List<?>) a2.readPropertyDirectly(Artist.PAINTINGS.getName());
             assertNotNull(toMany2);
             assertFalse(((ToManyHolder) toMany2).isFault());
             assertEquals(1, toMany2.size());
@@ -203,7 +203,7 @@ public class DataContextPrefetchIT {
         createTwoArtistsAndTwoPaintingsDataSet();
 
         ObjectSelect<Artist> q = ObjectSelect.query(Artist.class)
-                .prefetch(Artist.PAINTING_ARRAY.disjoint());
+                .prefetch(Artist.PAINTINGS.disjoint());
 
         List<Artist> artists = q.select(context);
 
@@ -213,7 +213,7 @@ public class DataContextPrefetchIT {
 
             for (int i = 0; i < 2; i++) {
                 Artist a = artists.get(i);
-                List<?> toMany = (List<?>) a.readPropertyDirectly("paintingArray");
+                List<?> toMany = (List<?>) a.readPropertyDirectly("paintings");
                 assertNotNull(toMany);
                 assertFalse(((ToManyHolder) toMany).isFault());
                 assertEquals(1, toMany.size());
@@ -229,7 +229,7 @@ public class DataContextPrefetchIT {
         createTwoArtistsAndTwoPaintingsDataSet();
 
         List<Artist> artists = ObjectSelect.query(Artist.class)
-                .prefetch("paintingArray", PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS)
+                .prefetch("paintings", PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS)
                 .select(context);
 
         env.runWithQueriesBlocked(() -> {
@@ -238,7 +238,7 @@ public class DataContextPrefetchIT {
 
             for (int i = 0; i < 2; i++) {
                 Artist a = artists.get(i);
-                List<?> toMany = (List<?>) a.readPropertyDirectly("paintingArray");
+                List<?> toMany = (List<?>) a.readPropertyDirectly("paintings");
                 assertNotNull(toMany);
                 assertFalse(((ToManyHolder) toMany).isFault());
                 assertEquals(1, toMany.size());
@@ -259,7 +259,7 @@ public class DataContextPrefetchIT {
         createTwoArtistsWithExhibitsDataSet();
 
         ObjectSelect<Artist> q = ObjectSelect.query(Artist.class)
-                .prefetch(Artist.ARTIST_EXHIBIT_ARRAY.disjoint())
+                .prefetch(Artist.ARTIST_EXHIBITS.disjoint())
                 .orderBy(Artist.ARTIST_NAME.asc());
 
         final List<Artist> artists = q.select(context);
@@ -269,25 +269,25 @@ public class DataContextPrefetchIT {
 
             Artist a1 = artists.get(0);
             assertEquals("artist2", a1.getArtistName());
-            List<?> toMany = (List<?>) a1.readPropertyDirectly(Artist.ARTIST_EXHIBIT_ARRAY.getName());
+            List<?> toMany = (List<?>) a1.readPropertyDirectly(Artist.ARTIST_EXHIBITS.getName());
             assertNotNull(toMany);
             assertFalse(((ToManyHolder) toMany).isFault());
             assertEquals(2, toMany.size());
 
             ArtistExhibit artistExhibit = (ArtistExhibit) toMany.get(0);
             assertEquals(PersistenceState.COMMITTED, artistExhibit.getPersistenceState());
-            assertSame(a1, artistExhibit.getToArtist());
+            assertSame(a1, artistExhibit.getArtist());
 
             Artist a2 = artists.get(1);
             assertEquals("artist3", a2.getArtistName());
-            List<?> toMany2 = (List<?>) a2.readPropertyDirectly(Artist.ARTIST_EXHIBIT_ARRAY.getName());
+            List<?> toMany2 = (List<?>) a2.readPropertyDirectly(Artist.ARTIST_EXHIBITS.getName());
             assertNotNull(toMany2);
             assertFalse(((ToManyHolder) toMany2).isFault());
             assertEquals(3, toMany2.size());
 
             ArtistExhibit artistExhibit2 = (ArtistExhibit) toMany2.get(0);
             assertEquals(PersistenceState.COMMITTED, artistExhibit2.getPersistenceState());
-            assertSame(a2, artistExhibit2.getToArtist());
+            assertSame(a2, artistExhibit2.getArtist());
         });
     }
 
@@ -296,7 +296,7 @@ public class DataContextPrefetchIT {
         createTwoArtistsWithExhibitsDataSet();
 
         ObjectSelect<Artist> q = ObjectSelect.query(Artist.class)
-                .prefetch(Artist.ARTIST_EXHIBIT_ARRAY.joint())
+                .prefetch(Artist.ARTIST_EXHIBITS.joint())
                 .orderBy(Artist.ARTIST_NAME.asc());
 
         List<Artist> artists = q.select(context);
@@ -307,25 +307,25 @@ public class DataContextPrefetchIT {
 
             Artist a1 = artists.get(0);
             assertEquals("artist2", a1.getArtistName());
-            List<?> toMany = (List<?>) a1.readPropertyDirectly(Artist.ARTIST_EXHIBIT_ARRAY.getName());
+            List<?> toMany = (List<?>) a1.readPropertyDirectly(Artist.ARTIST_EXHIBITS.getName());
             assertNotNull(toMany);
             assertFalse(((ToManyHolder) toMany).isFault());
             assertEquals(2, toMany.size());
 
             ArtistExhibit artistExhibit = (ArtistExhibit) toMany.get(0);
             assertEquals(PersistenceState.COMMITTED, artistExhibit.getPersistenceState());
-            assertSame(a1, artistExhibit.getToArtist());
+            assertSame(a1, artistExhibit.getArtist());
 
             Artist a2 = artists.get(1);
             assertEquals("artist3", a2.getArtistName());
-            List<?> toMany2 = (List<?>) a2.readPropertyDirectly(Artist.ARTIST_EXHIBIT_ARRAY.getName());
+            List<?> toMany2 = (List<?>) a2.readPropertyDirectly(Artist.ARTIST_EXHIBITS.getName());
             assertNotNull(toMany2);
             assertFalse(((ToManyHolder) toMany2).isFault());
             assertEquals(3, toMany2.size());
 
             ArtistExhibit artistExhibit2 = (ArtistExhibit) toMany2.get(0);
             assertEquals(PersistenceState.COMMITTED, artistExhibit2.getPersistenceState());
-            assertSame(a2, artistExhibit2.getToArtist());
+            assertSame(a2, artistExhibit2.getArtist());
         });
     }
 
@@ -338,19 +338,19 @@ public class DataContextPrefetchIT {
         createTwoArtistsAndTwoPaintingsDataSet();
 
         ObjEntity paintingEntity = context.getEntityResolver().getObjEntity(Painting.class);
-        ObjRelationship relationship = paintingEntity.getRelationship("toArtist");
-        paintingEntity.removeRelationship("toArtist");
+        ObjRelationship relationship = paintingEntity.getRelationship("artist");
+        paintingEntity.removeRelationship("artist");
 
         try {
 
             List<Artist> result = ObjectSelect.query(Artist.class)
-                    .prefetch(Artist.PAINTING_ARRAY.disjoint())
+                    .prefetch(Artist.PAINTINGS.disjoint())
                     .select(context);
 
             env.runWithQueriesBlocked(() -> {
                 assertFalse(result.isEmpty());
                 Artist a1 = result.get(0);
-                List<?> toMany = (List<?>) a1.readPropertyDirectly("paintingArray");
+                List<?> toMany = (List<?>) a1.readPropertyDirectly("paintings");
                 assertNotNull(toMany);
                 assertFalse(((ToManyHolder) toMany).isFault());
             });
@@ -364,20 +364,20 @@ public class DataContextPrefetchIT {
         createTwoArtistsAndTwoPaintingsDataSet();
 
         ObjEntity paintingEntity = context.getEntityResolver().getObjEntity(Painting.class);
-        ObjRelationship relationship = paintingEntity.getRelationship("toArtist");
-        paintingEntity.removeRelationship("toArtist");
+        ObjRelationship relationship = paintingEntity.getRelationship("artist");
+        paintingEntity.removeRelationship("artist");
 
         try {
 
             List<Artist> result = ObjectSelect.query(Artist.class)
                     .where(Artist.ARTIST_NAME.eq("artist2"))
-                    .prefetch(Artist.PAINTING_ARRAY.disjoint())
+                    .prefetch(Artist.PAINTINGS.disjoint())
                     .select(context);
 
             env.runWithQueriesBlocked(() -> {
                 assertFalse(result.isEmpty());
                 Artist a1 = result.get(0);
-                List<?> toMany = (List<?>) a1.readPropertyDirectly("paintingArray");
+                List<?> toMany = (List<?>) a1.readPropertyDirectly("paintings");
                 assertNotNull(toMany);
                 assertFalse(((ToManyHolder) toMany).isFault());
             });
@@ -392,7 +392,7 @@ public class DataContextPrefetchIT {
         createTwoArtistsAndTwoPaintingsDataSet();
 
         ObjectSelect<Painting> q = ObjectSelect.query(Painting.class)
-                .prefetch(Painting.TO_ARTIST.disjoint());
+                .prefetch(Painting.ARTIST.disjoint());
 
         List<Painting> result = q.select(context);
 
@@ -400,7 +400,7 @@ public class DataContextPrefetchIT {
             assertFalse(result.isEmpty());
             Painting p1 = result.get(0);
 
-            Object toOnePrefetch = p1.readNestedProperty("toArtist");
+            Object toOnePrefetch = p1.readNestedProperty("artist");
             assertNotNull(toOnePrefetch);
             assertInstanceOf(Artist.class, toOnePrefetch, "Expected Artist, got: " + toOnePrefetch.getClass().getName());
 
@@ -414,8 +414,8 @@ public class DataContextPrefetchIT {
         createTwoArtistsAndTwoPaintingsDataSet();
 
         ObjectSelect<Painting> q = ObjectSelect.query(Painting.class)
-                .prefetch(Painting.TO_ARTIST.disjoint())
-                .and(Painting.TO_ARTIST.dot(Artist.ARTIST_NAME).eq("artist2"));
+                .prefetch(Painting.ARTIST.disjoint())
+                .and(Painting.ARTIST.dot(Artist.ARTIST_NAME).eq("artist2"));
 
         List<Painting> results = q.select(context);
 
@@ -427,8 +427,8 @@ public class DataContextPrefetchIT {
         createTwoArtistsAndTwoPaintingsDataSet();
 
         ObjectSelect<Painting> q = ObjectSelect.query(Painting.class)
-                .prefetch(Painting.TO_ARTIST.disjoint())
-                .and(Painting.TO_ARTIST.dot(Artist.ARTIST_NAME).eq("artist2"));
+                .prefetch(Painting.ARTIST.disjoint())
+                .and(Painting.ARTIST.dot(Artist.ARTIST_NAME).eq("artist2"));
 
         List<Painting> results = q.select(context);
         assertEquals(1, results.size());
@@ -440,12 +440,12 @@ public class DataContextPrefetchIT {
         parent.setName("parent");
         ArtGroup child = (ArtGroup) context.newObject("ArtGroup");
         child.setName("child");
-        child.setToParentGroup(parent);
+        child.setParentGroup(parent);
         context.commitChanges();
 
         ObjectSelect<ArtGroup> q = ObjectSelect.query(ArtGroup.class)
                 .where(ArtGroup.NAME.eq("child"))
-                .prefetch("toParentGroup", PrefetchTreeNode.UNDEFINED_SEMANTICS);
+                .prefetch("parentGroup", PrefetchTreeNode.UNDEFINED_SEMANTICS);
 
         List<ArtGroup> results = q.select(context);
 
@@ -454,10 +454,10 @@ public class DataContextPrefetchIT {
 
             ArtGroup fetchedChild = results.get(0);
             // The parent must be fully fetched, not just HOLLOW (a fault)
-            assertEquals(PersistenceState.COMMITTED, fetchedChild.getToParentGroup().getPersistenceState());
+            assertEquals(PersistenceState.COMMITTED, fetchedChild.getParentGroup().getPersistenceState());
         });
 
-        child.setToParentGroup(null);
+        child.setParentGroup(null);
         context.commitChanges();
     }
 
@@ -466,8 +466,8 @@ public class DataContextPrefetchIT {
         createTwoArtistsAndTwoPaintingsDataSet();
 
         ObjectSelect<Painting> q = ObjectSelect.query(Painting.class)
-                .where(Painting.TO_ARTIST.dot(Artist.ARTIST_NAME).eq("artist3"))
-                .prefetch(Painting.TO_ARTIST.disjoint());
+                .where(Painting.ARTIST.dot(Artist.ARTIST_NAME).eq("artist3"))
+                .prefetch(Painting.ARTIST.disjoint());
 
         List<Painting> results = q.select(context);
 
@@ -477,7 +477,7 @@ public class DataContextPrefetchIT {
             Painting painting = results.get(0);
 
             // The parent must be fully fetched, not just HOLLOW (a fault)
-            assertEquals(PersistenceState.COMMITTED, painting.getToArtist().getPersistenceState());
+            assertEquals(PersistenceState.COMMITTED, painting.getArtist().getPersistenceState());
         });
     }
 
@@ -496,12 +496,12 @@ public class DataContextPrefetchIT {
         tArtistGroup.insert(101, 1);
 
         // OUTER join part intentionally doesn't match anything
-        Expression exp = PropertyFactory.createBase("groupArray+.name", String.class)
+        Expression exp = PropertyFactory.createBase("groups+.name", String.class)
                 .eq("XX").orExp(Artist.ARTIST_NAME.eq("artist2"));
 
         ObjectSelect<Artist> q = ObjectSelect.query(Artist.class)
                 .where(exp)
-                .prefetch(Artist.PAINTING_ARRAY.disjoint());
+                .prefetch(Artist.PAINTINGS.disjoint());
 
         final List<Artist> results = q.select(context);
 
@@ -510,7 +510,7 @@ public class DataContextPrefetchIT {
 
             Artist a = results.get(0);
             assertEquals("artist2", a.getArtistName());
-            assertEquals(2, a.getPaintingArray().size());
+            assertEquals(2, a.getPaintings().size());
         });
     }
 
@@ -525,8 +525,8 @@ public class DataContextPrefetchIT {
                 .get(0);
 
         ObjectSelect<Painting> q = ObjectSelect.query(Painting.class)
-                .where(Painting.TO_ARTIST.eq(artist1))
-                .prefetch("toArtist", PrefetchTreeNode.UNDEFINED_SEMANTICS);
+                .where(Painting.ARTIST.eq(artist1))
+                .prefetch("artist", PrefetchTreeNode.UNDEFINED_SEMANTICS);
 
         final List<Painting> results = q.select(context);
 
@@ -536,7 +536,7 @@ public class DataContextPrefetchIT {
             // see that artists are resolved...
 
             Painting px = results.get(0);
-            Artist ax = (Artist) px.readProperty(Painting.TO_ARTIST.getName());
+            Artist ax = (Artist) px.readProperty(Painting.ARTIST.getName());
             assertEquals(PersistenceState.COMMITTED, ax.getPersistenceState());
         });
     }
@@ -546,8 +546,8 @@ public class DataContextPrefetchIT {
         createArtistWithTwoPaintingsAndTwoInfosDataSet();
 
         ObjectSelect<Painting> q = ObjectSelect.query(Painting.class)
-                .where(Painting.TO_ARTIST.dot(Artist.ARTIST_NAME).like("a%"))
-                .prefetch(Painting.TO_PAINTING_INFO.disjoint())
+                .where(Painting.ARTIST.dot(Artist.ARTIST_NAME).like("a%"))
+                .prefetch(Painting.PAINTING_INFO.disjoint())
                 .orderBy(Painting.PAINTING_TITLE.asc());
 
         List<Painting> results = q.select(context);
@@ -557,7 +557,7 @@ public class DataContextPrefetchIT {
 
             // testing non-null to-one target
             Painting p0 = results.get(0);
-            Object o2 = p0.readPropertyDirectly(Painting.TO_PAINTING_INFO.getName());
+            Object o2 = p0.readPropertyDirectly(Painting.PAINTING_INFO.getName());
             assertInstanceOf(PaintingInfo.class, o2);
             PaintingInfo pi2 = (PaintingInfo) o2;
             assertEquals(PersistenceState.COMMITTED, pi2.getPersistenceState());
@@ -565,7 +565,7 @@ public class DataContextPrefetchIT {
 
             // testing null to-one target
             Painting p1 = results.get(1);
-            assertNull(p1.readPropertyDirectly(Painting.TO_PAINTING_INFO.getName()));
+            assertNull(p1.readPropertyDirectly(Painting.PAINTING_INFO.getName()));
 
             // there was a bug marking an object as dirty when clearing the
             // relationships
@@ -579,7 +579,7 @@ public class DataContextPrefetchIT {
 
         ObjectSelect<Artist> q = ObjectSelect.query(Artist.class)
                 .where(Artist.DATE_OF_BIRTH.eq(new Date()))
-                .prefetch("paintingArray", PrefetchTreeNode.UNDEFINED_SEMANTICS);
+                .prefetch("paintings", PrefetchTreeNode.UNDEFINED_SEMANTICS);
 
         // prefetch with query using date in qualifier used to fail on SQL Server
         // see CAY-119 for details
@@ -592,7 +592,7 @@ public class DataContextPrefetchIT {
         tPainting.insert(6, "p_Xty", null, 1000, null);
 
         ObjectSelect<Painting> q = ObjectSelect.query(Painting.class)
-                .prefetch(Painting.TO_ARTIST.disjoint());
+                .prefetch(Painting.ARTIST.disjoint());
 
         List<Painting> paintings = context.select(q);
 
@@ -600,7 +600,7 @@ public class DataContextPrefetchIT {
             assertEquals(1, paintings.size());
 
             Painting p2 = paintings.get(0);
-            assertNull(p2.readProperty(Painting.TO_ARTIST.getName()));
+            assertNull(p2.readProperty(Painting.ARTIST.getName()));
         });
     }
 
@@ -609,7 +609,7 @@ public class DataContextPrefetchIT {
         createTwoArtistsAndTwoPaintingsDataSet();
 
         ObjectSelect<Painting> q = ObjectSelect.query(Painting.class)
-                .prefetch(Painting.TO_ARTIST.disjoint())
+                .prefetch(Painting.ARTIST.disjoint())
                 .cacheStrategy(QueryCacheStrategy.SHARED_CACHE);
 
         context.select(q);
@@ -624,7 +624,7 @@ public class DataContextPrefetchIT {
             assertFalse(cachedResult.isEmpty());
             Painting p1 = cachedResult.get(0);
 
-            Object toOnePrefetch = p1.readNestedProperty("toArtist");
+            Object toOnePrefetch = p1.readNestedProperty("artist");
             assertNotNull(toOnePrefetch);
             assertTrue(toOnePrefetch instanceof Artist,
                     "Expected Artist, got: " + toOnePrefetch.getClass().getName());
@@ -642,7 +642,7 @@ public class DataContextPrefetchIT {
         createTwoArtistsAndTwoPaintingsDataSet();
 
         ObjectSelect<Painting> q = ObjectSelect.query(Painting.class)
-                .prefetch(Painting.TO_ARTIST.disjoint())
+                .prefetch(Painting.ARTIST.disjoint())
                 .cacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
 
         context.select(q);
@@ -657,7 +657,7 @@ public class DataContextPrefetchIT {
             assertFalse(cachedResult.isEmpty());
             Painting p1 = cachedResult.get(0);
 
-            Object toOnePrefetch = p1.readNestedProperty("toArtist");
+            Object toOnePrefetch = p1.readNestedProperty("artist");
             assertNotNull(toOnePrefetch);
             assertInstanceOf(Artist.class, toOnePrefetch, "Expected Artist, got: " + toOnePrefetch.getClass().getName());
 
@@ -675,15 +675,15 @@ public class DataContextPrefetchIT {
 
         ObjectSelect<Painting> query = ObjectSelect.query(Painting.class)
                 .and(Painting.PAINTING_TITLE.eq("p_artist2"))
-                .prefetch(Painting.TO_PAINTING_INFO.disjoint())
-                .prefetch(Painting.TO_PAINTING_INFO.dot(PaintingInfo.PAINTING).disjoint());
+                .prefetch(Painting.PAINTING_INFO.disjoint())
+                .prefetch(Painting.PAINTING_INFO.dot(PaintingInfo.PAINTING).disjoint());
         List<Painting> results = context.select(query);
 
         env.runWithQueriesBlocked(() -> {
             assertEquals(1, results.size());
 
             Painting p0 = results.get(0);
-            PaintingInfo pi0 = (PaintingInfo) p0.readPropertyDirectly(Painting.TO_PAINTING_INFO.getName());
+            PaintingInfo pi0 = (PaintingInfo) p0.readPropertyDirectly(Painting.PAINTING_INFO.getName());
             assertNotNull(pi0);
             assertNotNull(pi0.readPropertyDirectly(PaintingInfo.PAINTING.getName()));
         });
@@ -695,17 +695,17 @@ public class DataContextPrefetchIT {
 
         ObjectSelect<Painting> query = ObjectSelect.query(Painting.class)
                 .and(Painting.PAINTING_TITLE.eq("p_artist2"))
-                .prefetch(Painting.TO_ARTIST.disjoint())
-                .prefetch(Painting.TO_ARTIST.dot(Artist.PAINTING_ARRAY).disjoint());
+                .prefetch(Painting.ARTIST.disjoint())
+                .prefetch(Painting.ARTIST.dot(Artist.PAINTINGS).disjoint());
         final List<Painting> results = context.select(query);
 
         env.runWithQueriesBlocked(() -> {
             assertEquals(1, results.size());
 
             Painting p0 = results.get(0);
-            Artist a0 = (Artist) p0.readPropertyDirectly(Painting.TO_ARTIST.getName());
+            Artist a0 = (Artist) p0.readPropertyDirectly(Painting.ARTIST.getName());
             assertNotNull(a0);
-            List<?> paintings = (List<?>) a0.readPropertyDirectly(Artist.PAINTING_ARRAY.getName());
+            List<?> paintings = (List<?>) a0.readPropertyDirectly(Artist.PAINTINGS.getName());
             assertEquals(2, paintings.size());
         });
     }
@@ -716,15 +716,15 @@ public class DataContextPrefetchIT {
 
         ObjectSelect<Painting> query = ObjectSelect.query(Painting.class)
                 .and(Painting.PAINTING_TITLE.eq("p_artist2"))
-                .prefetch(Painting.TO_PAINTING_INFO.joint())
-                .prefetch(Painting.TO_PAINTING_INFO.dot(PaintingInfo.PAINTING).joint());
+                .prefetch(Painting.PAINTING_INFO.joint())
+                .prefetch(Painting.PAINTING_INFO.dot(PaintingInfo.PAINTING).joint());
         final List<Painting> results = context.select(query);
 
         env.runWithQueriesBlocked(() -> {
             assertEquals(1, results.size());
 
             Painting p0 = results.get(0);
-            PaintingInfo pi0 = (PaintingInfo) p0.readPropertyDirectly(Painting.TO_PAINTING_INFO.getName());
+            PaintingInfo pi0 = (PaintingInfo) p0.readPropertyDirectly(Painting.PAINTING_INFO.getName());
             assertNotNull(pi0);
             assertNotNull(pi0.readPropertyDirectly(PaintingInfo.PAINTING.getName()));
         });
@@ -736,18 +736,18 @@ public class DataContextPrefetchIT {
 
         ObjectSelect<Painting> query = ObjectSelect.query(Painting.class)
                 .and(Painting.PAINTING_TITLE.eq("p_artist2"))
-                .prefetch(Painting.TO_ARTIST.joint())
-                .prefetch(Painting.TO_PAINTING_INFO.disjointById());
+                .prefetch(Painting.ARTIST.joint())
+                .prefetch(Painting.PAINTING_INFO.disjointById());
         List<Painting> results = context.select(query);
 
         env.runWithQueriesBlocked(() -> {
             assertEquals(1, results.size());
 
             Painting p0 = results.get(0);
-            Artist a0 = (Artist) p0.readPropertyDirectly(Painting.TO_ARTIST.getName());
+            Artist a0 = (Artist) p0.readPropertyDirectly(Painting.ARTIST.getName());
             assertNotNull(a0);
 
-            PaintingInfo info = (PaintingInfo) p0.readPropertyDirectly(Painting.TO_PAINTING_INFO.getName());
+            PaintingInfo info = (PaintingInfo) p0.readPropertyDirectly(Painting.PAINTING_INFO.getName());
             assertNotNull(info);
         });
     }
@@ -762,20 +762,20 @@ public class DataContextPrefetchIT {
         List<Painting> paintings = ObjectSelect.query(Painting.class)
                 .localCache("g1").select(context);
         assertEquals(1, paintings.size());
-        assertInstanceOf(Fault.class, paintings.get(0).readPropertyDirectly(Painting.TO_ARTIST.getName()));
+        assertInstanceOf(Fault.class, paintings.get(0).readPropertyDirectly(Painting.ARTIST.getName()));
 
         paintings = ObjectSelect.query(Painting.class)
-                .prefetch(Painting.TO_ARTIST.joint())
+                .prefetch(Painting.ARTIST.joint())
                 .localCache("g1").select(context);
         assertEquals(1, paintings.size());
-        assertInstanceOf(Artist.class, paintings.get(0).readPropertyDirectly(Painting.TO_ARTIST.getName()));
+        assertInstanceOf(Artist.class, paintings.get(0).readPropertyDirectly(Painting.ARTIST.getName()));
 
         env.runWithQueriesBlocked(() -> {
             List<Painting> paintings1 = ObjectSelect.query(Painting.class)
-                    .prefetch(Painting.TO_ARTIST.joint())
+                    .prefetch(Painting.ARTIST.joint())
                     .localCache("g1").select(context);
             assertEquals(1, paintings1.size());
-            assertInstanceOf(Artist.class, paintings1.get(0).readPropertyDirectly(Painting.TO_ARTIST.getName()));
+            assertInstanceOf(Artist.class, paintings1.get(0).readPropertyDirectly(Painting.ARTIST.getName()));
         });
     }
 
@@ -787,58 +787,58 @@ public class DataContextPrefetchIT {
                 .sharedCache("g1");
 
         ObjectSelect<Painting> s2 = ObjectSelect.query(Painting.class)
-                .prefetch(Painting.TO_ARTIST.disjoint())
+                .prefetch(Painting.ARTIST.disjoint())
                 .sharedCache("g1");
 
         ObjectSelect<Painting> s3 = ObjectSelect.query(Painting.class)
-                .prefetch(Painting.TO_GALLERY.joint())
+                .prefetch(Painting.GALLERY.joint())
                 .sharedCache("g1");
 
         ObjectSelect<Painting> s4 = ObjectSelect.query(Painting.class)
-                .prefetch(Painting.TO_ARTIST.disjoint())
-                .prefetch(Painting.TO_GALLERY.joint())
+                .prefetch(Painting.ARTIST.disjoint())
+                .prefetch(Painting.GALLERY.joint())
                 .sharedCache("g1");
 
         // first iteration select from DB and cache
         List<Painting> paintings = s1.select(context);
         assertEquals(1, paintings.size());
-        assertInstanceOf(Fault.class, paintings.get(0).readPropertyDirectly(Painting.TO_ARTIST.getName()));
-        assertInstanceOf(Fault.class, paintings.get(0).readPropertyDirectly(Painting.TO_GALLERY.getName()));
+        assertInstanceOf(Fault.class, paintings.get(0).readPropertyDirectly(Painting.ARTIST.getName()));
+        assertInstanceOf(Fault.class, paintings.get(0).readPropertyDirectly(Painting.GALLERY.getName()));
 
         paintings = s2.select(context);
         assertEquals(1, paintings.size());
-        assertInstanceOf(Artist.class, paintings.get(0).readPropertyDirectly(Painting.TO_ARTIST.getName()));
-        assertInstanceOf(Fault.class, paintings.get(0).readPropertyDirectly(Painting.TO_GALLERY.getName()));
+        assertInstanceOf(Artist.class, paintings.get(0).readPropertyDirectly(Painting.ARTIST.getName()));
+        assertInstanceOf(Fault.class, paintings.get(0).readPropertyDirectly(Painting.GALLERY.getName()));
 
         paintings = s3.select(context);
         assertEquals(1, paintings.size());
-        // Note: s3 prefetches only TO_GALLERY, so TO_ARTIST may be reset based on the prefetch pattern
-        // The important thing is that TO_GALLERY is fetched via prefetch
-        assertInstanceOf(Gallery.class, paintings.get(0).readPropertyDirectly(Painting.TO_GALLERY.getName()));
+        // Note: s3 prefetches only GALLERY, so ARTIST may be reset based on the prefetch pattern
+        // The important thing is that GALLERY is fetched via prefetch
+        assertInstanceOf(Gallery.class, paintings.get(0).readPropertyDirectly(Painting.GALLERY.getName()));
 
         paintings = s4.select(context);
         assertEquals(1, paintings.size());
-        assertInstanceOf(Artist.class, paintings.get(0).readPropertyDirectly(Painting.TO_ARTIST.getName()));
-        assertInstanceOf(Gallery.class, paintings.get(0).readPropertyDirectly(Painting.TO_GALLERY.getName()));
+        assertInstanceOf(Artist.class, paintings.get(0).readPropertyDirectly(Painting.ARTIST.getName()));
+        assertInstanceOf(Gallery.class, paintings.get(0).readPropertyDirectly(Painting.GALLERY.getName()));
 
         env.runWithQueriesBlocked(() -> {
             // select from cache - relationships that are already resolved stay resolved
             // This prevents stale cached data from clobbering newer in-memory state
             List<Painting> paintings1 = s2.select(context);
             assertEquals(1, paintings1.size());
-            assertInstanceOf(Artist.class, paintings1.get(0).readPropertyDirectly(Painting.TO_ARTIST.getName()));
-            // TO_GALLERY stays resolved (not reset to Fault) from previous queries
-            assertInstanceOf(Gallery.class, paintings1.get(0).readPropertyDirectly(Painting.TO_GALLERY.getName()));
+            assertInstanceOf(Artist.class, paintings1.get(0).readPropertyDirectly(Painting.ARTIST.getName()));
+            // GALLERY stays resolved (not reset to Fault) from previous queries
+            assertInstanceOf(Gallery.class, paintings1.get(0).readPropertyDirectly(Painting.GALLERY.getName()));
 
             paintings1 = s3.select(context);
             assertEquals(1, paintings1.size());
-            assertInstanceOf(Artist.class, paintings1.get(0).readPropertyDirectly(Painting.TO_ARTIST.getName()));
-            assertInstanceOf(Gallery.class, paintings1.get(0).readPropertyDirectly(Painting.TO_GALLERY.getName()));
+            assertInstanceOf(Artist.class, paintings1.get(0).readPropertyDirectly(Painting.ARTIST.getName()));
+            assertInstanceOf(Gallery.class, paintings1.get(0).readPropertyDirectly(Painting.GALLERY.getName()));
 
             paintings1 = s4.select(context);
             assertEquals(1, paintings1.size());
-            assertInstanceOf(Artist.class, paintings1.getFirst().readPropertyDirectly(Painting.TO_ARTIST.getName()));
-            assertInstanceOf(Gallery.class, paintings1.getFirst().readPropertyDirectly(Painting.TO_GALLERY.getName()));
+            assertInstanceOf(Artist.class, paintings1.getFirst().readPropertyDirectly(Painting.ARTIST.getName()));
+            assertInstanceOf(Gallery.class, paintings1.getFirst().readPropertyDirectly(Painting.GALLERY.getName()));
         });
     }
 

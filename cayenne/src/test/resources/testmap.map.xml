@@ -99,19 +99,19 @@
 		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>
 	</objEntity>
 	<objEntity name="CompoundPainting" className="org.apache.cayenne.testdo.testmap.CompoundPainting" dbEntityName="PAINTING">
-		<objAttribute name="artistName" type="java.lang.String" dbAttributePath="toArtist.ARTIST_NAME"/>
+		<objAttribute name="artistName" type="java.lang.String" dbAttributePath="artist.ARTIST_NAME"/>
 		<objAttribute name="estimatedPrice" type="java.math.BigDecimal" dbAttributePath="ESTIMATED_PRICE"/>
-		<objAttribute name="galleryName" type="java.lang.String" dbAttributePath="toGallery.GALLERY_NAME"/>
+		<objAttribute name="galleryName" type="java.lang.String" dbAttributePath="gallery.GALLERY_NAME"/>
 		<objAttribute name="paintingTitle" type="java.lang.String" dbAttributePath="PAINTING_TITLE"/>
-		<objAttribute name="textReview" type="java.lang.String" dbAttributePath="toPaintingInfo.TEXT_REVIEW"/>
+		<objAttribute name="textReview" type="java.lang.String" dbAttributePath="paintingInfo.TEXT_REVIEW"/>
 	</objEntity>
 	<objEntity name="CompoundPaintingLongNames" className="org.apache.cayenne.testdo.testmap.CompoundPaintingLongNames" dbEntityName="PAINTING">
-		<objAttribute name="artistLongName" type="java.lang.String" dbAttributePath="toArtist.ARTIST_NAME"/>
+		<objAttribute name="artistLongName" type="java.lang.String" dbAttributePath="artist.ARTIST_NAME"/>
 		<objAttribute name="estimatedPrice" type="java.math.BigDecimal" dbAttributePath="ESTIMATED_PRICE"/>
-		<objAttribute name="galleryLongName" type="java.lang.String" dbAttributePath="toGallery.GALLERY_NAME"/>
+		<objAttribute name="galleryLongName" type="java.lang.String" dbAttributePath="gallery.GALLERY_NAME"/>
 		<objAttribute name="paintingDescription" type="java.lang.String" dbAttributePath="PAINTING_DESCRIPTION"/>
 		<objAttribute name="paintingTitle" type="java.lang.String" dbAttributePath="PAINTING_TITLE"/>
-		<objAttribute name="textLongReview" type="java.lang.String" dbAttributePath="toPaintingInfo.TEXT_REVIEW"/>
+		<objAttribute name="textLongReview" type="java.lang.String" dbAttributePath="paintingInfo.TEXT_REVIEW"/>
 	</objEntity>
 	<objEntity name="Exhibit" className="org.apache.cayenne.testdo.testmap.Exhibit" dbEntityName="EXHIBIT">
 		<objAttribute name="closingDate" type="java.util.Date" dbAttributePath="CLOSING_DATE"/>
@@ -151,102 +151,102 @@
 	<objEntity name="RWCompoundPainting" className="org.apache.cayenne.testdo.testmap.RWCompoundPainting" dbEntityName="PAINTING">
 		<objAttribute name="estimatedPrice" type="java.math.BigDecimal" dbAttributePath="ESTIMATED_PRICE"/>
 		<objAttribute name="paintingTitle" type="java.lang.String" dbAttributePath="PAINTING_TITLE"/>
-		<objAttribute name="textReview" type="java.lang.String" dbAttributePath="toPaintingInfo.TEXT_REVIEW"/>
+		<objAttribute name="textReview" type="java.lang.String" dbAttributePath="paintingInfo.TEXT_REVIEW"/>
 	</objEntity>
 	<objEntity name="SubPainting" className="org.apache.cayenne.testdo.testmap.SubPainting" dbEntityName="PAINTING">
 		<objAttribute name="paintingTitle" type="java.lang.String" dbAttributePath="PAINTING_TITLE"/>
 	</objEntity>
-	<dbRelationship name="artistGroupArray" source="ARTGROUP" target="ARTIST_GROUP" toMany="true">
+	<dbRelationship name="artistGroups" source="ARTGROUP" target="ARTIST_GROUP" toMany="true">
 		<dbAttributePair source="GROUP_ID" target="GROUP_ID"/>
 	</dbRelationship>
-	<dbRelationship name="toChildGroups" source="ARTGROUP" target="ARTGROUP" toMany="true">
+	<dbRelationship name="childGroups" source="ARTGROUP" target="ARTGROUP" toMany="true">
 		<dbAttributePair source="GROUP_ID" target="PARENT_GROUP_ID"/>
 	</dbRelationship>
-	<dbRelationship name="toParentGroup" source="ARTGROUP" target="ARTGROUP" foreignKey="true">
+	<dbRelationship name="parentGroup" source="ARTGROUP" target="ARTGROUP" foreignKey="true">
 		<dbAttributePair source="PARENT_GROUP_ID" target="GROUP_ID"/>
 	</dbRelationship>
-	<dbRelationship name="artistAwardArray" source="ARTIST" target="AWARD" toMany="true">
+	<dbRelationship name="artistAwards" source="ARTIST" target="AWARD" toMany="true">
 		<dbAttributePair source="ARTIST_ID" target="ARTIST_ID"/>
 	</dbRelationship>
-	<dbRelationship name="artistExhibitArray" source="ARTIST" target="ARTIST_EXHIBIT" toMany="true">
+	<dbRelationship name="artistExhibits" source="ARTIST" target="ARTIST_EXHIBIT" toMany="true">
 		<dbAttributePair source="ARTIST_ID" target="ARTIST_ID"/>
 	</dbRelationship>
-	<dbRelationship name="artistGroupArray" source="ARTIST" target="ARTIST_GROUP" toMany="true">
+	<dbRelationship name="artistGroups" source="ARTIST" target="ARTIST_GROUP" toMany="true">
 		<dbAttributePair source="ARTIST_ID" target="ARTIST_ID"/>
 	</dbRelationship>
-	<dbRelationship name="paintingArray" source="ARTIST" target="PAINTING" toMany="true">
+	<dbRelationship name="paintings" source="ARTIST" target="PAINTING" toMany="true">
 		<dbAttributePair source="ARTIST_ID" target="ARTIST_ID"/>
 	</dbRelationship>
-	<dbRelationship name="toArtist" source="ARTIST_EXHIBIT" target="ARTIST" foreignKey="true">
+	<dbRelationship name="artist" source="ARTIST_EXHIBIT" target="ARTIST" foreignKey="true">
 		<dbAttributePair source="ARTIST_ID" target="ARTIST_ID"/>
 	</dbRelationship>
-	<dbRelationship name="toExhibit" source="ARTIST_EXHIBIT" target="EXHIBIT" foreignKey="true">
+	<dbRelationship name="exhibit" source="ARTIST_EXHIBIT" target="EXHIBIT" foreignKey="true">
 		<dbAttributePair source="EXHIBIT_ID" target="EXHIBIT_ID"/>
 	</dbRelationship>
-	<dbRelationship name="toArtist" source="ARTIST_GROUP" target="ARTIST" foreignKey="true">
+	<dbRelationship name="artist" source="ARTIST_GROUP" target="ARTIST" foreignKey="true">
 		<dbAttributePair source="ARTIST_ID" target="ARTIST_ID"/>
 	</dbRelationship>
-	<dbRelationship name="toGroup" source="ARTIST_GROUP" target="ARTGROUP" foreignKey="true">
+	<dbRelationship name="group" source="ARTIST_GROUP" target="ARTGROUP" foreignKey="true">
 		<dbAttributePair source="GROUP_ID" target="GROUP_ID"/>
 	</dbRelationship>
-	<dbRelationship name="toArtist" source="AWARD" target="ARTIST" foreignKey="true">
+	<dbRelationship name="artist" source="AWARD" target="ARTIST" foreignKey="true">
 		<dbAttributePair source="ARTIST_ID" target="ARTIST_ID"/>
 	</dbRelationship>
-	<dbRelationship name="artistExhibitArray" source="EXHIBIT" target="ARTIST_EXHIBIT" toMany="true">
+	<dbRelationship name="artistExhibits" source="EXHIBIT" target="ARTIST_EXHIBIT" toMany="true">
 		<dbAttributePair source="EXHIBIT_ID" target="EXHIBIT_ID"/>
 	</dbRelationship>
-	<dbRelationship name="toGallery" source="EXHIBIT" target="GALLERY" foreignKey="true">
+	<dbRelationship name="gallery" source="EXHIBIT" target="GALLERY" foreignKey="true">
 		<dbAttributePair source="GALLERY_ID" target="GALLERY_ID"/>
 	</dbRelationship>
-	<dbRelationship name="exhibitArray" source="GALLERY" target="EXHIBIT" toMany="true">
+	<dbRelationship name="exhibits" source="GALLERY" target="EXHIBIT" toMany="true">
 		<dbAttributePair source="GALLERY_ID" target="GALLERY_ID"/>
 	</dbRelationship>
-	<dbRelationship name="paintingArray" source="GALLERY" target="PAINTING" toMany="true">
+	<dbRelationship name="paintings" source="GALLERY" target="PAINTING" toMany="true">
 		<dbAttributePair source="GALLERY_ID" target="GALLERY_ID"/>
 	</dbRelationship>
-	<dbRelationship name="toArtist" source="PAINTING" target="ARTIST" foreignKey="true">
+	<dbRelationship name="artist" source="PAINTING" target="ARTIST" foreignKey="true">
 		<dbAttributePair source="ARTIST_ID" target="ARTIST_ID"/>
 	</dbRelationship>
-	<dbRelationship name="toGallery" source="PAINTING" target="GALLERY" foreignKey="true">
+	<dbRelationship name="gallery" source="PAINTING" target="GALLERY" foreignKey="true">
 		<dbAttributePair source="GALLERY_ID" target="GALLERY_ID"/>
 	</dbRelationship>
-	<dbRelationship name="toPaintingInfo" source="PAINTING" target="PAINTING_INFO">
+	<dbRelationship name="paintingInfo" source="PAINTING" target="PAINTING_INFO">
 		<dbAttributePair source="PAINTING_ID" target="PAINTING_ID"/>
 	</dbRelationship>
-	<dbRelationship name="toArtist" source="PAINTING1" target="ARTIST" foreignKey="true">
+	<dbRelationship name="artist" source="PAINTING1" target="ARTIST" foreignKey="true">
 		<dbAttributePair source="ARTIST_ID" target="ARTIST_ID"/>
 	</dbRelationship>
 	<dbRelationship name="painting" source="PAINTING_INFO" target="PAINTING" foreignKey="true">
 		<dbAttributePair source="PAINTING_ID" target="PAINTING_ID"/>
 	</dbRelationship>
-	<objRelationship name="artistArray" source="ArtGroup" target="Artist" deleteRule="nullify" dbRelationshipPath="artistGroupArray.toArtist"/>
-	<objRelationship name="childGroupsArray" source="ArtGroup" target="ArtGroup" deleteRule="nullify" dbRelationshipPath="toChildGroups"/>
-	<objRelationship name="toParentGroup" source="ArtGroup" target="ArtGroup" deleteRule="nullify" dbRelationshipPath="toParentGroup"/>
-	<objRelationship name="artistExhibitArray" source="Artist" target="ArtistExhibit" deleteRule="cascade" dbRelationshipPath="artistExhibitArray"/>
-	<objRelationship name="awardArray" source="Artist" target="Award" deleteRule="deny" dbRelationshipPath="artistAwardArray"/>
-	<objRelationship name="groupArray" source="Artist" target="ArtGroup" deleteRule="cascade" dbRelationshipPath="artistGroupArray.toGroup"/>
-	<objRelationship name="paintingArray" source="Artist" target="Painting" deleteRule="cascade" dbRelationshipPath="paintingArray"/>
-	<objRelationship name="toArtist" source="ArtistExhibit" target="Artist" deleteRule="nullify" dbRelationshipPath="toArtist"/>
-	<objRelationship name="toExhibit" source="ArtistExhibit" target="Exhibit" deleteRule="nullify" dbRelationshipPath="toExhibit"/>
-	<objRelationship name="toArtist" source="Award" target="Artist" deleteRule="nullify" dbRelationshipPath="toArtist"/>
-	<objRelationship name="toArtist" source="CompoundPainting" target="Artist" deleteRule="nullify" dbRelationshipPath="toArtist"/>
-	<objRelationship name="toGallery" source="CompoundPainting" target="Gallery" deleteRule="nullify" dbRelationshipPath="toGallery"/>
-	<objRelationship name="toPaintingInfo" source="CompoundPainting" target="PaintingInfo" deleteRule="cascade" dbRelationshipPath="toPaintingInfo"/>
-	<objRelationship name="toArtist" source="CompoundPaintingLongNames" target="Artist" deleteRule="nullify" dbRelationshipPath="toArtist"/>
-	<objRelationship name="toArtist1" source="CompoundPaintingLongNames" target="ROArtist" deleteRule="nullify" dbRelationshipPath="toArtist"/>
-	<objRelationship name="toGallery" source="CompoundPaintingLongNames" target="Gallery" deleteRule="nullify" dbRelationshipPath="toGallery"/>
-	<objRelationship name="toPaintingInfo" source="CompoundPaintingLongNames" target="PaintingInfo" deleteRule="nullify" dbRelationshipPath="toPaintingInfo"/>
-	<objRelationship name="artistExhibitArray" source="Exhibit" target="ArtistExhibit" deleteRule="cascade" dbRelationshipPath="artistExhibitArray"/>
-	<objRelationship name="toGallery" source="Exhibit" target="Gallery" deleteRule="nullify" dbRelationshipPath="toGallery"/>
-	<objRelationship name="exhibitArray" source="Gallery" target="Exhibit" deleteRule="cascade" dbRelationshipPath="exhibitArray"/>
-	<objRelationship name="paintingArray" source="Gallery" target="Painting" deleteRule="deny" dbRelationshipPath="paintingArray"/>
-	<objRelationship name="toArtist" source="Painting" target="Artist" deleteRule="nullify" dbRelationshipPath="toArtist"/>
-	<objRelationship name="toGallery" source="Painting" target="Gallery" deleteRule="nullify" dbRelationshipPath="toGallery"/>
-	<objRelationship name="toPaintingInfo" source="Painting" target="PaintingInfo" deleteRule="cascade" dbRelationshipPath="toPaintingInfo"/>
-	<objRelationship name="toArtist" source="Painting1" target="Artist" deleteRule="nullify" dbRelationshipPath="toArtist"/>
+	<objRelationship name="artists" source="ArtGroup" target="Artist" deleteRule="nullify" dbRelationshipPath="artistGroups.artist"/>
+	<objRelationship name="childGroups" source="ArtGroup" target="ArtGroup" deleteRule="nullify" dbRelationshipPath="childGroups"/>
+	<objRelationship name="parentGroup" source="ArtGroup" target="ArtGroup" deleteRule="nullify" dbRelationshipPath="parentGroup"/>
+	<objRelationship name="artistExhibits" source="Artist" target="ArtistExhibit" deleteRule="cascade" dbRelationshipPath="artistExhibits"/>
+	<objRelationship name="awards" source="Artist" target="Award" deleteRule="deny" dbRelationshipPath="artistAwards"/>
+	<objRelationship name="groups" source="Artist" target="ArtGroup" deleteRule="cascade" dbRelationshipPath="artistGroups.group"/>
+	<objRelationship name="paintings" source="Artist" target="Painting" deleteRule="cascade" dbRelationshipPath="paintings"/>
+	<objRelationship name="artist" source="ArtistExhibit" target="Artist" deleteRule="nullify" dbRelationshipPath="artist"/>
+	<objRelationship name="exhibit" source="ArtistExhibit" target="Exhibit" deleteRule="nullify" dbRelationshipPath="exhibit"/>
+	<objRelationship name="artist" source="Award" target="Artist" deleteRule="nullify" dbRelationshipPath="artist"/>
+	<objRelationship name="artist" source="CompoundPainting" target="Artist" deleteRule="nullify" dbRelationshipPath="artist"/>
+	<objRelationship name="gallery" source="CompoundPainting" target="Gallery" deleteRule="nullify" dbRelationshipPath="gallery"/>
+	<objRelationship name="paintingInfo" source="CompoundPainting" target="PaintingInfo" deleteRule="cascade" dbRelationshipPath="paintingInfo"/>
+	<objRelationship name="artist" source="CompoundPaintingLongNames" target="Artist" deleteRule="nullify" dbRelationshipPath="artist"/>
+	<objRelationship name="artist1" source="CompoundPaintingLongNames" target="ROArtist" deleteRule="nullify" dbRelationshipPath="artist"/>
+	<objRelationship name="gallery" source="CompoundPaintingLongNames" target="Gallery" deleteRule="nullify" dbRelationshipPath="gallery"/>
+	<objRelationship name="paintingInfo" source="CompoundPaintingLongNames" target="PaintingInfo" deleteRule="nullify" dbRelationshipPath="paintingInfo"/>
+	<objRelationship name="artistExhibits" source="Exhibit" target="ArtistExhibit" deleteRule="cascade" dbRelationshipPath="artistExhibits"/>
+	<objRelationship name="gallery" source="Exhibit" target="Gallery" deleteRule="nullify" dbRelationshipPath="gallery"/>
+	<objRelationship name="exhibits" source="Gallery" target="Exhibit" deleteRule="cascade" dbRelationshipPath="exhibits"/>
+	<objRelationship name="paintings" source="Gallery" target="Painting" deleteRule="deny" dbRelationshipPath="paintings"/>
+	<objRelationship name="artist" source="Painting" target="Artist" deleteRule="nullify" dbRelationshipPath="artist"/>
+	<objRelationship name="gallery" source="Painting" target="Gallery" deleteRule="nullify" dbRelationshipPath="gallery"/>
+	<objRelationship name="paintingInfo" source="Painting" target="PaintingInfo" deleteRule="cascade" dbRelationshipPath="paintingInfo"/>
+	<objRelationship name="artist" source="Painting1" target="Artist" deleteRule="nullify" dbRelationshipPath="artist"/>
 	<objRelationship name="painting" source="PaintingInfo" target="Painting" deleteRule="nullify" dbRelationshipPath="painting"/>
-	<objRelationship name="paintingArray" source="ROArtist" target="Painting" deleteRule="deny" dbRelationshipPath="paintingArray"/>
-	<objRelationship name="toArtist" source="ROPainting" target="Artist" deleteRule="nullify" dbRelationshipPath="toArtist"/>
+	<objRelationship name="paintings" source="ROArtist" target="Painting" deleteRule="deny" dbRelationshipPath="paintings"/>
+	<objRelationship name="artist" source="ROPainting" target="Artist" deleteRule="nullify" dbRelationshipPath="artist"/>
 	<objectQuery name="ArtistNamesQuery">
 		<ql><![CDATA[select artistName from Artist
 where artistName like $name
@@ -257,7 +257,7 @@ order by artistName]]></ql>
 	</objectQuery>
 	<objectQuery name="ArtistsWithPaintingsQuery">
 		<ql><![CDATA[from Artist
-where exists (from Painting where toArtist = enclosing(self) and estimatedPrice > $price)
+where exists (from Painting where artist = enclosing(self) and estimatedPrice > $price)
 order by artistName]]></ql>
 	</objectQuery>
 	<sqlQuery name="NonSelectingQuery" root="dataMap" rootName="testmap" columnNameCapitalization="UPPER">
@@ -266,7 +266,7 @@ VALUES (512, 'No Painting Like This', 12.5)]]></sql>
 		<sql adapterClass="org.apache.cayenne.dba.db2.DB2Adapter"><![CDATA[INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE) VALUES (512, 'No Painting Like This', 12.5)]]></sql>
 	</sqlQuery>
 	<objectQuery name="ObjectQuery">
-		<ql><![CDATA[from Painting where toArtist = $artist order by paintingTitle]]></ql>
+		<ql><![CDATA[from Painting where artist = $artist order by paintingTitle]]></ql>
 	</objectQuery>
 	<sqlQuery name="ParameterizedNonSelectingQuery" root="dataMap" rootName="testmap">
 		<sql><![CDATA[INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE)
@@ -287,7 +287,7 @@ VALUES (#bind($id), #bind($title), #bind($price))]]></sql>
 		<ql><![CDATA[from Artist order by artistName desc insensitive, dateOfBirth]]></ql>
 	</objectQuery>
 	<objectQuery name="QueryWithPrefetch">
-		<ql><![CDATA[from Gallery prefetch paintingArray]]></ql>
+		<ql><![CDATA[from Gallery prefetch paintings]]></ql>
 	</objectQuery>
 	<objectQuery name="QueryWithQualifier">
 		<ql><![CDATA[from Artist where artistName = $param1]]></ql>

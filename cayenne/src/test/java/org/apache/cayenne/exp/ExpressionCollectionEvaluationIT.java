@@ -63,37 +63,37 @@ public class ExpressionCollectionEvaluationIT {
 
     @Test
     public void substringWithCollection() {
-        testExpression("substring(paintingArray.paintingTitle, 1, 1)", String.class);
+        testExpression("substring(paintings.paintingTitle, 1, 1)", String.class);
     }
 
     @Test
     public void trimWithCollection() {
-        testExpression("trim(paintingArray.paintingTitle)", String.class);
+        testExpression("trim(paintings.paintingTitle)", String.class);
     }
 
     @Test
     public void upperWithCollection() {
-        testExpression("upper(paintingArray.paintingTitle)", String.class);
+        testExpression("upper(paintings.paintingTitle)", String.class);
     }
 
     @Test
     public void lowerWithCollection() {
-        testExpression("lower(paintingArray.paintingTitle)", String.class);
+        testExpression("lower(paintings.paintingTitle)", String.class);
     }
 
     @Test
     public void lengthWithCollection() {
-        testExpression("length(paintingArray.paintingTitle)", Integer.class);
+        testExpression("length(paintings.paintingTitle)", Integer.class);
     }
 
     @Test
     public void concatWithCollection() {
-        testExpression("concat(paintingArray.paintingTitle, ' ', 'xyz')", String.class);
+        testExpression("concat(paintings.paintingTitle, ' ', 'xyz')", String.class);
     }
 
     @Test
     public void mathWithCollection() {
-        testExpression("paintingArray.estimatedPrice + 2", BigDecimal.class);
+        testExpression("paintings.estimatedPrice + 2", BigDecimal.class);
     }
 
     @SuppressWarnings("unchecked")
@@ -101,11 +101,11 @@ public class ExpressionCollectionEvaluationIT {
         Expression exp = ExpressionFactory.exp(expStr);
         Object res = exp.evaluate(ObjectSelect
                 .query(Artist.class)
-                .prefetch(Artist.PAINTING_ARRAY.disjoint())
+                .prefetch(Artist.PAINTINGS.disjoint())
                 .selectOne(context));
         List<T> sqlResult = ObjectSelect.query(Artist.class)
                 .column(PropertyFactory.createBase(exp, tClass))
-                .orderBy("db:paintingArray.PAINTING_ID")
+                .orderBy("db:paintings.PAINTING_ID")
                 .select(context);
 
         Collections.sort((List<T>)res);

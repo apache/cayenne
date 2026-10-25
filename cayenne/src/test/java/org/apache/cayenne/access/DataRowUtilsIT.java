@@ -82,13 +82,13 @@ public class DataRowUtilsIT {
         ObjEntity paintingInfo = resolver.getObjEntity("PaintingInfo");
 
         // referential integrity guarantees the target of an FK on the source
-        assertTrue(DataRowUtils.isTargetDeterminedByFK(painting.getRelationship("toArtist"), resolver));
+        assertTrue(DataRowUtils.isTargetDeterminedByFK(painting.getRelationship("artist"), resolver));
         assertTrue(DataRowUtils.isTargetDeterminedByFK(paintingInfo.getRelationship("painting"), resolver));
 
         // a dependent row, to-many targets and flattened targets may be missing
-        assertFalse(DataRowUtils.isTargetDeterminedByFK(painting.getRelationship("toPaintingInfo"), resolver));
-        assertFalse(DataRowUtils.isTargetDeterminedByFK(artist.getRelationship("paintingArray"), resolver));
-        assertFalse(DataRowUtils.isTargetDeterminedByFK(artist.getRelationship("groupArray"), resolver));
+        assertFalse(DataRowUtils.isTargetDeterminedByFK(painting.getRelationship("paintingInfo"), resolver));
+        assertFalse(DataRowUtils.isTargetDeterminedByFK(artist.getRelationship("paintings"), resolver));
+        assertFalse(DataRowUtils.isTargetDeterminedByFK(artist.getRelationship("groups"), resolver));
     }
 
     @Test
@@ -121,12 +121,12 @@ public class DataRowUtilsIT {
         createOneArtist();
 
         ClassDescriptor d = context.getEntityResolver().getClassDescriptor("Painting");
-        ArcProperty toArtist = (ArcProperty) d.getProperty("toArtist");
+        ArcProperty artist = (ArcProperty) d.getProperty("artist");
 
         Artist artist2 = ObjectSelect.query(Artist.class).selectFirst(context);
         Painting painting = context.newObject(Painting.class);
         painting.setPaintingTitle("PX");
-        painting.setToArtist(artist2);
+        painting.setArtist(artist2);
 
         context.commitChanges();
 
@@ -134,16 +134,16 @@ public class DataRowUtilsIT {
         Artist artist3 = ObjectSelect.query(Artist.class)
                 .where(Artist.ARTIST_NAME.eq("artist3"))
                 .selectFirst(context);
-        assertNotSame(artist3, painting.getToArtist());
+        assertNotSame(artist3, painting.getArtist());
 
         ObjectDiff diff = context.getObjectStore().registerDiff(
                 painting.getObjectId(),
                 null);
 
-        assertFalse(DataRowUtils.isToOneTargetModified(toArtist, painting, diff));
+        assertFalse(DataRowUtils.isToOneTargetModified(artist, painting, diff));
 
-        painting.setToArtist(artist3);
-        assertTrue(DataRowUtils.isToOneTargetModified(toArtist, painting, diff));
+        painting.setArtist(artist3);
+        assertTrue(DataRowUtils.isToOneTargetModified(artist, painting, diff));
     }
 
     @Test
@@ -156,13 +156,13 @@ public class DataRowUtilsIT {
         Painting p1 = paintings.get(0);
 
         ClassDescriptor d = context.getEntityResolver().getClassDescriptor("Painting");
-        ArcProperty toGallery = (ArcProperty) d.getProperty("toGallery");
+        ArcProperty gallery = (ArcProperty) d.getProperty("gallery");
 
         ObjectDiff diff = context.getObjectStore().registerDiff(p1.getObjectId(), null);
-        assertFalse(DataRowUtils.isToOneTargetModified(toGallery, p1, diff));
+        assertFalse(DataRowUtils.isToOneTargetModified(gallery, p1, diff));
 
         Gallery g1 = (Gallery) context.newObject("Gallery");
-        g1.addToPaintingArray(p1);
-        assertTrue(DataRowUtils.isToOneTargetModified(toGallery, p1, diff));
+        g1.addToPaintings(p1);
+        assertTrue(DataRowUtils.isToOneTargetModified(gallery, p1, diff));
     }
 }

@@ -57,7 +57,7 @@ public class CAY2509IT {
         ObjectContext context1 = env.runtime().newContext();
         List<Artist> artists1 = ObjectSelect.query(Artist.class)
                 .select(context1);
-        assertEquals("P1", artists1.get(0).getPaintingArray().get(0).getPaintingTitle());
+        assertEquals("P1", artists1.get(0).getPaintings().get(0).getPaintingTitle());
 
         tPainting.update()
                 .set("PAINTING_TITLE", "P2")
@@ -67,7 +67,7 @@ public class CAY2509IT {
         ObjectContext context2 = env.runtime().newContext();
         List<Artist> artists2 = ObjectSelect.query(Artist.class)
                 .select(context2);
-        assertEquals("P2", artists2.get(0).getPaintingArray().get(0).getPaintingTitle());
+        assertEquals("P2", artists2.get(0).getPaintings().get(0).getPaintingTitle());
     }
 
     @Test

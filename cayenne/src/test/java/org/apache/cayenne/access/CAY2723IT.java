@@ -56,8 +56,8 @@ public class CAY2723IT {
         PaintingInfo paintingInfo = context.newObject(PaintingInfo.class);
         paintingInfo.setTextReview("test_a_123");
 
-        painting.setToPaintingInfo(paintingInfo);
-        painting.setToPaintingInfo(null);
+        painting.setPaintingInfo(paintingInfo);
+        painting.setPaintingInfo(null);
 
         context.deleteObject(paintingInfo);
 

@@ -27,14 +27,14 @@ public abstract class _ReflexiveAndToOne extends PersistentObject {
 
     public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);
     public static final ListProperty<ReflexiveAndToOne> CHILDREN = PropertyFactory.createList("children", ReflexiveAndToOne.class);
-    public static final EntityProperty<RelationshipHelper> TO_HELPER = PropertyFactory.createEntity("toHelper", RelationshipHelper.class);
-    public static final EntityProperty<ReflexiveAndToOne> TO_PARENT = PropertyFactory.createEntity("toParent", ReflexiveAndToOne.class);
+    public static final EntityProperty<RelationshipHelper> HELPER = PropertyFactory.createEntity("helper", RelationshipHelper.class);
+    public static final EntityProperty<ReflexiveAndToOne> PARENT = PropertyFactory.createEntity("parent", ReflexiveAndToOne.class);
 
     protected String name;
 
     protected Object children;
-    protected Object toHelper;
-    protected Object toParent;
+    protected Object helper;
+    protected Object parent;
 
     public void setName(String name) {
         beforePropertyWrite("name", this.name, name);
@@ -59,20 +59,20 @@ public abstract class _ReflexiveAndToOne extends PersistentObject {
         return (List<ReflexiveAndToOne>)readProperty("children");
     }
 
-    public void setToHelper(RelationshipHelper toHelper) {
-        setToOneTarget("toHelper", toHelper, true);
+    public void setHelper(RelationshipHelper helper) {
+        setToOneTarget("helper", helper, true);
     }
 
-    public RelationshipHelper getToHelper() {
-        return (RelationshipHelper)readProperty("toHelper");
+    public RelationshipHelper getHelper() {
+        return (RelationshipHelper)readProperty("helper");
     }
 
-    public void setToParent(ReflexiveAndToOne toParent) {
-        setToOneTarget("toParent", toParent, true);
+    public void setParent(ReflexiveAndToOne parent) {
+        setToOneTarget("parent", parent, true);
     }
 
-    public ReflexiveAndToOne getToParent() {
-        return (ReflexiveAndToOne)readProperty("toParent");
+    public ReflexiveAndToOne getParent() {
+        return (ReflexiveAndToOne)readProperty("parent");
     }
 
     @Override
@@ -86,10 +86,10 @@ public abstract class _ReflexiveAndToOne extends PersistentObject {
                 return this.name;
             case "children":
                 return this.children;
-            case "toHelper":
-                return this.toHelper;
-            case "toParent":
-                return this.toParent;
+            case "helper":
+                return this.helper;
+            case "parent":
+                return this.parent;
             default:
                 return super.readPropertyDirectly(propName);
         }
@@ -108,11 +108,11 @@ public abstract class _ReflexiveAndToOne extends PersistentObject {
             case "children":
                 this.children = val;
                 break;
-            case "toHelper":
-                this.toHelper = val;
+            case "helper":
+                this.helper = val;
                 break;
-            case "toParent":
-                this.toParent = val;
+            case "parent":
+                this.parent = val;
                 break;
             default:
                 super.writePropertyDirectly(propName, val);

@@ -73,7 +73,7 @@ public class DataContextOuterJoinsIT {
         artistGroupHelper.insert(1, 33004);
 
         List<Artist> artists = ObjectSelect.query(Artist.class)
-                .where(Artist.GROUP_ARRAY.outer().isNull())
+                .where(Artist.GROUPS.outer().isNull())
                 .orderBy(Artist.ARTIST_NAME.asc())
                 .select(env.context());
         assertEquals(1, artists.size());
@@ -92,14 +92,14 @@ public class DataContextOuterJoinsIT {
         paintingHelper.insert(33002, 33002, "P2");
 
         List<Artist> artists = ObjectSelect.query(Artist.class)
-                .where(Artist.PAINTING_ARRAY.outer().isNull())
+                .where(Artist.PAINTINGS.outer().isNull())
                 .orderBy(Artist.ARTIST_NAME.asc())
                 .select(env.context());
         assertEquals(2, artists.size());
         assertEquals("BB1", artists.get(0).getArtistName());
 
         artists = ObjectSelect.query(Artist.class)
-                .where(Artist.PAINTING_ARRAY.outer().isNull())
+                .where(Artist.PAINTINGS.outer().isNull())
                 .or(Artist.ARTIST_NAME.eq("AA1"))
                 .orderBy(Artist.ARTIST_NAME.asc())
                 .select(env.context());
@@ -121,14 +121,14 @@ public class DataContextOuterJoinsIT {
         paintingHelper.insert(33002, 33002, "P2");
 
         List<Artist> artists = ObjectSelect.query(Artist.class)
-                .where(ExpressionFactory.exp("paintingArray+ = null"))
+                .where(ExpressionFactory.exp("paintings+ = null"))
                 .orderBy(Artist.ARTIST_NAME.asc())
                 .select(env.context());
         assertEquals(2, artists.size());
         assertEquals("BB1", artists.get(0).getArtistName());
 
         artists = ObjectSelect.query(Artist.class)
-                .where(ExpressionFactory.exp("paintingArray+ = null"))
+                .where(ExpressionFactory.exp("paintings+ = null"))
                 .or(Artist.ARTIST_NAME.eq("AA1"))
                 .orderBy(Artist.ARTIST_NAME.asc())
                 .select(env.context());
@@ -149,7 +149,7 @@ public class DataContextOuterJoinsIT {
         paintingHelper.insert(33003, null, "P3");
 
         List<Painting> paintings = ObjectSelect.query(Painting.class)
-                .orderBy(Painting.TO_ARTIST.outer().dot(Artist.ARTIST_NAME).desc())
+                .orderBy(Painting.ARTIST.outer().dot(Artist.ARTIST_NAME).desc())
                 .select(env.context());
         assertEquals(3, paintings.size());
     }

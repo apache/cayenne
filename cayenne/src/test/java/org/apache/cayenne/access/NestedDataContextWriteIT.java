@@ -111,12 +111,12 @@ public class NestedDataContextWriteIT {
         Artist a = childContext.objectForPK(Artist.class, 33001);
         Painting p = childContext.newObject(Painting.class);
         p.setPaintingTitle("X");
-        a.addToPaintingArray(p);
+        a.addToPaintings(p);
 
         childContext.commitChangesToParent();
 
         childContext.deleteObjects(p);
-        a.removeFromPaintingArray(p);
+        a.removeFromPaintings(p);
 
         childContext.commitChangesToParent();
     }
@@ -135,7 +135,7 @@ public class NestedDataContextWriteIT {
 
         // trigger object creation in the peer nested DC
         childContextPeer.objectForPK(Painting.class, 33001);
-        childP1.setToArtist(null);
+        childP1.setArtist(null);
 
         env.runWithQueriesBlocked(() -> {
             childContext.commitChangesToParent();
@@ -146,7 +146,7 @@ public class NestedDataContextWriteIT {
 
             assertNotNull(parentP1);
             assertEquals(PersistenceState.MODIFIED, parentP1.getPersistenceState());
-            assertNull(parentP1.getToArtist());
+            assertNull(parentP1.getArtist());
         });
     }
 
@@ -340,13 +340,13 @@ public class NestedDataContextWriteIT {
         childModifiedSimple.setPaintingTitle("C_PT");
 
         final Painting childModifiedToOne = objects.get(1);
-        childModifiedToOne.setToArtist(childModifiedSimple.getToArtist());
+        childModifiedToOne.setArtist(childModifiedSimple.getArtist());
 
-        final Artist childModifiedToMany = objects.get(2).getToArtist();
+        final Artist childModifiedToMany = objects.get(2).getArtist();
 
         // ensure painting array is fully resolved...
-        childModifiedToMany.getPaintingArray().size();
-        childModifiedToMany.addToPaintingArray(objects.get(3));
+        childModifiedToMany.getPaintings().size();
+        childModifiedToMany.addToPaintings(objects.get(3));
 
         env.runWithQueriesBlocked(() -> {
             Painting parentModifiedSimple;
@@ -381,9 +381,9 @@ public class NestedDataContextWriteIT {
             assertNotNull(parentModifiedToOne);
             assertEquals(PersistenceState.MODIFIED, parentModifiedToOne
                     .getPersistenceState());
-            assertNotNull(parentModifiedToOne.getToArtist());
+            assertNotNull(parentModifiedToOne.getArtist());
             assertEquals(33001, Cayenne.intPKForObject(parentModifiedToOne
-                    .getToArtist()));
+                    .getArtist()));
             assertNotNull(context.getObjectStore().getChangesByObjectId().get(
                     parentModifiedToOne.getObjectId()));
 
@@ -393,7 +393,7 @@ public class NestedDataContextWriteIT {
                     .getPersistenceState());
 
             // no query is expected: the parent list was resolved in the parent when the child resolved its own
-            List<?> paintings = parentModifiedToMany.getPaintingArray();
+            List<?> paintings = parentModifiedToMany.getPaintings();
             assertEquals(2, paintings.size());
         });
     }
@@ -431,7 +431,7 @@ public class NestedDataContextWriteIT {
             assertEquals(PersistenceState.NEW, parentDetail1.getPersistenceState());
 
             assertSame(parentMaster, parentDetail1.getPainting());
-            assertSame(parentDetail1, parentMaster.getToPaintingInfo());
+            assertSame(parentDetail1, parentMaster.getPaintingInfo());
         });
     }
 
@@ -445,14 +445,14 @@ public class NestedDataContextWriteIT {
 
         final ArtGroup childO2 = childContext.newObject(ArtGroup.class);
         childO2.setName("Detail1");
-        childO2.addToArtistArray(childO1);
+        childO2.addToArtists(childO1);
 
         ObjEntity ent = childContext.getEntityResolver().getObjEntity("ArtGroup");
         Collection<ObjRelationship> rels = ent.getDeclaredRelationships();
         assertEquals(3, rels.size());
 
-        assertEquals(1, childO1.getGroupArray().size());
-        assertEquals(1, childO2.getArtistArray().size());
+        assertEquals(1, childO1.getGroups().size());
+        assertEquals(1, childO2.getArtists().size());
 
         env.runWithQueriesBlocked(() -> {
             childContext.commitChangesToParent();
@@ -472,10 +472,10 @@ public class NestedDataContextWriteIT {
             assertNotNull(parentO2);
             assertEquals(PersistenceState.NEW, parentO2.getPersistenceState());
 
-            assertEquals(1, parentO1.getGroupArray().size());
-            assertEquals(1, parentO2.getArtistArray().size());
-            assertTrue(parentO2.getArtistArray().contains(parentO1));
-            assertTrue(parentO1.getGroupArray().contains(parentO2));
+            assertEquals(1, parentO1.getGroups().size());
+            assertEquals(1, parentO2.getArtists().size());
+            assertTrue(parentO2.getArtists().contains(parentO1));
+            assertTrue(parentO1.getGroups().contains(parentO2));
         });
     }
 
@@ -488,17 +488,17 @@ public class NestedDataContextWriteIT {
 
         final ArtGroup childO2 = childContext.newObject(ArtGroup.class);
         childO2.setName("o2");
-        childO2.addToArtistArray(childO1);
+        childO2.addToArtists(childO1);
 
         childContext.commitChangesToParent();
 
         final ArtGroup childO3 = childContext.newObject(ArtGroup.class);
         childO3.setName("o3");
-        childO1.addToGroupArray(childO3);
+        childO1.addToGroups(childO3);
 
-        assertEquals(2, childO1.getGroupArray().size());
-        assertEquals(1, childO2.getArtistArray().size());
-        assertEquals(1, childO3.getArtistArray().size());
+        assertEquals(2, childO1.getGroups().size());
+        assertEquals(1, childO2.getArtists().size());
+        assertEquals(1, childO3.getArtists().size());
 
         env.runWithQueriesBlocked(() -> {
             childContext.commitChangesToParent();
@@ -525,16 +525,16 @@ public class NestedDataContextWriteIT {
             assertNotNull(parentO3);
             assertEquals(PersistenceState.NEW, parentO3.getPersistenceState());
 
-            assertEquals(2, parentO1.getGroupArray().size());
-            assertEquals(1, parentO2.getArtistArray().size());
-            assertEquals(1, parentO3.getArtistArray().size());
-            assertTrue(parentO2.getArtistArray().contains(parentO1));
-            assertTrue(parentO3.getArtistArray().contains(parentO1));
-            assertTrue(parentO1.getGroupArray().contains(parentO2));
-            assertTrue(parentO1.getGroupArray().contains(parentO3));
+            assertEquals(2, parentO1.getGroups().size());
+            assertEquals(1, parentO2.getArtists().size());
+            assertEquals(1, parentO3.getArtists().size());
+            assertTrue(parentO2.getArtists().contains(parentO1));
+            assertTrue(parentO3.getArtists().contains(parentO1));
+            assertTrue(parentO1.getGroups().contains(parentO2));
+            assertTrue(parentO1.getGroups().contains(parentO3));
         });
 
-        childO1.removeFromGroupArray(childO2);
+        childO1.removeFromGroups(childO2);
 
         env.runWithQueriesBlocked(() -> {
             childContext.commitChangesToParent();
@@ -561,12 +561,12 @@ public class NestedDataContextWriteIT {
             assertNotNull(parentO3);
             assertEquals(PersistenceState.NEW, parentO3.getPersistenceState());
 
-            assertEquals(1, parentO1.getGroupArray().size());
-            assertEquals(0, parentO2.getArtistArray().size());
-            assertEquals(1, parentO3.getArtistArray().size());
+            assertEquals(1, parentO1.getGroups().size());
+            assertEquals(0, parentO2.getArtists().size());
+            assertEquals(1, parentO3.getArtists().size());
 
-            assertTrue(parentO3.getArtistArray().contains(parentO1));
-            assertTrue(parentO1.getGroupArray().contains(parentO3));
+            assertTrue(parentO3.getArtists().contains(parentO1));
+            assertTrue(parentO1.getGroups().contains(parentO3));
         });
     }
 
@@ -581,13 +581,13 @@ public class NestedDataContextWriteIT {
 
         Painting p1 = child.newObject(Painting.class);
         p1.setPaintingTitle("P1");
-        a.addToPaintingArray(p1);
+        a.addToPaintings(p1);
 
         Painting p2 = child.newObject(Painting.class);
         p2.setPaintingTitle("P2");
-        a.addToPaintingArray(p2);
+        a.addToPaintings(p2);
 
-        a.removeFromPaintingArray(p2);
+        a.removeFromPaintings(p2);
 
         // this causes an error on commit
         child.deleteObjects(p2);
@@ -607,18 +607,18 @@ public class NestedDataContextWriteIT {
         painting.setPaintingTitle("222");
 
         Artist localParentMt = child.localObject(artist);
-        assertEquals(0, artist.getPaintingArray().size());
-        assertEquals(0, localParentMt.getPaintingArray().size());
+        assertEquals(0, artist.getPaintings().size());
+        assertEquals(0, localParentMt.getPaintings().size());
 
-        painting.setToArtist(localParentMt);
+        painting.setArtist(localParentMt);
 
-        assertEquals(0, artist.getPaintingArray().size());
-        assertEquals(1, localParentMt.getPaintingArray().size());
-        assertEquals(localParentMt.getPaintingArray().getFirst().getObjectContext(), child);
+        assertEquals(0, artist.getPaintings().size());
+        assertEquals(1, localParentMt.getPaintings().size());
+        assertEquals(localParentMt.getPaintings().getFirst().getObjectContext(), child);
 
         child.commitChangesToParent();
-        assertEquals(1, artist.getPaintingArray().size());
-        assertEquals(artist.getPaintingArray().getFirst().getObjectContext(), context);
+        assertEquals(1, artist.getPaintings().size());
+        assertEquals(artist.getPaintings().getFirst().getObjectContext(), context);
 
     }
     

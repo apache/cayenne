@@ -42,7 +42,7 @@ public class FluentSelectPrefetchRouterActionIT {
         ObjEntity paintingEntity = env.entityResolver().getObjEntity(Painting.class);
 
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class).where(Artist.ARTIST_NAME.eq("abc"))
-                .prefetch(Artist.PAINTING_ARRAY.disjoint());
+                .prefetch(Artist.PAINTINGS.disjoint());
 
         FluentSelectPrefetchRouterAction action = new FluentSelectPrefetchRouterAction();
 
@@ -53,7 +53,7 @@ public class FluentSelectPrefetchRouterActionIT {
         PrefetchSelectQuery prefetch = (PrefetchSelectQuery) router.getQueries().get(0);
 
         assertEquals(paintingEntity.getName(), prefetch.entityName);
-        assertEquals(ExpressionFactory.exp("db:toArtist.ARTIST_NAME = 'abc'"), prefetch.getWhere());
+        assertEquals(ExpressionFactory.exp("db:artist.ARTIST_NAME = 'abc'"), prefetch.getWhere());
     }
 
     @Test
@@ -63,7 +63,7 @@ public class FluentSelectPrefetchRouterActionIT {
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
                 .where(Artist.ARTIST_NAME.eq("abc"))
                 .or(Artist.ARTIST_NAME.eq("xyz"))
-                .prefetch(Artist.PAINTING_ARRAY.disjoint());
+                .prefetch(Artist.PAINTINGS.disjoint());
 
         FluentSelectPrefetchRouterAction action = new FluentSelectPrefetchRouterAction();
 
@@ -73,7 +73,7 @@ public class FluentSelectPrefetchRouterActionIT {
 
         PrefetchSelectQuery prefetch = (PrefetchSelectQuery) router.getQueries().get(0);
         assertEquals(paintingEntity.getName(), prefetch.entityName);
-        assertEquals(ExpressionFactory.exp("db:toArtist.ARTIST_NAME = 'abc' or db:toArtist.ARTIST_NAME = 'xyz'"),
+        assertEquals(ExpressionFactory.exp("db:artist.ARTIST_NAME = 'abc' or db:artist.ARTIST_NAME = 'xyz'"),
                 prefetch.getWhere());
     }
 
@@ -82,7 +82,7 @@ public class FluentSelectPrefetchRouterActionIT {
         ObjEntity galleryEntity = env.entityResolver().getObjEntity(Gallery.class);
 
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class).where(Artist.ARTIST_NAME.eq("abc"))
-                .prefetch(Artist.PAINTING_ARRAY.dot(Painting.TO_GALLERY).disjoint());
+                .prefetch(Artist.PAINTINGS.dot(Painting.GALLERY).disjoint());
         FluentSelectPrefetchRouterAction action = new FluentSelectPrefetchRouterAction();
 
         MockQueryRouter router = new MockQueryRouter();
@@ -92,6 +92,6 @@ public class FluentSelectPrefetchRouterActionIT {
         PrefetchSelectQuery prefetch = (PrefetchSelectQuery) router.getQueries().get(0);
 
         assertEquals(galleryEntity.getName(), prefetch.entityName);
-        assertEquals(ExpressionFactory.exp("db:paintingArray.toArtist.ARTIST_NAME = 'abc'"), prefetch.getWhere());
+        assertEquals(ExpressionFactory.exp("db:paintings.artist.ARTIST_NAME = 'abc'"), prefetch.getWhere());
     }
 }

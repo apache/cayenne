@@ -108,16 +108,16 @@ public class CayennePersistentObjectIT {
         Painting p2 = env.context().newObject(Painting.class);
         p1.setPaintingTitle("p1");
         p2.setPaintingTitle("p2");
-        a.addToPaintingArray(p1);
-        a.addToPaintingArray(p2);
-        ex.setToArtist(a);
+        a.addToPaintings(p1);
+        a.addToPaintings(p2);
+        ex.setArtist(a);
 
-        List<String> names = (List<String>) a.readNestedProperty("paintingArray.paintingTitle");
+        List<String> names = (List<String>) a.readNestedProperty("paintings.paintingTitle");
         assertEquals(2, names.size());
         assertEquals("p1", names.get(0));
         assertEquals("p2", names.get(1));
 
-        List<String> names2 = (List<String>) ex.readNestedProperty("toArtist.paintingArray.paintingTitle");
+        List<String> names2 = (List<String>) ex.readNestedProperty("artist.paintings.paintingTitle");
         assertEquals(names, names2);
     }
 
@@ -130,16 +130,16 @@ public class CayennePersistentObjectIT {
         Painting p2 = env.context().newObject(Painting.class);
         p1.setPaintingTitle("p1");
         p2.setPaintingTitle("p2");
-        a.addToPaintingArray(p1);
-        a.addToPaintingArray(p2);
-        ex.setToArtist(a);
+        a.addToPaintings(p1);
+        a.addToPaintings(p2);
+        ex.setArtist(a);
 
-        List<String> names = (List<String>) a.readNestedProperty("paintingArray+.paintingTitle");
+        List<String> names = (List<String>) a.readNestedProperty("paintings+.paintingTitle");
         assertEquals(2, names.size());
         assertEquals("p1", names.get(0));
         assertEquals("p2", names.get(1));
 
-        List<String> names2 = (List<String>) ex.readNestedProperty("toArtist.paintingArray+.paintingTitle");
+        List<String> names2 = (List<String>) ex.readNestedProperty("artist.paintings+.paintingTitle");
         assertEquals(names, names2);
     }
 
@@ -150,13 +150,13 @@ public class CayennePersistentObjectIT {
         Painting p1 = env.context().newObject(Painting.class);
         Artist a1 = env.context().newObject(Artist.class);
         a1.setArtistName("dddAd");
-        p1.setToArtist(a1);
+        p1.setArtist(a1);
 
         paintingList.add(p1);
-        Expression exp = ExpressionFactory.likeExp("toArtist+.artistName", "d%");
+        Expression exp = ExpressionFactory.likeExp("artist+.artistName", "d%");
 
         List<Painting> rezult = exp.filterObjects(paintingList);
-        assertEquals(a1, rezult.getFirst().getToArtist());
+        assertEquals(a1, rezult.getFirst().getArtist());
     }
 
     @Test

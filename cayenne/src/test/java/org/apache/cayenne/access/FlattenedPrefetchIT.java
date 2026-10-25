@@ -99,7 +99,7 @@ public class FlattenedPrefetchIT {
         createPrefetchDataSet1();
 
         List<Artist> objects = ObjectSelect.query(Artist.class)
-                .prefetch(Artist.GROUP_ARRAY.disjoint())
+                .prefetch(Artist.GROUPS.disjoint())
                 .select(env.context());
 
         env.runWithQueriesBlocked(() -> assertArtistResult(objects));
@@ -110,8 +110,8 @@ public class FlattenedPrefetchIT {
         createPrefetchDataSet2();
 
         List<Painting> objects = ObjectSelect.query(Painting.class)
-                .prefetch(Painting.TO_ARTIST.disjoint())
-                .prefetch(Painting.TO_ARTIST.dot(Artist.GROUP_ARRAY).disjoint())
+                .prefetch(Painting.ARTIST.disjoint())
+                .prefetch(Painting.ARTIST.dot(Artist.GROUPS).disjoint())
                 .select(env.context());
 
         env.runWithQueriesBlocked(() -> assertPaintingResult(objects));
@@ -122,7 +122,7 @@ public class FlattenedPrefetchIT {
         createPrefetchDataSet1();
 
         List<Artist> objects = ObjectSelect.query(Artist.class)
-                .prefetch(Artist.GROUP_ARRAY.joint())
+                .prefetch(Artist.GROUPS.joint())
                 .select(env.context());
 
         env.runWithQueriesBlocked(() -> assertArtistResult(objects));
@@ -133,8 +133,8 @@ public class FlattenedPrefetchIT {
         createPrefetchDataSet2();
 
         List<Painting> objects = ObjectSelect.query(Painting.class)
-                .prefetch(Painting.TO_ARTIST.joint())
-                .prefetch(Painting.TO_ARTIST.dot(Artist.GROUP_ARRAY).joint())
+                .prefetch(Painting.ARTIST.joint())
+                .prefetch(Painting.ARTIST.dot(Artist.GROUPS).joint())
                 .select(env.context());
 
         env.runWithQueriesBlocked(() -> assertPaintingResult(objects));
@@ -143,16 +143,16 @@ public class FlattenedPrefetchIT {
     private void assertArtistResult(List<Artist> objects) {
         assertEquals(3, objects.size());
         for (Artist a : objects) {
-            assertArtGroupResult(a.getGroupArray());
+            assertArtGroupResult(a.getGroups());
         }
     }
 
     private void assertPaintingResult(List<Painting> objects) {
         assertEquals(3, objects.size());
         for (Painting p : objects) {
-            Artist a = p.getToArtist();
+            Artist a = p.getArtist();
             assertEquals(PersistenceState.COMMITTED, a.getPersistenceState());
-            assertArtGroupResult(a.getGroupArray());
+            assertArtGroupResult(a.getGroups());
         }
     }
 

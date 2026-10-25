@@ -105,7 +105,7 @@ public class DataContextPrefetchExtrasIT  {
 
         CharFkTestEntity fk1 = (CharFkTestEntity) toMany.getFirst();
         assertEquals(PersistenceState.COMMITTED, fk1.getPersistenceState());
-        assertSame(pk1, fk1.getToCharPK());
+        assertSame(pk1, fk1.getCharPK());
     }
 
     /**
@@ -117,13 +117,13 @@ public class DataContextPrefetchExtrasIT  {
 
         ObjectSelect<CompoundFkTestEntity> q = ObjectSelect.query(CompoundFkTestEntity.class)
                 .where(CompoundFkTestEntity.NAME.eq("CFK2"))
-                .prefetch("toCompoundPk", PrefetchTreeNode.UNDEFINED_SEMANTICS);
+                .prefetch("compoundPk", PrefetchTreeNode.UNDEFINED_SEMANTICS);
 
         List<CompoundFkTestEntity> objects = q.select(env.context());
         assertEquals(1, objects.size());
         PersistentObject fk1 = objects.getFirst();
 
-        Object toOnePrefetch = fk1.readNestedProperty("toCompoundPk");
+        Object toOnePrefetch = fk1.readNestedProperty("compoundPk");
         assertNotNull(toOnePrefetch);
         assertInstanceOf(Persistent.class, toOnePrefetch, "Expected Persistent, got: " + toOnePrefetch.getClass().getName());
 
@@ -141,13 +141,13 @@ public class DataContextPrefetchExtrasIT  {
 
         ObjectSelect<CompoundPkTestEntity> q = ObjectSelect.query(CompoundPkTestEntity.class)
                 .where(CompoundPkTestEntity.NAME.eq("CPK2"))
-                .prefetch("compoundFkArray", PrefetchTreeNode.UNDEFINED_SEMANTICS);
+                .prefetch("compoundFks", PrefetchTreeNode.UNDEFINED_SEMANTICS);
 
         List<CompoundPkTestEntity> pks = q.select(env.context());
         assertEquals(1, pks.size());
         PersistentObject pk1 = pks.getFirst();
 
-        List<?> toMany = (List<?>) pk1.readPropertyDirectly("compoundFkArray");
+        List<?> toMany = (List<?>) pk1.readPropertyDirectly("compoundFks");
         assertNotNull(toMany);
         assertFalse(((ToManyHolder) toMany).isFault());
         assertEquals(2, toMany.size());

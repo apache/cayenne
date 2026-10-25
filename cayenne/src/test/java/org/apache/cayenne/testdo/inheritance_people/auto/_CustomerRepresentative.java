@@ -23,11 +23,11 @@ public abstract class _CustomerRepresentative extends AbstractPerson {
     public static final String PERSON_ID_PK_COLUMN = "PERSON_ID";
 
     public static final StringProperty<String> CLIENT_CONTACT_TYPE = PropertyFactory.createString("clientContactType", String.class);
-    public static final EntityProperty<ClientCompany> TO_CLIENT_COMPANY = PropertyFactory.createEntity("toClientCompany", ClientCompany.class);
+    public static final EntityProperty<ClientCompany> CLIENT_COMPANY = PropertyFactory.createEntity("clientCompany", ClientCompany.class);
 
     protected String clientContactType;
 
-    protected Object toClientCompany;
+    protected Object clientCompany;
 
     public void setClientContactType(String clientContactType) {
         beforePropertyWrite("clientContactType", this.clientContactType, clientContactType);
@@ -39,12 +39,12 @@ public abstract class _CustomerRepresentative extends AbstractPerson {
         return this.clientContactType;
     }
 
-    public void setToClientCompany(ClientCompany toClientCompany) {
-        setToOneTarget("toClientCompany", toClientCompany, true);
+    public void setClientCompany(ClientCompany clientCompany) {
+        setToOneTarget("clientCompany", clientCompany, true);
     }
 
-    public ClientCompany getToClientCompany() {
-        return (ClientCompany)readProperty("toClientCompany");
+    public ClientCompany getClientCompany() {
+        return (ClientCompany)readProperty("clientCompany");
     }
 
     @Override
@@ -56,8 +56,8 @@ public abstract class _CustomerRepresentative extends AbstractPerson {
         switch(propName) {
             case "clientContactType":
                 return this.clientContactType;
-            case "toClientCompany":
-                return this.toClientCompany;
+            case "clientCompany":
+                return this.clientCompany;
             default:
                 return super.readPropertyDirectly(propName);
         }
@@ -73,8 +73,8 @@ public abstract class _CustomerRepresentative extends AbstractPerson {
             case "clientContactType":
                 this.clientContactType = (String)val;
                 break;
-            case "toClientCompany":
-                this.toClientCompany = val;
+            case "clientCompany":
+                this.clientCompany = val;
                 break;
             default:
                 super.writePropertyDirectly(propName, val);

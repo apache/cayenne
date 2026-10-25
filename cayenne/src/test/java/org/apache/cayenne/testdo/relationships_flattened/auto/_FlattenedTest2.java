@@ -27,13 +27,13 @@ public abstract class _FlattenedTest2 extends PersistentObject {
     public static final String FT2_ID_PK_COLUMN = "FT2_ID";
 
     public static final StringProperty<String> NAME = PropertyFactory.createString("name", String.class);
-    public static final ListProperty<FlattenedTest3> FT3ARRAY = PropertyFactory.createList("ft3Array", FlattenedTest3.class);
-    public static final EntityProperty<FlattenedTest1> TO_FT1 = PropertyFactory.createEntity("toFT1", FlattenedTest1.class);
+    public static final ListProperty<FlattenedTest3> FT3S = PropertyFactory.createList("ft3s", FlattenedTest3.class);
+    public static final EntityProperty<FlattenedTest1> FT1 = PropertyFactory.createEntity("ft1", FlattenedTest1.class);
 
     protected String name;
 
-    protected Object ft3Array;
-    protected Object toFT1;
+    protected Object ft3s;
+    protected Object ft1;
 
     public void setName(String name) {
         beforePropertyWrite("name", this.name, name);
@@ -45,25 +45,25 @@ public abstract class _FlattenedTest2 extends PersistentObject {
         return this.name;
     }
 
-    public void addToFt3Array(FlattenedTest3 obj) {
-        addToManyTarget("ft3Array", obj, true);
+    public void addToFt3s(FlattenedTest3 obj) {
+        addToManyTarget("ft3s", obj, true);
     }
 
-    public void removeFromFt3Array(FlattenedTest3 obj) {
-        removeToManyTarget("ft3Array", obj, true);
+    public void removeFromFt3s(FlattenedTest3 obj) {
+        removeToManyTarget("ft3s", obj, true);
     }
 
     @SuppressWarnings("unchecked")
-    public List<FlattenedTest3> getFt3Array() {
-        return (List<FlattenedTest3>)readProperty("ft3Array");
+    public List<FlattenedTest3> getFt3s() {
+        return (List<FlattenedTest3>)readProperty("ft3s");
     }
 
-    public void setToFT1(FlattenedTest1 toFT1) {
-        setToOneTarget("toFT1", toFT1, true);
+    public void setFt1(FlattenedTest1 ft1) {
+        setToOneTarget("ft1", ft1, true);
     }
 
-    public FlattenedTest1 getToFT1() {
-        return (FlattenedTest1)readProperty("toFT1");
+    public FlattenedTest1 getFt1() {
+        return (FlattenedTest1)readProperty("ft1");
     }
 
     @Override
@@ -75,10 +75,10 @@ public abstract class _FlattenedTest2 extends PersistentObject {
         switch(propName) {
             case "name":
                 return this.name;
-            case "ft3Array":
-                return this.ft3Array;
-            case "toFT1":
-                return this.toFT1;
+            case "ft3s":
+                return this.ft3s;
+            case "ft1":
+                return this.ft1;
             default:
                 return super.readPropertyDirectly(propName);
         }
@@ -94,11 +94,11 @@ public abstract class _FlattenedTest2 extends PersistentObject {
             case "name":
                 this.name = (String)val;
                 break;
-            case "ft3Array":
-                this.ft3Array = val;
+            case "ft3s":
+                this.ft3s = val;
                 break;
-            case "toFT1":
-                this.toFT1 = val;
+            case "ft1":
+                this.ft1 = val;
                 break;
             default:
                 super.writePropertyDirectly(propName, val);

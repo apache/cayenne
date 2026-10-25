@@ -113,7 +113,7 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 	public void dbEntityQualifier_OuterJoin() throws Exception {
 
 		ObjectSelect<Painting> q = ObjectSelect.query(Painting.class)
-				.orderBy(Painting.TO_ARTIST.outer().dot(Artist.ARTIST_NAME).asc());
+				.orderBy(Painting.ARTIST.outer().dot(Artist.ARTIST_NAME).asc());
 
 		final DbEntity entity = env.context().getEntityResolver().getDbEntity("ARTIST");
 		final DbEntity middleEntity = env.context().getEntityResolver().getDbEntity("ARTIST_GROUP");
@@ -152,7 +152,7 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 	@Test
 	public void dbEntityQualifier_FlattenedRel() throws Exception {
 
-		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class).where(Artist.GROUP_ARRAY.dot(ArtGroup.NAME).eq("bar"));
+		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class).where(Artist.GROUPS.dot(ArtGroup.NAME).eq("bar"));
 
 		final DbEntity entity = env.context().getEntityResolver().getDbEntity("ARTIST");
 		final DbEntity middleEntity = env.context().getEntityResolver().getDbEntity("ARTIST_GROUP");
@@ -188,7 +188,7 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 	public void dbEntityQualifier_RelatedMatch() throws Exception {
 
 		ObjectSelect<Painting> q = ObjectSelect.query(Painting.class)
-				.where(Painting.TO_ARTIST.dot(Artist.ARTIST_NAME).eq("foo"));
+				.where(Painting.ARTIST.dot(Artist.ARTIST_NAME).eq("foo"));
 
 		final DbEntity entity = env.context().getEntityResolver().getDbEntity("ARTIST");
 		final DbEntity middleEntity = env.context().getEntityResolver().getDbEntity("ARTIST_GROUP");
@@ -237,18 +237,18 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 
 	/**
 	 * Test aliases when the same table used in more then 1 relationship. Check
-	 * translation of relationship path "ArtistExhibit.toArtist.artistName" and
-	 * "ArtistExhibit.toExhibit.toGallery.paintingArray.toArtist.artistName".
+	 * translation of relationship path "ArtistExhibit.artist.artistName" and
+	 * "ArtistExhibit.exhibit.gallery.paintings.artist.artistName".
 	 */
 	@Test
 	public void createSqlString5() throws Exception {
 		ObjectSelect<ArtistExhibit> q = ObjectSelect.query(ArtistExhibit.class)
-				.where(ArtistExhibit.TO_ARTIST
+				.where(ArtistExhibit.ARTIST
 						.dot(Artist.ARTIST_NAME).like( "a%"))
-				.and(ArtistExhibit.TO_EXHIBIT
-						.dot(Exhibit.TO_GALLERY)
-						.dot(Gallery.PAINTING_ARRAY)
-						.dot(Painting.TO_ARTIST)
+				.and(ArtistExhibit.EXHIBIT
+						.dot(Exhibit.GALLERY)
+						.dot(Gallery.PAINTINGS)
+						.dot(Painting.ARTIST)
 						.dot(Artist.ARTIST_NAME).like("a%"));
 
 		String generatedSql = new DbAdapterDelegatedSelectTranslator().translate(q, env.dataNode().getAdapter(), env.dataNode().getEntityResolver()).sql();
@@ -268,14 +268,14 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 
 	/**
 	 * Test aliases when the same table used in more then 1 relationship. Check
-	 * translation of relationship path "ArtistExhibit.toArtist.artistName" and
-	 * "ArtistExhibit.toArtist.paintingArray.paintingTitle".
+	 * translation of relationship path "ArtistExhibit.artist.artistName" and
+	 * "ArtistExhibit.artist.paintings.paintingTitle".
 	 */
 	@Test
 	public void createSqlString6() throws Exception {
 		ObjectSelect<ArtistExhibit> q = ObjectSelect.query(ArtistExhibit.class)
-				.where(ArtistExhibit.TO_ARTIST.dot(Artist.ARTIST_NAME).like("a%"))
-				.and(ArtistExhibit.TO_ARTIST.dot(Artist.PAINTING_ARRAY).dot(Painting.PAINTING_TITLE).like("p%"));
+				.where(ArtistExhibit.ARTIST.dot(Artist.ARTIST_NAME).like("a%"))
+				.and(ArtistExhibit.ARTIST.dot(Artist.PAINTINGS).dot(Painting.PAINTING_TITLE).like("p%"));
 
 		String generatedSql = new DbAdapterDelegatedSelectTranslator().translate(q, env.dataNode().getAdapter(), env.dataNode().getEntityResolver())
 				.sql();
@@ -329,14 +329,14 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 	/**
 	 * Test query when qualifying on the same attribute accessed over
 	 * relationship, more than once. Check translation
-	 * "Painting.toArtist.dateOfBirth > ? AND Painting.toArtist.dateOfBirth <
+	 * "Painting.artist.dateOfBirth > ? AND Painting.artist.dateOfBirth <
 	 * ?".
 	 */
 	@Test
 	public void createSqlString8() throws Exception {
 		ObjectSelect<Painting> q = ObjectSelect.query(Painting.class)
-				.where(Painting.TO_ARTIST.dot(Artist.DATE_OF_BIRTH).gt(new Date()))
-				.and(Painting.TO_ARTIST.dot(Artist.DATE_OF_BIRTH).lt(new Date()));
+				.where(Painting.ARTIST.dot(Artist.DATE_OF_BIRTH).gt(new Date()))
+				.and(Painting.ARTIST.dot(Artist.DATE_OF_BIRTH).lt(new Date()));
 
 		String generatedSql = new DbAdapterDelegatedSelectTranslator().translate(q, env.dataNode().getAdapter(), env.dataNode().getEntityResolver()).sql();
 
@@ -413,7 +413,7 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 	@Test
 	public void createSqlString10() throws Exception {
 		// query with to-many joint prefetches
-		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class).prefetch(Artist.PAINTING_ARRAY.joint());
+		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class).prefetch(Artist.PAINTINGS.joint());
 
 		TranslatedSelect transl = new DbAdapterDelegatedSelectTranslator().translate(q, env.dataNode().getAdapter(),
 				env.dataNode().getEntityResolver());
@@ -437,8 +437,8 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 	public void createSqlString11() throws Exception {
 		// query with joint prefetches and other joins
 		ObjectSelect q = ObjectSelect.query(Artist.class)
-				.where(Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE).eq("a"))
-				.prefetch(Artist.PAINTING_ARRAY.joint());
+				.where(Artist.PAINTINGS.dot(Painting.PAINTING_TITLE).eq("a"))
+				.prefetch(Artist.PAINTINGS.joint());
 
 		TranslatedSelect transl = new DbAdapterDelegatedSelectTranslator().translate(q, env.dataNode().getAdapter(),
 				env.dataNode().getEntityResolver());
@@ -452,7 +452,7 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 	@Test
 	public void createSqlString12() throws Exception {
 		// query with to-one joint prefetches
-		ObjectSelect<Painting> q = ObjectSelect.query(Painting.class).prefetch(Painting.TO_ARTIST.joint());
+		ObjectSelect<Painting> q = ObjectSelect.query(Painting.class).prefetch(Painting.ARTIST.joint());
 
 		TranslatedSelect transl = new DbAdapterDelegatedSelectTranslator().translate(q, env.dataNode().getAdapter(),
 				env.dataNode().getEntityResolver());
@@ -575,8 +575,8 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 		// and with QuoteSqlIdentifiers = true
 		try {
 			ObjectSelect<Artist> q = ObjectSelect.query(Artist.class)
-					.where(Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE).eq("a"))
-					.prefetch(Artist.PAINTING_ARRAY.joint());
+					.where(Artist.PAINTINGS.dot(Painting.PAINTING_TITLE).eq("a"))
+					.prefetch(Artist.PAINTINGS.joint());
 
 			DbEntity entity = env.context().getEntityResolver().getDbEntity("ARTIST");
 			entity.getDataMap().setQuotingSQLIdentifiers(true);
@@ -654,7 +654,7 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 		// query with to-one joint prefetches
 		// and with QuoteSqlIdentifiers = true
 		try {
-			ObjectSelect<Painting> q = ObjectSelect.query(Painting.class).prefetch(Painting.TO_ARTIST.joint());
+			ObjectSelect<Painting> q = ObjectSelect.query(Painting.class).prefetch(Painting.ARTIST.joint());
 
 			DbEntity entity = env.context().getEntityResolver().getDbEntity("PAINTING");
 			entity.getDataMap().setQuotingSQLIdentifiers(true);
@@ -746,7 +746,7 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 	 */
 	@Test
 	public void buildResultColumns2() throws Exception {
-		ObjectSelect<Painting> q = ObjectSelect.query(Painting.class).prefetch(Painting.TO_ARTIST.joint());
+		ObjectSelect<Painting> q = ObjectSelect.query(Painting.class).prefetch(Painting.ARTIST.joint());
 		TranslatedSelect tr = new DbAdapterDelegatedSelectTranslator().translate(q, env.dataNode().getAdapter(), env.dataNode().getEntityResolver());
 
 		tr.sql();
@@ -766,7 +766,7 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 			assertEquals(attribute, descriptor.attribute());
 			assertEquals(attribute.getName(), descriptor.rsName());
 			if("ARTIST".equals(attribute.getEntity().getName())) {
-				assertEquals("toArtist." + attribute.getName(), descriptor.dataRowName());
+				assertEquals("artist." + attribute.getName(), descriptor.dataRowName());
 			} else {
 				assertEquals(attribute.getName(), descriptor.dataRowName());
 			}
@@ -778,8 +778,8 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 	public void aliasedJoins() {
 		ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
 				.where(ExpressionFactory.and(
-						ExpressionFactory.matchAllExp("|awardArray", 1, 2),
-						Artist.AWARD_ARRAY.alias("aw1").dot(Award.NAME).eq("123")
+						ExpressionFactory.matchAllExp("|awards", 1, 2),
+						Artist.AWARDS.alias("aw1").dot(Award.NAME).eq("123")
 				));
 		query.select(env.context());
 
@@ -795,8 +795,8 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 	public void aliasedJoins_DifferentAliases() {
 		ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
 				.where(ExpressionFactory.and(
-						Artist.AWARD_ARRAY.alias("aw1").containsId(1),
-						Artist.AWARD_ARRAY.alias("aw2").dot(Award.NAME).eq("123")
+						Artist.AWARDS.alias("aw1").containsId(1),
+						Artist.AWARDS.alias("aw2").dot(Award.NAME).eq("123")
 				));
 		query.select(env.context());
 
@@ -812,8 +812,8 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 	public void aliasedJoins_DifferentProperties() {
 		ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
 				.where(ExpressionFactory.and(
-						Artist.AWARD_ARRAY.alias("aw1").containsId(1),
-						Artist.PAINTING_ARRAY.alias("aw2").dot(Painting.PAINTING_TITLE).eq("123")
+						Artist.AWARDS.alias("aw1").containsId(1),
+						Artist.PAINTINGS.alias("aw2").dot(Painting.PAINTING_TITLE).eq("123")
 				));
 		query.select(env.context());
 
@@ -829,7 +829,7 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 	public void aliasedJoins_FlattenedRelationship() {
 		ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
 				.where(ExpressionFactory.and(
-						ExpressionFactory.matchAllExp("|groupArray.name", "ag1", "ag2")
+						ExpressionFactory.matchAllExp("|groups.name", "ag1", "ag2")
 				));
 		query.select(env.context());
 
@@ -850,8 +850,8 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 		ObjectSelect<Painting> q = ObjectSelect.query(Painting.class)
 				.where
 						(
-								Painting.TO_ARTIST.dot(Artist.DATE_OF_BIRTH).eq(new java.sql.Date(1, 0, 1))
-										.orExp(Painting.TO_GALLERY.dot(Gallery.GALLERY_NAME).like("G%"))
+								Painting.ARTIST.dot(Artist.DATE_OF_BIRTH).eq(new java.sql.Date(1, 0, 1))
+										.orExp(Painting.GALLERY.dot(Gallery.GALLERY_NAME).like("G%"))
 						);
 
 		// If the DbEntity qualifier is set on the WHERE condition then the OR expression will fail to find matches

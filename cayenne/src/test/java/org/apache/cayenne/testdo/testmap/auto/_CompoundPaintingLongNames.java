@@ -34,10 +34,10 @@ public abstract class _CompoundPaintingLongNames extends PersistentObject {
     public static final StringProperty<String> PAINTING_DESCRIPTION = PropertyFactory.createString("paintingDescription", String.class);
     public static final StringProperty<String> PAINTING_TITLE = PropertyFactory.createString("paintingTitle", String.class);
     public static final StringProperty<String> TEXT_LONG_REVIEW = PropertyFactory.createString("textLongReview", String.class);
-    public static final EntityProperty<Artist> TO_ARTIST = PropertyFactory.createEntity("toArtist", Artist.class);
-    public static final EntityProperty<ROArtist> TO_ARTIST1 = PropertyFactory.createEntity("toArtist1", ROArtist.class);
-    public static final EntityProperty<Gallery> TO_GALLERY = PropertyFactory.createEntity("toGallery", Gallery.class);
-    public static final EntityProperty<PaintingInfo> TO_PAINTING_INFO = PropertyFactory.createEntity("toPaintingInfo", PaintingInfo.class);
+    public static final EntityProperty<Artist> ARTIST = PropertyFactory.createEntity("artist", Artist.class);
+    public static final EntityProperty<ROArtist> ARTIST1 = PropertyFactory.createEntity("artist1", ROArtist.class);
+    public static final EntityProperty<Gallery> GALLERY = PropertyFactory.createEntity("gallery", Gallery.class);
+    public static final EntityProperty<PaintingInfo> PAINTING_INFO = PropertyFactory.createEntity("paintingInfo", PaintingInfo.class);
 
     protected String artistLongName;
     protected BigDecimal estimatedPrice;
@@ -46,10 +46,10 @@ public abstract class _CompoundPaintingLongNames extends PersistentObject {
     protected String paintingTitle;
     protected String textLongReview;
 
-    protected Object toArtist;
-    protected Object toArtist1;
-    protected Object toGallery;
-    protected Object toPaintingInfo;
+    protected Object artist;
+    protected Object artist1;
+    protected Object gallery;
+    protected Object paintingInfo;
 
     public void setArtistLongName(String artistLongName) {
         beforePropertyWrite("artistLongName", this.artistLongName, artistLongName);
@@ -111,36 +111,36 @@ public abstract class _CompoundPaintingLongNames extends PersistentObject {
         return this.textLongReview;
     }
 
-    public void setToArtist(Artist toArtist) {
-        setToOneTarget("toArtist", toArtist, true);
+    public void setArtist(Artist artist) {
+        setToOneTarget("artist", artist, true);
     }
 
-    public Artist getToArtist() {
-        return (Artist)readProperty("toArtist");
+    public Artist getArtist() {
+        return (Artist)readProperty("artist");
     }
 
-    public void setToArtist1(ROArtist toArtist1) {
-        setToOneTarget("toArtist1", toArtist1, true);
+    public void setArtist1(ROArtist artist1) {
+        setToOneTarget("artist1", artist1, true);
     }
 
-    public ROArtist getToArtist1() {
-        return (ROArtist)readProperty("toArtist1");
+    public ROArtist getArtist1() {
+        return (ROArtist)readProperty("artist1");
     }
 
-    public void setToGallery(Gallery toGallery) {
-        setToOneTarget("toGallery", toGallery, true);
+    public void setGallery(Gallery gallery) {
+        setToOneTarget("gallery", gallery, true);
     }
 
-    public Gallery getToGallery() {
-        return (Gallery)readProperty("toGallery");
+    public Gallery getGallery() {
+        return (Gallery)readProperty("gallery");
     }
 
-    public void setToPaintingInfo(PaintingInfo toPaintingInfo) {
-        setToOneTarget("toPaintingInfo", toPaintingInfo, true);
+    public void setPaintingInfo(PaintingInfo paintingInfo) {
+        setToOneTarget("paintingInfo", paintingInfo, true);
     }
 
-    public PaintingInfo getToPaintingInfo() {
-        return (PaintingInfo)readProperty("toPaintingInfo");
+    public PaintingInfo getPaintingInfo() {
+        return (PaintingInfo)readProperty("paintingInfo");
     }
 
     @Override
@@ -162,14 +162,14 @@ public abstract class _CompoundPaintingLongNames extends PersistentObject {
                 return this.paintingTitle;
             case "textLongReview":
                 return this.textLongReview;
-            case "toArtist":
-                return this.toArtist;
-            case "toArtist1":
-                return this.toArtist1;
-            case "toGallery":
-                return this.toGallery;
-            case "toPaintingInfo":
-                return this.toPaintingInfo;
+            case "artist":
+                return this.artist;
+            case "artist1":
+                return this.artist1;
+            case "gallery":
+                return this.gallery;
+            case "paintingInfo":
+                return this.paintingInfo;
             default:
                 return super.readPropertyDirectly(propName);
         }
@@ -200,17 +200,17 @@ public abstract class _CompoundPaintingLongNames extends PersistentObject {
             case "textLongReview":
                 this.textLongReview = (String)val;
                 break;
-            case "toArtist":
-                this.toArtist = val;
+            case "artist":
+                this.artist = val;
                 break;
-            case "toArtist1":
-                this.toArtist1 = val;
+            case "artist1":
+                this.artist1 = val;
                 break;
-            case "toGallery":
-                this.toGallery = val;
+            case "gallery":
+                this.gallery = val;
                 break;
-            case "toPaintingInfo":
-                this.toPaintingInfo = val;
+            case "paintingInfo":
+                this.paintingInfo = val;
                 break;
             default:
                 super.writePropertyDirectly(propName, val);

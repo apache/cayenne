@@ -22,9 +22,9 @@
 	<dbRelationship name="binaryPKDetails" source="BINARY_PK_TEST1" target="BINARY_PK_TEST2" toMany="true">
 		<dbAttributePair source="BIN_ID" target="FK_ID"/>
 	</dbRelationship>
-	<dbRelationship name="toBinaryPKMaster" source="BINARY_PK_TEST2" target="BINARY_PK_TEST1" foreignKey="true">
+	<dbRelationship name="binaryPKMaster" source="BINARY_PK_TEST2" target="BINARY_PK_TEST1" foreignKey="true">
 		<dbAttributePair source="FK_ID" target="BIN_ID"/>
 	</dbRelationship>
 	<objRelationship name="binaryPKDetails" source="BinaryPKTest1" target="BinaryPKTest2" dbRelationshipPath="binaryPKDetails"/>
-	<objRelationship name="toBinaryPKMaster" source="BinaryPKTest2" target="BinaryPKTest1" dbRelationshipPath="toBinaryPKMaster"/>
+	<objRelationship name="binaryPKMaster" source="BinaryPKTest2" target="BinaryPKTest1" dbRelationshipPath="binaryPKMaster"/>
 </dataMap>

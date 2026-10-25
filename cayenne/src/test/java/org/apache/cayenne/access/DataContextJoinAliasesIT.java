@@ -90,7 +90,7 @@ public class DataContextJoinAliasesIT {
         Artist dali = env.context().objectForPK(Artist.class, 2);
 
         List<Gallery> galleries = ObjectSelect.query(Gallery.class)
-                .where(ExpressionFactory.matchAllExp("|exhibitArray.artistExhibitArray.toArtist", picasso, dali))
+                .where(ExpressionFactory.matchAllExp("|exhibits.artistExhibits.artist", picasso, dali))
                 .select(env.context());
 
         assertEquals(1, galleries.size());

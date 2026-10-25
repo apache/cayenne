@@ -160,25 +160,25 @@ public class DataContextObjectStoreIT {
         p.setPaintingTitle("Test Painting");
 
         // Set the painting's gallery.
-        p.setToGallery(g);
-        assertEquals(g, p.getToGallery());
+        p.setGallery(g);
+        assertEquals(g, p.getGallery());
 
         // Unregister the painting from the context.
         env.context().unregisterObjects(Collections.singletonList(p));
 
         // Make sure that even though the painting has been removed from the context's
         // object graph that the reference to the gallery is the same.
-        assertEquals(g, p.getToGallery());
+        assertEquals(g, p.getGallery());
 
         // Now, set the relationship between "p" & "a." Since "p" is not registered with a
         // context, but "a" is, "p" should be auto-registered with the context of "a."
-        p.setToArtist(a);
+        p.setArtist(a);
 
         // Now commit the gallery, artist, & painting.
         env.context().commitChanges();
 
         // Check one last time that the painting's gallery is set to what we expect.
-        assertEquals(g, p.getToGallery());
+        assertEquals(g, p.getGallery());
 
         // Now, retrieve the same painting from the DB. Note that the gallery relationship
         // is null even though according to our painting, that should not be the case; a
@@ -188,6 +188,6 @@ public class DataContextObjectStoreIT {
         // The full object graph is not being re-registered during auto-registration
         // with the context.
         Painting newP = (Painting) env.context().objectForPK(p.getObjectId());
-        assertNotNull(newP.getToGallery());
+        assertNotNull(newP.getGallery());
     }
 }

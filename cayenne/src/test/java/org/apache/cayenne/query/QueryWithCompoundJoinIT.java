@@ -71,7 +71,7 @@ public class QueryWithCompoundJoinIT {
     @Test
     public void objectSelectCompoundJoin() throws Exception {
         List<CompoundFkTestEntity> res = ObjectSelect.query(CompoundFkTestEntity.class)
-                .where(CompoundFkTestEntity.TO_COMPOUND_PK.dot(CompoundPkTestEntity.NAME).like("a%"))
+                .where(CompoundFkTestEntity.COMPOUND_PK.dot(CompoundPkTestEntity.NAME).like("a%"))
                 .select(context);
         assertEquals(1, res.size());
         assertEquals("test", res.get(0).getName());

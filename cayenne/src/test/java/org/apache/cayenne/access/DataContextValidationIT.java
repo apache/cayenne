@@ -73,7 +73,7 @@ public class DataContextValidationIT {
         Consumer<Artist> callback = a -> {
             Painting p = a.getObjectContext().newObject(Painting.class);
             p.setPaintingTitle("XXX");
-            p.setToArtist(a);
+            p.setArtist(a);
         };
 
         assertTrue(env.context().isValidatingObjectsOnCommit());

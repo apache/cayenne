@@ -79,8 +79,8 @@ public class PathAliasesIT {
     @Test
     public void beginAlias() {
         List<Artist> artists = ObjectSelect.query(Artist.class)
-                .where(Artist.PAINTING_ARRAY.alias("p1").dot(Painting.PAINTING_TITLE).eq("painting2"))
-                .and(Artist.PAINTING_ARRAY.alias("p2").dot(Painting.PAINTING_TITLE).eq("painting4"))
+                .where(Artist.PAINTINGS.alias("p1").dot(Painting.PAINTING_TITLE).eq("painting2"))
+                .and(Artist.PAINTINGS.alias("p2").dot(Painting.PAINTING_TITLE).eq("painting4"))
                 .select(context);
         assertEquals(1, artists.size());
         assertEquals("artist4", artists.get(0).getArtistName());
@@ -90,10 +90,10 @@ public class PathAliasesIT {
     public void theSameAliases() {
         List<Object[]> results = ObjectSelect.columnQuery(Artist.class,
                 Artist.ARTIST_NAME,
-                Artist.PAINTING_ARRAY.alias("p1").dot(Painting.PAINTING_TITLE),
-                Artist.PAINTING_ARRAY.alias("p2").dot(Painting.PAINTING_TITLE))
-                .where(Artist.PAINTING_ARRAY.alias("p1").dot(Painting.PAINTING_TITLE).eq("painting2"))
-                .and(Artist.PAINTING_ARRAY.alias("p2").dot(Painting.PAINTING_TITLE).eq("painting4"))
+                Artist.PAINTINGS.alias("p1").dot(Painting.PAINTING_TITLE),
+                Artist.PAINTINGS.alias("p2").dot(Painting.PAINTING_TITLE))
+                .where(Artist.PAINTINGS.alias("p1").dot(Painting.PAINTING_TITLE).eq("painting2"))
+                .and(Artist.PAINTINGS.alias("p2").dot(Painting.PAINTING_TITLE).eq("painting4"))
                 .select(context);
         assertEquals(1, results.size());
         assertEquals("artist4", results.get(0)[0]);
@@ -104,8 +104,8 @@ public class PathAliasesIT {
     @Test
     public void middleAlias() {
         List<Artist> artists = ObjectSelect.query(Artist.class)
-                .where(Artist.PAINTING_ARRAY.dot(Painting.TO_GALLERY).dot(Gallery.PAINTING_ARRAY).alias("p1").dot(Painting.PAINTING_TITLE).eq("painting2"))
-                .and(Artist.PAINTING_ARRAY.dot(Painting.TO_GALLERY).dot(Gallery.PAINTING_ARRAY).alias("p2").dot(Painting.PAINTING_TITLE).eq("painting4"))
+                .where(Artist.PAINTINGS.dot(Painting.GALLERY).dot(Gallery.PAINTINGS).alias("p1").dot(Painting.PAINTING_TITLE).eq("painting2"))
+                .and(Artist.PAINTINGS.dot(Painting.GALLERY).dot(Gallery.PAINTINGS).alias("p2").dot(Painting.PAINTING_TITLE).eq("painting4"))
                 .select(context);
         assertEquals(1, artists.size());
         assertEquals("artist4", artists.get(0).getArtistName());
@@ -116,18 +116,18 @@ public class PathAliasesIT {
         Artist artist = context.objectForPK(Artist.class, 1);
 
         List<Painting> paintings = ObjectSelect.query(Painting.class)
-                .where(Painting.TO_ARTIST.alias("p1").eq(artist))
+                .where(Painting.ARTIST.alias("p1").eq(artist))
                 .select(context);
         assertEquals(2, paintings.size());
-        assertEquals("artist1", paintings.get(0).getToArtist().getArtistName());
-        assertEquals("artist1", paintings.get(1).getToArtist().getArtistName());
+        assertEquals("artist1", paintings.get(0).getArtist().getArtistName());
+        assertEquals("artist1", paintings.get(1).getArtist().getArtistName());
     }
 
     @Test
     public void aliases() {
         List<Artist> artists = ObjectSelect.query(Artist.class)
-                .where(Artist.PAINTING_ARRAY.alias("p1").dot(Painting.PAINTING_TITLE).eq("painting2"))
-                .and(Artist.PAINTING_ARRAY.alias("p2").dot(Painting.PAINTING_TITLE).eq("painting4"))
+                .where(Artist.PAINTINGS.alias("p1").dot(Painting.PAINTING_TITLE).eq("painting2"))
+                .and(Artist.PAINTINGS.alias("p2").dot(Painting.PAINTING_TITLE).eq("painting4"))
                 .select(context);
         assertEquals(1, artists.size());
         assertNotNull(artists.get(0));
@@ -136,8 +136,8 @@ public class PathAliasesIT {
 
     @Test
     public void aliasForPath() {
-        PathExp astPath = new ObjPathExp("paintingArray.a.galleryName");
-        astPath.setPathAliases(Collections.singletonMap("a", "toGallery"));
+        PathExp astPath = new ObjPathExp("paintings.a.galleryName");
+        astPath.setPathAliases(Collections.singletonMap("a", "gallery"));
         EqualExp astEqual = new EqualExp(astPath, "tate modern");
         List<Object[]> artists = ObjectSelect.columnQuery(Artist.class, Artist.ARTIST_NAME, PropertyFactory.createBase(astPath, String.class))
                 .where(astEqual)
@@ -149,8 +149,8 @@ public class PathAliasesIT {
 
     @Test
     public void aggregationWithAliases() {
-        List<Object[]> artistAndPaintingCount = ObjectSelect.columnQuery(Artist.class, Artist.ARTIST_NAME, Artist.PAINTING_ARRAY.count())
-                .having(Artist.PAINTING_ARRAY.alias("p1").count().lt(5L))
+        List<Object[]> artistAndPaintingCount = ObjectSelect.columnQuery(Artist.class, Artist.ARTIST_NAME, Artist.PAINTINGS.count())
+                .having(Artist.PAINTINGS.alias("p1").count().lt(5L))
                 .select(context);
         assertEquals(4, artistAndPaintingCount.size());
         assertTrue((Long)artistAndPaintingCount.get(0)[1] < 5);
@@ -159,12 +159,12 @@ public class PathAliasesIT {
     @Test
     public void orderWithAlias() {
         ObjectSelect<Painting> query = ObjectSelect.query(Painting.class)
-                .orderBy(Painting.TO_ARTIST.alias("p1").dot(Artist.ARTIST_NAME).asc())
-                .prefetch(Painting.TO_ARTIST.disjoint());
+                .orderBy(Painting.ARTIST.alias("p1").dot(Artist.ARTIST_NAME).asc())
+                .prefetch(Painting.ARTIST.disjoint());
 
         List<Painting> paintings = query.select(context);
         assertEquals(20, paintings.size());
-        assertEquals("artist1", paintings.get(0).getToArtist().getArtistName());
+        assertEquals("artist1", paintings.get(0).getArtist().getArtistName());
     }
 
     @Test
@@ -173,7 +173,7 @@ public class PathAliasesIT {
         assertThrows(CayenneRuntimeException.class, () -> {
 
             ObjectSelect<Artist> query = ObjectSelect.query(Artist.class);
-            query.prefetch(Artist.PAINTING_ARRAY.alias("p1").disjoint());
+            query.prefetch(Artist.PAINTINGS.alias("p1").disjoint());
             query.select(context);
     
         });
@@ -185,8 +185,8 @@ public class PathAliasesIT {
         assertThrows(CayenneRuntimeException.class, () -> {
 
             ObjectSelect<Artist> query = ObjectSelect.query(Artist.class);
-            query.where(Artist.PAINTING_ARRAY.alias("p1").dot(Painting.PAINTING_TITLE).eq("p1"));
-            query.and(Artist.PAINTING_ARRAY.dot(Painting.TO_GALLERY).alias("p1").dot(Gallery.GALLERY_NAME).eq("g1"));
+            query.where(Artist.PAINTINGS.alias("p1").dot(Painting.PAINTING_TITLE).eq("p1"));
+            query.and(Artist.PAINTINGS.dot(Painting.GALLERY).alias("p1").dot(Gallery.GALLERY_NAME).eq("g1"));
             query.select(context);
     
         });
@@ -194,8 +194,8 @@ public class PathAliasesIT {
 
     @Test
     public void expWithAliases() {
-        Expression e1 = ExpressionFactory.exp("paintingArray#p1.paintingTitle = 'painting2'");
-        Expression e2 = ExpressionFactory.exp("paintingArray#p2.paintingTitle = 'painting4'");
+        Expression e1 = ExpressionFactory.exp("paintings#p1.paintingTitle = 'painting2'");
+        Expression e2 = ExpressionFactory.exp("paintings#p2.paintingTitle = 'painting4'");
         List<Artist> artists = ObjectSelect.query(Artist.class)
                 .where(e1)
                 .and(e2)
@@ -206,7 +206,7 @@ public class PathAliasesIT {
 
     @Test
     public void expWithSeveralAliases() {
-        Expression e1 = ExpressionFactory.exp("paintingArray#p1.toGallery#g1.galleryName = 'tate modern'");
+        Expression e1 = ExpressionFactory.exp("paintings#p1.gallery#g1.galleryName = 'tate modern'");
         List<Artist> artists = ObjectSelect.query(Artist.class)
                 .where(e1)
                 .orderBy(Artist.ARTIST_NAME.asc())
@@ -217,8 +217,8 @@ public class PathAliasesIT {
 
     @Test
     public void middleAliasForExp() {
-        Expression e1 = ExpressionFactory.exp("paintingArray.toGallery.paintingArray#p1.paintingTitle = 'painting2'");
-        Expression e2 = ExpressionFactory.exp("paintingArray.toGallery.paintingArray#p2.paintingTitle = 'painting4'");
+        Expression e1 = ExpressionFactory.exp("paintings.gallery.paintings#p1.paintingTitle = 'painting2'");
+        Expression e2 = ExpressionFactory.exp("paintings.gallery.paintings#p2.paintingTitle = 'painting4'");
         List<Artist> artists = ObjectSelect.query(Artist.class)
                 .where(e1)
                 .and(e2)
@@ -233,8 +233,8 @@ public class PathAliasesIT {
         Painting painting4 = context.objectForPK(Painting.class, 4);
 
         List<Artist> artists = ObjectSelect.query(Artist.class)
-                .where(ExpressionFactory.exp("paintingArray#p1 = $painting1", painting2))
-                .and(ExpressionFactory.exp("paintingArray#p2 = $painting2", painting4))
+                .where(ExpressionFactory.exp("paintings#p1 = $painting1", painting2))
+                .and(ExpressionFactory.exp("paintings#p2 = $painting2", painting4))
                 .select(context);
         assertEquals(1, artists.size());
         assertEquals("artist4", artists.get(0).getArtistName());
@@ -242,10 +242,10 @@ public class PathAliasesIT {
 
     @Test
     public void aliasForPathExp() {
-        PathExp astPath = new ObjPathExp("paintingArray.p1.galleryName");
-        astPath.setPathAliases(Collections.singletonMap("a", "toGallery"));
+        PathExp astPath = new ObjPathExp("paintings.p1.galleryName");
+        astPath.setPathAliases(Collections.singletonMap("a", "gallery"));
         EqualExp astEqual = new EqualExp(astPath, "test gallery");
-        Expression e1 = ExpressionFactory.exp("paintingArray.toGallery#p1.galleryName");
+        Expression e1 = ExpressionFactory.exp("paintings.gallery#p1.galleryName");
         List<Object[]> artists = ObjectSelect.columnQuery(Artist.class, Artist.ARTIST_NAME, PropertyFactory.createBase(e1, String.class))
                 .where(astEqual)
                 .select(context);
@@ -256,10 +256,10 @@ public class PathAliasesIT {
 
     @Test
     public void theSameAliasesForExp() {
-        Expression e1 = ExpressionFactory.exp("paintingArray#p1.paintingTitle");
-        Expression e2 = ExpressionFactory.exp("paintingArray#p2.paintingTitle");
-        Expression e3 = ExpressionFactory.exp("paintingArray#p1.paintingTitle = 'painting2'");
-        Expression e4 = ExpressionFactory.exp("paintingArray#p2.paintingTitle = 'painting4'");
+        Expression e1 = ExpressionFactory.exp("paintings#p1.paintingTitle");
+        Expression e2 = ExpressionFactory.exp("paintings#p2.paintingTitle");
+        Expression e3 = ExpressionFactory.exp("paintings#p1.paintingTitle = 'painting2'");
+        Expression e4 = ExpressionFactory.exp("paintings#p2.paintingTitle = 'painting4'");
         List<Object[]> results = ObjectSelect.columnQuery(Artist.class,
                 Artist.ARTIST_NAME,
                 PropertyFactory.createBase(e1, String.class),
@@ -275,20 +275,20 @@ public class PathAliasesIT {
 
     @Test
     public void orderWithAliasForExp() {
-        Expression e1 = ExpressionFactory.exp("toArtist#p1.artistName");
+        Expression e1 = ExpressionFactory.exp("artist#p1.artistName");
         ObjectSelect<Painting> query = ObjectSelect.query(Painting.class)
                 .orderBy(PropertyFactory.createBase(e1, String.class).asc())
-                .prefetch(Painting.TO_ARTIST.disjoint());
+                .prefetch(Painting.ARTIST.disjoint());
 
         List<Painting> paintings = query.select(context);
         assertEquals(20, paintings.size());
-        assertEquals("artist1", paintings.get(0).getToArtist().getArtistName());
+        assertEquals("artist1", paintings.get(0).getArtist().getArtistName());
     }
 
     @Test
     public void aggregationWithAliasesForExp() {
-        Expression e1 = ExpressionFactory.exp("paintingArray#p1");
-        List<Object[]> artistAndPaintingCount = ObjectSelect.columnQuery(Artist.class, Artist.ARTIST_NAME, Artist.PAINTING_ARRAY.count())
+        Expression e1 = ExpressionFactory.exp("paintings#p1");
+        List<Object[]> artistAndPaintingCount = ObjectSelect.columnQuery(Artist.class, Artist.ARTIST_NAME, Artist.PAINTINGS.count())
                 .having(PropertyFactory.createBase(e1, Number.class).count().lt(5L))
                 .select(context);
         assertEquals(4, artistAndPaintingCount.size());
@@ -300,7 +300,7 @@ public class PathAliasesIT {
     public void prefetchWithAliasesForExp() {
         assertThrows(CayenneRuntimeException.class, () -> {
 
-            Expression e1 = ExpressionFactory.exp("paintingArray#p1");
+            Expression e1 = ExpressionFactory.exp("paintings#p1");
             ObjectSelect<Artist> query = ObjectSelect.query(Artist.class);
             query.prefetch(PropertyFactory.createList("p1", e1, Painting.class).disjoint());
             query.select(context);
@@ -313,7 +313,7 @@ public class PathAliasesIT {
     public void expWithAliasNotToRelSegment() {
         assertThrows(CayenneRuntimeException.class, () -> {
 
-            Expression e1 = ExpressionFactory.exp("paintingArray.paintingTitle#p1 = 'painting2'");
+            Expression e1 = ExpressionFactory.exp("paintings.paintingTitle#p1 = 'painting2'");
             ObjectSelect.query(Artist.class)
                    .where(e1)
                    .select(context);

@@ -74,7 +74,7 @@ public class ObjectSelect_SubqueryIT {
     @Test
     public void selectQuery_existsExpressionSimple() {
         long count = ObjectSelect.query(Artist.class)
-                .where(Artist.PAINTING_ARRAY.exists())
+                .where(Artist.PAINTINGS.exists())
                 .selectCount(context);
         assertEquals(5L, count);
     }
@@ -82,7 +82,7 @@ public class ObjectSelect_SubqueryIT {
     @Test
     public void selectQuery_existsExpression() {
         long count = ObjectSelect.query(Artist.class)
-                .where(Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE).like("painting%").exists())
+                .where(Artist.PAINTINGS.dot(Painting.PAINTING_TITLE).like("painting%").exists())
                 .selectCount(context);
         assertEquals(5L, count);
     }
@@ -90,14 +90,14 @@ public class ObjectSelect_SubqueryIT {
     @Test
     public void selectQuery_simpleNotExistsExpression() {
         long count = ObjectSelect.query(Artist.class)
-                .where(Artist.PAINTING_ARRAY.notExists())
+                .where(Artist.PAINTINGS.notExists())
                 .selectCount(context);
         assertEquals(15L, count);
     }
 
     @Test
     public void selectQuery_existsWithExpressionFromParentQuery() {
-        Expression exp = Painting.TO_ARTIST.eq(Artist.ARTIST_ID_PK_PROPERTY.enclosing())
+        Expression exp = Painting.ARTIST.eq(Artist.ARTIST_ID_PK_PROPERTY.enclosing())
                 .andExp(Painting.PAINTING_TITLE.like("painting%"))
                 .andExp(Artist.ARTIST_NAME.enclosing().like("art%"));
 
@@ -111,7 +111,7 @@ public class ObjectSelect_SubqueryIT {
     @Test
     public void selectQuery_notExistsWithExpressionFromParentQuery() {
         ObjectSelect<Painting> subQuery = ObjectSelect.query(Painting.class)
-                .where(Painting.TO_ARTIST.eq(Artist.ARTIST_ID_PK_PROPERTY.enclosing()));
+                .where(Painting.ARTIST.eq(Artist.ARTIST_ID_PK_PROPERTY.enclosing()));
         long count = ObjectSelect.query(Artist.class)
                 .where(ExpressionFactory.notExists(subQuery))
                 .selectCount(context);
@@ -131,11 +131,11 @@ public class ObjectSelect_SubqueryIT {
     @Test
     public void selectQuery_twoLevelExistsWithExpressionFromParentQuery() {
         Expression deepNestedExp = Artist.ARTIST_NAME.enclosing().enclosing().like("art%")
-                .andExp(Painting.TO_GALLERY.enclosing().eq(Gallery.SELF));
+                .andExp(Painting.GALLERY.enclosing().eq(Gallery.SELF));
 
         Expression exp = Painting.PAINTING_TITLE.like("painting%")
                 .andExp(ExpressionFactory.exists(ObjectSelect.query(Gallery.class).where(deepNestedExp)))
-                .andExp(Painting.TO_ARTIST.eq(Artist.SELF.enclosing()));
+                .andExp(Painting.ARTIST.eq(Artist.SELF.enclosing()));
 
         long count = ObjectSelect.query(Artist.class)
                 .where(ExpressionFactory.exists(ObjectSelect.query(Painting.class).where(exp)))
@@ -147,11 +147,11 @@ public class ObjectSelect_SubqueryIT {
     public void objectSelect_twoLevelExistsWithExpressionFromParentQuery() {
         ObjectSelect<Gallery> deepSubquery = ObjectSelect.query(Gallery.class)
                 .where(Artist.ARTIST_NAME.enclosing().enclosing().like("art%"))
-                .and(Painting.TO_GALLERY.enclosing().eq(Gallery.SELF));
+                .and(Painting.GALLERY.enclosing().eq(Gallery.SELF));
 
         ObjectSelect<Painting> subquery = ObjectSelect.query(Painting.class)
                 .where(Painting.PAINTING_TITLE.like("painting%"))
-                .and(Painting.TO_ARTIST.eq(Artist.SELF.enclosing()))
+                .and(Painting.ARTIST.eq(Artist.SELF.enclosing()))
                 .and(ExpressionFactory.exists(deepSubquery));
 
         long count = ObjectSelect.query(Artist.class)
@@ -168,7 +168,7 @@ public class ObjectSelect_SubqueryIT {
                 .where(Artist.DATE_OF_BIRTH.lt(new Date()));
 
         long count = ObjectSelect.query(Painting.class)
-                .where(Painting.TO_ARTIST.dot(Artist.ARTIST_NAME).in(subquery))
+                .where(Painting.ARTIST.dot(Artist.ARTIST_NAME).in(subquery))
                 .selectCount(context);
 
         assertEquals(4L, count);
@@ -181,7 +181,7 @@ public class ObjectSelect_SubqueryIT {
                 .where(Artist.DATE_OF_BIRTH.lt(new Date()));
 
         long count = ObjectSelect.query(Painting.class)
-                .where(Painting.TO_ARTIST.dot(Artist.ARTIST_NAME).nin(subquery))
+                .where(Painting.ARTIST.dot(Artist.ARTIST_NAME).nin(subquery))
                 .selectCount(context);
 
         assertEquals(16L, count);
