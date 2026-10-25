@@ -83,7 +83,8 @@ public class JdbcAdapterIT {
             DbEntity entity = new DbEntity();
             DbAttribute attr = new DbAttribute();
             attr.setName("name column");
-            attr.setType(1);
+            attr.setType(Types.CHAR);
+            attr.setMaxLength(10);
             entity.addAttribute(attr);
 
             DbKeyGenerator id = new DbKeyGenerator();
@@ -94,7 +95,7 @@ public class JdbcAdapterIT {
             entity.setDataMap(dm);
             entity.setName("name table");
 
-            String str = "CREATE TABLE `name table` (`name column` CHAR NULL) ENGINE=InnoDB";
+            String str = "CREATE TABLE `name table` (`name column` CHAR(10) NULL) ENGINE=InnoDB";
             assertEquals(str, mySQLAdapter.createTable(entity));
         }
     }

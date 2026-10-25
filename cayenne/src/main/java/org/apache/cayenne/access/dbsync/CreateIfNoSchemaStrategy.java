@@ -50,7 +50,7 @@ public class CreateIfNoSchemaStrategy implements SchemaUpdateStrategy {
         boolean generate = true;
         for (DataMap map : dataMaps) {
             for (DbEntity entity : map.getDbEntities()) {
-                if (tablesInDB.contains(entity.getName())) {
+                if (isInDB(tablesInDB, entity)) {
                     generate = false;
                     break;
                 }
@@ -79,6 +79,18 @@ public class CreateIfNoSchemaStrategy implements SchemaUpdateStrategy {
                 throw new CayenneRuntimeException(e);
             }
         }
+    }
+
+    // same table matching rule as SchemaAnalyzer: unquoted identifiers may be folded by the DB to upper or lower case
+    // (e.g. PostgreSQL folds to lower case), quoted identifiers are stored as is
+    private static boolean isInDB(Set<String> tablesInDB, DbEntity entity) {
+        String name = entity.getName();
+        if (tablesInDB.contains(name)) {
+            return true;
+        }
+
+        return !entity.getDataMap().isQuotingSQLIdentifiers()
+                && (tablesInDB.contains(name.toLowerCase()) || tablesInDB.contains(name.toUpperCase()));
     }
 
     /**
