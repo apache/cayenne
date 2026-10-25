@@ -22,6 +22,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.dba.mysql.MySQLAdapter;
+import org.apache.cayenne.dba.postgres.PostgresAdapter;
 import org.apache.cayenne.map.EntityResolver;
 import org.junit.jupiter.api.Test;
 
@@ -98,6 +100,23 @@ public class SQLSelectTest {
 		SQLSelect<DataRow> q = SQLSelect.dataRowQuery("bla").paramsArray("a", "b");
 		SQLTemplate replacement = (SQLTemplate) q.createReplacementQuery(mock(EntityResolver.class));
 		assertArrayEquals(new Object[] { "a", "b" }, replacement.getPositionalParams().toArray());
+	}
+
+	@Test
+	public void createReplacementQuery_Dialect() {
+
+		SQLSelect<DataRow> q = SQLSelect.dataRowQuery("default")
+				.append(" plus")
+				.dialect(MySQLAdapter.class, "mysql")
+				.dialectAppend(MySQLAdapter.class, " plus")
+				.dialectAppend(PostgresAdapter.class, "postgres")
+				.dialectAppend(PostgresAdapter.class, " plus");
+
+		SQLTemplate<?> replacement = (SQLTemplate<?>) q.createReplacementQuery(mock(EntityResolver.class));
+		assertEquals("default plus", replacement.getDefaultTemplate());
+		assertEquals("mysql plus", replacement.getTemplate(MySQLAdapter.class.getName()));
+		assertEquals("postgres plus", replacement.getTemplate(PostgresAdapter.class.getName()));
+		assertEquals("default plus", replacement.getTemplate("org.example.OtherAdapter"));
 	}
 
 	@Test

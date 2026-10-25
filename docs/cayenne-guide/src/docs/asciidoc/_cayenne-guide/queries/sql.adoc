@@ -35,3 +35,13 @@ And here is an example of how to use `SQLExec`:
 ----
 include::{java-examples}/SQLSelectTest.java[tags=exec]
 ----
+
+Specific SQL may not portable across databases. Both queries can carry alternative "dialects" of their SQL, keyed by the
+`DbAdapter` class of the database they apply to. When the query runs, Cayenne picks the dialect matching the adapter of
+the target `DataNode`, falling back to the default SQL when there is none. Just like the default SQL can be extended with `append(..)`, a
+dialect can be built up incrementally with `dialectAppend(..)`:
+
+[source,java,indent=0]
+----
+include::{java-examples}/SQLSelectTest.java[tags=dialect]
+----

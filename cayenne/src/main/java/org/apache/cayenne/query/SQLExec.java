@@ -18,18 +18,19 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResult;
 import org.apache.cayenne.SelectResult;
 import org.apache.cayenne.UpdateResult;
+import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.EntityResolver;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A generic query based on raw SQL and featuring fluent API. While
@@ -58,26 +59,63 @@ public class SQLExec extends IndirectQuery {
     }
 
     protected String dataMapName;
-    protected StringBuilder sqlBuffer;
+    protected StringBuilder sql;
+    protected Map<String, StringBuilder> sqlDialects;
     protected Map<String, Object> params;
     protected List<Object> positionalParams;
     protected boolean returnGeneratedKeys;
     protected int queryTimeout;
 
     public SQLExec(String sql) {
-        this.sqlBuffer = sql != null ? new StringBuilder(sql) : new StringBuilder();
+        this.sql = sql != null ? new StringBuilder(sql) : new StringBuilder();
     }
 
     public String getSql() {
-        String sql = sqlBuffer.toString();
+        String sql = this.sql.toString();
         return sql.length() > 0 ? sql : null;
     }
 
     /**
-     * Appends a piece of SQL to the previously stored SQL template.
+     * Appends a piece of SQL to the previously stored default SQL template. Dialects registered with
+     * {@link #dialect(Class, String)} stay unchanged, use {@link #dialectAppend(Class, String)} to extend those.
      */
     public SQLExec append(String sqlChunk) {
-        sqlBuffer.append(sqlChunk);
+        sql.append(sqlChunk);
+        this.replacementQuery = null;
+        return this;
+    }
+
+    /**
+     * Sets an alternative SQL template to use when the query runs against a DataNode with the given adapter. Allows
+     * a single query to carry multiple "dialects" of the same SQL, one per database. The default SQL (passed to the
+     * query factory method and extended with {@link #append(String)}) is used for adapters without a dialect.
+     * Matching is done by the exact adapter class, so a dialect registered for an adapter superclass does not apply
+     * to its subclasses.
+     *
+     * @param adapterType the adapter class this dialect applies to, e.g. {@code MySQLAdapter.class}
+     * @param sql         the complete SQL template to use with this adapter
+     * @since 6.0
+     */
+    public SQLExec dialect(Class<? extends DbAdapter> adapterType, String sql) {
+        if (sqlDialects == null) {
+            sqlDialects = new HashMap<>();
+        }
+        sqlDialects.put(adapterType.getName(), new StringBuilder(sql));
+        this.replacementQuery = null;
+        return this;
+    }
+
+    /**
+     * Appends a piece of SQL to the dialect registered for the given adapter with {@link #dialect(Class, String)}.
+     * If no dialect was registered yet, the chunk becomes the start of a new one.
+     *
+     * @since 6.0
+     */
+    public SQLExec dialectAppend(Class<? extends DbAdapter> adapterType, String sqlChunk) {
+        if (sqlDialects == null) {
+            sqlDialects = new HashMap<>();
+        }
+        sqlDialects.computeIfAbsent(adapterType.getName(), k -> new StringBuilder()).append(sqlChunk);
         this.replacementQuery = null;
         return this;
     }
@@ -87,7 +125,6 @@ public class SQLExec extends IndirectQuery {
         return this;
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
     public SQLExec params(Map<String, ?> parameters) {
 
         if (this.params == null) {
@@ -143,7 +180,7 @@ public class SQLExec extends IndirectQuery {
      * bound to SQL.
      */
     public Map<String, Object> getParams() {
-        return params != null ? params : Collections.<String, Object>emptyMap();
+        return params != null ? params : Collections.emptyMap();
     }
 
     /**
@@ -221,6 +258,10 @@ public class SQLExec extends IndirectQuery {
         SQLTemplate<?> template = dataMapName != null
                 ? SQLTemplate.dataRowQuery(dataMapName, getSql())
                 : SQLTemplate.dataRowQuery(getSql());
+        if (sqlDialects != null) {
+            sqlDialects.forEach((adapter, sql) -> template.setTemplate(adapter, sql.toString()));
+        }
+
         template.setReturnGeneratedKeys(returnGeneratedKeys);
         template.setQueryTimeout(queryTimeout);
 

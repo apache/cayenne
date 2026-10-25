@@ -31,6 +31,8 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ResultBatchIterator;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.frontbase.FrontBaseAdapter;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.CayenneProjects;
@@ -101,6 +103,37 @@ public class SQLSelectIT {
 		List<DataRow> result = context.select(q1);
 		assertEquals(20, result.size());
 		assertTrue(result.get(0) instanceof DataRow);
+	}
+
+	@Test
+	public void dialect() throws Exception {
+		createPaintingsDataSet();
+		Class<? extends DbAdapter> adapterType = env.runtime().getDataDomain().getDefaultNode().getAdapter().getClass();
+
+		// the dialect of the current adapter replaces the default SQL
+		List<DataRow> matching = SQLSelect.dataRowQuery("SELECT * FROM PAINTING")
+				.dialect(adapterType, "SELECT * FROM PAINTING WHERE PAINTING_ID <= 5")
+				.select(context);
+		assertEquals(5, matching.size());
+
+		// the dialect of another adapter is ignored
+		List<DataRow> notMatching = SQLSelect.dataRowQuery("SELECT * FROM PAINTING")
+				.dialect(FrontBaseAdapter.class, "SELECT * FROM PAINTING WHERE PAINTING_ID <= 5")
+				.select(context);
+		assertEquals(20, notMatching.size());
+	}
+
+	@Test
+	public void dialect_Append() throws Exception {
+		createPaintingsDataSet();
+		Class<? extends DbAdapter> adapterType = env.runtime().getDataDomain().getDefaultNode().getAdapter().getClass();
+
+		List<DataRow> result = SQLSelect.dataRowQuery("SELECT * FROM PAINTING")
+				.append(" WHERE PAINTING_ID <= 3")
+				.dialect(adapterType, "SELECT * FROM PAINTING")
+				.dialectAppend(adapterType, " WHERE PAINTING_ID <= 5")
+				.select(context);
+		assertEquals(5, result.size());
 	}
 
 	@Test

@@ -20,6 +20,7 @@ package org.apache.cayenne.query;
 
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.EntityResolver;
 
 import java.util.ArrayList;
@@ -43,7 +44,8 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
     private Function<T, ?> resultMapper;
     protected Class<T> persistentType;
     protected String dataMapName;
-    protected StringBuilder sqlBuffer;
+    protected StringBuilder sql;
+    protected Map<String, StringBuilder> sqlDialects;
     protected QueryCacheStrategy cacheStrategy;
     protected String cacheGroup;
     protected Map<String, Object> params;
@@ -187,7 +189,7 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 
     public SQLSelect(Class<T> persistentType, String sql) {
         this.persistentType = persistentType;
-        this.sqlBuffer = sql != null ? new StringBuilder(sql) : new StringBuilder();
+        this.sql = sql != null ? new StringBuilder(sql) : new StringBuilder();
         this.limit = QueryMetadata.FETCH_LIMIT_DEFAULT;
         this.offset = QueryMetadata.FETCH_OFFSET_DEFAULT;
         this.pageSize = QueryMetadata.PAGE_SIZE_DEFAULT;
@@ -205,15 +207,51 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
     }
 
     public String getSql() {
-        String sql = sqlBuffer.toString();
+        String sql = this.sql.toString();
         return sql.length() > 0 ? sql : null;
     }
 
     /**
-     * Appends a piece of SQL to the previously stored SQL template.
+     * Appends a piece of SQL to the previously stored default SQL template. Dialects registered with
+     * {@link #dialect(Class, String)} stay unchanged, use {@link #dialectAppend(Class, String)} to extend those.
      */
     public SQLSelect<T> append(String sqlChunk) {
-        sqlBuffer.append(sqlChunk);
+        sql.append(sqlChunk);
+        this.replacementQuery = null;
+        return this;
+    }
+
+    /**
+     * Sets an alternative SQL template to use when the query runs against a DataNode with the given adapter. Allows
+     * a single query to carry multiple "dialects" of the same SQL, one per database. The default SQL (passed to the
+     * query factory method and extended with {@link #append(String)}) is used for adapters without a dialect.
+     * Matching is done by the exact adapter class, so a dialect registered for an adapter superclass does not apply
+     * to its subclasses.
+     *
+     * @param adapterType the adapter class this dialect applies to, e.g. {@code MySQLAdapter.class}
+     * @param sql         the complete SQL template to use with this adapter
+     * @since 6.0
+     */
+    public SQLSelect<T> dialect(Class<? extends DbAdapter> adapterType, String sql) {
+        if (sqlDialects == null) {
+            sqlDialects = new HashMap<>();
+        }
+        sqlDialects.put(adapterType.getName(), new StringBuilder(sql));
+        this.replacementQuery = null;
+        return this;
+    }
+
+    /**
+     * Appends a piece of SQL to the dialect registered for the given adapter with {@link #dialect(Class, String)}.
+     * If no dialect was registered yet, the chunk becomes the start of a new one.
+     *
+     * @since 6.0
+     */
+    public SQLSelect<T> dialectAppend(Class<? extends DbAdapter> adapterType, String sqlChunk) {
+        if (sqlDialects == null) {
+            sqlDialects = new HashMap<>();
+        }
+        sqlDialects.computeIfAbsent(adapterType.getName(), k -> new StringBuilder()).append(sqlChunk);
         this.replacementQuery = null;
         return this;
     }
@@ -302,6 +340,10 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
         } else {
             // will route via default node. TODO: allow explicit node name?
             template = new SQLTemplate<>(getSql());
+        }
+
+        if (sqlDialects != null) {
+            sqlDialects.forEach((adapter, sql) -> template.setTemplate(adapter, sql.toString()));
         }
 
         template.setFetchingDataRows(isFetchingDataRows);

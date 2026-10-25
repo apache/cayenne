@@ -26,6 +26,8 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.QueryResult;
 import org.apache.cayenne.SelectResult;
 import org.apache.cayenne.UpdateResult;
+import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.frontbase.FrontBaseAdapter;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.Test;
@@ -50,6 +52,44 @@ public class SQLExecIT {
     public void defaultRoot() throws Exception {
         int inserted = SQLExec.query("INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (1, 'a')").update(env.context());
         assertEquals(1, inserted);
+    }
+
+    @Test
+    public void dialect() throws Exception {
+        Class<? extends DbAdapter> adapterType = env.runtime().getDataDomain().getDefaultNode().getAdapter().getClass();
+
+        int inserted = SQLExec.query("INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (1, 'default')")
+                .dialect(adapterType, "INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (2, 'dialect')")
+                .update(env.context());
+
+        assertEquals(1, inserted);
+        assertEquals(2L, env.table("ARTIST").getLong("ARTIST_ID"));
+        assertEquals("dialect", env.table("ARTIST").getString("ARTIST_NAME").trim());
+    }
+
+    @Test
+    public void dialect_OtherAdapter() throws Exception {
+        int inserted = SQLExec.query("INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (1, 'default')")
+                .dialect(FrontBaseAdapter.class, "INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (2, 'dialect')")
+                .update(env.context());
+
+        assertEquals(1, inserted);
+        assertEquals(1L, env.table("ARTIST").getLong("ARTIST_ID"));
+        assertEquals("default", env.table("ARTIST").getString("ARTIST_NAME").trim());
+    }
+
+    @Test
+    public void dialect_Append() throws Exception {
+        Class<? extends DbAdapter> adapterType = env.runtime().getDataDomain().getDefaultNode().getAdapter().getClass();
+
+        int inserted = SQLExec.query("INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME)")
+                .append(" VALUES (1, 'default')")
+                .dialect(adapterType, "INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME)")
+                .dialectAppend(adapterType, " VALUES (2, 'dialect')")
+                .update(env.context());
+
+        assertEquals(1, inserted);
+        assertEquals(2L, env.table("ARTIST").getLong("ARTIST_ID"));
     }
 
     @Test

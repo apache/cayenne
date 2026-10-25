@@ -19,6 +19,8 @@
 package org.apache.cayenne.docs;
 
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.dba.oracle.OracleAdapter;
+import org.apache.cayenne.dba.sqlserver.SQLServerAdapter;
 import org.apache.cayenne.docs.persistent.Painting;
 import org.apache.cayenne.query.SQLExec;
 import org.apache.cayenne.query.SQLSelect;
@@ -66,6 +68,22 @@ public class SQLSelectTest extends BaseTest {
         assertEquals(3, rows.size());
         assertEquals(3, arrays.size());
         assertInstanceOf(LocalDate.class, arrays.get(0)[2]);
+    }
+
+    @Test
+    public void dialect() {
+        createArtistsDataSet();
+
+        // tag::dialect[]
+        List<String> firstName = SQLSelect
+                // default SQL, used with any database that has no dialect below
+                .scalarQuery("SELECT NAME FROM ARTIST ORDER BY NAME LIMIT 1", String.class)
+                .dialect(SQLServerAdapter.class, "SELECT TOP 1 NAME FROM ARTIST ORDER BY NAME")
+                .dialect(OracleAdapter.class, "SELECT NAME FROM ARTIST ORDER BY NAME FETCH FIRST 1 ROWS ONLY")
+                .select(context);
+        // end::dialect[]
+
+        assertEquals(List.of("Aivazovsky"), firstName);
     }
 
     @Test
