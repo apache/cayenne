@@ -786,6 +786,15 @@
                             <binary>false</binary>
                         </properties>
                     </configuration>
+                    <!-- Not needed for resolution, but makes the reactor build cayenne-legal before the modules that
+                         process its bundle. Without it, a parallel build (mvnd, -T) races and fails to resolve it -->
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.apache.cayenne.build-tools</groupId>
+                            <artifactId>cayenne-legal</artifactId>
+                            <version>${project.version}</version>
+                        </dependency>
+                    </dependencies>
                 </plugin>
                 <plugin>
                     <artifactId>maven-javadoc-plugin</artifactId>
