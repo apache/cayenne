@@ -76,8 +76,7 @@ public abstract sealed class AggregateConditionExp extends Expression permits An
 		// this is a check that we can't handle properly in the grammar... do it here...
 		// only allow conditional nodes... no scalars
 		if (!(value instanceof ConditionExp) && !(value instanceof AggregateConditionExp)) {
-			String label = (value instanceof Expression node) ? node.expName() : String.valueOf(value);
-			throw new ExpressionException(expName() + ": invalid operand - " + label);
+			throw new ExpressionException(expName() + ": invalid operand - " + value);
 		}
 
 		super.setOperand(index, value);

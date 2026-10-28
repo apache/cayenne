@@ -26,6 +26,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.exp.*;
 import org.apache.cayenne.query.FluentSelect;
 import org.apache.cayenne.query.PrefetchTreeNode;

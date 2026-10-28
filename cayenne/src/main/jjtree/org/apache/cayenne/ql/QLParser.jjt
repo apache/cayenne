@@ -41,6 +41,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.exp.*;
 import org.apache.cayenne.query.FluentSelect;
 import org.apache.cayenne.query.PrefetchTreeNode;
@@ -84,7 +85,10 @@ public class QLParser {
         try {
             return function.apply(new QLParser(new QLParserTokenManager(stream)));
         } catch (Throwable th) {
-            String message = th.getMessage();
+            // the message of a nested Cayenne exception already has the version label, so is taken without it
+            String message = th instanceof CayenneRuntimeException
+                    ? ((CayenneRuntimeException) th).getUnlabeledMessage()
+                    : th.getMessage();
             throw new ExpressionException("%s", th, message != null ? message : "");
         }
     }
@@ -166,6 +170,13 @@ public class QLParser {
     private boolean isSubquery(int offset) {
         return "(".equals(getToken(offset).image)
             && (isKeyword(offset + 1, "select") || isKeyword(offset + 1, "from"));
+    }
+
+    private void conditionOperand(Token first) throws ParseException {
+        Object operand = jjtree.peekNode();
+        if (!(operand instanceof ConditionExp) && !(operand instanceof AggregateConditionExp)) {
+            throw unexpectedToken(first, "a condition");
+        }
     }
 
     private ParseException unexpectedToken(Token t, String expected) {
@@ -454,14 +465,16 @@ void inOperand() : {}
         "(" scalarCommaList() ")"
 }
 
-void orCondition() : {}
+// only the left operand of "or" and "and" is checked here, to report it with its position. The right one is checked
+// by the node itself, as an action that follows it in the node scope runs after the node is closed
+void orCondition() : { Token t = getToken(1); }
 {
-	andCondition() ( "or" andCondition() #OrExp(2) )*
+	andCondition() ( "or" { conditionOperand(t); } andCondition() #OrExp(2) )*
 }
 
-void andCondition() : {}
+void andCondition() : { Token t = getToken(1); }
 {
-	notCondition() ( "and" notCondition() #AndExp(2) )*
+	notCondition() ( "and" { conditionOperand(t); } notCondition() #AndExp(2) )*
 }
 
 void notCondition() : {}

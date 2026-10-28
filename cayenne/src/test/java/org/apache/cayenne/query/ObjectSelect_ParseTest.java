@@ -218,6 +218,32 @@ public class ObjectSelect_ParseTest {
     }
 
     @Test
+    public void nonConditionOperand() {
+        ExpressionException e = assertThrows(ExpressionException.class,
+                () -> ObjectSelect.parse("from Artist where a and a"));
+        assertInstanceOf(ParseException.class, e.getCause());
+        assertEquals("Encountered \"a\" at line 1, column 19. Was expecting: a condition", e.getUnlabeledMessage());
+
+        // the right operand is reported with no position
+        e = assertThrows(ExpressionException.class, () -> ObjectSelect.parse("from Artist where a = 1 or b + 1"));
+        assertEquals("Or: invalid operand - b + 1", e.getUnlabeledMessage());
+
+        e = assertThrows(ExpressionException.class, () -> ObjectSelect.parse("from Artist where not a"));
+        assertEquals("Not: invalid operand - a", e.getUnlabeledMessage());
+
+        // a lone path is still a valid column, and a valid condition when compared
+        ObjectSelect.parse("select a from Artist");
+        ObjectSelect.parse("from Artist where not a = 1 and (b = 2 or c = 3)");
+    }
+
+    @Test
+    public void nestedErrorMessageHasNoLabel() {
+        ExpressionException e = assertThrows(ExpressionException.class,
+                () -> ObjectSelect.parse("from Artist where a = $x", 1, 2));
+        assertFalse(e.getUnlabeledMessage().startsWith("[v."), e.getUnlabeledMessage());
+    }
+
+    @Test
     public void collectionParameter() {
         FluentSelect<?, ?> q = ObjectSelect.parse("from Artist where db:ARTIST_ID in $ids", List.of(1, 2));
         assertEquals(ExpressionFactory.inDbExp("ARTIST_ID", 1, 2), q.getWhere());
