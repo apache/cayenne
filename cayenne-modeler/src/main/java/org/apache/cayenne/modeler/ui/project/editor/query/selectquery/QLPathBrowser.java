@@ -56,7 +56,6 @@ class QLPathBrowser extends JPanel {
     private static final String TREE_CARD = "tree";
     private static final String PLACEHOLDER_CARD = "placeholder";
 
-    private final JLabel title;
     private final JTree tree;
     private final JLabel hint;
     private final JPanel cards;
@@ -70,7 +69,6 @@ class QLPathBrowser extends JPanel {
      */
     QLPathBrowser(Consumer<String> pathConsumer) {
         this.pathConsumer = pathConsumer;
-        this.title = new JLabel();
         this.tree = new JTree(new DefaultTreeModel(null));
         this.hint = new JLabel("Double-click inserts a path");
         this.cardLayout = new CardLayout();
@@ -87,7 +85,6 @@ class QLPathBrowser extends JPanel {
         tree.setToggleClickCount(0);
         tree.setCellRenderer(new PathNodeRenderer());
 
-        title.setBorder(BorderFactory.createEmptyBorder(0, 2, 3, 0));
         hint.setBorder(BorderFactory.createEmptyBorder(3, 2, 0, 0));
         hint.setForeground(UIManager.getColor("Label.disabledForeground"));
 
@@ -101,7 +98,6 @@ class QLPathBrowser extends JPanel {
         cards.add(placeholder, PLACEHOLDER_CARD);
 
         setLayout(new BorderLayout());
-        add(title, BorderLayout.NORTH);
         add(cards, BorderLayout.CENTER);
         add(hint, BorderLayout.SOUTH);
 
@@ -144,11 +140,9 @@ class QLPathBrowser extends JPanel {
 
         this.entity = entity;
         if (entity != null) {
-            title.setText(entity.getName());
             tree.setModel(new EntityTreeModel(entity));
             cardLayout.show(cards, TREE_CARD);
         } else {
-            title.setText(" ");
             tree.setModel(new DefaultTreeModel(null));
             cardLayout.show(cards, PLACEHOLDER_CARD);
         }
