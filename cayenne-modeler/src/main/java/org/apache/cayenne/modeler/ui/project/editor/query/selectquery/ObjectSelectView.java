@@ -82,16 +82,6 @@ public class ObjectSelectView extends BaseQueryMainTab {
     private void initLayout() {
         CellConstraints cc = new CellConstraints();
 
-        PanelBuilder nameBuilder = new PanelBuilder(
-                new FormLayout(EditorForm.LABEL_COLUMN + ", $lcgap, fill:200dlu", "p"));
-        nameBuilder.setBorder(EditorForm.formBorder());
-        nameBuilder.addLabel("Name:", cc.xy(1, 1));
-        nameBuilder.add(name, cc.xy(3, 1));
-
-        JPanel header = new JPanel(new BorderLayout());
-        header.add(EditorForm.toolBarSpacer(), BorderLayout.NORTH);
-        header.add(nameBuilder.getPanel(), BorderLayout.CENTER);
-
         JPanel query = new JPanel(new BorderLayout());
         query.add(editor, BorderLayout.CENTER);
         query.add(statusLine, BorderLayout.SOUTH);
@@ -105,8 +95,15 @@ public class ObjectSelectView extends BaseQueryMainTab {
         split.setBackground(UIManager.getColor("Panel.background"));
 
         JPanel queryAndPaths = new JPanel(new BorderLayout());
-        queryAndPaths.setBorder(EditorForm.sectionBorder());
+        queryAndPaths.setBorder(EditorForm.formBorder());
         queryAndPaths.add(split, BorderLayout.CENTER);
+
+        // the name opens the list of the query properties, below the query String
+        PanelBuilder nameBuilder = new PanelBuilder(
+                new FormLayout(EditorForm.LABEL_COLUMN + ", $lcgap, fill:200dlu", "p"));
+        nameBuilder.setBorder(EditorForm.sectionBorder());
+        nameBuilder.addLabel("Name:", cc.xy(1, 1));
+        nameBuilder.add(name, cc.xy(3, 1));
 
         // the comment closes the form, below the query properties
         PanelBuilder commentBuilder = new PanelBuilder(
@@ -116,12 +113,13 @@ public class ObjectSelectView extends BaseQueryMainTab {
         commentBuilder.add(comment, cc.xy(3, 1));
 
         JPanel footer = new JPanel(new BorderLayout());
-        footer.add(properties, BorderLayout.NORTH);
-        footer.add(commentBuilder.getPanel(), BorderLayout.CENTER);
+        footer.add(nameBuilder.getPanel(), BorderLayout.NORTH);
+        footer.add(properties, BorderLayout.CENTER);
+        footer.add(commentBuilder.getPanel(), BorderLayout.SOUTH);
 
         // the query String takes all the height that the rest of the form doesn't need
         setLayout(new BorderLayout());
-        add(header, BorderLayout.NORTH);
+        add(EditorForm.toolBarSpacer(), BorderLayout.NORTH);
         add(queryAndPaths, BorderLayout.CENTER);
         add(footer, BorderLayout.SOUTH);
     }

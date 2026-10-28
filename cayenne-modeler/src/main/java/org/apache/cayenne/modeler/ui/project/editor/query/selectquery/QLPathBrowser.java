@@ -88,8 +88,8 @@ class QLPathBrowser extends JPanel {
         hint.setBorder(BorderFactory.createEmptyBorder(3, 2, 0, 0));
         hint.setForeground(UIManager.getColor("Label.disabledForeground"));
 
-        JLabel placeholder = new JLabel("<html>Write \"from &lt;Entity&gt;\" to browse its paths</html>",
-                SwingConstants.CENTER);
+        JLabel placeholder = new JLabel("No root entity specified", SwingConstants.CENTER);
+        placeholder.setVerticalAlignment(SwingConstants.CENTER);
         placeholder.setForeground(UIManager.getColor("Label.disabledForeground"));
 
         JScrollPane treeScrollPane = new JScrollPane(tree);
@@ -142,9 +142,12 @@ class QLPathBrowser extends JPanel {
         if (entity != null) {
             tree.setModel(new EntityTreeModel(entity));
             cardLayout.show(cards, TREE_CARD);
+            hint.setVisible(true);
         } else {
             tree.setModel(new DefaultTreeModel(null));
             cardLayout.show(cards, PLACEHOLDER_CARD);
+            // there are no paths to click
+            hint.setVisible(false);
         }
     }
 
