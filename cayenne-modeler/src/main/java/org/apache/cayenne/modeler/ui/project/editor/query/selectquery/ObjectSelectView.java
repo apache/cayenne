@@ -20,11 +20,14 @@ package org.apache.cayenne.modeler.ui.project.editor.query.selectquery;
 
 import java.awt.BorderLayout;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.UIManager;
 
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.SelectQueryDescriptor;
@@ -47,6 +50,11 @@ import com.jgoodies.forms.layout.FormLayout;
 public class ObjectSelectView extends BaseQueryMainTab {
 
     private static final int DEFAULT_SPLIT_LOCATION = 520;
+
+    // the first "from" clause, outside of the quoted string literals, and the entity name that follows it, if any
+    private static final Pattern FROM = Pattern.compile(
+            "'(?:[^'\\\\]|\\\\.)*'|\"(?:[^\"\\\\]|\\\\.)*\"|(?<![\\w$.])from(?![\\w$.])\\s*(db:\\s*)?([\\w$]*)",
+            Pattern.DOTALL);
 
     private final QLEditor editor;
     private final QLStatusLine statusLine;
@@ -157,11 +165,19 @@ public class ObjectSelectView extends BaseQueryMainTab {
         SelectQueryDescriptor query = getQuery();
         statusLine.update(query, problems);
         if (query != null) {
-            // a String of the same query that can't be parsed keeps the last tree, so that it doesn't flicker while
-            // typing
             if (query != browserQuery || query.isValid()) {
                 browserQuery = query;
                 pathBrowser.setEntity(rootEntity(query));
+            } else {
+                RootRef root = rootRef(query.getQl());
+                if (root == null) {
+                    pathBrowser.setEntity(null);
+                } else {
+                    Entity<?, ?, ?> entity = root.resolve(query.getDataMap());
+                    if (entity != null) {
+                        pathBrowser.setEntity(entity);
+                    }
+                }
             }
             properties.updateDataRowsEnabled(query);
         }
@@ -169,6 +185,38 @@ public class ObjectSelectView extends BaseQueryMainTab {
 
     private static Entity<?, ?, ?> rootEntity(SelectQueryDescriptor query) {
         return query.getRoot() instanceof Entity<?, ?, ?> entity ? entity : null;
+    }
+
+    /**
+     * Returns the entity named in the first "from" clause of a query String, that may not be parseable, or null if
+     * there's no "from" clause, or no name in it.
+     */
+    static RootRef rootRef(String ql) {
+        if (ql == null) {
+            return null;
+        }
+
+        Matcher matcher = FROM.matcher(ql);
+        while (matcher.find()) {
+            // a match with no groups is a string literal
+            if (matcher.group(2) != null) {
+                return matcher.group(2).isEmpty() ? null : new RootRef(matcher.group(2), matcher.group(1) != null);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * A name of the root entity of a query, either an ObjEntity, or a DbEntity.
+     */
+    record RootRef(String name, boolean db) {
+
+        Entity<?, ?, ?> resolve(DataMap dataMap) {
+            if (dataMap == null) {
+                return null;
+            }
+            return db ? dataMap.getDbEntity(name) : dataMap.getObjEntity(name);
+        }
     }
 
     private void setQueryComment(String text) {
