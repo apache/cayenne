@@ -32,6 +32,7 @@ import org.apache.cayenne.map.SelectQueryDescriptor;
 import org.apache.cayenne.projecttools.validation.SelectQueryPaths;
 import org.apache.cayenne.ql.ParseException;
 import org.fife.ui.rsyntaxtextarea.RSyntaxDocument;
+import org.fife.ui.rsyntaxtextarea.RSyntaxUtilities;
 import org.fife.ui.rsyntaxtextarea.Token;
 import org.fife.ui.rsyntaxtextarea.parser.AbstractParser;
 import org.fife.ui.rsyntaxtextarea.parser.DefaultParseResult;
@@ -120,9 +121,16 @@ class QLEditorParser extends AbstractParser {
             }
         } else {
             Matcher matcher = POSITION.matcher(String.valueOf(error.getMessage()));
-            offset = matcher.find()
-                    ? offsetOf(doc, Integer.parseInt(matcher.group(1)), Integer.parseInt(matcher.group(2)))
-                    : length - 1;
+            if (matcher.find()) {
+                // only the position of the token is known, so its length is taken from the editor tokens
+                offset = offsetOf(doc, Integer.parseInt(matcher.group(1)), Integer.parseInt(matcher.group(2)));
+                Token token = offset < length ? RSyntaxUtilities.getTokenAtOffset(doc, offset) : null;
+                if (token != null && token.getOffset() == offset) {
+                    size = token.length();
+                }
+            } else {
+                offset = length - 1;
+            }
         }
 
         // an error at the end of the text is shown on its last char

@@ -59,6 +59,13 @@ public class QLEditorParserTest {
     }
 
     @Test
+    public void errorRangeOfNonConditionOperand() throws Exception {
+        String ql = "from Artist where artistName and a = 1";
+        assertArrayEquals(new int[]{ql.indexOf("artistName"), 10},
+                QLEditorParser.errorRange(parseError(ql), document(ql)));
+    }
+
+    @Test
     public void occurrences() throws Exception {
         String ql = "select nme from Artist\nwhere nme = 1 and db:NME = 2 and nme.x = 3";
         RSyntaxDocument doc = document(ql);
