@@ -53,6 +53,7 @@ CAY-3051 Replace PropertyVisitor with ClassDescriptor property collections
 CAY-3054 Remove ObjRelationship.isReadOnly()
 CAY-3056 Switch DataMap queries to the new query parser
 CAY-3057 Improve parameter binding in the query parser
+CAY-3066 Modeler: update SQLTemplate editor UI
 
 Bug Fixes:
 

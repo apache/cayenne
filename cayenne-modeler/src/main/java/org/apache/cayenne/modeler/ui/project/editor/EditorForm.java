@@ -75,6 +75,15 @@ public final class EditorForm {
     }
 
     /**
+     * Border of a component that fills the top of an editor without a toolbar, such as a query text editor: the
+     * dialog side margins all around, so that the editor is evenly inset from the top and the sides, and no bottom
+     * margin, as another section of the form follows.
+     */
+    public static Border editorAreaBorder() {
+        return border(LayoutStyle.getCurrent().getDialogMarginX(), Sizes.ZERO);
+    }
+
+    /**
      * Border of a form section that continues the panel above it: dialog side margins, so that the
      * labels line up, the form row gap on top, so that the rows read as one list across the panel
      * boundary, and no bottom margin, as another section may follow.

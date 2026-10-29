@@ -19,23 +19,15 @@
 package org.apache.cayenne.modeler.ui.project.editor.query.selectquery;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
-
-import javax.swing.BorderFactory;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 
 import org.apache.cayenne.map.SelectQueryDescriptor;
 import org.apache.cayenne.modeler.event.model.QueryEvent;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.toolkit.ProjectPanel;
-import org.apache.cayenne.modeler.toolkit.text.CMUndoableSyntaxTextArea;
-import org.fife.ui.rsyntaxtextarea.AbstractTokenMakerFactory;
-import org.fife.ui.rsyntaxtextarea.TokenMakerFactory;
-import org.fife.ui.rtextarea.RTextScrollPane;
+import org.apache.cayenne.modeler.toolkit.text.QueryTextEditor;
 
 /**
  * A text editor of the query String of an ObjectSelect query, with the syntax highlighted, and the problems of the
@@ -43,49 +35,32 @@ import org.fife.ui.rtextarea.RTextScrollPane;
  */
 class QLEditor extends ProjectPanel {
 
-    private static final int PARSER_DELAY_MS = 300;
-
     static {
-        AbstractTokenMakerFactory factory = (AbstractTokenMakerFactory) TokenMakerFactory.getDefaultInstance();
-        factory.putMapping(QLTokenMaker.SYNTAX_STYLE, QLTokenMaker.class.getName());
+        QueryTextEditor.registerTokenMaker(QLTokenMaker.SYNTAX_STYLE, QLTokenMaker.class);
     }
 
-    private final CMUndoableSyntaxTextArea textArea;
-    private final QLEditorParser parser;
+    private final QueryTextEditor editor;
 
     private SelectQueryDescriptor query;
-
-    // true while the text is loaded from the model, so that it isn't written back
-    private boolean loading;
 
     /**
      * @param problemsListener receives the problems of the query after each check, empty if there are none
      */
     QLEditor(ProjectSession session, Consumer<List<String>> problemsListener) {
         super(session);
-        this.textArea = new CMUndoableSyntaxTextArea(app.getUndoManager());
-        this.parser = new QLEditorParser(() -> query, problemsListener);
+        this.editor = new QueryTextEditor(app.getUndoManager(), QLTokenMaker.SYNTAX_STYLE,
+                new QLEditorParser(() -> query, problemsListener));
         initLayout();
         initBindings();
     }
 
     private void initLayout() {
-        textArea.setSyntaxEditingStyle(QLTokenMaker.SYNTAX_STYLE);
-        textArea.setRows(8);
-        textArea.setHighlightCurrentLine(false);
-        textArea.setCodeFoldingEnabled(false);
-        textArea.setAntiAliasingEnabled(true);
-        textArea.setParserDelay(PARSER_DELAY_MS);
-        textArea.addParser(parser);
-
         setLayout(new BorderLayout());
-        RTextScrollPane scrollPane = new RTextScrollPane(textArea, true);
-        scrollPane.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
-        add(scrollPane, BorderLayout.CENTER);
+        add(editor, BorderLayout.CENTER);
     }
 
     private void initBindings() {
-        textArea.getDocument().addDocumentListener(new TextChangeListener());
+        editor.setChangeListener(this::textChanged);
     }
 
     /**
@@ -93,33 +68,21 @@ class QLEditor extends ProjectPanel {
      */
     void setQuery(SelectQueryDescriptor query) {
         this.query = query;
-
-        loading = true;
-        try {
-            textArea.setText(query != null && query.getQl() != null ? query.getQl() : "");
-            textArea.setCaretPosition(0);
-        } finally {
-            loading = false;
-        }
-
-        // check right away, not after the delay that is meant for typing
-        textArea.forceReparsing(parser);
+        editor.setText(query != null ? query.getQl() : null);
     }
 
     /**
      * Inserts the text at the caret, in place of the selection.
      */
     void insert(String text) {
-        textArea.replaceSelection(text);
-        textArea.requestFocusInWindow();
+        editor.insert(text);
     }
 
-    private void textChanged() {
-        if (loading || query == null) {
+    private void textChanged(String text) {
+        if (query == null) {
             return;
         }
 
-        String text = textArea.getText();
         String ql = text.isBlank() ? null : text;
         if (Objects.equals(ql, query.getQl())) {
             return;
@@ -127,23 +90,5 @@ class QLEditor extends ProjectPanel {
 
         query.setQl(ql);
         session.fireQueryEvent(QueryEvent.ofChange(this, query));
-    }
-
-    private final class TextChangeListener implements DocumentListener {
-
-        @Override
-        public void insertUpdate(DocumentEvent e) {
-            textChanged();
-        }
-
-        @Override
-        public void removeUpdate(DocumentEvent e) {
-            textChanged();
-        }
-
-        @Override
-        public void changedUpdate(DocumentEvent e) {
-            // style changes only
-        }
     }
 }

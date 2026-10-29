@@ -18,28 +18,20 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.ui.project.editor.query.selectquery;
 
-import java.awt.Color;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.swing.BorderFactory;
-import javax.swing.JLabel;
-import javax.swing.UIManager;
-
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.SelectQueryDescriptor;
+import org.apache.cayenne.modeler.toolkit.text.QueryStatusLine;
 
 /**
  * A line under the query editor that shows what the query returns and its parameters, or the first problem of the
  * query.
  */
-class QLStatusLine extends JLabel {
-
-    QLStatusLine() {
-        setBorder(BorderFactory.createEmptyBorder(4, 2, 0, 0));
-    }
+class QLStatusLine extends QueryStatusLine {
 
     /**
      * Shows the state of the query after it was checked.
@@ -48,27 +40,16 @@ class QLStatusLine extends JLabel {
      */
     void update(SelectQueryDescriptor query, List<String> problems) {
         if (query == null) {
-            setText(" ");
-            setToolTipText(null);
-            return;
+            clear();
+        } else if (!problems.isEmpty()) {
+            showErrors(problems);
+        } else {
+            Set<String> parameters = query.getParameterNames();
+            String parametersText = parameters.isEmpty()
+                    ? "none"
+                    : parameters.stream().map(p -> "$" + p).collect(Collectors.joining(", "));
+            showOk("Returns: " + resultType(query) + "    Parameters: " + parametersText);
         }
-
-        if (!problems.isEmpty()) {
-            String more = problems.size() > 1 ? "  (and " + (problems.size() - 1) + " more)" : "";
-            setText("✗ " + problems.getFirst() + more);
-            setToolTipText(problems.size() > 1 ? "<html>" + String.join("<br>", problems) + "</html>" : null);
-            setForeground(color());
-            return;
-        }
-
-        Set<String> parameters = query.getParameterNames();
-        String parametersText = parameters.isEmpty()
-                ? "none"
-                : parameters.stream().map(p -> "$" + p).collect(Collectors.joining(", "));
-
-        setText("✓ Returns: " + resultType(query) + "    Parameters: " + parametersText);
-        setToolTipText(null);
-        setForeground(UIManager.getColor("Label.foreground"));
     }
 
     /**
@@ -82,10 +63,5 @@ class QLStatusLine extends JLabel {
             case ARRAY -> "Object[] (" + query.getParsedQuery().getColumns().size() + " columns)";
             case null -> String.valueOf(query.getRoot());
         };
-    }
-
-    private static Color color() {
-        Color color = UIManager.getColor("Actions.Red");
-        return color != null ? color : Color.RED;
     }
 }

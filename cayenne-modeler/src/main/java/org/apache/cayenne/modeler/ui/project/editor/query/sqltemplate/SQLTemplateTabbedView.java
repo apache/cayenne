@@ -19,26 +19,25 @@
 
 package org.apache.cayenne.modeler.ui.project.editor.query.sqltemplate;
 
-import org.apache.cayenne.map.QueryDescriptor;
-import org.apache.cayenne.modeler.toolkit.ProjectTabbedPane;
-import org.apache.cayenne.modeler.project.ProjectSession;
-
-import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
+
 import org.apache.cayenne.map.SQLTemplateDescriptor;
+import org.apache.cayenne.modeler.project.ProjectSession;
+import org.apache.cayenne.modeler.toolkit.ProjectTabbedPane;
 
 public class SQLTemplateTabbedView extends ProjectTabbedPane {
 
-    private final SQLTemplateMainTab mainTab;
-    private final SQLTemplateScriptsTab scriptsTab;
+    private static final int MAIN_TAB = 0;
+    private static final int PREFETCH_TAB = 1;
+
+    private final SQLTemplateView mainTab;
     private final SQLTemplatePrefetchTab prefetchTab;
     private int lastSelectionIndex;
 
     public SQLTemplateTabbedView(ProjectSession session) {
         super(session);
-        this.mainTab = new SQLTemplateMainTab(session);
-        this.scriptsTab = new SQLTemplateScriptsTab(session);
+        this.mainTab = new SQLTemplateView(session);
         this.prefetchTab = new SQLTemplatePrefetchTab(session);
         initLayout();
         initBindings();
@@ -46,8 +45,9 @@ public class SQLTemplateTabbedView extends ProjectTabbedPane {
 
     private void initLayout() {
         setTabPlacement(JTabbedPane.TOP);
-        addTab("SQLTemplate", new JScrollPane(mainTab));
-        addTab("SQL Scripts", scriptsTab);
+
+        // not in a scroll pane, so that the SQL editor takes all the height of the tab
+        addTab("SQLTemplate", mainTab);
         addTab("Prefetches", prefetchTab);
     }
 
@@ -62,14 +62,14 @@ public class SQLTemplateTabbedView extends ProjectTabbedPane {
     }
 
     private void initFromModel() {
-        if (!(session.getSelectedQuery() instanceof SQLTemplateDescriptor)) {
+        if (!(session.getSelectedQuery() instanceof SQLTemplateDescriptor query)) {
             setVisible(false);
             return;
         }
 
-        // if no root, reset tabs to show the first panel..
-        if (session.getSelectedQuery().getRoot() == null) {
-            lastSelectionIndex = 0;
+        // the prefetches are only meaningful for a query with a root entity
+        if (query.getRoot() == null) {
+            lastSelectionIndex = MAIN_TAB;
         }
 
         // tab did not change - force update
@@ -85,20 +85,23 @@ public class SQLTemplateTabbedView extends ProjectTabbedPane {
     }
 
     private void updateTabs() {
-        switch (lastSelectionIndex) {
-            case 0:
-                mainTab.initFromModel();
-                break;
-            case 1:
-                scriptsTab.initFromModel();
-                break;
-            case 2:
-                prefetchTab.initFromModel();
-                break;
+        // the main tab follows the query display events itself
+        if (lastSelectionIndex == PREFETCH_TAB) {
+            prefetchTab.initFromModel();
         }
     }
 
-    public SQLTemplateScriptsTab getScriptsTab() {
-        return scriptsTab;
+    /**
+     * Returns the key of the SQL script shown in the editor.
+     */
+    public String getSelectedScript() {
+        return mainTab.getSelectedScript();
+    }
+
+    /**
+     * Shows the SQL script in the editor.
+     */
+    public void showScript(String key) {
+        mainTab.showScript(key);
     }
 }

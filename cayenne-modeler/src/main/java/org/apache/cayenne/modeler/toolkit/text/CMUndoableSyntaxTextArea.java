@@ -30,7 +30,7 @@ import org.fife.ui.rtextarea.RUndoManager;
 
 /**
  * A syntax-highlighting text area that records its edits in the Modeler {@link CayenneUndoManager}, the same as
- * {@link CMUndoableTextPane}, instead of its own undo history.
+ * {@link CMUndoableTextField}, instead of its own undo history.
  */
 public class CMUndoableSyntaxTextArea extends RSyntaxTextArea {
 

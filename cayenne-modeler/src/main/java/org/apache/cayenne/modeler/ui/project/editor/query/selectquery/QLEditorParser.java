@@ -29,6 +29,7 @@ import javax.swing.text.Element;
 
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.map.SelectQueryDescriptor;
+import org.apache.cayenne.modeler.toolkit.text.TextPositions;
 import org.apache.cayenne.projecttools.validation.SelectQueryPaths;
 import org.apache.cayenne.ql.ParseException;
 import org.fife.ui.rsyntaxtextarea.RSyntaxDocument;
@@ -78,16 +79,17 @@ class QLEditorParser extends AbstractParser {
             try {
                 descriptor.getParsedQuery();
             } catch (ExpressionException e) {
-                String message = firstLine(e.getUnlabeledMessage());
+                String message = TextPositions.firstLine(e.getUnlabeledMessage(), "Invalid query");
                 int[] range = errorRange(e, doc);
-                result.addNotice(new DefaultParserNotice(this, message, lineOf(root, range[0]), range[0], range[1]));
+                result.addNotice(new DefaultParserNotice(this, message, TextPositions.lineOf(doc, range[0]),
+                        range[0], range[1]));
                 problems.add(message);
             }
         } else {
             for (SelectQueryPaths.Problem problem : SelectQueryPaths.check(descriptor)) {
                 for (int[] range : occurrences(doc, problem.name())) {
-                    result.addNotice(new DefaultParserNotice(this, problem.message(), lineOf(root, range[0]),
-                            range[0], range[1]));
+                    result.addNotice(new DefaultParserNotice(this, problem.message(),
+                            TextPositions.lineOf(doc, range[0]), range[0], range[1]));
                 }
                 problems.add(problem.message());
             }
@@ -115,7 +117,7 @@ class QLEditorParser extends AbstractParser {
             int line = parseError.currentToken.next.beginLine;
             int beginColumn = parseError.currentToken.next.beginColumn;
             int endColumn = parseError.currentToken.next.endColumn;
-            offset = offsetOf(doc, line, beginColumn);
+            offset = TextPositions.offsetOf(doc, line, beginColumn);
             if (parseError.currentToken.next.endLine == line && endColumn >= beginColumn) {
                 size = endColumn - beginColumn + 1;
             }
@@ -123,7 +125,8 @@ class QLEditorParser extends AbstractParser {
             Matcher matcher = POSITION.matcher(String.valueOf(error.getMessage()));
             if (matcher.find()) {
                 // only the position of the token is known, so its length is taken from the editor tokens
-                offset = offsetOf(doc, Integer.parseInt(matcher.group(1)), Integer.parseInt(matcher.group(2)));
+                offset = TextPositions.offsetOf(doc, Integer.parseInt(matcher.group(1)),
+                        Integer.parseInt(matcher.group(2)));
                 Token token = offset < length ? RSyntaxUtilities.getTokenAtOffset(doc, offset) : null;
                 if (token != null && token.getOffset() == offset) {
                     size = token.length();
@@ -134,21 +137,9 @@ class QLEditorParser extends AbstractParser {
         }
 
         // an error at the end of the text is shown on its last char
-        offset = Math.max(0, Math.min(offset, length - 1));
-        size = Math.max(1, Math.min(size, length - offset));
-        return new int[]{offset, size};
+        return TextPositions.clamp(doc, offset, size);
     }
 
-    // the line and the column are 1-based
-    private static int offsetOf(RSyntaxDocument doc, int line, int column) {
-        Element root = doc.getDefaultRootElement();
-        int lineIndex = Math.max(0, Math.min(line - 1, root.getElementCount() - 1));
-        return root.getElement(lineIndex).getStartOffset() + Math.max(0, column - 1);
-    }
-
-    private static int lineOf(Element root, int offset) {
-        return root.getElementIndex(offset);
-    }
 
     /**
      * Returns the offsets and the lengths of the occurrences of a name in the text, either a whole identifier token, or
@@ -171,13 +162,5 @@ class QLEditorParser extends AbstractParser {
             }
         }
         return ranges;
-    }
-
-    private static String firstLine(String message) {
-        if (message == null) {
-            return "Invalid query";
-        }
-        int eol = message.indexOf('\n');
-        return (eol >= 0 ? message.substring(0, eol) : message).trim();
     }
 }

@@ -20,6 +20,7 @@
 package org.apache.cayenne.modeler.ui.project.editor.procedure;
 
 import org.apache.cayenne.modeler.ui.project.editor.EditorForm;
+import org.apache.cayenne.modeler.ui.project.editor.query.LabelCapsRenderer;
 import org.apache.cayenne.modeler.ui.project.editor.query.RawQueryPropertiesPanel;
 import org.apache.cayenne.modeler.ui.project.editor.query.SelectPropertiesPanel;
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -50,27 +51,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 
 public class ProcedureQueryView extends ProjectPanel {
-
-    private static final String DEFAULT_CAPS_LABEL = "Database Default";
-    private static final String LOWER_CAPS_LABEL = "Force Lower Case";
-    private static final String UPPER_CAPS_LABEL = "Force Upper Case";
-
-    private static final CapsStrategy[] LABEL_CAPITALIZATION = {
-            CapsStrategy.DEFAULT, CapsStrategy.LOWER, CapsStrategy.UPPER
-    };
-
-    private static final Map<CapsStrategy, String> labelCapsLabels = new HashMap<>();
-
-    static {
-        labelCapsLabels.put(CapsStrategy.DEFAULT, DEFAULT_CAPS_LABEL);
-        labelCapsLabels.put(CapsStrategy.LOWER, LOWER_CAPS_LABEL);
-        labelCapsLabels.put(CapsStrategy.UPPER, UPPER_CAPS_LABEL);
-    }
 
     protected CMUndoableTextField name;
     protected CMUndoableTextField comment;
@@ -262,19 +245,6 @@ public class ProcedureQueryView extends ProjectPanel {
         return ObjectInfo.getFromMetaData(app.getMetaData(), queryDescriptor, ObjectInfo.COMMENT);
     }
 
-    final class LabelCapsRenderer extends DefaultListCellRenderer {
-
-        public Component getListCellRendererComponent(
-                JList list,
-                Object object,
-                int arg2,
-                boolean arg3,
-                boolean arg4) {
-            object = labelCapsLabels.get(object);
-            return super.getListCellRendererComponent(list, object, arg2, arg3, arg4);
-        }
-    }
-
     final class ProcedureQueryPropertiesPanel extends RawQueryPropertiesPanel<ProcedureQueryDescriptor> {
 
         private JComboBox<CapsStrategy> labelCase;
@@ -317,7 +287,8 @@ public class ProcedureQueryView extends ProjectPanel {
             fetchOffset.setText(String.valueOf(query.getFetchOffset()));
             fetchLimit.setText(String.valueOf(query.getFetchLimit()));
 
-            DefaultComboBoxModel<CapsStrategy> labelCaseModel = new DefaultComboBoxModel<>(LABEL_CAPITALIZATION);
+            DefaultComboBoxModel<CapsStrategy> labelCaseModel =
+                    new DefaultComboBoxModel<>(LabelCapsRenderer.STRATEGIES);
             CapsStrategy columnNameCapitalization = query.getColumnNamesCapitalization();
             labelCaseModel.setSelectedItem(columnNameCapitalization != null ?
                     columnNameCapitalization : CapsStrategy.DEFAULT);

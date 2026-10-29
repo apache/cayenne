@@ -45,7 +45,8 @@ public class TextCompoundEdit extends CompoundEdit implements DocumentListener {
 
     private final TreePath treePath;
     private int selectedTabIndex;
-    private int selectedItem;
+    // the SQL script of a SQLTemplate that was edited
+    private String selectedScript;
     private JTabbedPane tabbedPane;
 
     private Object targetObject;
@@ -93,7 +94,7 @@ public class TextCompoundEdit extends CompoundEdit implements DocumentListener {
             tabbedPane = editorPanel.getSqlTemplateView();
 
             if (tabbedPane != null) {
-                selectedItem = ((SQLTemplateTabbedView) tabbedPane).getScriptsTab().getSelectedIndex();
+                selectedScript = ((SQLTemplateTabbedView) tabbedPane).getSelectedScript();
             }
         }
 
@@ -122,8 +123,8 @@ public class TextCompoundEdit extends CompoundEdit implements DocumentListener {
         if (tabbedPane != null) {
             tabbedPane.setSelectedIndex(selectedTabIndex);
 
-            if (tabbedPane instanceof SQLTemplateTabbedView) {
-                ((SQLTemplateTabbedView) tabbedPane).getScriptsTab().setSelectedIndex(selectedItem);
+            if (tabbedPane instanceof SQLTemplateTabbedView sqlTemplateView && selectedScript != null) {
+                sqlTemplateView.showScript(selectedScript);
             }
         }
     }
