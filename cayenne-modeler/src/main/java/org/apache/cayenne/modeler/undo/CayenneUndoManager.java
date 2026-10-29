@@ -51,37 +51,13 @@ public class CayenneUndoManager extends UndoManager {
 
     @Override
     public void redo() throws CannotRedoException {
-        UndoableEdit e = editToBeRedone();
-
-        if (e instanceof TextCompoundEdit edit) {
-
-            edit.watchCaretPosition();
-
-            super.redo();
-
-            edit.stopWatchingCaretPosition();
-        } else {
-            super.redo();
-        }
-
+        super.redo();
         updateUI();
     }
 
     @Override
     public void undo() throws CannotUndoException {
-        UndoableEdit e = editToBeUndone();
-
-        if (e instanceof TextCompoundEdit edit) {
-
-            edit.watchCaretPosition();
-
-            super.undo();
-
-            edit.stopWatchingCaretPosition();
-        } else {
-            super.undo();
-        }
-
+        super.undo();
         updateUI();
     }
 

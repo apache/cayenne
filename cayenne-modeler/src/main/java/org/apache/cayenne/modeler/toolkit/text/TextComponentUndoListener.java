@@ -21,11 +21,11 @@ package org.apache.cayenne.modeler.toolkit.text;
 import org.apache.cayenne.modeler.undo.CayenneUndoManager;
 import org.apache.cayenne.modeler.undo.TextCompoundEdit;
 
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
 import javax.swing.text.JTextComponent;
-import javax.swing.undo.CompoundEdit;
-import javax.swing.undo.UndoableEdit;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
@@ -35,16 +35,23 @@ class TextComponentUndoListener implements UndoableEditListener {
 
     private final JTextComponent editor;
     private final CayenneUndoManager undoManager;
-    private CompoundEdit compoundEdit;
+    private TextCompoundEdit compoundEdit;
 
     private int lastOffset;
     private int lastLength;
 
     private boolean isKeyEdit;
 
+    // the text before and after the last change of the document, including the changes that aren't recorded
+    private String previousText;
+    private String currentText;
+
     public TextComponentUndoListener(JTextComponent editor, CayenneUndoManager undoManager) {
         this.editor = editor;
         this.undoManager = undoManager;
+        this.currentText = editor.getText();
+        this.previousText = currentText;
+        this.editor.getDocument().addDocumentListener(new TextTracker());
         this.editor.addFocusListener(new FocusAdapter() {
 
             @Override
@@ -64,14 +71,14 @@ class TextComponentUndoListener implements UndoableEditListener {
     public void undoableEditHappened(UndoableEditEvent e) {
 
         if (compoundEdit == null || !compoundEdit.canUndo()) {
-            compoundEdit = startCompoundEdit(e.getEdit());
+            compoundEdit = startCompoundEdit();
             lastLength = editor.getDocument().getLength();
             return;
         }
 
         // See AbstractDocument.DefaultDocumentEvent.getPresentationName() method
         if ("AbstractDocument.styleChangeText".equals(e.getEdit().getPresentationName())) {
-            compoundEdit.addEdit(e.getEdit());
+            compoundEdit.editHappened();
             return;
         }
 
@@ -79,25 +86,25 @@ class TextComponentUndoListener implements UndoableEditListener {
         int lengthChange = editor.getDocument().getLength() - lastLength;
 
         if (Math.abs(offsetChange) == 1 && Math.abs(lengthChange) == 1) {
-            compoundEdit.addEdit(e.getEdit());
+            compoundEdit.editHappened();
             lastOffset = editor.getCaretPosition();
             lastLength = editor.getDocument().getLength();
             return;
         }
 
         compoundEdit.end();
-        compoundEdit = startCompoundEdit(e.getEdit());
+        compoundEdit = startCompoundEdit();
     }
 
-    private CompoundEdit startCompoundEdit(UndoableEdit anEdit) {
+    private TextCompoundEdit startCompoundEdit() {
 
         lastOffset = editor.getCaretPosition();
         lastLength = editor.getDocument().getLength();
 
-        compoundEdit = new TextCompoundEdit(editor, this::finishCurrentEdit);
+        compoundEdit = new TextCompoundEdit(editor, this, this::finishCurrentEdit, previousText);
 
         if (isKeyEdit) {
-            compoundEdit.addEdit(anEdit);
+            compoundEdit.editHappened();
         } else {
             return null;
         }
@@ -111,6 +118,31 @@ class TextComponentUndoListener implements UndoableEditListener {
             compoundEdit.end();
             compoundEdit = null;
             isKeyEdit = false;
+        }
+    }
+
+    // document listeners are notified before the undoable edit listeners, so the previous text is the text before the
+    // edit being recorded
+    private final class TextTracker implements DocumentListener {
+
+        @Override
+        public void insertUpdate(DocumentEvent e) {
+            textChanged();
+        }
+
+        @Override
+        public void removeUpdate(DocumentEvent e) {
+            textChanged();
+        }
+
+        @Override
+        public void changedUpdate(DocumentEvent e) {
+            // style changes only
+        }
+
+        private void textChanged() {
+            previousText = currentText;
+            currentText = editor.getText();
         }
     }
 }

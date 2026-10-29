@@ -30,18 +30,26 @@ import org.apache.cayenne.modeler.ui.project.editor.EditorPanelView;
 import org.apache.cayenne.modeler.ui.project.editor.query.sqltemplate.SQLTemplateTabbedView;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
+import javax.swing.event.UndoableEditListener;
+import javax.swing.text.AbstractDocument;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.CompoundEdit;
+import javax.swing.undo.UndoableEdit;
 
-public class TextCompoundEdit extends CompoundEdit implements DocumentListener {
+public class TextCompoundEdit extends CompoundEdit {
 
     private final JTextComponent editor;
+    // the listener that records the edits of the editor, detached while the text is restored
+    private final UndoableEditListener recorder;
+
+    private final String textBefore;
+    private String textAfter;
 
     private final TreePath treePath;
     private int selectedTabIndex;
@@ -53,10 +61,17 @@ public class TextCompoundEdit extends CompoundEdit implements DocumentListener {
 
     private final Runnable onUndoCleanup;
 
-    public TextCompoundEdit(JTextComponent editor, Runnable onUndoCleanup) {
+    public TextCompoundEdit(
+            JTextComponent editor,
+            UndoableEditListener recorder,
+            Runnable onUndoCleanup,
+            String textBefore) {
 
         this.editor = editor;
+        this.recorder = recorder;
         this.onUndoCleanup = onUndoCleanup;
+        this.textBefore = textBefore;
+        this.textAfter = editor.getText();
 
         ProjectView projectView = (ProjectView) SwingUtilities.getAncestorOfClass(ProjectView.class, editor);
         if (projectView == null) {
@@ -129,22 +144,61 @@ public class TextCompoundEdit extends CompoundEdit implements DocumentListener {
         }
     }
 
-    public void insertUpdate(final DocumentEvent e) {
-        SwingUtilities.invokeLater(() -> {
-            int offset = e.getOffset() + e.getLength();
-            offset = Math.min(offset, editor.getDocument().getLength());
-            editor.setCaretPosition(offset);
-        });
+    /**
+     * Takes the latest edit of the editor into this group. The edit itself isn't kept, only the text after it.
+     */
+    public void editHappened() {
+        textAfter = editor.getText();
     }
 
-
+    /**
+     * Doesn't absorb other edits, the edits of the editor are taken with {@link #editHappened()}.
+     */
     @Override
-    public void removeUpdate(DocumentEvent e) {
-        editor.setCaretPosition(e.getOffset());
+    public boolean addEdit(UndoableEdit anEdit) {
+        return false;
     }
 
+    // the CompoundEdit is significant only if its child edits are, and there are none here
     @Override
-    public void changedUpdate(DocumentEvent e) {
+    public boolean isSignificant() {
+        return true;
+    }
+
+    private void applyText(String text) {
+        String current = editor.getText();
+
+        int prefix = 0;
+        int maxPrefix = Math.min(current.length(), text.length());
+        while (prefix < maxPrefix && current.charAt(prefix) == text.charAt(prefix)) {
+            prefix++;
+        }
+
+        int suffix = 0;
+        int maxSuffix = maxPrefix - prefix;
+        while (suffix < maxSuffix
+                && current.charAt(current.length() - 1 - suffix) == text.charAt(text.length() - 1 - suffix)) {
+            suffix++;
+        }
+
+        String replacement = text.substring(prefix, text.length() - suffix);
+        Document document = editor.getDocument();
+        document.removeUndoableEditListener(recorder);
+        try {
+            int length = current.length() - suffix - prefix;
+            if (document instanceof AbstractDocument abstractDocument) {
+                abstractDocument.replace(prefix, length, replacement, null);
+            } else {
+                document.remove(prefix, length);
+                document.insertString(prefix, replacement, null);
+            }
+        } catch (BadLocationException e) {
+            throw new IllegalStateException("Can't restore the text", e);
+        } finally {
+            document.addUndoableEditListener(recorder);
+        }
+
+        editor.setCaretPosition(prefix + replacement.length());
     }
 
     @Override
@@ -158,6 +212,7 @@ public class TextCompoundEdit extends CompoundEdit implements DocumentListener {
 
         if (canRedo()) {
             super.redo();
+            applyText(textAfter);
         } else {
             die();
         }
@@ -173,6 +228,7 @@ public class TextCompoundEdit extends CompoundEdit implements DocumentListener {
 
         if (canUndo()) {
             super.undo();
+            applyText(textBefore);
         } else {
             die();
         }
@@ -197,13 +253,5 @@ public class TextCompoundEdit extends CompoundEdit implements DocumentListener {
 
     public JTextComponent getEditor() {
         return editor;
-    }
-
-    public void watchCaretPosition() {
-        editor.getDocument().addDocumentListener(this);
-    }
-
-    public void stopWatchingCaretPosition() {
-        editor.getDocument().removeDocumentListener(this);
     }
 }

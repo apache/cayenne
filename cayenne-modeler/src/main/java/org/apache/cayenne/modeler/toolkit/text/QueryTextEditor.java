@@ -104,12 +104,15 @@ public class QueryTextEditor extends JPanel {
      * checks it right away.
      */
     public void setText(String text) {
-        loading = true;
-        try {
-            textArea.setText(text != null ? text : "");
-            textArea.setCaretPosition(0);
-        } finally {
-            loading = false;
+        String newText = text != null ? text : "";
+        if (!newText.equals(textArea.getText())) {
+            loading = true;
+            try {
+                textArea.setText(newText);
+                textArea.setCaretPosition(0);
+            } finally {
+                loading = false;
+            }
         }
 
         // check right away, not after the delay that is meant for typing
