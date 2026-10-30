@@ -8,8 +8,8 @@ To browse individual bug reports check out project issue tracker:
 https://issues.apache.org/jira/browse/CAY
 
 ----------------------------------
-Release: 5.0-M4
-Date: 
+Release: 5.0-RC1
+Date: Oct 30, 2026
 ----------------------------------
 Changes/New Features:
 
