@@ -26,7 +26,7 @@ import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.docs.persistent.Artist;
 import org.apache.cayenne.docs.persistent.Painting;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.query.SQLSelect;
+import org.apache.cayenne.query.SQLQuery;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -79,7 +79,7 @@ public class TuningTest extends BaseTest {
         createArtistsDataSet();
 
         // tag::sqlSelectPrefetch[]
-        List<Artist> objects = SQLSelect.query(Artist.class, "SELECT "
+        List<Artist> objects = SQLQuery.query(Artist.class, "SELECT "
                         + "#result('ESTIMATED_PRICE' 'BigDecimal' '' 'paintings.ESTIMATED_PRICE'), "
                         + "#result('TITLE' 'String' '' 'paintings.TITLE'), "
                         + "#result('GALLERY_ID' 'int' '' 'paintings.GALLERY_ID'), "
@@ -135,7 +135,7 @@ public class TuningTest extends BaseTest {
         createArtistsDataSet();
 
         // tag::sqlDataRows[]
-        SQLSelect<DataRow> query = SQLSelect.dataRowQuery("SELECT * FROM ARTIST");
+        SQLQuery<DataRow> query = SQLQuery.dataRowQuery("SELECT * FROM ARTIST");
         List<DataRow> rows = query.select(context);
         // end::sqlDataRows[]
 

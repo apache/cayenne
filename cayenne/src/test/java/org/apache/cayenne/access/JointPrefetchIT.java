@@ -26,7 +26,7 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.query.SQLSelect;
+import org.apache.cayenne.query.SQLQuery;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.CayenneRuntime;
@@ -379,7 +379,7 @@ public class JointPrefetchIT {
     public void jointPrefetchSQLSelectToMany() throws Exception {
         createJointPrefetchDataSet();
 
-        List<Artist> objects = SQLSelect.query(Artist.class, "SELECT "
+        List<Artist> objects = SQLQuery.query(Artist.class, "SELECT "
                 + "#result('ESTIMATED_PRICE' 'BigDecimal' '' 'paintings.ESTIMATED_PRICE'), "
                 + "#result('PAINTING_TITLE' 'String' '' 'paintings.PAINTING_TITLE'), "
                 + "#result('GALLERY_ID' 'int' '' 'paintings.GALLERY_ID'), "
@@ -409,7 +409,7 @@ public class JointPrefetchIT {
     @Test
     public void jointPrefetchSQLSelectNestedJoint() throws Exception {
         createJointPrefetchDataSet();
-        SQLSelect.query(Artist.class, "SELECT "
+        SQLQuery.query(Artist.class, "SELECT "
                 + "#result('GALLERY_ID' 'int' '' 'paintings.gallery.GALLERY_ID'),"
                 + "#result('GALLERY_NAME' 'String' '' 'paintings.gallery.GALLERY_NAME'),"
                 + "#result('t0.ARTIST_ID' 'int' '' 'ARTIST_ID') "

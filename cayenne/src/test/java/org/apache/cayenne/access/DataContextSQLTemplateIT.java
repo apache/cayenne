@@ -26,7 +26,7 @@ import org.apache.cayenne.dba.frontbase.FrontBaseAdapter;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.EntityResult;
 import org.apache.cayenne.query.SQLResult;
-import org.apache.cayenne.query.SQLSelect;
+import org.apache.cayenne.query.SQLQuery;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -527,8 +527,8 @@ public class DataContextSQLTemplateIT {
 
 		int pageSize = 3;
 
-		// SQLSelect builds a replacement SQLTemplate, so it goes through the same paginated id reader
-		SQLSelect<Artist> query = SQLSelect
+		// SQLQuery builds a replacement SQLTemplate, so it goes through the same paginated id reader
+		SQLQuery<Artist> query = SQLQuery
 				.query(Artist.class, "SELECT ARTIST_NAME, ARTIST_ID FROM ARTIST ORDER BY ARTIST_ID")
 				.columnNameCaps(CapsStrategy.UPPER)
 				.pageSize(pageSize);
@@ -545,7 +545,7 @@ public class DataContextSQLTemplateIT {
 		createFourArtists();
 
 		// "SELECT *" yields lowercase column names on some DBs (e.g. PostgreSQL), so normalize the DataRow keys
-		SQLSelect<DataRow> query = SQLSelect
+		SQLQuery<DataRow> query = SQLQuery
 				.dataRowQuery("SELECT * FROM ARTIST ORDER BY ARTIST_ID")
 				.columnNameCaps(CapsStrategy.UPPER);
 

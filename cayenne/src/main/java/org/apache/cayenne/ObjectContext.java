@@ -22,7 +22,6 @@ package org.apache.cayenne;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.Select;
 
 import java.util.Collection;
 import java.util.List;
@@ -294,12 +293,13 @@ public interface ObjectContext {
     void rollbackChangesLocally();
 
     /**
-     * Executes a selecting query, returning a list of persistent objects or
-     * data rows.
+     * Executes a selecting query, returning the rows of the first result set it produced as a list of persistent
+     * objects, data rows, scalars or arrays, depending on the query. An empty list is returned if the query produced
+     * no result sets.
      * 
      * @since 4.0
      */
-    <T> List<T> select(Select<T> query);
+    <T> List<T> select(Query<T> query);
 
     /**
      * Executes a selecting query, returning either NULL if query matched no
@@ -308,7 +308,7 @@ public interface ObjectContext {
      * 
      * @since 4.0
      */
-    default <T> T selectOne(Select<T> query) {
+    default <T> T selectOne(Query<T> query) {
         List<T> objects = select(query);
         if (objects.isEmpty()) {
             return null;
@@ -325,17 +325,16 @@ public interface ObjectContext {
      * <p>
      * If it matched more than one object, the first object from the list is
      * returned. This makes 'selectFirst' different from
-     * {@link #selectOne(Select)}, which would throw in this situation.
+     * {@link #selectOne(Query)}, which would throw in this situation.
      * 'selectFirst' is useful e.g. when the query is ordered and we only want
      * to see the first object (e.g. "most recent news article"), etc.
      * <p>
-     * Selecting the first object via "Select.selectFirst(ObjectContext)"
-     * is more comprehensible than selecting via "ObjectContext.selectFirst(Select)",
-     * because implementations of "Select" set fetch size limit to one.
+     * Selecting the first object via "Query.selectFirst(ObjectContext)" is preferable to selecting via
+     * "ObjectContext.selectFirst(Query)", because queries that support a fetch limit set it to one.
      *
      * @since 4.0
      */
-    default <T> T selectFirst(Select<T> query) {
+    default <T> T selectFirst(Query<T> query) {
         List<T> objects = select(query);
         return objects.isEmpty() ? null : objects.getFirst();
     }
@@ -347,7 +346,7 @@ public interface ObjectContext {
      * 
      * @since 4.0
      */
-    default <T> void iterate(Select<T> query, ResultIteratorCallback<T> callback) {
+    default <T> void iterate(Query<T> query, ResultIteratorCallback<T> callback) {
         try (ResultIterator<T> it = iterator(query)) {
             for (T t : it) {
                 callback.next(t);
@@ -361,11 +360,11 @@ public interface ObjectContext {
      * sets, preserving a constant memory footprint. The caller must wrap
      * iteration in try/finally (or try-with-resources for Java 1.7 and higher) and
      * close the ResultIterator explicitly.
-     * Or use {@link #iterate(Select, ResultIteratorCallback)} as an alternative.
+     * Or use {@link #iterate(Query, ResultIteratorCallback)} as an alternative.
      * 
      * @since 4.0
      */
-    <T> ResultIterator<T> iterator(Select<T> query);
+    <T> ResultIterator<T> iterator(Query<T> query);
 
     /**
      * Creates a ResultBatchIterator based on the provided query and batch size. It is usually
@@ -376,7 +375,7 @@ public interface ObjectContext {
      *
      * @since 4.0
      */
-    default <T> ResultBatchIterator<T> batchIterator(Select<T> query, int size) {
+    default <T> ResultBatchIterator<T> batchIterator(Query<T> query, int size) {
         return new ResultBatchIterator<>(iterator(query), size);
     }
 
@@ -384,7 +383,7 @@ public interface ObjectContext {
      * Executes any kind of query, returning all of its result sets, update counts, iterators and OUT parameters as a
      * list of {@link QueryResult}s in the order they were produced.
      */
-    List<QueryResult> execute(Query query);
+    List<QueryResult> execute(Query<?> query);
 
     /**
      * Returns the store of persistent objects registered with this context.

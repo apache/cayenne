@@ -21,7 +21,7 @@ package org.apache.cayenne.dba.sqlserver;
 
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.jdbc.SelectAction;
-import org.apache.cayenne.query.Select;
+import org.apache.cayenne.query.Query;
 
 /**
  * @since 4.2
@@ -33,7 +33,7 @@ public class SQLServerSelectAction extends SelectAction {
      */
     private final boolean needsInMemoryOffset;
 
-    public SQLServerSelectAction(Select<?> query, DataNode dataNode, boolean needsInMemoryOffset) {
+    public SQLServerSelectAction(Query<?> query, DataNode dataNode, boolean needsInMemoryOffset) {
         super(query, dataNode);
         this.needsInMemoryOffset = needsInMemoryOffset;
     }

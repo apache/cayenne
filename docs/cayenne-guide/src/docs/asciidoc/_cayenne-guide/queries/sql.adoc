@@ -12,38 +12,39 @@
 // the specific language governing permissions and limitations under the
 // License.
 
-[[sqlselect]]
-=== SQLSelect and SQLExec
+[[sqlquery]]
+=== SQLQuery
 
 SQL is very powerful and allows to manipulate data in ways that can not always be described as a graph of related entities.
 Cayenne acknowledges this fact and provides a facility to execute SQL, sometimes allowing to map results back to
-persistent objects. `SQLSelect` and `SQLExec` are a pair of queries that allow to run native SQL. `SQLSelect` can be
-used (as the name suggests) to select custom data in form of entities, separate columns, collection of `DataRow` or
-`Object[]`. `SQLExec` is designed to execute any SQL (e.g. updates, deletes, DDLs, etc.).
+persistent objects. `SQLQuery` is a query that runs native SQL. Depending on the factory method used to create it, it
+selects custom data in form of entities, separate columns, collection of `DataRow` or `Object[]`. The same query
+executes any other SQL (e.g. updates, deletes, DDLs, etc.), with everything the SQL produced, such as update counts,
+returned from `execute(..)` as a list of `QueryResult`.
 
-Both queries support advanced SQL templating, with variable substitution and special directives as described
-<<sqlscripting,in the next chapter>>. Here we'll just provide a few simple examples:
-
-[source,java,indent=0]
-----
-include::{java-examples}/SQLSelectTest.java[tags=select]
-----
-
-And here is an example of how to use `SQLExec`:
+The query supports advanced SQL templating, with variable substitution and special directives as described
+<<sqlscripting,in the next chapter>>. Here we'll just provide a few simple selecting examples:
 
 [source,java,indent=0]
 ----
-include::{java-examples}/SQLSelectTest.java[tags=exec]
+include::{java-examples}/SQLQueryTest.java[tags=select]
 ----
 
-Specific SQL may not portable across databases. Both queries can carry alternative "dialects" of their SQL, keyed by the
+And here is an example of running a non-selecting SQL:
+
+[source,java,indent=0]
+----
+include::{java-examples}/SQLQueryTest.java[tags=exec]
+----
+
+Specific SQL may not portable across databases. A query can carry alternative "dialects" of their SQL, keyed by the
 `DbAdapter` class of the database they apply to. When the query runs, Cayenne picks the dialect matching the adapter of
 the target `DataNode`, falling back to the default SQL when there is none. Just like the default SQL can be extended with `append(..)`, a
 dialect can be built up incrementally with `dialectAppend(..)`:
 
 [source,java,indent=0]
 ----
-include::{java-examples}/SQLSelectTest.java[tags=dialect]
+include::{java-examples}/SQLQueryTest.java[tags=dialect]
 ----
 
 In some cases, you may not have any OR mapping (i.e., no DataMaps) in the project, and would still liek to run raw SQL. If you
@@ -52,5 +53,5 @@ you will need to add an explicit hint as to what DataNode should be called:
 
 [source,java,indent=0]
 ----
-include::{java-examples}/SQLSelectTest.java[tags=dataNode]
+include::{java-examples}/SQLQueryTest.java[tags=dataNode]
 ----

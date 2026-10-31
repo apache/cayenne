@@ -38,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
-public class SQLSelectIteratedQueryIT {
+public class SQLQueryIteratedIT {
 
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
@@ -77,7 +77,7 @@ public class SQLSelectIteratedQueryIT {
 
     @Test
     public void scalarQueryWithBatchIterator() {
-        try (ResultBatchIterator<Integer> iterator = SQLSelect
+        try (ResultBatchIterator<Integer> iterator = SQLQuery
                 .scalarQuery("SELECT PAINTING_ID FROM PAINTING ORDER BY PAINTING_ID", Integer.class)
                 .batchIterator(context, 5)) {
             int count = 0;
@@ -96,7 +96,7 @@ public class SQLSelectIteratedQueryIT {
 
     @Test
     public void scalarQueryWithIterator() {
-        try (ResultIterator<Integer> iterator = SQLSelect
+        try (ResultIterator<Integer> iterator = SQLQuery
                 .scalarQuery("SELECT PAINTING_ID FROM PAINTING ORDER BY PAINTING_ID", Integer.class)
                 .iterator(context)) {
             int count = 0;
@@ -113,7 +113,7 @@ public class SQLSelectIteratedQueryIT {
 
     @Test
     public void dataRowQueryWithBatchIterator() {
-        try (ResultBatchIterator<DataRow> iterator = SQLSelect
+        try (ResultBatchIterator<DataRow> iterator = SQLQuery
                 .dataRowQuery("SELECT * FROM PAINTING ORDER BY PAINTING_ID")
                 .upperColumnNames()
                 .batchIterator(context, 5)) {
@@ -132,7 +132,7 @@ public class SQLSelectIteratedQueryIT {
 
     @Test
     public void dataRowQueryWithIterator() {
-        try (ResultIterator<DataRow> iterator = SQLSelect
+        try (ResultIterator<DataRow> iterator = SQLQuery
                 .dataRowQuery("SELECT * FROM PAINTING ORDER BY PAINTING_ID")
                 .upperColumnNames()
                 .iterator(context)) {
@@ -149,7 +149,7 @@ public class SQLSelectIteratedQueryIT {
 
     @Test
     public void queryWithBatchIterator() {
-        try (ResultBatchIterator<Painting> iterator = SQLSelect
+        try (ResultBatchIterator<Painting> iterator = SQLQuery
                 .query(Painting.class,"SELECT * FROM PAINTING ORDER BY PAINTING_ID")
                 .upperColumnNames()
                 .batchIterator(context, 5)) {
@@ -169,7 +169,7 @@ public class SQLSelectIteratedQueryIT {
 
     @Test
     public void queryWithIterator() {
-        try (ResultIterator<Painting> iterator = SQLSelect
+        try (ResultIterator<Painting> iterator = SQLQuery
                 .query(Painting.class, "SELECT * FROM PAINTING ORDER BY PAINTING_ID")
                 .upperColumnNames()
                 .iterator(context)) {
@@ -185,21 +185,17 @@ public class SQLSelectIteratedQueryIT {
         }
     }
 
-    //MapperConversationStrategy
     //MixedConversationStrategy
     @Test
     public void mappingWithBatchIterator() {
-        try (ResultBatchIterator<DTO> iterator = SQLSelect
+        try (ResultBatchIterator<Object[]> iterator = SQLQuery
                 .columnQuery( "SELECT PAINTING_TITLE, ESTIMATED_PRICE FROM PAINTING ORDER BY PAINTING_ID")
-                .map(this::toDto)
                 .batchIterator(context, 5))  {
             int count = 0;
             while (iterator.hasNext()) {
                 count++;
-                List<DTO> dtoList = iterator.next();
+                List<DTO> dtoList = iterator.next().stream().map(this::toDto).toList();
                 for (DTO dto : dtoList) {
-                    //noinspection ConstantConditions
-                    assertTrue(dto instanceof DTO);
                     assertTrue(dto.getTitle().contains("dto_painting"));
                 }
             }
@@ -208,21 +204,17 @@ public class SQLSelectIteratedQueryIT {
         }
     }
 
-    //MapperConversationStrategy
     //MixedConversationStrategy
     @Test
     public void mappingWithIterator() {
-        try (ResultIterator<DTO> iterator = SQLSelect
+        try (ResultIterator<Object[]> iterator = SQLQuery
                 .columnQuery("SELECT PAINTING_TITLE, ESTIMATED_PRICE FROM PAINTING ORDER BY PAINTING_ID")
                 .upperColumnNames()
-                .map(this::toDto)
                 .iterator(context)) {
             int count = 0;
             while (iterator.hasNextRow()) {
                 count++;
-                DTO dto = iterator.nextRow();
-                //noinspection ConstantConditions
-                assertTrue(dto instanceof DTO);
+                DTO dto = toDto(iterator.nextRow());
                 assertTrue(dto.getTitle().contains("dto_painting"));
             }
             assertEquals(20, count);

@@ -42,7 +42,7 @@ import static org.mockito.Mockito.when;
 public class OperationContextTest {
 
     private static OperationContext newContext(boolean iteratedResult) {
-        Query query = mock(Query.class);
+        Query<?> query = mock(Query.class);
         when(query.getMetaData(any())).thenReturn(mock(QueryMetadata.class));
         return new OperationContext(null, query, mock(EntityResolver.class), iteratedResult);
     }
@@ -54,7 +54,7 @@ public class OperationContextTest {
     @Test
     public void queryContextResolvesMetadataOnce() {
         QueryMetadata metadata = mock(QueryMetadata.class);
-        Query query = mock(Query.class);
+        Query<?> query = mock(Query.class);
         when(query.getMetaData(any(EntityResolver.class))).thenReturn(metadata);
         ObjectContext objectContext = mock(ObjectContext.class);
 

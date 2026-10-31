@@ -202,7 +202,7 @@ public class DB2Adapter extends JdbcAdapter {
      * @since 3.1
      */
     @Override
-    public SQLAction getAction(Query query, DataNode node) {
+    public SQLAction getAction(Query<?> query, DataNode node) {
         return query.createSQLAction(new DB2ActionBuilder(node));
     }
 

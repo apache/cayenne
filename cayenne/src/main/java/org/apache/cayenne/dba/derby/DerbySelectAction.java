@@ -21,14 +21,14 @@ package org.apache.cayenne.dba.derby;
 
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.jdbc.SelectAction;
-import org.apache.cayenne.query.Select;
+import org.apache.cayenne.query.Query;
 
 /**
  * @since 4.1
  */
 public class DerbySelectAction extends SelectAction {
 
-    public DerbySelectAction(Select<?> query, DataNode dataNode) {
+    public DerbySelectAction(Query<?> query, DataNode dataNode) {
         super(query, dataNode);
     }
 

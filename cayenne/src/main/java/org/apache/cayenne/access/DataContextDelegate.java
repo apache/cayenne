@@ -43,7 +43,7 @@ public interface DataContextDelegate {
      * 
      * @since 1.2
      */
-    Query willPerformQuery(DataContext context, Query query);
+    Query<?> willPerformQuery(DataContext context, Query<?> query);
 
     /**
      * Invoked before a Query is executed via <em>DataContext.execute</em>.
@@ -52,7 +52,7 @@ public interface DataContextDelegate {
      * 
      * @since 1.2
      */
-    Query willPerformGenericQuery(DataContext context, Query query);
+    Query<?> willPerformGenericQuery(DataContext context, Query<?> query);
 
     /**
      * Invoked by parent DataContext whenever an object change is detected. This can be a

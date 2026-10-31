@@ -70,7 +70,7 @@ class MixedResultIncrementalFaultList<E> extends IncrementalFaultList<E> {
      * @param query        Main query used to retrieve data. Must have "pageSize"
      *                     property set to a value greater than zero.
      */
-    MixedResultIncrementalFaultList(DataContext dataContext, Query query, int maxFetchSize, List<?> data) {
+    MixedResultIncrementalFaultList(DataContext dataContext, Query<?> query, int maxFetchSize, List<?> data) {
         super(dataContext, query, maxFetchSize, data);
     }
 

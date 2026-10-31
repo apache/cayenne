@@ -43,9 +43,9 @@ import java.util.Map;
  * If a ProcedureQuery has OUT parameters, their values are reported as a separate item of the query response, a Map
  * keyed by parameter name (see {@link OutParametersResult}).
  * </p>
- * <h4>Using ProcedureQuery as a Select</h4>
+ * <h4>Using ProcedureQuery as a Query</h4>
  * <p>
- * Executing ProcedureQuery via {@link ObjectContext#select(Select)} makes sense only if
+ * Executing ProcedureQuery via {@link ObjectContext#select(Query)} makes sense only if
  * the stored procedure returns a single result set (or alternatively returns a result via
  * OUT parameters and no other result sets). It is still OK if data modification occurs as
  * a side effect. However, if the query returns more then one result set, a more generic
@@ -63,7 +63,7 @@ import java.util.Map;
  * @param <T> the type of the result elements: a {@link DataRow} by default, or a persistent
  *            object when a result type is specified.
  */
-public class ProcedureQuery<T> implements Select<T> {
+public class ProcedureQuery<T> implements Query<T> {
 
     /**
      * Creates a query calling the named stored procedure and fetching DataRows.

@@ -23,17 +23,23 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResult;
 import org.apache.cayenne.UpdateResult;
 
-import java.util.List;
 import java.util.Map;
 
 /**
- * A query that represents a named parameterized non selecting query stored in the mapping. The
- * actual query is resolved during execution.
+ * A query that represents a named parameterized non selecting query stored in the mapping. The actual query is
+ * resolved during execution.
  *
  * @since 4.0
- */
-public class MappedExec extends AbstractMappedQuery {
+ * @deprecated in favor of {@link MappedQuery}, that combines selecting and non-selecting mapped queries in
+ * a single query. Update counts are read from the {@link UpdateResult} items of
+ * {@link MappedQuery#execute(ObjectContext)}. */
+@Deprecated(since = "6.0", forRemoval = true)
+public class MappedExec extends MappedQuery<Object> {
 
+    /**
+     * @deprecated in favor of {@link MappedQuery#query(String)}
+     */
+    @Deprecated(since = "6.0", forRemoval = true)
     public static MappedExec query(String queryName) {
         return new MappedExec(queryName);
     }
@@ -44,28 +50,23 @@ public class MappedExec extends AbstractMappedQuery {
 
     @Override
     public MappedExec params(Map<String, ?> parameters) {
-        return (MappedExec) super.params(parameters);
+        super.params(parameters);
+        return this;
     }
 
     @Override
     public MappedExec param(String name, Object value) {
-        return (MappedExec) super.param(name, value);
-    }
-
-
-    /**
-     * Executes the query, returning all of its result sets, update counts and OUT parameters in the order they
-     * were produced.
-     */
-    public List<QueryResult> execute(ObjectContext context) {
-        return context.execute(this);
+        super.param(name, value);
+        return this;
     }
 
     /**
      * Executes the query, returning the counts of its first update result.
      *
      * @throws CayenneRuntimeException if the query produced no update results.
+     * @deprecated Read the counts from the {@link UpdateResult} returned by {@link #execute(ObjectContext)}.
      */
+    @Deprecated(since = "6.0", forRemoval = true)
     public int[] update(ObjectContext context) {
         for (QueryResult item : execute(context)) {
             if (item instanceof UpdateResult update) {
@@ -73,5 +74,11 @@ public class MappedExec extends AbstractMappedQuery {
             }
         }
         throw new CayenneRuntimeException("Expected an update result from query '%s'", queryName);
+    }
+
+    @Override
+    public MappedExec name(String queryName) {
+        super.name(queryName);
+        return this;
     }
 }

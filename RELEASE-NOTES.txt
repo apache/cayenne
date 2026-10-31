@@ -21,6 +21,7 @@ CAY-3062 SQLTemplate to stop supporting multiple parameter sets
 CAY-3063 SQLSelect / SQLExec per-adapter dialects
 CAY-3064 SQLSelect / SQLExec explicit DataNode routing
 CAY-3065 Redesign query pipeline around a mutable execution context
+CAY-3067 Unified Query shape
 
 ----------------------------------
 Release: 5.0-RC1

@@ -14,8 +14,10 @@
 === Custom Queries
 
 If a user needs some extra functionality not addressed by the existing set of Cayenne queries, he can write his own.
-The only requirement is to implement `org.apache.cayenne.query.Query` interface.
-E.g. to do something directly in the JDBC layer, you might implement `Query` like this:
+The only requirement is to implement `org.apache.cayenne.query.Query` interface. Its type parameter is the type of
+the rows the query selects, so that the query can be run with `ObjectContext.select(..)` and the other selecting
+methods, as well as with `execute(..)`. E.g. to do something directly in the JDBC layer, you might implement `Query` like
+this:
 
 [source,java,indent=0]
 ----

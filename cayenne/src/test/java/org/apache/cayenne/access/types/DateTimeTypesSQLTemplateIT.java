@@ -25,8 +25,8 @@ import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 
 import org.apache.cayenne.access.DataContext;
-import org.apache.cayenne.query.SQLExec;
-import org.apache.cayenne.query.SQLSelect;
+import org.apache.cayenne.query.SQLQuery;
+import org.apache.cayenne.query.SQLQuery;
 import org.apache.cayenne.testdo.datetime.LocalDateTestEntity;
 import org.apache.cayenne.testdo.datetime.LocalDateTimeTestEntity;
 import org.apache.cayenne.testdo.datetime.LocalTimeTestEntity;
@@ -65,13 +65,13 @@ public class DateTimeTypesSQLTemplateIT {
         entity.setDate(localDate);
         context.commitChanges();
 
-        int count = SQLSelect
+        int count = SQLQuery
                 .scalarQuery("SELECT COUNT(*) FROM LOCAL_DATE_TEST WHERE DateField = #bind($d)", Integer.class)
                 .param("d", localDate)
                 .selectOne(context);
         assertEquals(1, count);
 
-        count = SQLSelect
+        count = SQLQuery
                 .scalarQuery("SELECT COUNT(*) FROM LOCAL_DATE_TEST WHERE DateField = #bind($d)", Integer.class)
                 .param("d", localDate.plusDays(1))
                 .selectOne(context);
@@ -85,7 +85,7 @@ public class DateTimeTypesSQLTemplateIT {
         entity.setTime(localTime);
         context.commitChanges();
 
-        int count = SQLSelect
+        int count = SQLQuery
                 .scalarQuery("SELECT COUNT(*) FROM LOCAL_TIME_TEST WHERE TimeField = #bind($t)", Integer.class)
                 .param("t", localTime)
                 .selectOne(context);
@@ -99,13 +99,13 @@ public class DateTimeTypesSQLTemplateIT {
         entity.setTimestamp(localDateTime);
         context.commitChanges();
 
-        int count = SQLSelect
+        int count = SQLQuery
                 .scalarQuery("SELECT COUNT(*) FROM LOCAL_DATETIME_TEST WHERE TimestampField = #bind($ts)", Integer.class)
                 .param("ts", localDateTime)
                 .selectOne(context);
         assertEquals(1, count);
 
-        count = SQLSelect
+        count = SQLQuery
                 .scalarQuery("SELECT COUNT(*) FROM LOCAL_DATETIME_TEST WHERE TimestampField < #bind($ts)", Integer.class)
                 .param("ts", localDateTime.plus(1, ChronoUnit.HOURS))
                 .selectOne(context);
@@ -116,12 +116,12 @@ public class DateTimeTypesSQLTemplateIT {
     public void localDateTime_UntypedBind_Insert() {
         LocalDateTime localDateTime = LocalDateTime.of(2024, 3, 15, 13, 45, 30);
 
-        SQLExec.query("INSERT INTO LOCAL_DATETIME_TEST (ID, TimestampField) VALUES (#bind($id), #bind($ts))")
-                .params("id", 1)
-                .params("ts", localDateTime)
+        SQLQuery.query("INSERT INTO LOCAL_DATETIME_TEST (ID, TimestampField) VALUES (#bind($id), #bind($ts))")
+                .param("id", 1)
+                .param("ts", localDateTime)
                 .execute(context);
 
-        LocalDateTime read = SQLSelect
+        LocalDateTime read = SQLQuery
                 .scalarQuery("SELECT TimestampField FROM LOCAL_DATETIME_TEST WHERE ID = 1", LocalDateTime.class)
                 .selectOne(context);
         assertEquals(localDateTime, read);

@@ -39,7 +39,7 @@ public class CayenneSqlExceptionTest {
 
     @Test
     public void messageIncludesSql() {
-        Query query = new SQLTemplate<>("SELECT * FROM ARTIST");
+        Query<?> query = new SQLTemplate<>("SELECT * FROM ARTIST");
         TranslatedStatement statement = new TranslatedSQL("SELECT * FROM ARTIST", null, null);
         Throwable cause = new RuntimeException("boom");
 
@@ -56,7 +56,7 @@ public class CayenneSqlExceptionTest {
 
     @Test
     public void queryNotIncludedInMessage() {
-        Query query = new SQLTemplate<>("SELECT * FROM ARTIST");
+        Query<?> query = new SQLTemplate<>("SELECT * FROM ARTIST");
         TranslatedStatement statement = new TranslatedSQL("SELECT * FROM ARTIST", null, null);
 
         CayenneSqlException e = new CayenneSqlException("Query exception.", context(query, statement),
@@ -71,7 +71,7 @@ public class CayenneSqlExceptionTest {
         // SQL may contain '%' (e.g. LIKE patterns); it must not be interpreted as a format specifier
         TranslatedStatement statement = new TranslatedSQL("SELECT * FROM ARTIST WHERE NAME LIKE '%foo%'", null, null);
 
-        Query query = new SQLTemplate<>("SELECT * FROM ARTIST WHERE NAME LIKE '%foo%'");
+        Query<?> query = new SQLTemplate<>("SELECT * FROM ARTIST WHERE NAME LIKE '%foo%'");
         CayenneSqlException e = new CayenneSqlException("Query exception.", context(query, statement),
                 new RuntimeException());
 
@@ -80,7 +80,7 @@ public class CayenneSqlExceptionTest {
 
     @Test
     public void untranslatedRunHasNoStatement() {
-        Query query = new SQLTemplate<>("SELECT * FROM ARTIST");
+        Query<?> query = new SQLTemplate<>("SELECT * FROM ARTIST");
         StatementContext context = new StatementContext(query, mock(QueryMetadata.class), mock(EntityResolver.class));
 
         CayenneSqlException e = new CayenneSqlException("Query exception.", context, new RuntimeException());
@@ -100,7 +100,7 @@ public class CayenneSqlExceptionTest {
         assertTrue(e.getMessage().contains("Query exception."), e.getMessage());
     }
 
-    private static StatementContext context(Query query, TranslatedStatement statement) {
+    private static StatementContext context(Query<?> query, TranslatedStatement statement) {
         StatementContext context = new StatementContext(query, mock(QueryMetadata.class), mock(EntityResolver.class));
         context.setTranslated(statement);
         return context;

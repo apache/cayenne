@@ -23,7 +23,7 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.datasource.CayenneDataSource;
 import org.apache.cayenne.project.DataSourceDescriptor;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.query.SQLSelect;
+import org.apache.cayenne.query.SQLQuery;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.junit.jupiter.api.AfterEach;
@@ -83,7 +83,7 @@ public class CayenneRuntimeBuilderIT {
                 .defaultDataNode(dataSourceFromDescriptor())
                 .build();
 
-        List<DataRow> result = SQLSelect.dataRowQuery("SELECT * FROM ARTIST").select(localRuntime.newContext());
+        List<DataRow> result = SQLQuery.dataRowQuery("SELECT * FROM ARTIST").select(localRuntime.newContext());
         assertEquals(2, result.size());
     }
 
@@ -108,7 +108,7 @@ public class CayenneRuntimeBuilderIT {
 
         localRuntime = new CayenneRuntimeBuilder(null).defaultDataNode(dataSource).build();
 
-        List<DataRow> result = SQLSelect.dataRowQuery("SELECT * FROM ARTIST").select(localRuntime.newContext());
+        List<DataRow> result = SQLQuery.dataRowQuery("SELECT * FROM ARTIST").select(localRuntime.newContext());
         assertEquals(2, result.size());
     }
 

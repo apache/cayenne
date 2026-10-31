@@ -24,7 +24,7 @@ import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.access.jdbc.SelectAction;
 import org.apache.cayenne.access.jdbc.PSParameter;
 import org.apache.cayenne.access.translator.TranslatedSelect;
-import org.apache.cayenne.query.Select;
+import org.apache.cayenne.query.Query;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -36,7 +36,7 @@ import java.sql.Types;
  */
 class PostgresSelectAction extends SelectAction {
 
-	<T> PostgresSelectAction(Select<T> query, DataNode dataNode) {
+	<T> PostgresSelectAction(Query<T> query, DataNode dataNode) {
 		super(query, dataNode);
 	}
 

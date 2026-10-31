@@ -97,7 +97,7 @@ public class MockQueryMetadata implements QueryMetadata {
         return null;
     }
 
-    public Query getOriginatingQuery() {
+    public Query<?> getOriginatingQuery() {
         return null;
     }
 

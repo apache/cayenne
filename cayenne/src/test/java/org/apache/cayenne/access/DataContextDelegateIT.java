@@ -67,11 +67,11 @@ public class DataContextDelegateIT {
     @Test
     public void willPerformGenericQuery() throws Exception {
 
-        final List<Query> queriesPerformed = new ArrayList<Query>(1);
+        final List<Query<?>> queriesPerformed = new ArrayList<Query<?>>(1);
         DataContextDelegate delegate = new MockDataContextDelegate() {
 
             @Override
-            public Query willPerformGenericQuery(DataContext context, Query query) {
+            public Query<?> willPerformGenericQuery(DataContext context, Query<?> query) {
                 queriesPerformed.add(query);
                 return query;
             }
@@ -90,11 +90,11 @@ public class DataContextDelegateIT {
     @Test
     public void willPerformGenericQueryBlocked() throws Exception {
 
-        final List<Query> queriesPerformed = new ArrayList<Query>(1);
+        final List<Query<?>> queriesPerformed = new ArrayList<Query<?>>(1);
         DataContextDelegate delegate = new MockDataContextDelegate() {
 
             @Override
-            public Query willPerformGenericQuery(DataContext context, Query query) {
+            public Query<?> willPerformGenericQuery(DataContext context, Query<?> query) {
                 queriesPerformed.add(query);
                 return null;
             }
@@ -112,11 +112,11 @@ public class DataContextDelegateIT {
     @Test
     public void willPerformQuery() throws Exception {
 
-        final List<Query> queriesPerformed = new ArrayList<Query>(1);
+        final List<Query<?>> queriesPerformed = new ArrayList<Query<?>>(1);
         DataContextDelegate delegate = new MockDataContextDelegate() {
 
             @Override
-            public Query willPerformQuery(DataContext context, Query query) {
+            public Query<?> willPerformQuery(DataContext context, Query<?> query) {
                 queriesPerformed.add(query);
                 return query;
             }
@@ -135,11 +135,11 @@ public class DataContextDelegateIT {
     @Test
     public void willPerformQueryBlocked() throws Exception {
 
-        final List<Query> queriesPerformed = new ArrayList<Query>(1);
+        final List<Query<?>> queriesPerformed = new ArrayList<Query<?>>(1);
         DataContextDelegate delegate = new MockDataContextDelegate() {
 
             @Override
-            public Query willPerformQuery(DataContext context, Query query) {
+            public Query<?> willPerformQuery(DataContext context, Query<?> query) {
                 queriesPerformed.add(query);
                 return null;
             }

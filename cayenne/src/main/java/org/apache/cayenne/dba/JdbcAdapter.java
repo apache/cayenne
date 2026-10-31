@@ -43,7 +43,6 @@ import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.ProcedureQuery;
-import org.apache.cayenne.query.Select;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 
@@ -532,12 +531,12 @@ public class JdbcAdapter implements DbAdapter {
      * @since 1.2
      */
     @Override
-    public SQLAction getAction(Query query, DataNode node) {
+    public SQLAction getAction(Query<?> query, DataNode node) {
         return query.createSQLAction(new JdbcActionBuilder(node));
     }
 
     @Override
-    public SelectTranslator getSelectTranslator(Select<?> query, EntityResolver entityResolver) {
+    public SelectTranslator getSelectTranslator(Query<?> query, EntityResolver entityResolver) {
         return new DefaultSelectTranslator();
     }
 

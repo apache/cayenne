@@ -18,6 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.docs.customquery;
 
+import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.StatementContext;
 import org.apache.cayenne.docs.persistent.Artist;
 import org.apache.cayenne.map.EntityResolver;
@@ -31,7 +32,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 // tag::content[]
-public class MyQuery implements Query {
+public class MyQuery implements Query<DataRow> {
 
     @Override
     public QueryMetadata getMetaData(EntityResolver resolver) {
@@ -47,7 +48,7 @@ public class MyQuery implements Query {
             public void performAction(Connection connection, StatementContext context)
                     throws SQLException, Exception {
                 // 1. do some JDBC work using provided connection...
-                // 2. report the results to Cayenne via StatementContext.addResult(..)
+                // 2. report the results (DataRows, update counts) to Cayenne via StatementContext.addResult(..)
             }
         };
     }

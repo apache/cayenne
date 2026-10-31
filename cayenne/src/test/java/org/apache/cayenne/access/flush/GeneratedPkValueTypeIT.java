@@ -31,7 +31,7 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.query.SQLSelect;
+import org.apache.cayenne.query.SQLQuery;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -138,7 +138,7 @@ public class GeneratedPkValueTypeIT {
         Object generated = object.getObjectId().getIdSnapshot().get("ID");
         PkWrapper wrapper = assertInstanceOf(PkWrapper.class, generated);
 
-        Integer stored = SQLSelect.scalarQuery("SELECT ID FROM VO_PK", Integer.class).selectOne(context);
+        Integer stored = SQLQuery.scalarQuery("SELECT ID FROM VO_PK", Integer.class).selectOne(context);
         assertEquals(wrapper.value(), stored.longValue());
     }
 }

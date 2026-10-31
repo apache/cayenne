@@ -40,7 +40,7 @@ public interface QueryRouter {
      * @param substitutedQuery a query that was substituted for "query". Results must be
      *                         mapped back to substituted query.
      */
-    void route(DataNode node, Query query, Query substitutedQuery);
+    void route(DataNode node, Query<?> query, Query<?> substitutedQuery);
 
     /**
      * Returns a DataNode for a given name. If the name is null, a default

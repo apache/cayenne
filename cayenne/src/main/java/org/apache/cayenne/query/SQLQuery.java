@@ -1,0 +1,633 @@
+/*****************************************************************
+ *   Licensed to the Apache Software Foundation (ASF) under one
+ *  or more contributor license agreements.  See the NOTICE file
+ *  distributed with this work for additional information
+ *  regarding copyright ownership.  The ASF licenses this file
+ *  to you under the Apache License, Version 2.0 (the
+ *  "License"); you may not use this file except in compliance
+ *  with the License.  You may obtain a copy of the License at
+ *
+ *    https://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing,
+ *  software distributed under the License is distributed on an
+ *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ *  KIND, either express or implied.  See the License for the
+ *  specific language governing permissions and limitations
+ *  under the License.
+ ****************************************************************/
+package org.apache.cayenne.query;
+
+import org.apache.cayenne.DataRow;
+import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.SelectResult;
+import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.map.EntityResolver;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * A query based on raw SQL and featuring fluent API. It can run any SQL: selects, updates, deletes, DDL, etc. A
+ * selecting query returns its rows as persistent objects, {@link DataRow}s, scalars or {@code Object[]} depending on
+ * the factory method used to create it, and everything a query produced, including update counts, is available via
+ * {@link #execute(ObjectContext)}.
+ *
+ * @param <T> the type of the rows the query selects
+ * @since 6.0
+ */
+public class SQLQuery<T> extends IndirectQuery<T> {
+
+    private List<Class<?>> resultColumnsTypes;
+    private boolean useScalar;
+    private boolean isFetchingDataRows;
+    protected Class<T> persistentType;
+    protected String dataMapName;
+    protected String dataNodeName;
+    protected StringBuilder sql;
+    protected Map<String, StringBuilder> sqlDialects;
+    protected QueryCacheStrategy cacheStrategy;
+    protected String cacheGroup;
+    protected Map<String, Object> params;
+    protected List<Object> positionalParams;
+    protected CapsStrategy columnNameCaps;
+    protected boolean returnGeneratedKeys;
+    protected int limit;
+    protected int offset;
+    protected int pageSize;
+    protected int statementFetchSize;
+    protected int queryTimeout;
+    protected PrefetchTreeNode prefetches;
+
+    /**
+     * Creates a query running provided SQL against the default database. If the SQL selects, the rows are returned as
+     * DataRows. This is the form to use for updates, deletes and DDL, when the shape of the result does not matter.
+     */
+    public static SQLQuery<DataRow> query(String sql) {
+        return new SQLQuery<>(sql).fetchingDataRows();
+    }
+
+    /**
+     * Creates a query running provided SQL against the database of the named DataMap. If the SQL selects, the rows
+     * are returned as DataRows. This is the form to use for updates, deletes and DDL, when the shape of the result
+     * does not matter.
+     */
+    public static SQLQuery<DataRow> query(String dataMapName, String sql) {
+        return dataRowQuery(dataMapName, sql);
+    }
+
+    /**
+     * Creates a query that selects Persistent objects.
+     */
+    public static <T> SQLQuery<T> query(Class<T> type, String sql) {
+        return new SQLQuery<>(type, sql);
+    }
+
+    /**
+     * Creates a query that selects DataRows and uses default routing.
+     */
+    public static SQLQuery<DataRow> dataRowQuery(String sql) {
+        return new SQLQuery<>(sql).fetchingDataRows();
+    }
+
+    /**
+     * Creates a query that selects DataRows and uses default routing.
+     */
+    public static SQLQuery<DataRow> dataRowQuery(String sql, Class<?>... types) {
+        return new SQLQuery<>(sql).resultColumnsTypes(types).fetchingDataRows();
+    }
+
+    /**
+     * Creates a query that selects DataRows and uses routing based on the provided DataMap name.
+     */
+    public static SQLQuery<DataRow> dataRowQuery(String dataMapName, String sql, Class<?>... types) {
+        return dataRowQuery(dataMapName, sql).resultColumnsTypes(types);
+    }
+
+    /**
+     * Creates a query that selects DataRows and uses routing based on the provided DataMap name.
+     */
+    public static SQLQuery<DataRow> dataRowQuery(String dataMapName, String sql) {
+        SQLQuery<DataRow> query = new SQLQuery<>(sql);
+        query.dataMapName = dataMapName;
+        return query.fetchingDataRows();
+    }
+
+    /**
+     * Creates query that selects scalar value and uses default routing
+     */
+    public static <T> SQLQuery<T> scalarQuery(String sql, Class<T> type) {
+        SQLQuery<T> query = new SQLQuery<>(sql);
+        return query.resultColumnsTypes(type).useScalar();
+    }
+
+    /**
+     * Creates query that selects scalar value and uses routing based on the provided DataMap name.
+     */
+    public static <T> SQLQuery<T> scalarQuery(String sql, String dataMapName, Class<T> type) {
+        SQLQuery<T> query = new SQLQuery<>(sql);
+        query.dataMapName = dataMapName;
+        return query.resultColumnsTypes(type).useScalar();
+    }
+
+    /**
+     * Creates query that selects scalar values (as Object[]) and uses default routing
+     */
+    public static SQLQuery<Object[]> columnQuery(String sql) {
+        SQLQuery<Object[]> query = new SQLQuery<>(sql);
+        return query.useScalar();
+    }
+
+    /**
+     * Creates query that selects scalar values (as Object[]) and uses routing based on the provided DataMap name.
+     */
+    public static SQLQuery<Object[]> columnQuery(String sql, String dataMapName) {
+        SQLQuery<Object[]> query = new SQLQuery<>(sql);
+        query.dataMapName = dataMapName;
+        return query.useScalar();
+    }
+
+    /**
+     * Creates query that selects scalar values (as Object[]) and uses default routing
+     */
+    public static SQLQuery<Object[]> columnQuery(String sql, Class<?>... types) {
+        SQLQuery<Object[]> query = new SQLQuery<>(sql);
+        return query.resultColumnsTypes(types).useScalar();
+    }
+
+    /**
+     * Creates query that selects scalar values (as Object[]) and uses routing based on the provided DataMap name.
+     */
+    public static SQLQuery<Object[]> columnQuery(String sql, String dataMapName, Class<?>... types) {
+        SQLQuery<Object[]> query = new SQLQuery<>(sql);
+        query.dataMapName = dataMapName;
+        return query.resultColumnsTypes(types).useScalar();
+    }
+
+    public SQLQuery(String sql) {
+        this(null, sql);
+    }
+
+    public SQLQuery(Class<T> persistentType, String sql) {
+        this.persistentType = persistentType;
+        this.sql = sql != null ? new StringBuilder(sql) : new StringBuilder();
+        this.limit = QueryMetadata.FETCH_LIMIT_DEFAULT;
+        this.offset = QueryMetadata.FETCH_OFFSET_DEFAULT;
+        this.pageSize = QueryMetadata.PAGE_SIZE_DEFAULT;
+    }
+
+    @Override
+    public T selectFirst(ObjectContext context) {
+        return context.selectFirst(limit(1));
+    }
+
+    public boolean isFetchingDataRows() {
+        return isFetchingDataRows;
+    }
+
+    public String getSql() {
+        String sql = this.sql.toString();
+        return !sql.isEmpty() ? sql : null;
+    }
+
+    /**
+     * Appends a piece of SQL to the previously stored default SQL template. Dialects registered with
+     * {@link #dialect(Class, String)} stay unchanged, use {@link #dialectAppend(Class, String)} to extend those.
+     */
+    public SQLQuery<T> append(String sqlChunk) {
+        sql.append(sqlChunk);
+        this.replacementQuery = null;
+        return this;
+    }
+
+    /**
+     * Sets an alternative SQL template to use when the query runs against a DataNode with the given adapter. Allows
+     * a single query to carry multiple "dialects" of the same SQL, one per database. The default SQL (passed to the
+     * query factory method and extended with {@link #append(String)}) is used for adapters without a dialect.
+     * Matching is done by the exact adapter class, so a dialect registered for an adapter superclass does not apply
+     * to its subclasses.
+     *
+     * @param adapterType the adapter class this dialect applies to, e.g. {@code MySQLAdapter.class}
+     * @param sql         the complete SQL template to use with this adapter
+     */
+    public SQLQuery<T> dialect(Class<? extends DbAdapter> adapterType, String sql) {
+        if (sqlDialects == null) {
+            sqlDialects = new HashMap<>();
+        }
+        sqlDialects.put(adapterType.getName(), new StringBuilder(sql));
+        this.replacementQuery = null;
+        return this;
+    }
+
+    /**
+     * Appends a piece of SQL to the dialect registered for the given adapter with {@link #dialect(Class, String)}.
+     * If no dialect was registered yet, the chunk becomes the start of a new one.
+     */
+    public SQLQuery<T> dialectAppend(Class<? extends DbAdapter> adapterType, String sqlChunk) {
+        if (sqlDialects == null) {
+            sqlDialects = new HashMap<>();
+        }
+        sqlDialects.computeIfAbsent(adapterType.getName(), k -> new StringBuilder()).append(sqlChunk);
+        this.replacementQuery = null;
+        return this;
+    }
+
+    public SQLQuery<T> param(String name, Object value) {
+        params(Collections.singletonMap(name, value));
+        return this;
+    }
+
+    public SQLQuery<T> params(Map<String, ?> parameters) {
+        if (this.params == null) {
+            this.params = new HashMap<>(parameters);
+        } else {
+            this.params.putAll(parameters);
+        }
+        this.replacementQuery = null;
+
+        // since named parameters are specified, resetting positional parameters
+        this.positionalParams = null;
+        return this;
+    }
+
+    /**
+     * Initializes positional parameters of the query. Parameters are bound in the order they are found in the SQL
+     * template. If a given parameter name is used more than once, only the first occurrence is treated as "position",
+     * subsequent occurrences are bound with the same value as the first one. If template parameters count is
+     * different from the array parameter count, an exception will be thrown.
+     * <p>
+     * Note that calling this method will reset any previously set *named* parameters.
+     */
+    public SQLQuery<T> paramsArray(Object... params) {
+        return paramsList(params != null ? Arrays.asList(params) : null);
+    }
+
+    /**
+     * Initializes positional parameters of the query. Parameters are bound in the order they are found in the SQL
+     * template. If a given parameter name is used more than once, only the first occurrence is treated as "position",
+     * subsequent occurrences are bound with the same value as the first one. If template parameters count is
+     * different from the list parameter count, an exception will be thrown.
+     * <p>
+     * Note that calling this method will reset any previously set *named* parameters.
+     */
+    public SQLQuery<T> paramsList(List<Object> params) {
+        this.positionalParams = params;
+        this.replacementQuery = null;
+
+        // since positional parameters are specified, resetting named parameters
+        this.params = null;
+        return this;
+    }
+
+    /**
+     * Returns a potentially immutable map of named parameters that will be bound to SQL.
+     */
+    public Map<String, Object> getParams() {
+        return params != null ? params : Collections.emptyMap();
+    }
+
+    /**
+     * Returns a potentially immutable list of positional parameters that will be bound to SQL.
+     */
+    public List<Object> getPositionalParams() {
+        return positionalParams != null ? positionalParams : Collections.emptyList();
+    }
+
+    @Override
+    protected Query<?> createReplacementQuery(EntityResolver resolver) {
+
+        SQLTemplate<?> template;
+        if (persistentType != null) {
+            template = new SQLTemplate<>(persistentType, getSql());
+        } else if (dataMapName != null) {
+            template = SQLTemplate.dataRowQuery(dataMapName, getSql());
+        } else {
+            template = new SQLTemplate<>(getSql());
+        }
+
+        template.setDataNodeName(dataNodeName);
+        if (sqlDialects != null) {
+            sqlDialects.forEach((adapter, sql) -> template.setTemplate(adapter, sql.toString()));
+        }
+
+        template.setFetchingDataRows(isFetchingDataRows);
+        template.setReturnGeneratedKeys(returnGeneratedKeys);
+        template.setCacheGroup(cacheGroup);
+        template.setCacheStrategy(cacheStrategy);
+        template.setResultColumnsTypes(resultColumnsTypes);
+        if (prefetches != null) {
+            template.addPrefetch(prefetches);
+        }
+
+        if (positionalParams != null) {
+            template.setParamsList(positionalParams);
+        } else {
+            template.setParams(params);
+        }
+
+        template.setColumnNamesCapitalization(columnNameCaps);
+        template.setFetchLimit(limit);
+        template.setFetchOffset(offset);
+        template.setPageSize(pageSize);
+        template.setStatementFetchSize(statementFetchSize);
+        template.setQueryTimeout(queryTimeout);
+        template.setUseScalar(useScalar);
+
+        return template;
+    }
+
+    /**
+     * Instructs Cayenne to look for query results in the "local" cache when running the query. This is a short-hand
+     * notation for:
+     *
+     * <pre>
+     * query.cacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
+     * </pre>
+     */
+    public SQLQuery<T> localCache() {
+        return cacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
+    }
+
+    /**
+     * Instructs Cayenne to look for query results in the "local" cache when running the query. This is a short-hand
+     * notation for:
+     *
+     * <pre>
+     * query.cacheStrategy(QueryCacheStrategy.LOCAL_CACHE, cacheGroup);
+     * </pre>
+     */
+    public SQLQuery<T> localCache(String cacheGroup) {
+        return cacheStrategy(QueryCacheStrategy.LOCAL_CACHE, cacheGroup);
+    }
+
+    /**
+     * Instructs Cayenne to look for query results in the "shared" cache when running the query. This is a short-hand
+     * notation for:
+     *
+     * <pre>
+     * query.cacheStrategy(QueryCacheStrategy.SHARED_CACHE);
+     * </pre>
+     */
+    public SQLQuery<T> sharedCache() {
+        return cacheStrategy(QueryCacheStrategy.SHARED_CACHE);
+    }
+
+    /**
+     * Instructs Cayenne to look for query results in the "shared" cache when running the query. This is a short-hand
+     * notation for:
+     *
+     * <pre>
+     * query.cacheStrategy(QueryCacheStrategy.SHARED_CACHE, cacheGroup);
+     * </pre>
+     */
+    public SQLQuery<T> sharedCache(String cacheGroup) {
+        return cacheStrategy(QueryCacheStrategy.SHARED_CACHE, cacheGroup);
+    }
+
+    public QueryCacheStrategy getCacheStrategy() {
+        return cacheStrategy;
+    }
+
+    public SQLQuery<T> cacheStrategy(QueryCacheStrategy strategy) {
+        if (cacheStrategy != strategy) {
+            cacheStrategy = strategy;
+            replacementQuery = null;
+        }
+        if (cacheGroup != null) {
+            cacheGroup = null;
+            replacementQuery = null;
+        }
+
+        return this;
+    }
+
+    public SQLQuery<T> cacheStrategy(QueryCacheStrategy strategy, String cacheGroup) {
+        return cacheStrategy(strategy).cacheGroup(cacheGroup);
+    }
+
+    public String getCacheGroup() {
+        return cacheGroup;
+    }
+
+    public SQLQuery<T> cacheGroup(String cacheGroup) {
+        this.cacheGroup = cacheGroup;
+        this.replacementQuery = null;
+        return this;
+    }
+
+    /**
+     * Returns a column name capitalization policy applied to selecting queries. This is used to simplify mapping of
+     * the queries like "SELECT * FROM ...", ensuring that a chosen Cayenne column mapping strategy (e.g. all column
+     * names in uppercase) is portable across database engines that can have varying default capitalization. Default
+     * (null) value indicates that column names provided in result set are used unchanged.
+     */
+    public CapsStrategy getColumnNameCaps() {
+        return columnNameCaps;
+    }
+
+    /**
+     * Sets a column name capitalization policy applied to selecting queries. This is used to simplify mapping of the
+     * queries like "SELECT * FROM ...", ensuring that a chosen Cayenne column mapping strategy (e.g. all column names
+     * in uppercase) is portable across database engines that can have varying default capitalization. Default (null)
+     * value indicates that column names provided in result set are used unchanged.
+     * <p>
+     * Note that while a non-default setting is useful for queries that do not rely on a #result directive to describe
+     * columns, it works for all SQLTemplates the same way.
+     */
+    public SQLQuery<T> columnNameCaps(CapsStrategy columnNameCaps) {
+        if (this.columnNameCaps != columnNameCaps) {
+            this.columnNameCaps = columnNameCaps;
+            this.replacementQuery = null;
+        }
+
+        return this;
+    }
+
+    /**
+     * Equivalent of setting {@link CapsStrategy#UPPER}
+     */
+    public SQLQuery<T> upperColumnNames() {
+        return columnNameCaps(CapsStrategy.UPPER);
+    }
+
+    /**
+     * Equivalent of setting {@link CapsStrategy#LOWER}
+     */
+    public SQLQuery<T> lowerColumnNames() {
+        return columnNameCaps(CapsStrategy.LOWER);
+    }
+
+    /**
+     * Routes the query to the DataNode with the given name. This allows to run SQL in a project without any mapping,
+     * as the query needs neither a persistent type nor a DataMap to find its database. The node name is only used by
+     * queries that have no other routing information, i.e. created with factory methods that take neither a
+     * persistent type nor a DataMap name. Without it such queries are routed to the default DataNode.
+     *
+     * @param dataNodeName the name of the DataNode to run the query against
+     */
+    public SQLQuery<T> dataNode(String dataNodeName) {
+        this.dataNodeName = dataNodeName;
+        this.replacementQuery = null;
+        return this;
+    }
+
+    /**
+     * @return returnGeneratedKeys flag value
+     */
+    public boolean isReturnGeneratedKeys() {
+        return returnGeneratedKeys;
+    }
+
+    /**
+     * Flag indicating that generated keys should be returned by this query execution. Generated keys are returned as
+     * a {@link SelectResult} item of {@link #execute(ObjectContext)} result.
+     *
+     * @param returnGeneratedKeys flag value
+     * @see java.sql.Statement#RETURN_GENERATED_KEYS
+     */
+    public SQLQuery<T> returnGeneratedKeys(boolean returnGeneratedKeys) {
+        if (this.returnGeneratedKeys != returnGeneratedKeys) {
+            this.returnGeneratedKeys = returnGeneratedKeys;
+            this.replacementQuery = null;
+        }
+
+        return this;
+    }
+
+    public int getLimit() {
+        return limit;
+    }
+
+    public SQLQuery<T> limit(int fetchLimit) {
+        if (this.limit != fetchLimit) {
+            this.limit = fetchLimit;
+            this.replacementQuery = null;
+        }
+
+        return this;
+    }
+
+    public int getOffset() {
+        return offset;
+    }
+
+    public SQLQuery<T> offset(int fetchOffset) {
+        if (this.offset != fetchOffset) {
+            this.offset = fetchOffset;
+            this.replacementQuery = null;
+        }
+
+        return this;
+    }
+
+    public int getPageSize() {
+        return pageSize;
+    }
+
+    public SQLQuery<T> pageSize(int pageSize) {
+        if (this.pageSize != pageSize) {
+            this.pageSize = pageSize;
+            this.replacementQuery = null;
+        }
+
+        return this;
+    }
+
+    /**
+     * Sets JDBC statement's fetch size (0 for no default size)
+     */
+    public SQLQuery<T> statementFetchSize(int size) {
+        if (this.statementFetchSize != size) {
+            this.statementFetchSize = size;
+            this.replacementQuery = null;
+        }
+
+        return this;
+    }
+
+    /**
+     * Sets query timeout
+     */
+    public SQLQuery<T> queryTimeout(int queryTimeout) {
+        if (this.queryTimeout != queryTimeout) {
+            this.queryTimeout = queryTimeout;
+            this.replacementQuery = null;
+        }
+
+        return this;
+    }
+
+    /**
+     * @return JBDC statement's fetch size
+     */
+    public int getStatementFetchSize() {
+        return statementFetchSize;
+    }
+
+    public int getQueryTimeout() {
+        return queryTimeout;
+    }
+
+    /**
+     * Merges a prefetch path with specified semantics into the query prefetch tree.
+     *
+     * @param path      Path expression
+     * @param semantics Defines a strategy to prefetch relationships. See {@link PrefetchTreeNode}
+     * @return this object
+     */
+    public SQLQuery<T> addPrefetch(String path, int semantics) {
+        if (path == null) {
+            return this;
+        }
+        if (prefetches == null) {
+            prefetches = new PrefetchTreeNode();
+        }
+        prefetches.addPath(path).setSemantics(semantics);
+        return this;
+    }
+
+    /**
+     * Merges a prefetch into the query prefetch tree.
+     *
+     * @param node Prefetch which will added to query prefetch tree
+     * @return this object
+     */
+    public SQLQuery<T> addPrefetch(PrefetchTreeNode node) {
+        if (node == null) {
+            return this;
+        }
+        if (prefetches == null) {
+            prefetches = new PrefetchTreeNode();
+        }
+        prefetches.merge(node);
+        return this;
+    }
+
+    @SuppressWarnings("unchecked")
+    protected <E> SQLQuery<E> resultColumnsTypes(Class<?>... types) {
+        if (types.length == 0) {
+            throw new IllegalArgumentException("Empty types");
+        }
+        if (resultColumnsTypes == null) {
+            resultColumnsTypes = new ArrayList<>(types.length);
+        }
+        Collections.addAll(resultColumnsTypes, types);
+        return (SQLQuery<E>) this;
+    }
+
+    @SuppressWarnings("unchecked")
+    protected <E> SQLQuery<E> fetchingDataRows() {
+        this.isFetchingDataRows = true;
+        return (SQLQuery<E>) this;
+    }
+
+    @SuppressWarnings("unchecked")
+    protected <E> SQLQuery<E> useScalar() {
+        this.useScalar = true;
+        return (SQLQuery<E>) this;
+    }
+}

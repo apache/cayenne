@@ -28,7 +28,7 @@ include::{java-examples}/ProcedureCallExamples.java[tags=select]
 
 [source,java,indent=0]
 ----
-include::{java-examples}/ProcedureCallExamples.java[tags=call]
+include::{java-examples}/ProcedureCallExamples.java[tags=execute]
 ----
 
 `QueryResult` is a sealed interface with `SelectResult`, `UpdateResult`, `ResultIterator` and `OutParametersResult`

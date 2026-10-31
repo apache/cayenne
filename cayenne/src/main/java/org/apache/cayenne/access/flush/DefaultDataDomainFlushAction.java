@@ -88,7 +88,7 @@ public class DefaultDataDomainFlushAction implements DataDomainFlushAction {
         List<DbRowOp> deduplicatedOps = mergeSameObjectIds(dbRowOps);
         List<DbRowOp> filteredOps = filterOps(deduplicatedOps);
         List<DbRowOp> sortedOps = sort(filteredOps);
-        List<? extends Query> queries = createQueries(sortedOps);
+        List<? extends Query<?>> queries = createQueries(sortedOps);
         executeQueries(queries);
         createReplacementIds(objectStore, afterCommitDiff, sortedOps);
         // note: we are using here not filtered operations, but the original ones,
@@ -180,7 +180,7 @@ public class DefaultDataDomainFlushAction implements DataDomainFlushAction {
      * @param dbRowOps collection of {@link DbRowOp}
      * @return collection of {@link Query} to perform
      */
-    protected List<? extends Query> createQueries(List<DbRowOp> dbRowOps) {
+    protected List<? extends Query<?>> createQueries(List<DbRowOp> dbRowOps) {
         QueryCreatorVisitor queryCreator = new QueryCreatorVisitor(dbRowOps.size());
         dbRowOps.forEach(row -> row.accept(queryCreator));
         return queryCreator.getQueryList();
@@ -190,10 +190,10 @@ public class DefaultDataDomainFlushAction implements DataDomainFlushAction {
      * Execute queries, grouping them by nodes
      * @param queries to execute
      */
-    protected void executeQueries(List<? extends Query> queries) {
+    protected void executeQueries(List<? extends Query<?>> queries) {
         EntityResolver entityResolver = dataDomain.getEntityResolver();
         Map<DataNode, List<StatementContext>> statementsByNode = new LinkedHashMap<>();
-        for (Query query : queries) {
+        for (Query<?> query : queries) {
             QueryMetadata metadata = query.getMetaData(entityResolver);
             DataNode node = dataDomain.lookupDataNode(metadata.getDataMap());
             statementsByNode.computeIfAbsent(node, n -> new ArrayList<>())

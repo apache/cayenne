@@ -114,7 +114,7 @@ public class DerbyAdapter extends JdbcAdapter {
 	}
 
     @Override
-    public SQLAction getAction(Query query, DataNode node) {
+    public SQLAction getAction(Query<?> query, DataNode node) {
         return query.createSQLAction(new DerbyActionBuilder(node));
     }
 

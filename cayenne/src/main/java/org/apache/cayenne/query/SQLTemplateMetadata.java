@@ -27,14 +27,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 
 /**
  * @since 3.0
  */
 public class SQLTemplateMetadata extends BaseQueryMetadata {
 
-	private Function<?, ?> resultMapper;
 
 	boolean resolve(EntityResolver resolver, SQLTemplate<?> query) {
 
@@ -122,19 +120,6 @@ public class SQLTemplateMetadata extends BaseQueryMetadata {
 			result.addColumnResult(String.valueOf(i));
 		}
 		query.setResult(result);
-	}
-
-	void setResultMapper(Function<?,?> resultMapper) {
-		if(this.resultMapper != null) {
-			this.resultMapper = this.resultMapper.andThen((Function)resultMapper);
-		} else {
-			this.resultMapper = resultMapper;
-		}
-    }
-
-	@Override
-	public Function<?, ?> getResultMapper() {
-		return resultMapper;
 	}
 	// the root of the shared resolution: a persistent type or an entity name resolve to the query entity, a DataMap
 	// name to the DataMap the query is routed to

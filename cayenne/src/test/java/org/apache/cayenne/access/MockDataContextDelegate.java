@@ -32,12 +32,12 @@ import java.util.Map;
 public class MockDataContextDelegate implements DataContextDelegate {
 
     @Override
-    public Query willPerformGenericQuery(DataContext context, Query query) {
+    public Query<?> willPerformGenericQuery(DataContext context, Query<?> query) {
         return query;
     }
 
     @Override
-    public Query willPerformQuery(DataContext context, Query query) {
+    public Query<?> willPerformQuery(DataContext context, Query<?> query) {
         return query;
     }
 

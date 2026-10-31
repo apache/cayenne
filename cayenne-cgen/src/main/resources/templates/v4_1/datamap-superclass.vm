@@ -37,7 +37,7 @@ ${importUtils.setPackage($superPackageName)}##
 ${importUtils.addType('org.apache.cayenne.ObjectContext')}##
 #if( ${object.hasSelectQueries()} )
 ${importUtils.addType('java.util.List')}##
-${importUtils.addType('org.apache.cayenne.query.MappedSelect')}##
+${importUtils.addType('org.apache.cayenne.query.MappedQuery')}##
 #foreach( $selectQuery in ${object.SelectQueries})
 #if(${dataMapUtils.isValidParameterNames($selectQuery)})
 ${importUtils.addType(${dataMapUtils.getResultType($selectQuery)})}##
@@ -51,7 +51,7 @@ ${importUtils.addType(${parameter.type()})}##
 ${importUtils.addType('java.util.Map')}##
 ${importUtils.addType('java.util.List')}##
 ${importUtils.addType('org.apache.cayenne.QueryResult')}##
-${importUtils.addType('org.apache.cayenne.query.MappedExec')}##
+${importUtils.addType('org.apache.cayenne.query.MappedQuery')}##
 #end##
 ${importUtils.generate()}
 
@@ -73,7 +73,7 @@ public class ${superClassName} {
 #if(${dataMapUtils.isValidParameterNames($selectQuery)})
     #set($rootClass = ${stringUtils.stripPackageName(${dataMapUtils.getResultType($selectQuery)})})
     public List<$rootClass> perform${dataMapUtils.getQueryMethodName(${selectQuery})}(ObjectContext context#foreach( $parameter in ${dataMapUtils.getParameters(${selectQuery})}), ${stringUtils.stripPackageName(${parameter.type()})} ${parameter.javaName()}#end) {
-        MappedSelect<${rootClass}> query = MappedSelect.query(${stringUtils.capitalizedAsConstant(${selectQuery.Name})}_QUERYNAME, ${rootClass}.class);
+        MappedQuery<${rootClass}> query = MappedQuery.query(${stringUtils.capitalizedAsConstant(${selectQuery.Name})}_QUERYNAME, ${rootClass}.class);
 #foreach( $parameter in ${dataMapUtils.getParameters(${selectQuery})})
         query.param("${parameter.name()}", ${parameter.javaName()});
 #end
@@ -84,7 +84,7 @@ public class ${superClassName} {
 #end
 #foreach( $execQuery in ${object.ExecQueries})
     public List<QueryResult> perform${dataMapUtils.getQueryMethodName(${execQuery})}(ObjectContext context, Map<String, ?> parameters) {
-        MappedExec query = MappedExec.query(${stringUtils.capitalizedAsConstant(${execQuery.Name})}_QUERYNAME).params(parameters);
+        MappedQuery<?> query = MappedQuery.query(${stringUtils.capitalizedAsConstant(${execQuery.Name})}_QUERYNAME).params(parameters);
         return query.execute(context);
     }
 

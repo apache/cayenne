@@ -18,151 +18,50 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.DataRow;
-import org.apache.cayenne.QueryResult;
-import org.apache.cayenne.SelectResult;
-import org.apache.cayenne.UpdateResult;
-import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dba.frontbase.FrontBaseAdapter;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
+/**
+ * Tests the deprecated {@link SQLExec}. Its functionality is tested via {@link SQLQuery} in {@link SQLQueryIT}.
+ */
+@SuppressWarnings("removal")
 public class SQLExecIT {
 
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
     @Test
-    public void dataMapNameRoot() throws Exception {
-        int inserted = SQLExec.query("testmap", "INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (1, 'a')").update(
-                env.context());
-        assertEquals(1, inserted);
-    }
-
-    @Test
-    public void defaultRoot() throws Exception {
+    public void update() throws Exception {
         int inserted = SQLExec.query("INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (1, 'a')").update(env.context());
-        assertEquals(1, inserted);
-    }
-
-    @Test
-    public void dataNode() throws Exception {
-        int inserted = SQLExec.query("INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (1, 'a')")
-                .dataNode(env.dataNode().getName())
-                .update(env.context());
         assertEquals(1, inserted);
         assertEquals(1L, env.table("ARTIST").getLong("ARTIST_ID"));
     }
 
     @Test
-    public void dataNode_Unknown() throws Exception {
-        SQLExec query = SQLExec.query("INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (1, 'a')")
-                .dataNode("no_such_node");
-        CayenneRuntimeException e = assertThrows(CayenneRuntimeException.class, () -> query.update(env.context()));
-        assertTrue(e.getMessage().contains("no_such_node"), e.getMessage());
-    }
-
-    @Test
-    public void dialect() throws Exception {
-        Class<? extends DbAdapter> adapterType = env.runtime().getDataDomain().getDefaultNode().getAdapter().getClass();
-
-        int inserted = SQLExec.query("INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (1, 'default')")
-                .dialect(adapterType, "INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (2, 'dialect')")
+    public void update_DataMapNameRoot() {
+        int inserted = SQLExec.query("testmap", "INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (1, 'a')")
                 .update(env.context());
-
         assertEquals(1, inserted);
-        assertEquals(2L, env.table("ARTIST").getLong("ARTIST_ID"));
-        assertEquals("dialect", env.table("ARTIST").getString("ARTIST_NAME").trim());
     }
 
     @Test
-    public void dialect_OtherAdapter() throws Exception {
-        int inserted = SQLExec.query("INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (1, 'default')")
-                .dialect(FrontBaseAdapter.class, "INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (2, 'dialect')")
-                .update(env.context());
-
-        assertEquals(1, inserted);
-        assertEquals(1L, env.table("ARTIST").getLong("ARTIST_ID"));
-        assertEquals("default", env.table("ARTIST").getString("ARTIST_NAME").trim());
+    public void updateBatch() {
+        int[] inserted = SQLExec.query("INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (1, 'a')")
+                .updateBatch(env.context());
+        assertArrayEquals(new int[]{1}, inserted);
     }
 
     @Test
-    public void dialect_Append() throws Exception {
-        Class<? extends DbAdapter> adapterType = env.runtime().getDataDomain().getDefaultNode().getAdapter().getClass();
-
-        int inserted = SQLExec.query("INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME)")
-                .append(" VALUES (1, 'default')")
-                .dialect(adapterType, "INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME)")
-                .dialectAppend(adapterType, " VALUES (2, 'dialect')")
-                .update(env.context());
-
-        assertEquals(1, inserted);
-        assertEquals(2L, env.table("ARTIST").getLong("ARTIST_ID"));
-    }
-
-    @Test
-    public void returnGeneratedKeys() {
-        if(env.testDbAdapter().supportsGeneratedKeys()) {
-            List<QueryResult> response = SQLExec.query("testmap", "INSERT INTO GENERATED_COLUMN (NAME) VALUES ('Surikov')")
-                    .returnGeneratedKeys(true)
-                    .execute(env.context());
-            assertEquals(2, response.size());
-
-            List<QueryResult> response1 = SQLExec.query("testmap", "INSERT INTO GENERATED_COLUMN (NAME) VALUES ('Sidorov')")
-                    .returnGeneratedKeys(false)
-                    .execute(env.context());
-            assertEquals(1, response1.size());
-        }
-    }
-
-    @Test
-    public void paramsArray_Single() throws Exception {
-
-        int inserted = SQLExec.query("INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (1, #bind($name))")
-                .paramsArray("a3").update(env.context());
-
-        assertEquals(1, inserted);
-        assertEquals("a3", env.table("ARTIST").getString("ARTIST_NAME").trim());
-    }
-
-    @Test
-    public void executeSelect() throws Exception {
-        int inserted = SQLExec.query("INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (1, 'a')").update(env.context());
-        assertEquals(1, inserted);
-
-        List<QueryResult> result = SQLExec.query("SELECT * FROM ARTIST").execute(env.context());
-        assertEquals(2, result.size());
-        List<?> rows = ((SelectResult<?>) result.getFirst()).objects();
-        assertEquals(1, rows.size());
-
-        DataRow row = (DataRow) rows.getFirst();
-        if(env.testDbAdapter().isLowerCaseNames()) {
-            assertTrue(row.containsKey("artist_id"));
-            assertEquals(1L, ((Number)row.get("artist_id")).longValue());
-            assertEquals("a", row.get("artist_name"));
-        } else {
-            assertTrue(row.containsKey("ARTIST_ID"));
-            assertEquals(1L, ((Number)row.get("ARTIST_ID")).longValue());
-            assertEquals("a", row.get("ARTIST_NAME"));
-        }
-    }
-
-    @Test
-    public void paramsArray_Multiple() throws Exception {
-
+    public void params_NameValue() throws Exception {
         int inserted = SQLExec.query("INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (#bind($id), #bind($name))")
-                .paramsArray(55, "a3").update(env.context());
+                .params("id", 55)
+                .params("name", "a3")
+                .update(env.context());
 
         assertEquals(1, inserted);
         assertEquals(55L, env.table("ARTIST").getLong("ARTIST_ID"));
@@ -170,25 +69,11 @@ public class SQLExecIT {
     }
 
     @Test
-    public void execute_MultipleArrayBind() throws Exception {
-        SQLExec inserter = SQLExec.query("INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (#bind($id), #bind($name))");
-        for(int i = 0; i < 2; i++) {
-            List<QueryResult> result = inserter.paramsArray(i, "artist " + i).execute(env.context());
-            assertEquals(1, ((UpdateResult) result.getFirst()).count());
-        }
-        assertEquals(2, env.table("ARTIST").getRowCount());
-    }
-
-    @Test
-    public void execute_MultipleMapBind() throws Exception {
-        SQLExec inserter = SQLExec.query("INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (#bind($id), #bind($name))");
-        for(int i = 0; i < 2; i++) {
-            Map<String, Object> params = new HashMap<>();
-            params.put("id", i);
-            params.put("name", "artist " + i);
-            List<QueryResult> result = inserter.params(params).execute(env.context());
-            assertEquals(1, ((UpdateResult) result.getFirst()).count());
-        }
-        assertEquals(2, env.table("ARTIST").getRowCount());
+    public void fluentChain_KeepsType() {
+        // the chained assignment of the pre-6.0 code must still compile
+        SQLExec query = SQLExec.query("INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (#bind($id), #bind($name))")
+                .paramsArray(7, "a")
+                .dataNode(env.dataNode().getName());
+        assertEquals(1, query.update(env.context()));
     }
 }

@@ -22,6 +22,7 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.QueryResult;
 import org.apache.cayenne.ResultBatchIterator;
 import org.apache.cayenne.SelectResult;
+import org.apache.cayenne.UpdateResult;
 import org.apache.cayenne.log.NoopSQLLogger;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -57,7 +58,7 @@ public class MappedQueryIT {
     public void selectQuery() throws Exception {
         createArtistsDataSet();
 
-        Artist a = MappedSelect.query("ParameterizedQueryWithLocalCache", Artist.class)
+        Artist a = MappedQuery.query("ParameterizedQueryWithLocalCache", Artist.class)
                 .param("name", "artist14").select(env.context()).get(0);
         assertNotNull(a);
         assertEquals("artist14", a.getArtistName());
@@ -67,7 +68,7 @@ public class MappedQueryIT {
     public void butchIterator() throws Exception {
         createArtistsDataSet();
 
-        try (ResultBatchIterator<Artist> iterator = MappedSelect
+        try (ResultBatchIterator<Artist> iterator = MappedQuery
                 .query("ParameterizedQueryWithSharedCache", Artist.class)
                 .param("name", "artist14")
                 .batchIterator(env.context(), 1)) {
@@ -90,7 +91,7 @@ public class MappedQueryIT {
     public void columnQuery() throws Exception {
         createArtistsDataSet();
 
-        List<?> names = MappedSelect.query("ArtistNamesQuery").param("name", "artist1%").select(env.context());
+        List<?> names = MappedQuery.query("ArtistNamesQuery").param("name", "artist1%").select(env.context());
         assertEquals(List.of("artist1", "artist10", "artist11", "artist12", "artist13", "artist14", "artist15",
                 "artist16", "artist17", "artist18", "artist19"), names);
     }
@@ -99,7 +100,7 @@ public class MappedQueryIT {
     public void dbQuery() throws Exception {
         createArtistsDataSet();
 
-        List<DataRow> rows = MappedSelect.query("ArtistRowsQuery", DataRow.class)
+        List<DataRow> rows = MappedQuery.query("ArtistRowsQuery", DataRow.class)
                 .param("name", "artist3")
                 .select(env.context());
         assertEquals(1, rows.size());
@@ -117,13 +118,13 @@ public class MappedQueryIT {
         tPainting.insert(1, "p1", 1, 100);
         tPainting.insert(2, "p2", 2, 2000);
 
-        List<Artist> expensive = MappedSelect.query("ArtistsWithPaintingsQuery", Artist.class)
+        List<Artist> expensive = MappedQuery.query("ArtistsWithPaintingsQuery", Artist.class)
                 .param("price", 1000)
                 .select(env.context());
         assertEquals(List.of("artist2"), expensive.stream().map(Artist::getArtistName).toList());
 
         // with the parameter missing, its condition is pruned from the subquery
-        List<Artist> any = MappedSelect.query("ArtistsWithPaintingsQuery", Artist.class).select(env.context());
+        List<Artist> any = MappedQuery.query("ArtistsWithPaintingsQuery", Artist.class).select(env.context());
         assertEquals(List.of("artist1", "artist2"), any.stream().map(Artist::getArtistName).toList());
     }
 
@@ -131,14 +132,15 @@ public class MappedQueryIT {
     public void sqlTemplateSelect() throws Exception {
         createArtistsDataSet();
 
-        List<DataRow> result = MappedSelect.query("SelectTestLower", DataRow.class).select(env.context());
+        List<DataRow> result = MappedQuery.query("SelectTestLower", DataRow.class).select(env.context());
         assertEquals(20, result.size());
         assertInstanceOf(DataRow.class, result.get(0));
     }
 
     @Test
     public void sqlTemplateUpdate() throws Exception {
-        int updated = MappedExec.query("NonSelectingQuery").update(env.context())[0];
+        List<QueryResult> result = MappedQuery.query("NonSelectingQuery").execute(env.context());
+        int updated = ((UpdateResult) result.getFirst()).count();
 
         assertEquals(1, updated);
 
@@ -169,7 +171,7 @@ public class MappedQueryIT {
 
         env.context().commitChanges();
 
-        List<QueryResult> result = runProcedureSelect(MappedSelect.query("ProcedureQuery", Artist.class)
+        List<QueryResult> result = runProcedureSelect(MappedQuery.query("ProcedureQuery", Artist.class)
                 .param("aName", "An Artist")
                 .param("paintingPrice", 3000).forceNoCache());
         List<?> artists = ((SelectResult<?>) result.getFirst()).objects();
@@ -184,11 +186,11 @@ public class MappedQueryIT {
     @Test
     public void cacheKey() {
         // ensure queries initialized with different parameters receive different cache keys
-        MappedSelect<Artist> query1 = MappedSelect
+        MappedQuery<Artist> query1 = MappedQuery
                 .query("ParameterizedQueryWithLocalCache", Artist.class).param("name", "artist1");
-        MappedSelect<Artist> query2 = MappedSelect
+        MappedQuery<Artist> query2 = MappedQuery
                 .query("ParameterizedQueryWithLocalCache", Artist.class).param("name", "artist2");
-        MappedSelect<Artist> query3 = MappedSelect
+        MappedQuery<Artist> query3 = MappedQuery
                 .query("ParameterizedQueryWithLocalCache", Artist.class).param("name", "artist2");
 
         assertNotEquals(
@@ -199,7 +201,7 @@ public class MappedQueryIT {
                 query3.getMetaData(env.context().getEntityResolver()).getCacheKey());
     }
 
-    protected List<QueryResult> runProcedureSelect(AbstractMappedQuery q) throws Exception {
+    protected List<QueryResult> runProcedureSelect(MappedQuery<?> q) throws Exception {
         // Sybase blows whenever a transaction wraps a SP, so turn off
         // transactions
 

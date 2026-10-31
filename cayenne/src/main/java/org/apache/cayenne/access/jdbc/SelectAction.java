@@ -29,7 +29,7 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.query.PrefetchProcessor;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.QueryMetadata;
-import org.apache.cayenne.query.Select;
+import org.apache.cayenne.query.Query;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -44,12 +44,12 @@ import java.util.List;
  */
 public class SelectAction extends BaseSQLAction {
 
-    protected Select<?> query;
+    protected Query<?> query;
 
     /**
      * @since 4.0
      */
-    public SelectAction(Select<?> query, DataNode dataNode) {
+    public SelectAction(Query<?> query, DataNode dataNode) {
         super(dataNode);
         this.query = query;
     }

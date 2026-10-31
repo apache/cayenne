@@ -22,7 +22,7 @@ package org.apache.cayenne.query;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 
-public class MockQuery implements Query {
+public class MockQuery implements Query<Object> {
 
     protected boolean selecting;
     protected boolean routeCalled;
@@ -50,7 +50,7 @@ public class MockQuery implements Query {
         return null;
     }
 
-    public void route(QueryRouter router, EntityResolver resolver, Query substitutedQuery) {
+    public void route(QueryRouter router, EntityResolver resolver, Query<?> substitutedQuery) {
         routeCalled = true;
     }
 }

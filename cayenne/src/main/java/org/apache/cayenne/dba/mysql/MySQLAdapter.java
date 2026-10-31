@@ -145,7 +145,7 @@ public class MySQLAdapter extends JdbcAdapter {
      * @since 1.2
      */
     @Override
-    public SQLAction getAction(Query query, DataNode node) {
+    public SQLAction getAction(Query<?> query, DataNode node) {
         return query.createSQLAction(new MySQLActionBuilder(node));
     }
 

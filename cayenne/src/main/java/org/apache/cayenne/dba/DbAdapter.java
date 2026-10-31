@@ -33,7 +33,6 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.ProcedureQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
-import org.apache.cayenne.query.Select;
 
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
@@ -62,7 +61,7 @@ public interface DbAdapter {
      *
      * @since 4.2
      */
-    SelectTranslator getSelectTranslator(Select<?> query, EntityResolver entityResolver);
+    SelectTranslator getSelectTranslator(Query<?> query, EntityResolver entityResolver);
 
     /**
      * Returns the {@link ProcedureTranslator} for the given query. The default implementation ignores the
@@ -83,7 +82,7 @@ public interface DbAdapter {
      *
      * @since 1.2
      */
-    SQLAction getAction(Query query, DataNode node);
+    SQLAction getAction(Query<?> query, DataNode node);
 
     /**
      * Returns true if a target database supports UNIQUE constraints.

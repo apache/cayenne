@@ -43,7 +43,7 @@ public class MockQueryRouter implements QueryRouter {
         return queries.size();
     }
 
-    public void route(DataNode node, Query query, Query substitutedQuery) {
+    public void route(DataNode node, Query<?> query, Query<?> substitutedQuery) {
         queries.add(query);
     }
 

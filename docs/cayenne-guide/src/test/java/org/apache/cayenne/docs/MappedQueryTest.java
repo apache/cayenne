@@ -21,8 +21,7 @@ package org.apache.cayenne.docs;
 import org.apache.cayenne.QueryResult;
 import org.apache.cayenne.UpdateResult;
 import org.apache.cayenne.docs.persistent.Artist;
-import org.apache.cayenne.query.MappedExec;
-import org.apache.cayenne.query.MappedSelect;
+import org.apache.cayenne.query.MappedQuery;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -36,7 +35,7 @@ public class MappedQueryTest extends BaseTest {
         createArtistsDataSet();
 
         // tag::mappedSelect[]
-        List<Artist> results = MappedSelect.query("artistsByName", Artist.class)
+        List<Artist> results = MappedQuery.query("artistsByName", Artist.class)
                 .param("name", "Dali")
                 .select(context);
         // end::mappedSelect[]
@@ -49,7 +48,7 @@ public class MappedQueryTest extends BaseTest {
         createArtistsDataSet();
 
         // tag::mappedExec[]
-        List<QueryResult> result = MappedExec.query("updatePaintingTitle")
+        List<QueryResult> result = MappedQuery.query("updatePaintingTitle")
                 .param("title", "Untitled")
                 .execute(context);
         UpdateResult update = (UpdateResult) result.getFirst();

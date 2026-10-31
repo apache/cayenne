@@ -24,7 +24,7 @@ import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.query.ResultSegments;
 
 /**
- * An immutable result of translating a {@link org.apache.cayenne.query.Select} query to SQL,
+ * An immutable result of translating a {@link org.apache.cayenne.query.Query} query to SQL,
  * produced by {@link SelectTranslator#translate}.
  *
  * @since 5.0

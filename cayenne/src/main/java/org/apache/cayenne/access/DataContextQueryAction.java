@@ -40,7 +40,7 @@ class DataContextQueryAction {
 
     private final DataContext context;
     private final OperationContext execContext;
-    private final Query query;
+    private final Query<?> query;
     private final QueryMetadata metadata;
     private final boolean ignoreLocalCache;
     private List<QueryResult> response;

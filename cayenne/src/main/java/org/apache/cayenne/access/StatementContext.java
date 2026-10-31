@@ -45,7 +45,7 @@ import java.util.Objects;
  */
 public final class StatementContext {
 
-    private final Query query;
+    private final Query<?> query;
     private final QueryMetadata metadata;
     private final EntityResolver resolver;
     private StatementLog log;
@@ -61,7 +61,7 @@ public final class StatementContext {
      * @param metadata the metadata of the query, resolved with the resolver.
      * @param resolver the mapping the query is executed against, used by the SQL action to translate the query.
      */
-    public StatementContext(Query query, QueryMetadata metadata, EntityResolver resolver) {
+    public StatementContext(Query<?> query, QueryMetadata metadata, EntityResolver resolver) {
         this.query = Objects.requireNonNull(query, "Null query");
         this.metadata = Objects.requireNonNull(metadata, "Null metadata");
         this.resolver = Objects.requireNonNull(resolver, "Null resolver");
@@ -73,7 +73,7 @@ public final class StatementContext {
      * the query the operation was started with, e.g. a {@link org.apache.cayenne.query.PrefetchSelectQuery}, a batch
      * query of a flush, or the query that an indirect query delegates to.
      */
-    public Query getQuery() {
+    public Query<?> getQuery() {
         return query;
     }
 

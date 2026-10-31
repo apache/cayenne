@@ -26,7 +26,6 @@ import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
 import java.util.Map;
-import java.util.function.Function;
 
 /**
  * Provides a common interface for accessing query metadata.
@@ -163,7 +162,7 @@ public interface QueryMetadata {
      *
      * @since 4.0
      */
-    Query getOriginatingQuery();
+    Query<?> getOriginatingQuery();
 
     /**
      * Returns a root node of prefetch tree used by this query, or null of no prefetches
@@ -202,13 +201,6 @@ public interface QueryMetadata {
      * @since 4.0
      */
     boolean isSuppressingDistinct();
-
-    /**
-     * @since 4.2
-     */
-    default Function<?, ?> getResultMapper() {
-        return null;
-    }
 
     /**
      * Returns true if this is a read-only (selecting) query that does not need to run in its own

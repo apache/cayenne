@@ -23,7 +23,7 @@ import org.apache.cayenne.docs.persistent.Artist;
 import org.apache.cayenne.docs.persistent.CompoundPk;
 import org.apache.cayenne.docs.persistent.Painting;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.query.SQLExec;
+import org.apache.cayenne.query.SQLQuery;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -36,14 +36,14 @@ public class SelectByIdTest extends BaseTest {
 
     private void createArtistsWithIds() {
         for (int i = 1; i <= 4; i++) {
-            SQLExec.query("INSERT INTO ARTIST (ID, NAME) VALUES (#bind($id), #bind($name))")
-                    .params("id", i)
-                    .params("name", "artist" + i)
-                    .update(context);
+            SQLQuery.query("INSERT INTO ARTIST (ID, NAME) VALUES (#bind($id), #bind($name))")
+                    .param("id", i)
+                    .param("name", "artist" + i)
+                    .execute(context);
         }
 
-        SQLExec.query("INSERT INTO PAINTING (ID, TITLE, ARTIST_ID) VALUES (1, 'P1', 1)")
-                .update(context);
+        SQLQuery.query("INSERT INTO PAINTING (ID, TITLE, ARTIST_ID) VALUES (1, 'P1', 1)")
+                .execute(context);
     }
 
     @Test
@@ -67,7 +67,7 @@ public class SelectByIdTest extends BaseTest {
     @Test
     public void byIdForms() {
         createArtistsWithIds();
-        SQLExec.query("INSERT INTO COMPOUND_PK (KEY1, KEY2, NAME) VALUES ('x', 'y', 'xy')").update(context);
+        SQLQuery.query("INSERT INTO COMPOUND_PK (KEY1, KEY2, NAME) VALUES ('x', 'y', 'xy')").execute(context);
         ObjectId objectId = ObjectId.of("Artist", Artist.ID_PK_COLUMN, 2);
 
         // tag::byIdForms[]

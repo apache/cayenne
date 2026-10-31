@@ -17,7 +17,7 @@ include::../var.adoc[]
 [#ext-velocity]
 === Apache Velocity Extension
 
-Enables usage of full featured Apache Velocity templates in `SQLSelect` / `SQLExec` queries.
+Enables usage of full-featured Apache Velocity templates in `SQLQuery` queries.
 
 ==== Maven
 

@@ -259,7 +259,7 @@ public class FrontBaseAdapter extends JdbcAdapter {
      * @since 4.2
      */
     @Override
-    public SQLAction getAction(Query query, DataNode node) {
+    public SQLAction getAction(Query<?> query, DataNode node) {
         return query.createSQLAction(new FrontBaseActionBuilder(node));
     }
 }

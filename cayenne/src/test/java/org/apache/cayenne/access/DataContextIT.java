@@ -345,11 +345,11 @@ public class DataContextIT {
 
 	@Test
 	public void performQuery_Routing() {
-		Query query = mock(Query.class);
+		Query<?> query = mock(Query.class);
 		QueryMetadata md = mock(QueryMetadata.class);
 		when(query.getMetaData(any(EntityResolver.class))).thenReturn(md);
 		context.execute(query);
-		verify(query).route(any(QueryRouter.class), eq(context.getEntityResolver()), (Query) isNull());
+		verify(query).route(any(QueryRouter.class), eq(context.getEntityResolver()), (Query<?>) isNull());
 	}
 
 	@Test

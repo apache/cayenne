@@ -257,7 +257,7 @@ class BaseQueryMetadata implements QueryMetadata {
 	/**
 	 * @since 4.0
 	 */
-	public Query getOriginatingQuery() {
+	public Query<?> getOriginatingQuery() {
 		return null;
 	}
 

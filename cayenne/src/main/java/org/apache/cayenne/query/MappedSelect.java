@@ -18,28 +18,21 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
-import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.QueryDescriptor;
-
-import java.sql.Statement;
 import java.util.Map;
-import org.apache.cayenne.map.SelectQueryDescriptor;
-import org.apache.cayenne.map.SQLTemplateDescriptor;
-import org.apache.cayenne.map.ProcedureQueryDescriptor;
 
 /**
- * A query that represents a named parameterized selecting query stored in the mapping. The
- * actual query is resolved during execution.
+ * A query that represents a named parameterized selecting query stored in the mapping. The actual query is resolved
+ * during execution.
  *
  * @since 4.0
- */
-public class MappedSelect<T> extends AbstractMappedQuery implements Select<T> {
+ * @deprecated in favor of {@link MappedQuery}, that combines selecting and non-selecting mapped queries in
+ * a single query. */
+@Deprecated(since = "6.0", forRemoval = true)
+public class MappedSelect<T> extends MappedQuery<T> {
 
     /**
-     * Loads query with the given name, which selects objects of a given persistent class,
-     * from the mapping configuration.
+     * Loads query with the given name, which selects objects of a given persistent class, from the mapping
+     * configuration.
      *
      * @param queryName name of the mapped query
      * @param rootClass the Class of objects fetched by this query
@@ -57,186 +50,65 @@ public class MappedSelect<T> extends AbstractMappedQuery implements Select<T> {
         return new MappedSelect<>(queryName);
     }
 
-    protected Class<T> resultClass;
-    protected Integer fetchLimit;
-    protected Integer fetchOffset;
-    protected Integer statementFetchSize;
-    protected Integer queryTimeout;
-    protected Integer pageSize;
-    protected boolean forceNoCache;
-
     protected MappedSelect(String queryName) {
         super(queryName);
     }
 
     protected MappedSelect(String queryName, Class<T> resultClass) {
-        super(queryName);
-        this.resultClass = resultClass;
+        super(queryName, resultClass);
     }
 
-    /**
-     * Resets query fetch limit - a parameter that defines max number of objects
-     * that should be ever be fetched from the database.
-     */
-    public MappedSelect<T> limit(int fetchLimit) {
-        this.fetchLimit = fetchLimit;
-        this.replacementQuery = null;
-        return this;
-    }
-
-    /**
-     * Resets query fetch offset - a parameter that defines how many objects
-     * should be skipped when reading data from the database.
-     */
-    public MappedSelect<T> offset(int fetchOffset) {
-        this.fetchOffset = fetchOffset;
-        this.replacementQuery = null;
-        return this;
-    }
-
-    /**
-     * Sets fetch size of the PreparedStatement generated for this query. Any non-zero value is passed to the driver
-     * as is; 0 (the default) leaves the fetch size to the adapter and the driver. A negative value is only meaningful
-     * for drivers that give it a special meaning, such as {@link Integer#MIN_VALUE} for streaming on MySQL.
-     *
-     * @see Statement#setFetchSize(int)
-     */
-    public MappedSelect<T> statementFetchSize(int statementFetchSize) {
-        this.statementFetchSize = statementFetchSize;
-        this.replacementQuery = null;
-        return this;
-    }
-
-    /**
-     * Sets query timeout for the PreparedStatement generated for this query.
-     *
-     * @see Statement#setQueryTimeout(int)
-     * @since 4.2
-     */
-    public MappedSelect<T> queryTimeout(int timeout) {
-        this.queryTimeout = timeout;
-        this.replacementQuery = null;
-        return this;
-    }
-
-    /**
-     * Resets query page size. A non-negative page size enables query result
-     * pagination that saves memory and processing time for large lists if only
-     * parts of the result are ever going to be accessed.
-     */
-    public MappedSelect<T> pageSize(int pageSize) {
-        this.pageSize = pageSize;
-        this.replacementQuery = null;
-        return this;
-    }
-
-    /**
-     * Forces query cache to be refreshed during the execution of this query.
-     */
-    public MappedSelect<T> forceNoCache() {
-        this.forceNoCache = true;
-        this.replacementQuery = null;
-        return this;
-    }
-
-    @SuppressWarnings("unchecked")
     @Override
     public MappedSelect<T> params(Map<String, ?> parameters) {
-        return (MappedSelect<T>) super.params(parameters);
+        super.params(parameters);
+        return this;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public MappedSelect<T> param(String name, Object value) {
-        return (MappedSelect<T>) super.param(name, value);
+        super.param(name, value);
+        return this;
     }
 
     @Override
-    public T selectFirst(ObjectContext context) {
-        return context.selectFirst(limit(1));
+    public MappedSelect<T> name(String queryName) {
+        super.name(queryName);
+        return this;
     }
 
     @Override
-    protected Query createReplacementQuery(EntityResolver resolver) {
-        QueryDescriptor descriptor = resolver.getQueryDescriptor(queryName);
+    public MappedSelect<T> limit(int fetchLimit) {
+        super.limit(fetchLimit);
+        return this;
+    }
 
-        Query query = super.createReplacementQuery(resolver);
+    @Override
+    public MappedSelect<T> offset(int fetchOffset) {
+        super.offset(fetchOffset);
+        return this;
+    }
 
-        QueryCacheStrategy cacheStrategyOverride = null;
+    @Override
+    public MappedSelect<T> statementFetchSize(int statementFetchSize) {
+        super.statementFetchSize(statementFetchSize);
+        return this;
+    }
 
-        if (forceNoCache) {
-            QueryCacheStrategy cacheStrategy = query.getMetaData(resolver).getCacheStrategy();
-            if (QueryCacheStrategy.LOCAL_CACHE == cacheStrategy) {
-                cacheStrategyOverride = QueryCacheStrategy.LOCAL_CACHE_REFRESH;
-            } else if (QueryCacheStrategy.SHARED_CACHE == cacheStrategy) {
-                cacheStrategyOverride = QueryCacheStrategy.SHARED_CACHE_REFRESH;
-            }
-        }
+    @Override
+    public MappedSelect<T> queryTimeout(int timeout) {
+        super.queryTimeout(timeout);
+        return this;
+    }
 
-        switch (descriptor) {
-            case SelectQueryDescriptor ignored -> {
-                FluentSelect<?, ?> selectQuery = (FluentSelect<?, ?>) query;
-                if (fetchLimit != null) {
-                    selectQuery.limit(fetchLimit);
-                }
-                if (fetchOffset != null) {
-                    selectQuery.offset(fetchOffset);
-                }
-                if (statementFetchSize != null) {
-                    selectQuery.statementFetchSize(statementFetchSize);
-                }
-                if (pageSize != null) {
-                    selectQuery.pageSize(pageSize);
-                }
-                if (cacheStrategyOverride != null) {
-                    selectQuery.cacheStrategy(cacheStrategyOverride, selectQuery.getCacheGroup());
-                }
-            }
-            case SQLTemplateDescriptor ignored -> {
-                SQLTemplate<?> sqlTemplate = (SQLTemplate<?>) query;
-                if (fetchLimit != null) {
-                    sqlTemplate.setFetchLimit(fetchLimit);
-                }
-                if (fetchOffset != null) {
-                    sqlTemplate.setFetchOffset(fetchOffset);
-                }
-                if (statementFetchSize != null) {
-                    sqlTemplate.setStatementFetchSize(statementFetchSize);
-                }
-                if (queryTimeout != null) {
-                    sqlTemplate.setQueryTimeout(queryTimeout);
-                }
-                if (pageSize != null) {
-                    sqlTemplate.setPageSize(pageSize);
-                }
-                if (cacheStrategyOverride != null) {
-                    sqlTemplate.setCacheStrategy(cacheStrategyOverride);
-                }
-            }
-            case ProcedureQueryDescriptor ignored -> {
-                ProcedureQuery<?> procedureQuery = (ProcedureQuery<?>) query;
-                if (fetchLimit != null) {
-                    procedureQuery.setFetchLimit(fetchLimit);
-                }
-                if (fetchOffset != null) {
-                    procedureQuery.setFetchOffset(fetchOffset);
-                }
-                if (statementFetchSize != null) {
-                    procedureQuery.setStatementFetchSize(statementFetchSize);
-                }
-                if (queryTimeout != null) {
-                    procedureQuery.setQueryTimeout(queryTimeout);
-                }
-                if (pageSize != null) {
-                    procedureQuery.setPageSize(pageSize);
-                }
-                if (cacheStrategyOverride != null) {
-                    procedureQuery.setCacheStrategy(cacheStrategyOverride);
-                }
-            }
-            default -> throw new CayenneRuntimeException("Unknown query type: %s", descriptor.getClass().getName());
-        }
+    @Override
+    public MappedSelect<T> pageSize(int pageSize) {
+        super.pageSize(pageSize);
+        return this;
+    }
 
-        return query;
+    @Override
+    public MappedSelect<T> forceNoCache() {
+        super.forceNoCache();
+        return this;
     }
 }

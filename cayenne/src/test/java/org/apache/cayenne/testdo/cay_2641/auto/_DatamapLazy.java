@@ -3,7 +3,7 @@ package org.apache.cayenne.testdo.cay_2641.auto;
 import java.util.List;
 
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.query.MappedSelect;
+import org.apache.cayenne.query.MappedQuery;
 import org.apache.cayenne.testdo.cay_2641.ArtistLazy;
 import org.apache.cayenne.testdo.cay_2641.PaintingLazy;
 
@@ -20,13 +20,13 @@ public class _DatamapLazy {
     public static final String SIMPLE_SELECT_QUERYNAME = "simpleSelect";
 
     public List<PaintingLazy> performPrefetchSelect(ObjectContext context) {
-        MappedSelect<PaintingLazy> query = MappedSelect.query(PREFETCH_SELECT_QUERYNAME, PaintingLazy.class);
+        MappedQuery<PaintingLazy> query = MappedQuery.query(PREFETCH_SELECT_QUERYNAME, PaintingLazy.class);
         return query.select(context);
     }
 
 
     public List<ArtistLazy> performSimpleSelect(ObjectContext context) {
-        MappedSelect<ArtistLazy> query = MappedSelect.query(SIMPLE_SELECT_QUERYNAME, ArtistLazy.class);
+        MappedQuery<ArtistLazy> query = MappedQuery.query(SIMPLE_SELECT_QUERYNAME, ArtistLazy.class);
         return query.select(context);
     }
 

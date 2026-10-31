@@ -12,26 +12,26 @@
 // the specific language governing permissions and limitations under the
 // License.
 
-=== MappedSelect and MappedExec
+=== MappedQuery
 
-`MappedSelect` and `MappedExec` is a queries that are just a reference to another queries stored in the DataMap.
-The actual stored query can be ObjectSelect, SQLTemplate or ProcedureQuery.
-Difference between `MappedSelect` and `MappedExec` is (as reflected in their names) whether underlying query
-intended to select data or just to perform some generic SQL code.
+`MappedQuery` is a query that is just a reference to another query stored in the DataMap. The actual stored query can be
+ObjectSelect, SQLTemplate or ProcedureQuery. A selecting stored query is run with `select(..)` and the other selecting
+shortcuts, and any stored query, selecting or not, is run with `execute(..)`, returning everything the query produced
+as a list of `QueryResult`.
 
 An ObjectSelect stored in the DataMap is defined by a String in the <<ql,Object Query Language>>, so it can be any
 query that the language supports, including the column queries and the queries rooted in a DbEntity. Its "$name"
 parameters are bound by name when the query is executed. A condition with a parameter that has no value is dropped
 from the query, so the same mapped query can be used both with and without its optional parameters.
 
-Here is example of how to use `MappedSelect`:
+Here is example of selecting with `MappedQuery`:
 
 [source,java,indent=0]
 ----
 include::{java-examples}/MappedQueryTest.java[tags=mappedSelect]
 ----
 
-And here is example of `MappedExec`:
+And here is example of running a non-selecting mapped query:
 
 [source,java,indent=0]
 ----

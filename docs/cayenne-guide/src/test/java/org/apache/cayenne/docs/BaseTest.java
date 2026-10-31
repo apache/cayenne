@@ -24,7 +24,7 @@ import org.apache.cayenne.datasource.CayenneDataSource;
 import org.apache.cayenne.docs.persistent.Artist;
 import org.apache.cayenne.docs.persistent.Gallery;
 import org.apache.cayenne.docs.persistent.Painting;
-import org.apache.cayenne.query.SQLExec;
+import org.apache.cayenne.query.SQLQuery;
 import org.apache.cayenne.CayenneRuntime;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -80,7 +80,7 @@ public abstract class BaseTest {
         context = runtime.newContext();
 
         for (String table : List.of("PAINTING", "ARTIST", "GALLERY", "COMPOUND_PK", "GENERIC_ENTITY")) {
-            SQLExec.query("DELETE FROM " + table).update(context);
+            SQLQuery.query("DELETE FROM " + table).execute(context);
         }
     }
 

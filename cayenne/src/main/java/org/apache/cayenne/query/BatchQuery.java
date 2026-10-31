@@ -33,7 +33,7 @@ import java.util.List;
  * values.
  * 
  */
-public abstract class BatchQuery implements Query {
+public abstract class BatchQuery implements Query<Void> {
 
     protected DbEntity dbEntity;
     protected List<BatchQueryRow> rows;

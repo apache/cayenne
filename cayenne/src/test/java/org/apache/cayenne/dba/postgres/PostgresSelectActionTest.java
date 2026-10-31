@@ -28,7 +28,7 @@ import org.apache.cayenne.access.translator.TranslatedSelect;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.QueryMetadata;
-import org.apache.cayenne.query.Select;
+import org.apache.cayenne.query.Query;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
@@ -73,7 +73,7 @@ public class PostgresSelectActionTest {
         metadata = mock(QueryMetadata.class);
         when(metadata.getQueryTimeout()).thenReturn(QueryMetadata.QUERY_TIMEOUT_DEFAULT);
 
-        Select<?> query = mock(Select.class);
+        Query<?> query = mock(Query.class);
 
         RowReaderFactory rowReaderFactory = mock(RowReaderFactory.class);
         when(rowReaderFactory.rowReader(any(), any(), any(), any())).thenReturn(mock(RowReader.class));

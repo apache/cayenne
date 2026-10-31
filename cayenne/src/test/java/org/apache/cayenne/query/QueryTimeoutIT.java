@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.query;
 
+import org.apache.cayenne.DataRow;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
@@ -65,7 +66,7 @@ public class QueryTimeoutIT {
 
     @Test
     public void sqlSelect() {
-        SQLSelect<Artist> sqlSelect = SQLSelect
+        SQLQuery<Artist> sqlSelect = SQLQuery
                 .query(Artist.class, "SELECT * FROM ARTIST")
                 .queryTimeout(10);
         assertEquals(10, sqlSelect
@@ -76,7 +77,7 @@ public class QueryTimeoutIT {
 
     @Test
     public void sqlExec() {
-        SQLExec sqlExec = SQLExec
+        SQLQuery<DataRow> sqlExec = SQLQuery
                 .query("SELECT * FROM ARTIST")
                 .queryTimeout(10);
         assertEquals(10, sqlExec
@@ -87,10 +88,10 @@ public class QueryTimeoutIT {
 
     @Test
     public void mappedSelect() {
-        MappedSelect<Artist> mappedSelect = MappedSelect
+        MappedQuery<Artist> mappedSelect = MappedQuery
                 .query("SelectTestUpper", Artist.class)
                 .queryTimeout(10);
-        Query replacementQuery = mappedSelect.createReplacementQuery(env.context().getEntityResolver());
+        Query<?> replacementQuery = mappedSelect.createReplacementQuery(env.context().getEntityResolver());
         assertEquals(10, replacementQuery
                 .getMetaData(env.context().getEntityResolver())
                 .getQueryTimeout());

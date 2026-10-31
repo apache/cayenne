@@ -27,12 +27,12 @@ import org.apache.cayenne.dba.postgres.PostgresAdapter;
 import org.apache.cayenne.map.EntityResolver;
 import org.junit.jupiter.api.Test;
 
-public class SQLSelectTest {
+public class SQLQueryTest {
 
 
 	@Test
 	public void cacheStrategy() {
-		SQLSelect<DataRow> q = SQLSelect.dataRowQuery("bla");
+		SQLQuery<DataRow> q = SQLQuery.dataRowQuery("bla");
 
 		assertNull(q.getCacheStrategy());
 		assertNull(q.getCacheGroup());
@@ -48,7 +48,7 @@ public class SQLSelectTest {
 
 	@Test
 	public void localCache() {
-		SQLSelect<DataRow> q = SQLSelect.dataRowQuery("bla");
+		SQLQuery<DataRow> q = SQLQuery.dataRowQuery("bla");
 
 		assertNull(q.getCacheStrategy());
 		assertNull(q.getCacheGroup());
@@ -64,7 +64,7 @@ public class SQLSelectTest {
 
 	@Test
 	public void sharedCache() {
-		SQLSelect<DataRow> q = SQLSelect.dataRowQuery("bla");
+		SQLQuery<DataRow> q = SQLQuery.dataRowQuery("bla");
 
 		assertNull(q.getCacheStrategy());
 		assertNull(q.getCacheGroup());
@@ -81,15 +81,15 @@ public class SQLSelectTest {
 	@Test
 	public void createReplacementQuery() {
 
-		SQLSelect<DataRow> q = SQLSelect.dataRowQuery("bla");
-		Query replacement = q.createReplacementQuery(mock(EntityResolver.class));
+		SQLQuery<DataRow> q = SQLQuery.dataRowQuery("bla");
+		Query<?> replacement = q.createReplacementQuery(mock(EntityResolver.class));
 		assertInstanceOf(SQLTemplate.class, replacement);
 	}
 
 	@Test
 	public void createReplacementQuery_ParamsArray_Single() {
 
-		SQLSelect<DataRow> q = SQLSelect.dataRowQuery("bla").paramsArray("a");
+		SQLQuery<DataRow> q = SQLQuery.dataRowQuery("bla").paramsArray("a");
 		SQLTemplate replacement = (SQLTemplate) q.createReplacementQuery(mock(EntityResolver.class));
 		assertArrayEquals(new Object[] { "a" }, replacement.getPositionalParams().toArray());
 	}
@@ -97,7 +97,7 @@ public class SQLSelectTest {
 	@Test
 	public void createReplacementQuery_ParamsArray_Multiple() {
 
-		SQLSelect<DataRow> q = SQLSelect.dataRowQuery("bla").paramsArray("a", "b");
+		SQLQuery<DataRow> q = SQLQuery.dataRowQuery("bla").paramsArray("a", "b");
 		SQLTemplate replacement = (SQLTemplate) q.createReplacementQuery(mock(EntityResolver.class));
 		assertArrayEquals(new Object[] { "a", "b" }, replacement.getPositionalParams().toArray());
 	}
@@ -105,7 +105,7 @@ public class SQLSelectTest {
 	@Test
 	public void createReplacementQuery_DataNode() {
 
-		SQLSelect<DataRow> q = SQLSelect.dataRowQuery("bla").dataNode("n1");
+		SQLQuery<DataRow> q = SQLQuery.dataRowQuery("bla").dataNode("n1");
 		SQLTemplate<?> replacement = (SQLTemplate<?>) q.createReplacementQuery(mock(EntityResolver.class));
 		assertEquals("n1", replacement.getDataNodeName());
 	}
@@ -113,7 +113,7 @@ public class SQLSelectTest {
 	@Test
 	public void createReplacementQuery_Dialect() {
 
-		SQLSelect<DataRow> q = SQLSelect.dataRowQuery("default")
+		SQLQuery<DataRow> q = SQLQuery.dataRowQuery("default")
 				.append(" plus")
 				.dialect(MySQLAdapter.class, "mysql")
 				.dialectAppend(MySQLAdapter.class, " plus")
@@ -131,10 +131,10 @@ public class SQLSelectTest {
 	public void getMetadata_ParamsArray_Multiple_Cache() {
 
 		EntityResolver resolver = mock(EntityResolver.class);
-		QueryMetadata md0 = SQLSelect.dataRowQuery("bla").localCache().getMetaData(resolver);
-		QueryMetadata md1 = SQLSelect.dataRowQuery("bla").localCache().paramsArray("a").getMetaData(resolver);
-		QueryMetadata md2 = SQLSelect.dataRowQuery("bla").localCache().paramsArray("a", "b").getMetaData(resolver);
-		QueryMetadata md3 = SQLSelect.dataRowQuery("bla").localCache().paramsArray(null, "b").getMetaData(resolver);
+		QueryMetadata md0 = SQLQuery.dataRowQuery("bla").localCache().getMetaData(resolver);
+		QueryMetadata md1 = SQLQuery.dataRowQuery("bla").localCache().paramsArray("a").getMetaData(resolver);
+		QueryMetadata md2 = SQLQuery.dataRowQuery("bla").localCache().paramsArray("a", "b").getMetaData(resolver);
+		QueryMetadata md3 = SQLQuery.dataRowQuery("bla").localCache().paramsArray(null, "b").getMetaData(resolver);
 
 		assertNotNull(md0.getCacheKey());
 		assertNotNull(md1.getCacheKey());
@@ -149,7 +149,7 @@ public class SQLSelectTest {
 
 	@Test
 	public void notReadOnlyMetadata() {
-		// raw SQL is opaque, so SQLSelect keeps the regular transaction
-		assertFalse(SQLSelect.dataRowQuery("SELECT * FROM X").getMetaData(mock(EntityResolver.class)).isReadOnly());
+		// raw SQL is opaque, so SQLQuery keeps the regular transaction
+		assertFalse(SQLQuery.dataRowQuery("SELECT * FROM X").getMetaData(mock(EntityResolver.class)).isReadOnly());
 	}
 }

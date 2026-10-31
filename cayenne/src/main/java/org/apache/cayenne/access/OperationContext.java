@@ -44,7 +44,7 @@ import java.util.Objects;
 public final class OperationContext {
 
     private ObjectContext context;
-    private final Query query;
+    private final Query<?> query;
     private final QueryMetadata metadata;
     private final boolean iteratedResult;
 
@@ -61,7 +61,7 @@ public final class OperationContext {
      * @param iteratedResult whether a select result is to be returned as a {@link org.apache.cayenne.ResultIterator}
      *                       instead of a list.
      */
-    public OperationContext(ObjectContext context, Query query, EntityResolver resolver, boolean iteratedResult) {
+    public OperationContext(ObjectContext context, Query<?> query, EntityResolver resolver, boolean iteratedResult) {
         this.context = context;
         this.query = Objects.requireNonNull(query, "Null query");
         this.metadata = query.getMetaData(resolver);
@@ -91,7 +91,7 @@ public final class OperationContext {
      * Returns the query the operation was started with. This is the query as seen by the ObjectContext; the queries
      * actually executed are the ones of the {@link #getStatementContexts() statements}.
      */
-    public Query getQuery() {
+    public Query<?> getQuery() {
         return query;
     }
 

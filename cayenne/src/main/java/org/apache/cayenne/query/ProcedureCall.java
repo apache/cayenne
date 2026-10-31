@@ -23,7 +23,6 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResult;
-import org.apache.cayenne.SelectResult;
 import org.apache.cayenne.UpdateResult;
 import org.apache.cayenne.map.EntityResolver;
 
@@ -36,7 +35,7 @@ import java.util.Map;
  *
  * @since 4.0
  */
-public class ProcedureCall<T> extends IndirectQuery {
+public class ProcedureCall<T> extends IndirectQuery<T> {
 
     /**
      * Creates procedure call using name of stored procedure defined in the mapping file. With no result class
@@ -137,32 +136,21 @@ public class ProcedureCall<T> extends IndirectQuery {
     /**
      * Executes the procedure, returning all of its result sets, update counts and OUT parameters in the order they
      * were produced.
-     */
-    public List<QueryResult> call(ObjectContext context) {
-        return context.execute(this);
-    }
-
-    /**
-     * Executes the procedure, returning its first result set.
      *
-     * @throws CayenneRuntimeException if the procedure produced no result sets.
+     * @deprecated in favor of {@link #execute(ObjectContext)}
      */
-    @SuppressWarnings("unchecked")
-    public List<T> select(ObjectContext context) {
-        for (QueryResult item : call(context)) {
-            if (item instanceof SelectResult<?> select) {
-                return (List<T>) select.objects();
-            }
-        }
-
-        throw new CayenneRuntimeException("Procedure '%s' produced no result sets", procedureName);
+    @Deprecated(since = "6.0", forRemoval = true)
+    public List<QueryResult> call(ObjectContext context) {
+        return execute(context);
     }
 
     /**
      * Executes the procedure, returning the counts of its first update.
      *
      * @throws CayenneRuntimeException if the procedure produced no updates.
+     * @deprecated Read the counts from the {@link UpdateResult} items of {@link #execute(ObjectContext)}.
      */
+    @Deprecated(since = "6.0", forRemoval = true)
     public int[] batchUpdate(ObjectContext context) {
         return firstUpdate(context).counts();
     }
@@ -171,13 +159,15 @@ public class ProcedureCall<T> extends IndirectQuery {
      * Executes the procedure, returning the count of its first update.
      *
      * @throws CayenneRuntimeException if the procedure produced no updates, or the first one is a batch update.
+     * @deprecated Read the count from the {@link UpdateResult} items of {@link #execute(ObjectContext)}.
      */
+    @Deprecated(since = "6.0", forRemoval = true)
     public int update(ObjectContext context) {
         return firstUpdate(context).count();
     }
 
     private UpdateResult firstUpdate(ObjectContext context) {
-        for (QueryResult item : call(context)) {
+        for (QueryResult item : execute(context)) {
             if (item instanceof UpdateResult update) {
                 return update;
             }
@@ -187,7 +177,7 @@ public class ProcedureCall<T> extends IndirectQuery {
     }
 
     @Override
-    protected Query createReplacementQuery(EntityResolver resolver) {
+    protected Query<?> createReplacementQuery(EntityResolver resolver) {
         ProcedureQuery<?> procedureQuery = resultClass != null
                 ? new ProcedureQuery<>(procedureName, resultClass)
                 : new ProcedureQuery<>(procedureName);

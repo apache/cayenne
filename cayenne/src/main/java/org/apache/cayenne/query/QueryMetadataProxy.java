@@ -82,7 +82,7 @@ public class QueryMetadataProxy implements QueryMetadata {
     }
 
     @Override
-    public Query getOriginatingQuery() {
+    public Query<?> getOriginatingQuery() {
         return mdDelegate.getOriginatingQuery();
     }
 

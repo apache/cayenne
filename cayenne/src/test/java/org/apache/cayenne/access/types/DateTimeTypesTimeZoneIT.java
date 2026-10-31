@@ -20,7 +20,7 @@ package org.apache.cayenne.access.types;
 
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.query.SQLExec;
+import org.apache.cayenne.query.SQLQuery;
 import org.apache.cayenne.testdo.datetime.LocalDateTestEntity;
 import org.apache.cayenne.testdo.datetime.LocalDateTimeTestEntity;
 import org.apache.cayenne.testdo.datetime.LocalTimeTestEntity;
@@ -337,7 +337,7 @@ public class DateTimeTypesTimeZoneIT {
     }
 
     private void insertLiteral(String table, String column, String literal) {
-        SQLExec.query("insert into " + table + " (ID, " + column + ") values (1, " + literal + ")").execute(context);
+        SQLQuery.query("insert into " + table + " (ID, " + column + ") values (1, " + literal + ")").execute(context);
     }
 
     /**

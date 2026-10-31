@@ -191,7 +191,7 @@ public abstract class QueryDescriptor implements ProjectNode, XMLSerializable {
     /**
      * Assembles Cayenne query instance of appropriate type from this descriptor.
      */
-    public abstract Query buildQuery();
+    public abstract Query<?> buildQuery();
 
     /**
      * Assembles Cayenne query instance of appropriate type from this descriptor, applying a map of named
@@ -199,7 +199,7 @@ public abstract class QueryDescriptor implements ProjectNode, XMLSerializable {
      *
      * @since 5.0
      */
-    public abstract Query buildQuery(Map<String, ?> parameters);
+    public abstract Query<?> buildQuery(Map<String, ?> parameters);
 
     @Override
     public <T> T acceptVisitor(ProjectNodeVisitor<T> visitor) {

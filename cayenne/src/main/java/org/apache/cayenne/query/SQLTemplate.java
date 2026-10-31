@@ -35,7 +35,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 
 /**
  * A query that executes unchanged (except for template preprocessing) "raw" SQL
@@ -63,7 +62,7 @@ import java.util.function.Function;
  * </p>
  * @since 1.1
  */
-public class SQLTemplate<T> implements Select<T> {
+public class SQLTemplate<T> implements Query<T> {
 
 	private final Class<T> persistentType;
 	private final String entityName;
@@ -185,7 +184,7 @@ public class SQLTemplate<T> implements Select<T> {
 	}
 
 	@Override
-	public void route(QueryRouter router, EntityResolver resolver, Query substitutedQuery) {
+	public void route(QueryRouter router, EntityResolver resolver, Query<?> substitutedQuery) {
 		DataMap map = getMetaData(resolver).getDataMap();
 
 		DataNode dataNode;
@@ -654,11 +653,4 @@ public class SQLTemplate<T> implements Select<T> {
 	public boolean isUseScalar() {
 		return useScalar;
 	}
-
-	/**
-	 * @since 4.2
-	 */
-    public void setResultMapper(Function<?,?> resultMapper) {
-		this.metaData.setResultMapper(resultMapper);
-    }
 }

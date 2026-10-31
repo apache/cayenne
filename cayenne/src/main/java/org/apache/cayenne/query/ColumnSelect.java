@@ -36,7 +36,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
-import java.util.function.Function;
 
 /**
  * <p>A helper builder for queries selecting individual properties based on the root object.</p>
@@ -304,22 +303,5 @@ public class ColumnSelect<T> extends FluentSelect<T, ColumnSelect<T>> {
     @Override
     protected ColumnSelectMetadata getBaseMetaData() {
         return (ColumnSelectMetadata) metaData;
-    }
-
-    /**
-     * Maps result of this query by processing with a given function.
-     * <br/>
-     * Could be used to map plain Object[] to some domain-specific object.
-     * <br/>
-     * <b>Note:</b> this method could be called multiple time, result will be mapped by all functions in the call order.
-     *
-     * @param mapper function that maps result to the required type.
-     * @param <E>    new result type
-     * @return this query with changed result type
-     * @since 4.2
-     */
-    public <E> ColumnSelect<E> map(Function<T, E> mapper) {
-        getBaseMetaData().setResultMapper(mapper);
-        return castSelf();
     }
 }

@@ -140,7 +140,7 @@ public class DataNodeQueriesIT {
         createFourArtists();
 
         String template = "SELECT #result('ARTIST_ID' 'int' 'A') FROM ARTIST ORDER BY ARTIST_ID";
-        Query query = new SQLTemplate(template);
+        Query<?> query = new SQLTemplate(template);
 
         StatementContext statementContext = StatementContexts.run(node, env.resolver(), query);
 
@@ -156,7 +156,7 @@ public class DataNodeQueriesIT {
         String templateString = "INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME)"
                 + "\n"
                 + "VALUES (1, 'A')";
-        Query template = new SQLTemplate(templateString);
+        Query<?> template = new SQLTemplate(templateString);
         StatementContexts.run(node, env.resolver(), template);
     }
 
@@ -165,7 +165,7 @@ public class DataNodeQueriesIT {
         String templateString = "INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME)"
                 + "\r\n"
                 + "VALUES (1, 'A')";
-        Query template = new SQLTemplate(templateString);
+        Query<?> template = new SQLTemplate(templateString);
         StatementContexts.run(node, env.resolver(), template);
     }
 
@@ -174,7 +174,7 @@ public class DataNodeQueriesIT {
         String templateString = "INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME)"
                 + "\r"
                 + "VALUES (1, 'A')";
-        Query template = new SQLTemplate(templateString);
+        Query<?> template = new SQLTemplate(templateString);
         StatementContexts.run(node, env.resolver(), template);
     }
 }

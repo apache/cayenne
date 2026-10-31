@@ -26,7 +26,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.query.SQLSelect;
+import org.apache.cayenne.query.SQLQuery;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
@@ -59,13 +59,13 @@ public class CayenneSqlExceptionIT {
     public void selectWithInvalidSql() {
         // deliberately malformed SQL
         String badSql = "SELECT FROM NOT ARTIST WHERE";
-        SQLSelect<Artist> query = SQLSelect.query(Artist.class, badSql);
+        SQLQuery<Artist> query = SQLQuery.query(Artist.class, badSql);
 
         CayenneSqlException e = assertThrows(CayenneSqlException.class, () -> query.select(context));
 //        e.printStackTrace();
 
         assertNotNull(e.getStatement(), "statement should have been captured");
-        // SQLSelect is executed as an internally-routed SQLTemplate, so getQuery() reports that executed query
+        // SQLQuery is executed as an internally-routed SQLTemplate, so getQuery() reports that executed query
         assertNotNull(e.getQuery());
         assertTrue(e.getMessage().contains(badSql),
                 () -> "Expected message to include the failing SQL, but was: " + e.getMessage());

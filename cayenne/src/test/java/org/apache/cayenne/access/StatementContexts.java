@@ -40,14 +40,14 @@ public final class StatementContexts {
      * Creates a statement context for the query on the node without executing it, for tests that invoke a SQLAction
      * directly.
      */
-    public static StatementContext newRun(DataNode node, EntityResolver resolver, Query query) {
+    public static StatementContext newRun(DataNode node, EntityResolver resolver, Query<?> query) {
         return new StatementContext(query, query.getMetaData(resolver), resolver);
     }
 
     /**
      * Executes the query on the node, returning its statement context with the results.
      */
-    public static StatementContext run(DataNode node, EntityResolver resolver, Query query) {
+    public static StatementContext run(DataNode node, EntityResolver resolver, Query<?> query) {
         StatementContext statementContext = newRun(node, resolver, query);
         node.execute(List.of(statementContext));
         return statementContext;

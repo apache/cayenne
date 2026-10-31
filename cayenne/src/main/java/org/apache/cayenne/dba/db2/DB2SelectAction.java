@@ -21,14 +21,14 @@ package org.apache.cayenne.dba.db2;
 
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.jdbc.SelectAction;
-import org.apache.cayenne.query.Select;
+import org.apache.cayenne.query.Query;
 
 /**
  * @since 4.1
  */
 public class DB2SelectAction extends SelectAction {
 
-    public DB2SelectAction(Select<?> query, DataNode dataNode) {
+    public DB2SelectAction(Query<?> query, DataNode dataNode) {
         super(query, dataNode);
     }
 

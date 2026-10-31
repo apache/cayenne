@@ -28,7 +28,7 @@ Object queries (most notably `ObjectSelect`) are built with abstractions origina
 side in the "object-relational" divide). E.g. `ObjectSelect` consists of a Java class of objects to fetch, a qualifier
 expression, orderings, etc. - all of this expressed in terms of the object model.
 
-Native queries describe a desired DB operation using SQL (`SQLSelect`, `SQLExec` query), a reference to a stored
+Native queries describe a desired DB operation using SQL (`SQLQuery`), a reference to a stored
 procedure (`ProcedureQuery`), etc. The results of native queries are lists of scalars, lists of `Object[]` or lists of
 maps (a term "data row" is often used to describe such a map). Some of them can potentially be converted to persistent
 objects (though usually with considerable effort). Native queries are less (if at all) portable across databases

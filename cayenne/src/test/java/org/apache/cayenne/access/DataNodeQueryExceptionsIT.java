@@ -23,7 +23,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.datasource.UnmanagedPoolingDataSource;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SQLActionVisitor;
-import org.apache.cayenne.query.SQLSelect;
+import org.apache.cayenne.query.SQLQuery;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -40,7 +40,7 @@ public class DataNodeQueryExceptionsIT {
 
     @Test
     public void queryException() {
-        SQLSelect<Object> throwingSS = new SQLSelect<Object>(Object.class, "SELECT 1") {
+        SQLQuery<Object> throwingSS = new SQLQuery<Object>(Object.class, "SELECT 1") {
             @Override
             public SQLAction createSQLAction(SQLActionVisitor visitor) {
                 assertEquals(1, activeConnections());
@@ -57,7 +57,7 @@ public class DataNodeQueryExceptionsIT {
 
     @Test
     public void queryError() {
-        SQLSelect<Object> throwingSS = new SQLSelect<Object>(Object.class, "SELECT 1") {
+        SQLQuery<Object> throwingSS = new SQLQuery<Object>(Object.class, "SELECT 1") {
             @Override
             public SQLAction createSQLAction(SQLActionVisitor visitor) {
                 assertEquals(1, activeConnections());

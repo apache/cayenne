@@ -95,7 +95,7 @@ public class IncrementalFaultList<E> implements List<E> {
 	 * @param maxFetchSize
 	 *            maximum number of fetches in one query
 	 */
-	IncrementalFaultList(DataContext dataContext, Query query, int maxFetchSize, List<?> data) {
+	IncrementalFaultList(DataContext dataContext, Query<?> query, int maxFetchSize, List<?> data) {
 		this.metadata = query.getMetaData(dataContext.getEntityResolver());
 		if (metadata.getPageSize() <= 0) {
 			throw new CayenneRuntimeException("Not a paginated query; page size: " + metadata.getPageSize());

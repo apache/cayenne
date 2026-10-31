@@ -119,7 +119,7 @@ public class H2Adapter extends JdbcAdapter {
     }
 
     @Override
-    public SQLAction getAction(Query query, DataNode node) {
+    public SQLAction getAction(Query<?> query, DataNode node) {
         return query.createSQLAction(new H2ActionBuilder(node));
     }
 

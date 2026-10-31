@@ -110,7 +110,7 @@ public class IngresAdapter extends JdbcAdapter {
     }
 
     @Override
-    public SQLAction getAction(Query query, DataNode node) {
+    public SQLAction getAction(Query<?> query, DataNode node) {
         return query.createSQLAction(new IngresActionBuilder(node));
     }
 

@@ -22,7 +22,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.List;
 
-import org.apache.cayenne.query.SQLSelect;
+import org.apache.cayenne.query.SQLQuery;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.oneway.OnewayTable1;
 import org.apache.cayenne.testdo.oneway.OnewayTable2;
@@ -147,7 +147,7 @@ public class OneWayRelationshipsIT {
 
 		assertEquals(2, t3.getManyOneWayDb().size());
 
-		SQLSelect<Integer> fksQuery = SQLSelect.scalarQuery("SELECT TABLE3_ID FROM oneway_table4",
+		SQLQuery<Integer> fksQuery = SQLQuery.scalarQuery("SELECT TABLE3_ID FROM oneway_table4",
 				"oneway-rels",Integer.class);
 
 		List<Integer> fks = env.context().select(fksQuery);
@@ -176,7 +176,7 @@ public class OneWayRelationshipsIT {
 
 		assertEquals(2, t3.getManyOneWayDb().size());
 
-		SQLSelect<Integer> fksQuery = SQLSelect.scalarQuery("SELECT TABLE3_ID FROM oneway_table4",
+		SQLQuery<Integer> fksQuery = SQLQuery.scalarQuery("SELECT TABLE3_ID FROM oneway_table4",
 				"oneway-rels", Integer.class);
 
 		List<Integer> fks = env.context().select(fksQuery);
@@ -206,7 +206,7 @@ public class OneWayRelationshipsIT {
 
 		assertEquals(1, t3.getManyOneWayDb().size());
 
-		SQLSelect<Integer> fksQuery = SQLSelect.scalarQuery("SELECT TABLE3_ID FROM oneway_table4",
+		SQLQuery<Integer> fksQuery = SQLQuery.scalarQuery("SELECT TABLE3_ID FROM oneway_table4",
 				"oneway-rels", Integer.class);
 
 		List<Integer> fks = env.context().select(fksQuery);

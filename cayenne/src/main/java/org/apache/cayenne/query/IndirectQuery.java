@@ -29,7 +29,7 @@ import org.apache.cayenne.map.EntityResolver;
  * 
  * @since 1.2
  */
-public abstract class IndirectQuery implements Query {
+public abstract class IndirectQuery<T> implements Query<T> {
 
 	protected String name;
 
@@ -38,7 +38,7 @@ public abstract class IndirectQuery implements Query {
 	 */
 	protected DataMap dataMap;
 
-	protected Query replacementQuery;
+	protected Query<?> replacementQuery;
 	protected EntityResolver lastResolver;
 
 	/**
@@ -53,7 +53,7 @@ public abstract class IndirectQuery implements Query {
 	 * Delegates routing to a replacement query.
 	 */
 	@Override
-	public void route(QueryRouter router, EntityResolver resolver, Query substitutedQuery) {
+	public void route(QueryRouter router, EntityResolver resolver, Query<?> substitutedQuery) {
 		getReplacementQuery(resolver).route(router, resolver, substitutedQuery != null ? substitutedQuery : this);
 	}
 
@@ -61,13 +61,13 @@ public abstract class IndirectQuery implements Query {
 	 * Creates a substitute query. An implementor is free to provide an
 	 * arbitrary replacement query.
 	 */
-	protected abstract Query createReplacementQuery(EntityResolver resolver);
+	protected abstract Query<?> createReplacementQuery(EntityResolver resolver);
 
 	/**
 	 * Returns a replacement query, creating it on demand and caching it for
 	 * reuse.
 	 */
-	protected Query getReplacementQuery(EntityResolver resolver) {
+	protected Query<?> getReplacementQuery(EntityResolver resolver) {
 		if (replacementQuery == null || lastResolver != resolver) {
 			this.replacementQuery = createReplacementQuery(resolver);
 			this.lastResolver = resolver;

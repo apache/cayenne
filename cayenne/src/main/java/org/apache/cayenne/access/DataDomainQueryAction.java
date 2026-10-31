@@ -63,7 +63,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
 
 /**
  * Performs query routing and execution. Routes the query into {@link StatementContext}s of the
@@ -81,7 +80,7 @@ class DataDomainQueryAction implements QueryRouter {
     private final OperationContext execContext;
     private final DataContext context;
     private final DataDomain domain;
-    private final Query query;
+    private final Query<?> query;
     private final QueryMetadata metadata;
     private final AdhocObjectFactory objectFactory;
 
@@ -332,7 +331,7 @@ class DataDomainQueryAction implements QueryRouter {
             return;
         }
 
-        ObjectConversionStrategy<?, ?> converter = getConverter();
+        ObjectConversionStrategy<?, ?> converter = getDefaultConverter();
         for (int i = 0; i < response.size(); i++) {
             switch (response.get(i)) {
                 case SelectResult<?> select -> {
@@ -354,12 +353,6 @@ class DataDomainQueryAction implements QueryRouter {
 
     private boolean noObjectConversion() {
         return context == null || metadata.getPageSize() > 0;
-    }
-
-    private ObjectConversionStrategy<?, ?> getConverter() {
-        ObjectConversionStrategy<?, ?> converter = getDefaultConverter();
-        Function<?, ?> mapper = metadata.getResultMapper();
-        return mapper != null ? new MapperConversionStrategy(mapper, converter) : converter;
     }
 
     private ObjectConversionStrategy<?, ?> getDefaultConverter() {
@@ -384,7 +377,7 @@ class DataDomainQueryAction implements QueryRouter {
     }
 
     @Override
-    public void route(DataNode node, Query query, Query substitutedQuery) {
+    public void route(DataNode node, Query<?> query, Query<?> substitutedQuery) {
         // the operation has already resolved the metadata of its own query; a substituted query (e.g. a prefetch
         // query) is resolved here
         EntityResolver resolver = domain.getEntityResolver();
@@ -715,31 +708,6 @@ class DataDomainQueryAction implements QueryRouter {
         @Override
         public Object convert(Object object) {
             return object;
-        }
-    }
-
-    // Conversion strategy that uses mapper function to map raw result
-    private static class MapperConversionStrategy extends ObjectConversionStrategy<Object, Object> {
-
-        private final Function<Object, ?> mapper;
-        private final ObjectConversionStrategy<Object, Object> parentStrategy;
-
-        @SuppressWarnings({"unchecked", "rawtypes"})
-        MapperConversionStrategy(Function<?, ?> mapper, ObjectConversionStrategy<?, ?> parentStrategy) {
-            this.mapper = (Function) mapper;
-            this.parentStrategy = (ObjectConversionStrategy) parentStrategy;
-        }
-
-        @Override
-        List<Object> convert(List<Object> mainRows) {
-            parentStrategy.convert(mainRows);
-            mainRows.replaceAll(mapper::apply);
-            return mainRows;
-        }
-
-        @Override
-        Object convert(Object object) {
-            return mapper.apply(parentStrategy.convert(object));
         }
     }
 }

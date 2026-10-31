@@ -93,7 +93,7 @@ public class DataMapArtifact implements Artifact {
 
     private void addQuery(QueryDescriptor query) {
 
-        // For now put all non-select queries to MappedExec list.
+        // For now put all non-select queries to the "exec" list, run via MappedQuery.execute(..)
         // Some additional flag could be introduced to control this explicitly.
         if (query instanceof SelectQueryDescriptor) {
             selectQueries.add(query);

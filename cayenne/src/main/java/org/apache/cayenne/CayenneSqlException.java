@@ -61,7 +61,7 @@ public class CayenneSqlException extends CayenneRuntimeException {
     /**
      * Returns the query that was being executed when the failure occurred, or null if it is not known.
      */
-    public Query getQuery() {
+    public Query<?> getQuery() {
         return statementContext != null ? statementContext.getQuery() : null;
     }
 

@@ -25,13 +25,12 @@ import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLTemplate;
 
 // tag::content[]
-public class MyDelegatingQuery extends IndirectQuery {
+public class MyDelegatingQuery extends IndirectQuery<Artist> {
 
     @Override
-    protected Query createReplacementQuery(EntityResolver resolver) {
-        SQLTemplate delegate = new SQLTemplate(Artist.class, generateRawSQL());
-        delegate.setFetchingDataRows(true);
-        return delegate;
+    protected Query<?> createReplacementQuery(EntityResolver resolver) {
+        // the type parameter of the delegate matches the one of this query, as both select Artists
+        return new SQLTemplate<>(Artist.class, generateRawSQL());
     }
 
     protected String generateRawSQL() {

@@ -43,5 +43,8 @@ public class CustomQueryTest extends BaseTest {
         List<QueryResult> result = context.execute(new MyDelegatingQuery());
         SelectResult<?> select = assertInstanceOf(SelectResult.class, result.getFirst());
         assertEquals(3, select.objects().size());
+
+        // as any Query, it can also be run with the selecting shortcuts
+        assertEquals(3, new MyDelegatingQuery().select(context).size());
     }
 }

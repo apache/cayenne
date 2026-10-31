@@ -21,14 +21,14 @@ package org.apache.cayenne.dba.oracle;
 
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.jdbc.SelectAction;
-import org.apache.cayenne.query.Select;
+import org.apache.cayenne.query.Query;
 
 /**
  * @since 1.2
  */
 class OracleSelectAction extends SelectAction {
 
-	public <T> OracleSelectAction(Select<T> query, DataNode dataNode) {
+	public <T> OracleSelectAction(Query<T> query, DataNode dataNode) {
 		super(query, dataNode);
 	}
 

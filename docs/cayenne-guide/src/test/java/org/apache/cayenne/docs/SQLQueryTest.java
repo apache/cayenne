@@ -19,11 +19,12 @@
 package org.apache.cayenne.docs;
 
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.QueryResult;
+import org.apache.cayenne.UpdateResult;
 import org.apache.cayenne.dba.oracle.OracleAdapter;
 import org.apache.cayenne.dba.sqlserver.SQLServerAdapter;
 import org.apache.cayenne.docs.persistent.Painting;
-import org.apache.cayenne.query.SQLExec;
-import org.apache.cayenne.query.SQLSelect;
+import org.apache.cayenne.query.SQLQuery;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -32,7 +33,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
-public class SQLSelectTest extends BaseTest {
+public class SQLQueryTest extends BaseTest {
 
     @Test
     public void select() {
@@ -40,7 +41,7 @@ public class SQLSelectTest extends BaseTest {
 
         // tag::select[]
         // Selecting objects
-        List<Painting> paintings = SQLSelect
+        List<Painting> paintings = SQLQuery
                 .query(Painting.class, "SELECT * FROM PAINTING WHERE TITLE LIKE 'G%'")
                 .upperColumnNames()
                 .localCache()
@@ -48,17 +49,17 @@ public class SQLSelectTest extends BaseTest {
                 .select(context);
 
         // Selecting scalar values
-        List<String> paintingNames = SQLSelect
+        List<String> paintingNames = SQLQuery
                 .scalarQuery("SELECT TITLE FROM PAINTING WHERE ESTIMATED_PRICE > 100000", String.class)
                 .select(context);
 
         // Selecting DataRow with predefined types
-        List<DataRow> rows = SQLSelect
+        List<DataRow> rows = SQLQuery
                 .dataRowQuery("SELECT * FROM ARTIST", Integer.class, String.class, LocalDate.class)
                 .select(context);
 
         // Selecting Object[] with predefined types
-        List<Object[]> arrays = SQLSelect
+        List<Object[]> arrays = SQLQuery
                 .columnQuery("SELECT * FROM ARTIST", Integer.class, String.class, LocalDate.class)
                 .select(context);
         // end::select[]
@@ -75,7 +76,7 @@ public class SQLSelectTest extends BaseTest {
         createArtistsDataSet();
 
         // tag::dialect[]
-        List<String> firstName = SQLSelect
+        List<String> firstName = SQLQuery
                 // default SQL, used with any database that has no dialect below
                 .scalarQuery("SELECT NAME FROM ARTIST ORDER BY NAME LIMIT 1", String.class)
                 .dialect(SQLServerAdapter.class, "SELECT TOP 1 NAME FROM ARTIST ORDER BY NAME")
@@ -91,27 +92,29 @@ public class SQLSelectTest extends BaseTest {
         createArtistsDataSet();
 
         // tag::dataNode[]
-        List<String> names = SQLSelect
+        List<String> names = SQLQuery
                 .scalarQuery("SELECT NAME FROM ARTIST ORDER BY NAME", String.class)
                 .dataNode("docs")
                 .select(context);
 
-        int inserted = SQLExec
+        List<QueryResult> inserted = SQLQuery
                 .query("INSERT INTO ARTIST (ID, NAME) VALUES (55, 'Picasso')")
                 .dataNode("docs")
-                .update(context);
+                .execute(context);
         // end::dataNode[]
 
         assertEquals("Aivazovsky", names.get(0));
-        assertEquals(1, inserted);
+        assertEquals(1, ((UpdateResult) inserted.getFirst()).count());
     }
 
     @Test
     public void exec() {
         // tag::exec[]
-        int inserted = SQLExec
+        // the same query runs any SQL; everything it produced, update counts here, comes back as a list of results
+        List<QueryResult> results = SQLQuery
                 .query("INSERT INTO ARTIST (ID, NAME) VALUES (55, 'Picasso')")
-                .update(context);
+                .execute(context);
+        int inserted = ((UpdateResult) results.getFirst()).count();
         // end::exec[]
 
         assertEquals(1, inserted);

@@ -34,12 +34,12 @@ final class NoopDelegate implements DataContextDelegate {
     static DataContextDelegate noopDelegate = new NoopDelegate();
 
     @Override
-    public Query willPerformGenericQuery(DataContext context, Query query) {
+    public Query<?> willPerformGenericQuery(DataContext context, Query<?> query) {
         return query;
     }
 
     @Override
-    public Query willPerformQuery(DataContext context, Query query) {
+    public Query<?> willPerformQuery(DataContext context, Query<?> query) {
         return query;
     }
 

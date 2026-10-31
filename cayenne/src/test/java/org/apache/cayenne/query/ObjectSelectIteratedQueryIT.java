@@ -216,18 +216,15 @@ public class ObjectSelectIteratedQueryIT {
 
     @Test
     public void mappingWithBatchIterator() {
-        try (ResultBatchIterator<DTO> iterator = ObjectSelect
+        try (ResultBatchIterator<Object[]> iterator = ObjectSelect
                 .columnQuery(Painting.class, Painting.PAINTING_TITLE, Painting.ESTIMATED_PRICE)
                 .orderBy(Painting.PAINTING_ID_PK_PROPERTY.asc())
-                .map(this::toDto)
                 .batchIterator(context, 5)) {
             int count = 0;
             while (iterator.hasNext()) {
                 count++;
-                List<DTO> dtos = iterator.next();
+                List<DTO> dtos = iterator.next().stream().map(this::toDto).toList();
                 for (DTO dto : dtos) {
-                    //noinspection ConstantConditions
-                    assertTrue(dto instanceof DTO);
                     assertTrue(dto.getTitle().contains("dto_painting"));
                 }
             }
@@ -238,17 +235,14 @@ public class ObjectSelectIteratedQueryIT {
 
     @Test
     public void mappingWithIterator() {
-        try (ResultIterator<DTO> iterator = ObjectSelect
+        try (ResultIterator<Object[]> iterator = ObjectSelect
                 .columnQuery(Painting.class, Painting.PAINTING_TITLE, Painting.ESTIMATED_PRICE)
                 .orderBy(Painting.PAINTING_ID_PK_PROPERTY.asc())
-                .map(this::toDto)
                 .iterator(context)) {
             int count = 0;
             while (iterator.hasNextRow()) {
                 count++;
-                DTO dto = iterator.nextRow();
-                //noinspection ConstantConditions
-                assertTrue(dto instanceof DTO);
+                DTO dto = toDto(iterator.nextRow());
                 assertTrue(dto.getTitle().contains("dto_painting"));
             }
             assertEquals(20, count);

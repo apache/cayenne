@@ -20,7 +20,7 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.query.SQLSelect;
+import org.apache.cayenne.query.SQLQuery;
 import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -130,7 +130,7 @@ public class DataContextDisjointByIdPrefetchIT {
     public void oneToMany_SQLSelect() throws Exception {
         createArtistWithTwoPaintingsDataSet();
 
-        List<Artist> result = SQLSelect.query(Artist.class, "SELECT "
+        List<Artist> result = SQLQuery.query(Artist.class, "SELECT "
                         + "#result('ARTIST_NAME' 'String'), "
                         + "#result('DATE_OF_BIRTH' 'java.util.Date'), "
                         + "#result('t0.ARTIST_ID' 'int' '' 'ARTIST_ID') "
@@ -180,7 +180,7 @@ public class DataContextDisjointByIdPrefetchIT {
     public void manyToOne_SQLSelect() throws Exception {
         createArtistWithTwoPaintingsDataSet();
 
-        List<Painting> result = SQLSelect.query(Painting.class, "SELECT "
+        List<Painting> result = SQLQuery.query(Painting.class, "SELECT "
                         + "#result('ESTIMATED_PRICE' 'BigDecimal'), "
                         + "#result('PAINTING_TITLE' 'String'), "
                         + "#result('PAINTING_DESCRIPTION' 'String'), "

@@ -21,10 +21,10 @@ package org.apache.cayenne.access.translator;
 
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.query.Select;
+import org.apache.cayenne.query.Query;
 
 /**
- * A service that translates a {@link Select} query into a {@link TranslatedSelect}.
+ * A service that translates a selecting {@link Query} into a {@link TranslatedSelect}.
  *
  * @since 4.0
  */
@@ -35,5 +35,5 @@ public interface SelectTranslator {
      *
      * @since 5.0
      */
-    TranslatedSelect translate(Select<?> query, DbAdapter adapter, EntityResolver resolver);
+    TranslatedSelect translate(Query<?> query, DbAdapter adapter, EntityResolver resolver);
 }

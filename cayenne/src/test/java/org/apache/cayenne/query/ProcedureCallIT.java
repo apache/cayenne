@@ -216,12 +216,12 @@ public class ProcedureCallIT {
             return;
         }
 
-        // iterating over "call(..)" with no intermediate variable only compiles if "query(String)" is not a raw type
+        // iterating over "execute(..)" with no intermediate variable only compiles if "query(String)" is not a raw type
         int outParams = runProcedure(() -> {
             int count = 0;
             for (QueryResult item : ProcedureCall.query(OUT_STORED_PROCEDURE)
                     .param("in_param", 20)
-                    .call(env.context())) {
+                    .execute(env.context())) {
                 if (item instanceof OutParametersResult out) {
                     assertEquals(40, ((Number) out.values().get("out_param")).intValue());
                     count++;
@@ -304,7 +304,7 @@ public class ProcedureCallIT {
     }
 
     private List<QueryResult> runProcedureCall(ProcedureCall<?> q) {
-        return runProcedure(() -> q.call(env.context()));
+        return runProcedure(() -> q.execute(env.context()));
     }
 
     private <R> R runProcedure(Supplier<R> call) {

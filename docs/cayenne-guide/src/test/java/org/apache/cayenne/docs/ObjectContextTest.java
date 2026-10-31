@@ -33,7 +33,7 @@ import org.apache.cayenne.docs.persistent.Artist;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.SQLExec;
+import org.apache.cayenne.query.SQLQuery;
 import org.apache.cayenne.tx.BaseTransaction;
 import org.apache.cayenne.tx.Transaction;
 import org.apache.cayenne.tx.TransactionDescriptor;
@@ -100,7 +100,7 @@ public class ObjectContextTest extends BaseTest {
     @Test
     public void execute() {
         createArtistsDataSet();
-        Query query = SQLExec.query("UPDATE ARTIST SET NAME = 'Unknown'");
+        Query<?> query = SQLQuery.query("UPDATE ARTIST SET NAME = 'Unknown'");
 
         // tag::execute[]
         List<QueryResult> result = context.execute(query);
@@ -125,9 +125,9 @@ public class ObjectContextTest extends BaseTest {
         createArtistsDataSet();
 
         // tag::executeInTransaction[]
-        Collection<Query> queries = List.of( // multiple queries that need to be run together
-                SQLExec.query("DELETE FROM PAINTING"),
-                SQLExec.query("DELETE FROM ARTIST"));
+        Collection<Query<?>> queries = List.of( // multiple queries that need to be run together
+                SQLQuery.query("DELETE FROM PAINTING"),
+                SQLQuery.query("DELETE FROM ARTIST"));
 
         runtime.performInTransaction(() -> {
             queries.forEach(context::execute);
@@ -190,7 +190,7 @@ public class ObjectContextTest extends BaseTest {
 
     @Test
     public void pk() {
-        SQLExec.query("INSERT INTO ARTIST (ID, NAME) VALUES (34579, 'Dali')").update(context);
+        SQLQuery.query("INSERT INTO ARTIST (ID, NAME) VALUES (34579, 'Dali')").execute(context);
 
         // tag::objectForPK[]
         Artist artist = context.objectForPK(Artist.class, 34579);

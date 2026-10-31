@@ -45,7 +45,7 @@ import java.util.function.Function;
  *
  * @since 4.0
  */
-public abstract class FluentSelect<T, S extends FluentSelect<T, S>> implements Select<T> {
+public abstract class FluentSelect<T, S extends FluentSelect<T, S>> implements Query<T> {
 
     // an untyped "self" of the query root, used to build "by id" qualifiers; paths in the resulting expressions
     // are relative to the root and get resolved against the actual entity at translation time
@@ -616,8 +616,8 @@ public abstract class FluentSelect<T, S extends FluentSelect<T, S>> implements S
     }
 
     @Override
-    public void route(QueryRouter router, EntityResolver resolver, Query substitutedQuery) {
-        Select.super.route(router, resolver, substitutedQuery);
+    public void route(QueryRouter router, EntityResolver resolver, Query<?> substitutedQuery) {
+        Query.super.route(router, resolver, substitutedQuery);
 
         // suppress prefetches for paginated queries.. instead prefetches will be resolved per row...
         if (getPageSize() <= 0) {

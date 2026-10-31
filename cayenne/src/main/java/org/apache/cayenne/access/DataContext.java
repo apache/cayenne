@@ -42,7 +42,6 @@ import org.apache.cayenne.map.EntityInheritanceTree;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.Select;
 import org.apache.cayenne.reflect.ArcProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.PropertyDescriptor;
@@ -768,8 +767,8 @@ public class DataContext implements ObjectContext {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public <T> List<T> select(Select<T> query) {
-        Query resolved = nonNullDelegate().willPerformQuery(this, query);
+    public <T> List<T> select(Query<T> query) {
+        Query<?> resolved = nonNullDelegate().willPerformQuery(this, query);
         List<T> result = (List<T>) QueryResults.firstList(doExecute(resolved, false));
         return result != null ? result : new ArrayList<>(1);
     }
@@ -778,7 +777,7 @@ public class DataContext implements ObjectContext {
      * @since 4.0
      */
     @Override
-    public <T> T selectOne(Select<T> query) {
+    public <T> T selectOne(Query<T> query) {
         List<T> objects = select(query);
 
         if (objects.isEmpty()) {
@@ -794,7 +793,7 @@ public class DataContext implements ObjectContext {
      * @since 4.0
      */
     @Override
-    public <T> T selectFirst(Select<T> query) {
+    public <T> T selectFirst(Query<T> query) {
         List<T> objects = select(query);
 
         return (objects == null || objects.isEmpty()) ? null : objects.getFirst();
@@ -804,7 +803,7 @@ public class DataContext implements ObjectContext {
      * @since 4.0
      */
     @Override
-    public <T> void iterate(Select<T> query, ResultIteratorCallback<T> callback) {
+    public <T> void iterate(Query<T> query, ResultIteratorCallback<T> callback) {
 
         try (ResultIterator<T> it = iterator(query)) {
             for (T t : it) {
@@ -825,8 +824,8 @@ public class DataContext implements ObjectContext {
      */
     @Override
     @SuppressWarnings("unchecked")
-    public <T> ResultIterator<T> iterator(Select<T> query) {
-        Query resolved = nonNullDelegate().willPerformQuery(this, query);
+    public <T> ResultIterator<T> iterator(Query<T> query) {
+        Query<?> resolved = nonNullDelegate().willPerformQuery(this, query);
         return (ResultIterator<T>) QueryResults.firstIterator(doExecute(resolved, true));
     }
 
@@ -837,12 +836,12 @@ public class DataContext implements ObjectContext {
      * @since 5.0
      */
     @Override
-    public List<QueryResult> execute(Query query) {
-        Query resolved = nonNullDelegate().willPerformGenericQuery(this, query);
+    public List<QueryResult> execute(Query<?> query) {
+        Query<?> resolved = nonNullDelegate().willPerformGenericQuery(this, query);
         return Collections.unmodifiableList(doExecute(resolved, false));
     }
 
-    private List<QueryResult> doExecute(Query resolved, boolean iteratedResult) {
+    private List<QueryResult> doExecute(Query<?> resolved, boolean iteratedResult) {
         if (resolved == null) {
             return Collections.emptyList();
         }
@@ -898,7 +897,7 @@ public class DataContext implements ObjectContext {
     }
 
     @Override
-    public <T> ResultBatchIterator<T> batchIterator(Select<T> query, int size) {
+    public <T> ResultBatchIterator<T> batchIterator(Query<T> query, int size) {
         return new ResultBatchIterator<>(iterator(query), size);
     }
 

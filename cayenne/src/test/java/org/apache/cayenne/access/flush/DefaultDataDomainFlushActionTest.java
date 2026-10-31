@@ -148,7 +148,7 @@ public class DefaultDataDomainFlushActionTest {
         DefaultDataDomainFlushAction action = mock(DefaultDataDomainFlushAction.class);
         when(action.createQueries((List<DbRowOp>) any(List.class))).thenCallRealMethod();
 
-        List<? extends Query> queries = action.createQueries(ops);
+        List<? extends Query<?>> queries = action.createQueries(ops);
         assertEquals(4, queries.size());
         assertInstanceOf(InsertBatchQuery.class, queries.get(0));
         InsertBatchQuery insert1 = (InsertBatchQuery)queries.get(0);
@@ -206,7 +206,7 @@ public class DefaultDataDomainFlushActionTest {
         DefaultDataDomainFlushAction action = mock(DefaultDataDomainFlushAction.class);
         when(action.createQueries((List<DbRowOp>) any(List.class))).thenCallRealMethod();
 
-        List<? extends Query> queries = action.createQueries(ops);
+        List<? extends Query<?>> queries = action.createQueries(ops);
         assertEquals(6, queries.size());
     }
 

@@ -34,7 +34,7 @@ public class MockEntityResolver extends EntityResolver {
         return mockObjEntity;
     }
 
-    public synchronized ObjEntity lookupObjEntity(Query q) {
+    public synchronized ObjEntity lookupObjEntity(Query<?> q) {
         return mockObjEntity;
     }
 }

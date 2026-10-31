@@ -59,8 +59,28 @@
 
 *  Per [CAY-3062](https://issues.apache.org/jira/browse/CAY-3062) `SQLTemplate` no longer support multiple parameter sets. 
    The varargs `setParameters(Map...)`, `queryWithParameters(Map...)`, `getParameters()`, `parametersIterator()` and
-   `parametersSize()` are removed. The preferred way to run raw SQL is `SQLSelect` / `SQLExec` that can be called multiple 
-   times, once per a set of parameters.
+   `parametersSize()` are removed. The preferred way to run raw SQL is `SQLQuery` that can be called multiple times, once per a set of
+   parameters.
+
+*  Per [CAY-3067](https://issues.apache.org/jira/browse/CAY-3067) selecting and non-selecting queries share a single
+   shape. `Query` is now generic, `Query<T>`, with `T` being the type of the rows the query selects, and the selecting
+   shortcuts (`select(..)`, `selectOne(..)`, `selectFirst(..)`, `iterate(..)`, `iterator(..)`, `batchIterator(..)`) and
+   `execute(..)` are defined on `Query` itself as default methods. The `Select` interface is removed, and
+   `ObjectContext` selecting methods take `Query<T>`.
+
+   The user-facing queries are aligned with this shape:
+
+   * `SQLSelect` and `SQLExec` are merged into `SQLQuery`, and are deprecated as its subclasses. `SQLQuery.query(sql)`
+     and `SQLQuery.query(dataMapName, sql)` replace `SQLExec.query(..)`, and the other `SQLSelect` factory methods are
+     kept under the same names. There is no `update(..)` on `SQLQuery`: the counts are read from the `UpdateResult`
+     items returned by `execute(..)`, as in `((UpdateResult) query.execute(context).getFirst()).count()`.
+   * `SQLSelect.map(..)` and `ColumnSelect.map(..)` are removed without a replacement. Map the selected rows with
+     a `Stream`.
+   * `MappedSelect` and `MappedExec` are merged into `MappedQuery`, and are deprecated as its subclasses. Update counts
+     are read from `execute(..)` the same way.
+   * `ProcedureCall.call(..)` is deprecated in favor of the inherited `execute(..)`, and its `update(..)` and
+     `batchUpdate(..)` in favor of reading the `UpdateResult` items of `execute(..)`. `ProcedureCall.select(..)` no
+     longer throws when the procedure produced no result sets, returning an empty list like every other query.
 
 ## What's New in 5.0
 

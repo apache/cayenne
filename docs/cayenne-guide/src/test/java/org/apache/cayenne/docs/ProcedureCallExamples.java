@@ -44,20 +44,20 @@ public class ProcedureCallExamples {
         // end::select[]
     }
 
-    public void call() {
-        // tag::call[]
+    public void execute() {
+        // tag::execute[]
         // here we do not bother with root class.
         // Procedure name gives us needed routing information
         List<QueryResult> result = ProcedureCall.query("my_procedure")
                 .param("p1", "abc")
                 .param("p2", 3000)
-                .call(context);
-        // end::call[]
+                .execute(context);
+        // end::execute[]
     }
 
     public void outParameters() {
         // tag::outParameters[]
-        for (QueryResult item : ProcedureCall.query("my_procedure").call(context)) {
+        for (QueryResult item : ProcedureCall.query("my_procedure").execute(context)) {
             switch (item) {
                 case SelectResult<?> select -> process(select.objects());
                 case UpdateResult update -> process(update.counts());

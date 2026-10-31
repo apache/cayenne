@@ -96,7 +96,7 @@ public class MockDataNode extends DataNode {
         return runCount;
     }
 
-    public void addExpectedResult(Query query, List result) {
+    public void addExpectedResult(Query<?> query, List result) {
         replaceResults = true;
         results.put(query, result);
     }

@@ -22,7 +22,7 @@ package org.apache.cayenne;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.query.SQLSelect;
+import org.apache.cayenne.query.SQLQuery;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.compound.CharPkTestEntity;
@@ -209,8 +209,8 @@ public class CayenneCompoundIT {
 
         int pageSize = 7;
 
-        // SQLSelect builds a replacement SQLTemplate, so it exercises the same compound-PK paginated id reader
-        SQLSelect<CompoundPkTestEntity> query = SQLSelect
+        // SQLQuery builds a replacement SQLTemplate, so it exercises the same compound-PK paginated id reader
+        SQLQuery<CompoundPkTestEntity> query = SQLQuery
                 .query(CompoundPkTestEntity.class, "SELECT NAME, KEY1, KEY2 FROM COMPOUND_PK_TEST ORDER BY NAME")
                 .columnNameCaps(CapsStrategy.UPPER)
                 .pageSize(pageSize);

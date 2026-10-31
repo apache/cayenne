@@ -18,11 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.docs;
 
+import org.apache.cayenne.DataRow;
+import org.apache.cayenne.UpdateResult;
 import org.apache.cayenne.docs.persistent.Artist;
 import org.apache.cayenne.docs.persistent.Painting;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.query.SQLExec;
-import org.apache.cayenne.query.SQLSelect;
+import org.apache.cayenne.query.SQLQuery;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -35,11 +36,11 @@ public class SQLScriptingTest extends BaseTest {
 
         // tag::variable[]
         // this will generate SQL like this: "delete from PUBLIC.PAINTING"
-        SQLExec query = SQLExec.query("delete from $tableName")
-                .params("tableName", "PUBLIC.PAINTING");
+        SQLQuery<DataRow> query = SQLQuery.query("delete from $tableName")
+                .param("tableName", "PUBLIC.PAINTING");
         // end::variable[]
 
-        assertEquals(4, query.update(context));
+        assertEquals(4, ((UpdateResult) query.execute(context).getFirst()).count());
     }
 
     @Test
@@ -51,7 +52,7 @@ public class SQLScriptingTest extends BaseTest {
         String sql = "SELECT * FROM PAINTING t0 WHERE #bindObjectEqual($a 't0.ARTIST_ID' 'ID' )";
         Artist artistParam = dali;
 
-        SQLSelect<Painting> select = SQLSelect.query(Painting.class, sql)
+        SQLQuery<Painting> select = SQLQuery.query(Painting.class, sql)
                 .param("a", artistParam);
         // end::bindObjectEqual[]
 
@@ -67,7 +68,7 @@ public class SQLScriptingTest extends BaseTest {
         String sql = "SELECT * FROM PAINTING t0 WHERE #bindObjectNotEqual($a 't0.ARTIST_ID' 'ID' )";
         Artist artistParam = dali;
 
-        SQLSelect<Painting> select = SQLSelect.query(Painting.class, sql)
+        SQLQuery<Painting> select = SQLQuery.query(Painting.class, sql)
                 .param("a", artistParam);
         // end::bindObjectNotEqual[]
 
