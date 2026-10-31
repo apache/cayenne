@@ -25,10 +25,9 @@ import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.cache.QueryCacheEntryFactory;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.EntityResultSegment;
-import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryCacheStrategy;
-import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.ResultSegments;
+import org.apache.cayenne.query.resolved.ResolvedQuery;
 
 import java.util.Collections;
 import java.util.List;
@@ -39,17 +38,15 @@ class DataContextQueryAction {
     private static final boolean DONE = true;
 
     private final DataContext context;
-    private final OperationContext execContext;
-    private final Query<?> query;
-    private final QueryMetadata metadata;
+    private final QueryContext execContext;
+    private final ResolvedQuery resolved;
     private final boolean ignoreLocalCache;
     private List<QueryResult> response;
 
-    public DataContextQueryAction(DataContext context, OperationContext execContext, boolean ignoreLocalCache) {
+    public DataContextQueryAction(DataContext context, QueryContext execContext, boolean ignoreLocalCache) {
         this.context = context;
         this.execContext = execContext;
-        this.query = execContext.getQuery();
-        this.metadata = execContext.getMetadata();
+        this.resolved = execContext.getResolvedQuery();
         this.ignoreLocalCache = ignoreLocalCache;
     }
 
@@ -82,7 +79,7 @@ class DataContextQueryAction {
 
 
     protected boolean interceptPaginatedQuery() {
-        if (metadata.getPageSize() > 0) {
+        if (resolved.pageSize() > 0) {
             // this will select raw ids
             runQuery();
 
@@ -102,19 +99,19 @@ class DataContextQueryAction {
         // just a sanity check
         Objects.requireNonNull(rawIds, "Trying to execute paginated query that is not a select query");
         if (isMixedResultsForPaginatedQuery()) {
-            return new MixedResultIncrementalFaultList<>(context, query, maxIdQualifierSize, rawIds);
+            return new MixedResultIncrementalFaultList<>(context, resolved, maxIdQualifierSize, rawIds);
         } else {
-            DbEntity dbEntity = metadata.getDbEntity();
+            DbEntity dbEntity = resolved.dbEntity();
             if (dbEntity != null && dbEntity.getPrimaryKeys().size() == 1) {
-                return new SimpleIdIncrementalFaultList<>(context, query, maxIdQualifierSize, rawIds);
+                return new SimpleIdIncrementalFaultList<>(context, resolved, maxIdQualifierSize, rawIds);
             } else {
-                return new IncrementalFaultList<>(context, query, maxIdQualifierSize, rawIds);
+                return new IncrementalFaultList<>(context, resolved, maxIdQualifierSize, rawIds);
             }
         }
     }
 
     private boolean isMixedResultsForPaginatedQuery() {
-        ResultSegments rsMapping = metadata.getResultSegments();
+        ResultSegments rsMapping = resolved.resultSegments();
         return rsMapping != null
                 && !rsMapping.segments().isEmpty()
                 && (rsMapping.array() || !(rsMapping.segments().getFirst() instanceof EntityResultSegment));
@@ -130,13 +127,13 @@ class DataContextQueryAction {
             return !DONE;
         }
 
-        if (metadata.getCacheKey() == null) {
+        if (resolved.cacheKey() == null) {
             return !DONE;
         }
 
-        boolean cache = QueryCacheStrategy.LOCAL_CACHE == metadata.getCacheStrategy();
+        boolean cache = QueryCacheStrategy.LOCAL_CACHE == resolved.cacheStrategy();
         boolean cacheOrCacheRefresh = cache
-                || QueryCacheStrategy.LOCAL_CACHE_REFRESH == metadata.getCacheStrategy();
+                || QueryCacheStrategy.LOCAL_CACHE_REFRESH == resolved.cacheStrategy();
 
         if (!cacheOrCacheRefresh) {
             return !DONE;
@@ -147,7 +144,7 @@ class DataContextQueryAction {
 
         if (cache) {
             boolean wasResponseNull = (response == null);
-            List<?> cachedResults = queryCache.get(metadata, factory);
+            List<?> cachedResults = queryCache.get(resolved.cacheKey(), resolved.cacheGroup(), factory);
 
             // response may already be initialized by the factory above ... it is null if
             // there was a preexisting cache entry
@@ -157,7 +154,7 @@ class DataContextQueryAction {
             }
         } else {
             // on cache-refresh request, fetch without blocking and fill the cache
-            queryCache.put(metadata, factory.createObject());
+            queryCache.put(resolved.cacheKey(), resolved.cacheGroup(), factory.createObject());
         }
 
         return DONE;

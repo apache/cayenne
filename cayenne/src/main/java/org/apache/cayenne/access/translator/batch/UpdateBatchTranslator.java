@@ -24,39 +24,39 @@ import java.util.Arrays;
 import org.apache.cayenne.access.sqlbuilder.SQLBuilder;
 import org.apache.cayenne.access.sqlbuilder.UpdateBuilder;
 import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.query.UpdateBatchQuery;
+import org.apache.cayenne.query.resolved.UpdateBatch;
 
 /**
  * @since 4.2
  */
-public class UpdateBatchTranslator extends BaseBatchTranslator<UpdateBatchQuery> {
+public class UpdateBatchTranslator extends BaseBatchTranslator<UpdateBatch> {
 
     @Override
-    protected String createSql(BatchTranslatorContext<UpdateBatchQuery> context) {
-        UpdateBatchQuery query = context.getQuery();
+    protected String createSql(BatchTranslatorContext<UpdateBatch> context) {
+        UpdateBatch query = context.getQuery();
 
         UpdateBuilder updateBuilder = SQLBuilder.update(context.getRootDbEntity());
-        for (DbAttribute attr : query.getUpdatedAttributes()) {
+        for (DbAttribute attr : query.updatedAttributes()) {
             updateBuilder.set(SQLBuilder
                     .column(attr.getName()).attribute(attr)
                     .eq(SQLBuilder.value(1).attribute(attr))
             );
         }
-        updateBuilder.where(buildQualifier(context, query.getQualifierAttributes()));
+        updateBuilder.where(buildQualifier(context, query.qualifierAttributes()));
 
         return doTranslate(context, updateBuilder);
     }
 
     @Override
-    protected boolean isNullAttribute(BatchTranslatorContext<UpdateBatchQuery> context, DbAttribute attribute) {
+    protected boolean isNullAttribute(BatchTranslatorContext<UpdateBatch> context, DbAttribute attribute) {
         return context.getQuery().isNull(attribute);
     }
 
     @Override
-    protected int[] createRowValueIndexes(BatchTranslatorContext<UpdateBatchQuery> context) {
-        UpdateBatchQuery updateBatch = context.getQuery();
-        int updatedCount = updateBatch.getUpdatedAttributes().size();
-        int[] indexes = new int[updatedCount + updateBatch.getQualifierAttributes().size()];
+    protected int[] createRowValueIndexes(BatchTranslatorContext<UpdateBatch> context) {
+        UpdateBatch updateBatch = context.getQuery();
+        int updatedCount = updateBatch.updatedAttributes().size();
+        int[] indexes = new int[updatedCount + updateBatch.qualifierAttributes().size()];
 
         int i = 0;
         int j = 0;
@@ -65,7 +65,7 @@ public class UpdateBatchTranslator extends BaseBatchTranslator<UpdateBatchQuery>
         }
 
         // qualifier attributes with null values render as "IS NULL" and have no placeholder
-        for (DbAttribute attribute : updateBatch.getQualifierAttributes()) {
+        for (DbAttribute attribute : updateBatch.qualifierAttributes()) {
             if (!updateBatch.isNull(attribute)) {
                 indexes[j++] = i;
             }

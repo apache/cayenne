@@ -34,7 +34,7 @@ import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.map.ProcedureQueryDescriptor;
 import org.apache.cayenne.map.QueryDescriptor;
-import org.apache.cayenne.map.SQLTemplateDescriptor;
+import org.apache.cayenne.map.SQLQueryDescriptor;
 import org.apache.cayenne.map.SelectQueryDescriptor;
 import org.apache.cayenne.validation.ValidationResult;
 
@@ -80,7 +80,7 @@ public class DefaultProjectValidator implements ProjectValidator {
         validators.put(ProcedureParameter.class, new ProcedureParameterValidator(configSupplier));
         validators.put(SelectQueryDescriptor.class, new SelectQueryValidator(configSupplier));
         validators.put(ProcedureQueryDescriptor.class, new ProcedureQueryValidator(configSupplier));
-        validators.put(SQLTemplateDescriptor.class, new SQLTemplateValidator(configSupplier));
+        validators.put(SQLQueryDescriptor.class, new SQLQueryValidator(configSupplier));
         return validators;
     }
 
@@ -218,8 +218,8 @@ public class DefaultProjectValidator implements ProjectValidator {
             switch (query) {
                 case SelectQueryDescriptor select ->
                         getValidator(SelectQueryDescriptor.class).validate(select, validationResult);
-                case SQLTemplateDescriptor sqlTemplate ->
-                        getValidator(SQLTemplateDescriptor.class).validate(sqlTemplate, validationResult);
+                case SQLQueryDescriptor sqlTemplate ->
+                        getValidator(SQLQueryDescriptor.class).validate(sqlTemplate, validationResult);
                 case ProcedureQueryDescriptor procedureQuery ->
                         getValidator(ProcedureQueryDescriptor.class).validate(procedureQuery, validationResult);
                 default -> {

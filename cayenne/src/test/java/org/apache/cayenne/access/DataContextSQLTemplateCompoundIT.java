@@ -21,7 +21,7 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.query.CapsStrategy;
-import org.apache.cayenne.query.SQLTemplate;
+import org.apache.cayenne.query.SQLQuery;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.compound.CompoundFkTestEntity;
 import org.apache.cayenne.testdo.compound.CompoundPkTestEntity;
@@ -78,9 +78,9 @@ public class DataContextSQLTemplateCompoundIT {
 
         String template = "SELECT * FROM COMPOUND_FK_TEST t0"
                 + " WHERE #bindObjectEqual($a [ 't0.F_KEY1', 't0.F_KEY2' ] [ 'KEY1', 'KEY2' ] ) ORDER BY PKEY";
-        SQLTemplate query = new SQLTemplate(CompoundFkTestEntity.class, template);
-        query.setColumnNamesCapitalization(CapsStrategy.UPPER);
-        query.setParams(Collections.singletonMap("a", a));
+        SQLQuery<CompoundFkTestEntity> query = SQLQuery.query(CompoundFkTestEntity.class, template);
+        query.columnNameCaps(CapsStrategy.UPPER);
+        query.params(Collections.singletonMap("a", a));
 
         List<CompoundFkTestEntity> objects = context.select(query);
         assertEquals(1, objects.size());
@@ -102,9 +102,9 @@ public class DataContextSQLTemplateCompoundIT {
 
         String template = "SELECT * FROM COMPOUND_FK_TEST t0"
                 + " WHERE #bindObjectNotEqual($a [ 't0.F_KEY1', 't0.F_KEY2' ] [ 'KEY1', 'KEY2' ] ) ORDER BY PKEY";
-        SQLTemplate query = new SQLTemplate(CompoundFkTestEntity.class, template);
-        query.setColumnNamesCapitalization(CapsStrategy.UPPER);
-        query.setParams(Collections.singletonMap("a", a));
+        SQLQuery<CompoundFkTestEntity> query = SQLQuery.query(CompoundFkTestEntity.class, template);
+        query.columnNameCaps(CapsStrategy.UPPER);
+        query.params(Collections.singletonMap("a", a));
 
         List<CompoundFkTestEntity> objects = context.select(query);
         assertEquals(1, objects.size());

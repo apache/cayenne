@@ -29,8 +29,7 @@ import org.apache.cayenne.SelectResult;
 import org.apache.cayenne.UpdateResult;
 import org.apache.cayenne.access.translator.TranslatedSQL;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.query.QueryMetadata;
-import org.apache.cayenne.query.SQLTemplate;
+import org.apache.cayenne.query.resolved.ResolvedSQL;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -46,8 +45,7 @@ import static org.mockito.Mockito.mock;
 public class StatementContextTest {
 
     private static StatementContext context() {
-        return new StatementContext(new SQLTemplate<>("SELECT 1"), mock(QueryMetadata.class),
-                mock(EntityResolver.class));
+        return new StatementContext(ResolvedSQL.raw("SELECT 1"), mock(EntityResolver.class));
     }
 
     @Test
@@ -56,18 +54,18 @@ public class StatementContextTest {
 
         assertFalse(statementContext.isIteratedResult());
         assertFalse(statementContext.isExclusiveConnection());
-        assertNull(statementContext.getTranslated());
+        assertNull(statementContext.getTranslatedStatement());
         assertTrue(statementContext.getResults().isEmpty());
     }
 
     @Test
     public void translated() {
         StatementContext context = context();
-        TranslatedSQL statement = new TranslatedSQL("SELECT 1", null, null);
+        TranslatedSQL statement = new TranslatedSQL(ResolvedSQL.raw("SELECT 1"), "SELECT 1", null, null);
 
-        context.setTranslated(statement);
+        context.setTranslatedStatement(statement);
 
-        assertSame(statement, context.getTranslated());
+        assertSame(statement, context.getTranslatedStatement());
     }
 
     @Test

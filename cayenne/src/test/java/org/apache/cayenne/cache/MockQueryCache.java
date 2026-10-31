@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.cache;
 
-import org.apache.cayenne.query.QueryMetadata;
 
 import java.util.List;
 
@@ -29,15 +28,15 @@ public class MockQueryCache implements QueryCache {
     public void clear() {
     }
 
-    public List get(QueryMetadata metadata) {
+    public List get(String cacheKey, String cacheGroup) {
         return null;
     }
 
-    public List get(QueryMetadata metadata, QueryCacheEntryFactory factory) {
+    public List get(String cacheKey, String cacheGroup, QueryCacheEntryFactory factory) {
         return null;
     }
 
-    public void put(QueryMetadata metadata, List results) {
+    public void put(String cacheKey, String cacheGroup, List results) {
     }
 
     public void remove(String key) {

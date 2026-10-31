@@ -21,10 +21,9 @@ package org.apache.cayenne.dba.db2;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.UpdateResult;
 import org.apache.cayenne.access.StatementContext;
-import org.apache.cayenne.access.jdbc.ProcedureAction;
+import org.apache.cayenne.access.jdbc.DataNodeProcedureAction;
 import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.access.translator.TranslatedProcedure;
-import org.apache.cayenne.query.ProcedureQuery;
 
 import java.sql.CallableStatement;
 import java.sql.Connection;
@@ -33,28 +32,23 @@ import java.sql.ResultSet;
 /**
  * @since 3.1
  */
-class DB2ProcedureAction extends ProcedureAction {
+class DB2ProcedureAction extends DataNodeProcedureAction {
 
-	DB2ProcedureAction(ProcedureQuery<?> query, DataNode dataNode) {
-		super(query, dataNode);
+	DB2ProcedureAction(TranslatedProcedure translated, DataNode dataNode) {
+		super(translated, dataNode);
 	}
 
 	@Override
-	public void performAction(Connection connection, StatementContext context) throws Exception {
+	public void execute(Connection connection, StatementContext context) throws Exception {
 
 		// cloned from super except for result processing consistent with
 		// CAY-1874
 
 		processedResultSets = 0;
 
-		TranslatedProcedure translated = dataNode.getProcedureTranslator()
-				.translate(query, dataNode.getAdapter(), context.getResolver());
-
-		context.setTranslated(translated);
-
 		try (CallableStatement statement = connection.prepareCall(translated.sql());) {
 			initStatement(statement, context);
-			bindParameters(statement, translated);
+			bindParameters(statement);
 			boolean hasResultSet = statement.execute();
 
 			// read out parameters

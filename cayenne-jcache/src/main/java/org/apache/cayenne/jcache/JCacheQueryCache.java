@@ -23,7 +23,6 @@ import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.cache.QueryCacheEntryFactory;
 import org.apache.cayenne.di.BeforeScopeEnd;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.query.QueryMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,17 +51,17 @@ public class JCacheQueryCache implements QueryCache {
     private Set<String> seenCacheNames = Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
 
     @Override
-    public List get(QueryMetadata metadata) {
-        String key = Objects.requireNonNull(metadata.getCacheKey());
-        Cache<String, List> cache = createIfAbsent(metadata);
+    public List get(String cacheKey, String cacheGroup) {
+        String key = Objects.requireNonNull(cacheKey);
+        Cache<String, List> cache = createIfAbsent(cacheName(cacheGroup));
 
         return cache.get(key);
     }
 
     @Override
-    public List get(QueryMetadata metadata, QueryCacheEntryFactory factory) {
-        String key = Objects.requireNonNull(metadata.getCacheKey());
-        Cache<String, List> cache = createIfAbsent(metadata);
+    public List get(String cacheKey, String cacheGroup, QueryCacheEntryFactory factory) {
+        String key = Objects.requireNonNull(cacheKey);
+        Cache<String, List> cache = createIfAbsent(cacheName(cacheGroup));
 
         List<?> result = cache.get(key);
         return result != null
@@ -71,9 +70,9 @@ public class JCacheQueryCache implements QueryCache {
     }
 
     @Override
-    public void put(QueryMetadata metadata, List results) {
-        String key = Objects.requireNonNull(metadata.getCacheKey());
-        Cache<String, List> cache = createIfAbsent(metadata);
+    public void put(String cacheKey, String cacheGroup, List results) {
+        String key = Objects.requireNonNull(cacheKey);
+        Cache<String, List> cache = createIfAbsent(cacheName(cacheGroup));
 
         cache.put(key, results);
     }
@@ -115,10 +114,6 @@ public class JCacheQueryCache implements QueryCache {
         }
     }
 
-    protected Cache<String, List> createIfAbsent(QueryMetadata metadata) {
-        return createIfAbsent(cacheName(metadata));
-    }
-
     @SuppressWarnings("unchecked")
     protected Cache<String, List> createIfAbsent(String cacheName) {
 
@@ -153,9 +148,8 @@ public class JCacheQueryCache implements QueryCache {
         return cacheManager.getCache(name);
     }
 
-    protected String cacheName(QueryMetadata metadata) {
+    protected String cacheName(String cacheGroup) {
 
-        String cacheGroup = metadata.getCacheGroup();
         if (cacheGroup != null) {
             return cacheGroup;
         }

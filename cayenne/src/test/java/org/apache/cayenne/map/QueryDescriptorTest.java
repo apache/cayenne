@@ -31,7 +31,7 @@ public class QueryDescriptorTest {
 
     @Test
     public void defaults() {
-        QueryDescriptor descriptor = new SQLTemplateDescriptor();
+        QueryDescriptor descriptor = new SQLQueryDescriptor();
         assertEquals(0, descriptor.getPageSize());
         assertEquals(0, descriptor.getStatementFetchSize());
         assertFalse(descriptor.isFetchingDataRows());
@@ -41,7 +41,7 @@ public class QueryDescriptorTest {
 
     @Test
     public void settings() {
-        QueryDescriptor descriptor = new SQLTemplateDescriptor();
+        QueryDescriptor descriptor = new SQLQueryDescriptor();
         descriptor.setPageSize(10);
         descriptor.setStatementFetchSize(6);
         descriptor.setFetchingDataRows(true);
@@ -57,7 +57,7 @@ public class QueryDescriptorTest {
 
     @Test
     public void nullCacheStrategyIsDefault() {
-        QueryDescriptor descriptor = new SQLTemplateDescriptor();
+        QueryDescriptor descriptor = new SQLQueryDescriptor();
         descriptor.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
         descriptor.setCacheGroup("g1");
 

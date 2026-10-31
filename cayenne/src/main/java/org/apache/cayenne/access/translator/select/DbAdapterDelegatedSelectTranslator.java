@@ -23,18 +23,17 @@ import org.apache.cayenne.access.translator.SelectTranslator;
 import org.apache.cayenne.access.translator.TranslatedSelect;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.resolved.ResolvedSelect;
 
 /**
- * A {@link SelectTranslator} that resolves the actual translator from the {@link DbAdapter#getSelectTranslator}
- * allowing adapters to customize translation.
+ * A {@link SelectTranslator} that delegates to the translator picked by the adapter.
  *
  * @since 5.0
  */
 public class DbAdapterDelegatedSelectTranslator implements SelectTranslator {
 
     @Override
-    public TranslatedSelect translate(Query<?> query, DbAdapter adapter, EntityResolver resolver) {
-        return adapter.getSelectTranslator(query, resolver).translate(query, adapter, resolver);
+    public TranslatedSelect translate(ResolvedSelect select, DbAdapter adapter, EntityResolver resolver) {
+        return adapter.getSelectTranslator(select, resolver).translate(select, adapter, resolver);
     }
 }

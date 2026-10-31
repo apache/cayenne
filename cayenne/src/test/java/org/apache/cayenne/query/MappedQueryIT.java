@@ -194,11 +194,11 @@ public class MappedQueryIT {
                 .query("ParameterizedQueryWithLocalCache", Artist.class).param("name", "artist2");
 
         assertNotEquals(
-                query1.getMetaData(env.context().getEntityResolver()).getCacheKey(),
-                query2.getMetaData(env.context().getEntityResolver()).getCacheKey());
+                query1.resolve(env.context().getEntityResolver()).cacheKey(),
+                query2.resolve(env.context().getEntityResolver()).cacheKey());
         assertEquals(
-                query2.getMetaData(env.context().getEntityResolver()).getCacheKey(),
-                query3.getMetaData(env.context().getEntityResolver()).getCacheKey());
+                query2.resolve(env.context().getEntityResolver()).cacheKey(),
+                query3.resolve(env.context().getEntityResolver()).cacheKey());
     }
 
     protected List<QueryResult> runProcedureSelect(MappedQuery<?> q) throws Exception {
@@ -221,4 +221,5 @@ public class MappedQueryIT {
             t.commit();
         }
     }
+
 }

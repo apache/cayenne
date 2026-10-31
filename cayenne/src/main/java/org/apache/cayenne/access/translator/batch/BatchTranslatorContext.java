@@ -23,16 +23,16 @@ import org.apache.cayenne.access.jdbc.PSParameter;
 import org.apache.cayenne.access.sqlbuilder.SQLGenerationContext;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.query.BatchQuery;
+import org.apache.cayenne.query.resolved.ResolvedBatch;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @since 4.2
- * @param <T> type of the {@link BatchQuery}
+ * @param <T> type of the {@link ResolvedBatch}
  */
-class BatchTranslatorContext<T extends BatchQuery> implements SQLGenerationContext {
+class BatchTranslatorContext<T extends ResolvedBatch> implements SQLGenerationContext {
 
     private final T query;
     private final DbAdapter adapter;
@@ -56,7 +56,7 @@ class BatchTranslatorContext<T extends BatchQuery> implements SQLGenerationConte
 
     @Override
     public DbEntity getRootDbEntity() {
-        return query.getDbEntity();
+        return query.dbEntity();
     }
 
     public T getQuery() {

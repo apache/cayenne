@@ -24,7 +24,7 @@ import org.apache.cayenne.access.jdbc.reader.DefaultRowReaderFactory;
 import org.apache.cayenne.access.jdbc.reader.RowReader;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.query.MockQueryMetadata;
+import org.apache.cayenne.query.resolved.ResolvedQueries;
 import org.apache.cayenne.unit.jdbc.TestConnection;
 import org.apache.cayenne.unit.jdbc.TestResultSet;
 import org.apache.cayenne.unit.jdbc.TestStatement;
@@ -49,7 +49,7 @@ public class RSIteratorTest {
 		rs.addColumn("a", new Object[] { "1", "2", "3" });
 
 		RSColumn[] columns = RSColumn.rowBuilder().resultSet(rs).build(new ExtendedTypeMap());
-		RowReader<?> rowReader = new DefaultRowReaderFactory().rowReader(columns, null, new MockQueryMetadata(),
+		RowReader<?> rowReader = new DefaultRowReaderFactory().rowReader(columns, null, ResolvedQueries.select(),
 				mock(DbAdapter.class));
 
 		RSIterator it = new RSIterator(s, rs, rowReader);

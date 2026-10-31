@@ -15,7 +15,7 @@
 === MappedQuery
 
 `MappedQuery` is a query that is just a reference to another query stored in the DataMap. The actual stored query can be
-ObjectSelect, SQLTemplate or ProcedureQuery. A selecting stored query is run with `select(..)` and the other selecting
+ObjectSelect, SQLQuery or ProcedureQuery. A selecting stored query is run with `select(..)` and the other selecting
 shortcuts, and any stored query, selecting or not, is run with `execute(..)`, returning everything the query produced
 as a list of `QueryResult`.
 

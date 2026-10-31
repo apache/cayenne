@@ -24,7 +24,7 @@ import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.query.DeleteBatchQuery;
+import org.apache.cayenne.query.resolved.DeleteBatch;
 import org.apache.cayenne.CayenneRuntime;
 import org.apache.cayenne.testdo.locking.SimpleLockingTestEntity;
 import org.apache.cayenne.unit.dba.TestDbAdapter;
@@ -67,7 +67,7 @@ public class DeleteBatchTranslatorIT {
 
         List<DbAttribute> idAttributes = Collections.singletonList(entity.getAttribute("LOCKING_TEST_ID"));
 
-        DeleteBatchQuery deleteQuery = new DeleteBatchQuery(entity, idAttributes, Collections.emptySet(), 1);
+        DeleteBatch deleteQuery = new DeleteBatch(entity, idAttributes, Collections.emptySet(), false, List.of());
 
         DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
         String generatedSql = new DeleteBatchTranslator().translate(deleteQuery, adapter).sql();
@@ -85,7 +85,7 @@ public class DeleteBatchTranslatorIT {
 
         Collection<String> nullAttributes = Collections.singleton("NAME");
 
-        DeleteBatchQuery deleteQuery = new DeleteBatchQuery(entity, idAttributes, nullAttributes, 1);
+        DeleteBatch deleteQuery = new DeleteBatch(entity, idAttributes, nullAttributes, false, List.of());
 
         DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
         String generatedSql = new DeleteBatchTranslator().translate(deleteQuery, adapter).sql();
@@ -102,7 +102,7 @@ public class DeleteBatchTranslatorIT {
             entity.getDataMap().setQuotingSQLIdentifiers(true);
             List<DbAttribute> idAttributes = Collections.singletonList(entity.getAttribute("LOCKING_TEST_ID"));
 
-            DeleteBatchQuery deleteQuery = new DeleteBatchQuery(entity, idAttributes, Collections.emptySet(), 1);
+            DeleteBatch deleteQuery = new DeleteBatch(entity, idAttributes, Collections.emptySet(), false, List.of());
             String generatedSql = new DeleteBatchTranslator().translate(deleteQuery, adapter).sql();
 
             String charStart = unitAdapter.getIdentifiersStartQuote();
@@ -130,7 +130,7 @@ public class DeleteBatchTranslatorIT {
 
             Collection<String> nullAttributes = Collections.singleton("NAME");
 
-            DeleteBatchQuery deleteQuery = new DeleteBatchQuery(entity, idAttributes, nullAttributes, 1);
+            DeleteBatch deleteQuery = new DeleteBatch(entity, idAttributes, nullAttributes, false, List.of());
 
             String generatedSql = new DeleteBatchTranslator().translate(deleteQuery, adapter).sql();
 

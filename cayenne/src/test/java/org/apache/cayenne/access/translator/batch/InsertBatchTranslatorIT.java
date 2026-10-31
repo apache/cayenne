@@ -22,7 +22,7 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.query.InsertBatchQuery;
+import org.apache.cayenne.query.resolved.InsertBatch;
 import org.apache.cayenne.CayenneRuntime;
 import org.apache.cayenne.testdo.locking.SimpleLockingTestEntity;
 import org.apache.cayenne.unit.dba.TestDbAdapter;
@@ -31,6 +31,8 @@ import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -61,7 +63,7 @@ public class InsertBatchTranslatorIT {
                 .getDbEntity();
 
         DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
-        InsertBatchQuery insertQuery = new InsertBatchQuery(entity, 1);
+        InsertBatch insertQuery = new InsertBatch(entity, List.of());
         String generatedSql = new InsertBatchTranslator().translate(insertQuery, adapter).sql();
         assertNotNull(generatedSql);
         assertEquals("INSERT INTO " + entity.getName() + "(DESCRIPTION, INT_COLUMN_NOTNULL, INT_COLUMN_NULL, LOCKING_TEST_ID, NAME) " +
@@ -77,7 +79,7 @@ public class InsertBatchTranslatorIT {
 
             entity.getDataMap().setQuotingSQLIdentifiers(true);
 
-            InsertBatchQuery insertQuery = new InsertBatchQuery(entity, 1);
+            InsertBatch insertQuery = new InsertBatch(entity, List.of());
             String generatedSql = new InsertBatchTranslator().translate(insertQuery, adapter).sql();
             String charStart = unitAdapter.getIdentifiersStartQuote();
             String charEnd = unitAdapter.getIdentifiersEndQuote();

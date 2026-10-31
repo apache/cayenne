@@ -26,8 +26,7 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.QueryMetadata;
+import org.apache.cayenne.query.resolved.ResolvedQuery;
 
 /**
  * A paginated list that implements a strategy for retrieval of entities with a single PK
@@ -39,8 +38,8 @@ class SimpleIdIncrementalFaultList<E> extends IncrementalFaultList<E> {
 
     protected DbAttribute pk;
 
-    SimpleIdIncrementalFaultList(DataContext dataContext, Query<?> query, int maxFetchSize, List<?> data) {
-        super(dataContext, query, maxFetchSize, data);
+    SimpleIdIncrementalFaultList(DataContext dataContext, ResolvedQuery resolved, int maxFetchSize, List<?> data) {
+        super(dataContext, resolved, maxFetchSize, data);
 
         Collection<DbAttribute> pks = rootEntity.getDbEntity().getPrimaryKeys();
         if (pks.size() != 1) {
@@ -55,8 +54,8 @@ class SimpleIdIncrementalFaultList<E> extends IncrementalFaultList<E> {
     }
 
     @Override
-    IncrementalFaultList<E>.IncrementalListHelper createHelper(QueryMetadata metadata) {
-        if (metadata.isFetchingDataRows()) {
+    IncrementalFaultList<E>.IncrementalListHelper createHelper(ResolvedQuery resolved) {
+        if (resolved.fetchingDataRows()) {
             return new SingleIdDataRowListHelper();
         }
         else {

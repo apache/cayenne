@@ -24,35 +24,35 @@ import java.util.Arrays;
 import org.apache.cayenne.access.sqlbuilder.DeleteBuilder;
 import org.apache.cayenne.access.sqlbuilder.SQLBuilder;
 import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.query.DeleteBatchQuery;
+import org.apache.cayenne.query.resolved.DeleteBatch;
 
 /**
  * @since 4.2
  */
-public class DeleteBatchTranslator extends BaseBatchTranslator<DeleteBatchQuery> {
+public class DeleteBatchTranslator extends BaseBatchTranslator<DeleteBatch> {
 
     @Override
-    protected String createSql(BatchTranslatorContext<DeleteBatchQuery> context) {
+    protected String createSql(BatchTranslatorContext<DeleteBatch> context) {
         DeleteBuilder deleteBuilder = SQLBuilder
                 .delete(context.getRootDbEntity())
-                .where(buildQualifier(context, context.getQuery().getDbAttributes()));
+                .where(buildQualifier(context, context.getQuery().dbAttributes()));
         return doTranslate(context, deleteBuilder);
     }
 
     @Override
-    protected boolean isNullAttribute(BatchTranslatorContext<DeleteBatchQuery> context, DbAttribute attribute) {
+    protected boolean isNullAttribute(BatchTranslatorContext<DeleteBatch> context, DbAttribute attribute) {
         return context.getQuery().isNull(attribute);
     }
 
     @Override
-    protected int[] createRowValueIndexes(BatchTranslatorContext<DeleteBatchQuery> context) {
-        DeleteBatchQuery deleteBatch = context.getQuery();
-        int[] indexes = new int[deleteBatch.getDbAttributes().size()];
+    protected int[] createRowValueIndexes(BatchTranslatorContext<DeleteBatch> context) {
+        DeleteBatch deleteBatch = context.getQuery();
+        int[] indexes = new int[deleteBatch.dbAttributes().size()];
 
         int i = 0;
         int j = 0;
         // attributes with null values render as "IS NULL" and have no placeholder
-        for (DbAttribute attribute : deleteBatch.getDbAttributes()) {
+        for (DbAttribute attribute : deleteBatch.dbAttributes()) {
             if (!deleteBatch.isNull(attribute)) {
                 indexes[j++] = i;
             }

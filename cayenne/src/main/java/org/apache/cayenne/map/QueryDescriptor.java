@@ -22,7 +22,7 @@ import org.apache.cayenne.project.ProjectNode;
 import org.apache.cayenne.project.ProjectNodeVisitor;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryCacheStrategy;
-import org.apache.cayenne.query.QueryMetadata;
+import org.apache.cayenne.query.resolved.ResolvedQuery;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
 
@@ -66,9 +66,9 @@ public abstract class QueryDescriptor implements ProjectNode, XMLSerializable {
 
     protected QueryCacheStrategy cacheStrategy = QueryCacheStrategy.getDefaultStrategy();
     protected String cacheGroup;
-    protected boolean fetchingDataRows = QueryMetadata.FETCHING_DATA_ROWS_DEFAULT;
-    protected int pageSize = QueryMetadata.PAGE_SIZE_DEFAULT;
-    protected int statementFetchSize = QueryMetadata.STATEMENT_FETCH_SIZE_DEFAULT;
+    protected boolean fetchingDataRows = ResolvedQuery.FETCHING_DATA_ROWS_DEFAULT;
+    protected int pageSize = ResolvedQuery.PAGE_SIZE_DEFAULT;
+    protected int statementFetchSize = ResolvedQuery.STATEMENT_FETCH_SIZE_DEFAULT;
 
     /**
      * Returns name of the query.

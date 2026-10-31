@@ -31,8 +31,8 @@ import org.apache.cayenne.access.translator.BatchTranslator;
 import org.apache.cayenne.access.translator.TranslatedBatch;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.query.BatchQuery;
-import org.apache.cayenne.query.BatchQueryRow;
+import org.apache.cayenne.query.resolved.BatchRow;
+import org.apache.cayenne.query.resolved.ResolvedBatch;
 
 import java.util.List;
 
@@ -40,30 +40,31 @@ import java.util.List;
  * @param <T> type of the batch query to translate
  * @since 4.2
  */
-public abstract class BaseBatchTranslator<T extends BatchQuery> implements BatchTranslator<T> {
+public abstract class BaseBatchTranslator<T extends ResolvedBatch> implements BatchTranslator<T> {
 
     @Override
-    public TranslatedBatch translate(T query, DbAdapter adapter) {
-        BatchTranslatorContext<T> context = new BatchTranslatorContext<>(query, adapter);
+    public TranslatedBatch translate(T batch, DbAdapter adapter) {
+        BatchTranslatorContext<T> context = new BatchTranslatorContext<>(batch, adapter);
 
         String sql = createSql(context);
         PSBatchParameter[] bindings = createBindings(context);
 
-        return new TranslatedBatch(sql, bindings);
+        return new TranslatedBatch(batch, sql, bindings);
     }
 
     protected abstract String createSql(BatchTranslatorContext<T> context);
 
     protected PSBatchParameter[] createBindings(BatchTranslatorContext<T> context) {
         int[] rowValueIndexes = createRowValueIndexes(context);
-        List<BatchQueryRow> rows = context.getQuery().getRows();
+        T batch = context.getQuery();
+        List<BatchRow> rows = batch.rows();
 
         PSBatchParameter[] bindings = new PSBatchParameter[context.getBindings().size()];
         int j = 0;
         for (PSParameter<?> b : context.getBindings()) {
             Object[] values = new Object[rows.size()];
             for (int r = 0; r < values.length; r++) {
-                values[r] = rows.get(r).getValue(rowValueIndexes[j]);
+                values[r] = batch.value(rows.get(r), rowValueIndexes[j]);
             }
             bindings[j] = new PSBatchParameter(values, j + 1, b.psType(), b.psScale(), b.attribute());
             j++;
@@ -73,7 +74,7 @@ public abstract class BaseBatchTranslator<T extends BatchQuery> implements Batch
 
     /**
      * Returns, for each PreparedStatement placeholder in the order {@link #createSql(BatchTranslatorContext)} emits
-     * them, the index of the {@link BatchQueryRow} value that feeds it.
+     * them, the index of the {@link BatchRow} value that feeds it.
      */
     protected abstract int[] createRowValueIndexes(BatchTranslatorContext<T> context);
 

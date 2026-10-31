@@ -65,7 +65,7 @@ public class SimpleIdIncrementalFaultListDataRowsIT {
         List<Long> select = Artist.SELF.columnQuery(Artist.ARTIST_ID_PK_PROPERTY)
                 .orderBy(Artist.ARTIST_ID_PK_PROPERTY.asc())
                 .select(context);
-        list = new SimpleIdIncrementalFaultList<>(context, q, 10000, select);
+        list = new SimpleIdIncrementalFaultList<>(context, q.resolve(context.getEntityResolver()), 10000, select);
     }
 
     protected void createArtistsDataSet() throws Exception {

@@ -18,8 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.cache;
 
-import org.apache.cayenne.query.QueryMetadata;
-import org.apache.cayenne.query.QueryMetadataProxy;
 
 import java.util.List;
 
@@ -76,20 +74,20 @@ public class NestedQueryCache implements QueryCache {
 
     @Override
     @SuppressWarnings("rawtypes")
-    public List get(QueryMetadata metadata, QueryCacheEntryFactory factory) {
-        return delegate.get(qualifiedMetadata(metadata), factory);
+    public List get(String cacheKey, String cacheGroup, QueryCacheEntryFactory factory) {
+        return delegate.get(qualifiedKey(cacheKey), cacheGroup, factory);
     }
 
     @Override
     @SuppressWarnings("rawtypes")
-    public List get(QueryMetadata metadata) {
-        return delegate.get(qualifiedMetadata(metadata));
+    public List get(String cacheKey, String cacheGroup) {
+        return delegate.get(qualifiedKey(cacheKey), cacheGroup);
     }
 
     @Override
     @SuppressWarnings("rawtypes")
-    public void put(QueryMetadata metadata, List results) {
-        delegate.put(qualifiedMetadata(metadata), results);
+    public void put(String cacheKey, String cacheGroup, List results) {
+        delegate.put(qualifiedKey(cacheKey), cacheGroup, results);
     }
 
     /**
@@ -115,14 +113,5 @@ public class NestedQueryCache implements QueryCache {
 
     private String qualifiedKey(String key) {
         return key != null ? namespace + key : null;
-    }
-
-    private QueryMetadata qualifiedMetadata(QueryMetadata md) {
-        return new QueryMetadataProxy(md) {
-            @Override
-            public String getCacheKey() {
-                return qualifiedKey(mdDelegate.getCacheKey());
-            }
-        };
     }
 }

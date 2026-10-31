@@ -16,89 +16,121 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
 package org.apache.cayenne.query;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.Procedure;
+import org.apache.cayenne.query.resolved.ResolvedProcedure;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ProcedureQueryTest {
 
-    @Test
-    public void constructorDataRows() {
-        ProcedureQuery<DataRow> query = new ProcedureQuery<>("SomeProcedure");
-        assertEquals("SomeProcedure", query.getProcedureName());
-        assertNull(query.getResultType());
-        assertNull(query.getResultEntityName());
-        assertTrue(query.isFetchingDataRows());
-    }
+    private final DataMap map = new DataMap("m");
+    private final Procedure procedure = new Procedure("SomeProcedure");
+    private final DbEntity table = new DbEntity("ARTIST");
+    private final ObjEntity entity = new ObjEntity("Artist");
+    private final EntityResolver resolver;
 
-    @Test
-    public void constructorResultType() {
-        ProcedureQuery<Artist> query = new ProcedureQuery<>("SomeProcedure", Artist.class);
-        assertEquals("SomeProcedure", query.getProcedureName());
-        assertSame(Artist.class, query.getResultType());
-        assertNull(query.getResultEntityName());
-        assertFalse(query.isFetchingDataRows());
+    public ProcedureQueryTest() {
+        map.addProcedure(procedure);
+        map.addDbEntity(table);
+        entity.setDbEntity(table);
+        entity.setClassName(Object.class.getName());
+        map.addObjEntity(entity);
+        resolver = new EntityResolver(List.of(map));
     }
 
     @Test
     public void query() {
-        ProcedureQuery<DataRow> query = ProcedureQuery.query("SomeProcedure");
-        assertEquals("SomeProcedure", query.getProcedureName());
-        assertNull(query.getResultType());
-        assertNull(query.getResultEntityName());
-        assertTrue(query.isFetchingDataRows());
+        ResolvedProcedure resolved = ProcedureQuery.query("SomeProcedure").resolve(resolver);
+        assertSame(procedure, resolved.procedure());
+        assertNull(resolved.objEntity());
+        assertTrue(resolved.fetchingDataRows());
     }
 
     @Test
     public void queryResultType() {
-        ProcedureQuery<Artist> query = ProcedureQuery.query("SomeProcedure", Artist.class);
-        assertSame(Artist.class, query.getResultType());
-        assertNull(query.getResultEntityName());
-        assertFalse(query.isFetchingDataRows());
+        ResolvedProcedure resolved = ProcedureQuery.query("SomeProcedure", Object.class).resolve(resolver);
+        assertSame(entity, resolved.objEntity());
+        assertFalse(resolved.fetchingDataRows());
     }
 
     @Test
     public void entityQuery() {
-        ProcedureQuery<Persistent> query = ProcedureQuery.entityQuery("SomeProcedure", "abc.AAAA");
-        assertEquals("SomeProcedure", query.getProcedureName());
-        assertNull(query.getResultType());
-        assertEquals("abc.AAAA", query.getResultEntityName());
-        assertFalse(query.isFetchingDataRows());
+        ProcedureQuery<Persistent> query = ProcedureQuery.entityQuery("SomeProcedure", "Artist");
+        ResolvedProcedure resolved = query.resolve(resolver);
+        assertSame(procedure, resolved.procedure());
+        assertSame(entity, resolved.objEntity());
+        assertFalse(resolved.fetchingDataRows());
     }
 
     @Test
-    public void columnNameCapitalization() {
-        ProcedureQuery q1 = new ProcedureQuery("SomeProcedure");
-        assertSame(CapsStrategy.DEFAULT, q1.getColumnNamesCapitalization());
-        q1.setColumnNamesCapitalization(CapsStrategy.UPPER);
-        assertEquals(CapsStrategy.UPPER, q1.getColumnNamesCapitalization());
+    public void unknownProcedure() {
+        ProcedureQuery<DataRow> query = ProcedureQuery.query("NoSuchProcedure");
+        assertThrows(CayenneRuntimeException.class, () -> query.resolve(resolver));
+    }
+
+    @Test
+    public void capsStrategy() {
+        ProcedureQuery<DataRow> q1 = ProcedureQuery.query("SomeProcedure");
+        assertSame(CapsStrategy.DEFAULT, q1.resolve(resolver).columnNameCaps());
+        q1.capsStrategy(CapsStrategy.UPPER);
+        assertEquals(CapsStrategy.UPPER, q1.resolve(resolver).columnNameCaps());
     }
 
     @Test
     public void resultDescriptors() {
-        ProcedureQuery query = new ProcedureQuery("SomeProcedure");
-
-        assertNotNull(query.getResultDescriptors());
-        assertTrue(query.getResultDescriptors().isEmpty());
+        ProcedureQuery<DataRow> query = ProcedureQuery.query("SomeProcedure");
+        assertTrue(query.resolve(resolver).resultDescriptors().isEmpty());
 
         ProcedureColumn[] descriptor = new ProcedureColumn[5];
-        query.addResultDescriptor(descriptor);
-        assertEquals(1, query.getResultDescriptors().size());
-        assertTrue(query.getResultDescriptors().contains(descriptor));
+        query.resultDescriptor(descriptor);
+        List<ProcedureColumn[]> descriptors = query.resolve(resolver).resultDescriptors();
+        assertEquals(1, descriptors.size());
+        assertSame(descriptor, descriptors.get(0));
+    }
 
-        query.removeResultDescriptor(descriptor);
-        assertNotNull(query.getResultDescriptors());
-        assertTrue(query.getResultDescriptors().isEmpty());
+    @Test
+    public void params() {
+        ProcedureQuery<DataRow> query = ProcedureQuery.query("SomeProcedure").param("a", 1).param("b", null);
+        ResolvedProcedure resolved = query.resolve(resolver);
+        assertEquals(2, resolved.params().size());
+        assertEquals(1, resolved.params().get("a"));
+        assertNull(resolved.params().get("b"));
+    }
+
+    @Test
+    public void cacheStrategyResetsGroup() {
+        ProcedureQuery<DataRow> query = ProcedureQuery.query("SomeProcedure").sharedCache("g1");
+        assertEquals(QueryCacheStrategy.SHARED_CACHE, query.resolve(resolver).cacheStrategy());
+        assertEquals("g1", query.resolve(resolver).cacheGroup());
+
+        query.cacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
+        assertEquals(QueryCacheStrategy.LOCAL_CACHE, query.resolve(resolver).cacheStrategy());
+        assertNull(query.resolve(resolver).cacheGroup());
+    }
+
+    @Test
+    public void resolveReflectsLaterChanges() {
+        ProcedureQuery<DataRow> query = ProcedureQuery.query("SomeProcedure").localCache();
+        String key1 = query.resolve(resolver).cacheKey();
+        query.param("a", 1);
+        String key2 = query.resolve(resolver).cacheKey();
+        assertFalse(key1.equals(key2), "parameters added after the first resolve must change the cache key");
     }
 }

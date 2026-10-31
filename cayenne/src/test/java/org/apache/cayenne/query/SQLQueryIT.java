@@ -88,8 +88,8 @@ public class SQLQueryIT {
 	public void dataRows_DataMapNameRoot() throws Exception {
 		createPaintingsDataSet();
 
-		SQLQuery<DataRow> q1 = SQLQuery.dataRowQuery("testmap", "SELECT * FROM PAINTING");
-		assertTrue(q1.isFetchingDataRows());
+		SQLQuery<DataRow> q1 = SQLQuery.query("testmap", "SELECT * FROM PAINTING");
+		assertTrue(q1.resolve(env.resolver()).fetchingDataRows());
 
 		List<DataRow> result = context.select(q1);
 		assertEquals(20, result.size());
@@ -100,8 +100,8 @@ public class SQLQueryIT {
 	public void dataRows_DefaultRoot() throws Exception {
 		createPaintingsDataSet();
 
-		SQLQuery<DataRow> q1 = SQLQuery.dataRowQuery("SELECT * FROM PAINTING");
-		assertTrue(q1.isFetchingDataRows());
+		SQLQuery<DataRow> q1 = SQLQuery.query("SELECT * FROM PAINTING");
+		assertTrue(q1.resolve(env.resolver()).fetchingDataRows());
 
 		List<DataRow> result = context.select(q1);
 		assertEquals(20, result.size());
@@ -112,7 +112,7 @@ public class SQLQueryIT {
 	public void dataNode() throws Exception {
 		createPaintingsDataSet();
 
-		List<DataRow> result = SQLQuery.dataRowQuery("SELECT * FROM PAINTING")
+		List<DataRow> result = SQLQuery.query("SELECT * FROM PAINTING")
 				.dataNode(env.dataNode().getName())
 				.select(context);
 		assertEquals(20, result.size());
@@ -120,7 +120,7 @@ public class SQLQueryIT {
 
 	@Test
 	public void dataNode_Unknown() throws Exception {
-		SQLQuery<DataRow> query = SQLQuery.dataRowQuery("SELECT * FROM PAINTING").dataNode("no_such_node");
+		SQLQuery<DataRow> query = SQLQuery.query("SELECT * FROM PAINTING").dataNode("no_such_node");
 		CayenneRuntimeException e = assertThrows(CayenneRuntimeException.class, () -> query.select(context));
 		assertTrue(e.getMessage().contains("no_such_node"), e.getMessage());
 	}
@@ -131,13 +131,13 @@ public class SQLQueryIT {
 		Class<? extends DbAdapter> adapterType = env.runtime().getDataDomain().getDefaultNode().getAdapter().getClass();
 
 		// the dialect of the current adapter replaces the default SQL
-		List<DataRow> matching = SQLQuery.dataRowQuery("SELECT * FROM PAINTING")
+		List<DataRow> matching = SQLQuery.query("SELECT * FROM PAINTING")
 				.dialect(adapterType, "SELECT * FROM PAINTING WHERE PAINTING_ID <= 5")
 				.select(context);
 		assertEquals(5, matching.size());
 
 		// the dialect of another adapter is ignored
-		List<DataRow> notMatching = SQLQuery.dataRowQuery("SELECT * FROM PAINTING")
+		List<DataRow> notMatching = SQLQuery.query("SELECT * FROM PAINTING")
 				.dialect(FrontBaseAdapter.class, "SELECT * FROM PAINTING WHERE PAINTING_ID <= 5")
 				.select(context);
 		assertEquals(20, notMatching.size());
@@ -148,7 +148,7 @@ public class SQLQueryIT {
 		createPaintingsDataSet();
 		Class<? extends DbAdapter> adapterType = env.runtime().getDataDomain().getDefaultNode().getAdapter().getClass();
 
-		List<DataRow> result = SQLQuery.dataRowQuery("SELECT * FROM PAINTING")
+		List<DataRow> result = SQLQuery.query("SELECT * FROM PAINTING")
 				.append(" WHERE PAINTING_ID <= 3")
 				.dialect(adapterType, "SELECT * FROM PAINTING")
 				.dialectAppend(adapterType, " WHERE PAINTING_ID <= 5")
@@ -162,7 +162,7 @@ public class SQLQueryIT {
 
 		SQLQuery<Painting> q1 = SQLQuery.query(Painting.class, "SELECT * FROM PAINTING").columnNameCaps(
 				CapsStrategy.UPPER);
-		assertFalse(q1.isFetchingDataRows());
+		assertFalse(q1.resolve(env.resolver()).fetchingDataRows());
 		List<Painting> result = context.select(q1);
 		assertEquals(20, result.size());
 		assertTrue(result.get(0) instanceof Painting);
@@ -172,7 +172,7 @@ public class SQLQueryIT {
 	public void dataRowWithTypes() throws Exception {
 		createArtistDataSet();
 
-		List<DataRow> result = SQLQuery.dataRowQuery("SELECT * FROM ARTIST_CT", Integer.class, String.class, LocalDateTime.class)
+		List<DataRow> result = SQLQuery.query("SELECT * FROM ARTIST_CT", Integer.class, String.class, LocalDateTime.class)
 				.columnNameCaps(CapsStrategy.UPPER)
 				.select(context);
 		assertEquals(2, result.size());
@@ -184,7 +184,7 @@ public class SQLQueryIT {
 	public void dataRowWithDirectives() throws Exception {
 		createArtistDataSet();
 
-		List<DataRow> result = SQLQuery.dataRowQuery("SELECT #result('ARTIST_ID' 'java.lang.Double'), #result('ARTIST_NAME' 'java.lang.String') FROM ARTIST_CT")
+		List<DataRow> result = SQLQuery.query("SELECT #result('ARTIST_ID' 'java.lang.Double'), #result('ARTIST_NAME' 'java.lang.String') FROM ARTIST_CT")
 				.select(context);
 		assertEquals(2, result.size());
 		assertTrue(result.get(0) instanceof DataRow);
@@ -196,7 +196,7 @@ public class SQLQueryIT {
 		createArtistDataSet();
 
 		assertThrows(CayenneRuntimeException.class, () ->
-				SQLQuery.dataRowQuery("SELECT * FROM ARTIST_CT", Integer.class, String.class)
+				SQLQuery.query("SELECT * FROM ARTIST_CT", Integer.class, String.class)
 						.select(context));
 	}
 
@@ -332,7 +332,7 @@ public class SQLQueryIT {
 				"SELECT * FROM PAINTING WHERE PAINTING_TITLE = #bind($a)");
 		q1.param("a", "painting3").columnNameCaps(CapsStrategy.UPPER);
 
-		assertFalse(q1.isFetchingDataRows());
+		assertFalse(q1.resolve(env.resolver()).fetchingDataRows());
 		Painting a = context.selectOne(q1);
 		assertEquals("painting3", a.getPaintingTitle());
 	}
@@ -352,22 +352,20 @@ public class SQLQueryIT {
 
 	@Test
 	public void dataRows_ColumnNameCaps() {
-		SQLQuery<DataRow> q1 = SQLQuery.dataRowQuery("SELECT * FROM PAINTING WHERE PAINTING_TITLE = 'painting2'");
+		SQLQuery<DataRow> q1 = SQLQuery.query("SELECT * FROM PAINTING WHERE PAINTING_TITLE = 'painting2'");
 		q1.upperColumnNames();
 
-		SQLTemplate r1 = (SQLTemplate) q1.getReplacementQuery(context.getEntityResolver());
-		assertEquals(CapsStrategy.UPPER, r1.getColumnNamesCapitalization());
+				assertEquals(CapsStrategy.UPPER, q1.resolve(context.getEntityResolver()).columnNameCaps());
 
 		q1.lowerColumnNames();
-		SQLTemplate r2 = (SQLTemplate) q1.getReplacementQuery(context.getEntityResolver());
-		assertEquals(CapsStrategy.LOWER, r2.getColumnNamesCapitalization());
+				assertEquals(CapsStrategy.LOWER, q1.resolve(context.getEntityResolver()).columnNameCaps());
 	}
 
 	@Test
 	public void dataRows_FetchLimit() throws Exception {
 		createPaintingsDataSet();
 
-		SQLQuery<DataRow> q1 = SQLQuery.dataRowQuery("SELECT * FROM PAINTING");
+		SQLQuery<DataRow> q1 = SQLQuery.query("SELECT * FROM PAINTING");
 		q1.limit(5);
 
 		assertEquals(5, context.select(q1).size());
@@ -377,7 +375,7 @@ public class SQLQueryIT {
 	public void dataRows_FetchOffset() throws Exception {
 		createPaintingsDataSet();
 
-		SQLQuery<DataRow> q1 = SQLQuery.dataRowQuery("SELECT * FROM PAINTING");
+		SQLQuery<DataRow> q1 = SQLQuery.query("SELECT * FROM PAINTING");
 		q1.offset(4);
 
 		assertEquals(16, context.select(q1).size());

@@ -23,6 +23,7 @@ import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.GenericPersistentObject;
@@ -32,6 +33,8 @@ import org.apache.cayenne.access.jdbc.PSParameter;
 import org.apache.cayenne.access.translator.TranslatedSQL;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.query.SQLQuery;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -57,7 +60,7 @@ public class DefaultSQLTemplateTranslatorTest {
     public void processTemplateUnchanged1() throws Exception {
         String sqlTemplate = "SELECT * FROM ME";
 
-        TranslatedSQL compiled = processor.translate(sqlTemplate, Collections.emptyMap(), adapter);
+        TranslatedSQL compiled = translate(sqlTemplate, Collections.emptyMap());
 
         assertEquals(sqlTemplate, compiled.sql());
         assertEquals(0, compiled.bindings().length);
@@ -67,7 +70,7 @@ public class DefaultSQLTemplateTranslatorTest {
     public void processTemplateUnchanged2() throws Exception {
         String sqlTemplate = "SELECT a.b as XYZ FROM $SYSTEM_TABLE";
 
-        TranslatedSQL compiled = processor.translate(sqlTemplate, Collections.emptyMap(), adapter);
+        TranslatedSQL compiled = translate(sqlTemplate, Collections.emptyMap());
 
         assertEquals(sqlTemplate, compiled.sql());
         assertEquals(0, compiled.bindings().length);
@@ -78,7 +81,7 @@ public class DefaultSQLTemplateTranslatorTest {
         String sqlTemplate = "SELECT * FROM ME WHERE $a";
 
         Map<String, Object> map = Collections.singletonMap("a", "VALUE_OF_A");
-        TranslatedSQL compiled = processor.translate(sqlTemplate, map, adapter);
+        TranslatedSQL compiled = translate(sqlTemplate, map);
 
         assertEquals("SELECT * FROM ME WHERE VALUE_OF_A", compiled.sql());
 
@@ -91,7 +94,7 @@ public class DefaultSQLTemplateTranslatorTest {
         String sqlTemplate = "SELECT * FROM ME WHERE "
                 + "COLUMN1 = #bind($a 'VARCHAR') AND COLUMN2 = #bind($b 'INTEGER')";
         Map<String, Object> map = Collections.singletonMap("a", "VALUE_OF_A");
-        TranslatedSQL compiled = processor.translate(sqlTemplate, map, adapter);
+        TranslatedSQL compiled = translate(sqlTemplate, map);
 
         assertEquals("SELECT * FROM ME WHERE COLUMN1 = ? AND COLUMN2 = ?", compiled.sql());
         assertEquals(2, compiled.bindings().length);
@@ -104,7 +107,7 @@ public class DefaultSQLTemplateTranslatorTest {
         String sqlTemplate = "SELECT * FROM ME WHERE COLUMN1 = #bind($a)";
         Map<String, Object> map = Collections.singletonMap("a", "VALUE_OF_A");
 
-        TranslatedSQL compiled = processor.translate(sqlTemplate, map, adapter);
+        TranslatedSQL compiled = translate(sqlTemplate, map);
 
         assertEquals(1, compiled.bindings().length);
         assertBindingType(Types.VARCHAR, compiled.bindings()[0]);
@@ -115,7 +118,7 @@ public class DefaultSQLTemplateTranslatorTest {
         String sqlTemplate = "SELECT * FROM ME WHERE COLUMN1 = #bind($a)";
         Map<String, Object> map = Collections.singletonMap("a", 4);
 
-        TranslatedSQL compiled = processor.translate(sqlTemplate, map, adapter);
+        TranslatedSQL compiled = translate(sqlTemplate, map);
 
         assertEquals(1, compiled.bindings().length);
         assertBindingType(Types.INTEGER, compiled.bindings()[0]);
@@ -125,14 +128,14 @@ public class DefaultSQLTemplateTranslatorTest {
     public void processTemplateBindEqual() throws Exception {
         String sqlTemplate = "SELECT * FROM ME WHERE COLUMN #bindEqual($a 'VARCHAR')";
 
-        TranslatedSQL compiled = processor.translate(sqlTemplate, Collections.emptyMap(), adapter);
+        TranslatedSQL compiled = translate(sqlTemplate, Collections.emptyMap());
 
         assertEquals("SELECT * FROM ME WHERE COLUMN IS NULL", compiled.sql());
         assertEquals(0, compiled.bindings().length);
 
         Map<String, Object> map = Collections.singletonMap("a", "VALUE_OF_A");
 
-        compiled = processor.translate(sqlTemplate, map, adapter);
+        compiled = translate(sqlTemplate, map);
 
         assertEquals("SELECT * FROM ME WHERE COLUMN = ?", compiled.sql());
         assertEquals(1, compiled.bindings().length);
@@ -143,14 +146,14 @@ public class DefaultSQLTemplateTranslatorTest {
     public void processTemplateBindNotEqual() throws Exception {
         String sqlTemplate = "SELECT * FROM ME WHERE COLUMN #bindNotEqual($a 'VARCHAR')";
 
-        TranslatedSQL compiled = processor.translate(sqlTemplate, Collections.emptyMap(), adapter);
+        TranslatedSQL compiled = translate(sqlTemplate, Collections.emptyMap());
 
         assertEquals("SELECT * FROM ME WHERE COLUMN IS NOT NULL", compiled.sql());
         assertEquals(0, compiled.bindings().length);
 
         Map<String, Object> map = Collections.singletonMap("a", "VALUE_OF_A");
 
-        compiled = processor.translate(sqlTemplate, map, adapter);
+        compiled = translate(sqlTemplate, map);
 
         assertEquals("SELECT * FROM ME WHERE COLUMN <> ?", compiled.sql());
         assertEquals(1, compiled.bindings().length);
@@ -166,7 +169,7 @@ public class DefaultSQLTemplateTranslatorTest {
 
         Map<String, Object> map = Collections.singletonMap("a", persistent);
 
-        TranslatedSQL compiled = processor.translate(sqlTemplate, map, adapter);
+        TranslatedSQL compiled = translate(sqlTemplate, map);
 
         assertEquals("SELECT * FROM ME WHERE COLUMN1 = ?", compiled.sql());
         assertEquals(1, compiled.bindings().length);
@@ -188,7 +191,7 @@ public class DefaultSQLTemplateTranslatorTest {
 
         Map<String, Object> map = Collections.singletonMap("a", persistent);
 
-        TranslatedSQL compiled = processor.translate(sqlTemplate, map, adapter);
+        TranslatedSQL compiled = translate(sqlTemplate, map);
 
         assertEquals("SELECT * FROM ME WHERE COLUMN1 <> ? AND COLUMN2 <> ?", compiled.sql());
         assertEquals(2, compiled.bindings().length);
@@ -202,13 +205,13 @@ public class DefaultSQLTemplateTranslatorTest {
 
         Map<String, Object> map = Collections.singletonMap("a", "VALUE_OF_A");
 
-        TranslatedSQL compiled = processor.translate(sqlTemplate, map, adapter);
+        TranslatedSQL compiled = translate(sqlTemplate, map);
 
         assertEquals("SELECT * FROM ME  WHERE COLUMN1 > ?", compiled.sql());
         assertEquals(1, compiled.bindings().length);
         assertBindingValue("VALUE_OF_A", compiled.bindings()[0]);
 
-        compiled = processor.translate(sqlTemplate, Collections.emptyMap(), adapter);
+        compiled = translate(sqlTemplate, Collections.emptyMap());
 
         assertEquals("SELECT * FROM ME ", compiled.sql());
         assertEquals(0, compiled.bindings().length);
@@ -219,7 +222,7 @@ public class DefaultSQLTemplateTranslatorTest {
         String sqlTemplate = "SELECT * FROM ME WHERE COLUMN IN (#bind($list 'VARCHAR'))";
 
         Map<String, Object> map = Collections.singletonMap("list", Arrays.asList("a", "b", "c"));
-        TranslatedSQL compiled = processor.translate(sqlTemplate, map, adapter);
+        TranslatedSQL compiled = translate(sqlTemplate, map);
 
         assertEquals("SELECT * FROM ME WHERE COLUMN IN (?,?,?)", compiled.sql());
         assertEquals(3, compiled.bindings().length);
@@ -231,8 +234,16 @@ public class DefaultSQLTemplateTranslatorTest {
     @Test
     public void unknownDirective() throws Exception {
         String sqlTemplate = "SELECT #from(1) FROM a";
-        TranslatedSQL compiled = processor.translate(sqlTemplate, Collections.emptyMap(), adapter);
+        TranslatedSQL compiled = translate(sqlTemplate, Collections.emptyMap());
         assertEquals("SELECT  FROM a", compiled.sql());
+    }
+
+    private TranslatedSQL translate(String template, Map<String, ?> params) {
+        return processor.translate(SQLQuery.query(template).params(params).resolve(new EntityResolver()), adapter);
+    }
+
+    private TranslatedSQL translate(String template, List<Object> params) {
+        return processor.translate(SQLQuery.query(template).paramsList(params).resolve(new EntityResolver()), adapter);
     }
 
     private void assertBindingValue(Object expectedValue, Object binding) {

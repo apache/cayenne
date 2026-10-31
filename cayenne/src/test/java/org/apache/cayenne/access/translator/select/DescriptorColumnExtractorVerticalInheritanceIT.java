@@ -52,7 +52,7 @@ public class DescriptorColumnExtractorVerticalInheritanceIT {
         ClassDescriptor classDescriptor = resolver.getClassDescriptor(entityName);
 
         SelectTranslatorContext translatorContext =
-                new SelectTranslatorContext(query, Mockito.mock(DbAdapter.class), resolver, null);
+                new SelectTranslatorContext(query.resolve(resolver), Mockito.mock(DbAdapter.class), resolver, null);
 
         new DescriptorColumnExtractor(translatorContext, classDescriptor).extract();
         return translatorContext;

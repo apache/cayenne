@@ -21,10 +21,10 @@ package org.apache.cayenne.dba.sqlserver;
 
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.StatementContext;
-import org.apache.cayenne.access.jdbc.BatchAction;
+import org.apache.cayenne.access.jdbc.DataNodeBatchAction;
 import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.query.BatchQuery;
-import org.apache.cayenne.query.InsertBatchQuery;
+import org.apache.cayenne.query.resolved.InsertBatch;
+import org.apache.cayenne.access.translator.TranslatedBatch;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -33,14 +33,14 @@ import java.sql.Statement;
 /**
  * @since 1.2
  */
-public class SQLServerBatchAction extends BatchAction {
+public class SQLServerBatchAction extends DataNodeBatchAction {
 
-	public SQLServerBatchAction(BatchQuery batchQuery, DataNode dataNode, boolean runningAsBatch) {
-		super(batchQuery, dataNode, runningAsBatch);
+	public SQLServerBatchAction(TranslatedBatch translated, DataNode dataNode, boolean runningAsBatch) {
+		super(translated, dataNode, runningAsBatch);
 	}
 
 	@Override
-	public void performAction(Connection connection, StatementContext context) throws Exception {
+	public void execute(Connection connection, StatementContext context) throws Exception {
 
 		// this condition checks if identity columns are present in the query
 		// and adapter
@@ -51,7 +51,7 @@ public class SQLServerBatchAction extends BatchAction {
 		}
 
 		try {
-			super.performAction(connection, context);
+			super.execute(connection, context);
 		} finally {
 
 			// important: turn off IDENTITY_INSERT as SQL Server won't be able
@@ -68,7 +68,7 @@ public class SQLServerBatchAction extends BatchAction {
 	protected void setIdentityInsert(Connection connection, boolean on) throws SQLException {
 
 		String flag = on ? " ON" : " OFF";
-		String configSQL = "SET IDENTITY_INSERT " + query.getDbEntity().getFullyQualifiedName() + flag;
+		String configSQL = "SET IDENTITY_INSERT " + query.dbEntity().getFullyQualifiedName() + flag;
 
 		dataNode.getSqlLogger().logMessage(configSQL);
 
@@ -86,12 +86,12 @@ public class SQLServerBatchAction extends BatchAction {
 			return false;
 		}
 
-		if (!(query instanceof InsertBatchQuery) || query.getDbEntity() == null) {
+		if (!(query instanceof InsertBatch) || query.dbEntity() == null) {
 			return false;
 		}
 
 		// find identity attributes
-		for (DbAttribute attribute : query.getDbEntity().getAttributes()) {
+		for (DbAttribute attribute : query.dbEntity().getAttributes()) {
 			if (attribute.isGenerated()) {
 				return true;
 			}

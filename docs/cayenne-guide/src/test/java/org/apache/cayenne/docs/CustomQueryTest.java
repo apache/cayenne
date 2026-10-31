@@ -33,7 +33,15 @@ public class CustomQueryTest extends BaseTest {
 
     @Test
     public void myQuery() {
-        assertEquals(0, context.execute(new MyQuery()).size());
+        createArtistsDataSet();
+
+        // the custom query is resolved to the standard select it delegates to
+        List<QueryResult> result = context.execute(new MyQuery(""));
+        SelectResult<?> select = assertInstanceOf(SelectResult.class, result.getFirst());
+        assertEquals(3, select.objects().size());
+
+        assertEquals(3, new MyQuery("").select(context).size());
+        assertEquals(0, new MyQuery("no such artist").select(context).size());
     }
 
     @Test

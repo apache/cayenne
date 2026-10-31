@@ -21,12 +21,13 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.CoreModule;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.query.SQLTemplate;
+import org.apache.cayenne.query.SQLQuery;
 import org.apache.cayenne.testdo.extended_type.ExtendedTypeEntity;
 import org.apache.cayenne.testdo.extended_type.StringET1;
 import org.apache.cayenne.testdo.extended_type.StringET1ExtendedType;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.apache.cayenne.unit.CayenneProjects;
+import org.apache.cayenne.DataRow;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -47,11 +48,10 @@ public class DataContextExtendedTypeOperationsIT {
         e1.setName(new StringET1("X"));
         env.context().commitChanges();
 
-        SQLTemplate checkQ = new SQLTemplate(
+        SQLQuery<DataRow> checkQ = SQLQuery.query(
                 ExtendedTypeEntity.class,
-                "SELECT * FROM EXTENDED_TYPE_TEST WHERE NAME = 'X'");
-        checkQ.setFetchingDataRows(true);
-        checkQ.setColumnNamesCapitalization(CapsStrategy.UPPER);
+                "SELECT * FROM EXTENDED_TYPE_TEST WHERE NAME = 'X'").fetchDataRows();
+        checkQ.columnNameCaps(CapsStrategy.UPPER);
         assertEquals(1, e1.getObjectContext().select(checkQ).size());
     }
 

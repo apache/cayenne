@@ -38,18 +38,18 @@ public class QueryTimeoutIT {
         ObjectSelect<Artist> objectSelect = ObjectSelect.query(Artist.class)
                 .queryTimeout(10);
         assertEquals(10, objectSelect
-                .getMetaData(env.context().getEntityResolver())
-                .getQueryTimeout());
+                .resolve(env.context().getEntityResolver())
+                .queryTimeout());
         objectSelect.select(env.context());
     }
 
     @Test
     public void sqlTemplate() {
-        SQLTemplate sqlTemplate = SQLTemplate.dataRowQuery("SELECT * FROM ARTIST");
-        sqlTemplate.setQueryTimeout(10);
+        SQLQuery<DataRow> sqlTemplate = SQLQuery.query("SELECT * FROM ARTIST");
+        sqlTemplate.queryTimeout(10);
         assertEquals(10, sqlTemplate
-                .getMetaData(env.context().getEntityResolver())
-                .getQueryTimeout());
+                .resolve(env.context().getEntityResolver())
+                .queryTimeout());
         env.context().select(sqlTemplate);
     }
 
@@ -59,8 +59,8 @@ public class QueryTimeoutIT {
                 .columnQuery(Artist.class, Artist.ARTIST_NAME)
                 .queryTimeout(10);
         assertEquals(10, columnSelect
-                .getMetaData(env.context().getEntityResolver())
-                .getQueryTimeout());
+                .resolve(env.context().getEntityResolver())
+                .queryTimeout());
         env.context().select(columnSelect);
     }
 
@@ -70,8 +70,8 @@ public class QueryTimeoutIT {
                 .query(Artist.class, "SELECT * FROM ARTIST")
                 .queryTimeout(10);
         assertEquals(10, sqlSelect
-                .getMetaData(env.context().getEntityResolver())
-                .getQueryTimeout());
+                .resolve(env.context().getEntityResolver())
+                .queryTimeout());
         env.context().select(sqlSelect);
     }
 
@@ -81,8 +81,8 @@ public class QueryTimeoutIT {
                 .query("SELECT * FROM ARTIST")
                 .queryTimeout(10);
         assertEquals(10, sqlExec
-                .getMetaData(env.context().getEntityResolver())
-                .getQueryTimeout());
+                .resolve(env.context().getEntityResolver())
+                .queryTimeout());
         env.context().execute(sqlExec);
     }
 
@@ -91,10 +91,9 @@ public class QueryTimeoutIT {
         MappedQuery<Artist> mappedSelect = MappedQuery
                 .query("SelectTestUpper", Artist.class)
                 .queryTimeout(10);
-        Query<?> replacementQuery = mappedSelect.createReplacementQuery(env.context().getEntityResolver());
-        assertEquals(10, replacementQuery
-                .getMetaData(env.context().getEntityResolver())
-                .getQueryTimeout());
-        env.context().execute(replacementQuery);
+        assertEquals(10, mappedSelect
+                .resolve(env.context().getEntityResolver())
+                .queryTimeout());
+        env.context().execute(mappedSelect);
     }
 }

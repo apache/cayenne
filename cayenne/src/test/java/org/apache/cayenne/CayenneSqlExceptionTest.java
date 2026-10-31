@@ -23,9 +23,9 @@ import org.apache.cayenne.access.StatementContext;
 import org.apache.cayenne.access.translator.TranslatedSQL;
 import org.apache.cayenne.access.translator.TranslatedStatement;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.QueryMetadata;
-import org.apache.cayenne.query.SQLTemplate;
+import org.apache.cayenne.query.SQLQuery;
+import org.apache.cayenne.query.resolved.ResolvedQuery;
+import org.apache.cayenne.query.resolved.ResolvedSQL;
 import org.junit.jupiter.api.Test;
 
 import static org.mockito.Mockito.mock;
@@ -39,16 +39,17 @@ public class CayenneSqlExceptionTest {
 
     @Test
     public void messageIncludesSql() {
-        Query<?> query = new SQLTemplate<>("SELECT * FROM ARTIST");
-        TranslatedStatement statement = new TranslatedSQL("SELECT * FROM ARTIST", null, null);
+        SQLQuery<?> query = SQLQuery.query("SELECT * FROM ARTIST");
+        ResolvedSQL resolved = query.resolve(new EntityResolver());
+        TranslatedStatement statement = new TranslatedSQL(resolved, "SELECT * FROM ARTIST", null, null);
         Throwable cause = new RuntimeException("boom");
 
-        StatementContext context = context(query, statement);
+        StatementContext context = context(resolved, statement);
         CayenneSqlException e = new CayenneSqlException("Query exception.", context, cause);
 
         assertSame(context, e.getStatementContext());
         assertSame(query, e.getQuery());
-        assertSame(statement, e.getStatement());
+        assertSame(statement, e.getTranslatedStatement());
         assertSame(cause, e.getCause());
         assertTrue(e.getMessage().contains("Query exception."), e.getMessage());
         assertTrue(e.getMessage().contains("SELECT * FROM ARTIST"), e.getMessage());
@@ -56,10 +57,11 @@ public class CayenneSqlExceptionTest {
 
     @Test
     public void queryNotIncludedInMessage() {
-        Query<?> query = new SQLTemplate<>("SELECT * FROM ARTIST");
-        TranslatedStatement statement = new TranslatedSQL("SELECT * FROM ARTIST", null, null);
+        SQLQuery<?> query = SQLQuery.query("SELECT * FROM ARTIST");
+        ResolvedSQL resolved = query.resolve(new EntityResolver());
+        TranslatedStatement statement = new TranslatedSQL(resolved, "SELECT * FROM ARTIST", null, null);
 
-        CayenneSqlException e = new CayenneSqlException("Query exception.", context(query, statement),
+        CayenneSqlException e = new CayenneSqlException("Query exception.", context(resolved, statement),
                 new RuntimeException());
 
         assertSame(query, e.getQuery());
@@ -69,10 +71,11 @@ public class CayenneSqlExceptionTest {
     @Test
     public void sqlWithPercentDoesNotBreakFormatting() {
         // SQL may contain '%' (e.g. LIKE patterns); it must not be interpreted as a format specifier
-        TranslatedStatement statement = new TranslatedSQL("SELECT * FROM ARTIST WHERE NAME LIKE '%foo%'", null, null);
-
-        Query<?> query = new SQLTemplate<>("SELECT * FROM ARTIST WHERE NAME LIKE '%foo%'");
-        CayenneSqlException e = new CayenneSqlException("Query exception.", context(query, statement),
+        SQLQuery<?> query = SQLQuery.query("SELECT * FROM ARTIST WHERE NAME LIKE '%foo%'");
+        ResolvedSQL resolved = query.resolve(new EntityResolver());
+        TranslatedStatement statement = new TranslatedSQL(resolved, "SELECT * FROM ARTIST WHERE NAME LIKE '%foo%'",
+                null, null);
+        CayenneSqlException e = new CayenneSqlException("Query exception.", context(resolved, statement),
                 new RuntimeException());
 
         assertTrue(e.getMessage().contains("LIKE '%foo%'"), e.getMessage());
@@ -80,13 +83,13 @@ public class CayenneSqlExceptionTest {
 
     @Test
     public void untranslatedRunHasNoStatement() {
-        Query<?> query = new SQLTemplate<>("SELECT * FROM ARTIST");
-        StatementContext context = new StatementContext(query, mock(QueryMetadata.class), mock(EntityResolver.class));
+        SQLQuery<?> query = SQLQuery.query("SELECT * FROM ARTIST");
+        StatementContext context = new StatementContext(query.resolve(new EntityResolver()), mock(EntityResolver.class));
 
         CayenneSqlException e = new CayenneSqlException("Query exception.", context, new RuntimeException());
 
         assertSame(query, e.getQuery());
-        assertNull(e.getStatement());
+        assertNull(e.getTranslatedStatement());
         assertTrue(e.getMessage().contains("Query exception."), e.getMessage());
     }
 
@@ -96,13 +99,13 @@ public class CayenneSqlExceptionTest {
 
         assertNull(e.getStatementContext());
         assertNull(e.getQuery());
-        assertNull(e.getStatement());
+        assertNull(e.getTranslatedStatement());
         assertTrue(e.getMessage().contains("Query exception."), e.getMessage());
     }
 
-    private static StatementContext context(Query<?> query, TranslatedStatement statement) {
-        StatementContext context = new StatementContext(query, mock(QueryMetadata.class), mock(EntityResolver.class));
-        context.setTranslated(statement);
+    private static StatementContext context(ResolvedQuery query, TranslatedStatement statement) {
+        StatementContext context = new StatementContext(query, mock(EntityResolver.class));
+        context.setTranslatedStatement(statement);
         return context;
     }
 }

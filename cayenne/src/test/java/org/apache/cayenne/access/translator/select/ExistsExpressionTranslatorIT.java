@@ -22,10 +22,9 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.query.MockQueryMetadata;
-import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
+import org.apache.cayenne.query.resolved.ResolvedQueries;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -48,13 +47,7 @@ public class ExistsExpressionTranslatorIT {
         DbEntity dbArtist = env.context().getEntityResolver().getDbEntity("ARTIST");
         ObjEntity objArtist = env.context().getEntityResolver().getObjEntity("Artist");
         when(translatorContext.getRootDbEntity()).thenReturn(dbArtist);
-        QueryMetadata metadata = new MockQueryMetadata() {
-            @Override
-            public ObjEntity getObjEntity() {
-                return objArtist;
-            }
-        };
-        when(translatorContext.getMetadata()).thenReturn(metadata);
+        when(translatorContext.getSelect()).thenReturn(ResolvedQueries.select(objArtist, dbArtist));
     }
 
     @Test
@@ -149,7 +142,7 @@ public class ExistsExpressionTranslatorIT {
         translatorContext = mock(SelectTranslatorContext.class);
         DbEntity dbArtist = env.context().getEntityResolver().getDbEntity("ARTIST");
         when(translatorContext.getRootDbEntity()).thenReturn(dbArtist);
-        when(translatorContext.getMetadata()).thenReturn(new MockQueryMetadata());
+        when(translatorContext.getSelect()).thenReturn(ResolvedQueries.select(null, dbArtist));
 
         Expression translated = new ExistsExpressionTranslator(translatorContext, exp).translate();
 

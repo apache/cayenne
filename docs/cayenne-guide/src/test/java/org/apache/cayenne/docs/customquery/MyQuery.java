@@ -16,41 +16,31 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+
 package org.apache.cayenne.docs.customquery;
 
-import org.apache.cayenne.DataRow;
-import org.apache.cayenne.access.StatementContext;
 import org.apache.cayenne.docs.persistent.Artist;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.QueryMetadata;
-import org.apache.cayenne.query.SQLAction;
-import org.apache.cayenne.query.SQLActionVisitor;
-
-import java.sql.Connection;
-import java.sql.SQLException;
+import org.apache.cayenne.query.resolved.ResolvedQuery;
 
 // tag::content[]
-public class MyQuery implements Query<DataRow> {
+public class MyQuery implements Query<Artist> {
 
-    @Override
-    public QueryMetadata getMetaData(EntityResolver resolver) {
-        // the metadata tells Cayenne which DataNode to run the query on. Here we simply borrow it from a standard query
-        return ObjectSelect.query(Artist.class).getMetaData(resolver);
+    private final String namePrefix;
+
+    public MyQuery(String namePrefix) {
+        this.namePrefix = namePrefix;
     }
 
     @Override
-    public SQLAction createSQLAction(SQLActionVisitor visitor) {
-        return new SQLAction() {
-
-            @Override
-            public void performAction(Connection connection, StatementContext context)
-                    throws SQLException, Exception {
-                // 1. do some JDBC work using provided connection...
-                // 2. report the results (DataRows, update counts) to Cayenne via StatementContext.addResult(..)
-            }
-        };
+    public ResolvedQuery resolve(EntityResolver resolver) {
+        // the type parameter of the delegate matches the one of this query, as both select Artists
+        return ObjectSelect.query(Artist.class)
+                .where(Artist.NAME.startsWith(namePrefix))
+                .orderBy(Artist.NAME.asc())
+                .resolve(resolver);
     }
 }
 // end::content[]

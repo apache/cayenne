@@ -301,11 +301,11 @@ class QualifierTranslator implements TraversalHandler {
         // the common node kinds go first: a pattern switch tests its cases in order
         return switch (node) {
             case ObjPathExp path -> processPathTranslationResult(node, parentNode,
-                    pathTranslator.translatePath(context.getMetadata().getObjEntity(), path.getPath()));
+                    pathTranslator.translatePath(context.getSelect().objEntity(), path.getPath()));
             case DbIdPathExp path -> processPathTranslationResult(node, parentNode,
-                    pathTranslator.translateIdPath(context.getMetadata().getObjEntity(), path.getPath()));
+                    pathTranslator.translateIdPath(context.getSelect().objEntity(), path.getPath()));
             case DbPathExp path -> processPathTranslationResult(node, parentNode,
-                    pathTranslator.translatePath(context.getMetadata().getDbEntity(), path.getPath()));
+                    pathTranslator.translatePath(context.getSelect().dbEntity(), path.getPath()));
             case ScalarExp scalar -> {
                 // a value in the place of an expression: a whole clause, or an operand wrapped by the caller
                 Object value = scalar.getValue();
@@ -364,7 +364,8 @@ class QualifierTranslator implements TraversalHandler {
             case AnyExp e -> new FunctionNode("ANY", null, false);
             case SubqueryExp subquery -> {
                 SelectTranslatorContext subContext = new SelectTranslatorContext(
-                        subquery.getQuery(), context.getAdapter(), context.getResolver(), context);
+                        subquery.getQuery().resolve(context.getResolver()), context.getAdapter(), context.getResolver(),
+                        context);
                 // skip SQL translation stage for nested translators, it should be performed by root context only
                 subContext.setSkipSQLGeneration(true);
                 subContext.translate();
@@ -381,7 +382,7 @@ class QualifierTranslator implements TraversalHandler {
                 yield context.getParentContext().getQualifierTranslator().translate(expression);
             }
             case FullObjectExp e -> {
-                Collection<DbAttribute> dbAttributes = context.getMetadata().getDbEntity().getPrimaryKeys();
+                Collection<DbAttribute> dbAttributes = context.getSelect().dbEntity().getPrimaryKeys();
                 String alias = context.getTableTree().aliasForPath(CayennePath.EMPTY_PATH);
                 if (dbAttributes.size() > 1) {
                     yield createMultiPkMatch(node, parentNode, dbAttributes, alias);
@@ -646,13 +647,13 @@ class QualifierTranslator implements TraversalHandler {
         for (int i = 0; i < node.getOperandCount(); i++) {
             Object op = node.getOperand(i);
             if (op instanceof ObjPathExp) {
-                result = pathTranslator.translatePath(context.getMetadata().getObjEntity(), ((ObjPathExp) op).getPath());
+                result = pathTranslator.translatePath(context.getSelect().objEntity(), ((ObjPathExp) op).getPath());
                 break;
             } else if (op instanceof DbIdPathExp) {
-                result = pathTranslator.translateIdPath(context.getMetadata().getObjEntity(), ((DbIdPathExp) op).getPath());
+                result = pathTranslator.translateIdPath(context.getSelect().objEntity(), ((DbIdPathExp) op).getPath());
                 break;
             } else if (op instanceof DbPathExp) {
-                result = pathTranslator.translatePath(context.getMetadata().getDbEntity(), ((DbPathExp) op).getPath());
+                result = pathTranslator.translatePath(context.getSelect().dbEntity(), ((DbPathExp) op).getPath());
                 break;
             }
         }

@@ -25,11 +25,17 @@ import org.apache.cayenne.DataRowLayout;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.access.translator.BatchTranslator;
+import org.apache.cayenne.access.translator.ProcedureTranslator;
+import org.apache.cayenne.access.translator.SQLTemplateTranslator;
+import org.apache.cayenne.access.translator.SelectTranslator;
 import org.apache.cayenne.dba.JdbcPkGenerator;
+import org.apache.cayenne.di.Injector;
+import org.apache.cayenne.di.Key;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.query.SQLTemplate;
+import org.apache.cayenne.query.SQLQuery;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
@@ -256,6 +262,7 @@ public class DataContextExtrasIT {
 
         // a node is immutable, so to install the generator, replace the node with a copy that has it
         DataNode node = domain.getDefaultNode();
+        Injector injector = env.runtime().getInjector();
         List<DataMap> maps = domain.getDataMaps().stream().filter(m -> domain.lookupDataNode(m) == node).toList();
         DataNode replacement = new DataNode(
                 node.getName(),
@@ -264,12 +271,12 @@ public class DataContextExtrasIT {
                 newGenerator,
                 node.getSqlLogger(),
                 node.getRowReaderFactory(),
-                node.getSelectTranslator(),
-                node.getProcedureTranslator(),
-                node.getSqlTemplateTranslator(),
-                node.getInsertBatchTranslator(),
-                node.getUpdateBatchTranslator(),
-                node.getDeleteBatchTranslator());
+                injector.getInstance(SelectTranslator.class),
+                injector.getInstance(ProcedureTranslator.class),
+                injector.getInstance(SQLTemplateTranslator.class),
+                injector.getInstance(Key.get(BatchTranslator.class, BatchTranslator.INSERT)),
+                injector.getInstance(Key.get(BatchTranslator.class, BatchTranslator.UPDATE)),
+                injector.getInstance(Key.get(BatchTranslator.class, BatchTranslator.DELETE)));
 
         domain.removeDataNode(node.getName());
         domain.addNode(replacement, maps);
@@ -293,7 +300,7 @@ public class DataContextExtrasIT {
     @Test
     public void selectException() {
 
-        SQLTemplate q = new SQLTemplate(Artist.class, "SELECT * FROM NON_EXISTENT_TABLE");
+        SQLQuery<Artist> q = SQLQuery.query(Artist.class, "SELECT * FROM NON_EXISTENT_TABLE");
 
         assertThrows(RuntimeException.class, () -> context.execute(q));
 

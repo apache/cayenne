@@ -29,7 +29,7 @@ import java.sql.Types;
 import java.util.List;
 
 import org.apache.cayenne.PersistenceState;
-import org.apache.cayenne.query.SQLTemplate;
+import org.apache.cayenne.query.SQLQuery;
 import org.apache.cayenne.testdo.testmap.ArtGroup;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.ArtistExhibit;
@@ -39,6 +39,7 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.testdo.testmap.PaintingInfo;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
+import org.apache.cayenne.DataRow;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -107,8 +108,7 @@ public class DataContextDeleteRulesIT {
 
         context.commitChanges();
 
-        SQLTemplate checkQuery = new SQLTemplate(Artist.class, "SELECT * FROM ARTIST_GROUP");
-        checkQuery.setFetchingDataRows(true);
+        SQLQuery<DataRow> checkQuery = SQLQuery.query(Artist.class, "SELECT * FROM ARTIST_GROUP").fetchDataRows();
         List<?> joins1 = context.select(checkQuery);
         assertEquals(1, joins1.size());
 
@@ -141,8 +141,7 @@ public class DataContextDeleteRulesIT {
         assertTrue(aGroup.getArtists().contains(anArtist));
         assertTrue(anArtist.getGroups().contains(aGroup));
 
-        SQLTemplate checkQuery = new SQLTemplate(Artist.class, "SELECT * FROM ARTIST_GROUP");
-        checkQuery.setFetchingDataRows(true);
+        SQLQuery<DataRow> checkQuery = SQLQuery.query(Artist.class, "SELECT * FROM ARTIST_GROUP").fetchDataRows();
         List<?> joins1 = context.select(checkQuery);
         assertEquals(1, joins1.size());
 

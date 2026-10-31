@@ -29,7 +29,7 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.QueryDescriptor;
-import org.apache.cayenne.map.SQLTemplateDescriptor;
+import org.apache.cayenne.map.SQLQueryDescriptor;
 import org.apache.cayenne.map.SelectQueryDescriptor;
 import org.apache.cayenne.ql.QLSelectPrinter;
 import org.apache.cayenne.query.ObjectSelect;
@@ -291,7 +291,7 @@ public class EOModelProcessor {
 	}
 
 	protected QueryDescriptor makeEOSQLQueryDescriptor(ObjEntity root, Map plistMap) {
-		SQLTemplateDescriptor descriptor = new SQLTemplateDescriptor();
+		SQLQueryDescriptor descriptor = new SQLQueryDescriptor();
 		descriptor.setRoot(root);
 
 		// the limit of a SQL query can only be a part of its SQL

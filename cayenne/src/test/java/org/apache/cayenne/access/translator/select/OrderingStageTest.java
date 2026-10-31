@@ -31,8 +31,8 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.query.FluentSelect;
 import org.apache.cayenne.query.Ordering;
+import org.apache.cayenne.query.resolved.ResolvedSelect;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -66,12 +66,12 @@ public class OrderingStageTest {
         Ordering ordering = new Ordering("path");
         ordering.setDescending();
 
-        FluentSelect<?, ?> query = new MockFluentSelectBuilder()
+        ResolvedSelect query = new MockResolvedSelectBuilder()
                 .withOrderings(Collections.singleton(ordering))
-                .withMetaData(new MockQueryMetadataBuilder()
+                
                         .withDbEntity(dbEntity)
                         .withObjEntity(objEntity)
-                        .build())
+                        
                 .withDistinct( true )
                 .build();
         context = new MockSelectTranslatorContext(query);
@@ -114,7 +114,7 @@ public class OrderingStageTest {
         OrderingDistinctStage orderingStage = new OrderingDistinctStage();
         orderingStage.perform(context);
 
-        assertTrue(context.getQuery().isDistinct());
+        assertTrue(context.getSelect().distinct());
         assertEquals(1, context.getResultNodeList().size());
     }
 }

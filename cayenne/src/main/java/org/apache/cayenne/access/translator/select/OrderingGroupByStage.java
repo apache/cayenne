@@ -25,14 +25,14 @@ class OrderingGroupByStage extends OrderingAbstractStage {
 
     @Override
     public void perform(SelectTranslatorContext context) {
-        if (context.getQuery().getOrderings() == null) {
+        if (context.getSelect().orderings().isEmpty()) {
             return;
         }
 
         if (context.hasAggregate()) {
             // If query is GROUPING then we need to add the order column as a result column
             QualifierTranslator qualifierTranslator = context.getQualifierTranslator();
-            for (Ordering ordering : context.getQuery().getOrderings()) {
+            for (Ordering ordering : context.getSelect().orderings()) {
                 processOrdering(qualifierTranslator, context, ordering);
             }
         }

@@ -21,7 +21,6 @@ package org.apache.cayenne.dba.h2;
 
 import org.apache.cayenne.CoreModule;
 import org.apache.cayenne.dba.NativeColumnType;
-import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeFactory;
@@ -33,8 +32,6 @@ import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.SQLAction;
 
 import java.sql.Types;
 import java.util.List;
@@ -118,10 +115,6 @@ public class H2Adapter extends JdbcAdapter {
         return new H2SQLTreeProcessor();
     }
 
-    @Override
-    public SQLAction getAction(Query<?> query, DataNode node) {
-        return query.createSQLAction(new H2ActionBuilder(node));
-    }
 
     /**
      * Installs appropriate ExtendedTypes as converters for passing values

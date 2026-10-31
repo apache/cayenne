@@ -24,7 +24,7 @@ import java.util.List;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.query.SQLTemplate;
+import org.apache.cayenne.query.SQLQuery;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.Test;
@@ -61,13 +61,13 @@ public class GenericMappingIT {
 
     @Test
     public void testSelect() {
-        env.context().execute(SQLTemplate.entityQuery(
+        env.context().execute(SQLQuery.entityQuery(
                 "Generic1",
                 "INSERT INTO GENERIC1 (ID, NAME) VALUES (1, 'AAAA')"));
-        env.context().execute(SQLTemplate.entityQuery(
+        env.context().execute(SQLQuery.entityQuery(
                 "Generic1",
                 "INSERT INTO GENERIC1 (ID, NAME) VALUES (2, 'BBBB')"));
-        env.context().execute(SQLTemplate.entityQuery(
+        env.context().execute(SQLQuery.entityQuery(
                 "Generic1",
                 "INSERT INTO GENERIC2 (GENERIC1_ID, ID, NAME) VALUES (1, 1, 'CCCCC')"));
 

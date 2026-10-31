@@ -34,9 +34,8 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.JoinType;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.query.PrefetchSelectQuery;
 import org.apache.cayenne.query.PrefetchTreeNode;
-import org.apache.cayenne.query.QueryMetadata;
+import org.apache.cayenne.query.resolved.ResolvedSelect;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,31 +57,31 @@ class PrefetchNodeStage implements TranslationStage {
     }
 
     private void updatePrefetchNodes(SelectTranslatorContext context) {
-        if(context.getMetadata().getPrefetchTree() == null) {
+        if(context.getSelect().prefetchTree() == null) {
             return;
         }
         // Set entity name, in case MixedConversionStrategy will be used to select objects from this query
         // Note: all prefetch nodes will point to query root, it is not a problem until select query can't
         // perform some sort of union or sub-queries.
-        for(PrefetchTreeNode prefetch : context.getMetadata().getPrefetchTree().getChildren()) {
-            prefetch.setEntityName(context.getMetadata().getObjEntity().getName());
+        for(PrefetchTreeNode prefetch : context.getSelect().prefetchTree().getChildren()) {
+            prefetch.setEntityName(context.getSelect().objEntity().getName());
         }
     }
 
     private void processJoint(SelectTranslatorContext context) {
-        QueryMetadata queryMetadata = context.getMetadata();
-        PrefetchTreeNode prefetch = queryMetadata.getPrefetchTree();
+        ResolvedSelect select = context.getSelect();
+        PrefetchTreeNode prefetch = select.prefetchTree();
         if(prefetch == null) {
             return;
         }
 
         // a paginated query only selects root ids; a joint to-many prefetch would multiply the id rows by the number
         // of joined children. Prefetches are applied later to the per-page fetch queries (see IncrementalFaultList).
-        if(queryMetadata.getPageSize() > 0) {
+        if(select.pageSize() > 0) {
             return;
         }
 
-        ObjEntity objEntity = queryMetadata.getObjEntity();
+        ObjEntity objEntity = select.objEntity();
         boolean warnPrefetchWithLimit = false;
 
         for(PrefetchTreeNode node : prefetch.adjacentJointNodes()) {
@@ -116,7 +115,7 @@ class PrefetchNodeStage implements TranslationStage {
             columnExtractor.extract(dbPath.withMarker(CayennePath.PREFETCH_MARKER));
 
             if(!warnPrefetchWithLimit && targetRel.isToMany()
-                    && (queryMetadata.getFetchLimit() > 0 || queryMetadata.getFetchOffset() > 0)) {
+                    && (select.fetchLimit() > 0 || select.fetchOffset() > 0)) {
                 warnPrefetchWithLimit = true;
             }
         }
@@ -136,18 +135,17 @@ class PrefetchNodeStage implements TranslationStage {
     }
 
     private void processPrefetchQuery(SelectTranslatorContext context) {
-        if(!(context.getQuery() instanceof PrefetchSelectQuery<?> prefetchSelectQuery)) {
+        ResolvedSelect select = context.getSelect();
+        if (select.resultPaths().isEmpty()) {
             return;
         }
 
         PathTranslator pathTranslator = context.getPathTranslator();
-        for(PathExp prefetchPath: prefetchSelectQuery.getResultPaths()) {
-            DbPathExp pathExp = (DbPathExp) context.getMetadata()
-                    .getClassDescriptor().getEntity().translateToDbPath(prefetchPath);
+        for(PathExp prefetchPath: select.resultPaths()) {
+            DbPathExp pathExp = (DbPathExp) select.classDescriptor().getEntity().translateToDbPath(prefetchPath);
             CayennePath path = pathExp.getPath();
 
-            PathTranslationResult result = pathTranslator
-                    .translatePath(context.getMetadata().getDbEntity(), path);
+            PathTranslationResult result = pathTranslator.translatePath(select.dbEntity(), path);
             CayennePath resultPath = result.getFinalPath();
             result.getDbRelationship().ifPresent(r -> {
                 DbEntity targetEntity = r.getTargetEntity();

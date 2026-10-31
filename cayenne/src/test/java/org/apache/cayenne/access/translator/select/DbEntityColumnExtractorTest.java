@@ -25,7 +25,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.JoinType;
-import org.apache.cayenne.query.FluentSelect;
+import org.apache.cayenne.query.resolved.ResolvedSelect;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
@@ -36,10 +36,10 @@ public class DbEntityColumnExtractorTest extends BaseColumnExtractorTest {
 
     @Test
     public void extractNoPrefix() {
-        FluentSelect<?, ?> query = new MockFluentSelectBuilder()
-                .withMetaData(new MockQueryMetadataBuilder()
+        ResolvedSelect query = new MockResolvedSelectBuilder()
+                
                         .withDbEntity(createMockDbEntity("mock"))
-                        .build())
+                        
                 .build();
         SelectTranslatorContext context = new MockSelectTranslatorContext(query);
 
@@ -80,10 +80,10 @@ public class DbEntityColumnExtractorTest extends BaseColumnExtractorTest {
         dataMap.addDbEntity(mock2DbEntity);
         mockDbEntity.setDataMap(dataMap);
 
-        FluentSelect<?, ?> query = new MockFluentSelectBuilder()
-                .withMetaData(new MockQueryMetadataBuilder()
+        ResolvedSelect query = new MockResolvedSelectBuilder()
+                
                         .withDbEntity(mockDbEntity)
-                        .build())
+                        
                 .build();
         SelectTranslatorContext context = new MockSelectTranslatorContext(query);
 

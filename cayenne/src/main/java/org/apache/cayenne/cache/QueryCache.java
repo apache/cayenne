@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.cache;
 
-import org.apache.cayenne.query.QueryMetadata;
 
 import java.util.List;
 
@@ -30,27 +29,27 @@ import java.util.List;
 public interface QueryCache {
 
     /**
-     * Returns a cached query result for the given QueryMetadata or null if the result is
+     * Returns a cached query result for the given cache key and group or null if the result is
      * not cached or is expired.
      */
     @SuppressWarnings("rawtypes")
-    List get(QueryMetadata metadata);
+    List get(String cacheKey, String cacheGroup);
 
     /**
-     * Returns a cached query result for the given QueryMetadata. If the result is not
+     * Returns a cached query result for the given cache key and group. If the result is not
      * cached or is expired, cache will use provided factory to rebuild the value and
      * store it in the cache. A corollary is that this method never returns null.
      * <p>
-     * Compared to {@link #get(QueryMetadata)}, this method allows the cache to do
+     * Compared to {@link #get(cache key and group)}, this method allows the cache to do
      * appropriate synchronization when refreshing the entry, preventing multiple threads
      * from running the same query when a missing entry is requested by multiple threads
      * simultaneously.
      */
     @SuppressWarnings("rawtypes")
-    List get(QueryMetadata metadata, QueryCacheEntryFactory factory);
+    List get(String cacheKey, String cacheGroup, QueryCacheEntryFactory factory);
 
     @SuppressWarnings("rawtypes")
-    void put(QueryMetadata metadata, List results);
+    void put(String cacheKey, String cacheGroup, List results);
 
     /**
      * Removes a single entry from cache.

@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.velocity;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
@@ -31,6 +33,8 @@ import java.util.Map;
 import org.apache.cayenne.access.translator.TranslatedSQL;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.query.SQLQuery;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -52,18 +56,16 @@ public class VelocitySQLTemplateTranslator_ChainTest {
 		// whatever is inside the chain, it should render as empty if there
 		// is no chunks...
 
-		TranslatedSQL compiled = processor.translate("#chain(' AND ') #end",
-				Collections.<String, Object> emptyMap(), adapter);
+		TranslatedSQL compiled = translate("#chain(' AND ') #end", Collections.<String, Object> emptyMap());
 		assertEquals("", compiled.sql());
 
-		compiled = processor.translate("#chain(' AND ') garbage #end", Collections.<String, Object> emptyMap(), adapter);
+		compiled = translate("#chain(' AND ') garbage #end", Collections.<String, Object> emptyMap());
 		assertEquals("", compiled.sql());
 
-		compiled = processor.translate("#chain(' AND ' 'PREFIX') #end", Collections.<String, Object> emptyMap(), adapter);
+		compiled = translate("#chain(' AND ' 'PREFIX') #end", Collections.<String, Object> emptyMap());
 
 		assertEquals("", compiled.sql());
-		compiled = processor.translate("#chain(' AND ' 'PREFIX') garbage #end",
-				Collections.<String, Object> emptyMap(), adapter);
+		compiled = translate("#chain(' AND ' 'PREFIX') garbage #end", Collections.<String, Object> emptyMap());
 
 		assertEquals("", compiled.sql());
 	}
@@ -77,7 +79,7 @@ public class VelocitySQLTemplateTranslator_ChainTest {
 		map.put("b", "[B]");
 		map.put("c", "[C]");
 
-		TranslatedSQL compiled = processor.translate(template, map, adapter);
+		TranslatedSQL compiled = translate(template, map);
 		assertEquals("[A] OR [B] OR [C]", compiled.sql());
 	}
 
@@ -91,7 +93,7 @@ public class VelocitySQLTemplateTranslator_ChainTest {
 		map.put("b", "[B]");
 		map.put("c", "[C]");
 
-		TranslatedSQL compiled = processor.translate(template, map, adapter);
+		TranslatedSQL compiled = translate(template, map);
 		assertEquals("WHERE [A] OR [B] OR [C]", compiled.sql());
 	}
 
@@ -104,7 +106,7 @@ public class VelocitySQLTemplateTranslator_ChainTest {
 		map.put("a", "[A]");
 		map.put("c", "[C]");
 
-		TranslatedSQL compiled = processor.translate(template, map, adapter);
+		TranslatedSQL compiled = translate(template, map);
 		assertEquals("WHERE [A] OR [C]", compiled.sql());
 	}
 
@@ -117,7 +119,7 @@ public class VelocitySQLTemplateTranslator_ChainTest {
 		map.put("b", "[B]");
 		map.put("c", "[C]");
 
-		TranslatedSQL compiled = processor.translate(template, map, adapter);
+		TranslatedSQL compiled = translate(template, map);
 		assertEquals("WHERE [B] OR [C]", compiled.sql());
 	}
 
@@ -130,7 +132,7 @@ public class VelocitySQLTemplateTranslator_ChainTest {
 		map.put("a", "[A]");
 		map.put("b", "[B]");
 
-		TranslatedSQL compiled = processor.translate(template, map, adapter);
+		TranslatedSQL compiled = translate(template, map);
 		assertEquals("WHERE [A] OR [B]", compiled.sql());
 	}
 
@@ -143,7 +145,7 @@ public class VelocitySQLTemplateTranslator_ChainTest {
 		map.put("a", "[A]");
 		map.put("c", "[C]");
 
-		TranslatedSQL compiled = processor.translate(template, map, adapter);
+		TranslatedSQL compiled = translate(template, map);
 		assertEquals("WHERE [A] some other stuff OR [C]", compiled.sql());
 	}
 
@@ -151,7 +153,7 @@ public class VelocitySQLTemplateTranslator_ChainTest {
 	public void processTemplateChainUnconditionalChunks() throws Exception {
 		String template = "#chain(' OR ' 'WHERE ')" + "#chunk()C1#end" + "#chunk()C2#end" + "#chunk()C3#end" + "#end";
 
-		TranslatedSQL compiled = processor.translate(template, Collections.<String, Object> emptyMap(), adapter);
+		TranslatedSQL compiled = translate(template, Collections.<String, Object> emptyMap());
 		assertEquals("WHERE C1 OR C2 OR C3", compiled.sql());
 	}
 
@@ -160,7 +162,7 @@ public class VelocitySQLTemplateTranslator_ChainTest {
 		String template = "#chain(' OR ' 'WHERE ')" + "#chunk($a)$a#end" + "#chunk($b)$b#end" + "#chunk($c)$c#end"
 				+ "#end";
 
-		TranslatedSQL compiled = processor.translate(template, Collections.<String, Object> emptyMap(), adapter);
+		TranslatedSQL compiled = translate(template, Collections.<String, Object> emptyMap());
 		assertEquals("", compiled.sql());
 	}
 
@@ -173,7 +175,7 @@ public class VelocitySQLTemplateTranslator_ChainTest {
 		map.put("a", false);
 		map.put("b", 0);
 
-		TranslatedSQL compiled = processor.translate(template, map, adapter);
+		TranslatedSQL compiled = translate(template, map);
 		assertEquals("WHERE [A] OR [B]", compiled.sql());
 	}
 
@@ -186,8 +188,18 @@ public class VelocitySQLTemplateTranslator_ChainTest {
 		map.put("a", false);
 		map.put("b", 0);
 
-		TranslatedSQL compiled = processor.translate(template, map, adapter);
+		TranslatedSQL compiled = translate(template, map);
 		assertEquals("WHERE false OR 0", compiled.sql());
 	}
 
+
+	private TranslatedSQL translate(String template, Map<?, ?> params) {
+		Map<String, Object> named = new HashMap<>();
+		params.forEach((k, v) -> named.put(String.valueOf(k), v));
+		return processor.translate(SQLQuery.query(template).params(named).resolve(new EntityResolver()), adapter);
+	}
+
+	private TranslatedSQL translate(String template, List<Object> params) {
+		return processor.translate(SQLQuery.query(template).paramsList(params).resolve(new EntityResolver()), adapter);
+	}
 }

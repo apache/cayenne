@@ -37,7 +37,7 @@ import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.map.ProcedureQueryDescriptor;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.Relationship;
-import org.apache.cayenne.map.SQLTemplateDescriptor;
+import org.apache.cayenne.map.SQLQueryDescriptor;
 import org.apache.cayenne.map.SelectQueryDescriptor;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.event.display.DbAttributeDisplayEvent;
@@ -89,7 +89,7 @@ public class FindAction extends AppAction {
         PRIORITY_BY_TYPE.put(DbRelationshipDetected.class, 8); // this one comes from db reverse engineering
         PRIORITY_BY_TYPE.put(QueryDescriptor.class, 9);
         PRIORITY_BY_TYPE.put(SelectQueryDescriptor.class, 10);
-        PRIORITY_BY_TYPE.put(SQLTemplateDescriptor.class, 12);
+        PRIORITY_BY_TYPE.put(SQLQueryDescriptor.class, 12);
         PRIORITY_BY_TYPE.put(ProcedureQueryDescriptor.class, 13);
         PRIORITY_BY_TYPE.put(Embeddable.class, 14);
         PRIORITY_BY_TYPE.put(EmbeddableAttribute.class, 15);

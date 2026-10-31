@@ -32,7 +32,7 @@ import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
 import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.SQLTemplateDescriptor;
+import org.apache.cayenne.map.SQLQueryDescriptor;
 import org.apache.cayenne.map.SelectQueryDescriptor;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.resource.URLResource;
@@ -96,7 +96,7 @@ public class XMLDataMapLoaderTest {
         assertEquals(10, select.getPageSize());
         assertEquals("g1 & g2", select.getCacheGroup());
 
-        SQLTemplateDescriptor sql = (SQLTemplateDescriptor) map.getQueryDescriptor("ArtistSql");
+        SQLQueryDescriptor sql = (SQLQueryDescriptor) map.getQueryDescriptor("ArtistSql");
         assertEquals("select * from ARTIST", sql.getSql());
         assertEquals(7, sql.getPageSize());
         assertEquals(CapsStrategy.UPPER, sql.getColumnNamesCapitalization());
@@ -200,7 +200,7 @@ public class XMLDataMapLoaderTest {
         assertEquals(2,
                 map.getProcedure("cayenne_tst_out_proc").getCallParameters().size());
 
-        SQLTemplateDescriptor descriptor = (SQLTemplateDescriptor)map.getQueryDescriptor("NonSelectingQuery");
+        SQLQueryDescriptor descriptor = (SQLQueryDescriptor)map.getQueryDescriptor("NonSelectingQuery");
         assertEquals("INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE) " +
                         "VALUES (512, 'No Painting Like This', 12.5)",
                 descriptor.getAdapterSql().get("org.apache.cayenne.dba.db2.DB2Adapter"));

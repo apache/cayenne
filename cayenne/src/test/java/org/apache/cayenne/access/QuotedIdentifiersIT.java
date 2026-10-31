@@ -22,11 +22,12 @@ import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.query.UpdateBatchQuery;
+import org.apache.cayenne.query.resolved.UpdateBatch;
 import org.apache.cayenne.testdo.quotemap.QuoteAdress;
 import org.apache.cayenne.testdo.quotemap.Quote_Person;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
+import org.apache.cayenne.access.StatementContexts;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -118,9 +119,9 @@ public class QuotedIdentifiersIT {
         List<DbAttribute> idAttributes = Collections.singletonList(entity.getAttribute("City"));
         List<DbAttribute> updatedAttributes = Collections.singletonList(entity.getAttribute("City"));
 
-        UpdateBatchQuery updateQuery = new UpdateBatchQuery(entity, idAttributes, updatedAttributes, Collections.emptySet(), 1);
+        UpdateBatch updateQuery = new UpdateBatch(entity, idAttributes, updatedAttributes, Collections.emptySet(), false, List.of());
 
-        env.context().execute(updateQuery);
+        StatementContexts.run(env.dataNode(), env.resolver(), updateQuery);
 
         List<Quote_Person> objects4 = ObjectSelect.query(Quote_Person.class).select(env.context());
         assertEquals(2, objects4.size());

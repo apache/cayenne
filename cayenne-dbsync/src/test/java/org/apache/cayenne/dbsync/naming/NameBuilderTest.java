@@ -33,7 +33,7 @@ import org.apache.cayenne.map.ProcedureParameter;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.junit.jupiter.api.Test;
 import org.apache.cayenne.map.SelectQueryDescriptor;
-import org.apache.cayenne.map.SQLTemplateDescriptor;
+import org.apache.cayenne.map.SQLQueryDescriptor;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -110,7 +110,7 @@ public class NameBuilderTest {
         assertEquals("query", q0.getName());
         map.addQueryDescriptor(q0);
 
-        QueryDescriptor q1 = new SQLTemplateDescriptor();
+        QueryDescriptor q1 = new SQLQueryDescriptor();
         q1.setName(NameBuilder.of(q1, map).build());
         assertEquals("query1", q1.getName());
         map.addQueryDescriptor(q1);

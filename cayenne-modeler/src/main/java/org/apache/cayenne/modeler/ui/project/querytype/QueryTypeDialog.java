@@ -40,10 +40,10 @@ import java.awt.BorderLayout;
 import java.awt.Window;
 import org.apache.cayenne.map.SelectQueryDescriptor;
 import org.apache.cayenne.map.ProcedureQueryDescriptor;
-import org.apache.cayenne.map.SQLTemplateDescriptor;
+import org.apache.cayenne.map.SQLQueryDescriptor;
 
 /**
- * Modal dialog for picking the type of new query (Select, SQLTemplate, Procedure)
+ * Modal dialog for picking the type of new query (Select, SQL Query, Procedure)
  * before adding it to the current DataMap.
  */
 public class QueryTypeDialog extends ProjectDialog {
@@ -63,7 +63,7 @@ public class QueryTypeDialog extends ProjectDialog {
         this.project = session.project();
 
         this.objectSelect = new JRadioButton("ObjectSelect");
-        this.sqlSelect = new JRadioButton("SQLTemplate");
+        this.sqlSelect = new JRadioButton("SQL Query");
         this.procedureSelect = new JRadioButton("ProcedureQuery");
         objectSelect.setSelected(true);
 
@@ -127,7 +127,7 @@ public class QueryTypeDialog extends ProjectDialog {
     }
 
     private QueryDescriptor newQuery() {
-        if (sqlSelect.isSelected()) return new SQLTemplateDescriptor();
+        if (sqlSelect.isSelected()) return new SQLQueryDescriptor();
         if (procedureSelect.isSelected()) return new ProcedureQueryDescriptor();
 
         // start the query String with the selected entity, if any

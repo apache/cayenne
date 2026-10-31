@@ -17,165 +17,104 @@
  *  under the License.
  ****************************************************************/
 
-
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.QueryResult;
-import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.SelectResult;
 import org.apache.cayenne.access.translator.TranslatedStatement;
 import org.apache.cayenne.log.SQLLogger;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.QueryMetadata;
+import org.apache.cayenne.query.resolved.ResolvedQuery;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 /**
- * The context of a single statement: the execution of one {@link Query} on a {@link DataNode}. Within a query
- * operation it is created by query routing and added to the {@link OperationContext}, which sets the iterator flags;
- * a flush or a primary key generation create standalone statements. The executing node attaches its SQL logger, and
- * the {@link org.apache.cayenne.query.SQLAction} fills the context in: it reports the translated statement before
- * executing it, and then every result the statement produces, in the order produced.
+ * The context of a single statement run by a DataNode: the {@link ResolvedQuery resolved query} behind it (a user
+ * query, one of its prefetch selects, or a flush batch), its translation once the node has translated it, and the
+ * results the SQL action reports.
  *
  * @since 6.0
  */
 public final class StatementContext {
 
-    private final Query<?> query;
-    private final QueryMetadata metadata;
+    private final ResolvedQuery resolvedQuery;
     private final EntityResolver resolver;
     private StatementLog log;
     private boolean iteratedResult;
     private boolean exclusiveConnection;
-    private TranslatedStatement translated;
+    private TranslatedStatement translatedStatement;
     private final List<QueryResult> results;
 
-    /**
-     * Creates a statement of a query, with a result read in full, i.e. not iterated.
-     *
-     * @param query    the query to execute.
-     * @param metadata the metadata of the query, resolved with the resolver.
-     * @param resolver the mapping the query is executed against, used by the SQL action to translate the query.
-     */
-    public StatementContext(Query<?> query, QueryMetadata metadata, EntityResolver resolver) {
-        this.query = Objects.requireNonNull(query, "Null query");
-        this.metadata = Objects.requireNonNull(metadata, "Null metadata");
+    public StatementContext(ResolvedQuery resolvedQuery, EntityResolver resolver) {
+        this.resolvedQuery = Objects.requireNonNull(resolvedQuery, "Null resolved query");
         this.resolver = Objects.requireNonNull(resolver, "Null resolver");
         this.results = new ArrayList<>(1);
     }
 
     /**
-     * Returns the query of this statement. For a routed query this is the query that was routed, which may differ from
-     * the query the operation was started with, e.g. a {@link org.apache.cayenne.query.PrefetchSelectQuery}, a batch
-     * query of a flush, or the query that an indirect query delegates to.
+     * Returns the resolved query this statement runs.
      */
-    public Query<?> getQuery() {
-        return query;
+    public ResolvedQuery getResolvedQuery() {
+        return resolvedQuery;
     }
 
-    /**
-     * Returns the metadata of the {@link #getQuery() query}. Unlike {@link OperationContext#getMetadata()}, this is
-     * the metadata of the query actually executed, e.g. of a prefetch query.
-     */
-    public QueryMetadata getMetadata() {
-        return metadata;
-    }
-
-    /**
-     * Returns the mapping the statement is executed against, i.e. the EntityResolver of the DataDomain that routed
-     * the query to the node.
-     */
     public EntityResolver getResolver() {
         return resolver;
     }
 
-    /**
-     * Returns whether a select result is to be reported as a {@link ResultIterator} instead of a list.
-     *
-     * @see OperationContext#isIteratedResult()
-     */
     public boolean isIteratedResult() {
         return iteratedResult;
     }
 
-    /**
-     * Sets whether a select result is to be reported as a {@link ResultIterator} instead of a list. Set by the
-     * {@link OperationContext} the statement is added to.
-     */
     public void setIteratedResult(boolean iteratedResult) {
         this.iteratedResult = iteratedResult;
     }
 
-    /**
-     * Returns whether an iterated result has the connection to itself until it is closed.
-     *
-     * @see OperationContext#isExclusiveConnection()
-     */
     public boolean isExclusiveConnection() {
         return exclusiveConnection;
     }
 
-    /**
-     * Sets whether an iterated result has the connection to itself until it is closed. Set by the
-     * {@link OperationContext} the statement is added to.
-     */
     public void setExclusiveConnection(boolean exclusiveConnection) {
         this.exclusiveConnection = exclusiveConnection;
     }
 
     /**
-     * Returns the translated form of the query (its SQL and bindings), or null if the query was not translated yet,
-     * or its translation failed.
+     * Returns the translation of the statement, or null before the node has translated it.
      */
-    public TranslatedStatement getTranslated() {
-        return translated;
+    public TranslatedStatement getTranslatedStatement() {
+        return translatedStatement;
     }
 
     /**
-     * Returns the results reported so far, in the order they were produced.
+     * Returns the results reported by the SQL action so far, in the order they were produced.
      */
     public List<QueryResult> getResults() {
         return results;
     }
 
-    /**
-     * Sets the SQL logger that the statement reports to: a header line with the first result, continuation lines for
-     * the results that follow, and an error line if the statement fails. Called by the {@link DataNode} before
-     * executing the statement. A disabled logger turns logging off.
-     */
     public void setLogger(SQLLogger logger) {
         this.log = logger != null && logger.isEnabled() ? new StatementLog(logger) : null;
     }
 
     /**
-     * Sets the translated form of the query (its SQL and bindings). Called by the SQL action just before the
-     * statement is executed, so that a failure and the results can be correlated with the statement. Starts the
-     * execution timer of the statement log.
+     * Records the translation of the statement, logging it and starting the statement timer.
      */
-    public void setTranslated(TranslatedStatement statement) {
-        this.translated = statement;
+    public void setTranslatedStatement(TranslatedStatement translatedStatement) {
+        this.translatedStatement = translatedStatement;
         if (log != null) {
-            log.statement(statement);
+            log.statement(translatedStatement);
         }
     }
 
-    /**
-     * Appends a result produced by the statement: a result set read in full, a {@link ResultIterator} over an open
-     * result set, update counts, or the OUT parameters of a procedure call. With SQL logging on, a ResultIterator is
-     * stored and later returned wrapped in an iterator that logs the row count when it is closed.
-     */
     public void addResult(QueryResult result) {
         results.add(log != null ? log.result(result) : result);
     }
 
     /**
-     * Appends the keys the database generated for the inserted rows, as a {@link SelectResult} of one
-     * {@link DataRow} per row. Unlike {@link #addResult(QueryResult)}, this does not log a result set, but reports
-     * the keys on the statement's update line instead.
+     * Reports the keys generated by an insert as a select result, logging them.
      */
     public void addGeneratedKeys(List<DataRow> keys) {
         if (log != null) {
@@ -184,20 +123,12 @@ public final class StatementContext {
         results.add(new SelectResult<>(keys));
     }
 
-    /**
-     * Emits the pending update line of a batch to the SQL log. Called by the {@link DataNode} after the SQL action
-     * returns.
-     */
     public void logComplete() {
         if (log != null) {
             log.complete();
         }
     }
 
-    /**
-     * Emits an error line for the translated statement, if any, to the SQL log. Called by the {@link DataNode} when
-     * the SQL action throws.
-     */
     public void logError(Throwable error) {
         if (log != null) {
             log.error(error);

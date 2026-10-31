@@ -40,8 +40,7 @@ import org.apache.cayenne.access.flush.operation.UpdateDbRowOp;
 import org.apache.cayenne.graph.CompoundDiff;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.QueryMetadata;
+import org.apache.cayenne.query.resolved.ResolvedBatch;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -88,8 +87,8 @@ public class DefaultDataDomainFlushAction implements DataDomainFlushAction {
         List<DbRowOp> deduplicatedOps = mergeSameObjectIds(dbRowOps);
         List<DbRowOp> filteredOps = filterOps(deduplicatedOps);
         List<DbRowOp> sortedOps = sort(filteredOps);
-        List<? extends Query<?>> queries = createQueries(sortedOps);
-        executeQueries(queries);
+        List<ResolvedBatch> batches = createQueries(sortedOps);
+        executeQueries(batches);
         createReplacementIds(objectStore, afterCommitDiff, sortedOps);
         // note: we are using here not filtered operations, but the original ones,
         // as we need them all for the postprocessing
@@ -180,7 +179,7 @@ public class DefaultDataDomainFlushAction implements DataDomainFlushAction {
      * @param dbRowOps collection of {@link DbRowOp}
      * @return collection of {@link Query} to perform
      */
-    protected List<? extends Query<?>> createQueries(List<DbRowOp> dbRowOps) {
+    protected List<ResolvedBatch> createQueries(List<DbRowOp> dbRowOps) {
         QueryCreatorVisitor queryCreator = new QueryCreatorVisitor(dbRowOps.size());
         dbRowOps.forEach(row -> row.accept(queryCreator));
         return queryCreator.getQueryList();
@@ -190,14 +189,12 @@ public class DefaultDataDomainFlushAction implements DataDomainFlushAction {
      * Execute queries, grouping them by nodes
      * @param queries to execute
      */
-    protected void executeQueries(List<? extends Query<?>> queries) {
+    protected void executeQueries(List<ResolvedBatch> batches) {
         EntityResolver entityResolver = dataDomain.getEntityResolver();
         Map<DataNode, List<StatementContext>> statementsByNode = new LinkedHashMap<>();
-        for (Query<?> query : queries) {
-            QueryMetadata metadata = query.getMetaData(entityResolver);
-            DataNode node = dataDomain.lookupDataNode(metadata.getDataMap());
-            statementsByNode.computeIfAbsent(node, n -> new ArrayList<>())
-                    .add(new StatementContext(query, metadata, entityResolver));
+        for (ResolvedBatch batch : batches) {
+            statementsByNode.computeIfAbsent(dataDomain.lookupDataNode(batch), n -> new ArrayList<>())
+                    .add(new StatementContext(batch, entityResolver));
         }
 
         statementsByNode.forEach(DataNode::execute);

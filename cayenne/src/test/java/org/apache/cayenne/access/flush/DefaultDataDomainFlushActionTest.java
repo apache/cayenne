@@ -35,9 +35,9 @@ import org.apache.cayenne.access.flush.operation.UpdateDbRowOp;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.query.DeleteBatchQuery;
-import org.apache.cayenne.query.InsertBatchQuery;
-import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.resolved.DeleteBatch;
+import org.apache.cayenne.query.resolved.InsertBatch;
+import org.apache.cayenne.query.resolved.ResolvedBatch;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -148,27 +148,27 @@ public class DefaultDataDomainFlushActionTest {
         DefaultDataDomainFlushAction action = mock(DefaultDataDomainFlushAction.class);
         when(action.createQueries((List<DbRowOp>) any(List.class))).thenCallRealMethod();
 
-        List<? extends Query<?>> queries = action.createQueries(ops);
+        List<ResolvedBatch> queries = action.createQueries(ops);
         assertEquals(4, queries.size());
-        assertInstanceOf(InsertBatchQuery.class, queries.get(0));
-        InsertBatchQuery insert1 = (InsertBatchQuery)queries.get(0);
-        assertSame(test, insert1.getDbEntity());
-        assertEquals(2, insert1.getRows().size());
+        assertInstanceOf(InsertBatch.class, queries.get(0));
+        InsertBatch insert1 = (InsertBatch)queries.get(0);
+        assertSame(test, insert1.dbEntity());
+        assertEquals(2, insert1.rows().size());
 
-        assertInstanceOf(InsertBatchQuery.class, queries.get(1));
-        InsertBatchQuery insert2 = (InsertBatchQuery)queries.get(1);
-        assertSame(test2, insert2.getDbEntity());
-        assertEquals(2, insert2.getRows().size());
+        assertInstanceOf(InsertBatch.class, queries.get(1));
+        InsertBatch insert2 = (InsertBatch)queries.get(1);
+        assertSame(test2, insert2.dbEntity());
+        assertEquals(2, insert2.rows().size());
 
-        assertInstanceOf(DeleteBatchQuery.class, queries.get(2));
-        DeleteBatchQuery delete1 = (DeleteBatchQuery)queries.get(2);
-        assertSame(test2, delete1.getDbEntity());
-        assertEquals(1, delete1.getRows().size());
+        assertInstanceOf(DeleteBatch.class, queries.get(2));
+        DeleteBatch delete1 = (DeleteBatch)queries.get(2);
+        assertSame(test2, delete1.dbEntity());
+        assertEquals(1, delete1.rows().size());
 
-        assertInstanceOf(DeleteBatchQuery.class, queries.get(3));
-        DeleteBatchQuery delete2 = (DeleteBatchQuery)queries.get(3);
-        assertSame(test, delete2.getDbEntity());
-        assertEquals(1, delete2.getRows().size());
+        assertInstanceOf(DeleteBatch.class, queries.get(3));
+        DeleteBatch delete2 = (DeleteBatch)queries.get(3);
+        assertSame(test, delete2.dbEntity());
+        assertEquals(1, delete2.rows().size());
     }
 
     @Test
@@ -206,7 +206,7 @@ public class DefaultDataDomainFlushActionTest {
         DefaultDataDomainFlushAction action = mock(DefaultDataDomainFlushAction.class);
         when(action.createQueries((List<DbRowOp>) any(List.class))).thenCallRealMethod();
 
-        List<? extends Query<?>> queries = action.createQueries(ops);
+        List<ResolvedBatch> queries = action.createQueries(ops);
         assertEquals(6, queries.size());
     }
 

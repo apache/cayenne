@@ -33,8 +33,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.ColumnSelect;
 import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.QueryMetadata;
+import org.apache.cayenne.query.resolved.ResolvedQuery;
 import org.apache.cayenne.query.ResultSegment;
 import java.util.Objects;
 
@@ -70,16 +69,16 @@ class MixedResultIncrementalFaultList<E> extends IncrementalFaultList<E> {
      * @param query        Main query used to retrieve data. Must have "pageSize"
      *                     property set to a value greater than zero.
      */
-    MixedResultIncrementalFaultList(DataContext dataContext, Query<?> query, int maxFetchSize, List<?> data) {
-        super(dataContext, query, maxFetchSize, data);
+    MixedResultIncrementalFaultList(DataContext dataContext, ResolvedQuery resolved, int maxFetchSize, List<?> data) {
+        super(dataContext, resolved, maxFetchSize, data);
     }
 
     @Override
-    IncrementalListHelper createHelper(QueryMetadata metadata) {
+    IncrementalListHelper createHelper(ResolvedQuery resolved) {
         // first compile some meta data about results
         indexToEntity = new HashMap<>();
         scalarResult = true;
-        List<ResultSegment> segments = metadata.getResultSegments().segments();
+        List<ResultSegment> segments = resolved.resultSegments().segments();
         for (int i = 0; i < segments.size(); i++) {
             if (segments.get(i) instanceof EntityResultSegment resultSegment) {
                 ObjEntity entity = resultSegment.classDescriptor().getEntity();
@@ -166,8 +165,8 @@ class MixedResultIncrementalFaultList<E> extends IncrementalFaultList<E> {
         ObjectSelect<Persistent> query = ObjectSelect.query(Persistent.class)
                 .entityName(entity.getName())
                 .where(ExpressionFactory.or(expressions));
-        if (entity.equals(rootEntity) && metadata.getPrefetchTree() != null) {
-            query.prefetch(metadata.getPrefetchTree());
+        if (entity.equals(rootEntity) && resolved.prefetchTree() != null) {
+            query.prefetch(resolved.prefetchTree());
         }
         return query;
     }

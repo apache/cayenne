@@ -23,7 +23,7 @@ import org.apache.cayenne.project.ProjectNodeVisitor;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.ProcedureQuery;
 import org.apache.cayenne.query.QueryCacheStrategy;
-import org.apache.cayenne.query.QueryMetadata;
+import org.apache.cayenne.query.resolved.ResolvedQuery;
 import org.apache.cayenne.util.XMLEncoder;
 
 import java.util.Map;
@@ -34,8 +34,8 @@ import java.util.Map;
 public class ProcedureQueryDescriptor extends QueryDescriptor {
 
     protected String resultEntityName;
-    protected int fetchLimit = QueryMetadata.FETCH_LIMIT_DEFAULT;
-    protected int fetchOffset = QueryMetadata.FETCH_OFFSET_DEFAULT;
+    protected int fetchLimit = ResolvedQuery.FETCH_LIMIT_DEFAULT;
+    protected int fetchOffset = ResolvedQuery.FETCH_OFFSET_DEFAULT;
     protected CapsStrategy columnNamesCapitalization;
 
     /**
@@ -112,16 +112,18 @@ public class ProcedureQueryDescriptor extends QueryDescriptor {
                 ? ProcedureQuery.entityQuery(procedureName, resultEntityName)
                 : ProcedureQuery.query(procedureName);
 
-        procedureQuery.setFetchLimit(fetchLimit);
-        procedureQuery.setFetchOffset(fetchOffset);
-        procedureQuery.setPageSize(pageSize);
-        procedureQuery.setStatementFetchSize(statementFetchSize);
-        procedureQuery.setFetchingDataRows(fetchingDataRows);
-        procedureQuery.setCacheStrategy(cacheStrategy);
-        procedureQuery.setCacheGroup(cacheGroup);
-        procedureQuery.setColumnNamesCapitalization(columnNamesCapitalization);
+        // without a result entity the rows are DataRows regardless of the flag
+        if (fetchingDataRows && resultEntityName != null) {
+            procedureQuery = procedureQuery.fetchDataRows();
+        }
 
-        return procedureQuery;
+        return procedureQuery
+                .limit(fetchLimit)
+                .offset(fetchOffset)
+                .pageSize(pageSize)
+                .statementFetchSize(statementFetchSize)
+                .cacheStrategy(cacheStrategy, cacheGroup)
+                .capsStrategy(columnNamesCapitalization);
     }
 
     /**
@@ -130,7 +132,9 @@ public class ProcedureQueryDescriptor extends QueryDescriptor {
     @Override
     public ProcedureQuery<?> buildQuery(Map<String, ?> parameters) {
         ProcedureQuery<?> procedureQuery = buildQuery();
-        procedureQuery.setParameters(parameters);
+        if (parameters != null && !parameters.isEmpty()) {
+            procedureQuery.params(parameters);
+        }
         return procedureQuery;
     }
 

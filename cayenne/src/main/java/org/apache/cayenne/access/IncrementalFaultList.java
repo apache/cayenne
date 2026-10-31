@@ -25,8 +25,7 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.QueryMetadata;
+import org.apache.cayenne.query.resolved.ResolvedQuery;
 import java.util.Objects;
 
 import java.util.ArrayList;
@@ -67,7 +66,7 @@ public class IncrementalFaultList<E> implements List<E> {
 	 * the query fetches data rows.
 	 */
 	protected final int idWidth;
-	protected final QueryMetadata metadata;
+	protected final ResolvedQuery resolved;
 
 	/**
 	 * Defines the upper limit on the size of fetches. This is needed to avoid
@@ -95,21 +94,21 @@ public class IncrementalFaultList<E> implements List<E> {
 	 * @param maxFetchSize
 	 *            maximum number of fetches in one query
 	 */
-	IncrementalFaultList(DataContext dataContext, Query<?> query, int maxFetchSize, List<?> data) {
-		this.metadata = query.getMetaData(dataContext.getEntityResolver());
-		if (metadata.getPageSize() <= 0) {
-			throw new CayenneRuntimeException("Not a paginated query; page size: " + metadata.getPageSize());
+	IncrementalFaultList(DataContext dataContext, ResolvedQuery resolved, int maxFetchSize, List<?> data) {
+		this.resolved = resolved;
+		if (resolved.pageSize() <= 0) {
+			throw new CayenneRuntimeException("Not a paginated query; page size: " + resolved.pageSize());
 		}
 
 		this.dataContext = dataContext;
-		this.pageSize = metadata.getPageSize();
-		this.rootEntity = metadata.getObjEntity();
+		this.pageSize = resolved.pageSize();
+		this.rootEntity = resolved.objEntity();
 
 		if (rootEntity == null) {
 			throw new CayenneRuntimeException("Pagination is not supported for queries not rooted in an ObjEntity");
 		}
 
-		this.idWidth = metadata.getDbEntity().getPrimaryKeys().size();
+		this.idWidth = resolved.dbEntity().getPrimaryKeys().size();
 		this.maxFetchSize = maxFetchSize;
 		// make a copy of data, as we need to modify content of this list later
 		this.elements = Collections.synchronizedList(new ArrayList<>(data));
@@ -119,8 +118,8 @@ public class IncrementalFaultList<E> implements List<E> {
 	/**
 	 * @since 3.0
 	 */
-	IncrementalListHelper createHelper(QueryMetadata metadata) {
-		if (metadata.isFetchingDataRows()) {
+	IncrementalListHelper createHelper(ResolvedQuery resolved) {
+		if (resolved.fetchingDataRows()) {
 			return new DataRowListHelper();
 		} else {
 			return new PersistentListHelper();
@@ -129,7 +128,7 @@ public class IncrementalFaultList<E> implements List<E> {
 
 	IncrementalListHelper getHelper() {
 		if(helper == null) {
-			helper = createHelper(metadata);
+			helper = createHelper(resolved);
 		}
 		return helper;
 	}
@@ -162,7 +161,7 @@ public class IncrementalFaultList<E> implements List<E> {
 
 		// I am not sure if such a check makes sense???
 
-		if (metadata.isFetchingDataRows()) {
+		if (resolved.fetchingDataRows()) {
 			if (!(object instanceof Map)) {
 				throw new IllegalArgumentException("Only Map objects can be stored in this list.");
 			}
@@ -251,10 +250,10 @@ public class IncrementalFaultList<E> implements List<E> {
 				.entityName(rootEntity.getName())
 				.where(ExpressionFactory.or(expressions));
 
-		if(metadata.isFetchingDataRows()) {
+		if(resolved.fetchingDataRows()) {
 			query.fetchDataRows();
-		} else if (metadata.getPrefetchTree() != null) {
-			query.prefetch(metadata.getPrefetchTree());
+		} else if (resolved.prefetchTree() != null) {
+			query.prefetch(resolved.prefetchTree());
 		}
 
 		return query;

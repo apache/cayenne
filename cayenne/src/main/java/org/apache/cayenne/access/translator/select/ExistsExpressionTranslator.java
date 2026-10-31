@@ -71,7 +71,7 @@ class ExistsExpressionTranslator {
         }
 
         DbEntity entity = context.getRootDbEntity();
-        ObjEntity objEntity = context.getMetadata().getObjEntity();
+        ObjEntity objEntity = context.getSelect().objEntity();
         if (objEntity != null) {
             // unwrap all paths to DB
             translatedExpression = objEntity.translateToDbPath(translatedExpression);

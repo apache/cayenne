@@ -29,9 +29,9 @@ import org.apache.cayenne.access.translator.SQLTemplateTranslator;
 import org.apache.cayenne.access.translator.SelectTranslator;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.log.SQLLogger;
-import org.apache.cayenne.query.DeleteBatchQuery;
-import org.apache.cayenne.query.InsertBatchQuery;
-import org.apache.cayenne.query.UpdateBatchQuery;
+import org.apache.cayenne.query.resolved.DeleteBatch;
+import org.apache.cayenne.query.resolved.InsertBatch;
+import org.apache.cayenne.query.resolved.UpdateBatch;
 import org.junit.jupiter.api.Assertions;
 
 import javax.sql.DataSource;
@@ -66,9 +66,9 @@ public class TelemetricDataNodeFactory extends DefaultDataNodeFactory {
                 SelectTranslator selectTranslator,
                 ProcedureTranslator procedureTranslator,
                 SQLTemplateTranslator sqlTemplateTranslator,
-                BatchTranslator<InsertBatchQuery> insertBatchTranslator,
-                BatchTranslator<UpdateBatchQuery> updateBatchTranslator,
-                BatchTranslator<DeleteBatchQuery> deleteBatchTranslator) {
+                BatchTranslator<InsertBatch> insertBatchTranslator,
+                BatchTranslator<UpdateBatch> updateBatchTranslator,
+                BatchTranslator<DeleteBatch> deleteBatchTranslator) {
             super(name, dataSource, initializer, pkGenerator, sqlLogger, rowReaderFactory, selectTranslator,
                     procedureTranslator, sqlTemplateTranslator, insertBatchTranslator, updateBatchTranslator,
                     deleteBatchTranslator);
@@ -78,7 +78,7 @@ public class TelemetricDataNodeFactory extends DefaultDataNodeFactory {
         public void execute(List<StatementContext> statementContexts) {
             if (blockingQueries) {
                 Assertions.fail("Query is unexpected: "
-                        + statementContexts.stream().map(StatementContext::getQuery).toList());
+                        + statementContexts.stream().map(c -> c.getResolvedQuery().source()).toList());
             }
             super.execute(statementContexts);
             queryCounter.addAndGet(statementContexts.size());

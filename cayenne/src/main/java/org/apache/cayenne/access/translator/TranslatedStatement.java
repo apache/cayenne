@@ -19,16 +19,25 @@
 
 package org.apache.cayenne.access.translator;
 
+import org.apache.cayenne.query.resolved.ResolvedQuery;
+
 /**
- * A common supertype for the immutable results of translating a query to SQL.
+ * The translation of a {@link ResolvedQuery} into SQL: the statement text and its bindings, with the resolved query
+ * it was produced from. Translation is done by a DataNode, that then hands the statement to the
+ * {@link org.apache.cayenne.dba.DbAdapter} to execute.
  *
- * @since 5.0
+ * @since 6.0
  */
 public sealed interface TranslatedStatement
         permits TranslatedSelect, TranslatedBatch, TranslatedProcedure, TranslatedSQL {
 
     /**
-     * Returns the SQL string of the translated statement.
+     * Returns the resolved query this statement was translated from.
+     */
+    ResolvedQuery query();
+
+    /**
+     * Returns the SQL text of the statement.
      */
     String sql();
 }

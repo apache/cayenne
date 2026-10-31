@@ -84,7 +84,7 @@ public class DataContextDelegateIT {
 
         assertTrue(queriesPerformed.contains(query), "Delegate is not notified of a query being run.");
         assertEquals(1, queriesPerformed.size());
-        assertTrue(query.isRouteCalled(), "Delegate unexpectedly blocked the query.");
+        assertTrue(query.isResolved(), "Delegate unexpectedly blocked the query.");
     }
 
     @Test
@@ -106,7 +106,7 @@ public class DataContextDelegateIT {
 
         assertTrue(queriesPerformed.contains(query), "Delegate is not notified of a query being run.");
         assertEquals(1, queriesPerformed.size());
-        assertFalse(query.isRouteCalled(), "Delegate couldn't block the query.");
+        assertFalse(query.isResolved(), "Delegate couldn't block the query.");
     }
 
     @Test

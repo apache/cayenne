@@ -20,6 +20,7 @@
 package org.apache.cayenne.dba.oracle;
 
 import org.apache.cayenne.CoreModule;
+import org.apache.cayenne.access.StatementContext;
 import org.apache.cayenne.dba.NativeColumnType;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
@@ -38,14 +39,12 @@ import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.query.BatchQuery;
-import org.apache.cayenne.query.InsertBatchQuery;
-import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.SQLAction;
-import org.apache.cayenne.query.UpdateBatchQuery;
+import org.apache.cayenne.access.translator.TranslatedSQL;
+import org.apache.cayenne.access.translator.TranslatedProcedure;
 
 import java.lang.reflect.Field;
 import java.sql.CallableStatement;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Types;
@@ -107,33 +106,6 @@ public class OracleAdapter extends JdbcAdapter {
     // TODO: rename to something that looks like English ...
     public static boolean isSupportsOracleLOB() {
         return supportsOracleLOB;
-    }
-
-    /**
-     * Utility method that returns <code>true</code> if the query will update at
-     * least one BLOB or CLOB DbAttribute.
-     *
-     * @since 1.2
-     */
-    static boolean updatesLOBColumns(BatchQuery query) {
-        boolean isInsert = query instanceof InsertBatchQuery;
-        boolean isUpdate = query instanceof UpdateBatchQuery;
-
-        if (!isInsert && !isUpdate) {
-            return false;
-        }
-
-        List<DbAttribute> updatedAttributes = (isInsert) ? query.getDbAttributes() : ((UpdateBatchQuery) query)
-                .getUpdatedAttributes();
-
-        for (DbAttribute attr : updatedAttributes) {
-            int type = attr.getType();
-            if (type == Types.CLOB || type == Types.BLOB) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     /**
@@ -313,14 +285,17 @@ public class OracleAdapter extends JdbcAdapter {
         return attr;
     }
 
-    /**
-     * Uses OracleActionBuilder to create the right action.
-     *
-     * @since 1.2
-     */
+
     @Override
-    public SQLAction getAction(Query<?> query, DataNode node) {
-        return query.createSQLAction(new OracleActionBuilder(node));
+    public void executeSQL(TranslatedSQL sql, Connection connection, StatementContext context,
+            DataNode node) throws Exception {
+        new OracleSQLAction(sql, node).execute(connection, context);
+    }
+
+    @Override
+    public void executeProcedure(TranslatedProcedure procedure, Connection connection, StatementContext context,
+            DataNode node) throws Exception {
+        new OracleProcedureAction(procedure, node).execute(connection, context);
     }
 
     @Override

@@ -93,7 +93,8 @@ class DataDomainIdQueryAction {
                 .query(Persistent.class, id.getEntityName())
                 .where(ExpressionFactory.matchAllDbExp(id.getIdSnapshot()));
 
-        OperationContext execContext = new OperationContext(context, query, domain.getEntityResolver(), false);
+        QueryContext execContext = new QueryContext(context, query, query.resolve(domain.getEntityResolver()),
+                false);
         List<?> objects = QueryResults.firstList(domain.onQuery(execContext));
         return switch (objects.size()) {
             case 0 -> null;

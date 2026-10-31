@@ -19,38 +19,29 @@
 
 package org.apache.cayenne.query;
 
-import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.query.resolved.ResolvedQuery;
+import org.apache.cayenne.testdo.testmap.Artist;
 
+/**
+ * A custom query that delegates its resolution to a standard select, and records whether it was resolved, i.e. whether
+ * the context let it run.
+ */
 public class MockQuery implements Query<Object> {
 
-    protected boolean selecting;
-    protected boolean routeCalled;
+    protected boolean resolved;
 
-    public MockQuery(boolean selecting) {
-        this.selecting = selecting;
+    public boolean isResolved() {
+        return resolved;
     }
 
-    public MockQuery() {
-    }
-
-    public QueryMetadata getMetaData(EntityResolver resolver) {
-        return DefaultQueryMetadata.defaultMetadata;
-    }
-
-    public boolean isRouteCalled() {
-        return routeCalled;
-    }
-
-    public boolean isSelecting() {
-        return selecting;
-    }
-
-    public SQLAction createSQLAction(SQLActionVisitor visitor) {
-        return null;
-    }
-
-    public void route(QueryRouter router, EntityResolver resolver, Query<?> substitutedQuery) {
-        routeCalled = true;
+    @Override
+    public ResolvedQuery resolve(EntityResolver resolver) {
+        resolved = true;
+        if (resolver == null) {
+            throw new CayenneRuntimeException("Null resolver");
+        }
+        return ObjectSelect.query(Artist.class).resolve(resolver);
     }
 }

@@ -22,14 +22,16 @@ package org.apache.cayenne.access.translator;
 import org.apache.cayenne.access.jdbc.PSParameter;
 import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.query.ResultSegments;
+import org.apache.cayenne.query.resolved.ResolvedSelect;
 
 /**
- * An immutable result of translating a {@link org.apache.cayenne.query.Query} query to SQL,
- * produced by {@link SelectTranslator#translate}.
+ * A translated select: the SQL, the parameter bindings, the result columns, and the result set mapping resolved
+ * against the translated columns (null unless the select has a custom column set).
  *
- * @since 5.0
+ * @since 6.0
  */
 public record TranslatedSelect(
+        ResolvedSelect query,
         String sql,
         PSParameter<?>[] bindings,
         RSColumn[] resultColumns,

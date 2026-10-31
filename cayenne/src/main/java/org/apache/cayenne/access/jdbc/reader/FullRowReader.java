@@ -25,7 +25,7 @@ import org.apache.cayenne.DataRowLayout;
 import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.map.EntityInheritanceTree;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.query.QueryMetadata;
+import org.apache.cayenne.query.resolved.ResolvedQuery;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
 import java.sql.ResultSet;
@@ -41,12 +41,12 @@ class FullRowReader implements RowReader<DataRow> {
     private final long version;
     protected final String entityName;
 
-    static RowReader<DataRow> of(RSColumn[] columns, QueryMetadata queryMetadata, long version) {
+    static RowReader<DataRow> of(RSColumn[] columns, ResolvedQuery query, long version) {
 
-        ObjEntity objEntity = queryMetadata.getObjEntity();
+        ObjEntity objEntity = query.objEntity();
         String entityName = objEntity != null ? objEntity.getName() : null;
 
-        ClassDescriptor classDescriptor = queryMetadata.getClassDescriptor();
+        ClassDescriptor classDescriptor = query.classDescriptor();
         if (classDescriptor != null && classDescriptor.hasSubclasses()) {
             return new InheritanceAwareRowReader(columns, entityName, classDescriptor.getEntityInheritanceTree(),
                     version);

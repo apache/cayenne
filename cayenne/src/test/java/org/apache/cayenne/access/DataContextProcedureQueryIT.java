@@ -67,8 +67,8 @@ public class DataContextProcedureQueryIT  {
         // create an artist with painting in the database
         createArtist(1000.0);
 
-        ProcedureQuery q = new ProcedureQuery(UPDATE_STORED_PROCEDURE);
-        q.addParameter("paintingPrice", 3000);
+        ProcedureQuery q = ProcedureQuery.query(UPDATE_STORED_PROCEDURE);
+        q.param("paintingPrice", 3000);
 
         // since stored procedure commits its stuff, we must use an explicit
         // non-committing transaction
@@ -104,7 +104,7 @@ public class DataContextProcedureQueryIT  {
         // create an artist with painting in the database
         createArtist(1000.0);
 
-        ProcedureQuery q = new ProcedureQuery(UPDATE_STORED_PROCEDURE_NOPARAM);
+        ProcedureQuery q = ProcedureQuery.query(UPDATE_STORED_PROCEDURE_NOPARAM);
 
         // since stored procedure commits its stuff, we must use an explicit
         // non-committing transaction
@@ -140,9 +140,9 @@ public class DataContextProcedureQueryIT  {
         // create an artist with painting in the database
         createArtist(1000.0);
 
-        ProcedureQuery q = new ProcedureQuery(SELECT_STORED_PROCEDURE);
-        q.addParameter("aName", "An Artist");
-        q.addParameter("paintingPrice", 3000);
+        ProcedureQuery q = ProcedureQuery.query(SELECT_STORED_PROCEDURE);
+        q.param("aName", "An Artist");
+        q.param("paintingPrice", 3000);
         List<?> artists = runProcedureSelect(q);
 
         // check the results
@@ -166,9 +166,9 @@ public class DataContextProcedureQueryIT  {
         // create an artist with painting in the database
         createArtist(1000.0);
 
-        ProcedureQuery q = new ProcedureQuery(SELECT_STORED_PROCEDURE);
-        q.addParameter("aName", "An Artist");
-        q.addParameter("paintingPrice", 3000);
+        ProcedureQuery q = ProcedureQuery.query(SELECT_STORED_PROCEDURE);
+        q.param("aName", "An Artist");
+        q.param("paintingPrice", 3000);
 
         List<?> artists = runProcedureSelect(q);
 
@@ -193,9 +193,9 @@ public class DataContextProcedureQueryIT  {
         // create an artist with painting in the database
         createArtist(1000.0);
 
-        ProcedureQuery q = new ProcedureQuery(SELECT_STORED_PROCEDURE);
-        q.addParameter("aName", "An Artist");
-        q.addParameter("paintingPrice", 3000);
+        ProcedureQuery q = ProcedureQuery.query(SELECT_STORED_PROCEDURE);
+        q.param("aName", "An Artist");
+        q.param("paintingPrice", 3000);
 
         List<?> artists = runProcedureSelect(q);
 
@@ -222,10 +222,10 @@ public class DataContextProcedureQueryIT  {
         createArtist(2000.0);
         createArtist(3000.0);
 
-        ProcedureQuery q = new ProcedureQuery(SELECT_STORED_PROCEDURE);
-        q.addParameter("aName", "An Artist");
-        q.addParameter("paintingPrice", 3000);
-        q.setFetchLimit(2);
+        ProcedureQuery q = ProcedureQuery.query(SELECT_STORED_PROCEDURE);
+        q.param("aName", "An Artist");
+        q.param("paintingPrice", 3000);
+        q.limit(2);
         List<?> artists = runProcedureSelect(q);
 
         assertEquals(2, artists.size());
@@ -242,10 +242,10 @@ public class DataContextProcedureQueryIT  {
         createArtist(2000.0);
         createArtist(3000.0);
 
-        ProcedureQuery q = new ProcedureQuery(SELECT_STORED_PROCEDURE);
-        q.addParameter("aName", "An Artist");
-        q.addParameter("paintingPrice", 3000);
-        q.setFetchOffset(2);
+        ProcedureQuery q = ProcedureQuery.query(SELECT_STORED_PROCEDURE);
+        q.param("aName", "An Artist");
+        q.param("paintingPrice", 3000);
+        q.offset(2);
         List<?> artists = runProcedureSelect(q);
 
         assertEquals(1, artists.size());
@@ -259,16 +259,16 @@ public class DataContextProcedureQueryIT  {
 
         // create an artist with painting in the database
         createArtist(1000.0);
-        ProcedureQuery q = new ProcedureQuery(SELECT_STORED_PROCEDURE);
+        ProcedureQuery q = ProcedureQuery.query(SELECT_STORED_PROCEDURE);
 
-        q.setColumnNamesCapitalization(CapsStrategy.LOWER);
-        q.addParameter("aName", "An Artist");
+        q.capsStrategy(CapsStrategy.LOWER);
+        q.param("aName", "An Artist");
         List<DataRow> artists = runProcedureSelect(q);
 
-        ProcedureQuery q1 = new ProcedureQuery(SELECT_STORED_PROCEDURE);
+        ProcedureQuery q1 = ProcedureQuery.query(SELECT_STORED_PROCEDURE);
 
-        q1.setColumnNamesCapitalization(CapsStrategy.UPPER);
-        q1.addParameter("aName", "An Artist");
+        q1.capsStrategy(CapsStrategy.UPPER);
+        q1.param("aName", "An Artist");
         List<DataRow> artists1 = runProcedureSelect(q1);
 
         assertTrue(artists.get(0).containsKey("date_of_birth"));
@@ -285,8 +285,8 @@ public class DataContextProcedureQueryIT  {
             return;
         }
 
-        ProcedureQuery q = new ProcedureQuery(OUT_STORED_PROCEDURE);
-        q.addParameter("in_param", 20);
+        ProcedureQuery q = ProcedureQuery.query(OUT_STORED_PROCEDURE);
+        q.param("in_param", 20);
 
         List<QueryResult> response = runProcedureGeneric(q);
 
@@ -316,8 +316,8 @@ public class DataContextProcedureQueryIT  {
         // create an artist with painting in the database
         createArtist(1101.01);
 
-        ProcedureQuery q = new ProcedureQuery(SELECT_STORED_PROCEDURE, Artist.class);
-        q.addParameter("aName", "An Artist");
+        ProcedureQuery q = ProcedureQuery.query(SELECT_STORED_PROCEDURE, Artist.class);
+        q.param("aName", "An Artist");
 
         List<?> artists = runProcedureSelect(q);
 
@@ -342,10 +342,10 @@ public class DataContextProcedureQueryIT  {
         // create an artist with painting in the database
         createArtist(1000.0);
 
-        ProcedureQuery q = new ProcedureQuery(SELECT_STORED_PROCEDURE);
-        q.setFetchingDataRows(true);
-        q.addParameter("aName", "An Artist");
-        q.addParameter("paintingPrice", 3000);
+        ProcedureQuery q = ProcedureQuery.query(SELECT_STORED_PROCEDURE);
+        q.fetchDataRows();
+        q.param("aName", "An Artist");
+        q.param("paintingPrice", 3000);
 
         // TESTING THIS ***
         // A.ARTIST_ID, A.DATE_OF_BIRTH, A.ARTIST_NAME
@@ -355,7 +355,7 @@ public class DataContextProcedureQueryIT  {
         columns[0] = new ProcedureColumn("ARTIST_ID", "ARTIST_ID", Types.BIGINT, TypesMapping.getJavaBySqlType(Types.BIGINT));
         columns[1] = new ProcedureColumn("ARTIST_NAME", "ARTIST_NAME", Types.CHAR, TypesMapping.getJavaBySqlType(Types.CHAR));
         columns[2] = new ProcedureColumn("DATE_OF_BIRTH", "DATE_OF_BIRTH", Types.DATE, TypesMapping.getJavaBySqlType(Types.DATE));
-        q.addResultDescriptor(columns);
+        q.resultDescriptor(columns);
 
         List<?> rows = runProcedureSelect(q);
 

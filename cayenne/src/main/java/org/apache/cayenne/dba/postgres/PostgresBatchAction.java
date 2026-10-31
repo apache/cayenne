@@ -20,10 +20,9 @@
 package org.apache.cayenne.dba.postgres;
 
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.jdbc.BatchAction;
-import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.access.jdbc.DataNodeBatchAction;
 import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.query.BatchQuery;
+import org.apache.cayenne.access.translator.TranslatedBatch;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -31,20 +30,19 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 
-public class PostgresBatchAction extends BatchAction {
+public class PostgresBatchAction extends DataNodeBatchAction {
 
     /**
      * @since 4.0
      */
-    public PostgresBatchAction(BatchQuery query, DataNode dataNode, boolean runningAsBatch) {
-        super(query, dataNode, runningAsBatch);
+    public PostgresBatchAction(TranslatedBatch translated, DataNode dataNode, boolean runningAsBatch) {
+        super(translated, dataNode, runningAsBatch);
     }
 
     @Override
-    protected PreparedStatement prepareStatement(Connection connection, String queryStr,
-                                                 DbAdapter adapter, boolean generatedKeys) throws SQLException {
+    protected PreparedStatement prepareStatement(Connection connection, boolean generatedKeys) throws SQLException {
         if (generatedKeys) {
-            Collection<DbAttribute> generatedAttributes = query.getDbEntity().getGeneratedAttributes();
+            Collection<DbAttribute> generatedAttributes = query.dbEntity().getGeneratedAttributes();
             String[] generatedPKColumns = new String[generatedAttributes.size()];
 
             int i = 0;
@@ -54,10 +52,10 @@ public class PostgresBatchAction extends BatchAction {
                 }
             }
 
-            return connection.prepareStatement(queryStr, Arrays.copyOf(generatedPKColumns, i));
+            return connection.prepareStatement(translated.sql(), Arrays.copyOf(generatedPKColumns, i));
         }
 
-        return connection.prepareStatement(queryStr);
+        return connection.prepareStatement(translated.sql());
     }
 
 }

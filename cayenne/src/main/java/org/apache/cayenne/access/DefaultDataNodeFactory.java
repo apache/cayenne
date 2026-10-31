@@ -37,9 +37,9 @@ import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.log.SQLLogger;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.query.DeleteBatchQuery;
-import org.apache.cayenne.query.InsertBatchQuery;
-import org.apache.cayenne.query.UpdateBatchQuery;
+import org.apache.cayenne.query.resolved.DeleteBatch;
+import org.apache.cayenne.query.resolved.InsertBatch;
+import org.apache.cayenne.query.resolved.UpdateBatch;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -59,13 +59,13 @@ public class DefaultDataNodeFactory implements DataNodeFactory {
     protected RowReaderFactory rowReaderFactory;
 
     @Inject(BatchTranslator.INSERT)
-    protected BatchTranslator<InsertBatchQuery> insertBatchTranslator;
+    protected BatchTranslator<InsertBatch> insertBatchTranslator;
 
     @Inject(BatchTranslator.UPDATE)
-    protected BatchTranslator<UpdateBatchQuery> updateBatchTranslator;
+    protected BatchTranslator<UpdateBatch> updateBatchTranslator;
 
     @Inject(BatchTranslator.DELETE)
-    protected BatchTranslator<DeleteBatchQuery> deleteBatchTranslator;
+    protected BatchTranslator<DeleteBatch> deleteBatchTranslator;
 
     @Inject
     protected SelectTranslator selectTranslator;

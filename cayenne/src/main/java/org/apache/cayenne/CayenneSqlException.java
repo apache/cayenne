@@ -22,6 +22,7 @@ package org.apache.cayenne;
 import org.apache.cayenne.access.StatementContext;
 import org.apache.cayenne.access.translator.TranslatedStatement;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.resolved.ResolvedQuery;
 
 /**
  * An exception thrown when a failure occurs while executing a query statement or reading its results. It carries the
@@ -44,7 +45,8 @@ public class CayenneSqlException extends CayenneRuntimeException {
     public CayenneSqlException(String message, StatementContext statementContext, Throwable cause) {
         // pass the pre-built message as a "%s" argument so that any "%" characters in the SQL (e.g. LIKE patterns)
         // are not interpreted as format specifiers by the superclass
-        super("%s", cause, buildMessage(message, statementContext != null ? statementContext.getTranslated() : null));
+        super("%s", cause, buildMessage(message,
+                statementContext != null ? statementContext.getTranslatedStatement() : null));
         this.statementContext = statementContext;
     }
 
@@ -62,14 +64,26 @@ public class CayenneSqlException extends CayenneRuntimeException {
      * Returns the query that was being executed when the failure occurred, or null if it is not known.
      */
     public Query<?> getQuery() {
-        return statementContext != null ? statementContext.getQuery() : null;
+        ResolvedQuery resolved = getResolvedQuery();
+        return resolved != null ? resolved.source() : null;
+    }
+
+    /**
+     * Returns the resolved query of the failed statement, or null if the exception was not raised by a statement.
+     *
+     * @since 6.0
+     */
+    public ResolvedQuery getResolvedQuery() {
+        return statementContext != null ? statementContext.getResolvedQuery() : null;
     }
 
     /**
      * Returns the statement that was being executed when the failure occurred, or null if it is not known.
+     *
+     * @since 6.0
      */
-    public TranslatedStatement getStatement() {
-        return statementContext != null ? statementContext.getTranslated() : null;
+    public TranslatedStatement getTranslatedStatement() {
+        return statementContext != null ? statementContext.getTranslatedStatement() : null;
     }
 
     private static String buildMessage(String message, TranslatedStatement statement) {

@@ -28,7 +28,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.EmbeddableResultSegment;
 import org.apache.cayenne.query.EntityResultSegment;
-import org.apache.cayenne.query.QueryMetadata;
+import org.apache.cayenne.query.resolved.ResolvedQuery;
 import org.apache.cayenne.query.ResultSegment;
 import org.apache.cayenne.query.ResultSegments;
 import org.apache.cayenne.query.ScalarResultSegment;
@@ -46,34 +46,34 @@ import java.util.Set;
 public class DefaultRowReaderFactory implements RowReaderFactory {
 
     @Override
-    public RowReader<?> rowReader(RSColumn[] columns, ResultSegments segments, QueryMetadata metadata,
+    public RowReader<?> rowReader(RSColumn[] columns, ResultSegments segments, ResolvedQuery query,
                                   DbAdapter adapter) {
 
         long version = SnapshotVersion.next();
 
         if (segments == null || segments.segments().isEmpty()) {
-            return noSegmentReader(columns, metadata, version);
+            return noSegmentReader(columns, query, version);
         }
 
         if (!segments.array()) {
-            return segmentReader(segments.segments().getFirst(), columns, metadata, version);
+            return segmentReader(segments.segments().getFirst(), columns, query, version);
         }
 
         int w = segments.segments().size();
         RowReader<?>[] readers = new RowReader[w];
         for (int i = 0; i < w; i++) {
-            readers[i] = segmentReader(segments.segments().get(i), columns, metadata, version);
+            readers[i] = segmentReader(segments.segments().get(i), columns, query, version);
         }
 
         return new CompoundRowReader(readers);
     }
 
-    private RowReader<?> segmentReader(ResultSegment segment, RSColumn[] columns, QueryMetadata metadata,
+    private RowReader<?> segmentReader(ResultSegment segment, RSColumn[] columns, ResolvedQuery query,
                                        long version) {
         return switch (segment) {
-            case EntityResultSegment ers -> entitySegmentReader(columns, metadata, ers, version);
+            case EntityResultSegment ers -> entitySegmentReader(columns, query, ers, version);
             case EmbeddableResultSegment ers -> embeddableSegmentReader(columns, ers, version);
-            case ScalarResultSegment srs -> scalarSegmentReader(columns, metadata, srs);
+            case ScalarResultSegment srs -> scalarSegmentReader(columns, query, srs);
         };
     }
 
@@ -100,7 +100,7 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
         return OffsetRowReader.of(relabeled, startIndex, version);
     }
 
-    protected RowReader<?> scalarSegmentReader(RSColumn[] columns, QueryMetadata metadata, ScalarResultSegment segment) {
+    protected RowReader<?> scalarSegmentReader(RSColumn[] columns, ResolvedQuery query, ScalarResultSegment segment) {
         int scalarIndex = segment.columnOffset();
         return new ScalarRowReader<>(
                 columns[scalarIndex].reader(),
@@ -113,12 +113,12 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
      * @param version the snapshot version of the rows the reader produces
      * @since 5.0
      */
-    protected RowReader<?> entitySegmentReader(RSColumn[] columns, QueryMetadata metadata,
+    protected RowReader<?> entitySegmentReader(RSColumn[] columns, ResolvedQuery query,
                                                EntityResultSegment segment, long version) {
 
         // For a paginated query only the root PK is read into the IncrementalFaultList - locate the PK columns within
         // this segment by their DbAttribute (see idReader).
-        if (metadata.getPageSize() > 0) {
+        if (query.pageSize() > 0) {
             ObjEntity objEntity = segment.classDescriptor().getEntity();
             return idReader(columns,
                     segment.columnOffset(),
@@ -159,13 +159,13 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
      * @param version the snapshot version of the rows the reader produces
      * @since 5.0
      */
-    protected RowReader<?> noSegmentReader(RSColumn[] columns, QueryMetadata metadata, long version) {
-        if (metadata.getPageSize() > 0) {
-            ObjEntity objEntity = metadata.getObjEntity();
-            return idReader(columns, 0, columns.length, metadata.getDbEntity(),
+    protected RowReader<?> noSegmentReader(RSColumn[] columns, ResolvedQuery query, long version) {
+        if (query.pageSize() > 0) {
+            ObjEntity objEntity = query.objEntity();
+            return idReader(columns, 0, columns.length, query.dbEntity(),
                     objEntity != null ? objEntity.getName() : null, version);
         }
-        return FullRowReader.of(columns, metadata, version);
+        return FullRowReader.of(columns, query, version);
     }
 
     private RowReader<?> idReader(RSColumn[] columns, int from, int to, DbEntity dbEntity, String entityName,

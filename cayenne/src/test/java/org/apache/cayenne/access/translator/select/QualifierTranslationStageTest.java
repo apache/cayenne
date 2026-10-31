@@ -28,7 +28,7 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.query.FluentSelect;
+import org.apache.cayenne.query.resolved.ResolvedSelect;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -52,11 +52,11 @@ public class QualifierTranslationStageTest {
         dbAttribute.setName("path");
         dbEntity.addAttribute(dbAttribute);
 
-        FluentSelect<?, ?> query = new MockFluentSelectBuilder()
+        ResolvedSelect query = new MockResolvedSelectBuilder()
                 .withWhere(where)
-                .withMetaData(new MockQueryMetadataBuilder()
+                
                         .withDbEntity(dbEntity)
-                        .build())
+                        
                 .build();
         return new MockSelectTranslatorContext(query);
     }

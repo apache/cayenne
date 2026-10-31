@@ -20,22 +20,18 @@ package org.apache.cayenne.dba.mysql;
 
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.StatementContext;
-import org.apache.cayenne.access.jdbc.SelectAction;
-import org.apache.cayenne.query.Query;
+import org.apache.cayenne.access.jdbc.DataNodeSelectAction;
+import org.apache.cayenne.access.translator.TranslatedSelect;
 
 /**
  * @since 3.0
  */
-class MySQLSelectAction extends SelectAction {
+class MySQLSelectAction extends DataNodeSelectAction {
 
-    <T> MySQLSelectAction(Query<T> query, DataNode dataNode) {
-        super(query, dataNode);
+    MySQLSelectAction(TranslatedSelect translated, DataNode dataNode) {
+        super(translated, dataNode);
     }
 
-    @Override
-    protected int getInMemoryOffset(int queryOffset) {
-        return 0;
-    }
 
     /**
      * Streams an iterated result when the iterator has the connection to itself.

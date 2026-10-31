@@ -34,12 +34,12 @@ class OrderingStage implements TranslationStage {
 
     @Override
     public void perform(SelectTranslatorContext context) {
-        if(context.getQuery().getOrderings() == null) {
+        if(context.getSelect().orderings().isEmpty()) {
             return;
         }
 
         QualifierTranslator qualifierTranslator = context.getQualifierTranslator();
-        for(Ordering ordering : context.getQuery().getOrderings()) {
+        for(Ordering ordering : context.getSelect().orderings()) {
             processOrdering(qualifierTranslator, context, ordering);
         }
     }

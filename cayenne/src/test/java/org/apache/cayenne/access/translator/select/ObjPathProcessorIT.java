@@ -24,6 +24,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
+import org.apache.cayenne.Persistent;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,7 +42,7 @@ public class ObjPathProcessorIT {
     @BeforeEach
     public void prepareTranslationContext() {
         SelectTranslatorContext translatorContext = new SelectTranslatorContext(
-                ObjectSelect.query(Object.class),
+                ObjectSelect.query(Persistent.class, "IvSub3").resolve(env.context().getEntityResolver()),
                 Mockito.mock(DbAdapter.class),
                 env.context().getEntityResolver(),
                 null

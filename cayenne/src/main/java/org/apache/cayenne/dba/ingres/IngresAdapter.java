@@ -21,7 +21,6 @@ package org.apache.cayenne.dba.ingres;
 
 import org.apache.cayenne.CoreModule;
 import org.apache.cayenne.dba.NativeColumnType;
-import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeFactory;
@@ -34,8 +33,6 @@ import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.SQLAction;
 
 import java.sql.PreparedStatement;
 import java.sql.Types;
@@ -109,10 +106,6 @@ public class IngresAdapter extends JdbcAdapter {
         return new IngressSQLTreeProcessor();
     }
 
-    @Override
-    public SQLAction getAction(Query<?> query, DataNode node) {
-        return query.createSQLAction(new IngresActionBuilder(node));
-    }
 
     @Override
     protected void configureExtendedTypes(ExtendedTypeMap map) {

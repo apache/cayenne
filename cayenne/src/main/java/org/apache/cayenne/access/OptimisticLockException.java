@@ -44,22 +44,23 @@ public class OptimisticLockException extends CayenneRuntimeException {
     private final ObjectId failedObjectId;
     private final DbEntity rootEntity;
     private final Map<String, ?> qualifierSnapshot;
-    private final TranslatedStatement statement;
+    private final TranslatedStatement translatedStatement;
 
-    public OptimisticLockException(ObjectId id, DbEntity rootEntity, Map<String, ?> qualifierSnapshot, TranslatedStatement statement) {
+    public OptimisticLockException(ObjectId id, DbEntity rootEntity, Map<String, ?> qualifierSnapshot,
+                                   TranslatedStatement translatedStatement) {
         super("Optimistic Lock Failure");
 
         this.failedObjectId = id;
         this.rootEntity = rootEntity;
         this.qualifierSnapshot = qualifierSnapshot != null ? qualifierSnapshot : Collections.emptyMap();
-        this.statement = Objects.requireNonNull(statement);
+        this.translatedStatement = Objects.requireNonNull(translatedStatement);
     }
 
     /**
-     * @since 5.0
+     * @since 6.0, replaces {@code getStatement()}
      */
-    public TranslatedStatement getStatement() {
-        return statement;
+    public TranslatedStatement getTranslatedStatement() {
+        return translatedStatement;
     }
 
     public Map getQualifierSnapshot() {
@@ -95,7 +96,7 @@ public class OptimisticLockException extends CayenneRuntimeException {
     @Override
     public String getMessage() {
         StringBuilder buffer = new StringBuilder(super.getMessage());
-        buffer.append(", SQL: [").append(statement.sql()).append("]");
+        buffer.append(", SQL: [").append(translatedStatement.sql()).append("]");
 
         if (!qualifierSnapshot.isEmpty()) {
             buffer.append(", WHERE clause bindings: [");

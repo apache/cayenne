@@ -21,7 +21,7 @@ package org.apache.cayenne.access.translator.sqltemplate.directive;
 import org.apache.cayenne.access.StatementContext;
 import org.apache.cayenne.access.StatementContexts;
 import org.apache.cayenne.query.CapsStrategy;
-import org.apache.cayenne.query.SQLTemplate;
+import org.apache.cayenne.query.SQLQuery;
 import org.apache.cayenne.CayenneRuntime;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.CayenneProjects;
@@ -92,8 +92,8 @@ public class ResultDirectiveIT {
 	}
 
 	private Map<String, Object> selectForQuery(String sql) {
-		SQLTemplate template = new SQLTemplate(Artist.class, sql);
-		template.setColumnNamesCapitalization(CapsStrategy.UPPER);
+		SQLQuery<Artist> template = SQLQuery.query(Artist.class, sql);
+		template.columnNameCaps(CapsStrategy.UPPER);
 		StatementContext statementContext = StatementContexts.run(runtime.getDataDomain().getDefaultNode(),
 				runtime.getDataDomain().getEntityResolver(), template);
 

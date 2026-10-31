@@ -20,6 +20,7 @@
 package org.apache.cayenne.dba.sqlserver;
 
 import org.apache.cayenne.CoreModule;
+import org.apache.cayenne.access.StatementContext;
 import org.apache.cayenne.dba.NativeColumnType;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
@@ -41,9 +42,12 @@ import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.SQLAction;
+import org.apache.cayenne.access.translator.TranslatedSelect;
+import org.apache.cayenne.access.translator.TranslatedProcedure;
+import org.apache.cayenne.access.translator.TranslatedBatch;
+import org.apache.cayenne.query.resolved.ResolvedSelect;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.Types;
 import java.util.Collection;
@@ -209,14 +213,31 @@ public class SQLServerAdapter extends JdbcAdapter {
         map.registerType(new JsonType(charType, true));
     }
 
-    /**
-     * Uses SQLServerActionBuilder to create the right action.
-     *
-     * @since 1.2
-     */
     @Override
-    public SQLAction getAction(Query<?> query, DataNode node) {
-        return query.createSQLAction(new SQLServerActionBuilder(node, getVersion()));
+    public void executeSelect(TranslatedSelect select, Connection connection, StatementContext context,
+            DataNode node) throws Exception {
+        new SQLServerSelectAction(select, node, needsInMemoryOffset(select.query())).execute(connection, context);
+    }
+
+    @Override
+    public void executeProcedure(TranslatedProcedure procedure, Connection connection, StatementContext context,
+            DataNode node) throws Exception {
+        new SQLServerProcedureAction(procedure, node).execute(connection, context);
+    }
+
+    @Override
+    public void executeBatch(TranslatedBatch batch, Connection connection, StatementContext context,
+            DataNode node) throws Exception {
+        new SQLServerBatchAction(batch, node, runsAsBatch(batch)).execute(connection, context);
+    }
+
+    /**
+     * SQL Server before version 12 has no OFFSET clause, and a later version needs an ORDER BY for it, so the offset
+     * is applied in memory in those cases.
+     */
+    private boolean needsInMemoryOffset(ResolvedSelect select) {
+        Integer version = getVersion();
+        return select.orderings().isEmpty() || version == null || version < 12;
     }
 
     @Override

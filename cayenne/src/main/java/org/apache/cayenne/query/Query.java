@@ -25,9 +25,8 @@ import org.apache.cayenne.QueryResult;
 import org.apache.cayenne.ResultBatchIterator;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.ResultIteratorCallback;
-import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.query.resolved.ResolvedQuery;
 
 import java.util.List;
 
@@ -43,47 +42,14 @@ import java.util.List;
 public interface Query<T> {
 
     /**
-     * Returns query runtime parameters. The method is called at various stages of the
-     * execution by Cayenne access stack to retrieve query parameters. EntityResolver
-     * instance is passed to this method, meaning that the query doesn't need to store
-     * direct references to Cayenne mapping objects and can resolve them at runtime.
-     * 
-     * @since 1.2
+     * Resolves this query against the mapping into an immutable description of the statements to run. This is the
+     * single step the runtime needs from a query: it routes, translates and executes the resolved query on its own.
+     * A query is resolved every time it runs, so a query object may be modified and run again. A custom query
+     * delegates to a standard one, e.g. {@code ObjectSelect.query(..).resolve(resolver)}.
+     *
+     * @since 6.0
      */
-    QueryMetadata getMetaData(EntityResolver resolver);
-
-    /**
-     * A callback method invoked by Cayenne during the routing phase of the query
-     * execution. Mapping of DataNodes is provided by QueryRouter. Query should use a
-     * {@link QueryRouter#route(DataNode, Query, Query)} callback method to route
-     * itself. Query can create one or more substitute queries or even provide its own
-     * DataNode to execute itself.
-     * <p>
-     * The default implementation relies on the EntityResolver to find the DataMap based on
-     * the query metadata. This mechanism is sufficient for most queries that "know" their root.
-     * 
-     * @since 1.2
-     */
-    default void route(QueryRouter router, EntityResolver resolver, Query<?> substitutedQuery) {
-        DataMap map = getMetaData(resolver).getDataMap();
-
-        if (map == null) {
-            throw new CayenneRuntimeException("No DataMap found, can't route query %s", this);
-        }
-
-        router.route(router.nodeForDataMap(map), this, substitutedQuery);
-    }
-
-    /**
-     * A callback method invoked by Cayenne during the final execution phase of the query
-     * run. A concrete query implementation is given a chance to decide how it should be
-     * handled. Implementors can pick an appropriate method of the SQLActionVisitor to
-     * handle itself, create a custom SQLAction of its own, or substitute itself with
-     * another query that should be used for SQLAction construction.
-     * 
-     * @since 1.2
-     */
-    SQLAction createSQLAction(SQLActionVisitor visitor);
+    ResolvedQuery resolve(EntityResolver resolver);
 
     /**
      * Executes the query, returning all of its result sets, update counts, iterators and OUT parameters in the order

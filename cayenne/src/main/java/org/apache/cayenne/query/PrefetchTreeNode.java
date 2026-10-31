@@ -205,6 +205,27 @@ public class PrefetchTreeNode implements XMLSerializable {
 	}
 
 	/**
+	 * Returns a deep copy of the subtree starting at this node. The copy is a root node (it has no parent), keeping
+	 * this node's name, semantics and phantom flag, so a copy of a non-root node has a non-empty name.
+	 *
+	 * @since 6.0
+	 */
+	public PrefetchTreeNode deepClone() {
+		return deepClone(null);
+	}
+
+	private PrefetchTreeNode deepClone(PrefetchTreeNode targetParent) {
+		PrefetchTreeNode target = new PrefetchTreeNode(targetParent, getName());
+		target.setEntityName(getEntityName());
+		target.setPhantom(isPhantom());
+		target.setSemantics(getSemantics());
+		for (PrefetchTreeNode child : getChildren()) {
+			target.addChild(child.deepClone(target));
+		}
+		return target;
+	}
+
+	/**
 	 * Returns a clone of subtree that includes all joint children starting from
 	 * this node itself and till the first occurrence of non-joint node
 	 *

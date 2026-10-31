@@ -23,7 +23,6 @@ import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.cache.QueryCacheEntryFactory;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.QueryCacheStrategy;
-import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
@@ -37,14 +36,14 @@ public class DataDomainQueryActionIT {
     static QueryCache testQQ = new MockQueryCache() {
 
         @Override
-        public List<?> get(QueryMetadata metadata, QueryCacheEntryFactory factory) {
+        public List<?> get(String cacheKey, String cacheGroup, QueryCacheEntryFactory factory) {
             factory.createObject();
             return null;
         }
 
         @SuppressWarnings("all")
         @Override
-        public void put(QueryMetadata metadata, List results) {
+        public void put(String cacheKey, String cacheGroup, List results) {
             // no-op
         }
     };
@@ -69,7 +68,8 @@ public class DataDomainQueryActionIT {
                 .pageSize(5);
 
 
-        OperationContext context = new OperationContext(env.context(), query, domain.getEntityResolver(), false);
+        QueryContext context = new QueryContext(env.context(), query, query.resolve(domain.getEntityResolver()),
+                false);
         new DataDomainQueryAction(domain, context).execute();
     }
 

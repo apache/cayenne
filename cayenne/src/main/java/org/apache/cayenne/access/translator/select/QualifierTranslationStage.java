@@ -33,12 +33,12 @@ class QualifierTranslationStage implements TranslationStage {
     public void perform(SelectTranslatorContext context) {
         QualifierTranslator translator = context.getQualifierTranslator();
 
-        Expression expression = context.getQuery().getWhere();
+        Expression expression = context.getSelect().where();
 
         // Attaching Obj entity's qualifier
-        ObjEntity entity = context.getMetadata().getObjEntity();
+        ObjEntity entity = context.getSelect().objEntity();
         if (entity != null) {
-            ClassDescriptor descriptor = context.getMetadata().getClassDescriptor();
+            ClassDescriptor descriptor = context.getSelect().classDescriptor();
             Expression entityQualifier = descriptor.getEntityInheritanceTree().qualifierForEntityAndSubclasses();
             if (entityQualifier != null) {
                 expression = expression == null ? entityQualifier : expression.andExp(entityQualifier);

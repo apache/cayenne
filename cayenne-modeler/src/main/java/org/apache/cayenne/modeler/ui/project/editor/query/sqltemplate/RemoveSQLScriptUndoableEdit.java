@@ -22,7 +22,7 @@ import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 
-import org.apache.cayenne.map.SQLTemplateDescriptor;
+import org.apache.cayenne.map.SQLQueryDescriptor;
 
 /**
  * A removal of a DbAdapter-specific script of a SQLTemplate.
@@ -30,11 +30,11 @@ import org.apache.cayenne.map.SQLTemplateDescriptor;
 class RemoveSQLScriptUndoableEdit extends AbstractUndoableEdit {
 
     private final SQLScriptTabs tabs;
-    private final SQLTemplateDescriptor query;
+    private final SQLQueryDescriptor query;
     private final String key;
     private final String text;
 
-    RemoveSQLScriptUndoableEdit(SQLScriptTabs tabs, SQLTemplateDescriptor query, String key, String text) {
+    RemoveSQLScriptUndoableEdit(SQLScriptTabs tabs, SQLQueryDescriptor query, String key, String text) {
         this.tabs = tabs;
         this.query = query;
         this.key = key;

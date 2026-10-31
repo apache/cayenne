@@ -22,134 +22,135 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.mysql.MySQLAdapter;
 import org.apache.cayenne.dba.postgres.PostgresAdapter;
 import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.query.resolved.ResolvedQuery;
+import org.apache.cayenne.query.resolved.ResolvedSQL;
 import org.junit.jupiter.api.Test;
 
 public class SQLQueryTest {
 
+	private static ResolvedSQL resolved(SQLQuery<?> query) {
+		return query.resolve(mock(EntityResolver.class));
+	}
 
 	@Test
 	public void cacheStrategy() {
-		SQLQuery<DataRow> q = SQLQuery.dataRowQuery("bla");
+		SQLQuery<DataRow> q = SQLQuery.query("bla");
 
-		assertNull(q.getCacheStrategy());
-		assertNull(q.getCacheGroup());
+		assertSame(QueryCacheStrategy.NO_CACHE, resolved(q).cacheStrategy());
+		assertNull(resolved(q).cacheGroup());
 
 		q.cacheStrategy(QueryCacheStrategy.LOCAL_CACHE, "a");
-		assertSame(QueryCacheStrategy.LOCAL_CACHE, q.getCacheStrategy());
-		assertEquals("a", q.getCacheGroup());
+		assertSame(QueryCacheStrategy.LOCAL_CACHE, resolved(q).cacheStrategy());
+		assertEquals("a", resolved(q).cacheGroup());
 
 		q.cacheStrategy(QueryCacheStrategy.SHARED_CACHE);
-		assertSame(QueryCacheStrategy.SHARED_CACHE, q.getCacheStrategy());
-		assertNull(q.getCacheGroup());
+		assertSame(QueryCacheStrategy.SHARED_CACHE, resolved(q).cacheStrategy());
+		assertNull(resolved(q).cacheGroup());
 	}
 
 	@Test
 	public void localCache() {
-		SQLQuery<DataRow> q = SQLQuery.dataRowQuery("bla");
+		SQLQuery<DataRow> q = SQLQuery.query("bla");
 
-		assertNull(q.getCacheStrategy());
-		assertNull(q.getCacheGroup());
+		assertSame(QueryCacheStrategy.NO_CACHE, resolved(q).cacheStrategy());
+		assertNull(resolved(q).cacheGroup());
 
 		q.localCache("a");
-		assertSame(QueryCacheStrategy.LOCAL_CACHE, q.getCacheStrategy());
-		assertEquals("a", q.getCacheGroup());
+		assertSame(QueryCacheStrategy.LOCAL_CACHE, resolved(q).cacheStrategy());
+		assertEquals("a", resolved(q).cacheGroup());
 
 		q.localCache();
-		assertSame(QueryCacheStrategy.LOCAL_CACHE, q.getCacheStrategy());
-		assertNull(q.getCacheGroup());
+		assertSame(QueryCacheStrategy.LOCAL_CACHE, resolved(q).cacheStrategy());
+		assertNull(resolved(q).cacheGroup());
 	}
 
 	@Test
 	public void sharedCache() {
-		SQLQuery<DataRow> q = SQLQuery.dataRowQuery("bla");
+		SQLQuery<DataRow> q = SQLQuery.query("bla");
 
-		assertNull(q.getCacheStrategy());
-		assertNull(q.getCacheGroup());
+		assertSame(QueryCacheStrategy.NO_CACHE, resolved(q).cacheStrategy());
+		assertNull(resolved(q).cacheGroup());
 
 		q.sharedCache("a");
-		assertSame(QueryCacheStrategy.SHARED_CACHE, q.getCacheStrategy());
-		assertEquals("a", q.getCacheGroup());
+		assertSame(QueryCacheStrategy.SHARED_CACHE, resolved(q).cacheStrategy());
+		assertEquals("a", resolved(q).cacheGroup());
 
 		q.sharedCache();
-		assertSame(QueryCacheStrategy.SHARED_CACHE, q.getCacheStrategy());
-		assertNull(q.getCacheGroup());
+		assertSame(QueryCacheStrategy.SHARED_CACHE, resolved(q).cacheStrategy());
+		assertNull(resolved(q).cacheGroup());
 	}
 
 	@Test
-	public void createReplacementQuery() {
-
-		SQLQuery<DataRow> q = SQLQuery.dataRowQuery("bla");
-		Query<?> replacement = q.createReplacementQuery(mock(EntityResolver.class));
-		assertInstanceOf(SQLTemplate.class, replacement);
+	public void resolve() {
+		SQLQuery<DataRow> q = SQLQuery.query("bla");
+		ResolvedSQL resolved = q.resolve(mock(EntityResolver.class));
+		assertSame(q, resolved.source());
+		assertEquals("bla", resolved.defaultTemplate());
+		assertTrue(resolved.fetchingDataRows());
+		assertNull(resolved.dataMap());
 	}
 
 	@Test
-	public void createReplacementQuery_ParamsArray_Single() {
-
-		SQLQuery<DataRow> q = SQLQuery.dataRowQuery("bla").paramsArray("a");
-		SQLTemplate replacement = (SQLTemplate) q.createReplacementQuery(mock(EntityResolver.class));
-		assertArrayEquals(new Object[] { "a" }, replacement.getPositionalParams().toArray());
+	public void resolve_ParamsArray_Single() {
+		SQLQuery<DataRow> q = SQLQuery.query("bla").paramsArray("a");
+		assertArrayEquals(new Object[] { "a" }, q.resolve(mock(EntityResolver.class)).positionalParams().toArray());
 	}
 
 	@Test
-	public void createReplacementQuery_ParamsArray_Multiple() {
-
-		SQLQuery<DataRow> q = SQLQuery.dataRowQuery("bla").paramsArray("a", "b");
-		SQLTemplate replacement = (SQLTemplate) q.createReplacementQuery(mock(EntityResolver.class));
-		assertArrayEquals(new Object[] { "a", "b" }, replacement.getPositionalParams().toArray());
+	public void resolve_ParamsArray_Multiple() {
+		SQLQuery<DataRow> q = SQLQuery.query("bla").paramsArray("a", "b");
+		assertArrayEquals(new Object[] { "a", "b" }, q.resolve(mock(EntityResolver.class)).positionalParams().toArray());
 	}
 
 	@Test
-	public void createReplacementQuery_DataNode() {
-
-		SQLQuery<DataRow> q = SQLQuery.dataRowQuery("bla").dataNode("n1");
-		SQLTemplate<?> replacement = (SQLTemplate<?>) q.createReplacementQuery(mock(EntityResolver.class));
-		assertEquals("n1", replacement.getDataNodeName());
+	public void resolve_DataNode() {
+		SQLQuery<DataRow> q = SQLQuery.query("bla").dataNode("n1");
+		assertEquals("n1", q.resolve(mock(EntityResolver.class)).dataNodeName());
 	}
 
 	@Test
-	public void createReplacementQuery_Dialect() {
-
-		SQLQuery<DataRow> q = SQLQuery.dataRowQuery("default")
+	public void resolve_Dialect() {
+		SQLQuery<DataRow> q = SQLQuery.query("default")
 				.append(" plus")
 				.dialect(MySQLAdapter.class, "mysql")
 				.dialectAppend(MySQLAdapter.class, " plus")
 				.dialectAppend(PostgresAdapter.class, "postgres")
 				.dialectAppend(PostgresAdapter.class, " plus");
 
-		SQLTemplate<?> replacement = (SQLTemplate<?>) q.createReplacementQuery(mock(EntityResolver.class));
-		assertEquals("default plus", replacement.getDefaultTemplate());
-		assertEquals("mysql plus", replacement.getTemplate(MySQLAdapter.class.getName()));
-		assertEquals("postgres plus", replacement.getTemplate(PostgresAdapter.class.getName()));
-		assertEquals("default plus", replacement.getTemplate("org.example.OtherAdapter"));
+		ResolvedSQL resolved = q.resolve(mock(EntityResolver.class));
+		assertEquals("default plus", resolved.defaultTemplate());
+		assertEquals("mysql plus", resolved.templates().get(MySQLAdapter.class.getName()));
+		assertEquals("postgres plus", resolved.templates().get(PostgresAdapter.class.getName()));
+		assertEquals("default plus", resolved.template(mock(DbAdapter.class)));
 	}
 
 	@Test
 	public void getMetadata_ParamsArray_Multiple_Cache() {
 
 		EntityResolver resolver = mock(EntityResolver.class);
-		QueryMetadata md0 = SQLQuery.dataRowQuery("bla").localCache().getMetaData(resolver);
-		QueryMetadata md1 = SQLQuery.dataRowQuery("bla").localCache().paramsArray("a").getMetaData(resolver);
-		QueryMetadata md2 = SQLQuery.dataRowQuery("bla").localCache().paramsArray("a", "b").getMetaData(resolver);
-		QueryMetadata md3 = SQLQuery.dataRowQuery("bla").localCache().paramsArray(null, "b").getMetaData(resolver);
+		ResolvedQuery md0 = SQLQuery.query("bla").localCache().resolve(resolver);
+		ResolvedQuery md1 = SQLQuery.query("bla").localCache().paramsArray("a").resolve(resolver);
+		ResolvedQuery md2 = SQLQuery.query("bla").localCache().paramsArray("a", "b").resolve(resolver);
+		ResolvedQuery md3 = SQLQuery.query("bla").localCache().paramsArray(null, "b").resolve(resolver);
 
-		assertNotNull(md0.getCacheKey());
-		assertNotNull(md1.getCacheKey());
-		assertNotNull(md2.getCacheKey());
-		assertNotNull(md3.getCacheKey());
+		assertNotNull(md0.cacheKey());
+		assertNotNull(md1.cacheKey());
+		assertNotNull(md2.cacheKey());
+		assertNotNull(md3.cacheKey());
 		
-		assertNotEquals(md0.getCacheKey(), md1.getCacheKey());
-		assertNotEquals(md0.getCacheKey(), md2.getCacheKey());
-		assertNotEquals(md1.getCacheKey(), md2.getCacheKey());
-		assertNotEquals(md3.getCacheKey(), md2.getCacheKey());
+		assertNotEquals(md0.cacheKey(), md1.cacheKey());
+		assertNotEquals(md0.cacheKey(), md2.cacheKey());
+		assertNotEquals(md1.cacheKey(), md2.cacheKey());
+		assertNotEquals(md3.cacheKey(), md2.cacheKey());
 	}
 
 	@Test
 	public void notReadOnlyMetadata() {
 		// raw SQL is opaque, so SQLQuery keeps the regular transaction
-		assertFalse(SQLQuery.dataRowQuery("SELECT * FROM X").getMetaData(mock(EntityResolver.class)).isReadOnly());
+		assertFalse(SQLQuery.query("SELECT * FROM X").resolve(mock(EntityResolver.class)).readOnly());
 	}
 }

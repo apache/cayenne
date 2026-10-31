@@ -24,12 +24,10 @@ import org.apache.cayenne.access.jdbc.PSParameter;
 import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.access.jdbc.reader.RowReader;
 import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
-import org.apache.cayenne.access.translator.SelectTranslator;
 import org.apache.cayenne.access.translator.TranslatedSelect;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.query.QueryMetadata;
-import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.resolved.ResolvedQueries;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
@@ -49,36 +47,18 @@ import static org.mockito.Mockito.when;
 
 public class MySQLSelectActionTest {
 
-    private static final TranslatedSelect SELECT = new TranslatedSelect(
-            "SELECT 1",
-            new PSParameter[0],
-            new RSColumn[0],
-            null,
-            false,
-            false);
-
-    private QueryMetadata metadata;
     private Connection connection;
     private PreparedStatement statement;
-    private MySQLSelectAction action;
+    private DataNode dataNode;
 
     @BeforeEach
     public void setUp() throws Exception {
-        metadata = mock(QueryMetadata.class);
-        when(metadata.getQueryTimeout()).thenReturn(QueryMetadata.QUERY_TIMEOUT_DEFAULT);
-
-        Query<?> query = mock(Query.class);
-
         RowReaderFactory rowReaderFactory = mock(RowReaderFactory.class);
         when(rowReaderFactory.rowReader(any(), any(), any(), any())).thenReturn(mock(RowReader.class));
 
-        SelectTranslator translator = mock(SelectTranslator.class);
-        when(translator.translate(any(), any(), any())).thenReturn(SELECT);
-
-        DataNode dataNode = mock(DataNode.class);
+        dataNode = mock(DataNode.class);
         when(dataNode.getAdapter()).thenReturn(mock(DbAdapter.class));
         when(dataNode.getRowReaderFactory()).thenReturn(rowReaderFactory);
-        when(dataNode.getSelectTranslator()).thenReturn(translator);
 
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.next()).thenReturn(false);
@@ -89,12 +69,22 @@ public class MySQLSelectActionTest {
         connection = mock(Connection.class);
         when(connection.prepareStatement(anyString())).thenReturn(statement);
 
-        action = new MySQLSelectAction(query, dataNode);
+    }
+
+    private MySQLSelectAction action(int statementFetchSize) {
+        TranslatedSelect select = new TranslatedSelect(
+                ResolvedQueries.select(statementFetchSize),
+                "SELECT 1",
+                new PSParameter[0],
+                new RSColumn[0],
+                null,
+                false,
+                false);
+        return new MySQLSelectAction(select, dataNode);
     }
 
     private StatementContext context(boolean iterated, boolean exclusiveConnection) {
         StatementContext context = mock(StatementContext.class);
-        when(context.getMetadata()).thenReturn(metadata);
         when(context.getResolver()).thenReturn(mock(EntityResolver.class));
         when(context.isIteratedResult()).thenReturn(iterated);
         when(context.isExclusiveConnection()).thenReturn(exclusiveConnection);
@@ -103,18 +93,16 @@ public class MySQLSelectActionTest {
 
     @Test
     public void noFetchSizeOnListResultLeavesDriverDefault() throws Exception {
-        when(metadata.getStatementFetchSize()).thenReturn(0);
 
-        action.performAction(connection, context(false, false));
+        action(0).execute(connection, context(false, false));
 
         verify(statement, never()).setFetchSize(anyInt());
     }
 
     @Test
     public void noFetchSizeOnIteratorWithExclusiveConnectionStreams() throws Exception {
-        when(metadata.getStatementFetchSize()).thenReturn(0);
 
-        action.performAction(connection, context(true, true));
+        action(0).execute(connection, context(true, true));
 
         InOrder inOrder = inOrder(statement);
         inOrder.verify(statement).setFetchSize(Integer.MIN_VALUE);
@@ -123,36 +111,32 @@ public class MySQLSelectActionTest {
 
     @Test
     public void noFetchSizeOnIteratorInCallerTransactionLeavesDriverDefault() throws Exception {
-        when(metadata.getStatementFetchSize()).thenReturn(0);
 
-        action.performAction(connection, context(true, false));
+        action(0).execute(connection, context(true, false));
 
         verify(statement, never()).setFetchSize(anyInt());
     }
 
     @Test
     public void streamingFetchSizeOnListResultIsPassedThrough() throws Exception {
-        when(metadata.getStatementFetchSize()).thenReturn(Integer.MIN_VALUE);
 
-        action.performAction(connection, context(false, false));
+        action(Integer.MIN_VALUE).execute(connection, context(false, false));
 
         verify(statement).setFetchSize(Integer.MIN_VALUE);
     }
 
     @Test
     public void streamingFetchSizeOnIteratorInCallerTransactionIsPassedThrough() throws Exception {
-        when(metadata.getStatementFetchSize()).thenReturn(Integer.MIN_VALUE);
 
-        action.performAction(connection, context(true, false));
+        action(Integer.MIN_VALUE).execute(connection, context(true, false));
 
         verify(statement).setFetchSize(Integer.MIN_VALUE);
     }
 
     @Test
     public void positiveFetchSizeOnIteratorWithExclusiveConnectionIsPassedThrough() throws Exception {
-        when(metadata.getStatementFetchSize()).thenReturn(100);
 
-        action.performAction(connection, context(true, true));
+        action(100).execute(connection, context(true, true));
 
         verify(statement).setFetchSize(100);
         verify(statement, never()).setFetchSize(Integer.MIN_VALUE);

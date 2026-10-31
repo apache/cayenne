@@ -26,11 +26,13 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class ObjectSelectTest {
 
@@ -439,7 +441,9 @@ public class ObjectSelectTest {
 
 	@Test
 	public void readOnlyMetadata() {
-		assertTrue(ObjectSelect.query(Artist.class).getMetaData(mock(EntityResolver.class)).isReadOnly());
+		EntityResolver resolver = mock(EntityResolver.class);
+		when(resolver.getObjEntity(Artist.class)).thenReturn(new ObjEntity("Artist"));
+		assertTrue(ObjectSelect.query(Artist.class).resolve(resolver).readOnly());
 	}
 
 }

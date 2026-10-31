@@ -20,44 +20,31 @@
 package org.apache.cayenne.access.translator;
 
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.query.BatchQuery;
+import org.apache.cayenne.query.resolved.ResolvedBatch;
 
 /**
- * A stateless service that translates a batch query of type {@code T} into an immutable
- * {@link TranslatedBatch}. Each batch query flavor (insert, update, delete) is handled by its own
- * translator, configured individually in the DI container under the {@link #INSERT}, {@link #UPDATE}
- * and {@link #DELETE} binding names.
+ * Translates a {@link ResolvedBatch} into a single parametrized statement. One translator is bound per batch kind,
+ * under the {@link #INSERT}, {@link #UPDATE} and {@link #DELETE} names.
  *
- * @param <T> type of the batch query to translate
- * @since 4.0
+ * @param <T> the kind of batch translated
+ * @since 6.0
  */
-public interface BatchTranslator<T extends BatchQuery> {
+public interface BatchTranslator<T extends ResolvedBatch> {
 
     /**
-     * DI binding name of the translator for {@link org.apache.cayenne.query.InsertBatchQuery}.
-     *
-     * @since 5.0
+     * The DI binding name of the insert batch translator.
      */
     String INSERT = "insert";
 
     /**
-     * DI binding name of the translator for {@link org.apache.cayenne.query.UpdateBatchQuery}.
-     *
-     * @since 5.0
+     * The DI binding name of the update batch translator.
      */
     String UPDATE = "update";
 
     /**
-     * DI binding name of the translator for {@link org.apache.cayenne.query.DeleteBatchQuery}.
-     *
-     * @since 5.0
+     * The DI binding name of the delete batch translator.
      */
     String DELETE = "delete";
 
-    /**
-     * Translates the provided batch query into an immutable {@link TranslatedBatch}.
-     *
-     * @since 5.0
-     */
-    TranslatedBatch translate(T query, DbAdapter adapter);
+    TranslatedBatch translate(T batch, DbAdapter adapter);
 }

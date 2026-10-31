@@ -27,7 +27,6 @@ import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SQLQuery;
-import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -173,7 +172,7 @@ public class JointPrefetchIT {
         createJointPrefetchDataSet();
 
         // correctly naming columns is the key..
-        SQLTemplate q = new SQLTemplate(
+        SQLQuery<Artist> q = SQLQuery.query(
                 Artist.class,
                 "SELECT distinct "
                         + "#result('ESTIMATED_PRICE' 'BigDecimal' '' 'paintings.ESTIMATED_PRICE'), "
@@ -187,7 +186,6 @@ public class JointPrefetchIT {
                         + "WHERE t0.ARTIST_ID = t1.ARTIST_ID");
 
         q.addPrefetch(Artist.PAINTINGS.joint());
-        q.setFetchingDataRows(false);
 
         @SuppressWarnings("unchecked")
         final List<Artist> objects = (List<Artist>)context.select(q);
@@ -238,14 +236,14 @@ public class JointPrefetchIT {
     @Test
     public void jointPrefetchDataTypes() {
         // prepare... can't load from XML, as it doesn't yet support dates..
-        SQLTemplate artistSQL = new SQLTemplate(
+        SQLQuery<Artist> artistSQL = SQLQuery.query(
                 Artist.class,
                 "insert into ARTIST (ARTIST_ID, ARTIST_NAME, DATE_OF_BIRTH) "
                         + "values (33001, 'a1', #bind($date 'DATE'))");
-        artistSQL.setParams(Collections.singletonMap(
+        artistSQL.params(Collections.singletonMap(
                 "date",
                 new Date(System.currentTimeMillis())));
-        SQLTemplate paintingSQL = new SQLTemplate(
+        SQLQuery<Painting> paintingSQL = SQLQuery.query(
                 Painting.class,
                 "INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ARTIST_ID, ESTIMATED_PRICE) "
                         + "VALUES (33001, 'p1', 33001, 1000)");

@@ -205,7 +205,7 @@ public class DataContextFlattenedAttributesIT {
 
         DataNode dataNode = context.getChannel().getDataDomain().getDataNodes().iterator().next();
         TranslatedSelect translator =
-                new DbAdapterDelegatedSelectTranslator().translate(originalQuery, dataNode.getAdapter(), context.getEntityResolver());
+                new DbAdapterDelegatedSelectTranslator().translate(originalQuery.resolve(context.getEntityResolver()), dataNode.getAdapter(), context.getEntityResolver());
 
         EntityResultSegment segment = (EntityResultSegment) translator.resultSetMapping().segments().get(0);
 

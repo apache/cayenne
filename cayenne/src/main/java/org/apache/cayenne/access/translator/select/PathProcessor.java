@@ -54,7 +54,7 @@ abstract class PathProcessor<T extends Entity<?,?,?>> implements PathTranslation
     public PathProcessor(SelectTranslatorContext context, T entity) {
         this.context = Objects.requireNonNull(context);
         this.entity = Objects.requireNonNull(entity);
-        this.pathSplitAliases = context.getMetadata().getPathSplitAliases();
+        this.pathSplitAliases = context.getSelect().pathSplitAliases();
         this.currentDbPath = CayennePath.EMPTY_PATH;
         this.attributes = new ArrayList<>(1);
         this.attributePaths = new ArrayList<>(1);

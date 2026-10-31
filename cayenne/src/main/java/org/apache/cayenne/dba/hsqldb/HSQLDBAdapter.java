@@ -22,7 +22,6 @@ package org.apache.cayenne.dba.hsqldb;
 import org.apache.cayenne.CoreModule;
 import org.apache.cayenne.dba.NativeColumnType;
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
 import org.apache.cayenne.access.translator.ProcedureTranslator;
 import org.apache.cayenne.access.types.CharType;
@@ -39,10 +38,7 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.query.ProcedureQuery;
-import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.SQLAction;
+import org.apache.cayenne.query.resolved.ResolvedProcedure;
 
 import java.sql.Types;
 import java.util.Collection;
@@ -130,7 +126,7 @@ public class HSQLDBAdapter extends JdbcAdapter {
      * @since 5.0
      */
     @Override
-    public ProcedureTranslator getProcedureTranslator(ProcedureQuery<?> query, EntityResolver entityResolver) {
+    public ProcedureTranslator getProcedureTranslator(ResolvedProcedure procedure) {
         return new HSQLDBProcedureTranslator();
     }
 
@@ -162,10 +158,6 @@ public class HSQLDBAdapter extends JdbcAdapter {
      *
      * @since 1.2
      */
-    @Override
-    public SQLAction getAction(Query<?> query, DataNode node) {
-        return query.createSQLAction(new HSQLActionBuilder(node));
-    }
 
     /**
      * Returns a DDL string to create a unique constraint over a set of columns.

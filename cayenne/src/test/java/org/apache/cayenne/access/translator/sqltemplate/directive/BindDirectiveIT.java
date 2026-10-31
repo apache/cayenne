@@ -37,11 +37,12 @@ import org.apache.cayenne.access.StatementContexts;
 import org.apache.cayenne.dba.oracle.OracleAdapter;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.query.SQLTemplate;
+import org.apache.cayenne.query.SQLQuery;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
+import org.apache.cayenne.DataRow;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -127,14 +128,14 @@ public class BindDirectiveIT {
 		artistNames.add("Artist1");
 		artistNames.add("Artist3");
 		String sql = "SELECT * FROM ARTIST WHERE ARTIST_NAME in (#bind($ARTISTNAMES))";
-		SQLTemplate query = new SQLTemplate(Artist.class, sql);
+		SQLQuery<Artist> query = SQLQuery.query(Artist.class, sql);
 
 		// customize for DB's that require trimming CHAR spaces
-		query.setTemplate(OracleAdapter.class.getName(),
+		query.dialect(OracleAdapter.class.getName(),
 				"SELECT * FROM ARTIST WHERE RTRIM(ARTIST_NAME) in (#bind($ARTISTNAMES))");
 
-		query.setColumnNamesCapitalization(CapsStrategy.UPPER);
-		query.setParams(Collections.singletonMap("ARTISTNAMES", artistNames));
+		query.columnNameCaps(CapsStrategy.UPPER);
+		query.params(Collections.singletonMap("ARTISTNAMES", artistNames));
 		List<?> result = env.context().select(query);
 		assertEquals(2, result.size());
 	}
@@ -209,10 +210,10 @@ public class BindDirectiveIT {
 	private Map<String, ?> performInsertForParameters(Map<String, Object> parameters, String templateString)
 			throws Exception {
 
-		// TODO: do we really care if an inserting SQLTemplate is executed via
+		// TODO: do we really care if an inserting SQLQuery is executed via
 		// ObjectContext?
-		SQLTemplate template = new SQLTemplate(templateString);
-		template.setParams(parameters);
+		SQLQuery<DataRow> template = SQLQuery.query(templateString);
+		template.params(parameters);
 		StatementContext statementContext = StatementContexts.run(env.dataNode(), env.resolver(), template);
 
 		return ObjectSelect.dataRowQuery(Artist.class).selectOne(env.context());

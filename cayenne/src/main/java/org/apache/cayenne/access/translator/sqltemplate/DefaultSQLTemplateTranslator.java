@@ -24,6 +24,7 @@ import org.apache.cayenne.access.translator.SQLTemplateTranslator;
 import org.apache.cayenne.access.translator.TranslatedSQL;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.query.resolved.ResolvedSQL;
 import org.apache.cayenne.access.translator.sqltemplate.parser.Node;
 import org.apache.cayenne.access.translator.sqltemplate.parser.ParseException;
 import org.apache.cayenne.access.translator.sqltemplate.parser.SQLTemplateParser;
@@ -32,7 +33,6 @@ import org.apache.cayenne.util.ClockMap;
 
 import java.io.ByteArrayInputStream;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 
@@ -52,23 +52,30 @@ public class DefaultSQLTemplateTranslator implements SQLTemplateTranslator {
     }
 
     @Override
-    public TranslatedSQL translate(String template, Map<String, ?> parameters, DbAdapter adapter) {
-        Context context = contextFactory.createContext(parameters, adapter);
-        return process(template, context);
-    }
-
-    @Override
-    public TranslatedSQL translate(String template, List<Object> positionalParameters, DbAdapter adapter) {
-        Map<String, Object> parameters = new HashMap<>();
-        int i = 0;
-        for (Object param : positionalParameters) {
-            parameters.put(String.valueOf(i++), param);
+    public TranslatedSQL translate(ResolvedSQL query, DbAdapter adapter) {
+        String template = query.template(adapter);
+        if (template == null) {
+            throw new CayenneRuntimeException("No template string configured for adapter %s",
+                    adapter.getClass().getName());
         }
-        Context context = contextFactory.createContext(parameters, true, adapter);
-        return process(template, context);
+
+        // bind either positional or named parameters
+        Context context;
+        if (query.positionalParams().isEmpty()) {
+            context = contextFactory.createContext(query.params(), adapter);
+        } else {
+            Map<String, Object> parameters = new HashMap<>();
+            int i = 0;
+            for (Object param : query.positionalParams()) {
+                parameters.put(String.valueOf(i++), param);
+            }
+            context = contextFactory.createContext(parameters, true, adapter);
+        }
+
+        return process(query, template, context);
     }
 
-    protected TranslatedSQL process(String template, Context context) {
+    protected TranslatedSQL process(ResolvedSQL query, String template, Context context) {
         Node node = templateCache.get(template);
         if (node == null) {
             SQLTemplateParser parser = parserPool.get();
@@ -86,6 +93,7 @@ public class DefaultSQLTemplateTranslator implements SQLTemplateTranslator {
 
         node.evaluate(context);
 
-        return new TranslatedSQL(context.buildTemplate(), context.getParameterBindings(), context.getColumnDescriptors());
+        return new TranslatedSQL(query, context.buildTemplate(), context.getParameterBindings(),
+                context.getColumnDescriptors());
     }
 }

@@ -16,21 +16,21 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+
 package org.apache.cayenne.docs.customquery;
 
 import org.apache.cayenne.docs.persistent.Artist;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.query.IndirectQuery;
 import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.SQLTemplate;
+import org.apache.cayenne.query.SQLQuery;
+import org.apache.cayenne.query.resolved.ResolvedQuery;
 
 // tag::content[]
-public class MyDelegatingQuery extends IndirectQuery<Artist> {
+public class MyDelegatingQuery implements Query<Artist> {
 
     @Override
-    protected Query<?> createReplacementQuery(EntityResolver resolver) {
-        // the type parameter of the delegate matches the one of this query, as both select Artists
-        return new SQLTemplate<>(Artist.class, generateRawSQL());
+    public ResolvedQuery resolve(EntityResolver resolver) {
+        return SQLQuery.query(Artist.class, generateRawSQL()).resolve(resolver);
     }
 
     protected String generateRawSQL() {

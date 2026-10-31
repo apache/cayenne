@@ -20,10 +20,8 @@
 package org.apache.cayenne.dba.oracle;
 
 import org.apache.cayenne.dba.NativeColumnType;
-import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.query.InsertBatchQuery;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.Test;
@@ -40,17 +38,6 @@ public class OracleAdapterIT {
 
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.LOB_PROJECT);
-
-    @Test
-    public void updatesLOBColumns() throws Exception {
-        DataMap map = env.runtime().getDataDomain().getDataMap("lob");
-        assertTrue(OracleAdapter.updatesLOBColumns(new InsertBatchQuery(map
-                .getDbEntity("BLOB_TEST"), 1)));
-        assertTrue(OracleAdapter.updatesLOBColumns(new InsertBatchQuery(map
-                .getDbEntity("CLOB_TEST"), 1)));
-        assertFalse(OracleAdapter.updatesLOBColumns(new InsertBatchQuery(map
-                .getDbEntity("TEST"), 1)));
-    }
 
     @Test
     public void timestampMapping() throws Exception {

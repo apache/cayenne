@@ -30,9 +30,7 @@ import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.QueryMetadata;
-import org.apache.cayenne.query.QueryRouter;
-import org.apache.cayenne.query.SQLTemplate;
+import org.apache.cayenne.query.SQLQuery;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Exhibit;
@@ -346,10 +344,10 @@ public class DataContextIT {
 	@Test
 	public void performQuery_Routing() {
 		Query<?> query = mock(Query.class);
-		QueryMetadata md = mock(QueryMetadata.class);
-		when(query.getMetaData(any(EntityResolver.class))).thenReturn(md);
+		when(query.resolve(any(EntityResolver.class)))
+				.thenReturn(ObjectSelect.query(Artist.class).resolve(context.getEntityResolver()));
 		context.execute(query);
-		verify(query).route(any(QueryRouter.class), eq(context.getEntityResolver()), (Query<?>) isNull());
+		verify(query).resolve(eq(context.getEntityResolver()));
 	}
 
 	@Test
@@ -361,7 +359,7 @@ public class DataContextIT {
 
 		assertEquals(0, query.select(context).size());
 
-		SQLTemplate insert = new SQLTemplate(Painting.class,
+		SQLQuery<Painting> insert = SQLQuery.query(Painting.class,
 				"INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ARTIST_ID, ESTIMATED_PRICE) "
 						+ "VALUES (1, 'PX', 33001, 1)");
 		context.execute(insert);
@@ -373,7 +371,7 @@ public class DataContextIT {
 	public void performNonSelectingQueryCounts1() throws Exception {
 		createArtistsDataSet();
 
-		SQLTemplate query = new SQLTemplate(Painting.class,
+		SQLQuery<Painting> query = SQLQuery.query(Painting.class,
 				"INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ARTIST_ID, ESTIMATED_PRICE) "
 						+ "VALUES ($pid, '$pt', $aid, $price)");
 
@@ -383,7 +381,7 @@ public class DataContextIT {
 		map.put("aid", 33002);
 		map.put("price", 1.1);
 
-		query.setParams(map);
+		query.params(map);
 
 		int[] counts = ((UpdateResult) context.execute(query).getFirst()).counts();
 		assertNotNull(counts);
@@ -589,7 +587,7 @@ public class DataContextIT {
 		a.setArtistName("aa");
 		context.commitChanges();
 
-		SQLTemplate q = new SQLTemplate(Artist.class, "DELETE FROM ARTIST");
+		SQLQuery<Artist> q = SQLQuery.query(Artist.class, "DELETE FROM ARTIST");
 
 		// this way of executing a query makes no sense, but it shouldn't blow
 		// either...

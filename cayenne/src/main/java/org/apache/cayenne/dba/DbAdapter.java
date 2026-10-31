@@ -20,6 +20,7 @@ package org.apache.cayenne.dba;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.access.StatementContext;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
 import org.apache.cayenne.access.jdbc.CSParameter;
 import org.apache.cayenne.access.jdbc.PSParameter;
@@ -30,11 +31,15 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.query.ProcedureQuery;
-import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.SQLAction;
+import org.apache.cayenne.query.resolved.ResolvedProcedure;
+import org.apache.cayenne.query.resolved.ResolvedSelect;
+import org.apache.cayenne.access.translator.TranslatedBatch;
+import org.apache.cayenne.access.translator.TranslatedProcedure;
+import org.apache.cayenne.access.translator.TranslatedSQL;
+import org.apache.cayenne.access.translator.TranslatedSelect;
 
 import java.sql.CallableStatement;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.Collection;
 import java.util.List;
@@ -56,20 +61,22 @@ public interface DbAdapter {
     String getBatchTerminator();
 
     /**
-     * Returns the {@link SelectTranslator} for the given query. The default implementation ignores the
-     * query, but the parameter is retained so adapters can pick a translator based on it.
+     * Returns the {@link SelectTranslator} for the given select. The default implementation ignores the
+     * select, but the parameter is retained so adapters can pick a translator based on it.
      *
      * @since 4.2
+     * @since 6.0 takes a {@link ResolvedSelect}
      */
-    SelectTranslator getSelectTranslator(Query<?> query, EntityResolver entityResolver);
+    SelectTranslator getSelectTranslator(ResolvedSelect select, EntityResolver entityResolver);
 
     /**
-     * Returns the {@link ProcedureTranslator} for the given query. The default implementation ignores the
-     * query, but the parameter is retained so adapters can pick a translator based on it.
+     * Returns the {@link ProcedureTranslator} for the given procedure call. The default implementation ignores the
+     * call, but the parameter is retained so adapters can pick a translator based on it.
      *
      * @since 5.0
+     * @since 6.0 takes a {@link ResolvedProcedure}
      */
-    ProcedureTranslator getProcedureTranslator(ProcedureQuery<?> query, EntityResolver entityResolver);
+    ProcedureTranslator getProcedureTranslator(ResolvedProcedure procedure);
 
     /**
      * @return {@link SQLTreeProcessor} that can adjust SQL tree to specific database flavour
@@ -78,11 +85,39 @@ public interface DbAdapter {
     SQLTreeProcessor getSqlTreeProcessor();
 
     /**
-     * Returns an instance of SQLAction that should handle the query.
+     * Runs a translated select on the connection, reporting the rows to the statement context.
      *
-     * @since 1.2
+     * @since 6.0
      */
-    SQLAction getAction(Query<?> query, DataNode node);
+    void executeSelect(TranslatedSelect select, Connection connection, StatementContext context, DataNode node)
+            throws Exception;
+
+    /**
+     * Runs a translated raw SQL statement on the connection, reporting its result sets and update counts to the
+     * statement context.
+     *
+     * @since 6.0
+     */
+    void executeSQL(TranslatedSQL sql, Connection connection, StatementContext context, DataNode node)
+            throws Exception;
+
+    /**
+     * Runs a translated stored procedure call on the connection, reporting its OUT parameters, result sets and
+     * update counts to the statement context.
+     *
+     * @since 6.0
+     */
+    void executeProcedure(TranslatedProcedure procedure, Connection connection, StatementContext context,
+            DataNode node) throws Exception;
+
+    /**
+     * Runs a translated batch on the connection, reporting the update counts and generated keys to the statement
+     * context.
+     *
+     * @since 6.0
+     */
+    void executeBatch(TranslatedBatch batch, Connection connection, StatementContext context, DataNode node)
+            throws Exception;
 
     /**
      * Returns true if a target database supports UNIQUE constraints.

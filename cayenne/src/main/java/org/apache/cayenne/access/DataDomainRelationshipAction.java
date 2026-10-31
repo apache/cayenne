@@ -137,7 +137,8 @@ class DataDomainRelationshipAction {
                 .query(Persistent.class, relationship.getTargetEntityName())
                 .where(qualifier);
 
-        OperationContext execContext = new OperationContext(context, query, domain.getEntityResolver(), false);
+        QueryContext execContext = new QueryContext(context, query, query.resolve(domain.getEntityResolver()),
+                false);
         @SuppressWarnings("unchecked")
         List<Persistent> related = (List<Persistent>) QueryResults.firstList(domain.onQuery(execContext));
         return related;

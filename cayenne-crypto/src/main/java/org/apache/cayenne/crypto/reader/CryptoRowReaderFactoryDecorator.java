@@ -36,7 +36,7 @@ import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.EntityResultSegment;
-import org.apache.cayenne.query.QueryMetadata;
+import org.apache.cayenne.query.resolved.ResolvedQuery;
 import org.apache.cayenne.query.ResultSegments;
 import org.apache.cayenne.query.ScalarResultSegment;
 
@@ -60,27 +60,27 @@ public class CryptoRowReaderFactoryDecorator extends DefaultRowReaderFactory {
     }
 
     @Override
-    public RowReader<?> rowReader(RSColumn[] columns, ResultSegments segments, QueryMetadata metadata,
+    public RowReader<?> rowReader(RSColumn[] columns, ResultSegments segments, ResolvedQuery query,
                                   DbAdapter adapter) {
-        return super.rowReader(encryptedColumns(columns, adapter.getExtendedTypes()), segments, metadata, adapter);
+        return super.rowReader(encryptedColumns(columns, adapter.getExtendedTypes()), segments, query, adapter);
     }
 
     @Override
-    protected RowReader<?> scalarSegmentReader(RSColumn[] columns, QueryMetadata metadata, ScalarResultSegment segment) {
-        RowReader<?> reader = super.scalarSegmentReader(columns, metadata, segment);
+    protected RowReader<?> scalarSegmentReader(RSColumn[] columns, ResolvedQuery query, ScalarResultSegment segment) {
+        RowReader<?> reader = super.scalarSegmentReader(columns, query, segment);
         return new DecoratedScalarRowReader(columns[segment.columnOffset()], reader);
     }
 
     @Override
-    protected RowReader<?> entitySegmentReader(RSColumn[] columns, QueryMetadata metadata, EntityResultSegment segment,
+    protected RowReader<?> entitySegmentReader(RSColumn[] columns, ResolvedQuery query, EntityResultSegment segment,
                                                long version) {
-        RowReader<?> reader = super.entitySegmentReader(columns, metadata, segment, version);
+        RowReader<?> reader = super.entitySegmentReader(columns, query, segment, version);
         return new DecoratedEntityRowReader(columns, reader, segment);
     }
 
     @Override
-    protected RowReader<?> noSegmentReader(RSColumn[] columns, QueryMetadata metadata, long version) {
-        RowReader<?> reader = super.noSegmentReader(columns, metadata, version);
+    protected RowReader<?> noSegmentReader(RSColumn[] columns, ResolvedQuery query, long version) {
+        RowReader<?> reader = super.noSegmentReader(columns, query, version);
         return new DecoratedFullRowReader(columns, reader);
     }
 

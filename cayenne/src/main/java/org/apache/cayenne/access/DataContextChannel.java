@@ -32,7 +32,7 @@ import org.apache.cayenne.graph.CompoundDiff;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.EntityResultSegment;
-import org.apache.cayenne.query.QueryMetadata;
+import org.apache.cayenne.query.resolved.ResolvedQuery;
 import org.apache.cayenne.query.ResultSegment;
 import org.apache.cayenne.access.lifecycle.LifecycleEventsManager;
 
@@ -75,7 +75,7 @@ public record DataContextChannel(DataContext context) implements DataChannel {
     }
 
     @Override
-    public List<QueryResult> onQuery(OperationContext execContext) {
+    public List<QueryResult> onQuery(QueryContext execContext) {
         DataContext child = checkChildContext(execContext.getContext());
 
         // the parent context runs the query on its own behalf, registering the result objects with itself before
@@ -88,10 +88,10 @@ public record DataContextChannel(DataContext context) implements DataChannel {
             execContext.setContext(child);
         }
 
-        QueryMetadata metadata = execContext.getMetadata();
-        return metadata.isFetchingDataRows()
+        ResolvedQuery resolved = execContext.getResolvedQuery();
+        return resolved.fetchingDataRows()
                 ? response
-                : transferObjectsToChildContext(child, response, metadata);
+                : transferObjectsToChildContext(child, response, resolved);
     }
 
     @Override
@@ -178,7 +178,7 @@ public record DataContextChannel(DataContext context) implements DataChannel {
     private List<QueryResult> transferObjectsToChildContext(
             DataContext childContext,
             List<QueryResult> response,
-            QueryMetadata metadata) {
+            ResolvedQuery resolved) {
 
         // rewrite response to contain objects from the query context
 
@@ -193,9 +193,9 @@ public record DataContextChannel(DataContext context) implements DataChannel {
                 } else {
 
                     // minor optimization, skip Object[] if there are no persistent objects
-                    boolean haveObjects = metadata.getResultSegments() == null;
+                    boolean haveObjects = resolved.resultSegments() == null;
                     if (!haveObjects) {
-                        for (ResultSegment next : metadata.getResultSegments().segments()) {
+                        for (ResultSegment next : resolved.resultSegments().segments()) {
                             if (next instanceof EntityResultSegment) {
                                 haveObjects = true;
                                 break;

@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.velocity;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -38,6 +40,8 @@ import org.apache.cayenne.access.translator.TranslatedSQL;
 import org.apache.cayenne.access.jdbc.PSParameter;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.query.SQLQuery;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -58,7 +62,7 @@ public class VelocitySQLTemplateTranslatorTest {
 	public void processTemplateUnchanged1() throws Exception {
 		String sqlTemplate = "SELECT * FROM ME";
 
-		TranslatedSQL compiled = processor.translate(sqlTemplate, Collections.<String, Object> emptyMap(), adapter);
+		TranslatedSQL compiled = translate(sqlTemplate, Collections.<String, Object> emptyMap());
 
 		assertEquals(sqlTemplate, compiled.sql());
 		assertEquals(0, compiled.bindings().length);
@@ -68,7 +72,7 @@ public class VelocitySQLTemplateTranslatorTest {
 	public void processTemplateUnchanged2() throws Exception {
 		String sqlTemplate = "SELECT a.b as XYZ FROM $SYSTEM_TABLE";
 
-		TranslatedSQL compiled = processor.translate(sqlTemplate, Collections.<String, Object> emptyMap(), adapter);
+		TranslatedSQL compiled = translate(sqlTemplate, Collections.<String, Object> emptyMap());
 
 		assertEquals(sqlTemplate, compiled.sql());
 		assertEquals(0, compiled.bindings().length);
@@ -79,7 +83,7 @@ public class VelocitySQLTemplateTranslatorTest {
 		String sqlTemplate = "SELECT * FROM ME WHERE $a";
 
 		Map<String, Object> map = Collections.<String, Object> singletonMap("a", "VALUE_OF_A");
-		TranslatedSQL compiled = processor.translate(sqlTemplate, map, adapter);
+		TranslatedSQL compiled = translate(sqlTemplate, map);
 
 		assertEquals("SELECT * FROM ME WHERE VALUE_OF_A", compiled.sql());
 
@@ -92,7 +96,7 @@ public class VelocitySQLTemplateTranslatorTest {
 		String sqlTemplate = "SELECT * FROM ME WHERE "
 				+ "COLUMN1 = #bind($a 'VARCHAR') AND COLUMN2 = #bind($b 'INTEGER')";
 		Map<String, Object> map = Collections.<String, Object> singletonMap("a", "VALUE_OF_A");
-		TranslatedSQL compiled = processor.translate(sqlTemplate, map, adapter);
+		TranslatedSQL compiled = translate(sqlTemplate, map);
 
 		assertEquals("SELECT * FROM ME WHERE COLUMN1 = ? AND COLUMN2 = ?", compiled.sql());
 		assertEquals(2, compiled.bindings().length);
@@ -105,7 +109,7 @@ public class VelocitySQLTemplateTranslatorTest {
 		String sqlTemplate = "SELECT * FROM ME WHERE COLUMN1 = #bind($a)";
 		Map<String, Object> map = Collections.<String, Object> singletonMap("a", "VALUE_OF_A");
 
-		TranslatedSQL compiled = processor.translate(sqlTemplate, map, adapter);
+		TranslatedSQL compiled = translate(sqlTemplate, map);
 
 		assertEquals(1, compiled.bindings().length);
 		assertBindingType(Types.VARCHAR, compiled.bindings()[0]);
@@ -116,7 +120,7 @@ public class VelocitySQLTemplateTranslatorTest {
 		String sqlTemplate = "SELECT * FROM ME WHERE COLUMN1 = #bind($a)";
 		Map<String, Object> map = Collections.<String, Object> singletonMap("a", 4);
 
-		TranslatedSQL compiled = processor.translate(sqlTemplate, map, adapter);
+		TranslatedSQL compiled = translate(sqlTemplate, map);
 
 		assertEquals(1, compiled.bindings().length);
 		assertBindingType(Types.INTEGER, compiled.bindings()[0]);
@@ -126,14 +130,14 @@ public class VelocitySQLTemplateTranslatorTest {
 	public void processTemplateBindEqual() throws Exception {
 		String sqlTemplate = "SELECT * FROM ME WHERE COLUMN #bindEqual($a 'VARCHAR')";
 
-		TranslatedSQL compiled = processor.translate(sqlTemplate, Collections.<String, Object> emptyMap(), adapter);
+		TranslatedSQL compiled = translate(sqlTemplate, Collections.<String, Object> emptyMap());
 
 		assertEquals("SELECT * FROM ME WHERE COLUMN IS NULL", compiled.sql());
 		assertEquals(0, compiled.bindings().length);
 
 		Map<String, Object> map = Collections.<String, Object> singletonMap("a", "VALUE_OF_A");
 
-		compiled = processor.translate(sqlTemplate, map, adapter);
+		compiled = translate(sqlTemplate, map);
 
 		assertEquals("SELECT * FROM ME WHERE COLUMN = ?", compiled.sql());
 		assertEquals(1, compiled.bindings().length);
@@ -144,14 +148,14 @@ public class VelocitySQLTemplateTranslatorTest {
 	public void processTemplateBindNotEqual() throws Exception {
 		String sqlTemplate = "SELECT * FROM ME WHERE COLUMN #bindNotEqual($a 'VARCHAR')";
 
-		TranslatedSQL compiled = processor.translate(sqlTemplate, Collections.<String, Object> emptyMap(), adapter);
+		TranslatedSQL compiled = translate(sqlTemplate, Collections.<String, Object> emptyMap());
 
 		assertEquals("SELECT * FROM ME WHERE COLUMN IS NOT NULL", compiled.sql());
 		assertEquals(0, compiled.bindings().length);
 
 		Map<String, Object> map = Collections.<String, Object> singletonMap("a", "VALUE_OF_A");
 
-		compiled = processor.translate(sqlTemplate, map, adapter);
+		compiled = translate(sqlTemplate, map);
 
 		assertEquals("SELECT * FROM ME WHERE COLUMN <> ?", compiled.sql());
 		assertEquals(1, compiled.bindings().length);
@@ -167,7 +171,7 @@ public class VelocitySQLTemplateTranslatorTest {
 
 		Map<String, Object> map = Collections.<String, Object> singletonMap("a", persistent);
 
-		TranslatedSQL compiled = processor.translate(sqlTemplate, map, adapter);
+		TranslatedSQL compiled = translate(sqlTemplate, map);
 
 		assertEquals("SELECT * FROM ME WHERE COLUMN1 = ?", compiled.sql());
 		assertEquals(1, compiled.bindings().length);
@@ -189,7 +193,7 @@ public class VelocitySQLTemplateTranslatorTest {
 
 		Map<String, Object> map = Collections.<String, Object> singletonMap("a", persistent);
 
-		TranslatedSQL compiled = processor.translate(sqlTemplate, map, adapter);
+		TranslatedSQL compiled = translate(sqlTemplate, map);
 
 		assertEquals("SELECT * FROM ME WHERE COLUMN1 <> ? AND COLUMN2 <> ?", compiled.sql());
 		assertEquals(2, compiled.bindings().length);
@@ -203,13 +207,13 @@ public class VelocitySQLTemplateTranslatorTest {
 
 		Map<String, Object> map = Collections.<String, Object> singletonMap("a", "VALUE_OF_A");
 
-		TranslatedSQL compiled = processor.translate(sqlTemplate, map, adapter);
+		TranslatedSQL compiled = translate(sqlTemplate, map);
 
 		assertEquals("SELECT * FROM ME  WHERE COLUMN1 > ?", compiled.sql());
 		assertEquals(1, compiled.bindings().length);
 		assertBindingValue("VALUE_OF_A", compiled.bindings()[0]);
 
-		compiled = processor.translate(sqlTemplate, Collections.<String, Object> emptyMap(), adapter);
+		compiled = translate(sqlTemplate, Collections.<String, Object> emptyMap());
 
 		assertEquals("SELECT * FROM ME ", compiled.sql());
 		assertEquals(0, compiled.bindings().length);
@@ -220,12 +224,12 @@ public class VelocitySQLTemplateTranslatorTest {
 		String sqlTemplate = "SELECT * FROM ME WHERE COLUMN IN (#bind($list 'VARCHAR'))";
 
 		Map<String, Object> map = Collections.<String, Object> singletonMap("list", Arrays.asList("a", "b", "c"));
-		TranslatedSQL compiled = new VelocitySQLTemplateTranslator().translate(sqlTemplate, map, adapter);
+		TranslatedSQL compiled = translate(sqlTemplate, map);
 
 		assertEquals("SELECT * FROM ME WHERE COLUMN IN (?,?,?)", compiled.sql());
 		assertEquals(3, compiled.bindings().length);
 
-		compiled = processor.translate(sqlTemplate, map, adapter);
+		compiled = translate(sqlTemplate, map);
 		assertBindingValue("a", compiled.bindings()[0]);
 		assertBindingValue("b", compiled.bindings()[1]);
 		assertBindingValue("c", compiled.bindings()[2]);
@@ -234,7 +238,7 @@ public class VelocitySQLTemplateTranslatorTest {
 	@Test
 	public void unknownDirective() throws Exception {
 		String sqlTemplate = "SELECT #from(1) FROM a";
-		TranslatedSQL compiled = processor.translate(sqlTemplate, Collections.emptyMap(), adapter);
+		TranslatedSQL compiled = translate(sqlTemplate, Collections.emptyMap());
         assertEquals("SELECT #from(1) FROM a", compiled.sql());
 	}
 
@@ -246,5 +250,15 @@ public class VelocitySQLTemplateTranslatorTest {
 	private void assertBindingType(Integer expectedType, Object binding) {
 		assertTrue(binding instanceof PSParameter, "Not a binding!");
 		assertEquals(expectedType, ((PSParameter) binding).psType());
+	}
+
+	private TranslatedSQL translate(String template, Map<?, ?> params) {
+		Map<String, Object> named = new HashMap<>();
+		params.forEach((k, v) -> named.put(String.valueOf(k), v));
+		return processor.translate(SQLQuery.query(template).params(named).resolve(new EntityResolver()), adapter);
+	}
+
+	private TranslatedSQL translate(String template, List<Object> params) {
+		return processor.translate(SQLQuery.query(template).paramsList(params).resolve(new EntityResolver()), adapter);
 	}
 }

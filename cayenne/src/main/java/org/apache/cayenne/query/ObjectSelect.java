@@ -29,9 +29,6 @@ import org.apache.cayenne.exp.property.ComparableProperty;
 import org.apache.cayenne.exp.property.NumericProperty;
 import org.apache.cayenne.exp.property.Property;
 import org.apache.cayenne.exp.property.PropertyFactory;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.ObjEntity;
 
 import java.util.List;
 import java.util.Map;
@@ -240,11 +237,6 @@ public class ObjectSelect<T> extends FluentSelect<T, ObjectSelect<T>> {
     protected ObjectSelect() {
     }
 
-    @Override
-    protected ObjectSelectMetadata createMetadata() {
-        return new ObjectSelectMetadata();
-    }
-
     /**
      * Appends a having qualifier expression of this query. An equivalent to
      * {@link #and(Expression...)} that can be used a syntactic sugar.
@@ -276,7 +268,7 @@ public class ObjectSelect<T> extends FluentSelect<T, ObjectSelect<T>> {
      * @return this object
      */
     public ObjectSelect<DataRow> fetchDataRows() {
-        metaData.setFetchingDataRows(true);
+        this.fetchingDataRows = true;
         return castSelf();
     }
 
@@ -442,15 +434,4 @@ public class ObjectSelect<T> extends FluentSelect<T, ObjectSelect<T>> {
         return context.selectFirst(limit(1));
     }
 
-    @Override
-    public QueryMetadata getMetaData(EntityResolver resolver) {
-        Object root = resolveRoot(resolver);
-        metaData.resolve(root, resolver, this);
-        return metaData;
-    }
-
-    @Override
-    protected ObjectSelectMetadata getBaseMetaData() {
-        return metaData;
-    }
 }

@@ -22,7 +22,7 @@ package org.apache.cayenne.dba.postgres;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.dba.sqlserver.SQLServerProcedureAction;
-import org.apache.cayenne.query.ProcedureQuery;
+import org.apache.cayenne.access.translator.TranslatedProcedure;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -38,8 +38,8 @@ import java.sql.SQLException;
  */
 class PostgresProcedureAction extends SQLServerProcedureAction {
 
-    PostgresProcedureAction(ProcedureQuery<?> query, DataNode dataNode) {
-        super(query, dataNode);
+    PostgresProcedureAction(TranslatedProcedure translated, DataNode dataNode) {
+        super(translated, dataNode);
     }
 
     @Override

@@ -26,6 +26,7 @@ import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
+import org.apache.cayenne.query.resolved.ResolvedQuery;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -43,13 +44,13 @@ public class ObjectSelect_CacheKeyIT {
 
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class);
 
-        QueryMetadata md1 = query.getMetaData(env.entityResolver());
-        assertEquals(QueryCacheStrategy.NO_CACHE, md1.getCacheStrategy());
-        assertNull(md1.getCacheKey());
+        ResolvedQuery md1 = query.resolve(env.entityResolver());
+        assertEquals(QueryCacheStrategy.NO_CACHE, md1.cacheStrategy());
+        assertNull(md1.cacheKey());
 
-        QueryMetadata md2 = query.getMetaData(env.entityResolver());
-        assertEquals(QueryCacheStrategy.NO_CACHE, md2.getCacheStrategy());
-        assertNull(md2.getCacheKey());
+        ResolvedQuery md2 = query.resolve(env.entityResolver());
+        assertEquals(QueryCacheStrategy.NO_CACHE, md2.cacheStrategy());
+        assertNull(md2.cacheKey());
     }
 
     @Test
@@ -58,9 +59,9 @@ public class ObjectSelect_CacheKeyIT {
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
                 .localCache();
 
-        QueryMetadata md1 = query.getMetaData(env.entityResolver());
-        assertEquals(QueryCacheStrategy.LOCAL_CACHE, md1.getCacheStrategy());
-        assertNotNull(md1.getCacheKey());
+        ResolvedQuery md1 = query.resolve(env.entityResolver());
+        assertEquals(QueryCacheStrategy.LOCAL_CACHE, md1.cacheStrategy());
+        assertNotNull(md1.cacheKey());
     }
 
     @Test
@@ -69,18 +70,18 @@ public class ObjectSelect_CacheKeyIT {
         ObjectSelect<Artist> q1 = ObjectSelect.query(Artist.class)
                 .localCache();
 
-        QueryMetadata md1 = q1.getMetaData(env.entityResolver());
-        assertEquals(QueryCacheStrategy.LOCAL_CACHE, md1.getCacheStrategy());
-        assertNotNull(md1.getCacheKey());
-        assertNull(md1.getCacheGroup());
+        ResolvedQuery md1 = q1.resolve(env.entityResolver());
+        assertEquals(QueryCacheStrategy.LOCAL_CACHE, md1.cacheStrategy());
+        assertNotNull(md1.cacheKey());
+        assertNull(md1.cacheGroup());
 
         ObjectSelect<Artist> q2 = ObjectSelect.query(Artist.class);
         q2.localCache("g1");
 
-        QueryMetadata md2 = q2.getMetaData(env.entityResolver());
-        assertEquals(QueryCacheStrategy.LOCAL_CACHE, md2.getCacheStrategy());
-        assertNotNull(md2.getCacheKey());
-        assertEquals("g1", md2.getCacheGroup());
+        ResolvedQuery md2 = q2.resolve(env.entityResolver());
+        assertEquals(QueryCacheStrategy.LOCAL_CACHE, md2.cacheStrategy());
+        assertNotNull(md2.cacheKey());
+        assertEquals("g1", md2.cacheGroup());
     }
 
     @Test
@@ -89,9 +90,9 @@ public class ObjectSelect_CacheKeyIT {
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
                 .sharedCache();
 
-        QueryMetadata md1 = query.getMetaData(env.entityResolver());
-        assertEquals(QueryCacheStrategy.SHARED_CACHE, md1.getCacheStrategy());
-        assertNotNull(md1.getCacheKey());
+        ResolvedQuery md1 = query.resolve(env.entityResolver());
+        assertEquals(QueryCacheStrategy.SHARED_CACHE, md1.cacheStrategy());
+        assertNotNull(md1.cacheKey());
     }
 
     @Test
@@ -100,18 +101,18 @@ public class ObjectSelect_CacheKeyIT {
         ObjectSelect<Artist> q1 = ObjectSelect.query(Artist.class)
                 .sharedCache();
 
-        QueryMetadata md1 = q1.getMetaData(env.entityResolver());
-        assertEquals(QueryCacheStrategy.SHARED_CACHE, md1.getCacheStrategy());
-        assertNotNull(md1.getCacheKey());
-        assertNull(md1.getCacheGroup());
+        ResolvedQuery md1 = q1.resolve(env.entityResolver());
+        assertEquals(QueryCacheStrategy.SHARED_CACHE, md1.cacheStrategy());
+        assertNotNull(md1.cacheKey());
+        assertNull(md1.cacheGroup());
 
         ObjectSelect<Artist> q2 = ObjectSelect.query(Artist.class)
                 .sharedCache("g1");
 
-        QueryMetadata md2 = q2.getMetaData(env.entityResolver());
-        assertEquals(QueryCacheStrategy.SHARED_CACHE, md2.getCacheStrategy());
-        assertNotNull(md2.getCacheKey());
-        assertEquals("g1", md2.getCacheGroup());
+        ResolvedQuery md2 = q2.resolve(env.entityResolver());
+        assertEquals(QueryCacheStrategy.SHARED_CACHE, md2.cacheStrategy());
+        assertNotNull(md2.cacheKey());
+        assertEquals("g1", md2.cacheGroup());
     }
 
     @Test
@@ -120,9 +121,9 @@ public class ObjectSelect_CacheKeyIT {
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
                 .sharedCache();
 
-        QueryMetadata md1 = query.getMetaData(env.entityResolver());
-        assertEquals(QueryCacheStrategy.SHARED_CACHE, md1.getCacheStrategy());
-        assertNotEquals("XYZ", md1.getCacheKey());
+        ResolvedQuery md1 = query.resolve(env.entityResolver());
+        assertEquals(QueryCacheStrategy.SHARED_CACHE, md1.cacheStrategy());
+        assertNotEquals("XYZ", md1.cacheKey());
     }
 
     @Test
@@ -137,10 +138,10 @@ public class ObjectSelect_CacheKeyIT {
         ObjectSelect<Painting> q3 = ObjectSelect.query(Painting.class)
                 .localCache();
 
-        assertNotNull(q1.getMetaData(env.entityResolver()).getCacheKey());
-        assertEquals(q1.getMetaData(env.entityResolver()).getCacheKey(), q2.getMetaData(env.entityResolver()).getCacheKey());
+        assertNotNull(q1.resolve(env.entityResolver()).cacheKey());
+        assertEquals(q1.resolve(env.entityResolver()).cacheKey(), q2.resolve(env.entityResolver()).cacheKey());
 
-        assertNotEquals(q1.getMetaData(env.entityResolver()).getCacheKey(), q3.getMetaData(env.entityResolver()).getCacheKey());
+        assertNotEquals(q1.resolve(env.entityResolver()).cacheKey(), q3.resolve(env.entityResolver()).cacheKey());
     }
 
     @Test
@@ -158,10 +159,10 @@ public class ObjectSelect_CacheKeyIT {
                 .localCache()
                 .where(ExpressionFactory.matchExp("a", "c"));
 
-        assertNotNull(q1.getMetaData(env.entityResolver()).getCacheKey());
-        assertEquals(q1.getMetaData(env.entityResolver()).getCacheKey(), q2.getMetaData(env.entityResolver()).getCacheKey());
+        assertNotNull(q1.resolve(env.entityResolver()).cacheKey());
+        assertEquals(q1.resolve(env.entityResolver()).cacheKey(), q2.resolve(env.entityResolver()).cacheKey());
 
-        assertNotEquals(q1.getMetaData(env.entityResolver()).getCacheKey(), q3.getMetaData(env.entityResolver()).getCacheKey());
+        assertNotEquals(q1.resolve(env.entityResolver()).cacheKey(), q3.resolve(env.entityResolver()).cacheKey());
     }
 
     @Test
@@ -182,11 +183,11 @@ public class ObjectSelect_CacheKeyIT {
         ObjectSelect<Artist> q4 = ObjectSelect.query(Artist.class)
                 .localCache();
 
-        assertNotNull(q1.getMetaData(env.entityResolver()).getCacheKey());
-        assertEquals(q1.getMetaData(env.entityResolver()).getCacheKey(), q2.getMetaData(env.entityResolver()).getCacheKey());
+        assertNotNull(q1.resolve(env.entityResolver()).cacheKey());
+        assertEquals(q1.resolve(env.entityResolver()).cacheKey(), q2.resolve(env.entityResolver()).cacheKey());
 
-        assertNotEquals(q1.getMetaData(env.entityResolver()).getCacheKey(), q3.getMetaData(env.entityResolver()).getCacheKey());
-        assertNotEquals(q1.getMetaData(env.entityResolver()).getCacheKey(), q4.getMetaData(env.entityResolver()).getCacheKey());
+        assertNotEquals(q1.resolve(env.entityResolver()).cacheKey(), q3.resolve(env.entityResolver()).cacheKey());
+        assertNotEquals(q1.resolve(env.entityResolver()).cacheKey(), q4.resolve(env.entityResolver()).cacheKey());
     }
 
     @Test
@@ -207,15 +208,15 @@ public class ObjectSelect_CacheKeyIT {
         ObjectSelect<Artist> q4 = ObjectSelect.query(Artist.class)
                 .localCache();
 
-        assertNotNull(q1.getMetaData(env.entityResolver()).getCacheKey());
-        assertEquals(q1.getMetaData(env.entityResolver()).getCacheKey(), q2.getMetaData(env.entityResolver()).getCacheKey());
+        assertNotNull(q1.resolve(env.entityResolver()).cacheKey());
+        assertEquals(q1.resolve(env.entityResolver()).cacheKey(), q2.resolve(env.entityResolver()).cacheKey());
 
-        assertNotEquals(q1.getMetaData(env.entityResolver()).getCacheKey(), q3.getMetaData(env.entityResolver()).getCacheKey());
-        assertNotEquals(q1.getMetaData(env.entityResolver()).getCacheKey(), q4.getMetaData(env.entityResolver()).getCacheKey());
+        assertNotEquals(q1.resolve(env.entityResolver()).cacheKey(), q3.resolve(env.entityResolver()).cacheKey());
+        assertNotEquals(q1.resolve(env.entityResolver()).cacheKey(), q4.resolve(env.entityResolver()).cacheKey());
     }
 
     private String cacheKey(FluentSelect<?, ?> query) {
-        return query.getMetaData(env.entityResolver()).getCacheKey();
+        return query.resolve(env.entityResolver()).cacheKey();
     }
 
     private static ObjectSelect<Painting> paintingsOver(int price) {
@@ -360,5 +361,20 @@ public class ObjectSelect_CacheKeyIT {
                 .select(context);
         assertEquals(1, over500.size());
         assertEquals("artist2", over500.get(0).getArtistName());
+    }
+
+    @Test
+    public void cacheKeyReflectsLaterChanges() {
+        // a query is resolved on every run, so its cache key follows the changes made between the runs
+        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class).sharedCache();
+        String key1 = query.resolve(env.entityResolver()).cacheKey();
+
+        query.where(Artist.ARTIST_NAME.eq("abc"));
+        String key2 = query.resolve(env.entityResolver()).cacheKey();
+        assertNotEquals(key1, key2);
+
+        query.orderBy(Artist.ARTIST_NAME.asc());
+        String key3 = query.resolve(env.entityResolver()).cacheKey();
+        assertNotEquals(key2, key3);
     }
 }

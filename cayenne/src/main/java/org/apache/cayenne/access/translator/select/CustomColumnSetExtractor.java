@@ -61,7 +61,7 @@ class CustomColumnSetExtractor implements ColumnExtractor {
 
     @Override
     public void extract(CayennePath prefix) {
-        ResultSegments mapping = context.getMetadata().getResultSegments();
+        ResultSegments mapping = context.getSelect().resultSegments();
         List<ResultSegment> segments = mapping != null ? mapping.segments() : List.of();
         if (segments.size() != columns.size()) {
             throw new CayenneRuntimeException("Query metadata describes %d result segments for %d columns",
@@ -90,7 +90,7 @@ class CustomColumnSetExtractor implements ColumnExtractor {
     }
 
     private void extractEmbeddedObject(Property<?> property) {
-        Object o = property.getExpression().evaluate(context.getMetadata().getObjEntity());
+        Object o = property.getExpression().evaluate(context.getSelect().objEntity());
         if(!(o instanceof EmbeddedAttribute attribute)) {
             throw new CayenneRuntimeException("EmbeddedAttribute expected, %s found", o);
         }
@@ -111,7 +111,7 @@ class CustomColumnSetExtractor implements ColumnExtractor {
         ObjEntity entity = descriptor.getEntity();
 
         ColumnExtractor extractor;
-        if(context.getMetadata().getPageSize() > 0) {
+        if(context.getSelect().pageSize() > 0) {
             extractor = new IdColumnExtractor(context, entity);
         } else {
             extractor = new DescriptorColumnExtractor(context, descriptor);
@@ -140,7 +140,7 @@ class CustomColumnSetExtractor implements ColumnExtractor {
     private CayennePath dbPathOrDefault(Expression pathExp, CayennePath defaultPrefix) {
         // normalize to db path first
         if(pathExp instanceof ObjPathExp) {
-            pathExp = context.getMetadata().getObjEntity().translateToDbPath(pathExp);
+            pathExp = context.getSelect().objEntity().translateToDbPath(pathExp);
         }
 
         if(!(pathExp instanceof DbPathExp dbPath)) {
@@ -160,7 +160,7 @@ class CustomColumnSetExtractor implements ColumnExtractor {
             int nodeCount = tableTree.getNodeCount();
 
             PathTranslationResult result = context.getPathTranslator()
-                    .translatePath(context.getMetadata().getDbEntity(), prefix);
+                    .translatePath(context.getSelect().dbEntity(), prefix);
             result.getDbRelationship().ifPresent(relationship
                     -> tableTree.addJoinTable(result.getFinalPath(), relationship, JoinType.LEFT_OUTER));
 

@@ -22,19 +22,17 @@ package org.apache.cayenne.access.translator.procedure;
 import org.apache.cayenne.access.translator.ProcedureTranslator;
 import org.apache.cayenne.access.translator.TranslatedProcedure;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.query.ProcedureQuery;
+import org.apache.cayenne.query.resolved.ResolvedProcedure;
 
 /**
- * A {@link ProcedureTranslator} that resolves the actual translator from {@link DbAdapter#getProcedureTranslator}
- * allowing adapters to customize translation.
+ * A {@link ProcedureTranslator} that delegates to the translator picked by the adapter.
  *
  * @since 5.0
  */
 public class DbAdapterDelegatedProcedureTranslator implements ProcedureTranslator {
 
     @Override
-    public TranslatedProcedure translate(ProcedureQuery<?> query, DbAdapter adapter, EntityResolver resolver) {
-        return adapter.getProcedureTranslator(query, resolver).translate(query, adapter, resolver);
+    public TranslatedProcedure translate(ResolvedProcedure procedure, DbAdapter adapter) {
+        return adapter.getProcedureTranslator(procedure).translate(procedure, adapter);
     }
 }

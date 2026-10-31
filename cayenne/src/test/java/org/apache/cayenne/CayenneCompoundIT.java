@@ -23,7 +23,6 @@ import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SQLQuery;
-import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.compound.CharPkTestEntity;
 import org.apache.cayenne.testdo.compound.CompoundPkTestEntity;
@@ -188,10 +187,10 @@ public class CayenneCompoundIT {
 
         // the compound PK columns (KEY1, KEY2) are NOT the first selected columns and are read as a
         // DataRow id map by the paginated id reader
-        SQLTemplate query = new SQLTemplate(CompoundPkTestEntity.class,
+        SQLQuery<CompoundPkTestEntity> query = SQLQuery.query(CompoundPkTestEntity.class,
                 "SELECT NAME, KEY1, KEY2 FROM COMPOUND_PK_TEST ORDER BY NAME");
-        query.setColumnNamesCapitalization(CapsStrategy.UPPER);
-        query.setPageSize(pageSize);
+        query.columnNameCaps(CapsStrategy.UPPER);
+        query.pageSize(pageSize);
 
         List<?> result = env.context().select(query);
         assertEquals(20, result.size());
@@ -209,7 +208,7 @@ public class CayenneCompoundIT {
 
         int pageSize = 7;
 
-        // SQLQuery builds a replacement SQLTemplate, so it exercises the same compound-PK paginated id reader
+        // SQLQuery builds a replacement SQLQuery, so it exercises the same compound-PK paginated id reader
         SQLQuery<CompoundPkTestEntity> query = SQLQuery
                 .query(CompoundPkTestEntity.class, "SELECT NAME, KEY1, KEY2 FROM COMPOUND_PK_TEST ORDER BY NAME")
                 .columnNameCaps(CapsStrategy.UPPER)

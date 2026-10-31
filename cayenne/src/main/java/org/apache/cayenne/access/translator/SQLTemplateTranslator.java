@@ -16,30 +16,19 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+
 package org.apache.cayenne.access.translator;
 
 import org.apache.cayenne.dba.DbAdapter;
-
-import java.util.List;
-import java.util.Map;
+import org.apache.cayenne.query.resolved.ResolvedSQL;
 
 /**
- * @since 4.0
+ * Renders the SQL template of a {@link ResolvedSQL} (the dialect of the given adapter, or the default template) with
+ * its named or positional parameters into SQL with bindings.
+ *
+ * @since 6.0
  */
 public interface SQLTemplateTranslator {
 
-	/**
-	 * Builds and returns a SQLStatement based on SQL template String and a map of parameters.
-	 *
-	 * @since 5.0
-	 */
-	TranslatedSQL translate(String template, Map<String, ?> parameters, DbAdapter adapter);
-
-	/**
-	 * Builds and returns a SQLStatement based on SQL template String and a list of positional
-	 * parameters.
-	 *
-	 * @since 5.0
-	 */
-	TranslatedSQL translate(String template, List<Object> positionalParameters, DbAdapter adapter);
+    TranslatedSQL translate(ResolvedSQL query, DbAdapter adapter);
 }

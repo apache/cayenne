@@ -21,18 +21,14 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.SelectResult;
 import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
-import org.apache.cayenne.access.translator.BatchTranslator;
-import org.apache.cayenne.access.translator.ProcedureTranslator;
-import org.apache.cayenne.access.translator.SQLTemplateTranslator;
-import org.apache.cayenne.access.translator.SelectTranslator;
+import org.apache.cayenne.access.translator.TranslatedStatement;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.log.SQLLogger;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.query.DeleteBatchQuery;
-import org.apache.cayenne.query.InsertBatchQuery;
+import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.UpdateBatchQuery;
+import org.apache.cayenne.query.resolved.ResolvedQuery;
 
 import javax.sql.DataSource;
 import java.util.HashMap;
@@ -108,7 +104,7 @@ public class MockDataNode extends DataNode {
         if (replaceResults) {
             // stick preset results to the statements
             for (StatementContext statementContext : statementContexts) {
-                statementContext.addResult(new SelectResult<>((List) results.get(statementContext.getQuery())));
+                statementContext.addResult(new SelectResult<>((List) results.get(statementContext.getResolvedQuery().source())));
             }
         } else {
             // execute here, with the delegate supplying all the parts
@@ -147,34 +143,15 @@ public class MockDataNode extends DataNode {
     }
 
     @Override
-    public SelectTranslator getSelectTranslator() {
-        return node.getSelectTranslator();
+    protected TranslatedStatement translate(ResolvedQuery query, DbAdapter adapter, EntityResolver resolver) {
+        return node.translate(query, adapter, resolver);
     }
 
-    @Override
-    public ProcedureTranslator getProcedureTranslator() {
-        return node.getProcedureTranslator();
-    }
 
-    @Override
-    public SQLTemplateTranslator getSqlTemplateTranslator() {
-        return node.getSqlTemplateTranslator();
-    }
 
-    @Override
-    public BatchTranslator<InsertBatchQuery> getInsertBatchTranslator() {
-        return node.getInsertBatchTranslator();
-    }
 
-    @Override
-    public BatchTranslator<UpdateBatchQuery> getUpdateBatchTranslator() {
-        return node.getUpdateBatchTranslator();
-    }
 
-    @Override
-    public BatchTranslator<DeleteBatchQuery> getDeleteBatchTranslator() {
-        return node.getDeleteBatchTranslator();
-    }
+
 
     @Override
     public String getName() {

@@ -23,10 +23,9 @@ import org.apache.cayenne.SelectResult;
 import org.apache.cayenne.UpdateResult;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.StatementContext;
-import org.apache.cayenne.access.jdbc.ProcedureAction;
+import org.apache.cayenne.access.jdbc.DataNodeProcedureAction;
 import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.access.translator.TranslatedProcedure;
-import org.apache.cayenne.query.ProcedureQuery;
 
 import java.sql.CallableStatement;
 import java.sql.Connection;
@@ -35,33 +34,28 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * ProcedureAction for SQLServer MS JDBC driver. Customizes OUT parameter processing - it has to be done AFTER the
- * ResultSets are read (note that jTDS driver works fine with normal ProcedureAction).
+ * DataNodeProcedureAction for SQLServer MS JDBC driver. Customizes OUT parameter processing - it has to be done AFTER the
+ * ResultSets are read (note that jTDS driver works fine with normal DataNodeProcedureAction).
  * <p>
  * <i>See JIRA CAY-251 for details. </i>
  * </p>
  *
  * @since 1.2
  */
-public class SQLServerProcedureAction extends ProcedureAction {
+public class SQLServerProcedureAction extends DataNodeProcedureAction {
 
 	/**
 	 * @since 4.0
 	 */
-	public SQLServerProcedureAction(ProcedureQuery<?> query, DataNode dataNode) {
-		super(query, dataNode);
+	public SQLServerProcedureAction(TranslatedProcedure translated, DataNode dataNode) {
+		super(translated, dataNode);
 	}
 
 	@Override
-	public void performAction(Connection connection, StatementContext context) throws Exception {
-
-		TranslatedProcedure translated = dataNode.getProcedureTranslator()
-				.translate(query, dataNode.getAdapter(), context.getResolver());
-
-		context.setTranslated(translated);
+	public void execute(Connection connection, StatementContext context) throws Exception {
 
 		try (CallableStatement statement = connection.prepareCall(translated.sql())) {
-			bindParameters(statement, translated);
+			bindParameters(statement);
 
 			// stored procedure may contain a mixture of update counts and
 			// result sets,

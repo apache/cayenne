@@ -21,10 +21,9 @@ package org.apache.cayenne.dba.mysql;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.UpdateResult;
 import org.apache.cayenne.access.StatementContext;
-import org.apache.cayenne.access.jdbc.ProcedureAction;
+import org.apache.cayenne.access.jdbc.DataNodeProcedureAction;
 import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.access.translator.TranslatedProcedure;
-import org.apache.cayenne.query.ProcedureQuery;
 
 import java.sql.CallableStatement;
 import java.sql.Connection;
@@ -35,24 +34,19 @@ import java.util.Objects;
 /**
  * @since 3.0
  */
-class MySQLProcedureAction extends ProcedureAction {
+class MySQLProcedureAction extends DataNodeProcedureAction {
 
-	public MySQLProcedureAction(ProcedureQuery<?> query, DataNode dataNode) {
-		super(query, dataNode);
+	public MySQLProcedureAction(TranslatedProcedure translated, DataNode dataNode) {
+		super(translated, dataNode);
 	}
 
 	@Override
-	public void performAction(Connection connection, StatementContext context) throws Exception {
+	public void execute(Connection connection, StatementContext context) throws Exception {
 
 		processedResultSets = 0;
 
-		TranslatedProcedure translated = dataNode.getProcedureTranslator()
-				.translate(query, dataNode.getAdapter(), context.getResolver());
-
-		context.setTranslated(translated);
-
 		try (CallableStatement statement = connection.prepareCall(translated.sql());) {
-			bindParameters(statement, translated);
+			bindParameters(statement);
 
 			// this is one difference with super - we need to read the first
 			// result set

@@ -20,11 +20,13 @@
 package org.apache.cayenne.access.translator;
 
 import org.apache.cayenne.access.jdbc.CSParameter;
+import org.apache.cayenne.query.resolved.ResolvedProcedure;
 
 /**
- * An immutable result of translating a {@link org.apache.cayenne.query.ProcedureQuery} to a stored procedure call.
+ * A translated stored procedure call: the call SQL and its IN and OUT parameters.
  *
- * @since 5.0
+ * @since 6.0
  */
-public record TranslatedProcedure(String sql, CSParameter<?>[] params) implements TranslatedStatement {
+public record TranslatedProcedure(ResolvedProcedure query, String sql, CSParameter<?>[] params)
+        implements TranslatedStatement {
 }

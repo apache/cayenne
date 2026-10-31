@@ -24,6 +24,7 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.jdbc.PSParameter;
 import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.access.translator.TranslatedSQL;
+import org.apache.cayenne.query.resolved.ResolvedSQL;
 import org.apache.cayenne.log.SQLLogger;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -183,7 +184,7 @@ public class JdbcPkGenerator implements PkGenerator {
      * @since 6.0
      */
     protected static int executeUpdate(Connection con, String sql, SQLLogger logger) throws SQLException {
-        TranslatedSQL statement = new TranslatedSQL(sql, new PSParameter[0], new RSColumn[0]);
+        TranslatedSQL statement = new TranslatedSQL(ResolvedSQL.raw(sql), sql, new PSParameter[0], new RSColumn[0]);
         long start = System.nanoTime();
         try (Statement update = con.createStatement()) {
             int count = update.executeUpdate(sql);
@@ -203,7 +204,7 @@ public class JdbcPkGenerator implements PkGenerator {
      * @since 6.0
      */
     protected static Long selectLong(Connection con, String sql, SQLLogger logger) throws SQLException {
-        TranslatedSQL statement = new TranslatedSQL(sql, new PSParameter[0], new RSColumn[0]);
+        TranslatedSQL statement = new TranslatedSQL(ResolvedSQL.raw(sql), sql, new PSParameter[0], new RSColumn[0]);
         long start = System.nanoTime();
         try (Statement select = con.createStatement(); ResultSet rs = select.executeQuery(sql)) {
             if (!rs.next()) {

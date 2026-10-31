@@ -20,6 +20,9 @@
 package org.apache.cayenne.dba.sybase;
 
 import org.apache.cayenne.CoreModule;
+import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.access.StatementContext;
+import org.apache.cayenne.access.translator.TranslatedSelect;
 import org.apache.cayenne.dba.NativeColumnType;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
 import org.apache.cayenne.access.types.ByteArrayType;
@@ -38,6 +41,7 @@ import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.Types;
 import java.util.List;
@@ -109,6 +113,12 @@ public class SybaseAdapter extends JdbcAdapter {
     @Override
     public SQLTreeProcessor getSqlTreeProcessor() {
         return new SybaseSQLTreeProcessor();
+    }
+
+    @Override
+    public void executeSelect(TranslatedSelect select, Connection connection, StatementContext context,
+            DataNode node) throws Exception {
+        new SybaseSelectAction(select, node).execute(connection, context);
     }
 
     /**

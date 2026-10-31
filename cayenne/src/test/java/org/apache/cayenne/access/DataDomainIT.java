@@ -23,6 +23,10 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.query.resolved.ResolvedSQL;
+import org.apache.cayenne.query.resolved.ResolvedQueries;
+import org.apache.cayenne.query.SQLQuery;
+import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.unit.CayenneProjects;
@@ -83,6 +87,34 @@ public class DataDomainIT {
 
         // must map to default
         assertSame(n1, domain.lookupDataNode(new DataMap("m3")));
+    }
+
+    @Test
+    public void lookupDataNodeForQuery() {
+
+        DataDomain domain = env.runtime().getDataDomain();
+        domain.setDefaultNode(null);
+
+        DataMap m1 = new DataMap("m1");
+        DbEntity e1 = new DbEntity("E1");
+        m1.addDbEntity(e1);
+        DataNode n1 = DataNodes.named("n1");
+        domain.addNode(n1, List.of(m1));
+
+        DataNode n2 = DataNodes.named("n2");
+        domain.addNode(n2, List.of());
+
+        // a query with a root is routed by its DataMap
+        assertSame(n1, domain.lookupDataNode(ResolvedQueries.select(null, e1)));
+
+        // a rootless SQL statement by its node name, or else to the default node
+        assertSame(n2, domain.lookupDataNode(SQLQuery.query("SELECT 1").dataNode("n2").resolve(new EntityResolver())));
+        assertThrows(CayenneRuntimeException.class,
+                () -> domain.lookupDataNode(SQLQuery.query("SELECT 1").dataNode("n3").resolve(new EntityResolver())));
+        assertThrows(CayenneRuntimeException.class, () -> domain.lookupDataNode(ResolvedSQL.raw("SELECT 1")));
+
+        domain.setDefaultNode(n1);
+        assertSame(n1, domain.lookupDataNode(ResolvedSQL.raw("SELECT 1")));
     }
 
     @Test

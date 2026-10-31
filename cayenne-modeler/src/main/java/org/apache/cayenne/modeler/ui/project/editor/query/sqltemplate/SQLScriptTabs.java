@@ -34,7 +34,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTabbedPane;
 
-import org.apache.cayenne.map.SQLTemplateDescriptor;
+import org.apache.cayenne.map.SQLQueryDescriptor;
 import org.apache.cayenne.modeler.dbadapter.DbAdapters;
 import org.apache.cayenne.modeler.event.model.QueryEvent;
 import org.apache.cayenne.modeler.project.ProjectSession;
@@ -66,7 +66,7 @@ class SQLScriptTabs extends ProjectPanel {
     // an editor per script key, created on demand and kept, as the undoable edits of a script refer to its editor
     private final Map<String, QueryTextEditor> editors;
 
-    private SQLTemplateDescriptor query;
+    private SQLQueryDescriptor query;
     private Runnable selectionListener;
 
     // true while the tabs are rebuilt, so that the intermediate selections aren't reported
@@ -125,7 +125,7 @@ class SQLScriptTabs extends ProjectPanel {
      * Shows the scripts of the query: the default one, and those of the DbAdapters that have SQL. The script shown
      * before stays selected if the query has it, otherwise the default one is selected.
      */
-    void setQuery(SQLTemplateDescriptor query) {
+    void setQuery(SQLQueryDescriptor query) {
         String selected = getSelectedScript();
         this.query = query;
 
@@ -254,7 +254,7 @@ class SQLScriptTabs extends ProjectPanel {
     /**
      * Stores the script in the query. The text is trimmed, and a blank one is stored as null.
      */
-    void setScript(SQLTemplateDescriptor query, String key, String text) {
+    void setScript(SQLQueryDescriptor query, String key, String text) {
         String sql = text != null && !text.isBlank() ? text.trim() : null;
         if (Objects.equals(sql, getScript(query, key))) {
             return;
@@ -268,7 +268,7 @@ class SQLScriptTabs extends ProjectPanel {
         session.fireQueryEvent(QueryEvent.ofChange(this, query));
     }
 
-    static String getScript(SQLTemplateDescriptor query, String key) {
+    static String getScript(SQLQueryDescriptor query, String key) {
         return DEFAULT_SCRIPT.equals(key) ? query.getSql() : query.getAdapterSql().get(key);
     }
 
@@ -285,7 +285,7 @@ class SQLScriptTabs extends ProjectPanel {
     /**
      * Removes the script from the query, and its tab, if the query is shown.
      */
-    void removeScript(SQLTemplateDescriptor query, String key) {
+    void removeScript(SQLQueryDescriptor query, String key) {
         setScript(query, key, null);
         if (query == this.query) {
             int index = indexOf(key);
@@ -298,7 +298,7 @@ class SQLScriptTabs extends ProjectPanel {
     /**
      * Puts the script back to the query, and shows it, if the query is shown.
      */
-    void restoreScript(SQLTemplateDescriptor query, String key, String text) {
+    void restoreScript(SQLQueryDescriptor query, String key, String text) {
         setScript(query, key, text);
         if (query == this.query) {
             showScript(key);

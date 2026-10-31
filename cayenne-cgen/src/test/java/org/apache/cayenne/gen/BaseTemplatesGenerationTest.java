@@ -25,7 +25,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.QueryDescriptor;
-import org.apache.cayenne.map.SQLTemplateDescriptor;
+import org.apache.cayenne.map.SQLQueryDescriptor;
 import org.apache.cayenne.map.SelectQueryDescriptor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -121,7 +121,7 @@ public class BaseTemplatesGenerationTest extends CgenCase {
         objEntity.setDbEntity(dbEntity);
         objEntity.setClassName("Test");
 
-        SQLTemplateDescriptor sqlTemplateDescriptor = new SQLTemplateDescriptor();
+        SQLQueryDescriptor sqlTemplateDescriptor = new SQLQueryDescriptor();
         sqlTemplateDescriptor.setSql("SELECT * FROM table");
         sqlTemplateDescriptor.setRoot(objEntity);
         sqlTemplateDescriptor.setName("select");

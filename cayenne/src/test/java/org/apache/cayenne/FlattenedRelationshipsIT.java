@@ -23,7 +23,7 @@ import java.util.List;
 
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.query.SQLTemplate;
+import org.apache.cayenne.query.SQLQuery;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.relationships_flattened.Entity1;
 import org.apache.cayenne.testdo.relationships_flattened.Entity3;
@@ -37,6 +37,7 @@ import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.apache.cayenne.validation.ValidationResult;
 import org.apache.cayenne.access.ToManyHolder;
+import org.apache.cayenne.DataRow;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -135,10 +136,9 @@ public class FlattenedRelationshipsIT {
     public void testUnsetJoinWithPK() throws Exception {
         createCircularJoinDataSet();
 
-        SQLTemplate joinSelect = new SQLTemplate(
+        SQLQuery<DataRow> joinSelect = SQLQuery.query(
                 FlattenedTest1.class,
-                "SELECT * FROM COMPLEX_JOIN");
-        joinSelect.setFetchingDataRows(true);
+                "SELECT * FROM COMPLEX_JOIN").fetchDataRows();
         assertEquals(3, context.select(joinSelect).size());
 
         FlattenedTest1 ft1 = context.objectForPK(FlattenedTest1.class, 2);

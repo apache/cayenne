@@ -16,21 +16,24 @@
 If a user needs some extra functionality not addressed by the existing set of Cayenne queries, he can write his own.
 The only requirement is to implement `org.apache.cayenne.query.Query` interface. Its type parameter is the type of
 the rows the query selects, so that the query can be run with `ObjectContext.select(..)` and the other selecting
-methods, as well as with `execute(..)`. E.g. to do something directly in the JDBC layer, you might implement `Query` like
-this:
+methods, as well as with `execute(..)`.
+
+`Query` has a single abstract method, `resolve(EntityResolver)`, that turns the query into a `ResolvedQuery` - an
+immutable description of the statements to run, from which Cayenne picks the DataNode, generates the SQL and reads the
+results. A custom query builds its resolved form by delegating to a standard Cayenne query, e.g. an `ObjectSelect`
+assembled from the custom query's own state:
 
 [source,java,indent=0]
 ----
 include::{java-examples}/customquery/MyQuery.java[tags=content]
 ----
 
-To delegate the actual query execution to a standard Cayenne query, you may subclass `IndirectQuery`:
-
+Or raw SQL, delegating to `SQLQuery`:
 
 [source,java,indent=0]
 ----
 include::{java-examples}/customquery/MyDelegatingQuery.java[tags=content]
 ----
 
-In fact many internal Cayenne queries are `IndirectQueries`, delegating to `ObjectSelect` or `SQLTemplate`
-after some preprocessing.
+A query is resolved every time it runs, so a custom query may change its state between the runs, and the standard
+queries it delegates to do not need to be cached.

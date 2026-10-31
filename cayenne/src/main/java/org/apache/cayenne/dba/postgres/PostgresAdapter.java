@@ -20,6 +20,7 @@
 package org.apache.cayenne.dba.postgres;
 
 import org.apache.cayenne.CoreModule;
+import org.apache.cayenne.access.StatementContext;
 import org.apache.cayenne.dba.NativeColumnType;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
@@ -39,11 +40,12 @@ import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.query.ProcedureQuery;
-import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.SQLAction;
+import org.apache.cayenne.access.translator.TranslatedSelect;
+import org.apache.cayenne.access.translator.TranslatedProcedure;
+import org.apache.cayenne.access.translator.TranslatedBatch;
+import org.apache.cayenne.query.resolved.ResolvedProcedure;
 
+import java.sql.Connection;
 import java.sql.Types;
 import java.util.Collection;
 import java.util.Collections;
@@ -126,21 +128,29 @@ public class PostgresAdapter extends JdbcAdapter {
         return new PostgreSQLTreeProcessor();
     }
 
-    /**
-     * Uses PostgresActionBuilder to create the right action.
-     *
-     * @since 1.2
-     */
     @Override
-    public SQLAction getAction(Query<?> query, DataNode node) {
-        return query.createSQLAction(new PostgresActionBuilder(node));
+    public void executeSelect(TranslatedSelect select, Connection connection, StatementContext context,
+            DataNode node) throws Exception {
+        new PostgresSelectAction(select, node).execute(connection, context);
+    }
+
+    @Override
+    public void executeProcedure(TranslatedProcedure procedure, Connection connection, StatementContext context,
+            DataNode node) throws Exception {
+        new PostgresProcedureAction(procedure, node).execute(connection, context);
+    }
+
+    @Override
+    public void executeBatch(TranslatedBatch batch, Connection connection, StatementContext context,
+            DataNode node) throws Exception {
+        new PostgresBatchAction(batch, node, runsAsBatch(batch)).execute(connection, context);
     }
 
     /**
      * @since 5.0
      */
     @Override
-    public ProcedureTranslator getProcedureTranslator(ProcedureQuery<?> query, EntityResolver entityResolver) {
+    public ProcedureTranslator getProcedureTranslator(ResolvedProcedure procedure) {
         return new PostgresProcedureTranslator();
     }
 

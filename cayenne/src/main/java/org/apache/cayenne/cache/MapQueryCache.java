@@ -19,7 +19,6 @@
 package org.apache.cayenne.cache;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.util.ClockMap;
 
 import java.util.List;
@@ -51,14 +50,13 @@ public class MapQueryCache implements QueryCache {
         this.maxSize = maxSize;
     }
 
-    public List get(QueryMetadata metadata) {
-        String key = metadata.getCacheKey();
-        if (key == null) {
+    public List get(String cacheKey, String cacheGroup) {
+        if (cacheKey == null) {
             return null;
         }
-        Map<String, List<?>> map = createIfAbsent(metadata);
+        Map<String, List<?>> map = createIfAbsent(cacheName(cacheGroup));
         synchronized (map) {
-            return map.get(key);
+            return map.get(cacheKey);
         }
     }
 
@@ -69,30 +67,29 @@ public class MapQueryCache implements QueryCache {
      * this wouldn't lead to corruption of the cache, but can be suboptimal.
      */
     @SuppressWarnings("rawtypes")
-    public List get(QueryMetadata metadata, QueryCacheEntryFactory factory) {
-        List result = get(metadata);
+    public List get(String cacheKey, String cacheGroup, QueryCacheEntryFactory factory) {
+        List result = get(cacheKey, cacheGroup);
         if (result == null) {
             List newObject = factory.createObject();
             if (newObject == null) {
-                throw new CayenneRuntimeException("Null on cache rebuilding: %s", metadata.getCacheKey());
+                throw new CayenneRuntimeException("Null on cache rebuilding: %s", cacheKey);
             }
 
             result = newObject;
-            put(metadata, result);
+            put(cacheKey, cacheGroup, result);
         }
 
         return result;
     }
 
-    public void put(QueryMetadata metadata, List results) {
-        String key = metadata.getCacheKey();
-        if (key == null) {
+    public void put(String cacheKey, String cacheGroup, List results) {
+        if (cacheKey == null) {
             return;
         }
 
-        Map<String, List<?>> map = createIfAbsent(metadata);
+        Map<String, List<?>> map = createIfAbsent(cacheName(cacheGroup));
         synchronized (map) {
-            map.put(key, results);
+            map.put(cacheKey, results);
         }
     }
 
@@ -134,10 +131,6 @@ public class MapQueryCache implements QueryCache {
         return size;
     }
 
-    protected Map<String, List<?>> createIfAbsent(QueryMetadata metadata) {
-        return createIfAbsent(cacheName(metadata));
-    }
-
     protected Map<String, List<?>> createIfAbsent(String cacheName) {
         Map<String, List<?>> cache = getCache(cacheName);
         if (cache == null) {
@@ -163,9 +156,7 @@ public class MapQueryCache implements QueryCache {
         return cacheGroups.get(name);
     }
 
-    protected String cacheName(QueryMetadata metadata) {
-
-        String cacheGroup = metadata.getCacheGroup();
+    protected String cacheName(String cacheGroup) {
         if (cacheGroup != null) {
             return cacheGroup;
         }

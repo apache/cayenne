@@ -20,7 +20,7 @@
 package org.apache.cayenne.project.xml;
 
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.SQLTemplateDescriptor;
+import org.apache.cayenne.map.SQLQueryDescriptor;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -34,11 +34,11 @@ public class PrefetchTypeForSqlTemplateHandlerTest extends BaseHandlerTest {
         parse("sqlQuery", new HandlerFactory() {
             @Override
             public NamespaceAwareNestedTagHandler createHandler(NamespaceAwareNestedTagHandler parent) {
-                return new SQLTemplateDescriptorHandler(parent, map);
+                return new SQLQueryDescriptorHandler(parent, map);
             }
         });
 
-        SQLTemplateDescriptor sqlTemplateDescriptor = (SQLTemplateDescriptor) map.getQueryDescriptor("query");
+        SQLQueryDescriptor sqlTemplateDescriptor = (SQLQueryDescriptor) map.getQueryDescriptor("query");
         assertEquals(3, sqlTemplateDescriptor.getPrefetchesMap().size());
 
         assertEquals(1, (int) sqlTemplateDescriptor.getPrefetchesMap().get("paintings"));

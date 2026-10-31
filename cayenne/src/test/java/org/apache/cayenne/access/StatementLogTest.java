@@ -36,8 +36,9 @@ import org.apache.cayenne.access.translator.TranslatedSelect;
 import org.apache.cayenne.access.translator.TranslatedStatement;
 import org.apache.cayenne.log.SQLLogger;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.query.QueryMetadata;
-import org.apache.cayenne.query.SQLTemplate;
+import org.apache.cayenne.query.resolved.ResolvedQueries;
+import org.apache.cayenne.query.resolved.ResolvedQuery;
+import org.apache.cayenne.query.resolved.ResolvedSQL;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -57,16 +58,17 @@ import static org.mockito.Mockito.when;
 public class StatementLogTest {
 
     private static TranslatedSelect select() {
-        return new TranslatedSelect("SELECT 1", new PSParameter<?>[0], new RSColumn[0], null, false, false);
+        return new TranslatedSelect(ResolvedQueries.select(), "SELECT 1", new PSParameter<?>[0], new RSColumn[0], null, false,
+                false);
     }
 
     private static TranslatedBatch batch() {
         PSBatchParameter p = new PSBatchParameter(new Object[]{1, 2, 3}, 1, 0, 0, null);
-        return new TranslatedBatch("INSERT", new PSBatchParameter[]{p});
+        return new TranslatedBatch(ResolvedQueries.batch(), "INSERT", new PSBatchParameter[]{p});
     }
 
     private static TranslatedProcedure procedure() {
-        return new TranslatedProcedure("call p()", new CSParameter<?>[0]);
+        return new TranslatedProcedure(ResolvedQueries.procedure(), "call p()", new CSParameter<?>[0]);
     }
 
     private static UpdateResult count(int count) {
@@ -135,15 +137,14 @@ public class StatementLogTest {
         }
     }
 
-    private static StatementContext statementContext(SQLTemplate<?> query, SQLLogger logger) {
-        StatementContext statementContext = new StatementContext(query, mock(QueryMetadata.class),
-                mock(EntityResolver.class));
+    private static StatementContext statementContext(ResolvedQuery query, SQLLogger logger) {
+        StatementContext statementContext = new StatementContext(query, mock(EntityResolver.class));
         statementContext.setLogger(logger);
         return statementContext;
     }
 
     private static StatementContext statementContext(CapturingLogger logger) {
-        return statementContext(new SQLTemplate<>("SELECT 1"), logger);
+        return statementContext(ResolvedSQL.raw("SELECT 1"), logger);
     }
 
     @Test
@@ -151,7 +152,7 @@ public class StatementLogTest {
         CapturingLogger logger = new CapturingLogger();
         StatementContext statementContext = statementContext(logger);
 
-        statementContext.setTranslated(select());
+        statementContext.setTranslatedStatement(select());
         statementContext.addResult(new SelectResult<>(asList(new Object(), new Object())));
         statementContext.logComplete();
 
@@ -163,7 +164,7 @@ public class StatementLogTest {
         CapturingLogger logger = new CapturingLogger();
         StatementContext statementContext = statementContext(logger);
 
-        statementContext.setTranslated(batch());
+        statementContext.setTranslatedStatement(batch());
         statementContext.addResult(count(1));
         statementContext.addResult(count(1));
         statementContext.addResult(count(1));
@@ -177,7 +178,7 @@ public class StatementLogTest {
         CapturingLogger logger = new CapturingLogger();
         StatementContext statementContext = statementContext(logger);
 
-        statementContext.setTranslated(batch());
+        statementContext.setTranslatedStatement(batch());
         statementContext.addResult(new UpdateResult(new int[]{1, 2, 3}));
         statementContext.logComplete();
 
@@ -189,7 +190,7 @@ public class StatementLogTest {
         CapturingLogger logger = new CapturingLogger();
         StatementContext statementContext = statementContext(logger);
 
-        statementContext.setTranslated(procedure());
+        statementContext.setTranslatedStatement(procedure());
         statementContext.addResult(new SelectResult<>(
                 List.of(new Object(), new Object(), new Object(), new Object(), new Object())));
         statementContext.addResult(count(10));
@@ -204,7 +205,7 @@ public class StatementLogTest {
         CapturingLogger logger = new CapturingLogger();
         StatementContext statementContext = statementContext(logger);
 
-        statementContext.setTranslated(procedure());
+        statementContext.setTranslatedStatement(procedure());
         statementContext.addResult(new OutParametersResult(Map.of("p", 1)));
         statementContext.addResult(new SelectResult<>(List.of(new Object())));
         statementContext.logComplete();
@@ -219,7 +220,7 @@ public class StatementLogTest {
         CapturingLogger logger = new CapturingLogger();
         StatementContext statementContext = statementContext(logger);
 
-        statementContext.setTranslated(procedure());
+        statementContext.setTranslatedStatement(procedure());
         statementContext.addResult(new SelectResult<>(List.of(new Object())));
         statementContext.addResult(count(0));
         statementContext.logComplete();
@@ -233,7 +234,7 @@ public class StatementLogTest {
         CapturingLogger logger = new CapturingLogger();
         StatementContext statementContext = statementContext(logger);
 
-        statementContext.setTranslated(select());
+        statementContext.setTranslatedStatement(select());
         statementContext.addResult(new SelectResult<>(asList(new Object(), new Object())));
         statementContext.addResult(new UpdateResult(new int[0]));
         statementContext.logComplete();
@@ -251,7 +252,7 @@ public class StatementLogTest {
         DataRow row2 = DataRow.of("Artist", DataRowLayout.of("ARTIST_ID"),
                 new Object[]{2L}, SnapshotVersion.next());
 
-        statementContext.setTranslated(batch());
+        statementContext.setTranslatedStatement(batch());
         statementContext.addGeneratedKeys(asList(row1, row2));
         statementContext.addResult(count(1));
         statementContext.addResult(count(1));
@@ -267,14 +268,14 @@ public class StatementLogTest {
     @Test
     public void completedBatchLoggedBeforeNextRun() {
         CapturingLogger logger = new CapturingLogger();
-        StatementContext statementContext1 = statementContext(new SQLTemplate<>("INSERT 1"), logger);
-        StatementContext statementContext2 = statementContext(new SQLTemplate<>("INSERT 2"), logger);
+        StatementContext statementContext1 = statementContext(ResolvedSQL.raw("INSERT 1"), logger);
+        StatementContext statementContext2 = statementContext(ResolvedSQL.raw("INSERT 2"), logger);
 
-        statementContext1.setTranslated(batch());
+        statementContext1.setTranslatedStatement(batch());
         statementContext1.addResult(count(2));
         statementContext1.logComplete();
 
-        statementContext2.setTranslated(batch());
+        statementContext2.setTranslatedStatement(batch());
         statementContext2.addResult(count(3));
         statementContext2.logComplete();
 
@@ -286,7 +287,7 @@ public class StatementLogTest {
         CapturingLogger logger = new CapturingLogger();
         StatementContext statementContext = statementContext(logger);
 
-        statementContext.setTranslated(select());
+        statementContext.setTranslatedStatement(select());
         statementContext.logError(new RuntimeException("boom"));
 
         assertEquals(List.of("error:boom"), logger.calls);
@@ -308,7 +309,7 @@ public class StatementLogTest {
         CapturingLogger logger = new CapturingLogger();
         StatementContext statementContext = statementContext(logger);
 
-        statementContext.setTranslated(batch());
+        statementContext.setTranslatedStatement(batch());
         statementContext.addResult(count(1));
         statementContext.logError(new RuntimeException("boom"));
         statementContext.logComplete();
@@ -338,7 +339,7 @@ public class StatementLogTest {
         when(iterator.hasNextRow()).thenReturn(true, true, false);
         when(iterator.nextRow()).thenReturn(new Object(), new Object());
 
-        statementContext.setTranslated(select());
+        statementContext.setTranslatedStatement(select());
         statementContext.addResult(iterator);
 
         ResultIterator<?> stored = assertInstanceOf(ResultIterator.class, statementContext.getResults().getFirst());
@@ -356,11 +357,11 @@ public class StatementLogTest {
 
     @Test
     public void iteratorNotWrappedWhenLoggingDisabled() {
-        StatementContext statementContext = new StatementContext(new SQLTemplate<>("SELECT 1"),
-                mock(QueryMetadata.class), mock(EntityResolver.class));
+        StatementContext statementContext = new StatementContext(ResolvedSQL.raw("SELECT 1"),
+                mock(EntityResolver.class));
 
         ResultIterator<?> iterator = mock(ResultIterator.class);
-        statementContext.setTranslated(select());
+        statementContext.setTranslatedStatement(select());
         statementContext.addResult(iterator);
 
         assertSame(iterator, statementContext.getResults().getFirst());
@@ -371,7 +372,7 @@ public class StatementLogTest {
         CapturingLogger logger = new CapturingLogger();
         StatementContext statementContext = statementContext(logger);
 
-        statementContext.setTranslated(select());
+        statementContext.setTranslatedStatement(select());
         statementContext.addResult(new SelectResult<>(asList(new Object(), new Object())));
         statementContext.logComplete();
 

@@ -18,11 +18,19 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.Persistent;
 import org.apache.cayenne.SelectResult;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.query.resolved.ResolvedQuery;
+import org.apache.cayenne.query.resolved.ResolvedSQL;
+import org.apache.cayenne.reflect.ClassDescriptor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,28 +48,29 @@ import java.util.Map;
  * @param <T> the type of the rows the query selects
  * @since 6.0
  */
-public class SQLQuery<T> extends IndirectQuery<T> {
+public class SQLQuery<T> implements Query<T> {
 
     private List<Class<?>> resultColumnsTypes;
     private boolean useScalar;
     private boolean isFetchingDataRows;
-    protected Class<T> persistentType;
-    protected String dataMapName;
-    protected String dataNodeName;
-    protected StringBuilder sql;
-    protected Map<String, StringBuilder> sqlDialects;
-    protected QueryCacheStrategy cacheStrategy;
-    protected String cacheGroup;
-    protected Map<String, Object> params;
-    protected List<Object> positionalParams;
-    protected CapsStrategy columnNameCaps;
-    protected boolean returnGeneratedKeys;
-    protected int limit;
-    protected int offset;
-    protected int pageSize;
-    protected int statementFetchSize;
-    protected int queryTimeout;
-    protected PrefetchTreeNode prefetches;
+    Class<T> persistentType;
+    private String entityName;
+    String dataMapName;
+    private String dataNodeName;
+    private final StringBuilder sql;
+    private Map<String, StringBuilder> sqlDialects;
+    private QueryCacheStrategy cacheStrategy;
+    private String cacheGroup;
+    private Map<String, Object> params;
+    private List<Object> positionalParams;
+    private CapsStrategy columnNameCaps;
+    private boolean returnGeneratedKeys;
+    private int limit;
+    private int offset;
+    private int pageSize;
+    private int statementFetchSize;
+    private int queryTimeout;
+    private PrefetchTreeNode prefetches;
 
     /**
      * Creates a query running provided SQL against the default database. If the SQL selects, the rows are returned as
@@ -77,44 +86,44 @@ public class SQLQuery<T> extends IndirectQuery<T> {
      * does not matter.
      */
     public static SQLQuery<DataRow> query(String dataMapName, String sql) {
-        return dataRowQuery(dataMapName, sql);
+        SQLQuery<DataRow> query = new SQLQuery<>(sql);
+        query.dataMapName = dataMapName;
+        return query.fetchingDataRows();
+    }
+
+    /**
+     * Creates a query running provided SQL against the default database, returning the rows as DataRows with the
+     * columns read as the given Java types, in the order of the columns.
+     */
+    public static SQLQuery<DataRow> query(String sql, Class<?>... types) {
+        return query(sql).resultColumnsTypes(types);
+    }
+
+    /**
+     * Creates a query running provided SQL against the database of the named DataMap, returning the rows as DataRows
+     * with the columns read as the given Java types, in the order of the columns.
+     */
+    public static SQLQuery<DataRow> query(String dataMapName, String sql, Class<?>... types) {
+        return query(dataMapName, sql).resultColumnsTypes(types);
     }
 
     /**
      * Creates a query that selects Persistent objects.
      */
     public static <T> SQLQuery<T> query(Class<T> type, String sql) {
-        return new SQLQuery<>(type, sql);
+        SQLQuery<T> query = new SQLQuery<>(sql);
+        query.persistentType = type;
+        return query;
     }
 
     /**
-     * Creates a query that selects DataRows and uses default routing.
+     * Creates a query running provided SQL and returning the rows as objects of the named ObjEntity. This is the form
+     * used for queries mapped in a DataMap, where the entity is known by name.
      */
-    public static SQLQuery<DataRow> dataRowQuery(String sql) {
-        return new SQLQuery<>(sql).fetchingDataRows();
-    }
-
-    /**
-     * Creates a query that selects DataRows and uses default routing.
-     */
-    public static SQLQuery<DataRow> dataRowQuery(String sql, Class<?>... types) {
-        return new SQLQuery<>(sql).resultColumnsTypes(types).fetchingDataRows();
-    }
-
-    /**
-     * Creates a query that selects DataRows and uses routing based on the provided DataMap name.
-     */
-    public static SQLQuery<DataRow> dataRowQuery(String dataMapName, String sql, Class<?>... types) {
-        return dataRowQuery(dataMapName, sql).resultColumnsTypes(types);
-    }
-
-    /**
-     * Creates a query that selects DataRows and uses routing based on the provided DataMap name.
-     */
-    public static SQLQuery<DataRow> dataRowQuery(String dataMapName, String sql) {
-        SQLQuery<DataRow> query = new SQLQuery<>(sql);
-        query.dataMapName = dataMapName;
-        return query.fetchingDataRows();
+    public static SQLQuery<Persistent> entityQuery(String entityName, String sql) {
+        SQLQuery<Persistent> query = new SQLQuery<>(sql);
+        query.entityName = entityName;
+        return query;
     }
 
     /**
@@ -168,30 +177,50 @@ public class SQLQuery<T> extends IndirectQuery<T> {
         return query.resultColumnsTypes(types).useScalar();
     }
 
-    public SQLQuery(String sql) {
-        this(null, sql);
-    }
+    // a raw SQL statement can't fetch disjoint prefetches, as they need selects of their own
+    private static final PrefetchProcessor NO_DISJOINT_PREFETCHES = new PrefetchProcessor() {
+        @Override
+        public boolean startPhantomPrefetch(PrefetchTreeNode node) {
+            return true;
+        }
 
-    public SQLQuery(Class<T> persistentType, String sql) {
-        this.persistentType = persistentType;
+        @Override
+        public boolean startDisjointPrefetch(PrefetchTreeNode node) {
+            throw new CayenneRuntimeException("Disjoint prefetches are not supported by SQLQuery: %s. Use joint or "
+                    + "disjoint-by-id prefetches instead.", node.getPath());
+        }
+
+        @Override
+        public boolean startDisjointByIdPrefetch(PrefetchTreeNode node) {
+            return true;
+        }
+
+        @Override
+        public boolean startJointPrefetch(PrefetchTreeNode node) {
+            return true;
+        }
+
+        @Override
+        public boolean startUnknownPrefetch(PrefetchTreeNode node) {
+            return startDisjointPrefetch(node);
+        }
+
+        @Override
+        public void finishPrefetch(PrefetchTreeNode node) {
+        }
+    };
+
+    protected SQLQuery(String sql) {
         this.sql = sql != null ? new StringBuilder(sql) : new StringBuilder();
-        this.limit = QueryMetadata.FETCH_LIMIT_DEFAULT;
-        this.offset = QueryMetadata.FETCH_OFFSET_DEFAULT;
-        this.pageSize = QueryMetadata.PAGE_SIZE_DEFAULT;
+        this.limit = ResolvedQuery.FETCH_LIMIT_DEFAULT;
+        this.offset = ResolvedQuery.FETCH_OFFSET_DEFAULT;
+        this.pageSize = ResolvedQuery.PAGE_SIZE_DEFAULT;
+        this.queryTimeout = ResolvedQuery.QUERY_TIMEOUT_DEFAULT;
     }
 
     @Override
     public T selectFirst(ObjectContext context) {
         return context.selectFirst(limit(1));
-    }
-
-    public boolean isFetchingDataRows() {
-        return isFetchingDataRows;
-    }
-
-    public String getSql() {
-        String sql = this.sql.toString();
-        return !sql.isEmpty() ? sql : null;
     }
 
     /**
@@ -200,7 +229,6 @@ public class SQLQuery<T> extends IndirectQuery<T> {
      */
     public SQLQuery<T> append(String sqlChunk) {
         sql.append(sqlChunk);
-        this.replacementQuery = null;
         return this;
     }
 
@@ -215,12 +243,26 @@ public class SQLQuery<T> extends IndirectQuery<T> {
      * @param sql         the complete SQL template to use with this adapter
      */
     public SQLQuery<T> dialect(Class<? extends DbAdapter> adapterType, String sql) {
+        return dialect(adapterType.getName(), sql);
+    }
+
+    /**
+     * Sets the SQL to run on the adapter of a given class name, replacing any dialect set for it before. This is the
+     * form used for queries mapped in a DataMap, where the adapter is known by name.
+     */
+    public SQLQuery<T> dialect(String adapterClassName, String sql) {
         if (sqlDialects == null) {
             sqlDialects = new HashMap<>();
         }
-        sqlDialects.put(adapterType.getName(), new StringBuilder(sql));
-        this.replacementQuery = null;
+        sqlDialects.put(adapterClassName, new StringBuilder(sql));
         return this;
+    }
+
+    /**
+     * Makes the query return its rows as DataRows instead of objects.
+     */
+    public SQLQuery<DataRow> fetchDataRows() {
+        return fetchingDataRows();
     }
 
     /**
@@ -232,7 +274,6 @@ public class SQLQuery<T> extends IndirectQuery<T> {
             sqlDialects = new HashMap<>();
         }
         sqlDialects.computeIfAbsent(adapterType.getName(), k -> new StringBuilder()).append(sqlChunk);
-        this.replacementQuery = null;
         return this;
     }
 
@@ -247,7 +288,6 @@ public class SQLQuery<T> extends IndirectQuery<T> {
         } else {
             this.params.putAll(parameters);
         }
-        this.replacementQuery = null;
 
         // since named parameters are specified, resetting positional parameters
         this.positionalParams = null;
@@ -276,68 +316,139 @@ public class SQLQuery<T> extends IndirectQuery<T> {
      */
     public SQLQuery<T> paramsList(List<Object> params) {
         this.positionalParams = params;
-        this.replacementQuery = null;
 
         // since positional parameters are specified, resetting named parameters
         this.params = null;
         return this;
     }
 
-    /**
-     * Returns a potentially immutable map of named parameters that will be bound to SQL.
-     */
-    public Map<String, Object> getParams() {
-        return params != null ? params : Collections.emptyMap();
-    }
-
-    /**
-     * Returns a potentially immutable list of positional parameters that will be bound to SQL.
-     */
-    public List<Object> getPositionalParams() {
-        return positionalParams != null ? positionalParams : Collections.emptyList();
-    }
-
     @Override
-    protected Query<?> createReplacementQuery(EntityResolver resolver) {
+    public ResolvedSQL resolve(EntityResolver resolver) {
+        boolean typedColumns = resultColumnsTypes != null && !resultColumnsTypes.isEmpty();
+        if (!useScalar && !isFetchingDataRows && typedColumns) {
+            throw new CayenneRuntimeException(
+                    "Error caused by using root in query with resultColumnTypes without scalar or dataRow.");
+        }
+        if (isFetchingDataRows && useScalar) {
+            throw new CayenneRuntimeException("Can't set both use scalar and fetching data rows.");
+        }
 
-        SQLTemplate<?> template;
+        // the root: a persistent type or an entity name resolve to the query entity, a DataMap name to the DataMap
+        // the query is routed to; without a root the query is routed by its DataNode name
+        ObjEntity entity = null;
+        DataMap dataMap = null;
         if (persistentType != null) {
-            template = new SQLTemplate<>(persistentType, getSql());
+            entity = resolver.getObjEntity(persistentType);
+        } else if (entityName != null) {
+            entity = resolver.getObjEntity(entityName);
         } else if (dataMapName != null) {
-            template = SQLTemplate.dataRowQuery(dataMapName, getSql());
-        } else {
-            template = new SQLTemplate<>(getSql());
+            dataMap = resolver.getDataMap(dataMapName);
+            if (dataMap == null) {
+                throw new CayenneRuntimeException("Invalid dataMapName '%s'", dataMapName);
+            }
         }
 
-        template.setDataNodeName(dataNodeName);
+        DbEntity dbEntity = null;
+        ClassDescriptor descriptor = null;
+        if (entity != null) {
+            dbEntity = entity.getDbEntity();
+            dataMap = entity.getDataMap();
+            descriptor = resolver.getClassDescriptor(entity.getName());
+        }
+
+        ResultSegments resultSegments = resolveResultSegments(resolver, typedColumns);
+
+        String sql = !this.sql.isEmpty() ? this.sql.toString() : null;
+        Map<String, Object> params = this.params != null ? this.params : Collections.emptyMap();
+        List<Object> positionalParams = this.positionalParams != null ? this.positionalParams : Collections.emptyList();
+        CapsStrategy columnNameCaps = this.columnNameCaps != null ? this.columnNameCaps : CapsStrategy.DEFAULT;
+
+        QueryCacheStrategy cacheStrategy = this.cacheStrategy != null
+                ? this.cacheStrategy
+                : QueryCacheStrategy.getDefaultStrategy();
+        String cacheKey = cacheStrategy != QueryCacheStrategy.NO_CACHE
+                ? cacheKey(entity, dbEntity, sql, params, positionalParams)
+                : null;
+
+        Map<String, String> dialects = new HashMap<>();
         if (sqlDialects != null) {
-            sqlDialects.forEach((adapter, sql) -> template.setTemplate(adapter, sql.toString()));
+            sqlDialects.forEach((adapter, dialect) -> dialects.put(adapter, dialect.toString()));
         }
 
-        template.setFetchingDataRows(isFetchingDataRows);
-        template.setReturnGeneratedKeys(returnGeneratedKeys);
-        template.setCacheGroup(cacheGroup);
-        template.setCacheStrategy(cacheStrategy);
-        template.setResultColumnsTypes(resultColumnsTypes);
-        if (prefetches != null) {
-            template.addPrefetch(prefetches);
-        }
+        return new ResolvedSQL(this, entity, dbEntity, dataMap, descriptor, dataNodeName, sql, dialects,
+                params, positionalParams, columnNameCaps, returnGeneratedKeys,
+                resultColumnsTypes != null ? resultColumnsTypes : Collections.emptyList(),
+                useScalar, isFetchingDataRows, limit, offset, pageSize, statementFetchSize, queryTimeout,
+                cacheStrategy, cacheKey, cacheGroup, prefetches != null ? prefetches.deepClone() : null,
+                resultSegments);
+    }
 
-        if (positionalParams != null) {
-            template.setParamsList(positionalParams);
+    /**
+     * Resolves the result mapping: one scalar per declared column type, an empty mapping for a scalar query without
+     * declared types (meaning "one scalar per ResultSet column", to be resolved at execution), or null for objects
+     * and DataRows.
+     */
+    private ResultSegments resolveResultSegments(EntityResolver resolver, boolean typedColumns) {
+        List<ResultSegment> segments;
+        if (typedColumns && useScalar) {
+            SQLResult result = new SQLResult();
+            for (int i = 0; i < resultColumnsTypes.size(); i++) {
+                result.addColumnResult(String.valueOf(i));
+            }
+            segments = result.getResolvedComponents(resolver);
         } else {
-            template.setParams(params);
+            segments = useScalar ? Collections.emptyList() : null;
         }
 
-        template.setColumnNamesCapitalization(columnNameCaps);
-        template.setFetchLimit(limit);
-        template.setFetchOffset(offset);
-        template.setPageSize(pageSize);
-        template.setStatementFetchSize(statementFetchSize);
-        template.setQueryTimeout(queryTimeout);
-        template.setUseScalar(useScalar);
+        // a single segment is returned as is, anything else - as an Object[]
+        return segments != null ? new ResultSegments(segments, segments.size() != 1) : null;
+    }
 
-        return template;
+    /**
+     * Creates a unique key based on entity, SQL, and parameters.
+     */
+    private String cacheKey(
+            ObjEntity entity,
+            DbEntity dbEntity,
+            String sql,
+            Map<String, Object> parameters,
+            List<Object> positionalParameters) {
+
+        StringBuilder key = new StringBuilder();
+
+        if (entity != null) {
+            key.append(entity.getName());
+        } else if (dbEntity != null) {
+            key.append("db:").append(dbEntity.getName());
+        }
+
+        if (sql != null) {
+            key.append('/').append(sql);
+        }
+
+        if (!parameters.isEmpty()) {
+            List<String> keys = new ArrayList<>(parameters.keySet());
+            Collections.sort(keys);
+            for (String parameterKey : keys) {
+                key.append('/').append(parameterKey).append('=').append(parameters.get(parameterKey));
+            }
+        }
+
+        for (Object parameter : positionalParameters) {
+            key.append("/p:").append(parameter);
+        }
+
+        if (offset > 0 || limit > 0) {
+            key.append('/');
+            if (offset > 0) {
+                key.append('o').append(offset);
+            }
+            if (limit > 0) {
+                key.append('l').append(limit);
+            }
+        }
+
+        return key.toString();
     }
 
     /**
@@ -388,20 +499,9 @@ public class SQLQuery<T> extends IndirectQuery<T> {
         return cacheStrategy(QueryCacheStrategy.SHARED_CACHE, cacheGroup);
     }
 
-    public QueryCacheStrategy getCacheStrategy() {
-        return cacheStrategy;
-    }
-
     public SQLQuery<T> cacheStrategy(QueryCacheStrategy strategy) {
-        if (cacheStrategy != strategy) {
-            cacheStrategy = strategy;
-            replacementQuery = null;
-        }
-        if (cacheGroup != null) {
-            cacheGroup = null;
-            replacementQuery = null;
-        }
-
+        this.cacheStrategy = strategy;
+        this.cacheGroup = null;
         return this;
     }
 
@@ -409,24 +509,9 @@ public class SQLQuery<T> extends IndirectQuery<T> {
         return cacheStrategy(strategy).cacheGroup(cacheGroup);
     }
 
-    public String getCacheGroup() {
-        return cacheGroup;
-    }
-
     public SQLQuery<T> cacheGroup(String cacheGroup) {
         this.cacheGroup = cacheGroup;
-        this.replacementQuery = null;
         return this;
-    }
-
-    /**
-     * Returns a column name capitalization policy applied to selecting queries. This is used to simplify mapping of
-     * the queries like "SELECT * FROM ...", ensuring that a chosen Cayenne column mapping strategy (e.g. all column
-     * names in uppercase) is portable across database engines that can have varying default capitalization. Default
-     * (null) value indicates that column names provided in result set are used unchanged.
-     */
-    public CapsStrategy getColumnNameCaps() {
-        return columnNameCaps;
     }
 
     /**
@@ -439,10 +524,7 @@ public class SQLQuery<T> extends IndirectQuery<T> {
      * columns, it works for all SQLTemplates the same way.
      */
     public SQLQuery<T> columnNameCaps(CapsStrategy columnNameCaps) {
-        if (this.columnNameCaps != columnNameCaps) {
-            this.columnNameCaps = columnNameCaps;
-            this.replacementQuery = null;
-        }
+        this.columnNameCaps = columnNameCaps;
 
         return this;
     }
@@ -471,15 +553,7 @@ public class SQLQuery<T> extends IndirectQuery<T> {
      */
     public SQLQuery<T> dataNode(String dataNodeName) {
         this.dataNodeName = dataNodeName;
-        this.replacementQuery = null;
         return this;
-    }
-
-    /**
-     * @return returnGeneratedKeys flag value
-     */
-    public boolean isReturnGeneratedKeys() {
-        return returnGeneratedKeys;
     }
 
     /**
@@ -490,49 +564,25 @@ public class SQLQuery<T> extends IndirectQuery<T> {
      * @see java.sql.Statement#RETURN_GENERATED_KEYS
      */
     public SQLQuery<T> returnGeneratedKeys(boolean returnGeneratedKeys) {
-        if (this.returnGeneratedKeys != returnGeneratedKeys) {
-            this.returnGeneratedKeys = returnGeneratedKeys;
-            this.replacementQuery = null;
-        }
+        this.returnGeneratedKeys = returnGeneratedKeys;
 
         return this;
-    }
-
-    public int getLimit() {
-        return limit;
     }
 
     public SQLQuery<T> limit(int fetchLimit) {
-        if (this.limit != fetchLimit) {
-            this.limit = fetchLimit;
-            this.replacementQuery = null;
-        }
+        this.limit = fetchLimit;
 
         return this;
-    }
-
-    public int getOffset() {
-        return offset;
     }
 
     public SQLQuery<T> offset(int fetchOffset) {
-        if (this.offset != fetchOffset) {
-            this.offset = fetchOffset;
-            this.replacementQuery = null;
-        }
+        this.offset = fetchOffset;
 
         return this;
     }
 
-    public int getPageSize() {
-        return pageSize;
-    }
-
     public SQLQuery<T> pageSize(int pageSize) {
-        if (this.pageSize != pageSize) {
-            this.pageSize = pageSize;
-            this.replacementQuery = null;
-        }
+        this.pageSize = pageSize;
 
         return this;
     }
@@ -541,10 +591,7 @@ public class SQLQuery<T> extends IndirectQuery<T> {
      * Sets JDBC statement's fetch size (0 for no default size)
      */
     public SQLQuery<T> statementFetchSize(int size) {
-        if (this.statementFetchSize != size) {
-            this.statementFetchSize = size;
-            this.replacementQuery = null;
-        }
+        this.statementFetchSize = size;
 
         return this;
     }
@@ -553,23 +600,9 @@ public class SQLQuery<T> extends IndirectQuery<T> {
      * Sets query timeout
      */
     public SQLQuery<T> queryTimeout(int queryTimeout) {
-        if (this.queryTimeout != queryTimeout) {
-            this.queryTimeout = queryTimeout;
-            this.replacementQuery = null;
-        }
+        this.queryTimeout = queryTimeout;
 
         return this;
-    }
-
-    /**
-     * @return JBDC statement's fetch size
-     */
-    public int getStatementFetchSize() {
-        return statementFetchSize;
-    }
-
-    public int getQueryTimeout() {
-        return queryTimeout;
     }
 
     /**
@@ -586,7 +619,10 @@ public class SQLQuery<T> extends IndirectQuery<T> {
         if (prefetches == null) {
             prefetches = new PrefetchTreeNode();
         }
-        prefetches.addPath(path).setSemantics(semantics);
+        PrefetchTreeNode node = prefetches.addPath(path);
+        node.setSemantics(semantics);
+        node.setPhantom(false);
+        node.traverse(NO_DISJOINT_PREFETCHES);
         return this;
     }
 
@@ -600,6 +636,7 @@ public class SQLQuery<T> extends IndirectQuery<T> {
         if (node == null) {
             return this;
         }
+        node.traverse(NO_DISJOINT_PREFETCHES);
         if (prefetches == null) {
             prefetches = new PrefetchTreeNode();
         }

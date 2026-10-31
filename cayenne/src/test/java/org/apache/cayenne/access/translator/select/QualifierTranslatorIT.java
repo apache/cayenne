@@ -70,7 +70,7 @@ public class QualifierTranslatorIT {
                 .and(CompoundFkTestEntity.NAME.contains("a"));
 
         SelectTranslatorContext context
-                = new SelectTranslatorContext(query, runtime.getDataDomain().getDefaultNode().getAdapter(), env.context().getEntityResolver(), null);
+                = new SelectTranslatorContext(query.resolve(env.context().getEntityResolver()), runtime.getDataDomain().getDefaultNode().getAdapter(), env.context().getEntityResolver(), null);
 
         QualifierTranslator qualifierTranslator = context.getQualifierTranslator();
 
@@ -95,7 +95,7 @@ public class QualifierTranslatorIT {
                 .or(CompoundFkTestEntity.COMPOUND_PK.eq(testEntity.get(1)));
 
         SelectTranslatorContext context
-                = new SelectTranslatorContext(query, runtime.getDataDomain().getDefaultNode().getAdapter(), env.context().getEntityResolver(), null);
+                = new SelectTranslatorContext(query.resolve(env.context().getEntityResolver()), runtime.getDataDomain().getDefaultNode().getAdapter(), env.context().getEntityResolver(), null);
 
         QualifierTranslator qualifierTranslator = context.getQualifierTranslator();
 
@@ -113,7 +113,7 @@ public class QualifierTranslatorIT {
                 .where(ExpressionFactory.exp("name = -1"));
 
         SelectTranslatorContext context
-                = new SelectTranslatorContext(query, runtime.getDataDomain().getDefaultNode().getAdapter(), env.context().getEntityResolver(), null);
+                = new SelectTranslatorContext(query.resolve(env.context().getEntityResolver()), runtime.getDataDomain().getDefaultNode().getAdapter(), env.context().getEntityResolver(), null);
 
         QualifierTranslator qualifierTranslator = context.getQualifierTranslator();
 
@@ -176,8 +176,7 @@ public class QualifierTranslatorIT {
     }
 
     private String translate(ObjectSelect<?> query) {
-        SelectTranslatorContext context = new SelectTranslatorContext(
-                query, runtime.getDataDomain().getDefaultNode().getAdapter(), env.context().getEntityResolver(), null);
+        SelectTranslatorContext context = new SelectTranslatorContext(query.resolve(env.context().getEntityResolver()), runtime.getDataDomain().getDefaultNode().getAdapter(), env.context().getEntityResolver(), null);
         Node node = context.getQualifierTranslator().translate(query.getWhere());
         SQLGenerationVisitor visitor = new SQLGenerationVisitor(new DefaultSQLAppendable(null), null);
         node.visit(visitor);

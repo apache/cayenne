@@ -20,7 +20,6 @@
 package org.apache.cayenne.dba.derby;
 
 import org.apache.cayenne.CoreModule;
-import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
 import org.apache.cayenne.access.types.ByteType;
 import org.apache.cayenne.access.types.CharType;
@@ -37,8 +36,6 @@ import org.apache.cayenne.dba.NativeColumnType;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.SQLAction;
 
 import java.sql.PreparedStatement;
 import java.sql.Types;
@@ -113,10 +110,6 @@ public class DerbyAdapter extends JdbcAdapter {
 		return false;
 	}
 
-    @Override
-    public SQLAction getAction(Query<?> query, DataNode node) {
-        return query.createSQLAction(new DerbyActionBuilder(node));
-    }
 
     /**
      * Installs appropriate ExtendedTypes as converters for passing values between JDBC

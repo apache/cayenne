@@ -26,7 +26,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.ProcedureQuery;
 import org.apache.cayenne.query.QueryCacheStrategy;
-import org.apache.cayenne.query.QueryMetadata;
+import org.apache.cayenne.query.resolved.ResolvedProcedure;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -37,15 +37,21 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ProcedureQueryDescriptorTest {
 
+    private static EntityResolver resolver(String procedureName) {
+        DataMap map = new DataMap("m");
+        map.addProcedure(new Procedure(procedureName));
+        return new EntityResolver(List.of(map));
+    }
+
     @Test
     public void buildQueryWithParameters() {
         ProcedureQueryDescriptor descriptor = new ProcedureQueryDescriptor();
-        descriptor.setRoot("FakeRoot");
+        descriptor.setRoot("p1");
 
         Map<String, Object> params = Map.of("a", "1", "b", "2");
-        ProcedureQuery query = descriptor.buildQuery(params);
+        ProcedureQuery<?> query = descriptor.buildQuery(params);
 
-        assertEquals(params, query.getParameters());
+        assertEquals(params, query.resolve(resolver("p1")).params());
     }
 
     @Test
@@ -63,10 +69,10 @@ public class ProcedureQueryDescriptorTest {
         builder.setRoot(procedure);
         builder.setResultEntityName("A");
 
-        QueryMetadata metadata = builder.buildQuery().getMetaData(new EntityResolver(List.of(map)));
-        assertSame(procedure, metadata.getProcedure());
-        assertSame(table, metadata.getDbEntity());
-        assertSame(map, metadata.getDataMap());
+        ResolvedProcedure metadata = builder.buildQuery().resolve(new EntityResolver(List.of(map)));
+        assertSame(procedure, metadata.procedure());
+        assertSame(table, metadata.dbEntity());
+        assertSame(map, metadata.dataMap());
     }
 
     @Test
@@ -78,10 +84,10 @@ public class ProcedureQueryDescriptorTest {
         ProcedureQueryDescriptor builder = new ProcedureQueryDescriptor();
         builder.setRoot("p1");
 
-        QueryMetadata metadata = builder.buildQuery().getMetaData(new EntityResolver(List.of(map)));
-        assertSame(procedure, metadata.getProcedure());
-        assertNull(metadata.getDbEntity());
-        assertSame(map, metadata.getDataMap());
+        ResolvedProcedure metadata = builder.buildQuery().resolve(new EntityResolver(List.of(map)));
+        assertSame(procedure, metadata.procedure());
+        assertNull(metadata.dbEntity());
+        assertSame(map, metadata.dataMap());
     }
 
     @Test
@@ -107,15 +113,15 @@ public class ProcedureQueryDescriptorTest {
         builder.setCacheGroup("g1");
         builder.setColumnNamesCapitalization(CapsStrategy.UPPER);
 
-        ProcedureQuery<?> query = builder.buildQuery();
-        assertEquals(5, query.getFetchLimit());
-        assertEquals(2, query.getFetchOffset());
-        assertEquals(10, query.getPageSize());
-        assertEquals(6, query.getStatementFetchSize());
-        assertTrue(query.isFetchingDataRows());
-        assertEquals(QueryCacheStrategy.LOCAL_CACHE, query.getCacheStrategy());
-        assertEquals("g1", query.getCacheGroup());
-        assertEquals(CapsStrategy.UPPER, query.getColumnNamesCapitalization());
+        ResolvedProcedure resolved = builder.buildQuery().resolve(resolver("p1"));
+        assertEquals(5, resolved.fetchLimit());
+        assertEquals(2, resolved.fetchOffset());
+        assertEquals(10, resolved.pageSize());
+        assertEquals(6, resolved.statementFetchSize());
+        assertTrue(resolved.fetchingDataRows());
+        assertEquals(QueryCacheStrategy.LOCAL_CACHE, resolved.cacheStrategy());
+        assertEquals("g1", resolved.cacheGroup());
+        assertEquals(CapsStrategy.UPPER, resolved.columnNameCaps());
     }
 
     @Test
@@ -126,7 +132,7 @@ public class ProcedureQueryDescriptorTest {
 
         builder.setColumnNamesCapitalization(CapsStrategy.LOWER);
         assertEquals(CapsStrategy.LOWER, builder.getColumnNamesCapitalization());
-        assertEquals(CapsStrategy.LOWER, builder.buildQuery().getColumnNamesCapitalization());
+        assertEquals(CapsStrategy.LOWER, builder.buildQuery().resolve(resolver("p1")).columnNameCaps());
 
         builder.setColumnNamesCapitalization(null);
         assertNull(builder.getColumnNamesCapitalization());

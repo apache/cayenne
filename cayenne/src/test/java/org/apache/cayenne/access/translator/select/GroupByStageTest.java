@@ -25,7 +25,7 @@ import org.apache.cayenne.access.sqlbuilder.sqltree.GroupByNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.exp.property.PropertyFactory;
-import org.apache.cayenne.query.FluentSelect;
+import org.apache.cayenne.query.resolved.ResolvedSelect;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -37,7 +37,7 @@ public class GroupByStageTest {
 
     @BeforeEach
     public void prepareContext() {
-        FluentSelect<?, ?> query = new MockFluentSelectBuilder().build();
+        ResolvedSelect query = new MockResolvedSelectBuilder().build();
         context = new MockSelectTranslatorContext(query);
     }
 

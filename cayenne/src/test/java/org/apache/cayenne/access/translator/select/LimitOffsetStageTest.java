@@ -22,7 +22,7 @@ package org.apache.cayenne.access.translator.select;
 import org.apache.cayenne.access.sqlbuilder.sqltree.LimitOffsetNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.query.FluentSelect;
+import org.apache.cayenne.query.resolved.ResolvedSelect;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -37,11 +37,11 @@ public class LimitOffsetStageTest {
         DbEntity entity = new DbEntity();
         entity.setName("mock");
 
-        FluentSelect<?, ?> query = new MockFluentSelectBuilder()
-                .withMetaData(new MockQueryMetadataBuilder()
+        ResolvedSelect query = new MockResolvedSelectBuilder()
+                
                         .withDbEntity(entity)
                         .withLimitOffset(123, 321)
-                        .build())
+                        
                 .build();
         context = new MockSelectTranslatorContext(query);
     }

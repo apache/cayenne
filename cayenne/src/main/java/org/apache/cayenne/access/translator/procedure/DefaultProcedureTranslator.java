@@ -24,10 +24,9 @@ import org.apache.cayenne.access.translator.ProcedureTranslator;
 import org.apache.cayenne.access.translator.TranslatedProcedure;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
-import org.apache.cayenne.query.ProcedureQuery;
+import org.apache.cayenne.query.resolved.ResolvedProcedure;
 
 import java.util.Map;
 
@@ -59,11 +58,11 @@ public class DefaultProcedureTranslator implements ProcedureTranslator {
     private static final NotInParam OUT_PARAM = new NotInParam("[OUT]");
 
     @Override
-    public TranslatedProcedure translate(ProcedureQuery<?> query, DbAdapter adapter, EntityResolver resolver) {
+    public TranslatedProcedure translate(ResolvedProcedure query, DbAdapter adapter) {
 
-        Procedure procedure = query.getMetaData(resolver).getProcedure();
+        Procedure procedure = query.procedure();
         ProcedureParameter[] callParams = procedure.getCallParameters().toArray(new ProcedureParameter[0]);
-        Map<String, ?> queryValues = query.getParameters();
+        Map<String, ?> queryValues = query.params();
 
         CSParameter<?>[] params = new CSParameter[callParams.length];
         for (int i = 0; i < callParams.length; i++) {
@@ -71,7 +70,7 @@ public class DefaultProcedureTranslator implements ProcedureTranslator {
         }
 
         String sql = createSqlString(procedure, callParams.length);
-        return new TranslatedProcedure(sql, params);
+        return new TranslatedProcedure(query, sql, params);
     }
 
     /**

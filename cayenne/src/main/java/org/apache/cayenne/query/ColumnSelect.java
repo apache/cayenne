@@ -30,7 +30,7 @@ import org.apache.cayenne.exp.property.Property;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.exp.DbPathExp;
 import org.apache.cayenne.exp.ObjPathExp;
-import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.query.resolved.ResolvedSelect;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -66,6 +66,7 @@ public class ColumnSelect<T> extends FluentSelect<T, ColumnSelect<T>> {
 
     protected Collection<Property<?>> columns;
     protected boolean singleColumn = true;
+    protected boolean suppressingDistinct;
 
     protected ColumnSelect() {
     }
@@ -74,18 +75,7 @@ public class ColumnSelect<T> extends FluentSelect<T, ColumnSelect<T>> {
      * Copy constructor to convert ObjectSelect to ColumnSelect
      */
     protected ColumnSelect(ObjectSelect<T> select) {
-        this.entityType = select.entityType;
-        this.entityName = select.entityName;
-        this.dbEntityName = select.dbEntityName;
-        this.where = select.where;
-        this.having = select.having;
-        this.orderings = select.orderings;
-        this.metaData.copyFromInfo(select.metaData);
-    }
-
-    @Override
-    protected ColumnSelectMetadata createMetadata() {
-        return new ColumnSelectMetadata();
+        copyFrom(select);
     }
 
     /**
@@ -265,7 +255,7 @@ public class ColumnSelect<T> extends FluentSelect<T, ColumnSelect<T>> {
      * Explicitly request distinct in query.
      */
     public ColumnSelect<T> distinct() {
-        getBaseMetaData().setSuppressingDistinct(false);
+        this.suppressingDistinct = false;
         this.distinct = true;
         return this;
     }
@@ -274,7 +264,7 @@ public class ColumnSelect<T> extends FluentSelect<T, ColumnSelect<T>> {
      * Explicitly suppress distinct in query.
      */
     public ColumnSelect<T> suppressDistinct() {
-        getBaseMetaData().setSuppressingDistinct(true);
+        this.suppressingDistinct = true;
         this.distinct = false;
         return this;
     }
@@ -294,14 +284,7 @@ public class ColumnSelect<T> extends FluentSelect<T, ColumnSelect<T>> {
     }
 
     @Override
-    public QueryMetadata getMetaData(EntityResolver resolver) {
-        Object root = resolveRoot(resolver);
-        getBaseMetaData().resolve(root, resolver, this);
-        return metaData;
-    }
-
-    @Override
-    protected ColumnSelectMetadata getBaseMetaData() {
-        return (ColumnSelectMetadata) metaData;
+    protected void configure(ResolvedSelect.Builder builder) {
+        builder.columns(columns, singleColumn).suppressingDistinct(suppressingDistinct);
     }
 }

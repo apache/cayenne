@@ -29,8 +29,8 @@ class LimitOffsetStage implements TranslationStage {
         if(context.isDistinctSuppression()) {
             return;
         }
-        int offset = context.getMetadata().getFetchOffset();
-        int limit = context.getMetadata().getFetchLimit();
+        int offset = context.getSelect().fetchOffset();
+        int limit = context.getSelect().fetchLimit();
 
         context.getSelectBuilder().limitOffset(limit, offset);
     }

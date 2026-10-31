@@ -227,7 +227,7 @@ The optional settings are attributes of `<sqlQuery>`: `cacheStrategy`, `dataRows
 settings, those must be a part of the SQL. An optional `<cacheGroup><![CDATA[name]]></cacheGroup>` element follows the `<sql>`
 elements. A `<procedureQuery>` takes the same attributes and `<cacheGroup>`, plus `fetchLimit` and `fetchOffset`.
 
-Use a second `<sql>` with `adapterClass=` to vary by DB adapter. SQLTemplate placeholders use Velocity syntax — `#bind($paramName)` for parameters.
+Use a second `<sql>` with `adapterClass=` to vary by DB adapter. SQL query templates use a Velocity-like syntax — `#bind($paramName)` for parameters.
 
 ### `<procedureQuery>`
 

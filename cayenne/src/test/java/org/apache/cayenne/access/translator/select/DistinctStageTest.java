@@ -24,7 +24,7 @@ import java.sql.Types;
 import org.apache.cayenne.access.sqlbuilder.sqltree.ColumnNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.query.FluentSelect;
+import org.apache.cayenne.query.resolved.ResolvedSelect;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -49,7 +49,7 @@ public class DistinctStageTest {
 
     @Test
     public void noSuppression() {
-        FluentSelect<?, ?> query = new MockFluentSelectBuilder().withDistinct(true).build();
+        ResolvedSelect query = new MockResolvedSelectBuilder().withDistinct(true).build();
         SelectTranslatorContext context = new MockSelectTranslatorContext(query);
 
         assertFalse(context.isDistinctSuppression());
@@ -62,11 +62,11 @@ public class DistinctStageTest {
 
     @Test
     public void explicitSuppression() {
-        FluentSelect<?, ?> query = new MockFluentSelectBuilder()
+        ResolvedSelect query = new MockResolvedSelectBuilder()
                 .withDistinct(true)
-                .withMetaData(new MockQueryMetadataBuilder()
+                
                         .withSuppressDistinct()
-                        .build())
+                        
                 .build();
         SelectTranslatorContext context = new MockSelectTranslatorContext(query);
 
@@ -80,9 +80,9 @@ public class DistinctStageTest {
 
     @Test
     public void suppressionByType() {
-        FluentSelect<?, ?> query = new MockFluentSelectBuilder()
+        ResolvedSelect query = new MockResolvedSelectBuilder()
                 .withDistinct(true)
-                .withMetaData(new MockQueryMetadataBuilder().build())
+                
                 .build();
         SelectTranslatorContext context = new MockSelectTranslatorContext(query);
 

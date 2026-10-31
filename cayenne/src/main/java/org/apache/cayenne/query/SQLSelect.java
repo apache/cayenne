@@ -160,7 +160,8 @@ public class SQLSelect<T> extends SQLQuery<T> {
     }
 
     public SQLSelect(Class<T> persistentType, String sql) {
-        super(persistentType, sql);
+        super(sql);
+        this.persistentType = persistentType;
     }
 
     // --- covariant overrides, so that chains built from the factory methods still assign to SQLSelect ---

@@ -270,7 +270,7 @@ public class DataDomainProviderIT {
     static class NoopQueryFilter implements DataChannelQueryFilter {
 
         @Override
-        public List<QueryResult> onQuery(OperationContext context, DataChannelQueryFilterChain filterChain) {
+        public List<QueryResult> onQuery(QueryContext context, DataChannelQueryFilterChain filterChain) {
             return filterChain.onQuery(context);
         }
     }

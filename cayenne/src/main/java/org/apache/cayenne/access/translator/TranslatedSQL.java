@@ -19,14 +19,16 @@
 
 package org.apache.cayenne.access.translator;
 
-import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.access.jdbc.PSParameter;
+import org.apache.cayenne.access.jdbc.RSColumn;
+import org.apache.cayenne.query.resolved.ResolvedSQL;
 
 /**
- * A translated form of a Query used to generated PreparedStatements.
+ * A translated raw SQL statement: the rendered SQL, the parameter bindings, and the result columns declared by the
+ * template (empty when the template declares none).
  *
- * @since 5.0
+ * @since 6.0
  */
-public record TranslatedSQL(String sql, PSParameter<?>[] bindings, RSColumn[] resultColumns)
+public record TranslatedSQL(ResolvedSQL query, String sql, PSParameter<?>[] bindings, RSColumn[] resultColumns)
         implements TranslatedStatement {
 }

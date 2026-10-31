@@ -24,19 +24,19 @@ import java.util.Arrays;
 import org.apache.cayenne.access.sqlbuilder.InsertBuilder;
 import org.apache.cayenne.access.sqlbuilder.SQLBuilder;
 import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.query.InsertBatchQuery;
+import org.apache.cayenne.query.resolved.InsertBatch;
 
 /**
  * @since 4.2
  */
-public class InsertBatchTranslator extends BaseBatchTranslator<InsertBatchQuery> {
+public class InsertBatchTranslator extends BaseBatchTranslator<InsertBatch> {
 
     @Override
-    protected String createSql(BatchTranslatorContext<InsertBatchQuery> context) {
-        InsertBatchQuery query = context.getQuery();
+    protected String createSql(BatchTranslatorContext<InsertBatch> context) {
+        InsertBatch query = context.getQuery();
         InsertBuilder insertBuilder = SQLBuilder.insert(context.getRootDbEntity());
 
-        for (DbAttribute attribute : query.getDbAttributes()) {
+        for (DbAttribute attribute : query.dbAttributes()) {
             // skip generated attributes, if needed
             if (excludeInBatch(context, attribute)) {
                 continue;
@@ -52,12 +52,12 @@ public class InsertBatchTranslator extends BaseBatchTranslator<InsertBatchQuery>
     }
 
     @Override
-    protected int[] createRowValueIndexes(BatchTranslatorContext<InsertBatchQuery> context) {
-        InsertBatchQuery query = context.getQuery();
-        int[] indexes = new int[query.getDbAttributes().size()];
+    protected int[] createRowValueIndexes(BatchTranslatorContext<InsertBatch> context) {
+        InsertBatch query = context.getQuery();
+        int[] indexes = new int[query.dbAttributes().size()];
         int i = 0;
         int j = 0;
-        for (DbAttribute attribute : query.getDbAttributes()) {
+        for (DbAttribute attribute : query.dbAttributes()) {
             if (!excludeInBatch(context, attribute)) {
                 indexes[j++] = i;
             }
@@ -66,7 +66,7 @@ public class InsertBatchTranslator extends BaseBatchTranslator<InsertBatchQuery>
         return Arrays.copyOf(indexes, j);
     }
 
-    protected boolean excludeInBatch(BatchTranslatorContext<InsertBatchQuery> context, DbAttribute attribute) {
+    protected boolean excludeInBatch(BatchTranslatorContext<InsertBatch> context, DbAttribute attribute) {
         // attribute inclusion rule - one of the rules below must be true:
         //  (1) attribute not generated
         //  (2) attribute is generated and PK and adapter does not support generated keys
@@ -74,7 +74,7 @@ public class InsertBatchTranslator extends BaseBatchTranslator<InsertBatchQuery>
     }
 
     @Override
-    protected boolean isNullAttribute(BatchTranslatorContext<InsertBatchQuery> context, DbAttribute attribute) {
+    protected boolean isNullAttribute(BatchTranslatorContext<InsertBatch> context, DbAttribute attribute) {
         return false;
     }
 }

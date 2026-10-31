@@ -768,8 +768,8 @@ public class DataContext implements ObjectContext {
     @SuppressWarnings("unchecked")
     @Override
     public <T> List<T> select(Query<T> query) {
-        Query<?> resolved = nonNullDelegate().willPerformQuery(this, query);
-        List<T> result = (List<T>) QueryResults.firstList(doExecute(resolved, false));
+        Query<?> runQuery = nonNullDelegate().willPerformQuery(this, query);
+        List<T> result = (List<T>) QueryResults.firstList(doExecute(runQuery, false));
         return result != null ? result : new ArrayList<>(1);
     }
 
@@ -825,8 +825,8 @@ public class DataContext implements ObjectContext {
     @Override
     @SuppressWarnings("unchecked")
     public <T> ResultIterator<T> iterator(Query<T> query) {
-        Query<?> resolved = nonNullDelegate().willPerformQuery(this, query);
-        return (ResultIterator<T>) QueryResults.firstIterator(doExecute(resolved, true));
+        Query<?> runQuery = nonNullDelegate().willPerformQuery(this, query);
+        return (ResultIterator<T>) QueryResults.firstIterator(doExecute(runQuery, true));
     }
 
     /**
@@ -837,12 +837,12 @@ public class DataContext implements ObjectContext {
      */
     @Override
     public List<QueryResult> execute(Query<?> query) {
-        Query<?> resolved = nonNullDelegate().willPerformGenericQuery(this, query);
-        return Collections.unmodifiableList(doExecute(resolved, false));
+        Query<?> runQuery = nonNullDelegate().willPerformGenericQuery(this, query);
+        return Collections.unmodifiableList(doExecute(runQuery, false));
     }
 
-    private List<QueryResult> doExecute(Query<?> resolved, boolean iteratedResult) {
-        if (resolved == null) {
+    private List<QueryResult> doExecute(Query<?> query, boolean iteratedResult) {
+        if (query == null) {
             return Collections.emptyList();
         }
 
@@ -850,10 +850,11 @@ public class DataContext implements ObjectContext {
             throw new CayenneRuntimeException("Can't run query - parent DataChannel is not set.");
         }
 
-        return onQuery(new OperationContext(this, resolved, getEntityResolver(), iteratedResult), false);
+        QueryContext queryContext = new QueryContext(this, query, query.resolve(getEntityResolver()), iteratedResult);
+        return onQuery(queryContext, false);
     }
 
-    List<QueryResult> onQuery(OperationContext context, boolean ignoreLocalCache) {
+    List<QueryResult> onQuery(QueryContext context, boolean ignoreLocalCache) {
         return new DataContextQueryAction(this, context, ignoreLocalCache).execute();
     }
 

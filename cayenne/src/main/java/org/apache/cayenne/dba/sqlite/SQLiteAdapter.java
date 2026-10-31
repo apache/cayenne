@@ -19,6 +19,7 @@
 package org.apache.cayenne.dba.sqlite;
 
 import org.apache.cayenne.CoreModule;
+import org.apache.cayenne.access.StatementContext;
 import org.apache.cayenne.dba.NativeColumnType;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
@@ -32,9 +33,9 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.SQLAction;
+import org.apache.cayenne.access.translator.TranslatedSQL;
 
+import java.sql.Connection;
 import java.sql.Types;
 import java.util.Calendar;
 import java.util.Collection;
@@ -138,9 +139,11 @@ public class SQLiteAdapter extends JdbcAdapter {
         return null;
     }
 
+
     @Override
-    public SQLAction getAction(Query<?> query, DataNode node) {
-        return query.createSQLAction(new SQLiteActionBuilder(node));
+    public void executeSQL(TranslatedSQL sql, Connection connection, StatementContext context,
+            DataNode node) throws Exception {
+        new SQLiteSQLAction(sql, node).execute(connection, context);
     }
 
     /**

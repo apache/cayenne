@@ -30,8 +30,8 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.query.FluentSelect;
 import org.apache.cayenne.reflect.generic.DefaultValueComparisonStrategyFactory;
+import org.apache.cayenne.query.resolved.ResolvedSelect;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -42,10 +42,10 @@ public class DescriptorColumnExtractorTest extends BaseColumnExtractorTest {
     @Test
     public void extractNoPrefix() {
         DbEntity mockDbEntity = createMockDbEntity("mock");
-        FluentSelect<?, ?> query = new MockFluentSelectBuilder()
-                .withMetaData(new MockQueryMetadataBuilder()
+        ResolvedSelect query = new MockResolvedSelectBuilder()
+                
                         .withDbEntity(mockDbEntity)
-                        .build())
+                        
                 .build();
 
         SelectTranslatorContext context = new MockSelectTranslatorContext(query);

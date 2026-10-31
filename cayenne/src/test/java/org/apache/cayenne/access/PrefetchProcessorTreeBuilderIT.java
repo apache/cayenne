@@ -26,9 +26,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.query.MockQueryMetadata;
 import org.apache.cayenne.query.PrefetchTreeNode;
-import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Gallery;
@@ -73,43 +71,9 @@ public class PrefetchProcessorTreeBuilderIT {
         dataRows.add(DataRow.of("Artist", DataRowLayout.of(), new Object[0], SnapshotVersion.next()));
         dataRows.add(DataRow.of("Artist", DataRowLayout.of(), new Object[0], SnapshotVersion.next()));
 
-        QueryMetadata metadata = new MockQueryMetadata() {
-
-            @Override
-            public ClassDescriptor getClassDescriptor() {
-                return descriptor;
-            }
-
-            @Override
-            public ObjEntity getObjEntity() {
-                return descriptor.getEntity();
-            }
-
-            @Override
-            public DbEntity getDbEntity() {
-                return getObjEntity().getDbEntity();
-            }
-
-            @Override
-            public DataMap getDataMap() {
-                return getObjEntity().getDataMap();
-            }
-
-            @Override
-            public boolean isRefreshingObjects() {
-                return true;
-            }
-
-            @Override
-            public boolean isResolvingInherited() {
-                return true;
-            }
-        };
 
         PrefetchTreeNode tree = new PrefetchTreeNode();
-        HierarchicalObjectResolver resolver = new HierarchicalObjectResolver(
-                context,
-                metadata);
+        HierarchicalObjectResolver resolver = new HierarchicalObjectResolver(context, null, descriptor, true);
         PrefetchProcessorTreeBuilder builder = new PrefetchProcessorTreeBuilder(
                 resolver,
                 dataRows,
@@ -143,42 +107,8 @@ public class PrefetchProcessorTreeBuilderIT {
         tree.addPath(Artist.PAINTINGS.dot(Painting.GALLERY).dot(Gallery.EXHIBITS).getName()).setPhantom(false);
         tree.addPath(Artist.ARTIST_EXHIBITS.getName()).setPhantom(false);
 
-        QueryMetadata metadata = new MockQueryMetadata() {
 
-            @Override
-            public ClassDescriptor getClassDescriptor() {
-                return descriptor;
-            }
-
-            @Override
-            public ObjEntity getObjEntity() {
-                return descriptor.getEntity();
-            }
-
-            @Override
-            public DbEntity getDbEntity() {
-                return getObjEntity().getDbEntity();
-            }
-
-            @Override
-            public DataMap getDataMap() {
-                return getObjEntity().getDataMap();
-            }
-
-            @Override
-            public boolean isRefreshingObjects() {
-                return true;
-            }
-
-            @Override
-            public boolean isResolvingInherited() {
-                return true;
-            }
-        };
-
-        HierarchicalObjectResolver resolver = new HierarchicalObjectResolver(
-                context,
-                metadata);
+        HierarchicalObjectResolver resolver = new HierarchicalObjectResolver(context, null, descriptor, true);
         PrefetchProcessorTreeBuilder builder = new PrefetchProcessorTreeBuilder(
                 resolver,
                 mainRows,

@@ -11,11 +11,10 @@
 // CONDITIONS OF ANY KIND, either express or implied. See the License for
 // the specific language governing permissions and limitations under the
 // License.
-=== ProcedureCall
+=== ProcedureQuery
 
 Stored procedures are mapped as separate objects in CayenneModeler.
-`ProcedureCall` provides a way to execute them with a certain set of parameters.
-This query is a "fluent" version of older `ProcedureQuery`. Just like with `SQLTemplate`,
+`ProcedureQuery` provides a way to execute them with a certain set of parameters. Just like with `SQLQuery`,
 the outcome of a procedure can be anything - a single result set, multiple result sets,
 some data modification (returned as an update count), or a combination of these.
 So use root class to get a single result set, and use only procedure name for anything else:
@@ -23,12 +22,12 @@ So use root class to get a single result set, and use only procedure name for an
 
 [source,java,indent=0]
 ----
-include::{java-examples}/ProcedureCallExamples.java[tags=select]
+include::{java-examples}/ProcedureQueryExamples.java[tags=select]
 ----
 
 [source,java,indent=0]
 ----
-include::{java-examples}/ProcedureCallExamples.java[tags=execute]
+include::{java-examples}/ProcedureQueryExamples.java[tags=execute]
 ----
 
 `QueryResult` is a sealed interface with `SelectResult`, `UpdateResult`, `ResultIterator` and `OutParametersResult`
@@ -39,7 +38,7 @@ result, a map keyed by parameter name:
 
 [source,java,indent=0]
 ----
-include::{java-examples}/ProcedureCallExamples.java[tags=outParameters]
+include::{java-examples}/ProcedureQueryExamples.java[tags=outParameters]
 ----
 
 There maybe a situation when a stored procedure handles its own transactions,

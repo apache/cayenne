@@ -35,16 +35,16 @@ class ColumnExtractorStage implements TranslationStage {
     public void perform(SelectTranslatorContext context) {
         ColumnExtractor extractor;
 
-        if(context.getQuery().getColumns() != null && !context.getQuery().getColumns().isEmpty()) {
-            extractor = new CustomColumnSetExtractor(context, context.getQuery().getColumns());
-        } else if (context.getParentContext() != null || context.getMetadata().getPageSize() > 0) {
-            if(context.getMetadata().getObjEntity() != null) {
-                extractor = new IdColumnExtractor(context, context.getMetadata().getObjEntity());
+        if(!context.getSelect().columns().isEmpty()) {
+            extractor = new CustomColumnSetExtractor(context, context.getSelect().columns());
+        } else if (context.getParentContext() != null || context.getSelect().pageSize() > 0) {
+            if(context.getSelect().objEntity() != null) {
+                extractor = new IdColumnExtractor(context, context.getSelect().objEntity());
             } else {
-                extractor = new IdColumnExtractor(context, context.getMetadata().getDbEntity());
+                extractor = new IdColumnExtractor(context, context.getSelect().dbEntity());
             }
-        } else if (context.getMetadata().getClassDescriptor() != null) {
-            extractor = new DescriptorColumnExtractor(context, context.getMetadata().getClassDescriptor());
+        } else if (context.getSelect().classDescriptor() != null) {
+            extractor = new DescriptorColumnExtractor(context, context.getSelect().classDescriptor());
         } else {
             extractor = new DbEntityColumnExtractor(context);
         }

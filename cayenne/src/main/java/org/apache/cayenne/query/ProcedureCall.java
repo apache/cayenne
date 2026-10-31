@@ -18,192 +18,48 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
-
-import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
-import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.QueryResult;
-import org.apache.cayenne.UpdateResult;
-import org.apache.cayenne.map.EntityResolver;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
- * Fluent API for calling stored procedures.
+ * The former name of {@link ProcedureQuery}, kept for one release for compatibility.
  *
  * @since 4.0
+ * @deprecated since 6.0 in favor of {@link ProcedureQuery}, which has the same API
  */
-public class ProcedureCall<T> extends IndirectQuery<T> {
+@Deprecated(since = "6.0", forRemoval = true)
+public class ProcedureCall<T> extends ProcedureQuery<T> {
 
     /**
-     * Creates procedure call using name of stored procedure defined in the mapping file. With no result class
-     * specified, the result sets are returned as data rows.
+     * @deprecated since 6.0 in favor of {@link ProcedureQuery#query(String)}
      */
+    @Deprecated(since = "6.0", forRemoval = true)
     public static ProcedureCall<DataRow> query(String procedure) {
-        ProcedureCall<DataRow> procedureCall = new ProcedureCall<>(procedure);
-        procedureCall.fetchingDataRows = true;
-        return procedureCall;
+        return new ProcedureCall<>(procedure);
     }
 
     /**
-     * Creates procedure call returning data rows using name of stored procedure defined in the mapping file.
+     * @deprecated since 6.0 in favor of {@link ProcedureQuery#query(String)}
      */
+    @Deprecated(since = "6.0", forRemoval = true)
     public static ProcedureCall<DataRow> dataRowQuery(String procedure) {
-        ProcedureCall<DataRow> procedureCall = new ProcedureCall<>(procedure);
-        procedureCall.fetchingDataRows = true;
-        return procedureCall;
+        return new ProcedureCall<>(procedure);
     }
 
     /**
-     * Creates procedure call using name of stored procedure defined in the mapping file and specifies data type
-     * of the objects it should return.
+     * @deprecated since 6.0 in favor of {@link ProcedureQuery#query(String, Class)}
      */
+    @Deprecated(since = "6.0", forRemoval = true)
     public static <T> ProcedureCall<T> query(String procedure, Class<T> resultClass) {
-        ProcedureCall<T> procedureCall = new ProcedureCall<>(procedure, resultClass);
-        procedureCall.fetchingDataRows = false;
-        return procedureCall;
+        return new ProcedureCall<>(procedure, resultClass);
     }
-
-    protected String procedureName;
-    protected Class<T> resultClass;
-    protected Map<String, Object> params;
-    protected Integer fetchLimit;
-    protected Integer fetchOffset;
-    protected CapsStrategy capsStrategy;
-    protected Boolean fetchingDataRows;
-    protected ProcedureColumn[] resultDescriptor;
 
     public ProcedureCall(String procedureName) {
-        this.procedureName = procedureName;
+        super(procedureName);
+        fetchDataRows();
     }
 
     public ProcedureCall(String procedureName, Class<T> resultClass) {
-        this.procedureName = procedureName;
+        super(procedureName);
         this.resultClass = resultClass;
-    }
-
-    public ProcedureCall<T> params(Map<String, ?> parameters) {
-        if (this.params == null) {
-            this.params = new HashMap<>(parameters);
-        } else {
-            Map bareMap = parameters;
-            this.params.putAll(bareMap);
-        }
-
-        this.replacementQuery = null;
-
-        return this;
-    }
-
-    public ProcedureCall<T> param(String name, Object value) {
-        if (this.params == null) {
-            this.params = new HashMap<>();
-        }
-
-        this.params.put(name, value);
-
-        this.replacementQuery = null;
-
-        return this;
-    }
-
-    public ProcedureCall<T> limit(int fetchLimit) {
-        this.fetchLimit = fetchLimit;
-
-        return this;
-    }
-
-    public ProcedureCall<T> offset(int fetchOffset) {
-        this.fetchOffset = fetchOffset;
-
-        return this;
-    }
-
-    public ProcedureCall<T> capsStrategy(CapsStrategy capsStrategy) {
-        this.capsStrategy = capsStrategy;
-
-        return this;
-    }
-
-    public ProcedureCall<T> resultDescriptor(ProcedureColumn[] resultDescriptor) {
-        this.resultDescriptor = resultDescriptor;
-
-        return this;
-    }
-
-    /**
-     * Executes the procedure, returning all of its result sets, update counts and OUT parameters in the order they
-     * were produced.
-     *
-     * @deprecated in favor of {@link #execute(ObjectContext)}
-     */
-    @Deprecated(since = "6.0", forRemoval = true)
-    public List<QueryResult> call(ObjectContext context) {
-        return execute(context);
-    }
-
-    /**
-     * Executes the procedure, returning the counts of its first update.
-     *
-     * @throws CayenneRuntimeException if the procedure produced no updates.
-     * @deprecated Read the counts from the {@link UpdateResult} items of {@link #execute(ObjectContext)}.
-     */
-    @Deprecated(since = "6.0", forRemoval = true)
-    public int[] batchUpdate(ObjectContext context) {
-        return firstUpdate(context).counts();
-    }
-
-    /**
-     * Executes the procedure, returning the count of its first update.
-     *
-     * @throws CayenneRuntimeException if the procedure produced no updates, or the first one is a batch update.
-     * @deprecated Read the count from the {@link UpdateResult} items of {@link #execute(ObjectContext)}.
-     */
-    @Deprecated(since = "6.0", forRemoval = true)
-    public int update(ObjectContext context) {
-        return firstUpdate(context).count();
-    }
-
-    private UpdateResult firstUpdate(ObjectContext context) {
-        for (QueryResult item : execute(context)) {
-            if (item instanceof UpdateResult update) {
-                return update;
-            }
-        }
-
-        throw new CayenneRuntimeException("Procedure '%s' produced no updates", procedureName);
-    }
-
-    @Override
-    protected Query<?> createReplacementQuery(EntityResolver resolver) {
-        ProcedureQuery<?> procedureQuery = resultClass != null
-                ? new ProcedureQuery<>(procedureName, resultClass)
-                : new ProcedureQuery<>(procedureName);
-
-        if (fetchingDataRows != null) {
-            procedureQuery.setFetchingDataRows(fetchingDataRows);
-        }
-
-        if (fetchLimit != null) {
-            procedureQuery.setFetchLimit(fetchLimit);
-        }
-
-        if (fetchOffset != null) {
-            procedureQuery.setFetchOffset(fetchOffset);
-        }
-
-        if (resultDescriptor != null) {
-            procedureQuery.addResultDescriptor(resultDescriptor);
-        }
-
-        if (capsStrategy != null) {
-            procedureQuery.setColumnNamesCapitalization(capsStrategy);
-        }
-
-        procedureQuery.setParameters(params);
-
-        return procedureQuery;
     }
 }

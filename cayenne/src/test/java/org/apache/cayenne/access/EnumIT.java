@@ -22,7 +22,7 @@ import java.util.List;
 
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.query.SQLTemplate;
+import org.apache.cayenne.query.SQLQuery;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.enum_test.Enum1;
 import org.apache.cayenne.testdo.enum_test.EnumEntity;
@@ -71,10 +71,10 @@ public class EnumIT {
     public void sQLTemplate() throws Exception {
         createDataSet();
 
-        SQLTemplate q = new SQLTemplate(
+        SQLQuery<EnumEntity> q = SQLQuery.query(
                 EnumEntity.class,
                 "SELECT * FROM ENUM_ENTITY WHERE ENUM_ATTRIBUTE = 'one'");
-        q.setColumnNamesCapitalization(CapsStrategy.UPPER);
+        q.columnNameCaps(CapsStrategy.UPPER);
 
         EnumEntity e = (EnumEntity) env.context().selectOne(q);
         assertNotNull(e);

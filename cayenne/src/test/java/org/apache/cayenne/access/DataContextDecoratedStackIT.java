@@ -28,11 +28,12 @@ import org.apache.cayenne.dba.mysql.MySQLAdapter;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.query.SQLTemplate;
+import org.apache.cayenne.query.SQLQuery;
 import org.apache.cayenne.access.lifecycle.LifecycleEventsManager;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
+import org.apache.cayenne.DataRow;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -61,14 +62,13 @@ public class DataContextDecoratedStackIT {
         a.setArtistName("XXX");
         context.commitChanges();
 
-        SQLTemplate query = new SQLTemplate(
+        SQLQuery<DataRow> query = SQLQuery.query(
                 Artist.class,
-                "select #result('count(1)' 'int' 'x') from ARTIST");
-        query.setFetchingDataRows(true);
-        query.setTemplate(
+                "select #result('count(1)' 'int' 'x') from ARTIST").fetchDataRows();
+        query.dialect(
                 FrontBaseAdapter.class.getName(),
                 "select #result('COUNT(ARTIST_ID)' 'int' 'x') from ARTIST");
-        query.setTemplate(
+        query.dialect(
                 MySQLAdapter.class.getName(),
                 "select #result('COUNT(ARTIST_ID)' 'int' 'x') from ARTIST");
         Map<?, ?> count = (Map<?, ?>) context.selectOne(query);
@@ -112,7 +112,7 @@ public class DataContextDecoratedStackIT {
         }
 
         @Override
-        public List<QueryResult> onQuery(OperationContext context) {
+        public List<QueryResult> onQuery(QueryContext context) {
             return channel.onQuery(context);
         }
 

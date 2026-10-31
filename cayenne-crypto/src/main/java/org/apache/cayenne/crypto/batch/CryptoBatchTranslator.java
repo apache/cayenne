@@ -24,12 +24,12 @@ import org.apache.cayenne.crypto.transformer.BindingsTransformer;
 import org.apache.cayenne.crypto.transformer.TransformerFactory;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.query.BatchQuery;
+import org.apache.cayenne.query.resolved.ResolvedBatch;
 
 /**
  * @since 5.0
  */
-public class CryptoBatchTranslator<T extends BatchQuery> implements BatchTranslator<T> {
+public class CryptoBatchTranslator<T extends ResolvedBatch> implements BatchTranslator<T> {
 
     private final TransformerFactory transformerFactory;
     private final BatchTranslator<T> delegate;
@@ -48,7 +48,7 @@ public class CryptoBatchTranslator<T extends BatchQuery> implements BatchTransla
         BindingsTransformer encryptor = transformerFactory.encryptor(translated.bindings());
 
         return encryptor != null
-                ? new TranslatedBatch(translated.sql(), encryptor.transform(translated.bindings()))
+                ? new TranslatedBatch(translated.query(), translated.sql(), encryptor.transform(translated.bindings()))
                 : translated;
     }
 }

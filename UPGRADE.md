@@ -82,6 +82,27 @@
      `batchUpdate(..)` in favor of reading the `UpdateResult` items of `execute(..)`. `ProcedureCall.select(..)` no
      longer throws when the procedure produced no result sets, returning an empty list like every other query.
 
+*  Per [CAY-3068](https://issues.apache.org/jira/browse/CAY-3068) a query is resolved ahead of its execution. `Query`
+   has a single abstract method, `ResolvedQuery resolve(EntityResolver)`, returning an immutable description of the
+   statements to run (`org.apache.cayenne.query.resolved`), and Cayenne routes, translates and executes the resolved
+   query on its own. The `getMetaData(..)`, `route(..)` and `createSQLAction(..)` hooks are removed, together with
+   `QueryMetadata` and its implementations. So:
+
+   * A custom `Query` can no longer run its own JDBC code via `createSQLAction(..)`. It is a facade over a standard
+     query instead: its `resolve(..)` builds an `ObjectSelect`, `SQLQuery`, `ProcedureQuery` or `MappedQuery` and
+     returns the result of resolving that.
+   * `SQLTemplate` is removed in favor of `SQLQuery`, The explicit
+     `SQLResult` mapping of `SQLTemplate.setResult(..)` has no replacement; use `#result` directives or
+     `resultColumnsTypes(..)` instead. `SQLQuery` getters (`getSql()`, `getParams()`, `getCacheStrategy()`, etc.) are
+     removed: the query is write-only, and its settings are read from the `ResolvedSQL` it resolves to. The `SQLQuery`
+     and `ProcedureQuery` constructors are no longer public; use the static factory methods (`query(..)`,
+     `columnQuery(..)`, `entityQuery(..)`).
+     `SQLTemplateDescriptor` is renamed
+     `SQLQueryDescriptor` (the `sqlQuery` XML element is unchanged) and builds `SQLQuery`.
+   * The setter-style `ProcedureQuery` is removed, and `ProcedureCall` takes over the name `ProcedureQuery`, keeping
+     its fluent API. `ProcedureCall` remains as a deprecated
+     subclass for one release.
+
 ## What's New in 5.0
 
 This is a high-level overview of 5.0 changes. Check the next section for milestone-by-milestone upgrade instructions.

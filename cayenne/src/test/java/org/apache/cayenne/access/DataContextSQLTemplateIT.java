@@ -24,10 +24,7 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.dba.frontbase.FrontBaseAdapter;
 import org.apache.cayenne.query.CapsStrategy;
-import org.apache.cayenne.query.EntityResult;
-import org.apache.cayenne.query.SQLResult;
 import org.apache.cayenne.query.SQLQuery;
-import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
@@ -79,111 +76,19 @@ public class DataContextSQLTemplateIT {
 	}
 
 	@Test
-	public void sQLResultSetMappingMixed() throws Exception {
-		createFourArtistsAndThreePaintingsDataSet();
-
-		String sql = "SELECT #result('t0.ARTIST_ID' 'long' 'X'), #result('t0.ARTIST_NAME' 'String' 'Y'), #result('t0.DATE_OF_BIRTH' 'Date' 'Z'), #result('count(t1.PAINTING_ID)' 'int' 'C') "
-				+ "FROM ARTIST t0 LEFT JOIN PAINTING t1 ON (t0.ARTIST_ID = t1.ARTIST_ID) "
-				+ "GROUP BY t0.ARTIST_ID, t0.ARTIST_NAME, t0.DATE_OF_BIRTH " + "ORDER BY t0.ARTIST_ID";
-
-		SQLTemplate query = new SQLTemplate(sql);
-		query.setColumnNamesCapitalization(CapsStrategy.UPPER);
-
-		EntityResult artistResult = new EntityResult(Artist.class);
-		artistResult.addDbField(Artist.ARTIST_ID_PK_COLUMN, "X");
-		artistResult.addObjectField(Artist.ARTIST_NAME.getName(), "Y");
-		artistResult.addObjectField(Artist.DATE_OF_BIRTH.getName(), "Z");
-
-		SQLResult rsMap = new SQLResult();
-		rsMap.addEntityResult(artistResult);
-		rsMap.addColumnResult("C");
-		query.setResult(rsMap);
-
-		List<?> objects = context.select(query);
-		assertEquals(4, objects.size());
-
-		Object o1 = objects.get(0);
-		assertTrue(o1 instanceof Object[], "Expected Object[]: " + o1);
-		Object[] array1 = (Object[]) o1;
-		assertEquals(2, array1.length);
-		Object[] array2 = (Object[]) objects.get(1);
-		assertEquals(2, array2.length);
-		Object[] array3 = (Object[]) objects.get(2);
-		assertEquals(2, array3.length);
-		Object[] array4 = (Object[]) objects.get(3);
-		assertEquals(2, array3.length);
-
-		assertEquals(1, array1[1]);
-		assertEquals(1, array2[1]);
-		assertEquals(0, array3[1]);
-		assertEquals(0, array4[1]);
-		assertTrue(array1[0] instanceof Artist, "Unexpected Persistent: " + array1[0]);
-	}
-
-	@Test
 	public void rootless_DataNodeName() throws Exception {
 		createFourArtists();
 
-		SQLTemplate query = SQLTemplate.dataRowQuery("SELECT * FROM ARTIST");
-		query.setDataNodeName(env.dataNode().getName());
+		SQLQuery<DataRow> query = SQLQuery.query("SELECT * FROM ARTIST");
+		query.dataNode(env.dataNode().getName());
 		assertEquals(4, context.select(query).size());
 	}
 
 	@Test
 	public void rootless_DefaultDataNode() throws Exception {
 		createFourArtists();
-		SQLTemplate query = SQLTemplate.dataRowQuery("SELECT * FROM ARTIST");
+		SQLQuery<DataRow> query = SQLQuery.query("SELECT * FROM ARTIST");
 		assertEquals(4, context.select(query).size());
-	}
-
-	@Test
-	public void sQLResultSetMappingScalar() throws Exception {
-		createFourArtists();
-
-		String sql = "SELECT count(1) AS X FROM ARTIST";
-
-		SQLTemplate query = new SQLTemplate(sql);
-		query.setTemplate(FrontBaseAdapter.class.getName(), "SELECT COUNT(ARTIST_ID) X FROM ARTIST");
-		query.setColumnNamesCapitalization(CapsStrategy.UPPER);
-
-		SQLResult rsMap = new SQLResult();
-		rsMap.addColumnResult("X");
-		query.setResult(rsMap);
-
-		List<?> objects = context.select(query);
-		assertEquals(1, objects.size());
-
-		Object o = objects.get(0);
-		assertTrue(o instanceof Number, "Expected Number: " + o);
-		assertEquals(4, ((Number) o).intValue());
-	}
-
-	@Test
-	public void sQLResultSetMappingScalarArray() throws Exception {
-		createFourArtists();
-
-		String sql = "SELECT count(1) AS X, 77 AS Y FROM ARTIST";
-
-		SQLTemplate query = new SQLTemplate(sql);
-		query.setTemplate(FrontBaseAdapter.class.getName(), "SELECT COUNT(ARTIST_ID) X, 77 Y FROM ARTIST GROUP BY Y");
-		query.setColumnNamesCapitalization(CapsStrategy.UPPER);
-
-		SQLResult rsMap = new SQLResult();
-		rsMap.addColumnResult("X");
-		rsMap.addColumnResult("Y");
-		query.setResult(rsMap);
-
-		List<?> objects = context.select(query);
-		assertEquals(1, objects.size());
-
-		Object o = objects.get(0);
-		assertTrue(o instanceof Object[]);
-
-		Object[] row = (Object[]) o;
-		assertEquals(2, row.length);
-
-		assertEquals(4, ((Number) row[0]).intValue());
-		assertEquals(77, ((Number) row[1]).intValue());
 	}
 
 	@Test
@@ -191,9 +96,8 @@ public class DataContextSQLTemplateIT {
 		createFourArtistsAndThreePaintingsDataSet();
 
 		String template = "SELECT * FROM ARTIST ORDER BY ARTIST_ID";
-		SQLTemplate query = new SQLTemplate(Artist.class, template);
-		query.setColumnNamesCapitalization(CapsStrategy.LOWER);
-		query.setFetchingDataRows(true);
+		SQLQuery<DataRow> query = SQLQuery.query(Artist.class, template).fetchDataRows();
+		query.columnNameCaps(CapsStrategy.LOWER);
 
 		List<DataRow> rows = context.select(query);
 
@@ -205,7 +109,7 @@ public class DataContextSQLTemplateIT {
 		assertFalse(row2.containsKey("ARTIST_ID"));
 		assertTrue(row2.containsKey("artist_id"));
 
-		query.setColumnNamesCapitalization(CapsStrategy.UPPER);
+		query.columnNameCaps(CapsStrategy.UPPER);
 
 		List<DataRow> rowsUpper = context.select(query);
 
@@ -223,11 +127,9 @@ public class DataContextSQLTemplateIT {
 		createFourArtists();
 
 		String template = "SELECT * FROM ARTIST ORDER BY ARTIST_ID";
-		SQLTemplate query = new SQLTemplate(Artist.class, template);
+		SQLQuery<DataRow> query = SQLQuery.query(Artist.class, template).fetchDataRows();
 
-		query.setColumnNamesCapitalization(CapsStrategy.UPPER);
-
-		query.setFetchingDataRows(true);
+		query.columnNameCaps(CapsStrategy.UPPER);
 
 		List<DataRow> rows = context.select(query);
 		assertEquals(4, rows.size());
@@ -243,10 +145,8 @@ public class DataContextSQLTemplateIT {
 		createFourArtists();
 
 		String template = "SELECT * FROM ARTIST ORDER BY ARTIST_ID";
-		SQLTemplate query = new SQLTemplate(Artist.class, template);
-		query.setColumnNamesCapitalization(CapsStrategy.UPPER);
-
-		query.setFetchingDataRows(false);
+		SQLQuery<Artist> query = SQLQuery.query(Artist.class, template);
+		query.columnNameCaps(CapsStrategy.UPPER);
 
 		List<?> objects = context.select(query);
 		assertEquals(4, objects.size());
@@ -263,9 +163,9 @@ public class DataContextSQLTemplateIT {
 		Artist a = context.objectForPK(Artist.class, 101);
 
 		String template = "SELECT * FROM PAINTING " + "WHERE #bindObjectEqual($a) ORDER BY PAINTING_ID";
-		SQLTemplate query = new SQLTemplate(Painting.class, template);
-		query.setColumnNamesCapitalization(CapsStrategy.UPPER);
-		query.setParams(Collections.singletonMap("a", a));
+		SQLQuery<Painting> query = SQLQuery.query(Painting.class, template);
+		query.columnNameCaps(CapsStrategy.UPPER);
+		query.params(Collections.singletonMap("a", a));
 
 		List<?> objects = context.select(query);
 		assertEquals(1, objects.size());
@@ -281,9 +181,9 @@ public class DataContextSQLTemplateIT {
 		Artist a = context.objectForPK(Artist.class, 101);
 
 		String template = "SELECT * FROM PAINTING " + "WHERE #bindObjectNotEqual($a) ORDER BY PAINTING_ID";
-		SQLTemplate query = new SQLTemplate(Painting.class, template);
-		query.setColumnNamesCapitalization(CapsStrategy.UPPER);
-		query.setParams(Collections.singletonMap("a", a));
+		SQLQuery<Painting> query = SQLQuery.query(Painting.class, template);
+		query.columnNameCaps(CapsStrategy.UPPER);
+		query.params(Collections.singletonMap("a", a));
 
 		List<?> objects = context.select(query);
 
@@ -304,9 +204,9 @@ public class DataContextSQLTemplateIT {
 
 		String template = "SELECT * FROM PAINTING t0"
 				+ " WHERE #bindObjectEqual($a [ 't0.ARTIST_ID' ] [ 'ARTIST_ID' ] ) ORDER BY PAINTING_ID";
-		SQLTemplate query = new SQLTemplate(Painting.class, template);
-		query.setColumnNamesCapitalization(CapsStrategy.UPPER);
-		query.setParams(Collections.singletonMap("a", a));
+		SQLQuery<Painting> query = SQLQuery.query(Painting.class, template);
+		query.columnNameCaps(CapsStrategy.UPPER);
+		query.params(Collections.singletonMap("a", a));
 
 		List<?> objects = context.select(query);
 		assertEquals(1, objects.size());
@@ -323,9 +223,9 @@ public class DataContextSQLTemplateIT {
 
 		String template = "SELECT * FROM PAINTING t0"
 				+ " WHERE #bindObjectEqual($a 't0.ARTIST_ID' 'ARTIST_ID' ) ORDER BY PAINTING_ID";
-		SQLTemplate query = new SQLTemplate(Painting.class, template);
-		query.setColumnNamesCapitalization(CapsStrategy.UPPER);
-		query.setParams(Collections.singletonMap("a", a));
+		SQLQuery<Painting> query = SQLQuery.query(Painting.class, template);
+		query.columnNameCaps(CapsStrategy.UPPER);
+		query.params(Collections.singletonMap("a", a));
 
 		List<?> objects = context.select(query);
 		assertEquals(1, objects.size());
@@ -340,9 +240,9 @@ public class DataContextSQLTemplateIT {
 
 		String template = "SELECT * FROM PAINTING t0"
 				+ " WHERE #bindObjectEqual($a [ 't0.ARTIST_ID' ] [ 'ARTIST_ID' ] ) ORDER BY PAINTING_ID";
-		SQLTemplate query = new SQLTemplate(Painting.class, template);
-		query.setColumnNamesCapitalization(CapsStrategy.UPPER);
-		query.setParams(Collections.singletonMap("a", null));
+		SQLQuery<Painting> query = SQLQuery.query(Painting.class, template);
+		query.columnNameCaps(CapsStrategy.UPPER);
+		query.params(Collections.singletonMap("a", null));
 
 		List<?> objects = context.select(query);
 		assertEquals(1, objects.size());
@@ -359,9 +259,9 @@ public class DataContextSQLTemplateIT {
 
 		String template = "SELECT * FROM PAINTING t0"
 				+ " WHERE #bindObjectNotEqual($a [ 't0.ARTIST_ID' ] [ 'ARTIST_ID' ] ) ORDER BY PAINTING_ID";
-		SQLTemplate query = new SQLTemplate(Painting.class, template);
-		query.setColumnNamesCapitalization(CapsStrategy.UPPER);
-		query.setParams(Collections.singletonMap("a", a));
+		SQLQuery<Painting> query = SQLQuery.query(Painting.class, template);
+		query.columnNameCaps(CapsStrategy.UPPER);
+		query.params(Collections.singletonMap("a", a));
 
 		List<?> objects = context.select(query);
 		// null comparison is unpredictable across DB's ... some would return
@@ -379,9 +279,9 @@ public class DataContextSQLTemplateIT {
 
 		String template = "SELECT * FROM PAINTING t0"
 				+ " WHERE #bindObjectNotEqual($a [ 't0.ARTIST_ID' ] [ 'ARTIST_ID' ] ) ORDER BY PAINTING_ID";
-		SQLTemplate query = new SQLTemplate(Painting.class, template);
-		query.setColumnNamesCapitalization(CapsStrategy.UPPER);
-		query.setParams(Collections.singletonMap("a", null));
+		SQLQuery<Painting> query = SQLQuery.query(Painting.class, template);
+		query.columnNameCaps(CapsStrategy.UPPER);
+		query.params(Collections.singletonMap("a", null));
 
 		List<Painting> objects = context.select(query);
 		assertEquals(2, objects.size());
@@ -398,9 +298,9 @@ public class DataContextSQLTemplateIT {
 		createFourArtistsAndThreePaintingsDataSet();
 
 		String template = "SELECT * FROM PAINTING t0" + " WHERE t0.ARTIST_ID #bindEqual($id) ORDER BY PAINTING_ID";
-		SQLTemplate query = new SQLTemplate(Painting.class, template);
-		query.setColumnNamesCapitalization(CapsStrategy.UPPER);
-		query.setParams(Collections.singletonMap("id", null));
+		SQLQuery<Painting> query = SQLQuery.query(Painting.class, template);
+		query.columnNameCaps(CapsStrategy.UPPER);
+		query.params(Collections.singletonMap("id", null));
 
 		List<Painting> objects = context.select(query);
 		assertEquals(1, objects.size());
@@ -418,9 +318,9 @@ public class DataContextSQLTemplateIT {
 		// sanity check
 		assertTrue(fetchLimit < 4);
 		String template = "SELECT * FROM ARTIST ORDER BY ARTIST_ID";
-		SQLTemplate query = new SQLTemplate(Artist.class, template);
-		query.setColumnNamesCapitalization(CapsStrategy.UPPER);
-		query.setFetchLimit(fetchLimit);
+		SQLQuery<Artist> query = SQLQuery.query(Artist.class, template);
+		query.columnNameCaps(CapsStrategy.UPPER);
+		query.limit(fetchLimit);
 
 		List<?> objects = context.select(query);
 		assertEquals(fetchLimit, objects.size());
@@ -436,9 +336,9 @@ public class DataContextSQLTemplateIT {
 		// sanity check
 		assertTrue(fetchOffset < 4);
 		String template = "SELECT * FROM ARTIST ORDER BY ARTIST_ID";
-		SQLTemplate query = new SQLTemplate(Artist.class, template);
-		query.setColumnNamesCapitalization(CapsStrategy.UPPER);
-		query.setFetchOffset(fetchOffset);
+		SQLQuery<Artist> query = SQLQuery.query(Artist.class, template);
+		query.columnNameCaps(CapsStrategy.UPPER);
+		query.offset(fetchOffset);
 
 		List<?> objects = context.select(query);
 		assertEquals(4 - fetchOffset, objects.size());
@@ -450,10 +350,10 @@ public class DataContextSQLTemplateIT {
 		createFourArtists();
 
 		String template = "SELECT * FROM ARTIST ORDER BY ARTIST_ID";
-		SQLTemplate query = new SQLTemplate(Artist.class, template);
-		query.setColumnNamesCapitalization(CapsStrategy.UPPER);
-		query.setFetchOffset(1);
-		query.setFetchLimit(2);
+		SQLQuery<Artist> query = SQLQuery.query(Artist.class, template);
+		query.columnNameCaps(CapsStrategy.UPPER);
+		query.offset(1);
+		query.limit(2);
 
 		List<?> objects = context.select(query);
 		assertEquals(2, objects.size());
@@ -470,10 +370,10 @@ public class DataContextSQLTemplateIT {
 		assertTrue(pageSize < 4);
 
 		String template = "SELECT * FROM ARTIST ORDER BY ARTIST_ID";
-		SQLTemplate query = new SQLTemplate(Artist.class, template);
-		query.setColumnNamesCapitalization(CapsStrategy.UPPER);
+		SQLQuery<Artist> query = SQLQuery.query(Artist.class, template);
+		query.columnNameCaps(CapsStrategy.UPPER);
 
-		query.setPageSize(pageSize);
+		query.pageSize(pageSize);
 
 		List<?> objects = context.select(query);
 
@@ -503,10 +403,10 @@ public class DataContextSQLTemplateIT {
 
 		// the PK is the SECOND result column - exercises the paginated id reader's column indexing
 		String template = "SELECT ARTIST_NAME, ARTIST_ID FROM ARTIST ORDER BY ARTIST_ID";
-		SQLTemplate query = new SQLTemplate(Artist.class, template);
-		query.setColumnNamesCapitalization(CapsStrategy.UPPER);
+		SQLQuery<Artist> query = SQLQuery.query(Artist.class, template);
+		query.columnNameCaps(CapsStrategy.UPPER);
 
-		query.setPageSize(pageSize);
+		query.pageSize(pageSize);
 
 		List<?> objects = context.select(query);
 
@@ -527,7 +427,7 @@ public class DataContextSQLTemplateIT {
 
 		int pageSize = 3;
 
-		// SQLQuery builds a replacement SQLTemplate, so it goes through the same paginated id reader
+		// SQLQuery builds a replacement SQLQuery, so it goes through the same paginated id reader
 		SQLQuery<Artist> query = SQLQuery
 				.query(Artist.class, "SELECT ARTIST_NAME, ARTIST_ID FROM ARTIST ORDER BY ARTIST_ID")
 				.columnNameCaps(CapsStrategy.UPPER)
@@ -546,7 +446,7 @@ public class DataContextSQLTemplateIT {
 
 		// "SELECT *" yields lowercase column names on some DBs (e.g. PostgreSQL), so normalize the DataRow keys
 		SQLQuery<DataRow> query = SQLQuery
-				.dataRowQuery("SELECT * FROM ARTIST ORDER BY ARTIST_ID")
+				.query("SELECT * FROM ARTIST ORDER BY ARTIST_ID")
 				.columnNameCaps(CapsStrategy.UPPER);
 
 		try (ResultIterator<DataRow> it = context.iterator(query)) {
@@ -571,9 +471,8 @@ public class DataContextSQLTemplateIT {
 
 		// see CAY-726 for details
 		String template = "SELECT #result('count(*)' 'int' 'X')" + System.getProperty("line.separator") + "FROM ARTIST";
-		SQLTemplate query = new SQLTemplate(Artist.class, template);
-		query.setColumnNamesCapitalization(CapsStrategy.UPPER);
-		query.setFetchingDataRows(true);
+		SQLQuery<DataRow> query = SQLQuery.query(Artist.class, template).fetchDataRows();
+		query.columnNameCaps(CapsStrategy.UPPER);
 
 		List<?> result = context.select(query);
 

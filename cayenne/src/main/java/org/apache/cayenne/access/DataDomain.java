@@ -41,6 +41,7 @@ import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.EntitySorter;
+import org.apache.cayenne.query.resolved.ResolvedQuery;
 import org.apache.cayenne.access.lifecycle.LifecycleEventsManager;
 import org.apache.cayenne.tx.BaseTransaction;
 import org.apache.cayenne.tx.Transaction;
@@ -272,6 +273,35 @@ public class DataDomain implements DataChannel {
     }
 
     /**
+     * Returns the DataNode that should handle a resolved query: the node of its DataMap (see
+     * {@link #lookupDataNode(DataMap)}), or, for a raw SQL statement without a root, the node it names, or else the
+     * default node. Fails if the named node does not exist, or if there is no default node to fall back on.
+     *
+     * @since 6.0
+     */
+    public DataNode lookupDataNode(ResolvedQuery query) {
+        DataMap map = query.dataMap();
+        if (map != null) {
+            return lookupDataNode(map);
+        }
+
+        // a raw SQL statement without a root is routed by its node name, or to the default node
+        String nodeName = query.dataNodeName();
+        if (nodeName != null) {
+            DataNode node = getDataNode(nodeName);
+            if (node == null) {
+                throw new CayenneRuntimeException("No DataNode exists for name %s", nodeName);
+            }
+            return node;
+        }
+
+        if (defaultNode == null) {
+            throw new CayenneRuntimeException("No default DataNode exists.");
+        }
+        return defaultNode;
+    }
+
+    /**
      * Returns a DataNode that should handle queries for all entities in a DataMap: the node the map was added with,
      * or the default node for a map not linked to any node.
      *
@@ -323,7 +353,7 @@ public class DataDomain implements DataChannel {
      * @since 1.2
      */
     @Override
-    public List<QueryResult> onQuery(OperationContext context) {
+    public List<QueryResult> onQuery(QueryContext context) {
         checkStopped();
         return new DataDomainQueryFilterChain().onQuery(context);
     }
@@ -379,7 +409,7 @@ public class DataDomain implements DataChannel {
         return new DataDomainRelationshipAction(this, context, sourceId, relationshipName).execute();
     }
 
-    List<QueryResult> onQueryNoFilters(OperationContext context) {
+    List<QueryResult> onQueryNoFilters(QueryContext context) {
         // transaction note:
         // we don't wrap this code in transaction to reduce transaction scope to
         // just the DB operation for better performance ... query action will
@@ -541,7 +571,7 @@ public class DataDomain implements DataChannel {
         }
 
         @Override
-        public List<QueryResult> onQuery(OperationContext context) {
+        public List<QueryResult> onQuery(QueryContext context) {
             return --idx >= 0
                     ? queryFilters.get(idx).onQuery(context, this)
                     : onQueryNoFilters(context);

@@ -19,29 +19,23 @@
 
 package org.apache.cayenne.access.translator.select;
 
-import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.translator.SelectTranslator;
 import org.apache.cayenne.access.translator.TranslatedSelect;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.query.FluentSelect;
-import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.resolved.ResolvedSelect;
 
 /**
- * A {@link SelectTranslator} that translates a {@link FluentSelect} by running the {@link TranslationStage}
- * pipeline over a {@link SelectTranslatorContext}. This is the translator returned by the base
- * {@link org.apache.cayenne.dba.JdbcAdapter}; adapters may subclass it to customize translation.
+ * The default {@link SelectTranslator}, generating SQL from a {@link ResolvedSelect} through the stages of a
+ * {@link SelectTranslatorContext}.
  *
- * @since 5.0
+ * @since 4.2
  */
 public class DefaultSelectTranslator implements SelectTranslator {
 
     @Override
-    public TranslatedSelect translate(Query<?> query, DbAdapter adapter, EntityResolver resolver) {
-        if (!(query instanceof FluentSelect<?, ?> fluentSelect)) {
-            throw new CayenneRuntimeException("Unsupported type of Select query %s", query);
-        }
-        SelectTranslatorContext context = new SelectTranslatorContext(fluentSelect, adapter, resolver, null);
+    public TranslatedSelect translate(ResolvedSelect select, DbAdapter adapter, EntityResolver resolver) {
+        SelectTranslatorContext context = new SelectTranslatorContext(select, adapter, resolver, null);
         context.translate();
         return context.getTranslation();
     }

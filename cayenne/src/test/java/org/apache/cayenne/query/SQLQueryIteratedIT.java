@@ -114,7 +114,7 @@ public class SQLQueryIteratedIT {
     @Test
     public void dataRowQueryWithBatchIterator() {
         try (ResultBatchIterator<DataRow> iterator = SQLQuery
-                .dataRowQuery("SELECT * FROM PAINTING ORDER BY PAINTING_ID")
+                .query("SELECT * FROM PAINTING ORDER BY PAINTING_ID")
                 .upperColumnNames()
                 .batchIterator(context, 5)) {
             int count = 0;
@@ -133,7 +133,7 @@ public class SQLQueryIteratedIT {
     @Test
     public void dataRowQueryWithIterator() {
         try (ResultIterator<DataRow> iterator = SQLQuery
-                .dataRowQuery("SELECT * FROM PAINTING ORDER BY PAINTING_ID")
+                .query("SELECT * FROM PAINTING ORDER BY PAINTING_ID")
                 .upperColumnNames()
                 .iterator(context)) {
             int count = 0;

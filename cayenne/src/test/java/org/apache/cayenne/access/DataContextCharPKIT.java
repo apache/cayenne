@@ -20,7 +20,7 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.DataRow;
-import org.apache.cayenne.query.SQLTemplate;
+import org.apache.cayenne.query.SQLQuery;
 import org.apache.cayenne.testdo.compound.CharPkTestEntity;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
@@ -45,11 +45,9 @@ public class DataContextCharPKIT {
         object.setPkCol("PK1");
         context.commitChanges();
 
-        SQLTemplate q = new SQLTemplate(
+        SQLQuery<DataRow> q = SQLQuery.query(
                 CharPkTestEntity.class,
-                "SELECT * FROM CHAR_PK_TEST");
-
-        q.setFetchingDataRows(true);
+                "SELECT * FROM CHAR_PK_TEST").fetchDataRows();
 
         List<?> rows = context.select(q);
         assertNotNull(rows);
@@ -80,10 +78,9 @@ public class DataContextCharPKIT {
         context.deleteObjects(object);
         context.commitChanges();
 
-        SQLTemplate q = new SQLTemplate(
+        SQLQuery<DataRow> q = SQLQuery.query(
                 CharPkTestEntity.class,
-                "SELECT * FROM CHAR_PK_TEST");
-        q.setFetchingDataRows(true);
+                "SELECT * FROM CHAR_PK_TEST").fetchDataRows();
 
         List<?> rows = context.select(q);
         assertNotNull(rows);
@@ -101,10 +98,9 @@ public class DataContextCharPKIT {
         object.setOtherCol("UPDATED");
         context.commitChanges();
 
-        SQLTemplate q = new SQLTemplate(
+        SQLQuery<DataRow> q = SQLQuery.query(
                 CharPkTestEntity.class,
-                "SELECT * FROM CHAR_PK_TEST");
-        q.setFetchingDataRows(true);
+                "SELECT * FROM CHAR_PK_TEST").fetchDataRows();
 
         List<?> rows = context.select(q);
         assertNotNull(rows);

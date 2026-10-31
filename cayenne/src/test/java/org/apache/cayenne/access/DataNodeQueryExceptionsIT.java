@@ -21,11 +21,13 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.datasource.UnmanagedPoolingDataSource;
-import org.apache.cayenne.query.SQLAction;
-import org.apache.cayenne.query.SQLActionVisitor;
 import org.apache.cayenne.query.SQLQuery;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
+import org.apache.cayenne.access.translator.TranslatedStatement;
+import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.query.resolved.ResolvedQuery;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
 import java.lang.reflect.Method;
@@ -40,9 +42,9 @@ public class DataNodeQueryExceptionsIT {
 
     @Test
     public void queryException() {
-        SQLQuery<Object> throwingSS = new SQLQuery<Object>(Object.class, "SELECT 1") {
+        DataNode failingNode = new MockDataNode(env.dataNode()) {
             @Override
-            public SQLAction createSQLAction(SQLActionVisitor visitor) {
+            protected TranslatedStatement translate(ResolvedQuery query, DbAdapter adapter, EntityResolver resolver) {
                 assertEquals(1, activeConnections());
                 throw new CayenneRuntimeException("Emulated exception");
             }
@@ -50,23 +52,24 @@ public class DataNodeQueryExceptionsIT {
 
         assertEquals(0, activeConnections());
         assertThrows(CayenneRuntimeException.class,
-                () -> StatementContexts.run(env.dataNode(), env.resolver(), throwingSS));
+                () -> StatementContexts.run(failingNode, env.resolver(), SQLQuery.query("SELECT 1")));
 
         assertEquals(0, activeConnections());
     }
 
     @Test
     public void queryError() {
-        SQLQuery<Object> throwingSS = new SQLQuery<Object>(Object.class, "SELECT 1") {
+        DataNode failingNode = new MockDataNode(env.dataNode()) {
             @Override
-            public SQLAction createSQLAction(SQLActionVisitor visitor) {
+            protected TranslatedStatement translate(ResolvedQuery query, DbAdapter adapter, EntityResolver resolver) {
                 assertEquals(1, activeConnections());
                 throw new Error("Emulated error");
             }
         };
 
         assertEquals(0, activeConnections());
-        assertThrows(Error.class, () -> StatementContexts.run(env.dataNode(), env.resolver(), throwingSS));
+        assertThrows(Error.class,
+                () -> StatementContexts.run(failingNode, env.resolver(), SQLQuery.query("SELECT 1")));
 
         assertEquals(0, activeConnections());
     }

@@ -48,13 +48,13 @@ class DistinctStage implements TranslationStage {
     @Override
     public void perform(SelectTranslatorContext context) {
         // explicit suppressing of distinct
-        if(context.getMetadata().isSuppressingDistinct()) {
+        if(context.getSelect().suppressingDistinct()) {
             context.setDistinctSuppression(true);
             return;
         }
 
         // query forcing distinct or query have joins (qualifier or prefetch)
-        if(!context.getQuery().isDistinct() && !context.getTableTree().hasToManyJoin()) {
+        if(!context.getSelect().distinct() && !context.getTableTree().hasToManyJoin()) {
             return;
         }
 

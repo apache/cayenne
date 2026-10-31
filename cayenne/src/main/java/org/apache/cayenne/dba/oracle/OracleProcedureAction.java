@@ -30,21 +30,21 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.OutParametersResult;
 import org.apache.cayenne.access.StatementContext;
 import org.apache.cayenne.access.jdbc.RSColumn;
-import org.apache.cayenne.access.jdbc.ProcedureAction;
+import org.apache.cayenne.access.jdbc.DataNodeProcedureAction;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.map.ProcedureParameter;
-import org.apache.cayenne.query.ProcedureQuery;
+import org.apache.cayenne.access.translator.TranslatedProcedure;
 
 /**
- * Oracle-specific ProcedureAction that supports ResultSet OUT parameters.
+ * Oracle-specific DataNodeProcedureAction that supports ResultSet OUT parameters.
  * 
  * @since 1.2
  */
-class OracleProcedureAction extends ProcedureAction {
+class OracleProcedureAction extends DataNodeProcedureAction {
 
-	OracleProcedureAction(ProcedureQuery<?> query, DataNode dataNode) {
-		super(query, dataNode);
+	OracleProcedureAction(TranslatedProcedure translated, DataNode dataNode) {
+		super(translated, dataNode);
 	}
 
 	/**
@@ -55,7 +55,7 @@ class OracleProcedureAction extends ProcedureAction {
 			throws SQLException, Exception {
 
 		Map<String, Object> result = null;
-		List<ProcedureParameter> parameters = context.getMetadata().getProcedure().getCallParameters();
+		List<ProcedureParameter> parameters = query.procedure().getCallParameters();
 		for (int i = 0; i < parameters.size(); i++) {
 			ProcedureParameter parameter = parameters.get(i);
 

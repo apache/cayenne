@@ -22,10 +22,8 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.ProcedureQueryDescriptor;
 import org.apache.cayenne.map.QueryDescriptor;
-import org.apache.cayenne.map.SQLTemplateDescriptor;
-import org.apache.cayenne.map.SelectQueryDescriptor;
+import org.apache.cayenne.query.resolved.ResolvedQuery;
 
 import java.sql.Statement;
 import java.util.Collections;
@@ -41,7 +39,7 @@ import java.util.Map;
  * @param <T> the type of the rows the query selects
  * @since 6.0
  */
-public class MappedQuery<T> extends IndirectQuery<T> {
+public class MappedQuery<T> implements Query<T> {
 
     /**
      * Loads query with the given name, which selects objects of a given persistent class, from the mapping
@@ -84,7 +82,6 @@ public class MappedQuery<T> extends IndirectQuery<T> {
 
     public MappedQuery<T> name(String queryName) {
         this.queryName = queryName;
-        this.replacementQuery = null;
         return this;
     }
 
@@ -94,8 +91,6 @@ public class MappedQuery<T> extends IndirectQuery<T> {
         } else {
             this.params.putAll(parameters);
         }
-
-        this.replacementQuery = null;
         return this;
     }
 
@@ -105,7 +100,6 @@ public class MappedQuery<T> extends IndirectQuery<T> {
         }
 
         this.params.put(name, value);
-        this.replacementQuery = null;
         return this;
     }
 
@@ -115,7 +109,6 @@ public class MappedQuery<T> extends IndirectQuery<T> {
      */
     public MappedQuery<T> limit(int fetchLimit) {
         this.fetchLimit = fetchLimit;
-        this.replacementQuery = null;
         return this;
     }
 
@@ -125,7 +118,6 @@ public class MappedQuery<T> extends IndirectQuery<T> {
      */
     public MappedQuery<T> offset(int fetchOffset) {
         this.fetchOffset = fetchOffset;
-        this.replacementQuery = null;
         return this;
     }
 
@@ -138,7 +130,6 @@ public class MappedQuery<T> extends IndirectQuery<T> {
      */
     public MappedQuery<T> statementFetchSize(int statementFetchSize) {
         this.statementFetchSize = statementFetchSize;
-        this.replacementQuery = null;
         return this;
     }
 
@@ -149,7 +140,6 @@ public class MappedQuery<T> extends IndirectQuery<T> {
      */
     public MappedQuery<T> queryTimeout(int timeout) {
         this.queryTimeout = timeout;
-        this.replacementQuery = null;
         return this;
     }
 
@@ -159,7 +149,6 @@ public class MappedQuery<T> extends IndirectQuery<T> {
      */
     public MappedQuery<T> pageSize(int pageSize) {
         this.pageSize = pageSize;
-        this.replacementQuery = null;
         return this;
     }
 
@@ -168,7 +157,6 @@ public class MappedQuery<T> extends IndirectQuery<T> {
      */
     public MappedQuery<T> forceNoCache() {
         this.forceNoCache = true;
-        this.replacementQuery = null;
         return this;
     }
 
@@ -201,85 +189,90 @@ public class MappedQuery<T> extends IndirectQuery<T> {
     }
 
     @Override
-    protected Query<?> createReplacementQuery(EntityResolver resolver) {
+    public ResolvedQuery resolve(EntityResolver resolver) {
         QueryDescriptor descriptor = resolver.getQueryDescriptor(queryName);
+        if (descriptor == null) {
+            throw new CayenneRuntimeException("Unknown query name: %s", queryName);
+        }
+
         Query<?> query = descriptor.buildQuery(normalizedParameters());
 
-        QueryCacheStrategy cacheStrategyOverride = null;
-
-        if (forceNoCache) {
-            QueryCacheStrategy cacheStrategy = query.getMetaData(resolver).getCacheStrategy();
-            if (QueryCacheStrategy.LOCAL_CACHE == cacheStrategy) {
-                cacheStrategyOverride = QueryCacheStrategy.LOCAL_CACHE_REFRESH;
-            } else if (QueryCacheStrategy.SHARED_CACHE == cacheStrategy) {
-                cacheStrategyOverride = QueryCacheStrategy.SHARED_CACHE_REFRESH;
-            }
-        }
-
-        switch (descriptor) {
-            case SelectQueryDescriptor ignored -> {
-                FluentSelect<?, ?> selectQuery = (FluentSelect<?, ?>) query;
+        switch (query) {
+            case FluentSelect<?, ?> select -> {
                 if (fetchLimit != null) {
-                    selectQuery.limit(fetchLimit);
+                    select.limit(fetchLimit);
                 }
                 if (fetchOffset != null) {
-                    selectQuery.offset(fetchOffset);
+                    select.offset(fetchOffset);
                 }
                 if (statementFetchSize != null) {
-                    selectQuery.statementFetchSize(statementFetchSize);
-                }
-                if (pageSize != null) {
-                    selectQuery.pageSize(pageSize);
-                }
-                if (cacheStrategyOverride != null) {
-                    selectQuery.cacheStrategy(cacheStrategyOverride, selectQuery.getCacheGroup());
-                }
-            }
-            case SQLTemplateDescriptor ignored -> {
-                SQLTemplate<?> sqlTemplate = (SQLTemplate<?>) query;
-                if (fetchLimit != null) {
-                    sqlTemplate.setFetchLimit(fetchLimit);
-                }
-                if (fetchOffset != null) {
-                    sqlTemplate.setFetchOffset(fetchOffset);
-                }
-                if (statementFetchSize != null) {
-                    sqlTemplate.setStatementFetchSize(statementFetchSize);
+                    select.statementFetchSize(statementFetchSize);
                 }
                 if (queryTimeout != null) {
-                    sqlTemplate.setQueryTimeout(queryTimeout);
+                    select.queryTimeout(queryTimeout);
                 }
                 if (pageSize != null) {
-                    sqlTemplate.setPageSize(pageSize);
+                    select.pageSize(pageSize);
                 }
-                if (cacheStrategyOverride != null) {
-                    sqlTemplate.setCacheStrategy(cacheStrategyOverride);
+                if (forceNoCache) {
+                    select.cacheStrategy(refreshing(descriptor.getCacheStrategy()), descriptor.getCacheGroup());
                 }
             }
-            case ProcedureQueryDescriptor ignored -> {
-                ProcedureQuery<?> procedureQuery = (ProcedureQuery<?>) query;
+            case SQLQuery<?> sql -> {
                 if (fetchLimit != null) {
-                    procedureQuery.setFetchLimit(fetchLimit);
+                    sql.limit(fetchLimit);
                 }
                 if (fetchOffset != null) {
-                    procedureQuery.setFetchOffset(fetchOffset);
+                    sql.offset(fetchOffset);
                 }
                 if (statementFetchSize != null) {
-                    procedureQuery.setStatementFetchSize(statementFetchSize);
+                    sql.statementFetchSize(statementFetchSize);
                 }
                 if (queryTimeout != null) {
-                    procedureQuery.setQueryTimeout(queryTimeout);
+                    sql.queryTimeout(queryTimeout);
                 }
                 if (pageSize != null) {
-                    procedureQuery.setPageSize(pageSize);
+                    sql.pageSize(pageSize);
                 }
-                if (cacheStrategyOverride != null) {
-                    procedureQuery.setCacheStrategy(cacheStrategyOverride);
+                if (forceNoCache) {
+                    sql.cacheStrategy(refreshing(descriptor.getCacheStrategy()), descriptor.getCacheGroup());
                 }
             }
-            default -> throw new CayenneRuntimeException("Unknown query type: %s", descriptor.getClass().getName());
+            case ProcedureQuery<?> procedure -> {
+                if (fetchLimit != null) {
+                    procedure.limit(fetchLimit);
+                }
+                if (fetchOffset != null) {
+                    procedure.offset(fetchOffset);
+                }
+                if (statementFetchSize != null) {
+                    procedure.statementFetchSize(statementFetchSize);
+                }
+                if (queryTimeout != null) {
+                    procedure.queryTimeout(queryTimeout);
+                }
+                if (pageSize != null) {
+                    procedure.pageSize(pageSize);
+                }
+                if (forceNoCache) {
+                    procedure.cacheStrategy(refreshing(descriptor.getCacheStrategy()), descriptor.getCacheGroup());
+                }
+            }
+            default -> throw new CayenneRuntimeException("Unknown query type: %s", query.getClass().getName());
         }
 
-        return query;
+        return query.resolve(resolver);
+    }
+
+    /**
+     * Returns the refreshing counterpart of a caching strategy, so that the query bypasses the cache but still fills
+     * it; a non-caching strategy is returned as is.
+     */
+    private static QueryCacheStrategy refreshing(QueryCacheStrategy strategy) {
+        return switch (strategy) {
+            case LOCAL_CACHE -> QueryCacheStrategy.LOCAL_CACHE_REFRESH;
+            case SHARED_CACHE -> QueryCacheStrategy.SHARED_CACHE_REFRESH;
+            case null, default -> strategy;
+        };
     }
 }

@@ -22,6 +22,7 @@ package org.apache.cayenne.dba;
 import org.apache.cayenne.CoreModule;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.access.StatementContext;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
 import org.apache.cayenne.access.jdbc.CSParameter;
 import org.apache.cayenne.access.jdbc.PSParameter;
@@ -29,6 +30,14 @@ import org.apache.cayenne.access.translator.procedure.DefaultProcedureTranslator
 import org.apache.cayenne.access.translator.ProcedureTranslator;
 import org.apache.cayenne.access.translator.select.DefaultSelectTranslator;
 import org.apache.cayenne.access.translator.SelectTranslator;
+import org.apache.cayenne.access.translator.TranslatedBatch;
+import org.apache.cayenne.access.translator.TranslatedProcedure;
+import org.apache.cayenne.access.translator.TranslatedSQL;
+import org.apache.cayenne.access.translator.TranslatedSelect;
+import org.apache.cayenne.access.jdbc.DataNodeBatchAction;
+import org.apache.cayenne.access.jdbc.DataNodeProcedureAction;
+import org.apache.cayenne.access.jdbc.DataNodeSQLAction;
+import org.apache.cayenne.access.jdbc.DataNodeSelectAction;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeFactory;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
@@ -42,11 +51,11 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.query.ProcedureQuery;
-import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.SQLAction;
+import org.apache.cayenne.query.resolved.ResolvedProcedure;
+import org.apache.cayenne.query.resolved.ResolvedSelect;
 
 import java.sql.CallableStatement;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.Types;
 import java.util.ArrayList;
@@ -525,23 +534,47 @@ public class JdbcAdapter implements DbAdapter {
         return "VIEW";
     }
 
-    /**
-     * Uses JdbcActionBuilder to create the right action.
-     *
-     * @since 1.2
-     */
     @Override
-    public SQLAction getAction(Query<?> query, DataNode node) {
-        return query.createSQLAction(new JdbcActionBuilder(node));
+    public void executeSelect(TranslatedSelect select, Connection connection, StatementContext context,
+            DataNode node) throws Exception {
+        new DataNodeSelectAction(select, node).execute(connection, context);
     }
 
     @Override
-    public SelectTranslator getSelectTranslator(Query<?> query, EntityResolver entityResolver) {
+    public void executeSQL(TranslatedSQL sql, Connection connection, StatementContext context,
+            DataNode node) throws Exception {
+        new DataNodeSQLAction(sql, node).execute(connection, context);
+    }
+
+    @Override
+    public void executeProcedure(TranslatedProcedure procedure, Connection connection, StatementContext context,
+            DataNode node) throws Exception {
+        new DataNodeProcedureAction(procedure, node).execute(connection, context);
+    }
+
+    @Override
+    public void executeBatch(TranslatedBatch batch, Connection connection, StatementContext context,
+            DataNode node) throws Exception {
+        new DataNodeBatchAction(batch, node, runsAsBatch(batch)).execute(connection, context);
+    }
+
+    /**
+     * Returns whether a batch should run as a JDBC batch. Optimistic locking is not supported in batches due to JDBC
+     * driver limitations, as the per-row update counts are needed.
+     *
+     * @since 6.0
+     */
+    protected boolean runsAsBatch(TranslatedBatch batch) {
+        return !batch.query().usingOptimisticLocking() && supportsBatchUpdates();
+    }
+
+    @Override
+    public SelectTranslator getSelectTranslator(ResolvedSelect select, EntityResolver entityResolver) {
         return new DefaultSelectTranslator();
     }
 
     @Override
-    public ProcedureTranslator getProcedureTranslator(ProcedureQuery<?> query, EntityResolver entityResolver) {
+    public ProcedureTranslator getProcedureTranslator(ResolvedProcedure procedure) {
         return new DefaultProcedureTranslator();
     }
 

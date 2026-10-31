@@ -22,7 +22,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.query.SQLTemplate;
+import org.apache.cayenne.query.SQLQuery;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
@@ -58,7 +58,7 @@ public class SchemaUpdateStrategyBase {
 		for (String name : existingTables()) {
 
 			for (String drop : node.getAdapter().dropTableStatements(map.getDbEntity(name))) {
-				context.execute(new SQLTemplate(drop));
+				context.execute(SQLQuery.query(drop));
 			}
 		}
 	}
@@ -82,7 +82,7 @@ public class SchemaUpdateStrategyBase {
 	protected void createOneTable(String entityName) {
 		DataMap map = env.resolver().getDataMap("sus-map");
 		String createTable = node.getAdapter().createTable(map.getDbEntity(entityName));
-		context.execute(new SQLTemplate(createTable));
+		context.execute(SQLQuery.query(createTable));
 	}
 
 	protected Map<String, Boolean> tablesMap() {

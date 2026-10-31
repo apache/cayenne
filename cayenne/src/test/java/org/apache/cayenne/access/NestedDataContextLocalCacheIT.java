@@ -45,16 +45,16 @@ public class NestedDataContextLocalCacheIT {
         ObjectContext child1 = env.runtime().newContext(env.context());
 
         assertNull(((DataContext) child1).getQueryCache().get(
-                query.getMetaData(child1.getEntityResolver())));
+                query.resolve(child1.getEntityResolver()).cacheKey(), query.getCacheGroup()));
 
         assertNull(env.context().getQueryCache().get(
-                query.getMetaData(env.context().getEntityResolver())));
+                query.resolve(env.context().getEntityResolver()).cacheKey(), query.getCacheGroup()));
 
         List<?> results = child1.select(query);
         assertSame(results, ((DataContext) child1).getQueryCache().get(
-                query.getMetaData(child1.getEntityResolver())));
+                query.resolve(child1.getEntityResolver()).cacheKey(), query.getCacheGroup()));
 
         assertNull(env.context().getQueryCache().get(
-                query.getMetaData(env.context().getEntityResolver())));
+                query.resolve(env.context().getEntityResolver()).cacheKey(), query.getCacheGroup()));
     }
 }

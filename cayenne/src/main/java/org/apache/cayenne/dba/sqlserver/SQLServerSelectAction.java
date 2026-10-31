@@ -19,27 +19,35 @@
 
 package org.apache.cayenne.dba.sqlserver;
 
+import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.jdbc.SelectAction;
-import org.apache.cayenne.query.Query;
+import org.apache.cayenne.access.jdbc.DataNodeSelectAction;
+import org.apache.cayenne.access.jdbc.LimitResultIterator;
+import org.apache.cayenne.access.translator.TranslatedSelect;
 
 /**
  * @since 4.2
  */
-public class SQLServerSelectAction extends SelectAction {
+public class SQLServerSelectAction extends DataNodeSelectAction {
 
     /**
      * When using TOP N instead of LIMIT the offset will be processed in-memory.
      */
     private final boolean needsInMemoryOffset;
 
-    public SQLServerSelectAction(Query<?> query, DataNode dataNode, boolean needsInMemoryOffset) {
-        super(query, dataNode);
+    public SQLServerSelectAction(TranslatedSelect translated, DataNode dataNode, boolean needsInMemoryOffset) {
+        super(translated, dataNode);
         this.needsInMemoryOffset = needsInMemoryOffset;
     }
 
     @Override
-    protected int getInMemoryOffset(int queryOffset) {
-        return needsInMemoryOffset ? super.getInMemoryOffset(queryOffset) : 0;
+    protected <T> ResultIterator<T> forFetchLimit(ResultIterator<T> iterator) {
+        // "TOP (offset + limit)" in the SQL, so the offset rows are skipped here
+        if (!needsInMemoryOffset) {
+            return super.forFetchLimit(iterator);
+        }
+        int offset = query.fetchOffset();
+        int limit = query.fetchLimit();
+        return limit > 0 || offset > 0 ? new LimitResultIterator<>(iterator, offset, limit) : iterator;
     }
 }

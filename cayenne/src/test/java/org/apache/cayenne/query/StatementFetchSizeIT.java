@@ -21,6 +21,7 @@ package org.apache.cayenne.query;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
+import org.apache.cayenne.query.resolved.ResolvedQuery;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -38,8 +39,8 @@ public class StatementFetchSizeIT {
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class).statementFetchSize(10);
 
         assertEquals(10, query
-                .getMetaData(env.context().getEntityResolver())
-                .getStatementFetchSize());
+                .resolve(env.context().getEntityResolver())
+                .statementFetchSize());
         env.context().select(query);
     }
 
@@ -60,14 +61,14 @@ public class StatementFetchSizeIT {
 
     @Test
     public void sqlTemplate() {
-        SQLTemplate template = new SQLTemplate(
+        SQLQuery<Artist> template = SQLQuery.query(
                 Artist.class,
                 "SELECT ARTIST_ID FROM ARTIST");
-        template.setStatementFetchSize(10);
+        template.statementFetchSize(10);
 
         assertEquals(10, template
-                .getMetaData(env.context().getEntityResolver())
-                .getStatementFetchSize());
+                .resolve(env.context().getEntityResolver())
+                .statementFetchSize());
         env.context().select(template);
     }
 }

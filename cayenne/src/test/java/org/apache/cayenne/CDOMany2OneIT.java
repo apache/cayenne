@@ -21,7 +21,7 @@ package org.apache.cayenne;
 
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.query.SQLTemplate;
+import org.apache.cayenne.query.SQLQuery;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Gallery;
@@ -29,6 +29,7 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.testdo.testmap.ROPainting;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
+import org.apache.cayenne.DataRow;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -102,9 +103,8 @@ public class CDOMany2OneIT {
 
         env.context().commitChanges();
 
-        SQLTemplate q = new SQLTemplate(Painting.class, "SELECT * from PAINTING");
-        q.setColumnNamesCapitalization(CapsStrategy.UPPER);
-        q.setFetchingDataRows(true);
+        SQLQuery<DataRow> q = SQLQuery.query(Painting.class, "SELECT * from PAINTING").fetchDataRows();
+        q.columnNameCaps(CapsStrategy.UPPER);
 
         DataRow row = (DataRow) env.context().selectOne(q);
         assertNotNull(row);

@@ -32,21 +32,17 @@ import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.cache.QueryCacheEntryFactory;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.exp.path.CayennePath;
-import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.query.EmbeddableResultSegment;
 import org.apache.cayenne.query.EntityResultSegment;
-import org.apache.cayenne.query.PrefetchSelectQuery;
 import org.apache.cayenne.query.PrefetchTreeNode;
-import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryCacheStrategy;
-import org.apache.cayenne.query.QueryMetadata;
-import org.apache.cayenne.query.QueryMetadataProxy;
-import org.apache.cayenne.query.QueryRouter;
 import org.apache.cayenne.query.ResultSegment;
 import org.apache.cayenne.query.ResultSegments;
 import org.apache.cayenne.query.ScalarResultSegment;
+import org.apache.cayenne.query.resolved.ResolvedQuery;
+import org.apache.cayenne.query.resolved.ResolvedSelect;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.DefaultConstructor;
 import org.apache.cayenne.tx.BaseTransaction;
@@ -66,22 +62,21 @@ import java.util.Set;
 
 /**
  * Performs query routing and execution. Routes the query into {@link StatementContext}s of the
- * {@link OperationContext}, executes them on their nodes, and assembles the response from their results, converting
+ * {@link QueryContext}, executes them on their nodes, and assembles the response from their results, converting
  * rows to objects.
  *
  * @since 1.2
  */
-class DataDomainQueryAction implements QueryRouter {
+class DataDomainQueryAction {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DataDomainQueryAction.class);
 
     private static final boolean DONE = true;
 
-    private final OperationContext execContext;
+    private final QueryContext execContext;
     private final DataContext context;
     private final DataDomain domain;
-    private final Query<?> query;
-    private final QueryMetadata metadata;
+    private final ResolvedQuery resolved;
     private final AdhocObjectFactory objectFactory;
 
     private List<QueryResult> response;
@@ -94,7 +89,7 @@ class DataDomainQueryAction implements QueryRouter {
     // or explicit refresh)
     private boolean cacheHit;
 
-    DataDomainQueryAction(DataDomain domain, OperationContext execContext) {
+    DataDomainQueryAction(DataDomain domain, QueryContext execContext) {
         ObjectContext context = execContext.getContext();
         if (context != null && !(context instanceof DataContext)) {
             throw new IllegalArgumentException("DataDomain can only work with DataContext. "
@@ -103,8 +98,7 @@ class DataDomainQueryAction implements QueryRouter {
 
         this.execContext = execContext;
         this.domain = domain;
-        this.query = execContext.getQuery();
-        this.metadata = execContext.getMetadata();
+        this.resolved = execContext.getResolvedQuery();
         this.context = (DataContext) context;
         this.objectFactory = domain.getObjectFactory();
     }
@@ -133,11 +127,11 @@ class DataDomainQueryAction implements QueryRouter {
     }
 
     private void validateIteratedQuery() {
-        if (metadata.getPageSize() > 0) {
+        if (resolved.pageSize() > 0) {
             throw new CayenneRuntimeException("Pagination is not supported with iterator");
         }
-        if (metadata.getPrefetchTree() != null) {
-            for (PrefetchTreeNode prefetchTreeNode : metadata.getPrefetchTree().getChildren()) {
+        if (resolved.prefetchTree() != null) {
+            for (PrefetchTreeNode prefetchTreeNode : resolved.prefetchTree().getChildren()) {
                 if (prefetchTreeNode.isDisjointPrefetch()) {
                     throw new CayenneRuntimeException("\"Disjoint\" semantic doesn't work with iterator. Use \"Joint\" instead");
                 }
@@ -200,12 +194,12 @@ class DataDomainQueryAction implements QueryRouter {
      */
     private boolean interceptSharedCache() {
 
-        if (metadata.getCacheKey() == null) {
+        if (resolved.cacheKey() == null) {
             return !DONE;
         }
 
-        boolean cache = QueryCacheStrategy.SHARED_CACHE == metadata.getCacheStrategy();
-        boolean cacheOrCacheRefresh = cache || QueryCacheStrategy.SHARED_CACHE_REFRESH == metadata.getCacheStrategy();
+        boolean cache = QueryCacheStrategy.SHARED_CACHE == resolved.cacheStrategy();
+        boolean cacheOrCacheRefresh = cache || QueryCacheStrategy.SHARED_CACHE_REFRESH == resolved.cacheStrategy();
 
         if (!cacheOrCacheRefresh) {
             return !DONE;
@@ -216,7 +210,7 @@ class DataDomainQueryAction implements QueryRouter {
 
         if (cache) {
             boolean wasResponseNull = (response == null);
-            List<?> cachedResults = queryCache.get(metadata, factory);
+            List<?> cachedResults = queryCache.get(resolved.cacheKey(), resolved.cacheGroup(), factory);
 
             // response may already be initialized by the factory above ...
             // it is null if there was a preexisting cache entry
@@ -238,7 +232,7 @@ class DataDomainQueryAction implements QueryRouter {
             }
         } else {
             // on cache-refresh request, fetch without blocking and fill the cache
-            queryCache.put(metadata, factory.createObject());
+            queryCache.put(resolved.cacheKey(), resolved.cacheGroup(), factory.createObject());
             cachedResult = true; // Still a cached path, lists need copying
             cacheHit = false; // Not a cache hit, we're refreshing
         }
@@ -270,7 +264,7 @@ class DataDomainQueryAction implements QueryRouter {
      * Gets response from the underlying DataNodes.
      */
     void runQueryInTransaction() {
-        if (metadata.isReadOnly() && BaseTransaction.getThreadTransaction() == null) {
+        if (resolved.readOnly() && BaseTransaction.getThreadTransaction() == null) {
             domain.getTransactionManager().performInTransaction(() -> {
                 runQuery();
                 return null;
@@ -285,11 +279,17 @@ class DataDomainQueryAction implements QueryRouter {
 
     private void runQuery() {
         // whether this is null or not will driver further decisions on how to process prefetched rows
-        this.prefetchResultsByPath = metadata.getPrefetchTree() != null && !metadata.isFetchingDataRows()
+        this.prefetchResultsByPath = resolved.prefetchTree() != null && !resolved.fetchingDataRows()
                 ? new HashMap<>() : null;
 
-        // categorize queries by node and by "executable" query...
-        query.route(this, domain.getEntityResolver(), null);
+        // the operation's own select, and the selects of its disjoint prefetches, if any
+        EntityResolver resolver = domain.getEntityResolver();
+        execContext.addStatementContext(domain.lookupDataNode(resolved), new StatementContext(resolved, resolver));
+        if (resolved instanceof ResolvedSelect select) {
+            for (ResolvedSelect prefetch : select.prefetches()) {
+                execContext.addStatementContext(domain.lookupDataNode(prefetch), new StatementContext(prefetch, resolver));
+            }
+        }
 
         // run categorized queries
         execContext.getStatementContexts().forEach(DataNode::execute);
@@ -317,8 +317,9 @@ class DataDomainQueryAction implements QueryRouter {
         for (QueryResult result : statementContext.getResults()) {
             if (prefetchResultsByPath != null
                     && result instanceof SelectResult<?> select
-                    && statementContext.getQuery() instanceof PrefetchSelectQuery<?> prefetchQuery) {
-                prefetchResultsByPath.put(prefetchQuery.getPrefetchPath(), select.objects());
+                    && statementContext.getResolvedQuery() instanceof ResolvedSelect prefetch
+                    && prefetch.prefetchPath() != null) {
+                prefetchResultsByPath.put(prefetch.prefetchPath(), select.objects());
             } else {
                 results.add(result);
             }
@@ -352,15 +353,15 @@ class DataDomainQueryAction implements QueryRouter {
     }
 
     private boolean noObjectConversion() {
-        return context == null || metadata.getPageSize() > 0;
+        return context == null || resolved.pageSize() > 0;
     }
 
     private ObjectConversionStrategy<?, ?> getDefaultConverter() {
-        if (metadata.isFetchingDataRows()) {
+        if (resolved.fetchingDataRows()) {
             return new IdentityConversionStrategy();
         }
 
-        ResultSegments rsMapping = metadata.getResultSegments();
+        ResultSegments rsMapping = resolved.resultSegments();
         if (rsMapping == null) {
             return new SingleObjectConversionStrategy();
         }
@@ -376,53 +377,6 @@ class DataDomainQueryAction implements QueryRouter {
         };
     }
 
-    @Override
-    public void route(DataNode node, Query<?> query, Query<?> substitutedQuery) {
-        // the operation has already resolved the metadata of its own query; a substituted query (e.g. a prefetch
-        // query) is resolved here
-        EntityResolver resolver = domain.getEntityResolver();
-        QueryMetadata queryMetadata = query == this.query ? metadata : query.getMetaData(resolver);
-        execContext.addStatementContext(node, new StatementContext(query, queryMetadata, resolver));
-    }
-
-    @Override
-    public DataNode nodeForDataMap(DataMap map) {
-        if (map == null) {
-            throw new NullPointerException("Null DataMap, can't determine DataNode.");
-        }
-
-        DataNode node = domain.lookupDataNode(map);
-
-        if (node == null) {
-            throw new CayenneRuntimeException("No DataNode exists for DataMap %s", map);
-        }
-
-        return node;
-    }
-
-    /**
-     * @since 5.0
-     */
-    @Override
-    public DataNode nodeForName(String name) {
-
-        DataNode node;
-
-        if (name != null) {
-            node = domain.getDataNode(name);
-            if (node == null) {
-                throw new CayenneRuntimeException("No DataNode exists for name %s", name);
-            }
-        } else {
-            node = domain.getDefaultNode();
-            if (node == null) {
-                throw new CayenneRuntimeException("No default DataNode exists.");
-            }
-        }
-
-        return node;
-    }
-
     abstract static class ObjectConversionStrategy<T, R> {
         abstract List<? extends R> convert(List<T> mainRows);
 
@@ -436,15 +390,12 @@ class DataDomainQueryAction implements QueryRouter {
         if (prefetchTree == null) {
             // When results come from cache (not a refresh operation), don't refresh objects 
             // to avoid clobbering newer in-memory state
-            boolean refresh = metadata.isRefreshingObjects() && !shouldSkipRefresh();
-            return new ObjectResolver(context, descriptor, refresh)
+            return new ObjectResolver(context, descriptor, !shouldSkipRefresh())
                     .rootResultNodeFromDataRows(normalizedRows);
         } else {
             // When results come from cache (not a refresh operation), wrap metadata to prevent refreshing objects
-            QueryMetadata effectiveMetadata = shouldSkipRefresh() && metadata.isRefreshingObjects()
-                    ? nonRefreshingMetadata(metadata)
-                    : metadata;
-            return new HierarchicalObjectResolver(context, effectiveMetadata)
+            return new HierarchicalObjectResolver(context, execContext.getQuery(), resolved.classDescriptor(),
+                    !shouldSkipRefresh())
                     .rootResultNodeFromDataRows(prefetchTree, normalizedRows, prefetchResultsByPath);
         }
     }
@@ -470,15 +421,6 @@ class DataDomainQueryAction implements QueryRouter {
         }
     }
 
-    private QueryMetadata nonRefreshingMetadata(QueryMetadata metadata) {
-        return new QueryMetadataProxy(metadata) {
-            @Override
-            public boolean isRefreshingObjects() {
-                return false;
-            }
-        };
-    }
-
     class SingleObjectConversionStrategy extends ObjectConversionStrategy<DataRow, Persistent> {
 
         @Override
@@ -502,16 +444,16 @@ class DataDomainQueryAction implements QueryRouter {
         }
 
         private PrefetchProcessorNode getPrefetchProcessorNode(List<DataRow> mainRows) {
-            PrefetchTreeNode prefetchTree = metadata.getPrefetchTree();
+            PrefetchTreeNode prefetchTree = resolved.prefetchTree();
 
-            ResultSegments rsMapping = metadata.getResultSegments();
+            ResultSegments rsMapping = resolved.resultSegments();
             EntityResultSegment resultSegment = null;
             if (rsMapping != null && !rsMapping.segments().isEmpty()) {
                 resultSegment = (EntityResultSegment) rsMapping.segments().getFirst();
             }
 
             ClassDescriptor descriptor = resultSegment == null
-                    ? metadata.getClassDescriptor()
+                    ? resolved.classDescriptor()
                     : resultSegment.classDescriptor();
 
             return toResultsTree(descriptor, prefetchTree, mainRows);
@@ -537,7 +479,7 @@ class DataDomainQueryAction implements QueryRouter {
 
         @Override
         List<EmbeddableObject> convert(List<DataRow> mainRows) {
-            EmbeddableResultSegment resultSegment = (EmbeddableResultSegment) metadata.getResultSegments().segments().getFirst();
+            EmbeddableResultSegment resultSegment = (EmbeddableResultSegment) resolved.resultSegments().segments().getFirst();
             Embeddable embeddable = resultSegment.embeddable();
             Class<? extends EmbeddableObject> embeddableClass = objectFactory.getJavaClass(embeddable.getClassName());
             DefaultConstructor<? extends EmbeddableObject> constructor = new DefaultConstructor<>(embeddableClass);
@@ -586,7 +528,7 @@ class DataDomainQueryAction implements QueryRouter {
             }
 
             // distinct filtering
-            if (!metadata.isSuppressingDistinct()) {
+            if (!(resolved instanceof ResolvedSelect select && select.suppressingDistinct())) {
                 Set<List<?>> seen = HashSet.newHashSet(result.size());
                 result.removeIf(objects -> !seen.add(Arrays.asList(objects)));
             }
@@ -615,7 +557,7 @@ class DataDomainQueryAction implements QueryRouter {
             // slowest path, deep copy everything
             List<Object[]> result = new ArrayList<>(mainRows.size());
             for (Object[] row : mainRows) {
-                result.add(Arrays.copyOf(row, metadata.getResultSegments().segments().size()));
+                result.add(Arrays.copyOf(row, resolved.resultSegments().segments().size()));
             }
             return result;
         }
@@ -644,17 +586,17 @@ class DataDomainQueryAction implements QueryRouter {
             }
 
             if (prefetchTree == null) {
-                return new ObjectResolver(context, descriptor, metadata.isRefreshingObjects())
+                return new ObjectResolver(context, descriptor, true)
                         .rootResultNodeFromDataRows(rowsColumn);
             } else {
                 HierarchicalObjectResolver resolver
-                        = new HierarchicalObjectResolver(context, metadata, descriptor, true);
+                        = new HierarchicalObjectResolver(context, execContext.getQuery(), descriptor, true, true);
                 return resolver.rootResultNodeFromDataRows(prefetchTree, rowsColumn, prefetchResultsByPath);
             }
         }
 
         private List<PrefetchProcessorNode> doInPlaceConversion(List<Object[]> result) {
-            List<ResultSegment> resultSetMapping = metadata.getResultSegments().segments();
+            List<ResultSegment> resultSetMapping = resolved.resultSegments().segments();
             int width = resultSetMapping.size();
             int height = result.size();
             List<PrefetchProcessorNode> segmentNodes = new ArrayList<>(width);
@@ -662,7 +604,7 @@ class DataDomainQueryAction implements QueryRouter {
                 ResultSegment mapping = resultSetMapping.get(i);
                 if (mapping instanceof EntityResultSegment entitySegment) {
                     PrefetchProcessorNode nextResult = toResultsTree(entitySegment.classDescriptor(),
-                            metadata.getPrefetchTree(), result, i);
+                            resolved.prefetchTree(), result, i);
 
                     segmentNodes.add(nextResult);
 
@@ -688,7 +630,7 @@ class DataDomainQueryAction implements QueryRouter {
         }
 
         private boolean needConversion() {
-            for (ResultSegment mapping : metadata.getResultSegments().segments()) {
+            for (ResultSegment mapping : resolved.resultSegments().segments()) {
                 if (mapping instanceof EntityResultSegment
                         || mapping instanceof EmbeddableResultSegment) {
                     return true;

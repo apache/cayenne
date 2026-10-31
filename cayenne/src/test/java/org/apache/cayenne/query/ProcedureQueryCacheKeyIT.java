@@ -22,6 +22,7 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
+import org.apache.cayenne.query.resolved.ResolvedProcedure;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -39,15 +40,15 @@ public class ProcedureQueryCacheKeyIT {
 
         EntityResolver resolver = env.runtime().getDataDomain().getEntityResolver();
 
-        ProcedureQuery query = new ProcedureQuery("ABC", Artist.class);
+        ProcedureQuery<Artist> query = ProcedureQuery.query("cayenne_tst_select_proc", Artist.class);
 
-        QueryMetadata md1 = query.getMetaData(resolver);
-        assertEquals(QueryCacheStrategy.NO_CACHE, md1.getCacheStrategy());
-        assertNull(md1.getCacheKey());
+        ResolvedProcedure md1 = query.resolve(resolver);
+        assertEquals(QueryCacheStrategy.NO_CACHE, md1.cacheStrategy());
+        assertNull(md1.cacheKey());
 
-        QueryMetadata md2 = query.getMetaData(resolver);
-        assertEquals(QueryCacheStrategy.NO_CACHE, md2.getCacheStrategy());
-        assertNull(md2.getCacheKey());
+        ResolvedProcedure md2 = query.resolve(resolver);
+        assertEquals(QueryCacheStrategy.NO_CACHE, md2.cacheStrategy());
+        assertNull(md2.cacheKey());
     }
 
     @Test
@@ -55,13 +56,11 @@ public class ProcedureQueryCacheKeyIT {
 
         EntityResolver resolver = env.runtime().getDataDomain().getEntityResolver();
 
-        ProcedureQuery query = new ProcedureQuery("ABC", Artist.class);
+        ProcedureQuery<Artist> query = ProcedureQuery.query("cayenne_tst_select_proc", Artist.class).cacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
 
-        query.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
-
-        QueryMetadata md1 = query.getMetaData(resolver);
-        assertEquals(QueryCacheStrategy.LOCAL_CACHE, md1.getCacheStrategy());
-        assertNotNull(md1.getCacheKey());
+        ResolvedProcedure md1 = query.resolve(resolver);
+        assertEquals(QueryCacheStrategy.LOCAL_CACHE, md1.cacheStrategy());
+        assertNotNull(md1.cacheKey());
     }
 
     @Test
@@ -69,13 +68,11 @@ public class ProcedureQueryCacheKeyIT {
 
         EntityResolver resolver = env.runtime().getDataDomain().getEntityResolver();
 
-        ProcedureQuery query = new ProcedureQuery("ABC", Artist.class);
+        ProcedureQuery<Artist> query = ProcedureQuery.query("cayenne_tst_select_proc", Artist.class).cacheStrategy(QueryCacheStrategy.SHARED_CACHE);
 
-        query.setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
-
-        QueryMetadata md1 = query.getMetaData(resolver);
-        assertEquals(QueryCacheStrategy.SHARED_CACHE, md1.getCacheStrategy());
-        assertNotNull(md1.getCacheKey());
+        ResolvedProcedure md1 = query.resolve(resolver);
+        assertEquals(QueryCacheStrategy.SHARED_CACHE, md1.cacheStrategy());
+        assertNotNull(md1.cacheKey());
     }
 
     @Test
@@ -83,31 +80,23 @@ public class ProcedureQueryCacheKeyIT {
 
         EntityResolver resolver = env.runtime().getDataDomain().getEntityResolver();
 
-        ProcedureQuery query = new ProcedureQuery("ABC", Artist.class);
+        ProcedureQuery<Artist> query = ProcedureQuery.query("cayenne_tst_select_proc", Artist.class).cacheStrategy(QueryCacheStrategy.SHARED_CACHE);
 
-        query.setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
-
-        QueryMetadata md1 = query.getMetaData(resolver);
-        assertEquals(QueryCacheStrategy.SHARED_CACHE, md1.getCacheStrategy());
-        assertEquals("proc:", md1.getCacheKey());
+        ResolvedProcedure md1 = query.resolve(resolver);
+        assertEquals(QueryCacheStrategy.SHARED_CACHE, md1.cacheStrategy());
+        assertEquals("proc:cayenne_tst_select_proc", md1.cacheKey());
     }
 
     @Test
     public void cacheFetchOffsetAndLimit() {
         EntityResolver resolver = env.runtime().getDataDomain().getEntityResolver();
         
-        ProcedureQuery q1 = new ProcedureQuery("ABC", Artist.class);
-        q1.setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
-        q1.setFetchOffset(5);
-        q1.setFetchLimit(3);
+        ProcedureQuery<Artist> q1 = ProcedureQuery.query("cayenne_tst_select_proc", Artist.class).cacheStrategy(QueryCacheStrategy.SHARED_CACHE);
+        q1.offset(5).limit(3);
         
-        ProcedureQuery q2 = new ProcedureQuery("ABC", Artist.class);
-        q2.setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
-        q2.setFetchOffset(5);
-        q2.setFetchLimit(3);
+        ProcedureQuery<Artist> q2 = ProcedureQuery.query("cayenne_tst_select_proc", Artist.class).cacheStrategy(QueryCacheStrategy.SHARED_CACHE);
+        q2.offset(5).limit(3);
         
-        assertEquals(q1.getMetaData(resolver).getCacheKey(), q2
-                .getMetaData(resolver)
-                .getCacheKey());
+        assertEquals(q1.resolve(resolver).cacheKey(), q2.resolve(resolver).cacheKey());
     }
 }

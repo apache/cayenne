@@ -83,7 +83,7 @@ public class CayenneRuntimeBuilderIT {
                 .defaultDataNode(dataSourceFromDescriptor())
                 .build();
 
-        List<DataRow> result = SQLQuery.dataRowQuery("SELECT * FROM ARTIST").select(localRuntime.newContext());
+        List<DataRow> result = SQLQuery.query("SELECT * FROM ARTIST").select(localRuntime.newContext());
         assertEquals(2, result.size());
     }
 
@@ -108,7 +108,7 @@ public class CayenneRuntimeBuilderIT {
 
         localRuntime = new CayenneRuntimeBuilder(null).defaultDataNode(dataSource).build();
 
-        List<DataRow> result = SQLQuery.dataRowQuery("SELECT * FROM ARTIST").select(localRuntime.newContext());
+        List<DataRow> result = SQLQuery.query("SELECT * FROM ARTIST").select(localRuntime.newContext());
         assertEquals(2, result.size());
     }
 

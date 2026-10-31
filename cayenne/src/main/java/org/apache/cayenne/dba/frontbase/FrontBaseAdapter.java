@@ -20,6 +20,7 @@
 package org.apache.cayenne.dba.frontbase;
 
 import org.apache.cayenne.CoreModule;
+import org.apache.cayenne.access.StatementContext;
 import org.apache.cayenne.dba.NativeColumnType;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
@@ -36,9 +37,9 @@ import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.SQLAction;
+import org.apache.cayenne.access.translator.TranslatedSQL;
 
+import java.sql.Connection;
 import java.sql.Types;
 import java.util.Collection;
 import java.util.Collections;
@@ -259,7 +260,8 @@ public class FrontBaseAdapter extends JdbcAdapter {
      * @since 4.2
      */
     @Override
-    public SQLAction getAction(Query<?> query, DataNode node) {
-        return query.createSQLAction(new FrontBaseActionBuilder(node));
+    public void executeSQL(TranslatedSQL sql, Connection connection, StatementContext context,
+            DataNode node) throws Exception {
+        new FrontBaseSQLAction(sql, node).execute(connection, context);
     }
 }

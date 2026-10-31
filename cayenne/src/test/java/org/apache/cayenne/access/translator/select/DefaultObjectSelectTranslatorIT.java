@@ -40,7 +40,7 @@ public class DefaultObjectSelectTranslatorIT {
     @Test
     public void simpleSql() {
         ObjectSelect<Artist> select = ObjectSelect.query(Artist.class);
-        TranslatedSelect translator = new DbAdapterDelegatedSelectTranslator().translate(select, env.dataNode().getAdapter(), env.context().getEntityResolver());
+        TranslatedSelect translator = new DbAdapterDelegatedSelectTranslator().translate(select.resolve(env.context().getEntityResolver()), env.dataNode().getAdapter(), env.context().getEntityResolver());
 
         String sql = translator.sql();
         assertTrue(sql.startsWith("SELECT "));
@@ -63,7 +63,7 @@ public class DefaultObjectSelectTranslatorIT {
         ObjectSelect<Artist> select = ObjectSelect.query(Artist.class).where(Artist.ARTIST_NAME.eq("artist")
                 .andExp(Artist.PAINTINGS.dot(Painting.PAINTING_TITLE).eq("painting")));
 
-        TranslatedSelect translator = new DbAdapterDelegatedSelectTranslator().translate(select, env.dataNode().getAdapter(), env.context().getEntityResolver());
+        TranslatedSelect translator = new DbAdapterDelegatedSelectTranslator().translate(select.resolve(env.context().getEntityResolver()), env.dataNode().getAdapter(), env.context().getEntityResolver());
 
         String sql = translator.sql();
         assertTrue(sql.startsWith("SELECT DISTINCT"));
@@ -93,7 +93,7 @@ public class DefaultObjectSelectTranslatorIT {
                 .where(Artist.ARTIST_NAME.nin(Collections.emptyList()));
 
         TranslatedSelect translator = new DbAdapterDelegatedSelectTranslator()
-                .translate(select, env.dataNode().getAdapter(), env.context().getEntityResolver());
+                .translate(select.resolve(env.context().getEntityResolver()), env.dataNode().getAdapter(), env.context().getEntityResolver());
 
         String sql = translator.sql();
         assertFalse(sql.contains("WHERE"), sql);
@@ -111,7 +111,7 @@ public class DefaultObjectSelectTranslatorIT {
                         .andExp(Artist.DATE_OF_BIRTH.isNotNull()));
 
         TranslatedSelect translator = new DbAdapterDelegatedSelectTranslator()
-                .translate(select, env.dataNode().getAdapter(), env.context().getEntityResolver());
+                .translate(select.resolve(env.context().getEntityResolver()), env.dataNode().getAdapter(), env.context().getEntityResolver());
 
         String sql = translator.sql();
         assertFalse(sql.contains("1=1"), sql);
@@ -127,7 +127,7 @@ public class DefaultObjectSelectTranslatorIT {
                 .where(Artist.ARTIST_NAME.in(Collections.emptyList()));
 
         TranslatedSelect translator = new DbAdapterDelegatedSelectTranslator()
-                .translate(select, env.dataNode().getAdapter(), env.context().getEntityResolver());
+                .translate(select.resolve(env.context().getEntityResolver()), env.dataNode().getAdapter(), env.context().getEntityResolver());
 
         String sql = translator.sql();
         assertTrue(sql.contains("WHERE"), sql);
@@ -138,7 +138,7 @@ public class DefaultObjectSelectTranslatorIT {
     public void selectWithJointPrefetch() {
         ObjectSelect<Painting> select = ObjectSelect.query(Painting.class).prefetch(Painting.ARTIST.joint());
 
-        TranslatedSelect translator = new DbAdapterDelegatedSelectTranslator().translate(select, env.dataNode().getAdapter(), env.context().getEntityResolver());
+        TranslatedSelect translator = new DbAdapterDelegatedSelectTranslator().translate(select.resolve(env.context().getEntityResolver()), env.dataNode().getAdapter(), env.context().getEntityResolver());
 
         String sql = translator.sql();
 

@@ -23,7 +23,7 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.CapsStrategy;
-import org.apache.cayenne.query.SQLTemplate;
+import org.apache.cayenne.query.SQLQuery;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
@@ -80,13 +80,13 @@ public class DataNodeQueriesIT {
     public void perfomQueriesSQLTemplate() throws Exception {
         String template = "INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME, DATE_OF_BIRTH) "
                 + "VALUES (#bind($id), #bind($name), #bind($dob 'DATE'))";
-        SQLTemplate query = new SQLTemplate(template);
+        SQLQuery<DataRow> query = SQLQuery.query(template);
 
         Map<String, Object> bindings = new HashMap<>();
         bindings.put("id", 1L);
         bindings.put("name", "a1");
         bindings.put("dob", new Date(System.currentTimeMillis()));
-        query.setParams(bindings);
+        query.params(bindings);
 
         StatementContext statementContext = StatementContexts.run(node, env.resolver(), query);
         assertNotNull(StatementContexts.counts(statementContext));
@@ -104,7 +104,7 @@ public class DataNodeQueriesIT {
         createFourArtists();
 
         String template = "SELECT #result('ARTIST_ID' 'int') FROM ARTIST ORDER BY ARTIST_ID";
-        SQLTemplate query = new SQLTemplate(template);
+        SQLQuery<DataRow> query = SQLQuery.query(template);
 
         StatementContext statementContext = StatementContexts.run(node, env.resolver(), query);
 
@@ -120,8 +120,8 @@ public class DataNodeQueriesIT {
         createFourArtists();
 
         String template = "SELECT * FROM ARTIST ORDER BY ARTIST_ID";
-        SQLTemplate query = new SQLTemplate(template);
-        query.setColumnNamesCapitalization(CapsStrategy.UPPER);
+        SQLQuery<DataRow> query = SQLQuery.query(template);
+        query.columnNameCaps(CapsStrategy.UPPER);
 
         StatementContext statementContext = StatementContexts.run(node, env.resolver(), query);
 
@@ -140,7 +140,7 @@ public class DataNodeQueriesIT {
         createFourArtists();
 
         String template = "SELECT #result('ARTIST_ID' 'int' 'A') FROM ARTIST ORDER BY ARTIST_ID";
-        Query<?> query = new SQLTemplate(template);
+        Query<?> query = SQLQuery.query(template);
 
         StatementContext statementContext = StatementContexts.run(node, env.resolver(), query);
 
@@ -156,7 +156,7 @@ public class DataNodeQueriesIT {
         String templateString = "INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME)"
                 + "\n"
                 + "VALUES (1, 'A')";
-        Query<?> template = new SQLTemplate(templateString);
+        Query<?> template = SQLQuery.query(templateString);
         StatementContexts.run(node, env.resolver(), template);
     }
 
@@ -165,7 +165,7 @@ public class DataNodeQueriesIT {
         String templateString = "INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME)"
                 + "\r\n"
                 + "VALUES (1, 'A')";
-        Query<?> template = new SQLTemplate(templateString);
+        Query<?> template = SQLQuery.query(templateString);
         StatementContexts.run(node, env.resolver(), template);
     }
 
@@ -174,7 +174,7 @@ public class DataNodeQueriesIT {
         String templateString = "INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME)"
                 + "\r"
                 + "VALUES (1, 'A')";
-        Query<?> template = new SQLTemplate(templateString);
+        Query<?> template = SQLQuery.query(templateString);
         StatementContexts.run(node, env.resolver(), template);
     }
 }

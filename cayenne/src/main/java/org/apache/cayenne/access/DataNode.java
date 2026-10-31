@@ -26,17 +26,27 @@ import org.apache.cayenne.access.translator.BatchTranslator;
 import org.apache.cayenne.access.translator.ProcedureTranslator;
 import org.apache.cayenne.access.translator.SQLTemplateTranslator;
 import org.apache.cayenne.access.translator.SelectTranslator;
+import org.apache.cayenne.access.translator.TranslatedStatement;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.log.NoopSQLLogger;
 import org.apache.cayenne.log.SQLLogger;
-import org.apache.cayenne.query.DeleteBatchQuery;
-import org.apache.cayenne.query.InsertBatchQuery;
-import org.apache.cayenne.query.UpdateBatchQuery;
+import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.query.resolved.DeleteBatch;
+import org.apache.cayenne.query.resolved.ResolvedProcedure;
+import org.apache.cayenne.query.resolved.ResolvedQuery;
+import org.apache.cayenne.query.resolved.ResolvedSQL;
+import org.apache.cayenne.query.resolved.ResolvedSelect;
+import org.apache.cayenne.query.resolved.InsertBatch;
+import org.apache.cayenne.query.resolved.UpdateBatch;
 import org.apache.cayenne.tx.BaseTransaction;
 import org.apache.cayenne.tx.Transaction;
 import org.apache.cayenne.util.ToStringBuilder;
 import org.apache.cayenne.util.Util;
+import org.apache.cayenne.access.translator.TranslatedBatch;
+import org.apache.cayenne.access.translator.TranslatedProcedure;
+import org.apache.cayenne.access.translator.TranslatedSQL;
+import org.apache.cayenne.access.translator.TranslatedSelect;
 
 import javax.sql.DataSource;
 import java.io.PrintWriter;
@@ -69,9 +79,9 @@ public class DataNode {
     private final SelectTranslator selectTranslator;
     private final ProcedureTranslator procedureTranslator;
     private final SQLTemplateTranslator sqlTemplateTranslator;
-    private final BatchTranslator<InsertBatchQuery> insertBatchTranslator;
-    private final BatchTranslator<UpdateBatchQuery> updateBatchTranslator;
-    private final BatchTranslator<DeleteBatchQuery> deleteBatchTranslator;
+    private final BatchTranslator<InsertBatch> insertBatchTranslator;
+    private final BatchTranslator<UpdateBatch> updateBatchTranslator;
+    private final BatchTranslator<DeleteBatch> deleteBatchTranslator;
 
     /**
      * Creates a new DataNode. A node is immutable once created: everything it needs is passed here, and the only
@@ -90,9 +100,9 @@ public class DataNode {
             SelectTranslator selectTranslator,
             ProcedureTranslator procedureTranslator,
             SQLTemplateTranslator sqlTemplateTranslator,
-            BatchTranslator<InsertBatchQuery> insertBatchTranslator,
-            BatchTranslator<UpdateBatchQuery> updateBatchTranslator,
-            BatchTranslator<DeleteBatchQuery> deleteBatchTranslator) {
+            BatchTranslator<InsertBatch> insertBatchTranslator,
+            BatchTranslator<UpdateBatch> updateBatchTranslator,
+            BatchTranslator<DeleteBatch> deleteBatchTranslator) {
 
         this.name = name;
         this.dataSource = dataSource != null ? new TransactionDataSource(this, dataSource) : null;
@@ -218,7 +228,10 @@ public class DataNode {
             for (StatementContext statementContext : statementContexts) {
                 statementContext.setLogger(logger);
                 try {
-                    adapter.getAction(statementContext.getQuery(), this).performAction(connection, statementContext);
+                    TranslatedStatement translated = translate(statementContext.getResolvedQuery(), adapter,
+                            statementContext.getResolver());
+                    statementContext.setTranslatedStatement(translated);
+                    execute(adapter, translated, connection, statementContext);
                     statementContext.logComplete();
                 } catch (Exception e) {
                     statementContext.logError(e);
@@ -242,6 +255,39 @@ public class DataNode {
         }
     }
 
+    /**
+     * Runs the translated statement with the adapter, dispatching on its kind.
+     */
+    private void execute(
+            DbAdapter adapter,
+            TranslatedStatement translated,
+            Connection connection,
+            StatementContext context) throws Exception {
+
+        switch (translated) {
+            case TranslatedSelect select -> adapter.executeSelect(select, connection, context, this);
+            case TranslatedSQL sql -> adapter.executeSQL(sql, connection, context, this);
+            case TranslatedProcedure procedure -> adapter.executeProcedure(procedure, connection, context, this);
+            case TranslatedBatch batch -> adapter.executeBatch(batch, connection, context, this);
+        }
+    }
+
+    /**
+     * Translates a resolved query into SQL with the translator of its kind.
+     *
+     * @since 6.0
+     */
+    protected TranslatedStatement translate(ResolvedQuery query, DbAdapter adapter, EntityResolver resolver) {
+        return switch (query) {
+            case ResolvedSelect select -> selectTranslator.translate(select, adapter, resolver);
+            case ResolvedSQL sql -> sqlTemplateTranslator.translate(sql, adapter);
+            case ResolvedProcedure procedure -> procedureTranslator.translate(procedure, adapter);
+            case InsertBatch insert -> insertBatchTranslator.translate(insert, adapter);
+            case UpdateBatch update -> updateBatchTranslator.translate(update, adapter);
+            case DeleteBatch delete -> deleteBatchTranslator.translate(delete, adapter);
+        };
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this).append("name", getName()).toString();
@@ -252,48 +298,6 @@ public class DataNode {
      */
     public RowReaderFactory getRowReaderFactory() {
         return rowReaderFactory;
-    }
-
-    /**
-     * @since 5.0
-     */
-    public BatchTranslator<InsertBatchQuery> getInsertBatchTranslator() {
-        return insertBatchTranslator;
-    }
-
-    /**
-     * @since 5.0
-     */
-    public BatchTranslator<UpdateBatchQuery> getUpdateBatchTranslator() {
-        return updateBatchTranslator;
-    }
-
-    /**
-     * @since 5.0
-     */
-    public BatchTranslator<DeleteBatchQuery> getDeleteBatchTranslator() {
-        return deleteBatchTranslator;
-    }
-
-    /**
-     * @since 5.0
-     */
-    public SQLTemplateTranslator getSqlTemplateTranslator() {
-        return sqlTemplateTranslator;
-    }
-
-    /**
-     * @since 5.0
-     */
-    public SelectTranslator getSelectTranslator() {
-        return selectTranslator;
-    }
-
-    /**
-     * @since 5.0
-     */
-    public ProcedureTranslator getProcedureTranslator() {
-        return procedureTranslator;
     }
 
     // a read-through DataSource that ensures returning the same connection

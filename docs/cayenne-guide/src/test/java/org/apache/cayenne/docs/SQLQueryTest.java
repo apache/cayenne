@@ -55,7 +55,7 @@ public class SQLQueryTest extends BaseTest {
 
         // Selecting DataRow with predefined types
         List<DataRow> rows = SQLQuery
-                .dataRowQuery("SELECT * FROM ARTIST", Integer.class, String.class, LocalDate.class)
+                .query("SELECT * FROM ARTIST", Integer.class, String.class, LocalDate.class)
                 .select(context);
 
         // Selecting Object[] with predefined types

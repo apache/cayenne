@@ -25,7 +25,6 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.query.PrefetchProcessor;
 import org.apache.cayenne.query.PrefetchTreeNode;
-import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.reflect.ArcProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
@@ -36,7 +35,7 @@ import java.util.Map;
 
 final class PrefetchProcessorTreeBuilder implements PrefetchProcessor {
 
-    private QueryMetadata queryMetadata;
+    private boolean refreshing;
     private DataContext context;
     private PrefetchProcessorNode root;
     private LinkedList<PrefetchProcessorNode> nodeStack;
@@ -49,7 +48,7 @@ final class PrefetchProcessorTreeBuilder implements PrefetchProcessor {
     PrefetchProcessorTreeBuilder(HierarchicalObjectResolver objectTreeResolver, List<DataRow> mainResultRows,
                                  Map<CayennePath, List<?>> extraResultsByPath) {
         this.context = objectTreeResolver.context;
-        this.queryMetadata = objectTreeResolver.queryMetadata;
+        this.refreshing = objectTreeResolver.refreshing;
         this.mainResultRows = mainResultRows;
         this.extraResultsByPath = extraResultsByPath;
         this.descriptor = objectTreeResolver.descriptor;
@@ -169,11 +168,7 @@ final class PrefetchProcessorTreeBuilder implements PrefetchProcessor {
             descriptor = arc.getTargetDescriptor();
         } else {
             arc = null;
-            if (this.descriptor != null) {
-                descriptor = this.descriptor;
-            } else {
-                descriptor = queryMetadata.getClassDescriptor();
-            }
+            descriptor = this.descriptor;
             rows = mainResultRows;
         }
 
@@ -183,10 +178,10 @@ final class PrefetchProcessorTreeBuilder implements PrefetchProcessor {
 
         if (node.getParent() != null && !node.isJointPrefetch()) {
             node.setResolver(new HierarchicalObjectResolverNode(node, context, descriptor,
-                    queryMetadata.isRefreshingObjects(), seen));
+                    refreshing, seen));
         } else {
             node.setResolver(new PrefetchObjectResolver(context, descriptor,
-                    queryMetadata.isRefreshingObjects(), seen));
+                    refreshing, seen));
         }
 
         if (node.getParent() == null || node.getParent().isPhantom()) {

@@ -22,7 +22,7 @@ package org.apache.cayenne.modeler.ui.project.editor.query.sqltemplate;
 import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
 
-import org.apache.cayenne.map.SQLTemplateDescriptor;
+import org.apache.cayenne.map.SQLQueryDescriptor;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.toolkit.ProjectTabbedPane;
 
@@ -62,7 +62,7 @@ public class SQLTemplateTabbedView extends ProjectTabbedPane {
     }
 
     private void initFromModel() {
-        if (!(session.getSelectedQuery() instanceof SQLTemplateDescriptor query)) {
+        if (!(session.getSelectedQuery() instanceof SQLQueryDescriptor query)) {
             setVisible(false);
             return;
         }

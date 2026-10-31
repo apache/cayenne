@@ -33,11 +33,10 @@ import org.apache.cayenne.exp.property.Property;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.EntityResult;
-import org.apache.cayenne.query.FluentSelect;
 import org.apache.cayenne.query.Ordering;
-import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.query.ResultSegments;
 import org.apache.cayenne.query.SQLResult;
+import org.apache.cayenne.query.resolved.ResolvedSelect;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -97,8 +96,7 @@ class SelectTranslatorContext implements SQLGenerationContext {
     private final List<PSParameter<?>> bindings;
 
     // Translated query
-    private final FluentSelect<?, ?> query;
-    private final QueryMetadata metadata;
+    private final ResolvedSelect select;
     // whether the query result must be mapped explicitly, i.e. it selects a custom set of columns
     private final boolean needsResultSetMapping;
 
@@ -137,21 +135,20 @@ class SelectTranslatorContext implements SQLGenerationContext {
     // result set mapping resolved against the translated columns, null unless the query selects a custom column set
     private ResultSegments resultSetMapping;
 
-    SelectTranslatorContext(FluentSelect<?, ?> query, DbAdapter adapter, EntityResolver resolver, SelectTranslatorContext parentContext) {
-        this.query = query;
+    SelectTranslatorContext(ResolvedSelect select, DbAdapter adapter, EntityResolver resolver,
+                            SelectTranslatorContext parentContext) {
+        this.select = select;
         this.adapter = adapter;
         this.resolver = resolver;
-        this.metadata = query.getMetaData(resolver);
         this.parentContext = parentContext;
-        this.tableTree = new TableTree(metadata.getDbEntity(), parentContext == null ? null : parentContext.getTableTree());
+        this.tableTree = new TableTree(select.dbEntity(), parentContext == null ? null : parentContext.getTableTree());
         this.columns = new ArrayList<>();
         this.bindings = new ArrayList<>();
         this.selectBuilder = SQLBuilder.select();
         this.pathTranslator = new PathTranslator(this);
         this.qualifierTranslator = new QualifierTranslator(this);
         this.resultNodeList = new LinkedList<>();
-        Collection<Property<?>> queryColumns = query.getColumns();
-        this.needsResultSetMapping = queryColumns != null && !queryColumns.isEmpty();
+        this.needsResultSetMapping = !select.columns().isEmpty();
         if (needsResultSetMapping) {
             this.sqlResult = new SQLResult();
         }
@@ -165,6 +162,7 @@ class SelectTranslatorContext implements SQLGenerationContext {
 
     public TranslatedSelect getTranslation() {
         return new TranslatedSelect(
+                select,
                 getFinalSQL(),
                 getBindings().toArray(new PSParameter[0]),
                 getColumnDescriptors().toArray(new RSColumn[0]),
@@ -221,8 +219,8 @@ class SelectTranslatorContext implements SQLGenerationContext {
         return tableTree.getNodeCount();
     }
 
-    FluentSelect<?, ?> getQuery() {
-        return query;
+    ResolvedSelect getSelect() {
+        return select;
     }
 
     /**
@@ -230,10 +228,6 @@ class SelectTranslatorContext implements SQLGenerationContext {
      */
     boolean needsResultSetMapping() {
         return needsResultSetMapping;
-    }
-
-    QueryMetadata getMetadata() {
-        return metadata;
     }
 
     EntityResolver getResolver() {
@@ -247,7 +241,7 @@ class SelectTranslatorContext implements SQLGenerationContext {
 
     @Override
     public DbEntity getRootDbEntity() {
-        return metadata.getDbEntity();
+        return select.dbEntity();
     }
 
     @Override
@@ -260,7 +254,7 @@ class SelectTranslatorContext implements SQLGenerationContext {
             return hasAggregate;
         }
 
-        if (getQuery().getHaving() != null) {
+        if (select.having() != null) {
             return (hasAggregate = true);
         }
 
@@ -270,11 +264,9 @@ class SelectTranslatorContext implements SQLGenerationContext {
             }
         }
 
-        if (getQuery().getOrderings() != null) {
-            for (Ordering ordering : getQuery().getOrderings()) {
-                if (ordering.getSortSpec() instanceof AggregateFunctionCallExp) {
-                    return (hasAggregate = true);
-                }
+        for (Ordering ordering : select.orderings()) {
+            if (ordering.getSortSpec() instanceof AggregateFunctionCallExp) {
+                return (hasAggregate = true);
             }
         }
 

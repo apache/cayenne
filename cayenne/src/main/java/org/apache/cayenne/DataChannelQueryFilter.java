@@ -19,7 +19,7 @@
 
 package org.apache.cayenne;
 
-import org.apache.cayenne.access.OperationContext;
+import org.apache.cayenne.access.QueryContext;
 import org.apache.cayenne.access.lifecycle.LifecycleEventsManager;
 
 import java.util.List;
@@ -30,7 +30,7 @@ import java.util.List;
  * <p>
  * Example: <pre>{@code
  * public class MyQueryFilter implements DataChannelQueryFilter {
- *     public List<QueryResult> onQuery(OperationContext context, DataChannelQueryFilterChain filterChain) {
+ *     public List<QueryResult> onQuery(QueryContext context, DataChannelQueryFilterChain filterChain) {
  *         System.out.println("Do something before query " + context.getQuery());
  *         // process query or return some custom response
  *         List<QueryResult> response = filterChain.onQuery(context);
@@ -54,7 +54,7 @@ public interface DataChannelQueryFilter {
      * @return query result items
      * @since 6.0
      */
-    List<QueryResult> onQuery(OperationContext context, DataChannelQueryFilterChain filterChain);
+    List<QueryResult> onQuery(QueryContext context, DataChannelQueryFilterChain filterChain);
 
     /**
      * Called once when the filter is added to the DataDomain, letting the filter register lifecycle event listeners,

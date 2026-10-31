@@ -27,6 +27,7 @@ import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SQLQuery;
+import org.apache.cayenne.query.resolved.ResolvedBatch;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
@@ -34,7 +35,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -64,8 +67,7 @@ public class CayenneSqlExceptionIT {
         CayenneSqlException e = assertThrows(CayenneSqlException.class, () -> query.select(context));
 //        e.printStackTrace();
 
-        assertNotNull(e.getStatement(), "statement should have been captured");
-        // SQLQuery is executed as an internally-routed SQLTemplate, so getQuery() reports that executed query
+        assertNotNull(e.getTranslatedStatement(), "statement should have been captured");
         assertNotNull(e.getQuery());
         assertTrue(e.getMessage().contains(badSql),
                 () -> "Expected message to include the failing SQL, but was: " + e.getMessage());
@@ -81,10 +83,10 @@ public class CayenneSqlExceptionIT {
         CayenneSqlException e = assertThrows(CayenneSqlException.class, () -> query.select(context));
 //        e.printStackTrace();
 
-        assertNotNull(e.getStatement(), "statement should have been captured");
+        assertNotNull(e.getTranslatedStatement(), "statement should have been captured");
         assertSame(query, e.getQuery());
-        assertTrue(e.getStatement().sql().contains("ARTIST"),
-                () -> "Expected SELECT SQL against ARTIST, but was: " + e.getStatement().sql());
+        assertTrue(e.getTranslatedStatement().sql().contains("ARTIST"),
+                () -> "Expected SELECT SQL against ARTIST, but was: " + e.getTranslatedStatement().sql());
     }
 
     @Test
@@ -109,10 +111,12 @@ public class CayenneSqlExceptionIT {
         CayenneSqlException e = assertThrows(CayenneSqlException.class, () -> context.commitChanges());
 //        e.printStackTrace();
 
-        assertNotNull(e.getStatement(), "statement should have been captured");
-        assertNotNull(e.getQuery());
-        assertTrue(e.getStatement().sql().contains("BOGUS_COLUMN"),
-                () -> "Expected INSERT SQL to reference BOGUS_COLUMN, but was: " + e.getStatement().sql());
+        assertNotNull(e.getTranslatedStatement(), "statement should have been captured");
+        // a flush batch has no user query behind it, but the resolved batch is reported
+        assertInstanceOf(ResolvedBatch.class, e.getResolvedQuery());
+        assertNull(e.getQuery());
+        assertTrue(e.getTranslatedStatement().sql().contains("BOGUS_COLUMN"),
+                () -> "Expected INSERT SQL to reference BOGUS_COLUMN, but was: " + e.getTranslatedStatement().sql());
         assertTrue(e.getMessage().contains("BOGUS_COLUMN"),
                 () -> "Expected message to include the failing SQL, but was: " + e.getMessage());
     }

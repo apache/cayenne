@@ -30,7 +30,7 @@ import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.CoreModule;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.query.SQLTemplate;
+import org.apache.cayenne.query.SQLQuery;
 import org.apache.cayenne.test.parallel.ParallelTestContainer;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
@@ -80,13 +80,13 @@ public class DataContextSharedCacheIT {
 
         // update artist using raw SQL
         // RTRIM: on Oracle a CHAR column compared with a VARCHAR bind is not blank-padded
-        SQLTemplate query = new SQLTemplate(Artist.class,
+        SQLQuery<Artist> query = SQLQuery.query(Artist.class,
                 "UPDATE ARTIST SET ARTIST_NAME = #bind($newName) WHERE RTRIM(ARTIST_NAME) = #bind($oldName)");
 
         Map<String, Object> map = new HashMap<>(3);
         map.put("newName", newName);
         map.put("oldName", originalName);
-        query.setParams(map);
+        query.params(map);
         context.execute(query);
 
         // fetch updated artist into the new context, and see if the original
@@ -517,12 +517,12 @@ public class DataContextSharedCacheIT {
 
         // update artist using raw SQL
         // RTRIM: on Oracle a CHAR column compared with a VARCHAR bind is not blank-padded
-        SQLTemplate update = new SQLTemplate(Artist.class,
+        SQLQuery<Artist> update = SQLQuery.query(Artist.class,
                 "UPDATE ARTIST SET ARTIST_NAME = #bind($newName) WHERE RTRIM(ARTIST_NAME) = #bind($oldName)");
         Map<String, Object> map = new HashMap<>(3);
         map.put("newName", newName);
         map.put("oldName", originalName);
-        update.setParams(map);
+        update.params(map);
         context.execute(update);
 
         // fetch updated artist without refreshing
@@ -678,12 +678,12 @@ public class DataContextSharedCacheIT {
 
         // now replace the row in the database
         String template = "UPDATE ARTIST SET ARTIST_NAME = #bind($newName) WHERE ARTIST_NAME = #bind($oldName)";
-        SQLTemplate update = new SQLTemplate(Artist.class, template);
+        SQLQuery<Artist> update = SQLQuery.query(Artist.class, template);
 
         Map<String, Object> map = new HashMap<>(3);
         map.put("newName", backendName);
         map.put("oldName", originalName);
-        update.setParams(map);
+        update.params(map);
         context.execute(update);
 
         context.commitChanges();

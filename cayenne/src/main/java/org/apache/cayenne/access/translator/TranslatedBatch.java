@@ -20,13 +20,13 @@
 package org.apache.cayenne.access.translator;
 
 import org.apache.cayenne.access.jdbc.PSBatchParameter;
+import org.apache.cayenne.query.resolved.ResolvedBatch;
 
 /**
- * An immutable result of translating a batch query: the SQL String shared by all rows of the batch, and one
- * {@link PSBatchParameter} per PreparedStatement placeholder, each carrying the values of all batch rows for
- * its placeholder.
+ * A translated batch: the SQL run once per row, and the bindings holding the values of all rows per placeholder.
  *
- * @since 5.0
+ * @since 6.0
  */
-public record TranslatedBatch(String sql, PSBatchParameter[] bindings) implements TranslatedStatement {
+public record TranslatedBatch(ResolvedBatch query, String sql, PSBatchParameter[] bindings)
+        implements TranslatedStatement {
 }

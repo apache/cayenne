@@ -16,417 +16,331 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
 package org.apache.cayenne.query;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.OutParametersResult;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.QueryResult;
+import org.apache.cayenne.UpdateResult;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.Procedure;
+import org.apache.cayenne.query.resolved.ResolvedProcedure;
+import org.apache.cayenne.query.resolved.ResolvedQuery;
+import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.util.ToStringBuilder;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * A query based on Procedure. Can be used as a select query, or as a query of an
- * arbitrary complexity, performing data modification, selecting data (possibly with
- * multiple result sets per call), returning values via OUT parameters.
- * <h3>Execution with DataContext</h3>
- * <h4>Reading OUT parameters</h4>
- * <p>
- * If a ProcedureQuery has OUT parameters, their values are reported as a separate item of the query response, a Map
- * keyed by parameter name (see {@link OutParametersResult}).
- * </p>
- * <h4>Using ProcedureQuery as a Query</h4>
- * <p>
- * Executing ProcedureQuery via {@link ObjectContext#select(Query)} makes sense only if
- * the stored procedure returns a single result set (or alternatively returns a result via
- * OUT parameters and no other result sets). It is still OK if data modification occurs as
- * a side effect. However, if the query returns more then one result set, a more generic
- * form should be used: {@link ObjectContext#execute(Query)}.
- * </p>
+ * A query calling a stored procedure mapped in a DataMap, with a fluent API. A procedure may return any mix of
+ * result sets, update counts and OUT parameters, all available via {@link #execute(ObjectContext)}; the selecting
+ * shortcuts return the rows of the first result set as objects of the result type or as {@link DataRow}s.
  *
- * <h3>Query Root</h3>
- * <p>
- * A ProcedureQuery is defined by the name of a mapped stored procedure and, optionally, by the type of the persistent
- * objects it fetches, given either as a Java class ({@link #query(String, Class)}) or as an ObjEntity name
- * ({@link #entityQuery(String, String)}). Both are fixed when the query is created. A query with no result type
- * ({@link #query(String)}) fetches DataRows.
- * </p>
- *
- * @param <T> the type of the result elements: a {@link DataRow} by default, or a persistent
- *            object when a result type is specified.
+ * @param <T> the type of the rows the query selects
+ * @since 6.0
  */
 public class ProcedureQuery<T> implements Query<T> {
 
     /**
-     * Creates a query calling the named stored procedure and fetching DataRows.
-     *
-     * @since 6.0
+     * Creates a query calling the named stored procedure. Any result sets it produces are returned as DataRows. This
+     * is the form to use for procedures that update rather than select, when the shape of the result does not matter.
      */
-    public static ProcedureQuery<DataRow> query(String procedureName) {
-        return new ProcedureQuery<>(procedureName);
+    public static ProcedureQuery<DataRow> query(String procedure) {
+        ProcedureQuery<DataRow> query = new ProcedureQuery<>(procedure);
+        query.fetchingDataRows = true;
+        return query;
     }
 
     /**
-     * Creates a query calling the named stored procedure and fetching objects of the given persistent type.
-     *
-     * @since 6.0
+     * Creates a query calling the named stored procedure and fetching the result sets as objects of the given
+     * persistent type.
      */
-    public static <T> ProcedureQuery<T> query(String procedureName, Class<T> resultType) {
-        return new ProcedureQuery<>(procedureName, resultType);
+    public static <T> ProcedureQuery<T> query(String procedure, Class<T> resultClass) {
+        ProcedureQuery<T> query = new ProcedureQuery<>(procedure);
+        query.resultClass = resultClass;
+        return query;
     }
 
     /**
-     * Creates a query calling the named stored procedure and fetching objects of the named ObjEntity. This is the
-     * form of the queries mapped in a DataMap, where the entity class is not necessarily known.
+     * Creates a query calling the named stored procedure and fetching the result sets as objects of the named
+     * ObjEntity. This is the form used for queries mapped in a DataMap, where the entity is known by name.
      *
      * @since 6.0
      */
-    public static ProcedureQuery<Persistent> entityQuery(String procedureName, String resultEntityName) {
-        return new ProcedureQuery<>(procedureName, null, resultEntityName);
+    public static ProcedureQuery<Persistent> entityQuery(String procedure, String resultEntityName) {
+        ProcedureQuery<Persistent> query = new ProcedureQuery<>(procedure);
+        query.resultEntityName = resultEntityName;
+        return query;
     }
 
     private final String procedureName;
-
     // the type of the fetched objects: at most one of the two is set
-    private final Class<T> resultType;
-    private final String resultEntityName;
+    Class<T> resultClass;
+    private String resultEntityName;
+    private Map<String, Object> params;
+    private int fetchLimit = ResolvedQuery.FETCH_LIMIT_DEFAULT;
+    private int fetchOffset = ResolvedQuery.FETCH_OFFSET_DEFAULT;
+    private int pageSize = ResolvedQuery.PAGE_SIZE_DEFAULT;
+    private int statementFetchSize = ResolvedQuery.STATEMENT_FETCH_SIZE_DEFAULT;
+    private int queryTimeout = ResolvedQuery.QUERY_TIMEOUT_DEFAULT;
+    private CapsStrategy capsStrategy;
+    private boolean fetchingDataRows;
+    private List<ProcedureColumn[]> resultDescriptors;
+    private QueryCacheStrategy cacheStrategy = QueryCacheStrategy.getDefaultStrategy();
+    private String cacheGroup;
 
-    protected CapsStrategy columnNamesCapitalization;
-    protected Map<String, Object> parameters = new HashMap<>();
-    ProcedureQueryMetadata metaData = new ProcedureQueryMetadata();
-    protected List<ProcedureColumn[]> resultDescriptors;
-
-    /**
-     * Creates a query calling the named stored procedure and fetching DataRows.
-     *
-     * @param procedureName A name of the stored procedure. For this query to work, a
-     *            procedure with this name must be mapped in Cayenne.
-     */
-    public ProcedureQuery(String procedureName) {
-        this(procedureName, null, null);
-
-        // for backwards compatibility we go against usual default...
-        metaData.setFetchingDataRows(true);
-    }
-
-    /**
-     * Creates a query calling the named stored procedure and fetching objects of the given persistent type.
-     *
-     * @since 1.1
-     */
-    public ProcedureQuery(String procedureName, Class<T> resultType) {
-        this(procedureName, resultType, null);
-    }
-
-    private ProcedureQuery(String procedureName, Class<T> resultType, String resultEntityName) {
+    protected ProcedureQuery(String procedureName) {
         this.procedureName = procedureName;
-        this.resultType = resultType;
-        this.resultEntityName = resultEntityName;
     }
 
-    String getProcedureName() {
-        return procedureName;
+    public ProcedureQuery<T> params(Map<String, ?> parameters) {
+        if (this.params == null) {
+            this.params = new HashMap<>(parameters);
+        } else {
+            this.params.putAll(parameters);
+        }
+        return this;
     }
 
-    Class<T> getResultType() {
-        return resultType;
+    public ProcedureQuery<T> param(String name, Object value) {
+        if (this.params == null) {
+            this.params = new HashMap<>();
+        }
+        this.params.put(name, value);
+        return this;
     }
 
-    String getResultEntityName() {
-        return resultEntityName;
+    public ProcedureQuery<T> limit(int fetchLimit) {
+        this.fetchLimit = fetchLimit;
+        return this;
+    }
+
+    public ProcedureQuery<T> offset(int fetchOffset) {
+        this.fetchOffset = fetchOffset;
+        return this;
+    }
+
+    /**
+     * @since 6.0
+     */
+    public ProcedureQuery<T> pageSize(int pageSize) {
+        this.pageSize = pageSize;
+        return this;
+    }
+
+    /**
+     * @since 6.0
+     */
+    public ProcedureQuery<T> statementFetchSize(int statementFetchSize) {
+        this.statementFetchSize = statementFetchSize;
+        return this;
+    }
+
+    /**
+     * @since 6.0
+     */
+    public ProcedureQuery<T> queryTimeout(int queryTimeout) {
+        this.queryTimeout = queryTimeout;
+        return this;
+    }
+
+    public ProcedureQuery<T> capsStrategy(CapsStrategy capsStrategy) {
+        this.capsStrategy = capsStrategy;
+        return this;
+    }
+
+    /**
+     * Makes the query return its rows as DataRows instead of objects.
+     *
+     * @since 6.0
+     */
+    @SuppressWarnings("unchecked")
+    public ProcedureQuery<DataRow> fetchDataRows() {
+        this.fetchingDataRows = true;
+        return (ProcedureQuery<DataRow>) this;
+    }
+
+    /**
+     * Describes the columns of the next result set of the procedure, for drivers that do not describe them (or do it
+     * wrong). When any result set is described, all of them must be, in the order they are returned.
+     */
+    public ProcedureQuery<T> resultDescriptor(ProcedureColumn[] resultDescriptor) {
+        if (resultDescriptors == null) {
+            resultDescriptors = new ArrayList<>(2);
+        }
+        resultDescriptors.add(resultDescriptor);
+        return this;
+    }
+
+    /**
+     * @since 6.0
+     */
+    public ProcedureQuery<T> cacheStrategy(QueryCacheStrategy strategy) {
+        this.cacheStrategy = strategy != null ? strategy : QueryCacheStrategy.getDefaultStrategy();
+        this.cacheGroup = null;
+        return this;
+    }
+
+    /**
+     * @since 6.0
+     */
+    public ProcedureQuery<T> cacheStrategy(QueryCacheStrategy strategy, String cacheGroup) {
+        return cacheStrategy(strategy).cacheGroup(cacheGroup);
+    }
+
+    /**
+     * @since 6.0
+     */
+    public ProcedureQuery<T> cacheGroup(String cacheGroup) {
+        this.cacheGroup = cacheGroup;
+        return this;
+    }
+
+    /**
+     * @since 6.0
+     */
+    public ProcedureQuery<T> localCache() {
+        return cacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
+    }
+
+    /**
+     * @since 6.0
+     */
+    public ProcedureQuery<T> localCache(String cacheGroup) {
+        return cacheStrategy(QueryCacheStrategy.LOCAL_CACHE, cacheGroup);
+    }
+
+    /**
+     * @since 6.0
+     */
+    public ProcedureQuery<T> sharedCache() {
+        return cacheStrategy(QueryCacheStrategy.SHARED_CACHE);
+    }
+
+    /**
+     * @since 6.0
+     */
+    public ProcedureQuery<T> sharedCache(String cacheGroup) {
+        return cacheStrategy(QueryCacheStrategy.SHARED_CACHE, cacheGroup);
+    }
+
+    @Override
+    public T selectFirst(ObjectContext context) {
+        return context.selectFirst(limit(1));
+    }
+
+    /**
+     * @deprecated since 6.0 in favor of {@link #execute(ObjectContext)}
+     */
+    @Deprecated(since = "6.0", forRemoval = true)
+    public List<QueryResult> call(ObjectContext context) {
+        return execute(context);
+    }
+
+    /**
+     * @deprecated since 6.0, read the counts from the {@link UpdateResult} items of {@link #execute(ObjectContext)}
+     */
+    @Deprecated(since = "6.0", forRemoval = true)
+    public int[] batchUpdate(ObjectContext context) {
+        return firstUpdate(context).counts();
+    }
+
+    /**
+     * @deprecated since 6.0, read the count from the {@link UpdateResult} items of {@link #execute(ObjectContext)}
+     */
+    @Deprecated(since = "6.0", forRemoval = true)
+    public int update(ObjectContext context) {
+        return firstUpdate(context).count();
+    }
+
+    private UpdateResult firstUpdate(ObjectContext context) {
+        for (QueryResult item : execute(context)) {
+            if (item instanceof UpdateResult update) {
+                return update;
+            }
+        }
+        throw new CayenneRuntimeException("Procedure '%s' produced no updates", procedureName);
+    }
+
+    @Override
+    public ResolvedProcedure resolve(EntityResolver resolver) {
+        Procedure procedure = resolver.getProcedure(procedureName);
+        if (procedure == null) {
+            throw new CayenneRuntimeException("Unknown procedure: %s", procedureName);
+        }
+
+        ObjEntity entity = null;
+        if (resultClass != null) {
+            entity = resolver.getObjEntity(resultClass);
+        } else if (resultEntityName != null) {
+            entity = resolver.getObjEntity(resultEntityName);
+        }
+
+        DbEntity dbEntity = null;
+        ClassDescriptor descriptor = null;
+        // theoretically procedure can be in one DataMap, while the Java Class - in another.
+        DataMap dataMap = procedure.getDataMap();
+        if (entity != null) {
+            dbEntity = entity.getDbEntity();
+            dataMap = entity.getDataMap();
+            descriptor = resolver.getClassDescriptor(entity.getName());
+        }
+
+        Map<String, Object> params = this.params != null ? this.params : Collections.emptyMap();
+        List<ProcedureColumn[]> resultDescriptors = this.resultDescriptors != null
+                ? this.resultDescriptors
+                : Collections.emptyList();
+        CapsStrategy capsStrategy = this.capsStrategy != null ? this.capsStrategy : CapsStrategy.DEFAULT;
+        String cacheKey = cacheStrategy != QueryCacheStrategy.NO_CACHE ? cacheKey(procedure, params) : null;
+
+        return new ResolvedProcedure(this, procedure, entity, dbEntity, dataMap, descriptor, params,
+                resultDescriptors, capsStrategy, fetchingDataRows, fetchLimit, fetchOffset, pageSize,
+                statementFetchSize, queryTimeout, cacheStrategy, cacheKey, cacheGroup);
+    }
+
+    /**
+     * Creates a unique key based on procedure and parameters.
+     */
+    private String cacheKey(Procedure procedure, Map<String, Object> parameters) {
+        StringBuilder key = new StringBuilder("proc:").append(procedure.getName());
+        if (!parameters.isEmpty()) {
+            List<String> keys = new ArrayList<>(parameters.keySet());
+            Collections.sort(keys);
+            for (String parameterKey : keys) {
+                key.append('/').append(parameterKey).append('=').append(parameters.get(parameterKey));
+            }
+        }
+
+        if (fetchOffset > 0 || fetchLimit > 0) {
+            key.append('/');
+            if (fetchOffset > 0) {
+                key.append('o').append(fetchOffset);
+            }
+            if (fetchLimit > 0) {
+                key.append('l').append(fetchLimit);
+            }
+        }
+
+        return key.toString();
     }
 
     @Override
     public String toString() {
         ToStringBuilder builder = new ToStringBuilder(this).append("procedureName", procedureName);
-        if (resultType != null) {
-            builder.append("resultType", resultType.getName());
+        if (resultClass != null) {
+            builder.append("resultClass", resultClass.getName());
         } else if (resultEntityName != null) {
             builder.append("resultEntityName", resultEntityName);
         }
         return builder.toString();
-    }
-
-    /**
-     * @since 1.2
-     */
-    @Override
-    public QueryMetadata getMetaData(EntityResolver resolver) {
-        metaData.resolve(resolver, this);
-        return metaData;
-    }
-
-    /**
-     * Returns a List of descriptors for query ResultSets in the order they are returned
-     * by the stored procedure.
-     * <p>
-     * <i>Note that if a procedure returns ResultSet in an OUT parameter, it is returned
-     * prior to any other result sets (though in practice database engines usually support
-     * only one mechanism for returning result sets).</i>
-     * </p>
-     * 
-     * @since 5.0
-     */
-    public List<ProcedureColumn[]> getResultDescriptors() {
-        return resultDescriptors != null ? resultDescriptors : Collections.emptyList();
-    }
-
-    /**
-     * Adds a descriptor for a single ResultSet. More than one descriptor can be added by
-     * calling this method multiple times in the order of described ResultSet appearance
-     * in the procedure results.
-     * 
-     * @since 5.0
-     */
-    public synchronized void addResultDescriptor(ProcedureColumn[] descriptor) {
-        if (resultDescriptors == null) {
-            resultDescriptors = new ArrayList<>(2);
-        }
-
-        resultDescriptors.add(descriptor);
-    }
-
-    /**
-     * Removes result descriptor from the list of descriptors.
-     * 
-     * @since 5.0
-     */
-    public void removeResultDescriptor(ProcedureColumn[] descriptor) {
-        if (resultDescriptors != null) {
-            resultDescriptors.remove(descriptor);
-        }
-    }
-
-    /**
-     * Calls "makeProcedure" on the visitor.
-     * 
-     * @since 1.2
-     */
-    @Override
-    public SQLAction createSQLAction(SQLActionVisitor visitor) {
-        return visitor.procedureAction(this);
-    }
-
-    /**
-     * @since 5.0
-     */
-    @Override
-    public T selectFirst(ObjectContext context) {
-        setFetchLimit(1);
-        return context.selectFirst(this);
-    }
-
-    /**
-     * @since 3.0
-     */
-    public QueryCacheStrategy getCacheStrategy() {
-        return metaData.getCacheStrategy();
-    }
-
-    /**
-     * @since 3.0
-     */
-    public void setCacheStrategy(QueryCacheStrategy strategy) {
-        metaData.setCacheStrategy(strategy);
-    }
-
-    /**
-     * @since 4.0
-     */
-    public String getCacheGroup() {
-        return metaData.getCacheGroup();
-    }
-
-    /**
-     * @since 4.0
-     */
-    public void setCacheGroup(String cacheGroup) {
-        metaData.setCacheGroup(cacheGroup);
-    }
-
-    public int getFetchLimit() {
-        return metaData.getFetchLimit();
-    }
-
-    public void setFetchLimit(int fetchLimit) {
-        this.metaData.setFetchLimit(fetchLimit);
-    }
-
-    /**
-     * @since 3.0
-     */
-    public int getFetchOffset() {
-        return metaData.getFetchOffset();
-    }
-
-    /**
-     * @since 3.0
-     */
-    public void setFetchOffset(int fetchOffset) {
-        metaData.setFetchOffset(fetchOffset);
-    }
-
-    public int getPageSize() {
-        return metaData.getPageSize();
-    }
-
-    public void setPageSize(int pageSize) {
-        metaData.setPageSize(pageSize);
-    }
-
-    public void setFetchingDataRows(boolean flag) {
-        metaData.setFetchingDataRows(flag);
-    }
-
-    public boolean isFetchingDataRows() {
-        return metaData.isFetchingDataRows();
-    }
-
-    /**
-     * Adds a named parameter to the internal map of parameters.
-     * 
-     * @since 1.1
-     */
-    public synchronized void addParameter(String name, Object value) {
-        parameters.put(name, value);
-    }
-
-    /**
-     * @since 1.1
-     */
-    public synchronized void removeParameter(String name) {
-        parameters.remove(name);
-    }
-
-    /**
-     * Returns a map of procedure parameters.
-     * 
-     * @since 1.1
-     */
-    public Map<String, ?> getParameters() {
-        return parameters;
-    }
-
-    /**
-     * Sets a map of parameters.
-     * 
-     * @since 1.1
-     */
-    public synchronized void setParameters(Map<String, ?> parameters) {
-        this.parameters.clear();
-
-        if (parameters != null) {
-            this.parameters.putAll(parameters);
-        }
-    }
-
-    /**
-     * Cleans up all configured parameters.
-     * 
-     * @since 1.1
-     */
-    public synchronized void clearParameters() {
-        this.parameters.clear();
-    }
-
-    /**
-     * @since 1.2
-     */
-    public PrefetchTreeNode getPrefetchTree() {
-        return metaData.getPrefetchTree();
-    }
-
-    /**
-     * Adds a prefetch.
-     * 
-     * @since 1.2
-     */
-    public PrefetchTreeNode addPrefetch(String prefetchPath) {
-        // by default use JOINT_PREFETCH_SEMANTICS
-        return metaData.addPrefetch(
-                prefetchPath,
-                PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
-    }
-
-    /**
-     * @since 1.2
-     */
-    public void removePrefetch(String prefetch) {
-        metaData.removePrefetch(prefetch);
-    }
-
-    /**
-     * Adds all prefetches from a provided collection.
-     * 
-     * @since 1.2
-     */
-    public void addPrefetches(Collection<String> prefetches) {
-        metaData.addPrefetches(prefetches, PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
-    }
-
-    /**
-     * Clears all prefetches.
-     * 
-     * @since 1.2
-     */
-    public void clearPrefetches() {
-        metaData.clearPrefetches();
-    }
-
-    /**
-     * @since 3.0
-     */
-    public CapsStrategy getColumnNamesCapitalization() {
-        return columnNamesCapitalization != null
-                ? columnNamesCapitalization
-                : CapsStrategy.DEFAULT;
-    }
-
-    /**
-     * @since 3.0
-     */
-    public void setColumnNamesCapitalization(CapsStrategy columnNameCapitalization) {
-        this.columnNamesCapitalization = columnNameCapitalization;
-    }
-
-    /**
-     * Sets statement's fetch size (0 for no default size)
-     * 
-     * @since 3.0
-     */
-    public void setStatementFetchSize(int size) {
-        metaData.setStatementFetchSize(size);
-    }
-
-    /**
-     * @return statement's fetch size
-     * @since 3.0
-     */
-    public int getStatementFetchSize() {
-        return metaData.getStatementFetchSize();
-    }
-
-    /**
-     * @return query timeout
-     * @since 4.2
-     */
-    public int getQueryTimeout() {
-        return metaData.getQueryTimeout();
-    }
-
-    /**
-     * Set's query timeout
-     * @since 4.2
-     */
-    public void setQueryTimeout(int timeout) {
-        metaData.setQueryTimeout(timeout);
     }
 }

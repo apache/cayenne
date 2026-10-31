@@ -25,6 +25,7 @@ import org.apache.cayenne.access.translator.TranslatedSQL;
 import org.apache.cayenne.access.translator.SQLTemplateTranslator;
 import org.apache.cayenne.access.jdbc.PSParameter;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.query.resolved.ResolvedSQL;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.access.translator.sqltemplate.SQLTemplateRenderingUtils;
 import org.apache.velocity.Template;
@@ -46,7 +47,7 @@ import java.util.Map;
 /**
  * Processor for SQL velocity templates.
  * 
- * @see org.apache.cayenne.query.SQLTemplate
+ * @see org.apache.cayenne.query.SQLQuery
  * @since 4.0
  */
 public class VelocitySQLTemplateTranslator implements SQLTemplateTranslator {
@@ -125,30 +126,31 @@ public class VelocitySQLTemplateTranslator implements SQLTemplateTranslator {
 	 * as a "helper" variable and SQLStatement object as "statement" variable.
 	 */
 	@Override
-	public TranslatedSQL translate(String template, Map<String, ?> parameters, DbAdapter adapter) {
-		// have to make a copy of parameter map since we are gonna modify it..
-		Map<String, Object> internalParameters = (parameters != null && !parameters.isEmpty()) ? new HashMap<>(
-				parameters) : new HashMap<String, Object>(5);
+	public TranslatedSQL translate(ResolvedSQL query, DbAdapter adapter) {
+		String template = query.template(adapter);
+		if (template == null) {
+			throw new CayenneRuntimeException("No template string configured for adapter %s",
+					adapter.getClass().getName());
+		}
 
 		SimpleNode parsedTemplate = parse(template);
-		return translate(template, parsedTemplate, internalParameters, adapter);
+		Map<String, Object> internalParameters;
+
+		if (query.positionalParams().isEmpty()) {
+			// have to make a copy of parameter map since we are gonna modify it..
+			internalParameters = new HashMap<>(query.params());
+		} else {
+			internalParameters = new HashMap<>();
+			PositionalParamMapper visitor = new PositionalParamMapper(query.positionalParams(), internalParameters);
+			parsedTemplate.jjtAccept(visitor, null);
+			visitor.onFinish();
+		}
+
+		return translate(query, template, parsedTemplate, internalParameters, adapter);
 	}
 
-	@Override
-	public TranslatedSQL translate(String template, List<Object> positionalParameters, DbAdapter adapter) {
-
-		SimpleNode parsedTemplate = parse(template);
-
-		Map<String, Object> internalParameters = new HashMap<>();
-
-		PositionalParamMapper visitor = new PositionalParamMapper(positionalParameters, internalParameters);
-		parsedTemplate.jjtAccept(visitor, null);
-		visitor.onFinish();
-
-		return translate(template, parsedTemplate, internalParameters, adapter);
-	}
-
-	TranslatedSQL translate(String template, SimpleNode parsedTemplate, Map<String, Object> parameters, DbAdapter adapter) {
+	TranslatedSQL translate(ResolvedSQL query, String template, SimpleNode parsedTemplate, Map<String, Object> parameters,
+							DbAdapter adapter) {
 		List<PSParameter> bindings = new ArrayList<>();
 		List<RSColumn> results = new ArrayList<>();
 		parameters.put(BINDINGS_LIST_KEY, bindings);
@@ -169,7 +171,7 @@ public class VelocitySQLTemplateTranslator implements SQLTemplateTranslator {
 		RSColumn[] resultsArray = new RSColumn[results.size()];
 		results.toArray(resultsArray);
 
-		return new TranslatedSQL(sql, bindingsArray, resultsArray);
+		return new TranslatedSQL(query, sql, bindingsArray, resultsArray);
 	}
 
 	String buildStatement(VelocityContext context, String template, SimpleNode parsedTemplate) throws Exception {

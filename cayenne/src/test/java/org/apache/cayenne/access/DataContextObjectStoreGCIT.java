@@ -19,7 +19,7 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.query.SQLTemplate;
+import org.apache.cayenne.query.SQLQuery;
 import org.apache.cayenne.test.parallel.ParallelTestContainer;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.CayenneProjects;
@@ -44,7 +44,7 @@ public class DataContextObjectStoreGCIT {
 
     @Test
     public void releaseUnreferenced() throws Exception {
-        context.execute(new SQLTemplate(
+        context.execute(SQLQuery.query(
                 Artist.class,
                 "insert into ARTIST (ARTIST_ID, ARTIST_NAME) values (1, 'aa')"));
 
@@ -96,7 +96,7 @@ public class DataContextObjectStoreGCIT {
 
     @Test
     public void retainUnreferencedModified() throws Exception {
-        context.execute(new SQLTemplate(
+        context.execute(SQLQuery.query(
                 Artist.class,
                 "insert into ARTIST (ARTIST_ID, ARTIST_NAME) values (1, 'aa')"));
 

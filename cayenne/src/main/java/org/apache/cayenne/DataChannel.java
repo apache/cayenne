@@ -20,7 +20,7 @@
 package org.apache.cayenne;
 
 import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.access.OperationContext;
+import org.apache.cayenne.access.QueryContext;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.event.EventSubject;
 import org.apache.cayenne.graph.GraphDiff;
@@ -117,9 +117,9 @@ public interface DataChannel {
     }
 
     /**
-     * Executes the query of the provided operation context, registering any result objects with the
-     * {@link OperationContext#getContext() ObjectContext} of the operation. If the operation asks for an
-     * {@link OperationContext#isIteratedResult() iterated result}, the select result is returned as a
+     * Executes the query of the provided query context, registering any result objects with the
+     * {@link QueryContext#getContext() ObjectContext} of the operation. If the operation asks for an
+     * {@link QueryContext#isIteratedResult() iterated result}, the select result is returned as a
      * {@link ResultIterator} item, and the caller is responsible for closing it; otherwise it is fully read into a
      * list.
      *
@@ -129,7 +129,7 @@ public interface DataChannel {
      * produced.
      * @since 6.0
      */
-    List<QueryResult> onQuery(OperationContext context);
+    List<QueryResult> onQuery(QueryContext context);
 
     /**
      * Invalidates objects with the given ids in this channel and all its parents, so that they are refetched on the

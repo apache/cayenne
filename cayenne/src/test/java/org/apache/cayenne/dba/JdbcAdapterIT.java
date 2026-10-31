@@ -19,21 +19,28 @@
 
 package org.apache.cayenne.dba;
 
+import org.apache.cayenne.access.jdbc.PSBatchParameter;
+import org.apache.cayenne.access.translator.TranslatedBatch;
 import org.apache.cayenne.dba.mysql.MySQLAdapter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbKeyGenerator;
+import org.apache.cayenne.query.resolved.DeleteBatch;
+import org.apache.cayenne.query.resolved.InsertBatch;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.sql.Types;
+import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class JdbcAdapterIT {
 
@@ -98,5 +105,24 @@ public class JdbcAdapterIT {
             String str = "CREATE TABLE `name table` (`name column` CHAR(10) NULL) ENGINE=InnoDB";
             assertEquals(str, mySQLAdapter.createTable(entity));
         }
+    }
+
+    @Test
+    public void runsAsBatch() {
+        JdbcAdapter adapter = env.adhocObjectFactory().newInstance(JdbcAdapter.class, JdbcAdapter.class.getName());
+        adapter.setSupportsBatchUpdates(true);
+
+        DbEntity entity = new DbEntity("T");
+        TranslatedBatch insert = new TranslatedBatch(new InsertBatch(entity, List.of()), "INSERT",
+                new PSBatchParameter[0]);
+        assertTrue(adapter.runsAsBatch(insert));
+
+        // optimistic locking needs the per-row update counts, so it never runs as a JDBC batch
+        TranslatedBatch lockingDelete = new TranslatedBatch(
+                new DeleteBatch(entity, List.of(), Set.of(), true, List.of()), "DELETE", new PSBatchParameter[0]);
+        assertFalse(adapter.runsAsBatch(lockingDelete));
+
+        adapter.setSupportsBatchUpdates(false);
+        assertFalse(adapter.runsAsBatch(insert));
     }
 }

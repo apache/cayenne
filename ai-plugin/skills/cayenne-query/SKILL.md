@@ -116,7 +116,7 @@ List<Artist> hits = SQLSelect.query(Artist.class,
     .select(ctx);
 ```
 
-**Always** use `#bind($name)` placeholders. Never concatenate user input into SQL. Cayenne's SQLTemplate is Velocity-based — see `query-api.md` for `#bind`, `#bindEqual`, `#chain`, and adapter-specific SQL with `<sql adapterClass="...">`.
+**Always** use `#bind($name)` placeholders. Never concatenate user input into SQL. Cayenne's SQL templates use a Velocity-like directive syntax — see `query-api.md` for `#bind`, `#bindEqual`, `#chain`, and adapter-specific SQL with `<sql adapterClass="...">`.
 
 ## Anti-patterns
 

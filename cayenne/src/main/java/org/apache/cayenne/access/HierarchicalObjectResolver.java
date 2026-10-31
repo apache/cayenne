@@ -25,14 +25,16 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.PathExp;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.DbJoin;
+import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.query.PrefetchProcessor;
-import org.apache.cayenne.query.PrefetchSelectQuery;
 import org.apache.cayenne.query.PrefetchTreeNode;
-import org.apache.cayenne.query.QueryMetadata;
+import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.resolved.ResolvedSelect;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
 import java.util.ArrayList;
@@ -49,22 +51,25 @@ import java.util.stream.Collectors;
  */
 class HierarchicalObjectResolver {
 
-    DataContext context;
-    QueryMetadata queryMetadata;
-    DataRowStore cache;
-    ClassDescriptor descriptor;
-    boolean needToSaveDuplicates;
+    final DataContext context;
+    // the user query the rows belong to; the source of the selects run for disjoint-by-id prefetches
+    final Query<?> source;
+    final ClassDescriptor descriptor;
+    final boolean refreshing;
+    final DataRowStore cache;
+    final boolean needToSaveDuplicates;
 
-    HierarchicalObjectResolver(DataContext context, QueryMetadata queryMetadata) {
-        this.queryMetadata = queryMetadata;
-        this.context = context;
-        this.cache = context.getObjectStore().getDataRowCache();
+    HierarchicalObjectResolver(DataContext context, Query<?> source, ClassDescriptor descriptor, boolean refreshing) {
+        this(context, source, descriptor, refreshing, false);
     }
 
-    HierarchicalObjectResolver(DataContext context, QueryMetadata metadata,
-                               ClassDescriptor descriptor, boolean needToSaveDuplicates) {
-        this(context, metadata);
+    HierarchicalObjectResolver(DataContext context, Query<?> source, ClassDescriptor descriptor, boolean refreshing,
+                               boolean needToSaveDuplicates) {
+        this.context = context;
+        this.source = source;
         this.descriptor = descriptor;
+        this.refreshing = refreshing;
+        this.cache = context.getObjectStore().getDataRowCache();
         this.needToSaveDuplicates = needToSaveDuplicates;
     }
 
@@ -159,23 +164,19 @@ class HierarchicalObjectResolver {
             List<DbJoin> joins = getDbJoins(relationship);
             DataRowLayout.Reader keyReader = DataRowLayout.of(dataRowKeys(joins, pathPrefix)).reader();
 
-            List<PrefetchSelectQuery<DataRow>> queries = new ArrayList<>();
-            PrefetchSelectQuery<DataRow> currentQuery = null;
+            // the parent keys, in chunks that fit the qualifier size limit; each chunk is fetched by a select of
+            // its own, as DataRows, with the joint subtree of the node to make its joint prefetches work
+            List<Set<List<Object>>> chunks = new ArrayList<>();
+            Set<List<Object>> values = null;
             int qualifiersCount = 0;
-            Set<List<Object>> values = new HashSet<>();
 
             for (DataRow dataRow : parentDataRows) {
                 // handling too big qualifiers
-                if (currentQuery == null
+                if (values == null
                         || (maxIdQualifierSize > 0 && qualifiersCount + joins.size() > maxIdQualifierSize)) {
-
-                    createDisjointByIdPrefetchQualifier(pathPrefix, currentQuery, joins, values);
-
-                    currentQuery = new PrefetchSelectQuery<>(node.getPath(), relationship);
-                    currentQuery.fetchDataRows();
-                    queries.add(currentQuery);
-                    qualifiersCount = 0;
                     values = new HashSet<>();
+                    chunks.add(values);
+                    qualifiersCount = 0;
                 }
 
                 List<Object> joinValues = new ArrayList<>(joins.size());
@@ -183,33 +184,34 @@ class HierarchicalObjectResolver {
                     joinValues.add(keyReader.get(dataRow, i));
                 }
 
-                if(values.add(joinValues)) {
+                if (values.add(joinValues)) {
                     qualifiersCount += joins.size();
                 }
             }
-            // add final part of values
-            createDisjointByIdPrefetchQualifier(pathPrefix, currentQuery, joins, values);
 
             PrefetchTreeNode jointSubtree = node.cloneJointSubtree();
 
-            Expression reversePath = null;
-            if (!relationship.isForeignKey()) {
-                reversePath = ExpressionFactory.dbPathExp(relationship.getReverseDbRelationshipPath());
-            }
+            // extra result columns to be able to relate result rows to the parent result objects
+            List<PathExp> resultPaths = relationship.isForeignKey()
+                    ? List.of()
+                    : List.of((PathExp) ExpressionFactory.dbPathExp(relationship.getReverseDbRelationshipPath()));
 
+            EntityResolver resolver = context.getEntityResolver();
             List<DataRow> dataRows = new ArrayList<>();
-            for (PrefetchSelectQuery<DataRow> query : queries) {
-                // need to pass the remaining tree to make joint prefetches work
-                if (jointSubtree.hasChildren()) {
-                    query.setPrefetchTree(jointSubtree);
-                }
+            for (Set<List<Object>> chunk : chunks) {
+                ResolvedSelect select = ResolvedSelect.builder()
+                        .source(source)
+                        .entityName(relationship.getTargetEntityName())
+                        .fetchingDataRows(true)
+                        .where(disjointByIdQualifier(pathPrefix, joins, chunk))
+                        .prefetchTree(jointSubtree.hasChildren() ? jointSubtree : null)
+                        .prefetch(node.getPath(), resultPaths)
+                        .build(resolver);
 
-                if (reversePath != null) {
-                    // setup extra result columns to be able to relate result rows to the parent result objects.
-                    query.addResultPath(reversePath);
-                }
-
-                dataRows.addAll(query.select(context));
+                @SuppressWarnings("unchecked")
+                List<DataRow> chunkRows = (List<DataRow>) QueryResults.firstList(
+                        context.onQuery(new QueryContext(context, select.source(), select, false), false));
+                dataRows.addAll(chunkRows);
             }
             processorNode.setDataRows(dataRows);
 
@@ -243,39 +245,33 @@ class HierarchicalObjectResolver {
             return keys;
         }
 
-        private void createDisjointByIdPrefetchQualifier(CayennePath pathPrefix, PrefetchSelectQuery<?> currentQuery,
-                                                         List<DbJoin> joins, Set<List<Object>> values) {
-            if (currentQuery == null) return;
-
-             // Use an IN clause for the list of prefetch IDs, when the
-             // join ON clause only has one predicate with many values.
-             // Results in SQL:  ... targetField IN ( ?, ?, ?, .... )
+        private Expression disjointByIdQualifier(CayennePath pathPrefix, List<DbJoin> joins,
+                                                 Set<List<Object>> values) {
+            // Use an IN clause for the list of prefetch IDs, when the
+            // join ON clause only has one predicate with many values.
+            // Results in SQL:  ... targetField IN ( ?, ?, ?, .... )
             if (joins.size() == 1 && values.size() > 1) {
-                currentQuery.and( ExpressionFactory.inDbExp(
-                    pathPrefix.dot(joins.get(0).getTargetName()).value(),
-                    values.stream().flatMap(List::stream).collect(Collectors.toSet())
-                ));
-            } else { // Handle a single value or compound prefetch ID predicates
-            	// SQL: ... (field1=? and field2=? ...) OR (field1=? and field2=? ...) etc
-            	Expression allJoinsQualifier;
-                Expression[] qualifiers = new Expression[values.size()];
-                int i = 0;
-                for(List<Object> joinValues : values) {
-                    allJoinsQualifier = null;
-                    for(int j=0; j<joins.size(); j++) {
-                        Expression joinQualifier = ExpressionFactory
-                                .matchDbExp(pathPrefix.dot(joins.get(j).getTargetName()).value(), joinValues.get(j));
-                        if (allJoinsQualifier == null) {
-                            allJoinsQualifier = joinQualifier;
-                        } else {
-                            allJoinsQualifier = allJoinsQualifier.andExp(joinQualifier);
-                        }
-                    }
-                    qualifiers[i++] = allJoinsQualifier;
-                }
-
-                currentQuery.or(ExpressionFactory.or(qualifiers));
+                return ExpressionFactory.inDbExp(
+                        pathPrefix.dot(joins.get(0).getTargetName()).value(),
+                        values.stream().flatMap(List::stream).collect(Collectors.toSet()));
             }
+
+            // Handle a single value or compound prefetch ID predicates
+            // SQL: ... (field1=? and field2=? ...) OR (field1=? and field2=? ...) etc
+            Expression[] qualifiers = new Expression[values.size()];
+            int i = 0;
+            for (List<Object> joinValues : values) {
+                Expression allJoinsQualifier = null;
+                for (int j = 0; j < joins.size(); j++) {
+                    Expression joinQualifier = ExpressionFactory
+                            .matchDbExp(pathPrefix.dot(joins.get(j).getTargetName()).value(), joinValues.get(j));
+                    allJoinsQualifier = allJoinsQualifier == null
+                            ? joinQualifier
+                            : allJoinsQualifier.andExp(joinQualifier);
+                }
+                qualifiers[i++] = allJoinsQualifier;
+            }
+            return ExpressionFactory.or(qualifiers);
         }
 
         @Override
@@ -371,7 +367,7 @@ class HierarchicalObjectResolver {
             cache.snapshotsUpdatedForObjects(
                     objects,
                     processorNode.getResolvedRows(),
-                    queryMetadata.isRefreshingObjects());
+                    refreshing);
 
             // Now process any deferred disjointById children
             DisjointByIdProcessor byIdProcessor = new DisjointByIdProcessor();
@@ -519,7 +515,7 @@ class HierarchicalObjectResolver {
                 cache.snapshotsUpdatedForObjects(
                         processorNode.getObjects(),
                         processorNode.getResolvedRows(),
-                        queryMetadata.isRefreshingObjects());
+                        refreshing);
             }
 
             // run 'connectToParents' even if the object list is empty. This is needed to

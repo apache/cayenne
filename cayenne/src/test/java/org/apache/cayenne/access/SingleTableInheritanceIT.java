@@ -21,7 +21,7 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.PeopleTestBase;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.query.SQLTemplate;
+import org.apache.cayenne.query.SQLQuery;
 import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.inheritance_people.AbstractPerson;
@@ -159,11 +159,11 @@ public class SingleTableInheritanceIT extends PeopleTestBase {
     @Test
     public void relationshipToAbstractSuper() {
         context
-                .execute(new SQLTemplate(
+                .execute(SQLQuery.query(
                         AbstractPerson.class,
                         "INSERT INTO PERSON (PERSON_ID, NAME, PERSON_TYPE) VALUES (1, 'AA', 'EE')"));
 
-        context.execute(new SQLTemplate(
+        context.execute(SQLQuery.query(
                 PersonNotes.class,
                 "INSERT INTO PERSON_NOTES (ID, NOTES, PERSON_ID) VALUES (1, 'AA', 1)"));
 
@@ -176,14 +176,14 @@ public class SingleTableInheritanceIT extends PeopleTestBase {
     @Test
     public void relationshipAbstractFromSuperPrefetchingJoint() {
         context
-                .execute(new SQLTemplate(
+                .execute(SQLQuery.query(
                         AbstractPerson.class,
                         "INSERT INTO PERSON (PERSON_ID, NAME, PERSON_TYPE) VALUES (3, 'AA', 'EE')"));
 
-        context.execute(new SQLTemplate(
+        context.execute(SQLQuery.query(
                 PersonNotes.class,
                 "INSERT INTO PERSON_NOTES (ID, NOTES, PERSON_ID) VALUES (3, 'AA', 3)"));
-        context.execute(new SQLTemplate(
+        context.execute(SQLQuery.query(
                 PersonNotes.class,
                 "INSERT INTO PERSON_NOTES (ID, NOTES, PERSON_ID) VALUES (4, 'BB', 3)"));
 
@@ -210,14 +210,14 @@ public class SingleTableInheritanceIT extends PeopleTestBase {
     @Test
     public void relationshipAbstractFromSuperPrefetchingDisjoint() {
         context
-                .execute(new SQLTemplate(
+                .execute(SQLQuery.query(
                         AbstractPerson.class,
                         "INSERT INTO PERSON (PERSON_ID, NAME, PERSON_TYPE) VALUES (3, 'AA', 'EE')"));
 
-        context.execute(new SQLTemplate(
+        context.execute(SQLQuery.query(
                 PersonNotes.class,
                 "INSERT INTO PERSON_NOTES (ID, NOTES, PERSON_ID) VALUES (3, 'AA', 3)"));
-        context.execute(new SQLTemplate(
+        context.execute(SQLQuery.query(
                 PersonNotes.class,
                 "INSERT INTO PERSON_NOTES (ID, NOTES, PERSON_ID) VALUES (4, 'BB', 3)"));
 
@@ -243,15 +243,15 @@ public class SingleTableInheritanceIT extends PeopleTestBase {
     @Test
     public void relationshipAbstractToSuperPrefetchingDisjoint() {
         context
-                .execute(new SQLTemplate(
+                .execute(SQLQuery.query(
                         AbstractPerson.class,
                         "INSERT INTO PERSON (PERSON_ID, NAME, PERSON_TYPE) VALUES (2, 'AA', 'EE')"));
 
-        context.execute(new SQLTemplate(
+        context.execute(SQLQuery.query(
                 PersonNotes.class,
                 "INSERT INTO PERSON_NOTES (ID, NOTES, PERSON_ID) VALUES (2, 'AA', 2)"));
 
-        context.execute(new SQLTemplate(
+        context.execute(SQLQuery.query(
                 PersonNotes.class,
                 "INSERT INTO PERSON_NOTES (ID, NOTES, PERSON_ID) VALUES (3, 'BB', 2)"));
 
@@ -268,11 +268,11 @@ public class SingleTableInheritanceIT extends PeopleTestBase {
     @Test
     public void relationshipAbstractToSuperPrefetchingJoint() {
         context
-                .execute(new SQLTemplate(
+                .execute(SQLQuery.query(
                         AbstractPerson.class,
                         "INSERT INTO PERSON (PERSON_ID, NAME, PERSON_TYPE) VALUES (3, 'AA', 'EE')"));
 
-        context.execute(new SQLTemplate(
+        context.execute(SQLQuery.query(
                 PersonNotes.class,
                 "INSERT INTO PERSON_NOTES (ID, NOTES, PERSON_ID) VALUES (3, 'AA', 3)"));
 

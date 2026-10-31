@@ -27,9 +27,9 @@ import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.property.Property;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.exp.property.SelfProperty;
-import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.query.resolved.ResolvedQuery;
+import org.apache.cayenne.query.resolved.ResolvedSelect;
 
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -63,40 +63,39 @@ public abstract class FluentSelect<T, S extends FluentSelect<T, S>> implements Q
     protected Collection<Ordering> orderings;
     protected boolean distinct;
 
-    protected ObjectSelectMetadata metaData;
+    protected int fetchLimit = ResolvedQuery.FETCH_LIMIT_DEFAULT;
+    protected int fetchOffset = ResolvedQuery.FETCH_OFFSET_DEFAULT;
+    protected int pageSize = ResolvedQuery.PAGE_SIZE_DEFAULT;
+    protected int statementFetchSize = ResolvedQuery.STATEMENT_FETCH_SIZE_DEFAULT;
+    protected int queryTimeout = ResolvedQuery.QUERY_TIMEOUT_DEFAULT;
+    protected QueryCacheStrategy cacheStrategy = QueryCacheStrategy.getDefaultStrategy();
+    protected String cacheGroup;
+    protected boolean fetchingDataRows = ResolvedQuery.FETCHING_DATA_ROWS_DEFAULT;
+    protected PrefetchTreeNode prefetches;
 
     protected FluentSelect() {
-        metaData = createMetadata();
     }
 
-    protected abstract ObjectSelectMetadata createMetadata();
-
-    protected abstract ObjectSelectMetadata getBaseMetaData();
-
-    protected Object resolveRoot(EntityResolver resolver) {
-        Object root;
-        if (entityType != null) {
-            root = entityType;
-        } else if (entityName != null) {
-
-            ObjEntity entity = resolver.getObjEntity(entityName);
-            if (entity == null) {
-                throw new CayenneRuntimeException("Unrecognized ObjEntity name: %s", entityName);
-            }
-
-            root = entity;
-        } else if (dbEntityName != null) {
-
-            DbEntity entity = resolver.getDbEntity(dbEntityName);
-            if (entity == null) {
-                throw new CayenneRuntimeException("Unrecognized DbEntity name: %s", dbEntityName);
-            }
-
-            root = entity;
-        } else {
-            throw new CayenneRuntimeException("Undefined root entity of the query");
-        }
-        return root;
+    /**
+     * Copies the state of another select into this one. Used to turn an {@link ObjectSelect} into a
+     * {@link ColumnSelect}.
+     */
+    protected void copyFrom(FluentSelect<?, ?> other) {
+        this.entityType = other.entityType;
+        this.entityName = other.entityName;
+        this.dbEntityName = other.dbEntityName;
+        this.where = other.where;
+        this.having = other.having;
+        this.orderings = other.orderings;
+        this.fetchLimit = other.fetchLimit;
+        this.fetchOffset = other.fetchOffset;
+        this.pageSize = other.pageSize;
+        this.statementFetchSize = other.statementFetchSize;
+        this.queryTimeout = other.queryTimeout;
+        this.cacheStrategy = other.cacheStrategy;
+        this.cacheGroup = other.cacheGroup;
+        this.fetchingDataRows = other.fetchingDataRows;
+        this.prefetches = other.prefetches != null ? other.prefetches.deepClone() : null;
     }
 
     /**
@@ -393,7 +392,10 @@ public abstract class FluentSelect<T, S extends FluentSelect<T, S>> implements Q
      * @return this object
      */
     public S prefetch(PrefetchTreeNode prefetch) {
-        getBaseMetaData().mergePrefetch(prefetch);
+        if (prefetches == null) {
+            prefetches = new PrefetchTreeNode();
+        }
+        prefetches.merge(prefetch);
         return castSelf();
     }
 
@@ -406,7 +408,12 @@ public abstract class FluentSelect<T, S extends FluentSelect<T, S>> implements Q
         if (path == null) {
             return castSelf();
         }
-        getBaseMetaData().addPrefetch(path, semantics);
+        if (prefetches == null) {
+            prefetches = new PrefetchTreeNode();
+        }
+        PrefetchTreeNode node = prefetches.addPath(path);
+        node.setSemantics(semantics);
+        node.setPhantom(false);
         return castSelf();
     }
 
@@ -415,7 +422,7 @@ public abstract class FluentSelect<T, S extends FluentSelect<T, S>> implements Q
      * that should be ever be fetched from the database.
      */
     public S limit(int fetchLimit) {
-        this.getBaseMetaData().setFetchLimit(fetchLimit);
+        this.fetchLimit = fetchLimit;
         return castSelf();
     }
 
@@ -424,7 +431,7 @@ public abstract class FluentSelect<T, S extends FluentSelect<T, S>> implements Q
      * should be skipped when reading data from the database.
      */
     public S offset(int fetchOffset) {
-        this.getBaseMetaData().setFetchOffset(fetchOffset);
+        this.fetchOffset = fetchOffset;
         return castSelf();
     }
 
@@ -434,7 +441,7 @@ public abstract class FluentSelect<T, S extends FluentSelect<T, S>> implements Q
      * parts of the result are ever going to be accessed.
      */
     public S pageSize(int pageSize) {
-        this.getBaseMetaData().setPageSize(pageSize);
+        this.pageSize = pageSize;
         return castSelf();
     }
 
@@ -446,7 +453,7 @@ public abstract class FluentSelect<T, S extends FluentSelect<T, S>> implements Q
      * @see Statement#setFetchSize(int)
      */
     public S statementFetchSize(int size) {
-        this.getBaseMetaData().setStatementFetchSize(size);
+        this.statementFetchSize = size;
         return castSelf();
     }
 
@@ -456,13 +463,13 @@ public abstract class FluentSelect<T, S extends FluentSelect<T, S>> implements Q
      * @see Statement#setQueryTimeout(int)
      */
     public S queryTimeout(int timeout) {
-        this.getBaseMetaData().setQueryTimeout(timeout);
+        this.queryTimeout = timeout;
         return castSelf();
     }
 
     public S cacheStrategy(QueryCacheStrategy strategy) {
-        getBaseMetaData().setCacheStrategy(strategy);
-        getBaseMetaData().setCacheGroup(null);
+        this.cacheStrategy = strategy != null ? strategy : QueryCacheStrategy.getDefaultStrategy();
+        this.cacheGroup = null;
         return castSelf();
     }
 
@@ -471,7 +478,7 @@ public abstract class FluentSelect<T, S extends FluentSelect<T, S>> implements Q
     }
 
     public S cacheGroup(String cacheGroup) {
-        getBaseMetaData().setCacheGroup(cacheGroup);
+        this.cacheGroup = cacheGroup;
         return castSelf();
     }
 
@@ -527,37 +534,37 @@ public abstract class FluentSelect<T, S extends FluentSelect<T, S>> implements Q
      * @since 3.0
      */
     public QueryCacheStrategy getCacheStrategy() {
-        return getBaseMetaData().getCacheStrategy();
+        return cacheStrategy;
     }
 
     /**
      * @since 4.0
      */
     public String getCacheGroup() {
-        return getBaseMetaData().getCacheGroup();
+        return cacheGroup;
     }
 
     public int getStatementFetchSize() {
-        return getBaseMetaData().getStatementFetchSize();
+        return statementFetchSize;
     }
 
     /**
      * @since 4.2
      */
     public int getQueryTimeout() {
-        return getBaseMetaData().getQueryTimeout();
+        return queryTimeout;
     }
 
     public int getPageSize() {
-        return getBaseMetaData().getPageSize();
+        return pageSize;
     }
 
     public int getLimit() {
-        return getBaseMetaData().getFetchLimit();
+        return fetchLimit;
     }
 
     public int getOffset() {
-        return getBaseMetaData().getFetchOffset();
+        return fetchOffset;
     }
 
     public Class<?> getEntityType() {
@@ -591,7 +598,7 @@ public abstract class FluentSelect<T, S extends FluentSelect<T, S>> implements Q
     }
 
     public PrefetchTreeNode getPrefetches() {
-        return getBaseMetaData().getPrefetchTree();
+        return prefetches;
     }
 
     protected void setActiveExpression(Expression exp) {
@@ -611,26 +618,43 @@ public abstract class FluentSelect<T, S extends FluentSelect<T, S>> implements Q
     }
 
     @Override
-    public SQLAction createSQLAction(SQLActionVisitor visitor) {
-        return visitor.objectSelectAction(this);
+    public ResolvedSelect resolve(EntityResolver resolver) {
+        ResolvedSelect.Builder builder = ResolvedSelect.builder()
+                .source(this)
+                .where(where)
+                .having(having)
+                .orderings(orderings)
+                .distinct(distinct)
+                .fetchingDataRows(fetchingDataRows)
+                .fetchLimit(fetchLimit)
+                .fetchOffset(fetchOffset)
+                .pageSize(pageSize)
+                .statementFetchSize(statementFetchSize)
+                .queryTimeout(queryTimeout)
+                .cacheStrategy(cacheStrategy)
+                .cacheGroup(cacheGroup)
+                .prefetchTree(prefetches);
+
+        if (entityType != null) {
+            builder.entityType(entityType);
+        } else if (entityName != null) {
+            builder.entityName(entityName);
+        } else if (dbEntityName != null) {
+            builder.dbEntityName(dbEntityName);
+        }
+
+        configure(builder);
+        return builder.build(resolver);
     }
 
-    @Override
-    public void route(QueryRouter router, EntityResolver resolver, Query<?> substitutedQuery) {
-        Query.super.route(router, resolver, substitutedQuery);
-
-        // suppress prefetches for paginated queries.. instead prefetches will be resolved per row...
-        if (getPageSize() <= 0) {
-            routePrefetches(router, resolver);
-        }
+    /**
+     * A hook for subclasses to add their own state to the resolved select. The base implementation does nothing.
+     */
+    protected void configure(ResolvedSelect.Builder builder) {
     }
 
     public boolean isFetchingDataRows() {
-        return getBaseMetaData().isFetchingDataRows();
-    }
-
-    protected void routePrefetches(QueryRouter router, EntityResolver resolver) {
-        new FluentSelectPrefetchRouterAction().route(this, router, resolver);
+        return fetchingDataRows;
     }
 
     /**

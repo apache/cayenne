@@ -20,6 +20,7 @@
 package org.apache.cayenne.dba.db2;
 
 import org.apache.cayenne.CoreModule;
+import org.apache.cayenne.access.StatementContext;
 import org.apache.cayenne.dba.NativeColumnType;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
@@ -37,9 +38,9 @@ import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.query.Query;
-import org.apache.cayenne.query.SQLAction;
+import org.apache.cayenne.access.translator.TranslatedProcedure;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.Types;
 import java.util.List;
@@ -201,9 +202,11 @@ public class DB2Adapter extends JdbcAdapter {
      * 
      * @since 3.1
      */
+
     @Override
-    public SQLAction getAction(Query<?> query, DataNode node) {
-        return query.createSQLAction(new DB2ActionBuilder(node));
+    public void executeProcedure(TranslatedProcedure procedure, Connection connection, StatementContext context,
+            DataNode node) throws Exception {
+        new DB2ProcedureAction(procedure, node).execute(connection, context);
     }
 
     /**

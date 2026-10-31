@@ -135,7 +135,7 @@ public class TuningTest extends BaseTest {
         createArtistsDataSet();
 
         // tag::sqlDataRows[]
-        SQLQuery<DataRow> query = SQLQuery.dataRowQuery("SELECT * FROM ARTIST");
+        SQLQuery<DataRow> query = SQLQuery.query("SELECT * FROM ARTIST");
         List<DataRow> rows = query.select(context);
         // end::sqlDataRows[]
 
