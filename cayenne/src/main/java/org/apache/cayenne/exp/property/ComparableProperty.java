@@ -19,16 +19,14 @@
 
 package org.apache.cayenne.exp.property;
 
-import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.FunctionExpressionFactory;
 import org.apache.cayenne.query.ObjectSelect;
 
 /**
- * Interface (or "Trait") that provides basic functionality for comparable properties.
+ * A "trait" of comparable properties.
  *
- * @see org.apache.cayenne.exp.property
  * @since 4.2
  */
 public interface ComparableProperty<E> extends Property<E> {
@@ -131,7 +129,6 @@ public interface ComparableProperty<E> extends Property<E> {
      * @since 5.0
      */
     default Expression ltAll(ObjectSelect<E> subquery) {
-        assertSubqueryIsValidForComparison(subquery);
         return ExpressionFactory.lessExp(getExpression(), ExpressionFactory.all(subquery));
     }
 
@@ -141,7 +138,6 @@ public interface ComparableProperty<E> extends Property<E> {
      * @since 5.0
      */
     default Expression lteAll(ObjectSelect<E> subquery) {
-        assertSubqueryIsValidForComparison(subquery);
         return ExpressionFactory.lessOrEqualExp(getExpression(), ExpressionFactory.all(subquery));
     }
 
@@ -151,7 +147,6 @@ public interface ComparableProperty<E> extends Property<E> {
      * @since 5.0
      */
     default Expression gtAll(ObjectSelect<E> subquery) {
-        assertSubqueryIsValidForComparison(subquery);
         return ExpressionFactory.greaterExp(getExpression(), ExpressionFactory.all(subquery));
     }
 
@@ -161,7 +156,6 @@ public interface ComparableProperty<E> extends Property<E> {
      * @since 5.0
      */
     default Expression gteAll(ObjectSelect<E> subquery) {
-        assertSubqueryIsValidForComparison(subquery);
         return ExpressionFactory.greaterOrEqualExp(getExpression(), ExpressionFactory.all(subquery));
     }
 
@@ -171,7 +165,6 @@ public interface ComparableProperty<E> extends Property<E> {
      * @since 5.0
      */
     default Expression ltAny(ObjectSelect<E> subquery) {
-        assertSubqueryIsValidForComparison(subquery);
         return ExpressionFactory.lessExp(getExpression(), ExpressionFactory.any(subquery));
     }
 
@@ -181,7 +174,6 @@ public interface ComparableProperty<E> extends Property<E> {
      * @since 5.0
      */
     default Expression lteAny(ObjectSelect<E> subquery) {
-        assertSubqueryIsValidForComparison(subquery);
         return ExpressionFactory.lessOrEqualExp(getExpression(), ExpressionFactory.any(subquery));
     }
 
@@ -191,7 +183,6 @@ public interface ComparableProperty<E> extends Property<E> {
      * @since 5.0
      */
     default Expression gtAny(ObjectSelect<E> subquery) {
-        assertSubqueryIsValidForComparison(subquery);
         return ExpressionFactory.greaterExp(getExpression(), ExpressionFactory.any(subquery));
     }
 
@@ -201,13 +192,6 @@ public interface ComparableProperty<E> extends Property<E> {
      * @since 5.0
      */
     default Expression gteAny(ObjectSelect<E> subquery) {
-        assertSubqueryIsValidForComparison(subquery);
         return ExpressionFactory.greaterOrEqualExp(getExpression(), ExpressionFactory.any(subquery));
-    }
-
-    private static <E> void assertSubqueryIsValidForComparison(ObjectSelect<E> subquery) {
-        if (!subquery.isSingleColumn()) {
-            throw new CayenneRuntimeException("Only a single-column query can be used in the comparison.");
-        }
     }
 }

@@ -21,6 +21,7 @@ package org.apache.cayenne.query;
 
 import java.util.Date;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
@@ -35,6 +36,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ObjectSelect_SubqueryIT {
 
@@ -185,6 +188,73 @@ public class ObjectSelect_SubqueryIT {
                 .selectCount(context);
 
         assertEquals(16L, count);
+    }
+
+    @Test
+    public void multiColumnSubqueryRejected_all() {
+        ObjectSelect<Artist> query = ObjectSelect.query(Artist.class).where(ExpressionFactory.lessExp(
+                Artist.DATE_OF_BIRTH.getExpression(),
+                ExpressionFactory.all(ObjectSelect.query(Artist.class).columns(Artist.DATE_OF_BIRTH, Artist.ARTIST_NAME))));
+
+        CayenneRuntimeException e = assertThrows(CayenneRuntimeException.class, () -> query.select(context));
+        assertTrue(e.getUnlabeledMessage().startsWith("A subquery of ALL must select a single column"),
+                e.getUnlabeledMessage());
+    }
+
+    @Test
+    public void multiColumnSubqueryRejected_in() {
+        ObjectSelect<Painting> query = ObjectSelect.query(Painting.class).where(ExpressionFactory.inExp(
+                Painting.ARTIST.dot(Artist.ARTIST_NAME).getExpression(),
+                ObjectSelect.query(Artist.class).columns(Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH)));
+
+        CayenneRuntimeException e = assertThrows(CayenneRuntimeException.class, () -> query.select(context));
+        assertTrue(e.getUnlabeledMessage().startsWith("A subquery of IN must select a single column"),
+                e.getUnlabeledMessage());
+    }
+
+    @Test
+    public void rootObjectsSubquery_in() {
+        // a subquery of the root objects stands for their ids
+        long count = ObjectSelect.query(Painting.class)
+                .where(Painting.ARTIST.in(ObjectSelect.query(Artist.class).where(Artist.ARTIST_NAME.in("artist1", "artist2"))))
+                .selectCount(context);
+        assertEquals(8L, count);
+    }
+
+    @Test
+    public void rootObjectsSubquery_nin() {
+        long count = ObjectSelect.query(Painting.class)
+                .where(Painting.ARTIST.nin(ObjectSelect.query(Artist.class).where(Artist.ARTIST_NAME.in("artist1", "artist2"))))
+                .selectCount(context);
+        assertEquals(12L, count);
+    }
+
+    @Test
+    public void rootObjectsSubquery_parsed() {
+        long count = ObjectSelect.parse(Painting.class,
+                        "from Painting where artist in (from Artist where artistName like 'artist1')")
+                .selectCount(context);
+        assertEquals(4L, count);
+    }
+
+    @Test
+    public void rootObjectsSubqueryRejected_compoundPk() {
+        ObjectSelect<Painting> query = ObjectSelect.query(Painting.class).where(ExpressionFactory.inExp(
+                Painting.ARTIST.getExpression(),
+                ObjectSelect.dbQuery("ARTIST_EXHIBIT")));
+
+        CayenneRuntimeException e = assertThrows(CayenneRuntimeException.class, () -> query.select(context));
+        assertTrue(e.getUnlabeledMessage().contains("the PK of ARTIST_EXHIBIT has 2 columns"), e.getUnlabeledMessage());
+    }
+
+    @Test
+    public void multiColumnSubqueryRejected_parsed() {
+        ObjectSelect<Artist> query = ObjectSelect.parse(Artist.class,
+                "from Artist where dateOfBirth < any (select dateOfBirth, artistName from Artist)");
+
+        CayenneRuntimeException e = assertThrows(CayenneRuntimeException.class, () -> query.select(context));
+        assertTrue(e.getUnlabeledMessage().startsWith("A subquery of ANY must select a single column"),
+                e.getUnlabeledMessage());
     }
 
     @Test

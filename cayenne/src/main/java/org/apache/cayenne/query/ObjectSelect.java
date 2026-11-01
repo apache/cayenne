@@ -34,7 +34,9 @@ import org.apache.cayenne.exp.property.NumericProperty;
 import org.apache.cayenne.exp.property.Property;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.exp.property.SelfProperty;
+import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.ql.QLParser;
 import org.apache.cayenne.query.resolved.ResolvedQuery;
 import org.apache.cayenne.query.resolved.ResolvedSelect;
@@ -487,7 +489,12 @@ public class ObjectSelect<T> implements Query<T> {
             all = expressions;
         }
 
-        setActiveExpression(joiner.apply(all));
+        if (havingExpressionIsActive) {
+            having = joiner.apply(all);
+        } else {
+            where = joiner.apply(all);
+        }
+
         return this;
     }
 
@@ -1033,14 +1040,6 @@ public class ObjectSelect<T> implements Query<T> {
      */
     public boolean isSingleColumn() {
         return columns != null && singleColumn;
-    }
-
-    protected void setActiveExpression(Expression exp) {
-        if (havingExpressionIsActive) {
-            having = exp;
-        } else {
-            where = exp;
-        }
     }
 
     protected Expression getActiveExpression() {

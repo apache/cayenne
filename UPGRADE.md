@@ -117,8 +117,10 @@
      `selectCount(..)` still leaves the query unchanged.
    * `ObjectSelect.parseColumn(..)` and `parseColumns(..)` are replaced by `parse(Class<T>, ..)` with the type of a
      column or `Object[].class`. The subquery methods (`ExpressionFactory.inExp(..)`, `all(..)`, `any(..)`,
-     `BaseProperty.in(..)`, `ComparableProperty.ltAll(..)`, etc.) accept any `ObjectSelect`, and check that it selects a
-     single column at runtime.
+     `BaseProperty.in(..)`, `ComparableProperty.ltAll(..)`, etc.) accept any `ObjectSelect`. That the subquery selects a
+     single column is checked when the query is translated, for the fluent, the factory and the parsed forms alike.
+     A query of the root objects stands for their ids, e.g. `Painting.ARTIST.in(ObjectSelect.query(Artist.class))`,
+     provided the PK of the entity is a single column.
    * `isColumnQuery()` and `isSingleColumn()` are added to `ObjectSelect` to inspect the shape of a query, e.g. one
      returned by `SelectQueryDescriptor.getParsedQuery()`. The getters of the execution settings
      (`getCacheStrategy()`, `getCacheGroup()`, `getPageSize()`, `getStatementFetchSize()`, `getQueryTimeout()`,

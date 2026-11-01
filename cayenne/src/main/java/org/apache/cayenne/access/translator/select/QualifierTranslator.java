@@ -64,6 +64,11 @@ import org.apache.cayenne.exp.AggregateConditionExp;
 import org.apache.cayenne.exp.PatternMatchExp;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.exp.property.Property;
+import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.exp.property.PropertyFactory;
+import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.query.ResultSegments;
+import org.apache.cayenne.query.resolved.ResolvedSelect;
 import org.apache.cayenne.exp.AddExp;
 import org.apache.cayenne.exp.AllExp;
 import org.apache.cayenne.exp.AnyExp;
@@ -363,9 +368,13 @@ class QualifierTranslator implements TraversalHandler {
             case AllExp e -> new FunctionNode("ALL", null, false);
             case AnyExp e -> new FunctionNode("ANY", null, false);
             case SubqueryExp subquery -> {
+                ResolvedSelect resolvedSubquery = subquery.getQuery().resolve(context.getResolver());
+                if (parentNode instanceof AllExp || parentNode instanceof AnyExp
+                        || parentNode instanceof InExp || parentNode instanceof NotInExp) {
+                    resolvedSubquery = singleColumnSubquery(resolvedSubquery, parentNode, context.getResolver());
+                }
                 SelectTranslatorContext subContext = new SelectTranslatorContext(
-                        subquery.getQuery().resolve(context.getResolver()), context.getAdapter(), context.getResolver(),
-                        context);
+                        resolvedSubquery, context.getAdapter(), context.getResolver(), context);
                 // skip SQL translation stage for nested translators, it should be performed by root context only
                 subContext.setSkipSQLGeneration(true);
                 subContext.translate();
@@ -396,6 +405,82 @@ class QualifierTranslator implements TraversalHandler {
             case WhenExp e -> new WhenNode();
             case ThenExp e -> new ThenNode();
             case ElseExp e -> new ElseNode();
+        };
+    }
+
+    /**
+     * A subquery compared to a value with IN, ALL or ANY must select exactly one column. A subquery of the root
+     * objects stands for their ids, so it is turned into a subquery of the PK column, provided the PK is a single
+     * column.
+     */
+    private static ResolvedSelect singleColumnSubquery(
+            ResolvedSelect subquery,
+            Expression comparison,
+            EntityResolver resolver) {
+
+        ResultSegments segments = subquery.resultSegments();
+
+        // a column query is used as is, if it has a single column
+        if (segments != null) {
+            if (segments.segments().size() == 1) {
+                return subquery;
+            }
+            throw new CayenneRuntimeException("""
+                    A subquery of %s must select a single column, e.g. with column(..), but this one selects %d \
+                    columns: %s""", operator(comparison), segments.segments().size(), subquery.source());
+        }
+
+        // a query of the root objects stands for their ids
+        Collection<DbAttribute> pks = subquery.dbEntity().getPrimaryKeys();
+        if (pks.size() != 1) {
+            throw new CayenneRuntimeException("""
+                    A subquery of %s must select a single column. This one selects the root objects, which can't \
+                    stand for their ids, as the PK of %s has %d columns: %s""",
+                    operator(comparison), subquery.dbEntity().getName(), pks.size(), subquery.source());
+        }
+
+        Property<?> pk = PropertyFactory.createBase(ExpressionFactory.dbPathExp(pks.iterator().next().getName()), null);
+        return withColumn(subquery, pk, resolver);
+    }
+
+    /**
+     * Returns a copy of a resolved select that selects the given single column instead of the root objects, with all
+     * the other inputs unchanged.
+     */
+    private static ResolvedSelect withColumn(ResolvedSelect select, Property<?> column, EntityResolver resolver) {
+        ResolvedSelect.Builder builder = ResolvedSelect.builder()
+                .source(select.source())
+                .where(select.where())
+                .having(select.having())
+                .orderings(select.orderings())
+                .columns(List.of(column), true)
+                .distinct(select.distinct())
+                .suppressingDistinct(select.suppressingDistinct())
+                .fetchingDataRows(select.fetchingDataRows())
+                .fetchLimit(select.fetchLimit())
+                .fetchOffset(select.fetchOffset())
+                .pageSize(select.pageSize())
+                .statementFetchSize(select.statementFetchSize())
+                .queryTimeout(select.queryTimeout())
+                .cacheStrategy(select.cacheStrategy())
+                .cacheGroup(select.cacheGroup())
+                .prefetchTree(select.prefetchTree());
+
+        if (select.objEntity() != null) {
+            builder.entityName(select.objEntity().getName());
+        } else {
+            builder.dbEntityName(select.dbEntity().getName());
+        }
+        return builder.build(resolver);
+    }
+
+    private static String operator(Expression comparison) {
+        return switch (comparison) {
+            case InExp e -> "IN";
+            case NotInExp e -> "NOT IN";
+            case AllExp e -> "ALL";
+            case AnyExp e -> "ANY";
+            default -> comparison.getClass().getSimpleName();
         };
     }
 
