@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.SelectQueryDescriptor;
+import org.apache.cayenne.map.NamedSelectQuery;
 import org.apache.cayenne.modeler.toolkit.text.QueryStatusLine;
 
 /**
@@ -38,7 +38,7 @@ class QLStatusLine extends QueryStatusLine {
      *
      * @param problems the problems found in the query, empty if there are none
      */
-    void update(SelectQueryDescriptor query, List<String> problems) {
+    void update(NamedSelectQuery query, List<String> problems) {
         if (query == null) {
             clear();
         } else if (!problems.isEmpty()) {
@@ -55,7 +55,7 @@ class QLStatusLine extends QueryStatusLine {
     /**
      * Returns a description of the objects that a valid query returns.
      */
-    static String resultType(SelectQueryDescriptor query) {
+    static String resultType(NamedSelectQuery query) {
         return switch (query.getResultKind()) {
             case ENTITY -> ((ObjEntity) query.getRoot()).getName();
             case DATA_ROW -> "DataRow (" + ((Entity<?, ?, ?>) query.getRoot()).getName() + ")";

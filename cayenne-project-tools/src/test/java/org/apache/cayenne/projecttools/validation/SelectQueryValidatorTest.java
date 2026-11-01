@@ -26,7 +26,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.map.SelectQueryDescriptor;
+import org.apache.cayenne.map.NamedSelectQuery;
 import org.apache.cayenne.validation.ValidationFailure;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -111,11 +111,11 @@ public class SelectQueryValidatorTest {
     }
 
     private List<String> validate(String ql) {
-        SelectQueryDescriptor query = new SelectQueryDescriptor();
+        NamedSelectQuery query = new NamedSelectQuery();
         query.setName("q");
         query.setQl(ql);
-        map.removeQueryDescriptor("q");
-        map.addQueryDescriptor(query);
+        map.removeNamedQuery("q");
+        map.addNamedQuery(query);
 
         return new DefaultProjectValidator().validate(query).getFailures().stream()
                 .map(ValidationFailure::getDescription)

@@ -50,15 +50,15 @@ public class DataMapTest {
         map.addObjEntity(artist);
         map.addObjEntity(new ObjEntity("Painting"));
 
-        SelectQueryDescriptor rooted = selectQuery("rooted", "from Artist\nwhere name = $name");
-        SelectQueryDescriptor subquery = selectQuery("subquery",
+        NamedSelectQuery rooted = selectQuery("rooted", "from Artist\nwhere name = $name");
+        NamedSelectQuery subquery = selectQuery("subquery",
                 "from Painting where exists (from Artist where artist = enclosing(self))");
-        SelectQueryDescriptor unrelated = selectQuery("unrelated", "from Painting where artist.name = 'Artist'");
-        SelectQueryDescriptor invalid = selectQuery("invalid", "from Artist where");
-        map.addQueryDescriptor(rooted);
-        map.addQueryDescriptor(subquery);
-        map.addQueryDescriptor(unrelated);
-        map.addQueryDescriptor(invalid);
+        NamedSelectQuery unrelated = selectQuery("unrelated", "from Painting where artist.name = 'Artist'");
+        NamedSelectQuery invalid = selectQuery("invalid", "from Artist where");
+        map.addNamedQuery(rooted);
+        map.addNamedQuery(subquery);
+        map.addNamedQuery(unrelated);
+        map.addNamedQuery(invalid);
 
         map.renameObjEntity(artist, "Painter");
 
@@ -78,10 +78,10 @@ public class DataMapTest {
         map.addDbEntity(table);
         map.addObjEntity(new ObjEntity("ARTIST"));
 
-        SelectQueryDescriptor db = selectQuery("db", "from db:ARTIST where NAME = 'a'");
-        SelectQueryDescriptor obj = selectQuery("obj", "from ARTIST where NAME = 'a'");
-        map.addQueryDescriptor(db);
-        map.addQueryDescriptor(obj);
+        NamedSelectQuery db = selectQuery("db", "from db:ARTIST where NAME = 'a'");
+        NamedSelectQuery obj = selectQuery("obj", "from ARTIST where NAME = 'a'");
+        map.addNamedQuery(db);
+        map.addNamedQuery(obj);
 
         map.renameDbEntity(table, "PAINTER");
 
@@ -104,14 +104,14 @@ public class DataMapTest {
         mapA.addObjEntity(artist);
         mapB.addObjEntity(new ObjEntity("Painting"));
 
-        SelectQueryDescriptor inA = selectQuery("inA", "from Artist");
-        SelectQueryDescriptor inB = selectQuery("inB",
+        NamedSelectQuery inA = selectQuery("inA", "from Artist");
+        NamedSelectQuery inB = selectQuery("inB",
                 "from Artist where exists (from Painting where artist = enclosing(self))");
-        SelectQueryDescriptor subqueryInB = selectQuery("subqueryInB",
+        NamedSelectQuery subqueryInB = selectQuery("subqueryInB",
                 "from Painting where exists (from Artist where artist = enclosing(self))");
-        mapA.addQueryDescriptor(inA);
-        mapB.addQueryDescriptor(inB);
-        mapB.addQueryDescriptor(subqueryInB);
+        mapA.addNamedQuery(inA);
+        mapB.addNamedQuery(inB);
+        mapB.addNamedQuery(subqueryInB);
 
         mapA.renameObjEntity(artist, "Painter");
 
@@ -133,10 +133,10 @@ public class DataMapTest {
         mapA.addDbEntity(table);
         mapB.addObjEntity(new ObjEntity("ARTIST"));
 
-        SelectQueryDescriptor db = selectQuery("db", "from db:ARTIST where NAME = 'a'");
-        SelectQueryDescriptor obj = selectQuery("obj", "from ARTIST where NAME = 'a'");
-        mapB.addQueryDescriptor(db);
-        mapB.addQueryDescriptor(obj);
+        NamedSelectQuery db = selectQuery("db", "from db:ARTIST where NAME = 'a'");
+        NamedSelectQuery obj = selectQuery("obj", "from ARTIST where NAME = 'a'");
+        mapB.addNamedQuery(db);
+        mapB.addNamedQuery(obj);
 
         mapA.renameDbEntity(table, "PAINTER");
 
@@ -146,15 +146,15 @@ public class DataMapTest {
     }
 
     @Test
-    public void removeQueryDescriptorDetachesIt() {
+    public void removeNamedQueryDetachesIt() {
         DataMap map = new DataMap("map");
-        SelectQueryDescriptor query = selectQuery("q", "from Artist");
-        map.addQueryDescriptor(query);
+        NamedSelectQuery query = selectQuery("q", "from Artist");
+        map.addNamedQuery(query);
         assertSame(map, query.getDataMap());
 
-        map.removeQueryDescriptor("q");
+        map.removeNamedQuery("q");
         assertNull(query.getDataMap());
-        assertNull(map.getQueryDescriptor("q"));
+        assertNull(map.getNamedQuery("q"));
     }
 
     @Test
@@ -346,33 +346,33 @@ public class DataMapTest {
     }
 
     @Test
-    public void addQueryDescriptor() {
-        QueryDescriptor q = new SelectQueryDescriptor();
+    public void addNamedQuery() {
+        NamedQuery q = new NamedSelectQuery();
         q.setName("a");
         DataMap map = new DataMap();
-        map.addQueryDescriptor(q);
-        assertSame(q, map.getQueryDescriptor("a"));
+        map.addNamedQuery(q);
+        assertSame(q, map.getNamedQuery("a"));
     }
 
     @Test
-    public void removeQueryDescriptor() {
-        QueryDescriptor q = new SelectQueryDescriptor();
+    public void removeNamedQuery() {
+        NamedQuery q = new NamedSelectQuery();
         q.setName("a");
 
         DataMap map = new DataMap();
-        map.addQueryDescriptor(q);
-        assertSame(q, map.getQueryDescriptor("a"));
-        map.removeQueryDescriptor("a");
-        assertNull(map.getQueryDescriptor("a"));
+        map.addNamedQuery(q);
+        assertSame(q, map.getNamedQuery("a"));
+        map.removeNamedQuery("a");
+        assertNull(map.getNamedQuery("a"));
     }
 
     @Test
     public void getQueryMap() {
-        QueryDescriptor q = new SelectQueryDescriptor();
+        NamedQuery q = new NamedSelectQuery();
         q.setName("a");
         DataMap map = new DataMap();
-        map.addQueryDescriptor(q);
-        Map<String, QueryDescriptor> queries = map.getQueryDescriptorMap();
+        map.addNamedQuery(q);
+        Map<String, NamedQuery> queries = map.getNamedQueryMap();
         assertEquals(1, queries.size());
         assertSame(q, queries.get("a"));
     }
@@ -453,8 +453,8 @@ public class DataMapTest {
         }
     }
 
-    private static SelectQueryDescriptor selectQuery(String name, String ql) {
-        SelectQueryDescriptor query = new SelectQueryDescriptor();
+    private static NamedSelectQuery selectQuery(String name, String ql) {
+        NamedSelectQuery query = new NamedSelectQuery();
         query.setName(name);
         query.setQl(ql);
         return query;

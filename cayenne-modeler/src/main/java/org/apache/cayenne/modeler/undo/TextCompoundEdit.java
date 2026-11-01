@@ -23,8 +23,8 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.SQLQueryDescriptor;
-import org.apache.cayenne.map.SelectQueryDescriptor;
+import org.apache.cayenne.map.NamedSQLQuery;
+import org.apache.cayenne.map.NamedSelectQuery;
 import org.apache.cayenne.modeler.ui.project.ProjectView;
 import org.apache.cayenne.modeler.ui.project.editor.EditorPanelView;
 import org.apache.cayenne.modeler.ui.project.editor.query.sqltemplate.SQLTemplateTabbedView;
@@ -101,11 +101,11 @@ public class TextCompoundEdit extends CompoundEdit {
             tabbedPane = editorPanel.getEmbeddableView();
         }
 
-        if (targetObject instanceof SelectQueryDescriptor) {
+        if (targetObject instanceof NamedSelectQuery) {
             tabbedPane = editorPanel.getSelectQueryView();
         }
 
-        if (targetObject instanceof SQLQueryDescriptor) {
+        if (targetObject instanceof NamedSQLQuery) {
             tabbedPane = editorPanel.getSqlTemplateView();
 
             if (tabbedPane != null) {

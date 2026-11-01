@@ -26,8 +26,8 @@ import javax.swing.JCheckBox;
 import org.apache.cayenne.modeler.toolkit.checkbox.CMCheckBox;
 import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
 import org.apache.cayenne.modeler.project.ProjectSession;
-import org.apache.cayenne.map.QueryDescriptor;
-import org.apache.cayenne.map.SelectQueryDescriptor;
+import org.apache.cayenne.map.NamedQuery;
+import org.apache.cayenne.map.NamedSelectQuery;
 import org.apache.cayenne.modeler.ui.project.editor.EditorForm;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -37,7 +37,7 @@ import com.jgoodies.forms.layout.FormLayout;
 /**
  * A panel that supports editing the properties of an ObjectSelect query that are not a part of its query String.
  */
-public class ObjectQueryPropertiesPanel extends SelectPropertiesPanel<SelectQueryDescriptor> {
+public class ObjectQueryPropertiesPanel extends SelectPropertiesPanel<NamedSelectQuery> {
 
     private static final String DATA_ROWS_TOOLTIP = "A column query or a query rooted in a DbEntity fetches no objects";
 
@@ -45,7 +45,7 @@ public class ObjectQueryPropertiesPanel extends SelectPropertiesPanel<SelectQuer
     protected CMUndoableTextField statementFetchSize;
 
     public ObjectQueryPropertiesPanel(ProjectSession session) {
-        super(session, SelectQueryDescriptor.class);
+        super(session, NamedSelectQuery.class);
     }
 
     protected void initView() {
@@ -82,12 +82,12 @@ public class ObjectQueryPropertiesPanel extends SelectPropertiesPanel<SelectQuer
     protected void initController() {
         super.initController();
 
-        dataRows.addItemListener(e -> setQueryProperty(QueryDescriptor::isFetchingDataRows,
-                QueryDescriptor::setFetchingDataRows, dataRows.isSelected()));
+        dataRows.addItemListener(e -> setQueryProperty(NamedQuery::isFetchingDataRows,
+                NamedQuery::setFetchingDataRows, dataRows.isSelected()));
     }
 
     void setStatementFetchSize(String string) {
-        setQueryProperty(QueryDescriptor::getStatementFetchSize, QueryDescriptor::setStatementFetchSize,
+        setQueryProperty(NamedQuery::getStatementFetchSize, NamedQuery::setStatementFetchSize,
                 intValue(string, "Statement fetch size"));
     }
 
@@ -96,7 +96,7 @@ public class ObjectQueryPropertiesPanel extends SelectPropertiesPanel<SelectQuer
      * query is changed.
      */
     @Override
-    public void initFromModel(SelectQueryDescriptor query) {
+    public void initFromModel(NamedSelectQuery query) {
         super.initFromModel(query);
 
         dataRows.setSelected(query.isFetchingDataRows());
@@ -107,7 +107,7 @@ public class ObjectQueryPropertiesPanel extends SelectPropertiesPanel<SelectQuer
     /**
      * Enables the "Fetch Data Rows" option only for the queries that fetch objects, which the query String defines.
      */
-    public void updateDataRowsEnabled(SelectQueryDescriptor query) {
+    public void updateDataRowsEnabled(NamedSelectQuery query) {
         boolean fetchesObjects = !query.isColumnQuery() && !query.isDbQuery();
         dataRows.setEnabled(fetchesObjects);
         dataRows.setToolTipText(fetchesObjects ? null : DATA_ROWS_TOOLTIP);

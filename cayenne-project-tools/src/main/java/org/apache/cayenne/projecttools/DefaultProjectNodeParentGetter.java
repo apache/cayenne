@@ -32,7 +32,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
-import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.map.NamedQuery;
 
 public class DefaultProjectNodeParentGetter implements ProjectNodeParentGetter {
 
@@ -104,7 +104,7 @@ public class DefaultProjectNodeParentGetter implements ProjectNodeParentGetter {
         }
 
         @Override
-        public ProjectNode visitQuery(QueryDescriptor query) {
+        public ProjectNode visitQuery(NamedQuery query) {
             return query.getDataMap();
         }
     }

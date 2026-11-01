@@ -25,7 +25,7 @@ import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.UIManager;
 
-import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.map.NamedQuery;
 import org.apache.cayenne.modeler.event.model.QueryEvent;
 import org.apache.cayenne.modeler.pref.adapters.SplitPanePrefs;
 import org.apache.cayenne.modeler.project.ProjectSession;
@@ -43,7 +43,7 @@ import com.jgoodies.forms.layout.FormLayout;
  * next to it, take all the height that the form below them doesn't need. The form has the query name, the properties
  * of the query that are not a part of the text, and the comment.
  */
-public abstract class TextQueryView<Q extends QueryDescriptor> extends BaseQueryMainTab {
+public abstract class TextQueryView<Q extends NamedQuery> extends BaseQueryMainTab {
 
     private static final int DEFAULT_SPLIT_LOCATION = 520;
 

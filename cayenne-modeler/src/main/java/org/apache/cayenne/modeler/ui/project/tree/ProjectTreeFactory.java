@@ -117,7 +117,7 @@ class ProjectTreeFactory {
                     .sorted(ProjectComparators.forDataMapChildren())
                     .forEach(e -> makeNode(e));
 
-            dataMap.getQueryDescriptors().stream()
+            dataMap.getNamedQueries().stream()
                     .sorted(ProjectComparators.forDataMapChildren())
                     .forEach(e -> makeNode(e));
 

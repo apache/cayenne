@@ -22,10 +22,10 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import org.apache.cayenne.exp.ExpressionException;
-import org.apache.cayenne.map.SelectQueryDescriptor;
+import org.apache.cayenne.map.NamedSelectQuery;
 import org.apache.cayenne.validation.ValidationResult;
 
-class SelectQueryValidator extends BaseQueryValidator<SelectQueryDescriptor> {
+class SelectQueryValidator extends BaseQueryValidator<NamedSelectQuery> {
 
     /**
      * @param configSupplier the config defining the behavior of this validator.
@@ -36,8 +36,8 @@ class SelectQueryValidator extends BaseQueryValidator<SelectQueryDescriptor> {
     }
 
     @Override
-    public void validate(SelectQueryDescriptor node, ValidationResult validationResult) {
-        ProjectNodeValidator<SelectQueryDescriptor>.Performer<SelectQueryDescriptor> performer =
+    public void validate(NamedSelectQuery node, ValidationResult validationResult) {
+        ProjectNodeValidator<NamedSelectQuery>.Performer<NamedSelectQuery> performer =
                 validateQuery(node, validationResult);
 
         if (node.getQl() == null || node.getQl().isBlank()) {
@@ -64,7 +64,7 @@ class SelectQueryValidator extends BaseQueryValidator<SelectQueryDescriptor> {
         }
     }
 
-    private void checkSyntax(SelectQueryDescriptor query, ValidationResult validationResult) {
+    private void checkSyntax(NamedSelectQuery query, ValidationResult validationResult) {
         try {
             query.getParsedQuery();
         } catch (ExpressionException e) {

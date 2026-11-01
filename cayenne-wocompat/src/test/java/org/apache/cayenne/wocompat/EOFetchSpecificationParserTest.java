@@ -21,8 +21,8 @@ package org.apache.cayenne.wocompat;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.QueryDescriptor;
-import org.apache.cayenne.map.SelectQueryDescriptor;
+import org.apache.cayenne.map.NamedQuery;
+import org.apache.cayenne.map.NamedSelectQuery;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.PrefetchTreeNode;
@@ -50,12 +50,12 @@ public class EOFetchSpecificationParserTest {
 
         DataMap map = new EOModelProcessor().loadEOModel(url);
 
-        QueryDescriptor descriptor = map.getQueryDescriptor("Entity1_E1FS1");
-        assertNotNull(descriptor);
-        SelectQueryDescriptor selectDescriptor = assertInstanceOf(SelectQueryDescriptor.class, descriptor);
-        assertSame(map.getObjEntity("Entity1"), selectDescriptor.getRoot());
+        NamedQuery namedQuery = map.getNamedQuery("Entity1_E1FS1");
+        assertNotNull(namedQuery);
+        NamedSelectQuery namedSelectQuery = assertInstanceOf(NamedSelectQuery.class, namedQuery);
+        assertSame(map.getObjEntity("Entity1"), namedSelectQuery.getRoot());
 
-        ObjectSelect<?> query = selectDescriptor.buildQuery();
+        ObjectSelect<?> query = namedSelectQuery.buildQuery();
 
         assertNotNull(query.getWhere());
         assertEquals(

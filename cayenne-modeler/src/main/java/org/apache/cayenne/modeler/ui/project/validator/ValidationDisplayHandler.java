@@ -27,7 +27,7 @@ import org.apache.cayenne.map.EmbeddableAttribute;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
-import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.map.NamedQuery;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.validation.ValidationFailure;
@@ -77,7 +77,7 @@ public abstract class ValidationDisplayHandler {
         else if (validatedObj instanceof ProcedureParameter) {
             msg = new ProcedureParameterErrorMsg(result);
         }
-        else if (validatedObj instanceof QueryDescriptor) {
+        else if (validatedObj instanceof NamedQuery) {
             msg = new QueryErrorMsg(result);
         }
         else {

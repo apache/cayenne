@@ -34,11 +34,11 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class SQLQueryDescriptorTest {
+public class NamedSQLQueryTest {
 
     @Test
     public void getQueryType() throws Exception {
-        SQLQueryDescriptor builder = new SQLQueryDescriptor();
+        NamedSQLQuery builder = new NamedSQLQuery();
         assertTrue(builder.buildQuery() instanceof SQLQuery);
     }
 
@@ -51,7 +51,7 @@ public class SQLQueryDescriptorTest {
         entity.setDbEntity(table);
         map.addObjEntity(entity);
 
-        SQLQueryDescriptor builder = new SQLQueryDescriptor();
+        NamedSQLQuery builder = new NamedSQLQuery();
         builder.setRoot(entity);
 
         ResolvedQuery metadata = builder.buildQuery().resolve(new EntityResolver(List.of(map)));
@@ -63,7 +63,7 @@ public class SQLQueryDescriptorTest {
     public void getQueryRootDataMap() throws Exception {
         DataMap map = new DataMap("m");
 
-        SQLQueryDescriptor builder = new SQLQueryDescriptor();
+        NamedSQLQuery builder = new NamedSQLQuery();
         builder.setRoot(map);
 
         ResolvedQuery metadata = builder.buildQuery().resolve(new EntityResolver(List.of(map)));
@@ -73,14 +73,14 @@ public class SQLQueryDescriptorTest {
 
     @Test
     public void getQueryRootUnsupported() throws Exception {
-        SQLQueryDescriptor builder = new SQLQueryDescriptor();
+        NamedSQLQuery builder = new NamedSQLQuery();
         builder.setRoot(new DbEntity("T"));
         assertThrows(CayenneRuntimeException.class, builder::buildQuery);
     }
 
     @Test
     public void getQueryProperties() throws Exception {
-        SQLQueryDescriptor builder = new SQLQueryDescriptor();
+        NamedSQLQuery builder = new NamedSQLQuery();
         builder.setPageSize(10);
         builder.setStatementFetchSize(6);
         builder.setFetchingDataRows(true);
@@ -99,7 +99,7 @@ public class SQLQueryDescriptorTest {
 
     @Test
     public void getQueryPropertiesDefaults() throws Exception {
-        ResolvedSQL resolved = new SQLQueryDescriptor().buildQuery().resolve(new EntityResolver());
+        ResolvedSQL resolved = new NamedSQLQuery().buildQuery().resolve(new EntityResolver());
         assertEquals(0, resolved.fetchLimit());
         assertEquals(0, resolved.fetchOffset());
         assertEquals(0, resolved.pageSize());
@@ -113,7 +113,7 @@ public class SQLQueryDescriptorTest {
 
     @Test
     public void getQuerySql() throws Exception {
-        SQLQueryDescriptor builder = new SQLQueryDescriptor();
+        NamedSQLQuery builder = new NamedSQLQuery();
         builder.setSql("abc");
 
         assertEquals("abc", builder.buildQuery().resolve(new EntityResolver()).defaultTemplate());
@@ -121,7 +121,7 @@ public class SQLQueryDescriptorTest {
 
     @Test
     public void buildQueryWithParameters() {
-        SQLQueryDescriptor builder = new SQLQueryDescriptor();
+        NamedSQLQuery builder = new NamedSQLQuery();
         builder.setSql("SELECT * FROM ARTIST WHERE ARTIST_NAME = #bind($name)");
 
         Map<String, Object> params = Map.of("name", "artist1");
@@ -130,7 +130,7 @@ public class SQLQueryDescriptorTest {
 
     @Test
     public void getQueryAdapterSql() throws Exception {
-        SQLQueryDescriptor builder = new SQLQueryDescriptor();
+        NamedSQLQuery builder = new NamedSQLQuery();
         builder.getAdapterSql().put("adapter", "abc");
 
         ResolvedSQL resolved = builder.buildQuery().resolve(new EntityResolver());

@@ -25,7 +25,7 @@ import org.apache.cayenne.project.Project;
 import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.map.NamedQuery;
 import org.apache.cayenne.modeler.event.display.QueryDisplayEvent;
 import org.apache.cayenne.modeler.event.model.QueryEvent;
 import org.apache.cayenne.modeler.toolkit.buttons.CMButtonPanel;
@@ -38,9 +38,9 @@ import javax.swing.JButton;
 import javax.swing.JRadioButton;
 import java.awt.BorderLayout;
 import java.awt.Window;
-import org.apache.cayenne.map.SelectQueryDescriptor;
-import org.apache.cayenne.map.ProcedureQueryDescriptor;
-import org.apache.cayenne.map.SQLQueryDescriptor;
+import org.apache.cayenne.map.NamedSelectQuery;
+import org.apache.cayenne.map.NamedProcedureQuery;
+import org.apache.cayenne.map.NamedSQLQuery;
 
 /**
  * Modal dialog for picking the type of new query (Select, SQL Query, Procedure)
@@ -83,7 +83,7 @@ public class QueryTypeDialog extends ProjectDialog {
      * Fires the standard "query added" notification sequence on the given session.
      * Used both internally on Create, and externally by paste handling.
      */
-    public static void fireQueryEvent(Object src, ProjectSession session, DataMap dataMap, QueryDescriptor query) {
+    public static void fireQueryEvent(Object src, ProjectSession session, DataMap dataMap, NamedQuery query) {
         session.fireQueryEvent(QueryEvent.ofAdd(src, query, dataMap));
         session.displayQuery(new QueryDisplayEvent(src,
                 session.project(),
@@ -114,11 +114,11 @@ public class QueryTypeDialog extends ProjectDialog {
     }
 
     private void createQuery() {
-        QueryDescriptor query = newQuery();
+        NamedQuery query = newQuery();
         query.setName(NameBuilder.of(query, dataMap).build());
         query.setDataMap(dataMap);
 
-        dataMap.addQueryDescriptor(query);
+        dataMap.addNamedQuery(query);
 
         app.getUndoManager().addEdit(new CreateQueryUndoableEdit(session, project, dataMap, query));
 
@@ -126,12 +126,12 @@ public class QueryTypeDialog extends ProjectDialog {
         dispose();
     }
 
-    private QueryDescriptor newQuery() {
-        if (sqlSelect.isSelected()) return new SQLQueryDescriptor();
-        if (procedureSelect.isSelected()) return new ProcedureQueryDescriptor();
+    private NamedQuery newQuery() {
+        if (sqlSelect.isSelected()) return new NamedSQLQuery();
+        if (procedureSelect.isSelected()) return new NamedProcedureQuery();
 
         // start the query String with the selected entity, if any
-        SelectQueryDescriptor query = new SelectQueryDescriptor();
+        NamedSelectQuery query = new NamedSelectQuery();
         ObjEntity entity = session.getSelectedObjEntity();
         if (entity != null && entity.getDataMap() == dataMap) {
             query.setQl("from " + entity.getName());

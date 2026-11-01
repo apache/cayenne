@@ -20,7 +20,7 @@ package org.apache.cayenne.project.xml;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Procedure;
-import org.apache.cayenne.map.ProcedureQueryDescriptor;
+import org.apache.cayenne.map.NamedProcedureQuery;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ProcedureQueryDescriptorHandlerTest extends BaseHandlerTest {
+public class NamedProcedureQueryHandlerTest extends BaseHandlerTest {
 
     private DataMap map;
 
@@ -37,9 +37,9 @@ public class ProcedureQueryDescriptorHandlerTest extends BaseHandlerTest {
         map = new DataMap("map");
     }
 
-    private ProcedureQueryDescriptor parseQuery(String xml) throws Exception {
-        parse("procedureQuery", xml, parent -> new ProcedureQueryDescriptorHandler(parent, map));
-        return (ProcedureQueryDescriptor) map.getQueryDescriptor("q");
+    private NamedProcedureQuery parseQuery(String xml) throws Exception {
+        parse("procedureQuery", xml, parent -> new NamedProcedureQueryHandler(parent, map));
+        return (NamedProcedureQuery) map.getNamedQuery("q");
     }
 
     @Test
@@ -47,7 +47,7 @@ public class ProcedureQueryDescriptorHandlerTest extends BaseHandlerTest {
         Procedure procedure = new Procedure("P1");
         map.addProcedure(procedure);
 
-        ProcedureQueryDescriptor descriptor = parseQuery("""
+        NamedProcedureQuery namedQuery = parseQuery("""
                 <procedureQuery name="q" root="procedure" rootName="P1" resultEntity="Artist"
                                 cacheStrategy="LOCAL_CACHE" dataRows="true" pageSize="5" statementFetchSize="7"
                                 fetchLimit="10" fetchOffset="20" columnNameCapitalization="upper">
@@ -55,31 +55,31 @@ public class ProcedureQueryDescriptorHandlerTest extends BaseHandlerTest {
                 </procedureQuery>
                 """);
 
-        assertEquals("q", descriptor.getName());
-        assertSame(map, descriptor.getDataMap());
-        assertSame(procedure, descriptor.getRoot());
-        assertEquals("Artist", descriptor.getResultEntityName());
-        assertEquals(QueryCacheStrategy.LOCAL_CACHE, descriptor.getCacheStrategy());
-        assertEquals("g", descriptor.getCacheGroup());
-        assertTrue(descriptor.isFetchingDataRows());
-        assertEquals(5, descriptor.getPageSize());
-        assertEquals(7, descriptor.getStatementFetchSize());
-        assertEquals(10, descriptor.getFetchLimit());
-        assertEquals(20, descriptor.getFetchOffset());
-        assertEquals(CapsStrategy.UPPER, descriptor.getColumnNamesCapitalization());
+        assertEquals("q", namedQuery.getName());
+        assertSame(map, namedQuery.getDataMap());
+        assertSame(procedure, namedQuery.getRoot());
+        assertEquals("Artist", namedQuery.getResultEntityName());
+        assertEquals(QueryCacheStrategy.LOCAL_CACHE, namedQuery.getCacheStrategy());
+        assertEquals("g", namedQuery.getCacheGroup());
+        assertTrue(namedQuery.isFetchingDataRows());
+        assertEquals(5, namedQuery.getPageSize());
+        assertEquals(7, namedQuery.getStatementFetchSize());
+        assertEquals(10, namedQuery.getFetchLimit());
+        assertEquals(20, namedQuery.getFetchOffset());
+        assertEquals(CapsStrategy.UPPER, namedQuery.getColumnNamesCapitalization());
     }
 
     @Test
     public void procedureQueryMinimal() throws Exception {
-        ProcedureQueryDescriptor descriptor = parseQuery("""
+        NamedProcedureQuery namedQuery = parseQuery("""
                 <procedureQuery name="q"/>
                 """);
 
-        assertSame(map, descriptor.getRoot());
-        assertNull(descriptor.getResultEntityName());
-        assertEquals(0, descriptor.getFetchLimit());
-        assertEquals(0, descriptor.getFetchOffset());
-        assertNull(descriptor.getColumnNamesCapitalization());
+        assertSame(map, namedQuery.getRoot());
+        assertNull(namedQuery.getResultEntityName());
+        assertEquals(0, namedQuery.getFetchLimit());
+        assertEquals(0, namedQuery.getFetchOffset());
+        assertNull(namedQuery.getColumnNamesCapitalization());
     }
 
     @Test

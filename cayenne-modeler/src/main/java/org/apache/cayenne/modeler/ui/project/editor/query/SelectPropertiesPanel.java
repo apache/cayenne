@@ -36,7 +36,7 @@ import org.apache.cayenne.modeler.toolkit.combobox.CMUndoableComboBox;
 import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.query.QueryCacheStrategy;
-import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.map.NamedQuery;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -46,7 +46,7 @@ import org.apache.cayenne.validation.ValidationException;
  * A panel that supports editing the properties of a GenericSelectQuery.
  * 
  */
-public abstract class SelectPropertiesPanel<Q extends QueryDescriptor> extends ProjectPanel {
+public abstract class SelectPropertiesPanel<Q extends NamedQuery> extends ProjectPanel {
 
     private static final String NO_CACHE_LABEL = "No Result Caching";
     private static final String LOCAL_CACHE_LABEL = "Local Cache (per ObjectContext)";
@@ -101,7 +101,7 @@ public abstract class SelectPropertiesPanel<Q extends QueryDescriptor> extends P
     protected void initController() {
         cacheStrategy.addActionListener(event -> {
             QueryCacheStrategy strategy = (QueryCacheStrategy) cacheStrategy.getModel().getSelectedItem();
-            setQueryProperty(QueryDescriptor::getCacheStrategy, QueryDescriptor::setCacheStrategy, strategy);
+            setQueryProperty(NamedQuery::getCacheStrategy, NamedQuery::setCacheStrategy, strategy);
             setCacheGroupsEnabled(strategy != QueryCacheStrategy.NO_CACHE);
         });
     }
@@ -132,12 +132,12 @@ public abstract class SelectPropertiesPanel<Q extends QueryDescriptor> extends P
     }
 
     void setPageSize(String string) {
-        setQueryProperty(QueryDescriptor::getPageSize, QueryDescriptor::setPageSize, intValue(string, "Page size"));
+        setQueryProperty(NamedQuery::getPageSize, NamedQuery::setPageSize, intValue(string, "Page size"));
     }
 
     void setCacheGroups(String string) {
         string = (string == null) ? "" : string.trim();
-        setQueryProperty(QueryDescriptor::getCacheGroup, QueryDescriptor::setCacheGroup,
+        setQueryProperty(NamedQuery::getCacheGroup, NamedQuery::setCacheGroup,
                 string.isEmpty() ? null : string);
     }
 
@@ -157,7 +157,7 @@ public abstract class SelectPropertiesPanel<Q extends QueryDescriptor> extends P
      * Returns the selected query, or null if there's no selection, or the selected query is of a different type.
      */
     protected Q getQuery() {
-        QueryDescriptor query = session.getSelectedQuery();
+        NamedQuery query = session.getSelectedQuery();
         return queryType.isInstance(query) ? queryType.cast(query) : null;
     }
 

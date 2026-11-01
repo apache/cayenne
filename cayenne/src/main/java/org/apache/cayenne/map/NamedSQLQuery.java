@@ -33,7 +33,7 @@ import java.util.TreeSet;
 /**
  * @since 4.0
  */
-public class SQLQueryDescriptor extends QueryDescriptor {
+public class NamedSQLQuery extends NamedQuery {
 
     protected String sql;
     protected Map<String, Integer> prefetchesMap = new HashMap<>();
@@ -155,7 +155,7 @@ public class SQLQueryDescriptor extends QueryDescriptor {
     }
 
     /**
-     * Creates a query from the descriptor, with the given named parameters.
+     * Creates a query from this named query, with the given named parameters.
      */
     @Override
     public SQLQuery<?> buildQuery(Map<String, ?> parameters) {
@@ -174,13 +174,13 @@ public class SQLQueryDescriptor extends QueryDescriptor {
         String rootType = null;
 
         if (root instanceof String) {
-            rootType = QueryDescriptor.OBJ_ENTITY_ROOT;
+            rootType = NamedQuery.OBJ_ENTITY_ROOT;
             rootString = root.toString();
         } else if (root instanceof ObjEntity) {
-            rootType = QueryDescriptor.OBJ_ENTITY_ROOT;
+            rootType = NamedQuery.OBJ_ENTITY_ROOT;
             rootString = ((ObjEntity) root).getName();
         } else if (root instanceof DataMap) {
-            rootType = QueryDescriptor.DATA_MAP_ROOT;
+            rootType = NamedQuery.DATA_MAP_ROOT;
             rootString = ((DataMap) root).getName();
         }
 

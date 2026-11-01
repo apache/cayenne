@@ -33,7 +33,7 @@ import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
 import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.SelectQueryDescriptor;
+import org.apache.cayenne.map.NamedSelectQuery;
 import org.apache.cayenne.resource.URLResource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -128,7 +128,7 @@ public class XMLProjectLoaderTest {
         assertEquals(2, map.getDbEntity("ARTIST").getAttributes().size());
         assertEquals("org.apache.cayenne.GenericPersistentObject", map.getObjEntity("Artist").getClassName());
         assertEquals(1, map.getObjEntity("Artist").getDeclaredAttributes().size());
-        assertInstanceOf(SelectQueryDescriptor.class, map.getQueryDescriptor("ArtistQuery"));
+        assertInstanceOf(NamedSelectQuery.class, map.getNamedQuery("ArtistQuery"));
     }
 
     @Test

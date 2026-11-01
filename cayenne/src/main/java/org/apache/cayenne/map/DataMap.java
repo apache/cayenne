@@ -70,7 +70,7 @@ public class DataMap implements ProjectNode, XMLSerializable, MappingNamespace, 
     private final Map<String, ObjEntity> objEntityMap;
     private final Map<String, DbEntity> dbEntityMap;
     private final Map<String, Procedure> procedureMap;
-    private final Map<String, QueryDescriptor> queryDescriptorMap;
+    private final Map<String, NamedQuery> namedQueryMap;
 
     protected Resource configurationSource;
     protected Project project;
@@ -84,7 +84,7 @@ public class DataMap implements ProjectNode, XMLSerializable, MappingNamespace, 
         objEntityMap = new HashMap<>();
         dbEntityMap = new HashMap<>();
         procedureMap = new HashMap<>();
-        queryDescriptorMap = new HashMap<>();
+        namedQueryMap = new HashMap<>();
         defaultLockType = ObjEntity.LOCK_TYPE_NONE;
         setName(mapName);
     }
@@ -166,8 +166,8 @@ public class DataMap implements ProjectNode, XMLSerializable, MappingNamespace, 
         encodeDbRelationshipsAsXML(encoder, delegate);
         encodeObjRelationshipsAsXML(encoder, delegate);
 
-        // descriptors at the end just to keep logic from older versions
-        encoder.nested(new TreeMap<>(getQueryDescriptorMap()), delegate);
+        // named queries at the end just to keep logic from older versions
+        encoder.nested(new TreeMap<>(getNamedQueryMap()), delegate);
 
         delegate.visitDataMap(this);
         encoder.end();
@@ -231,9 +231,9 @@ public class DataMap implements ProjectNode, XMLSerializable, MappingNamespace, 
             this.addObjEntity(ent);
         }
 
-        for (QueryDescriptor query : new ArrayList<>(map.getQueryDescriptors())) {
-            this.removeQueryDescriptor(query.getName());
-            this.addQueryDescriptor(query);
+        for (NamedQuery query : new ArrayList<>(map.getNamedQueries())) {
+            this.removeNamedQuery(query.getName());
+            this.addNamedQuery(query);
         }
     }
 
@@ -272,54 +272,54 @@ public class DataMap implements ProjectNode, XMLSerializable, MappingNamespace, 
     /**
      * Returns a named query associated with this DataMap.
      *
-     * @since 4.0
+     * @since 6.0
      */
-    public QueryDescriptor getQueryDescriptor(String queryName) {
-        QueryDescriptor queryDescriptor = queryDescriptorMap.get(queryName);
-        if (queryDescriptor != null) {
-            return queryDescriptor;
+    public NamedQuery getNamedQuery(String queryName) {
+        NamedQuery namedQuery = namedQueryMap.get(queryName);
+        if (namedQuery != null) {
+            return namedQuery;
         }
 
-        return namespace != null ? namespace.getQueryDescriptor(queryName) : null;
+        return namespace != null ? namespace.getNamedQuery(queryName) : null;
     }
 
     /**
-     * Stores a query descriptor under its name.
+     * Stores a named query under its name.
      *
-     * @since 1.1
+     * @since 6.0
      */
-    public void addQueryDescriptor(QueryDescriptor queryDescriptor) {
-        if (queryDescriptor == null) {
+    public void addNamedQuery(NamedQuery namedQuery) {
+        if (namedQuery == null) {
             throw new NullPointerException("Can't add null query.");
         }
 
-        if (queryDescriptor.getName() == null) {
+        if (namedQuery.getName() == null) {
             throw new NullPointerException("Query name can't be null.");
         }
 
         // TODO: change method signature to return replaced procedure and make
         // sure the
         // Modeler handles it...
-        QueryDescriptor existingQueryDescriptor = queryDescriptorMap.get(queryDescriptor.getName());
-        if (existingQueryDescriptor != null) {
-            if (existingQueryDescriptor == queryDescriptor) {
+        NamedQuery existingNamedQuery = namedQueryMap.get(namedQuery.getName());
+        if (existingNamedQuery != null) {
+            if (existingNamedQuery == namedQuery) {
                 return;
             } else {
-                throw new IllegalArgumentException("An attempt to override entity '" + queryDescriptor.getName());
+                throw new IllegalArgumentException("An attempt to override entity '" + namedQuery.getName());
             }
         }
 
-        queryDescriptorMap.put(queryDescriptor.getName(), queryDescriptor);
-        queryDescriptor.setDataMap(this);
+        namedQueryMap.put(namedQuery.getName(), namedQuery);
+        namedQuery.setDataMap(this);
     }
 
     /**
      * Removes a named query from the DataMap.
      *
-     * @since 4.0
+     * @since 6.0
      */
-    public void removeQueryDescriptor(String queryName) {
-        QueryDescriptor removed = queryDescriptorMap.remove(queryName);
+    public void removeNamedQuery(String queryName) {
+        NamedQuery removed = namedQueryMap.remove(queryName);
         if (removed != null) {
             removed.setDataMap(null);
         }
@@ -338,7 +338,7 @@ public class DataMap implements ProjectNode, XMLSerializable, MappingNamespace, 
      * @since 1.1
      */
     public void clearQueries() {
-        queryDescriptorMap.clear();
+        namedQueryMap.clear();
     }
 
     /**
@@ -363,19 +363,19 @@ public class DataMap implements ProjectNode, XMLSerializable, MappingNamespace, 
     }
 
     /**
-     * @since 4.0
+     * @since 6.0
      */
-    public Map<String, QueryDescriptor> getQueryDescriptorMap() {
-        return Collections.unmodifiableMap(queryDescriptorMap);
+    public Map<String, NamedQuery> getNamedQueryMap() {
+        return Collections.unmodifiableMap(namedQueryMap);
     }
 
     /**
      * Returns an unmodifiable collection of mapped queries.
      *
-     * @since 4.0
+     * @since 6.0
      */
-    public Collection<QueryDescriptor> getQueryDescriptors() {
-        return Collections.unmodifiableCollection(queryDescriptorMap.values());
+    public Collection<NamedQuery> getNamedQueries() {
+        return Collections.unmodifiableCollection(namedQueryMap.values());
     }
 
     /**
@@ -519,13 +519,13 @@ public class DataMap implements ProjectNode, XMLSerializable, MappingNamespace, 
 
     // the select queries reference entities by name in their query Strings, so a rename has to follow into them
     private void renameEntityInQueries(String oldName, String newName, boolean db) {
-        Pattern reference = SelectQueryDescriptor.renamePattern(oldName, db);
+        Pattern reference = NamedSelectQuery.renamePattern(oldName, db);
         Collection<DataMap> mapList = getNamespace() instanceof EntityResolver resolver
                 ? resolver.getDataMaps()
                 : Collections.singletonList(this);
         for (DataMap map : mapList) {
-            for (QueryDescriptor query : map.queryDescriptorMap.values()) {
-                if (query instanceof SelectQueryDescriptor select) {
+            for (NamedQuery query : map.namedQueryMap.values()) {
+                if (query instanceof NamedSelectQuery select) {
                     select.renameEntity(reference, newName);
                 }
             }

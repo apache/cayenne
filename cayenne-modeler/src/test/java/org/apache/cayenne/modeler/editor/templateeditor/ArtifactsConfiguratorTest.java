@@ -29,7 +29,7 @@ import org.apache.cayenne.gen.ClassGenerationActionFactory;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.map.NamedQuery;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.templateeditor.DataMapArtefactsConfigurator;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.templateeditor.EmbeddableArtefactsConfigurator;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.templateeditor.EntityArtefactsConfigurator;
@@ -42,7 +42,7 @@ import org.slf4j.helpers.NOPLogger;
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.List;
-import org.apache.cayenne.map.SelectQueryDescriptor;
+import org.apache.cayenne.map.NamedSelectQuery;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -72,7 +72,7 @@ public class ArtifactsConfiguratorTest {
     public void configTest() throws NoSuchFieldException, IllegalAccessException {
         entityArtefactsConfigurator.config(action,"objEntity");
         embeddableArtefactsConfigurator.config(action,"embeddable");
-        dataMapArtefactsConfigurator.config(action,"queryDescriptor");
+        dataMapArtefactsConfigurator.config(action,"namedQuery");
 
         CgenConfiguration configuration = action.getConfiguration();
 
@@ -105,9 +105,9 @@ public class ArtifactsConfiguratorTest {
         Embeddable embeddable = new Embeddable("embeddable");
         dataMap.addEmbeddable(embeddable);
 
-        QueryDescriptor descriptor = new SelectQueryDescriptor();
-        descriptor.setName("queryDescriptor");
-        dataMap.addQueryDescriptor(descriptor);
+        NamedQuery namedQuery = new NamedSelectQuery();
+        namedQuery.setName("namedQuery");
+        dataMap.addNamedQuery(namedQuery);
         return dataMap;
     }
 

@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Entity;
-import org.apache.cayenne.map.SelectQueryDescriptor;
+import org.apache.cayenne.map.NamedSelectQuery;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.project.editor.query.ObjectQueryPropertiesPanel;
 import org.apache.cayenne.modeler.ui.project.editor.query.TextQueryView;
@@ -32,7 +32,7 @@ import org.apache.cayenne.modeler.ui.project.editor.query.TextQueryView;
 /**
  * An editor of an ObjectSelect query: its name, its query String, and the properties that are not a part of the String.
  */
-public class ObjectSelectView extends TextQueryView<SelectQueryDescriptor> {
+public class ObjectSelectView extends TextQueryView<NamedSelectQuery> {
 
     // the first "from" clause, outside of the quoted string literals, and the entity name that follows it, if any
     private static final Pattern FROM = Pattern.compile(
@@ -45,7 +45,7 @@ public class ObjectSelectView extends TextQueryView<SelectQueryDescriptor> {
     private final ObjectQueryPropertiesPanel properties;
 
     // the query that the path browser was last populated for
-    private SelectQueryDescriptor browserQuery;
+    private NamedSelectQuery browserQuery;
 
     public ObjectSelectView(ProjectSession session) {
         super(session);
@@ -62,7 +62,7 @@ public class ObjectSelectView extends TextQueryView<SelectQueryDescriptor> {
     }
 
     private void initFromModel() {
-        SelectQueryDescriptor query = getQuery();
+        NamedSelectQuery query = getQuery();
         if (query == null) {
             editor.setQuery(null);
             statusLine.update(null, List.of());
@@ -88,7 +88,7 @@ public class ObjectSelectView extends TextQueryView<SelectQueryDescriptor> {
 
     // a reaction to each check of the query String by the editor
     private void queryChecked(List<String> problems) {
-        SelectQueryDescriptor query = getQuery();
+        NamedSelectQuery query = getQuery();
         statusLine.update(query, problems);
         if (query != null) {
             if (query != browserQuery || query.isValid()) {
@@ -109,7 +109,7 @@ public class ObjectSelectView extends TextQueryView<SelectQueryDescriptor> {
         }
     }
 
-    private static Entity<?, ?, ?> rootEntity(SelectQueryDescriptor query) {
+    private static Entity<?, ?, ?> rootEntity(NamedSelectQuery query) {
         return query.getRoot() instanceof Entity<?, ?, ?> entity ? entity : null;
     }
 
@@ -146,7 +146,7 @@ public class ObjectSelectView extends TextQueryView<SelectQueryDescriptor> {
     }
 
     @Override
-    protected SelectQueryDescriptor getQuery() {
-        return session.getSelectedQuery() instanceof SelectQueryDescriptor query ? query : null;
+    protected NamedSelectQuery getQuery() {
+        return session.getSelectedQuery() instanceof NamedSelectQuery query ? query : null;
     }
 }

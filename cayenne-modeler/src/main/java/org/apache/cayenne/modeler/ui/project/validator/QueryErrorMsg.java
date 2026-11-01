@@ -25,7 +25,7 @@ import org.apache.cayenne.project.Project;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.event.display.QueryDisplayEvent;
-import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.map.NamedQuery;
 import org.apache.cayenne.validation.ValidationFailure;
 
 public class QueryErrorMsg extends ValidationDisplayHandler {
@@ -38,7 +38,7 @@ public class QueryErrorMsg extends ValidationDisplayHandler {
         Object object = super.validationFailure.getSource();
         Project project = session
                 .project();
-        QueryDescriptor query = (QueryDescriptor) object;
+        NamedQuery query = (NamedQuery) object;
         DataMap map = query.getDataMap();
 
         QueryDisplayEvent event = new QueryDisplayEvent(frame, project, map, query);

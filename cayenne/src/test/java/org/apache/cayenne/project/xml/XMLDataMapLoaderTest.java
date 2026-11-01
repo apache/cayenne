@@ -32,8 +32,8 @@ import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
 import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.SQLQueryDescriptor;
-import org.apache.cayenne.map.SelectQueryDescriptor;
+import org.apache.cayenne.map.NamedSQLQuery;
+import org.apache.cayenne.map.NamedSelectQuery;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.resource.URLResource;
 import org.junit.jupiter.api.BeforeEach;
@@ -91,12 +91,12 @@ public class XMLDataMapLoaderTest {
         assertEquals(2, map.getDbEntity("ARTIST").getAttributes().size());
         assertEquals("org.apache.cayenne.GenericPersistentObject", map.getObjEntity("Artist").getClassName());
 
-        SelectQueryDescriptor select = (SelectQueryDescriptor) map.getQueryDescriptor("ArtistQuery");
+        NamedSelectQuery select = (NamedSelectQuery) map.getNamedQuery("ArtistQuery");
         assertEquals("from Artist where artistName = \"a\" limit 5", select.getQl());
         assertEquals(10, select.getPageSize());
         assertEquals("g1 & g2", select.getCacheGroup());
 
-        SQLQueryDescriptor sql = (SQLQueryDescriptor) map.getQueryDescriptor("ArtistSql");
+        NamedSQLQuery sql = (NamedSQLQuery) map.getNamedQuery("ArtistSql");
         assertEquals("select * from ARTIST", sql.getSql());
         assertEquals(7, sql.getPageSize());
         assertEquals(CapsStrategy.UPPER, sql.getColumnNamesCapitalization());
@@ -143,7 +143,7 @@ public class XMLDataMapLoaderTest {
         assertTrue(map.getDbEntities().isEmpty());
         assertTrue(map.getObjEntities().isEmpty());
         assertTrue(map.getProcedures().isEmpty());
-        assertTrue(map.getQueryDescriptors().isEmpty());
+        assertTrue(map.getNamedQueries().isEmpty());
         assertTrue(map.getEmbeddables().isEmpty());
         assertNull(map.getDefaultCatalog());
         assertNull(map.getDefaultSchema());
@@ -162,7 +162,7 @@ public class XMLDataMapLoaderTest {
         assertEquals(12, map.getDbEntities().size());
         assertEquals(17, map.getObjEntities().size());
         assertEquals(4, map.getProcedures().size());
-        assertEquals(13, map.getQueryDescriptors().size());
+        assertEquals(13, map.getNamedQueries().size());
         assertEquals(1, map.getEmbeddables().size());
         assertEquals("TEST_CATALOG", map.getDefaultCatalog());
         assertNull(map.getDefaultSchema());
@@ -200,10 +200,10 @@ public class XMLDataMapLoaderTest {
         assertEquals(2,
                 map.getProcedure("cayenne_tst_out_proc").getCallParameters().size());
 
-        SQLQueryDescriptor descriptor = (SQLQueryDescriptor)map.getQueryDescriptor("NonSelectingQuery");
+        NamedSQLQuery namedQuery = (NamedSQLQuery)map.getNamedQuery("NonSelectingQuery");
         assertEquals("INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE) " +
                         "VALUES (512, 'No Painting Like This', 12.5)",
-                descriptor.getAdapterSql().get("org.apache.cayenne.dba.db2.DB2Adapter"));
+                namedQuery.getAdapterSql().get("org.apache.cayenne.dba.db2.DB2Adapter"));
 
         assertEquals("TEST",
                 map.getEmbeddable("org.apache.cayenne.testdo.Embeddable")

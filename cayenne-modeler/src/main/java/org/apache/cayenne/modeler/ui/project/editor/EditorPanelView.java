@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.modeler.ui.project.editor;
 
-import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.map.NamedQuery;
 import org.apache.cayenne.modeler.event.display.QueryDisplayEvent;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.toolkit.ProjectPanel;
@@ -35,9 +35,9 @@ import org.apache.cayenne.modeler.ui.project.editor.query.sqltemplate.SQLTemplat
 
 import javax.swing.*;
 import java.awt.*;
-import org.apache.cayenne.map.SelectQueryDescriptor;
-import org.apache.cayenne.map.SQLQueryDescriptor;
-import org.apache.cayenne.map.ProcedureQueryDescriptor;
+import org.apache.cayenne.map.NamedSelectQuery;
+import org.apache.cayenne.map.NamedSQLQuery;
+import org.apache.cayenne.map.NamedProcedureQuery;
 
 /**
  * Card-layout panel that shows the editor matching the currently selected project object.
@@ -145,12 +145,12 @@ public class EditorPanelView extends ProjectPanel {
     }
 
     private void querySelected(QueryDisplayEvent e) {
-        QueryDescriptor query = e.getQuery();
+        NamedQuery query = e.getQuery();
 
         switch (query) {
-            case SelectQueryDescriptor ignored -> detailLayout.show(this, SELECT_QUERY_VIEW);
-            case SQLQueryDescriptor ignored -> detailLayout.show(this, SQL_TEMPLATE_VIEW);
-            case ProcedureQueryDescriptor ignored -> detailLayout.show(this, PROCEDURE_QUERY_VIEW);
+            case NamedSelectQuery ignored -> detailLayout.show(this, SELECT_QUERY_VIEW);
+            case NamedSQLQuery ignored -> detailLayout.show(this, SQL_TEMPLATE_VIEW);
+            case NamedProcedureQuery ignored -> detailLayout.show(this, PROCEDURE_QUERY_VIEW);
             default -> detailLayout.show(this, EMPTY_VIEW);
         }
     }

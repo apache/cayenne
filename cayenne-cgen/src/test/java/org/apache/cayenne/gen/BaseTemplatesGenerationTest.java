@@ -24,9 +24,9 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.QueryDescriptor;
-import org.apache.cayenne.map.SQLQueryDescriptor;
-import org.apache.cayenne.map.SelectQueryDescriptor;
+import org.apache.cayenne.map.NamedQuery;
+import org.apache.cayenne.map.NamedSQLQuery;
+import org.apache.cayenne.map.NamedSelectQuery;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -105,12 +105,12 @@ public class BaseTemplatesGenerationTest extends CgenCase {
         dataMap.addObjEntity(objEntity);
     }
 
-    private SelectQueryDescriptor selectQuery(String name, String ql) {
-        SelectQueryDescriptor descriptor = new SelectQueryDescriptor();
-        descriptor.setName(name);
-        descriptor.setQl(ql);
-        dataMap.addQueryDescriptor(descriptor);
-        return descriptor;
+    private NamedSelectQuery selectQuery(String name, String ql) {
+        NamedSelectQuery namedQuery = new NamedSelectQuery();
+        namedQuery.setName(name);
+        namedQuery.setQl(ql);
+        dataMap.addNamedQuery(namedQuery);
+        return namedQuery;
     }
 
     @Test
@@ -121,16 +121,16 @@ public class BaseTemplatesGenerationTest extends CgenCase {
         objEntity.setDbEntity(dbEntity);
         objEntity.setClassName("Test");
 
-        SQLQueryDescriptor sqlTemplateDescriptor = new SQLQueryDescriptor();
-        sqlTemplateDescriptor.setSql("SELECT * FROM table");
-        sqlTemplateDescriptor.setRoot(objEntity);
-        sqlTemplateDescriptor.setName("select");
-        sqlTemplateDescriptor.setRoot(objEntity);
+        NamedSQLQuery namedSQLQuery = new NamedSQLQuery();
+        namedSQLQuery.setSql("SELECT * FROM table");
+        namedSQLQuery.setRoot(objEntity);
+        namedSQLQuery.setName("select");
+        namedSQLQuery.setRoot(objEntity);
 
-        Collection<QueryDescriptor> descriptors = new ArrayList<>();
-        descriptors.add(sqlTemplateDescriptor);
+        Collection<NamedQuery> namedQueries = new ArrayList<>();
+        namedQueries.add(namedSQLQuery);
 
-        DataMapArtifact dataMapArtifact = new DataMapArtifact(dataMap, descriptors);
+        DataMapArtifact dataMapArtifact = new DataMapArtifact(dataMap, namedQueries);
 
         execute(dataMapArtifact);
     }

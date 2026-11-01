@@ -31,7 +31,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
-import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.map.NamedQuery;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.util.XMLEncoder;
 
@@ -109,7 +109,7 @@ public class BaseSaverDelegate implements SaverDelegate {
     }
 
     @Override
-    public Void visitQuery(QueryDescriptor query) {
+    public Void visitQuery(NamedQuery query) {
         return null;
     }
 

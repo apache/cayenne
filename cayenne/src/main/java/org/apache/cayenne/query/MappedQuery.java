@@ -22,7 +22,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.map.NamedQuery;
 import org.apache.cayenne.query.resolved.ResolvedQuery;
 
 import java.sql.Statement;
@@ -190,12 +190,12 @@ public class MappedQuery<T> implements Query<T> {
 
     @Override
     public ResolvedQuery resolve(EntityResolver resolver) {
-        QueryDescriptor descriptor = resolver.getQueryDescriptor(queryName);
-        if (descriptor == null) {
+        NamedQuery namedQuery = resolver.getNamedQuery(queryName);
+        if (namedQuery == null) {
             throw new CayenneRuntimeException("Unknown query name: %s", queryName);
         }
 
-        Query<?> query = descriptor.buildQuery(normalizedParameters());
+        Query<?> query = namedQuery.buildQuery(normalizedParameters());
 
         switch (query) {
             case ObjectSelect<?> select -> {
@@ -215,7 +215,7 @@ public class MappedQuery<T> implements Query<T> {
                     select.pageSize(pageSize);
                 }
                 if (forceNoCache) {
-                    select.cacheStrategy(refreshing(descriptor.getCacheStrategy()), descriptor.getCacheGroup());
+                    select.cacheStrategy(refreshing(namedQuery.getCacheStrategy()), namedQuery.getCacheGroup());
                 }
             }
             case SQLQuery<?> sql -> {
@@ -235,7 +235,7 @@ public class MappedQuery<T> implements Query<T> {
                     sql.pageSize(pageSize);
                 }
                 if (forceNoCache) {
-                    sql.cacheStrategy(refreshing(descriptor.getCacheStrategy()), descriptor.getCacheGroup());
+                    sql.cacheStrategy(refreshing(namedQuery.getCacheStrategy()), namedQuery.getCacheGroup());
                 }
             }
             case ProcedureQuery<?> procedure -> {
@@ -255,7 +255,7 @@ public class MappedQuery<T> implements Query<T> {
                     procedure.pageSize(pageSize);
                 }
                 if (forceNoCache) {
-                    procedure.cacheStrategy(refreshing(descriptor.getCacheStrategy()), descriptor.getCacheGroup());
+                    procedure.cacheStrategy(refreshing(namedQuery.getCacheStrategy()), namedQuery.getCacheGroup());
                 }
             }
             default -> throw new CayenneRuntimeException("Unknown query type: %s", query.getClass().getName());

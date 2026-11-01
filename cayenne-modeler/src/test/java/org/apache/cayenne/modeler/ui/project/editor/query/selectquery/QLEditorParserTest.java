@@ -27,7 +27,7 @@ import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.SelectQueryDescriptor;
+import org.apache.cayenne.map.NamedSelectQuery;
 import org.fife.ui.rsyntaxtextarea.RSyntaxDocument;
 import org.fife.ui.rsyntaxtextarea.parser.ParseResult;
 import org.fife.ui.rsyntaxtextarea.parser.ParserNotice;
@@ -82,9 +82,9 @@ public class QLEditorParserTest {
         artist.addAttribute(new ObjAttribute("name", String.class.getName(), artist));
         map.addObjEntity(artist);
 
-        SelectQueryDescriptor query = new SelectQueryDescriptor();
+        NamedSelectQuery query = new NamedSelectQuery();
         query.setName("q");
-        map.addQueryDescriptor(query);
+        map.addNamedQuery(query);
 
         List<List<String>> reported = new ArrayList<>();
         QLEditorParser parser = new QLEditorParser(() -> query, reported::add);
@@ -108,7 +108,7 @@ public class QLEditorParserTest {
     }
 
     private static ExpressionException parseError(String ql) {
-        SelectQueryDescriptor query = new SelectQueryDescriptor();
+        NamedSelectQuery query = new NamedSelectQuery();
         query.setQl(ql);
         return assertThrows(ExpressionException.class, query::getParsedQuery);
     }

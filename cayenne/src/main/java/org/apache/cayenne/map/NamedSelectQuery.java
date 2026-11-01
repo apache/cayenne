@@ -41,11 +41,11 @@ import java.util.regex.Pattern;
  * A mapped select query, defined by a String in the syntax of {@link ObjectSelect#parse(String, Object...)}.
  * The root of the query is defined by its "from" clause, so it is null while the String can't be parsed.
  * The settings that the String has no syntax for (caching, page size, etc.) are the properties of the
- * descriptor.
+ * named query.
  *
  * @since 4.0
  */
-public class SelectQueryDescriptor extends QueryDescriptor {
+public class NamedSelectQuery extends NamedQuery {
 
     // a single or double quoted string literal of the query grammar, with its backslash escapes
     private static final String QUOTED_STRING = "'(?:[^'\\\\]|\\\\.)*'|\"(?:[^\"\\\\]|\\\\.)*\"";

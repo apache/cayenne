@@ -33,7 +33,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
-import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.map.NamedQuery;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.event.display.*;
 import org.apache.cayenne.modeler.event.model.*;
@@ -264,7 +264,7 @@ public class ProjectSession {
         return state.dbRelationships;
     }
 
-    public QueryDescriptor getSelectedQuery() {
+    public NamedQuery getSelectedQuery() {
         return state.query;
     }
 
@@ -1076,7 +1076,7 @@ public class ProjectSession {
 
         Procedure procedure;
         ProcedureParameter[] procedureParameters;
-        QueryDescriptor query;
+        NamedQuery query;
         ProjectNode[] paths;
         ProjectNode parentPath;
 

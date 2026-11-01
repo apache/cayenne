@@ -57,10 +57,8 @@
 
    * `org.apache.cayenne.Validating` is deprecated in favor of `org.apache.cayenne.lifecycle.Validating`.
 
-*  Per [CAY-3062](https://issues.apache.org/jira/browse/CAY-3062) `SQLTemplate` no longer support multiple parameter sets. 
-   The varargs `setParameters(Map...)`, `queryWithParameters(Map...)`, `getParameters()`, `parametersIterator()` and
-   `parametersSize()` are removed. The preferred way to run raw SQL is `SQLQuery` that can be called multiple times, once per a set of
-   parameters.
+*  Per [CAY-3062](https://issues.apache.org/jira/browse/CAY-3062) `SQLTemplate` is gone. Its descent (`SQLQuery`) does not support multiple parameter sets. The 
+   preferred way to run raw SQL is `SQLQuery` that can be called multiple times, once per a set of parameters.
 
 *  Per [CAY-3067](https://issues.apache.org/jira/browse/CAY-3067) selecting and non-selecting queries share a single
    shape. `Query` is now generic, `Query<T>`, with `T` being the type of the rows the query selects, and the selecting
@@ -99,10 +97,16 @@
      and `ProcedureQuery` constructors are no longer public; use the static factory methods (`query(..)`,
      `columnQuery(..)`, `entityQuery(..)`).
      `SQLTemplateDescriptor` is renamed
-     `SQLQueryDescriptor` (the `sqlQuery` XML element is unchanged) and builds `SQLQuery`.
+     `NamedSQLQuery` (the `sqlQuery` XML element is unchanged) and builds `SQLQuery`.
    * The setter-style `ProcedureQuery` is removed, and `ProcedureCall` takes over the name `ProcedureQuery`, keeping
      its fluent API. `ProcedureCall` remains as a deprecated
      subclass for one release.
+
+*  `QueryDescriptor` and its subclasses are renamed: `QueryDescriptor` is now
+   `NamedQuery`, `SelectQueryDescriptor` is `NamedSelectQuery`, `SQLQueryDescriptor` is `NamedSQLQuery` and
+   `ProcedureQueryDescriptor` is `NamedProcedureQuery`. The `DataMap` accessors follow: `getNamedQuery(..)`,
+   `addNamedQuery(..)`, `removeNamedQuery(..)`, `getNamedQueries()` and `getNamedQueryMap()` replace the
+   `*QueryDescriptor*` methods. The XML format is unchanged.
 
 *  Per [CAY-3069](https://issues.apache.org/jira/browse/CAY-3069) `ColumnSelect` and `FluentSelect` are merged into
    `ObjectSelect`. A single `ObjectSelect<T>` now selects the root objects, DataRows or columns, with `T` being the type
@@ -122,7 +126,7 @@
      A query of the root objects stands for their ids, e.g. `Painting.ARTIST.in(ObjectSelect.query(Artist.class))`,
      provided the PK of the entity is a single column.
    * `isColumnQuery()` and `isSingleColumn()` are added to `ObjectSelect` to inspect the shape of a query, e.g. one
-     returned by `SelectQueryDescriptor.getParsedQuery()`. The getters of the execution settings
+     returned by `NamedSelectQuery.getParsedQuery()`. The getters of the execution settings
      (`getCacheStrategy()`, `getCacheGroup()`, `getPageSize()`, `getStatementFetchSize()`, `getQueryTimeout()`,
      `isFetchingDataRows()`) are removed, like those of `SQLQuery`, and so are `getLimit()`, `getOffset()`,
      `getEntityType()` and `isDistinct()`: read them from the `ResolvedSelect` the query resolves to. The getters that describe the clauses of a parsed query String (`getWhere()`,

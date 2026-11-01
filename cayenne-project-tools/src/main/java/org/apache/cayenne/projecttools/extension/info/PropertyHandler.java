@@ -29,7 +29,7 @@ import org.apache.cayenne.project.xml.ObjEntityHandler;
 import org.apache.cayenne.project.xml.ObjRelationshipHandler;
 import org.apache.cayenne.project.xml.ProcedureHandler;
 import org.apache.cayenne.project.xml.ProjectMetaData;
-import org.apache.cayenne.project.xml.QueryDescriptorHandler;
+import org.apache.cayenne.project.xml.NamedQueryHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;
@@ -86,7 +86,7 @@ class PropertyHandler extends NamespaceAwareNestedTagHandler {
             case DbEntityHandler handler -> handler.getEntity();
             case ObjEntityHandler handler -> handler.getEntity();
             case EmbeddableHandler handler -> handler.getEmbeddable();
-            case QueryDescriptorHandler handler -> handler.getQueryDescriptor();
+            case NamedQueryHandler handler -> handler.getNamedQuery();
             case ProcedureHandler handler -> handler.getProcedure();
             case DbRelationshipHandler handler -> handler.getDbRelationship();
             case ObjRelationshipHandler handler -> handler.getObjRelationship();

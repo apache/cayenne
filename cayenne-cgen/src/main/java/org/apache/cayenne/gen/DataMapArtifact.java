@@ -20,13 +20,13 @@
 package org.apache.cayenne.gen;
 
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.map.NamedQuery;
 import org.apache.cayenne.util.Util;
 import org.apache.velocity.context.Context;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import org.apache.cayenne.map.SelectQueryDescriptor;
+import org.apache.cayenne.map.NamedSelectQuery;
 
 /**
  * {@link Artifact} facade for a DataMap.
@@ -38,12 +38,12 @@ public class DataMapArtifact implements Artifact {
     public static final String DATAMAP_UTILS_KEY = "dataMapUtils";
 
     protected DataMap dataMap;
-    protected Collection<QueryDescriptor> selectQueries;
-    protected Collection<QueryDescriptor> execQueries;
+    protected Collection<NamedQuery> selectQueries;
+    protected Collection<NamedQuery> execQueries;
 
     protected Collection<String> queryNames;
 
-    public DataMapArtifact(DataMap dataMap, Collection<QueryDescriptor> queries) {
+    public DataMapArtifact(DataMap dataMap, Collection<NamedQuery> queries) {
         this.dataMap = dataMap;
         selectQueries = new LinkedList<>();
         execQueries = new LinkedList<>();
@@ -83,19 +83,19 @@ public class DataMapArtifact implements Artifact {
         }
     }
 
-    private void addQueries(Collection<QueryDescriptor> queries) {
+    private void addQueries(Collection<NamedQuery> queries) {
         if (queries != null) {
-            for (QueryDescriptor query : queries) {
+            for (NamedQuery query : queries) {
                 addQuery(query);
             }
         }
     }
 
-    private void addQuery(QueryDescriptor query) {
+    private void addQuery(NamedQuery query) {
 
         // For now put all non-select queries to the "exec" list, run via MappedQuery.execute(..)
         // Some additional flag could be introduced to control this explicitly.
-        if (query instanceof SelectQueryDescriptor) {
+        if (query instanceof NamedSelectQuery) {
             selectQueries.add(query);
         } else {
             execQueries.add(query);
@@ -106,11 +106,11 @@ public class DataMapArtifact implements Artifact {
         }
     }
 
-    public Collection<QueryDescriptor> getSelectQueries() {
+    public Collection<NamedQuery> getSelectQueries() {
         return selectQueries;
     }
 
-    public Collection<QueryDescriptor> getExecQueries() {
+    public Collection<NamedQuery> getExecQueries() {
         return execQueries;
     }
 

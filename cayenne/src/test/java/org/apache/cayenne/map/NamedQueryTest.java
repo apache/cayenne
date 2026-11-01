@@ -27,44 +27,44 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class QueryDescriptorTest {
+public class NamedQueryTest {
 
     @Test
     public void defaults() {
-        QueryDescriptor descriptor = new SQLQueryDescriptor();
-        assertEquals(0, descriptor.getPageSize());
-        assertEquals(0, descriptor.getStatementFetchSize());
-        assertFalse(descriptor.isFetchingDataRows());
-        assertEquals(QueryCacheStrategy.NO_CACHE, descriptor.getCacheStrategy());
-        assertNull(descriptor.getCacheGroup());
+        NamedQuery namedQuery = new NamedSQLQuery();
+        assertEquals(0, namedQuery.getPageSize());
+        assertEquals(0, namedQuery.getStatementFetchSize());
+        assertFalse(namedQuery.isFetchingDataRows());
+        assertEquals(QueryCacheStrategy.NO_CACHE, namedQuery.getCacheStrategy());
+        assertNull(namedQuery.getCacheGroup());
     }
 
     @Test
     public void settings() {
-        QueryDescriptor descriptor = new SQLQueryDescriptor();
-        descriptor.setPageSize(10);
-        descriptor.setStatementFetchSize(6);
-        descriptor.setFetchingDataRows(true);
-        descriptor.setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
-        descriptor.setCacheGroup("g1");
+        NamedQuery namedQuery = new NamedSQLQuery();
+        namedQuery.setPageSize(10);
+        namedQuery.setStatementFetchSize(6);
+        namedQuery.setFetchingDataRows(true);
+        namedQuery.setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
+        namedQuery.setCacheGroup("g1");
 
-        assertEquals(10, descriptor.getPageSize());
-        assertEquals(6, descriptor.getStatementFetchSize());
-        assertTrue(descriptor.isFetchingDataRows());
-        assertEquals(QueryCacheStrategy.SHARED_CACHE, descriptor.getCacheStrategy());
-        assertEquals("g1", descriptor.getCacheGroup());
+        assertEquals(10, namedQuery.getPageSize());
+        assertEquals(6, namedQuery.getStatementFetchSize());
+        assertTrue(namedQuery.isFetchingDataRows());
+        assertEquals(QueryCacheStrategy.SHARED_CACHE, namedQuery.getCacheStrategy());
+        assertEquals("g1", namedQuery.getCacheGroup());
     }
 
     @Test
     public void nullCacheStrategyIsDefault() {
-        QueryDescriptor descriptor = new SQLQueryDescriptor();
-        descriptor.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
-        descriptor.setCacheGroup("g1");
+        NamedQuery namedQuery = new NamedSQLQuery();
+        namedQuery.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
+        namedQuery.setCacheGroup("g1");
 
-        descriptor.setCacheStrategy(null);
-        descriptor.setCacheGroup(null);
+        namedQuery.setCacheStrategy(null);
+        namedQuery.setCacheGroup(null);
 
-        assertEquals(QueryCacheStrategy.NO_CACHE, descriptor.getCacheStrategy());
-        assertNull(descriptor.getCacheGroup());
+        assertEquals(QueryCacheStrategy.NO_CACHE, namedQuery.getCacheStrategy());
+        assertNull(namedQuery.getCacheGroup());
     }
 }

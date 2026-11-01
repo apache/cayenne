@@ -22,15 +22,15 @@ package org.apache.cayenne.modeler.event.display;
 
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.map.NamedQuery;
 
 public class QueryDisplayEvent extends DisplayEvent {
 
     private final Project project;
     private final DataMap dataMap;
-    private final QueryDescriptor query;
+    private final NamedQuery query;
 
-    public QueryDisplayEvent(Object src, Project project, DataMap dataMap, QueryDescriptor query) {
+    public QueryDisplayEvent(Object src, Project project, DataMap dataMap, NamedQuery query) {
         super(src);
         this.project = project;
         this.dataMap = dataMap;
@@ -45,7 +45,7 @@ public class QueryDisplayEvent extends DisplayEvent {
         return dataMap;
     }
 
-    public QueryDescriptor getQuery() {
+    public NamedQuery getQuery() {
         return query;
     }
 }

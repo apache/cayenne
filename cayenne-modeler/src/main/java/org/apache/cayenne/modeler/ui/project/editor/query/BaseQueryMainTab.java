@@ -24,7 +24,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.MappingNamespace;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.map.NamedQuery;
 import org.apache.cayenne.modeler.toolkit.ProjectPanel;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.toolkit.Renderers;
@@ -77,7 +77,7 @@ public abstract class BaseQueryMainTab extends ProjectPanel {
             newName = null;
         }
 
-        QueryDescriptor query = getQuery();
+        NamedQuery query = getQuery();
 
         if (query == null) {
             return;
@@ -92,7 +92,7 @@ public abstract class BaseQueryMainTab extends ProjectPanel {
         }
 
         DataMap map = session.getSelectedDataMap();
-        QueryDescriptor matchingQuery = map.getQueryDescriptor(newName);
+        NamedQuery matchingQuery = map.getNamedQuery(newName);
 
         if (matchingQuery == null) {
             // completely new name, set new name for entity
@@ -100,8 +100,8 @@ public abstract class BaseQueryMainTab extends ProjectPanel {
             QueryEvent e = QueryEvent.ofChange(this, query, oldName);
             query.setName(newName);
             query.setDataMap(map);
-            map.removeQueryDescriptor(oldName);
-            map.addQueryDescriptor(query);
+            map.removeNamedQuery(oldName);
+            map.addNamedQuery(query);
             MappingNamespace ns = map.getNamespace();
             if (ns instanceof EntityResolver) {
                 ((EntityResolver) ns).refreshMappingCache();
@@ -115,5 +115,5 @@ public abstract class BaseQueryMainTab extends ProjectPanel {
         }
     }
 
-    protected abstract QueryDescriptor getQuery();
+    protected abstract NamedQuery getQuery();
 }

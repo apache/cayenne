@@ -31,7 +31,7 @@ import java.util.Map;
 /**
  * @since 4.0
  */
-public class ProcedureQueryDescriptor extends QueryDescriptor {
+public class NamedProcedureQuery extends NamedQuery {
 
     protected String resultEntityName;
     protected int fetchLimit = ResolvedQuery.FETCH_LIMIT_DEFAULT;
@@ -142,7 +142,7 @@ public class ProcedureQueryDescriptor extends QueryDescriptor {
     public void encodeAsXML(XMLEncoder encoder, ProjectNodeVisitor<?> delegate) {
         encoder.start("procedureQuery")
                 .attribute("name", getName())
-                .attribute("root", QueryDescriptor.PROCEDURE_ROOT);
+                .attribute("root", NamedQuery.PROCEDURE_ROOT);
 
         String rootString = null;
         if (root instanceof String) {

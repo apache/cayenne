@@ -30,7 +30,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
-import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.map.NamedQuery;
 
 /**
  * @since 4.1
@@ -97,7 +97,7 @@ public class EmptyProjectNodeVisitor implements ProjectNodeVisitor<Void> {
     }
 
     @Override
-    public Void visitQuery(QueryDescriptor query) {
+    public Void visitQuery(NamedQuery query) {
         return null;
     }
 }

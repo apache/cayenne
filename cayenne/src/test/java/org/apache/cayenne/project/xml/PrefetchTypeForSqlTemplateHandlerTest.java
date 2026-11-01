@@ -20,7 +20,7 @@
 package org.apache.cayenne.project.xml;
 
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.SQLQueryDescriptor;
+import org.apache.cayenne.map.NamedSQLQuery;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -34,15 +34,15 @@ public class PrefetchTypeForSqlTemplateHandlerTest extends BaseHandlerTest {
         parse("sqlQuery", new HandlerFactory() {
             @Override
             public NamespaceAwareNestedTagHandler createHandler(NamespaceAwareNestedTagHandler parent) {
-                return new SQLQueryDescriptorHandler(parent, map);
+                return new NamedSQLQueryHandler(parent, map);
             }
         });
 
-        SQLQueryDescriptor sqlTemplateDescriptor = (SQLQueryDescriptor) map.getQueryDescriptor("query");
-        assertEquals(3, sqlTemplateDescriptor.getPrefetchesMap().size());
+        NamedSQLQuery namedSQLQuery = (NamedSQLQuery) map.getNamedQuery("query");
+        assertEquals(3, namedSQLQuery.getPrefetchesMap().size());
 
-        assertEquals(1, (int) sqlTemplateDescriptor.getPrefetchesMap().get("paintings"));
-        assertEquals(2, (int) sqlTemplateDescriptor.getPrefetchesMap().get("paintings.artist"));
-        assertEquals(3, (int) sqlTemplateDescriptor.getPrefetchesMap().get("paintings.gallery"));
+        assertEquals(1, (int) namedSQLQuery.getPrefetchesMap().get("paintings"));
+        assertEquals(2, (int) namedSQLQuery.getPrefetchesMap().get("paintings.artist"));
+        assertEquals(3, (int) namedSQLQuery.getPrefetchesMap().get("paintings.gallery"));
     }
 }

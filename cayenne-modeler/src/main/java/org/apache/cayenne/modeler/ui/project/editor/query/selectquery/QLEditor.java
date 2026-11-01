@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-import org.apache.cayenne.map.SelectQueryDescriptor;
+import org.apache.cayenne.map.NamedSelectQuery;
 import org.apache.cayenne.modeler.event.model.QueryEvent;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.toolkit.ProjectPanel;
@@ -41,7 +41,7 @@ class QLEditor extends ProjectPanel {
 
     private final QueryTextEditor editor;
 
-    private SelectQueryDescriptor query;
+    private NamedSelectQuery query;
 
     /**
      * @param problemsListener receives the problems of the query after each check, empty if there are none
@@ -66,7 +66,7 @@ class QLEditor extends ProjectPanel {
     /**
      * Shows the query String of the query, or clears the editor if the query is null.
      */
-    void setQuery(SelectQueryDescriptor query) {
+    void setQuery(NamedSelectQuery query) {
         this.query = query;
         editor.setText(query != null ? query.getQl() : null);
     }

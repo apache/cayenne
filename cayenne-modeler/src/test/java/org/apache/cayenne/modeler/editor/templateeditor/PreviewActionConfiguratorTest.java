@@ -25,7 +25,7 @@ import org.apache.cayenne.gen.TemplateType;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.map.NamedQuery;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.templateeditor.ArtefactsConfigurator;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.templateeditor.DataMapArtefactsConfigurator;
@@ -39,7 +39,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.io.Writer;
-import org.apache.cayenne.map.SelectQueryDescriptor;
+import org.apache.cayenne.map.NamedSelectQuery;
 
 import static org.mockito.Mockito.mock;
 
@@ -73,9 +73,9 @@ public class PreviewActionConfiguratorTest {
         Embeddable embeddable = new Embeddable("embeddable");
         dataMap.addEmbeddable(embeddable);
 
-        QueryDescriptor descriptor = new SelectQueryDescriptor();
-        descriptor.setName("queryDescriptor");
-        dataMap.addQueryDescriptor(descriptor);
+        NamedQuery namedQuery = new NamedSelectQuery();
+        namedQuery.setName("namedQuery");
+        dataMap.addNamedQuery(namedQuery);
         return dataMap;
     }
 
@@ -91,7 +91,7 @@ public class PreviewActionConfiguratorTest {
 
     @Test
     public void previewActionDataMapTest() throws Exception {
-        actionTest("queryDescriptor",TemplateType.DATAMAP_SUBCLASS,new DataMapArtefactsConfigurator());
+        actionTest("namedQuery",TemplateType.DATAMAP_SUBCLASS,new DataMapArtefactsConfigurator());
     }
 
     private void actionTest(String artifactName, TemplateType type, ArtefactsConfigurator configurator) throws Exception {

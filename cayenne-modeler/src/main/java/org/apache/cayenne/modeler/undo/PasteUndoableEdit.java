@@ -30,7 +30,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
-import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.map.NamedQuery;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.action.PasteAction;
 import org.apache.cayenne.modeler.ui.action.RemoveAction;
@@ -98,8 +98,8 @@ public class PasteUndoableEdit extends CayenneUndoableEdit {
                 rAction.removeObjEntity(map, objEntity);
             } else if (content instanceof Embeddable embeddable) {
                 rAction.removeEmbeddable(map, embeddable);
-            } else if (content instanceof QueryDescriptor queryDescriptor) {
-                rAction.removeQuery(map, queryDescriptor);
+            } else if (content instanceof NamedQuery namedQuery) {
+                rAction.removeQuery(map, namedQuery);
             } else if (content instanceof Procedure proc) {
                 rAction.removeProcedure(map, proc);
             }

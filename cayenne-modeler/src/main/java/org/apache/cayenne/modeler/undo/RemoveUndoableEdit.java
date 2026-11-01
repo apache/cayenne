@@ -26,7 +26,7 @@ import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Procedure;
-import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.map.NamedQuery;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.action.CreateDataMapAction;
 import org.apache.cayenne.modeler.ui.action.CreateDbEntityAction;
@@ -51,7 +51,7 @@ public class RemoveUndoableEdit extends CayenneUndoableEdit {
     private DataMap map;
     private DbEntity dbEntity;
     private ObjEntity objEntity;
-    private QueryDescriptor query;
+    private NamedQuery query;
     private Procedure procedure;
 
     private Project project;
@@ -110,7 +110,7 @@ public class RemoveUndoableEdit extends CayenneUndoableEdit {
         }
     }
 
-    public RemoveUndoableEdit(ProjectSession session, DataMap map, QueryDescriptor query) {
+    public RemoveUndoableEdit(ProjectSession session, DataMap map, NamedQuery query) {
         super(session);
         this.map = map;
         this.query = query;

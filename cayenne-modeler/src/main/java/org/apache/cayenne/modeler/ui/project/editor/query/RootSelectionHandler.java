@@ -21,7 +21,7 @@ package org.apache.cayenne.modeler.ui.project.editor.query;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Entity;
-import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.map.NamedQuery;
 import org.apache.cayenne.modeler.toolkit.Renderers;
 
 import java.awt.event.ActionEvent;
@@ -43,7 +43,7 @@ class RootSelectionHandler implements FocusListener, ActionListener {
     }
 
     public void actionPerformed(ActionEvent ae) {
-        QueryDescriptor query = queryTab.getQuery();
+        NamedQuery query = queryTab.getQuery();
         if (query != null) {
             Entity<?, ?, ?> root = (Entity<?, ?, ?>) queryTab.getQueryRoot().getModel().getSelectedItem();
 
@@ -60,7 +60,7 @@ class RootSelectionHandler implements FocusListener, ActionListener {
                     DataMap map = queryTab.getSession().getSelectedDataMap();
                     long postfix = 1;
 
-                    while (map.getQueryDescriptor(newName) != null) {
+                    while (map.getNamedQuery(newName) != null) {
                         newName = newPrefix + (postfix++);
                     }
 
@@ -74,7 +74,7 @@ class RootSelectionHandler implements FocusListener, ActionListener {
         //reset new name tracking
         newName = null;
 
-        QueryDescriptor query = queryTab.getQuery();
+        NamedQuery query = queryTab.getQuery();
         if (query != null) {
             needChangeName = hasDefaultName(query);
         } else {
@@ -97,7 +97,7 @@ class RootSelectionHandler implements FocusListener, ActionListener {
      * <p>
      * We cannot follow user input because tab might be opened many times
      */
-    boolean hasDefaultName(QueryDescriptor query) {
+    boolean hasDefaultName(NamedQuery query) {
         String prefix = query.getRoot() == null ? "UntitledQuery" :
                 Renderers.asString(query.getRoot(), queryTab.getSession().getSelectedDataMap()) + "Query";
 

@@ -34,7 +34,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
-import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.map.NamedQuery;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.event.model.DataMapEvent;
@@ -319,12 +319,12 @@ ObjRelationshipEvent e = ObjRelationshipEvent.ofRemove(app.getFrame(), rel, enti
     /**
      * Removes current Query from its DataMap and fires "remove" QueryEvent.
      */
-    public void removeQuery(DataMap map, QueryDescriptor query) {
+    public void removeQuery(DataMap map, NamedQuery query) {
         ProjectSession session = getProjectSession();
 
         QueryEvent e = QueryEvent.ofRemove(app.getFrame(), query, map);
 
-        map.removeQueryDescriptor(query.getName());
+        map.removeNamedQuery(query.getName());
         session.fireQueryEvent(e);
     }
 
@@ -355,7 +355,7 @@ ObjRelationshipEvent e = ObjRelationshipEvent.ofRemove(app.getFrame(), rel, enti
         // TODO: (Andrus, 09/09/2005) show warning dialog?
 
         // clone to be able to remove within iterator...
-        for (QueryDescriptor query : new ArrayList<>(map.getQueryDescriptors())) {
+        for (NamedQuery query : new ArrayList<>(map.getNamedQueries())) {
             Object root = query.getRoot();
             if (root == entity || (root instanceof String && root.toString().equals(entity.getName()))) {
                 removeQuery(map, query);
@@ -384,7 +384,7 @@ ObjRelationshipEvent e = ObjRelationshipEvent.ofRemove(app.getFrame(), rel, enti
                 || (object instanceof Relationship)
                 || (object instanceof Procedure)
                 || (object instanceof ProcedureParameter)
-                || (object instanceof QueryDescriptor)
+                || (object instanceof NamedQuery)
                 || (object instanceof Embeddable)
                 || (object instanceof EmbeddableAttribute);
     }
@@ -406,9 +406,9 @@ ObjRelationshipEvent e = ObjRelationshipEvent.ofRemove(app.getFrame(), rel, enti
         } else if (object instanceof ObjEntity) {
             undo = new RemoveUndoableEdit(session, ((ObjEntity) object).getDataMap(), (ObjEntity) object);
             removeObjEntity(((ObjEntity) object).getDataMap(), (ObjEntity) object);
-        } else if (object instanceof QueryDescriptor) {
-            undo = new RemoveUndoableEdit(session, ((QueryDescriptor) object).getDataMap(), (QueryDescriptor) object);
-            removeQuery(((QueryDescriptor) object).getDataMap(), (QueryDescriptor) object);
+        } else if (object instanceof NamedQuery) {
+            undo = new RemoveUndoableEdit(session, ((NamedQuery) object).getDataMap(), (NamedQuery) object);
+            removeQuery(((NamedQuery) object).getDataMap(), (NamedQuery) object);
         } else if (object instanceof Procedure) {
             undo = new RemoveUndoableEdit(session, ((Procedure) object).getDataMap(), (Procedure) object);
             removeProcedure(((Procedure) object).getDataMap(), (Procedure) object);

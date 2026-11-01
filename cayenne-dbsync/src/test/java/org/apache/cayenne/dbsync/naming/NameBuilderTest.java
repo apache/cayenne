@@ -30,10 +30,10 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
-import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.map.NamedQuery;
 import org.junit.jupiter.api.Test;
-import org.apache.cayenne.map.SelectQueryDescriptor;
-import org.apache.cayenne.map.SQLQueryDescriptor;
+import org.apache.cayenne.map.NamedSelectQuery;
+import org.apache.cayenne.map.NamedSQLQuery;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -105,15 +105,15 @@ public class NameBuilderTest {
         assertEquals("db_enity", p2.getName(), "Should not conflict with similarly named DbEntity");
         map.addProcedure(p2);
 
-        QueryDescriptor q0 = new SelectQueryDescriptor();
+        NamedQuery q0 = new NamedSelectQuery();
         q0.setName(NameBuilder.of(q0, map).build());
         assertEquals("query", q0.getName());
-        map.addQueryDescriptor(q0);
+        map.addNamedQuery(q0);
 
-        QueryDescriptor q1 = new SQLQueryDescriptor();
+        NamedQuery q1 = new NamedSQLQuery();
         q1.setName(NameBuilder.of(q1, map).build());
         assertEquals("query1", q1.getName());
-        map.addQueryDescriptor(q1);
+        map.addNamedQuery(q1);
 
         Embeddable e0 = new Embeddable();
         e0.setClassName("com.foo." + NameBuilder.of(e0, map).build());

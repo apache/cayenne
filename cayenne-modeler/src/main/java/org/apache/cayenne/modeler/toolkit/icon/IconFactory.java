@@ -26,7 +26,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
-import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.map.NamedQuery;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.modeler.toolkit.valuetype.ValueTypes;
 
@@ -92,7 +92,7 @@ public class IconFactory {
             return objEntityIcon;
         } else if (object instanceof Procedure) {
             return procedureIcon;
-        } else if (object instanceof QueryDescriptor) {
+        } else if (object instanceof NamedQuery) {
             return queryIcon;
         } else if (object instanceof Relationship) {
             return relationshipIcon;

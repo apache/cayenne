@@ -34,11 +34,11 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
-import org.apache.cayenne.map.ProcedureQueryDescriptor;
-import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.map.NamedProcedureQuery;
+import org.apache.cayenne.map.NamedQuery;
 import org.apache.cayenne.map.Relationship;
-import org.apache.cayenne.map.SQLQueryDescriptor;
-import org.apache.cayenne.map.SelectQueryDescriptor;
+import org.apache.cayenne.map.NamedSQLQuery;
+import org.apache.cayenne.map.NamedSelectQuery;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.event.display.DbAttributeDisplayEvent;
 import org.apache.cayenne.modeler.event.display.DbEntityDisplayEvent;
@@ -87,10 +87,10 @@ public class FindAction extends AppAction {
         PRIORITY_BY_TYPE.put(ObjRelationship.class, 7);
         PRIORITY_BY_TYPE.put(DbRelationship.class, 8);
         PRIORITY_BY_TYPE.put(DbRelationshipDetected.class, 8); // this one comes from db reverse engineering
-        PRIORITY_BY_TYPE.put(QueryDescriptor.class, 9);
-        PRIORITY_BY_TYPE.put(SelectQueryDescriptor.class, 10);
-        PRIORITY_BY_TYPE.put(SQLQueryDescriptor.class, 12);
-        PRIORITY_BY_TYPE.put(ProcedureQueryDescriptor.class, 13);
+        PRIORITY_BY_TYPE.put(NamedQuery.class, 9);
+        PRIORITY_BY_TYPE.put(NamedSelectQuery.class, 10);
+        PRIORITY_BY_TYPE.put(NamedSQLQuery.class, 12);
+        PRIORITY_BY_TYPE.put(NamedProcedureQuery.class, 13);
         PRIORITY_BY_TYPE.put(Embeddable.class, 14);
         PRIORITY_BY_TYPE.put(EmbeddableAttribute.class, 15);
         PRIORITY_BY_TYPE.put(Procedure.class, 16);
@@ -140,8 +140,8 @@ public class FindAction extends AppAction {
 
         if (searchResultEntry.getObject() instanceof Entity) {
             jumpToEntityResult((Entity<?, ?, ?>) searchResultEntry.getObject(), projectView, project, session);
-        } else if (searchResultEntry.getObject() instanceof QueryDescriptor) {
-            jumpToQueryResult((QueryDescriptor) searchResultEntry.getObject(), projectView, project, session);
+        } else if (searchResultEntry.getObject() instanceof NamedQuery) {
+            jumpToQueryResult((NamedQuery) searchResultEntry.getObject(), projectView, project, session);
         } else if (searchResultEntry.getObject() instanceof Embeddable) {
             jumpToEmbeddableResult((Embeddable) searchResultEntry.getObject(), projectView, project, session);
         } else if (searchResultEntry.getObject() instanceof EmbeddableAttribute) {
@@ -159,7 +159,7 @@ public class FindAction extends AppAction {
         Pattern pattern = Pattern.compile(searchStr, Pattern.CASE_INSENSITIVE);
         List<SearchResultEntry> result = new ArrayList<>();
         for (DataMap dataMap : getProjectSession().project().getDataMaps()) {
-            searchInQueryDescriptors(pattern, result, dataMap);
+            searchInNamedQueries(pattern, result, dataMap);
             searchInEmbeddables(pattern, result, dataMap);
             searchInDbEntities(pattern, result, dataMap);
             searchInObjEntities(pattern, result, dataMap);
@@ -169,8 +169,8 @@ public class FindAction extends AppAction {
         return result;
     }
 
-    private void searchInQueryDescriptors(Pattern pattern, List<SearchResultEntry> result, DataMap dataMap) {
-        for (QueryDescriptor q : dataMap.getQueryDescriptors()) {
+    private void searchInNamedQueries(Pattern pattern, List<SearchResultEntry> result, DataMap dataMap) {
+        for (NamedQuery q : dataMap.getNamedQueries()) {
             if (match(q.getName(), pattern)) {
                 result.add(new SearchResultEntry(q, q.getName()));
             }
@@ -322,10 +322,10 @@ public class FindAction extends AppAction {
         session.displayEmbeddable(event);
     }
 
-    private static void jumpToQueryResult(QueryDescriptor queryDescriptor, ProjectView projectView, Project project, ProjectSession session) {
-        DataMap map = queryDescriptor.getDataMap();
-        buildAndSelectTreePath(map, queryDescriptor, projectView);
-        QueryDisplayEvent event = new QueryDisplayEvent(projectView.getProjectTreeView(), project, map, queryDescriptor);
+    private static void jumpToQueryResult(NamedQuery namedQuery, ProjectView projectView, Project project, ProjectSession session) {
+        DataMap map = namedQuery.getDataMap();
+        buildAndSelectTreePath(map, namedQuery, projectView);
+        QueryDisplayEvent event = new QueryDisplayEvent(projectView.getProjectTreeView(), project, map, namedQuery);
         session.displayQuery(event);
     }
 

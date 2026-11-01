@@ -28,7 +28,7 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JPanel;
 
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.SQLQueryDescriptor;
+import org.apache.cayenne.map.NamedSQLQuery;
 import org.apache.cayenne.modeler.project.ProjectComparators;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.toolkit.text.QueryStatusLine;
@@ -44,7 +44,7 @@ import com.jgoodies.forms.layout.FormLayout;
 /**
  * An editor of a SQLTemplate query: its name, its SQL scripts, and the properties that are not a part of the SQL.
  */
-public class SQLTemplateView extends TextQueryView<SQLQueryDescriptor> {
+public class SQLTemplateView extends TextQueryView<NamedSQLQuery> {
 
     private final SQLScriptTabs scripts;
     private final QueryStatusLine statusLine;
@@ -90,7 +90,7 @@ public class SQLTemplateView extends TextQueryView<SQLQueryDescriptor> {
     }
 
     void initFromModel() {
-        SQLQueryDescriptor query = getQuery();
+        NamedSQLQuery query = getQuery();
         if (query == null) {
             scripts.setQuery(null);
             return;
@@ -140,7 +140,7 @@ public class SQLTemplateView extends TextQueryView<SQLQueryDescriptor> {
     }
 
     @Override
-    protected SQLQueryDescriptor getQuery() {
-        return session.getSelectedQuery() instanceof SQLQueryDescriptor query ? query : null;
+    protected NamedSQLQuery getQuery() {
+        return session.getSelectedQuery() instanceof NamedSQLQuery query ? query : null;
     }
 }

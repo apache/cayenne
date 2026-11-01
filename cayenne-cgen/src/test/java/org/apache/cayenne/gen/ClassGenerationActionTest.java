@@ -31,13 +31,13 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.map.NamedQuery;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.slf4j.helpers.NOPLogger;
-import org.apache.cayenne.map.SelectQueryDescriptor;
+import org.apache.cayenne.map.NamedSelectQuery;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -177,15 +177,15 @@ public class ClassGenerationActionTest extends CgenCase {
 	}
 
 	private void runDataMapTest() throws Exception {
-		QueryDescriptor descriptor = new SelectQueryDescriptor();
-		descriptor.setName("TestQuery");
+		NamedQuery namedQuery = new NamedSelectQuery();
+		namedQuery.setName("TestQuery");
 
 		DataMap map = new DataMap();
-		map.addQueryDescriptor(descriptor);
+		map.addNamedQuery(namedQuery);
 		map.setName("testmap");
 		List<String> generated;
 		map.setDefaultPackage("testpackage");
-		generated = execute(new DataMapArtifact(map, map.getQueryDescriptors()));
+		generated = execute(new DataMapArtifact(map, map.getNamedQueries()));
 		assertEquals(2, generated.size());
 		assertTrue(generated.get(0).contains("public static final String TEST_QUERY_QUERYNAME = \"TestQuery\""));
 	}

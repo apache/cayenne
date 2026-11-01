@@ -19,7 +19,7 @@
 package org.apache.cayenne.project.xml;
 
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.map.NamedQuery;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.xml.sax.Attributes;
@@ -27,51 +27,51 @@ import org.xml.sax.SAXException;
 
 /**
  * A base of the handlers of the query tags of a DataMap. A subclass per query type reads its own tag into the
- * matching {@link QueryDescriptor}. The base reads the attributes common to all the query tags.
+ * matching {@link NamedQuery}. The base reads the attributes common to all the query tags.
  *
  * @since 4.1
  */
-public abstract class QueryDescriptorHandler extends NamespaceAwareNestedTagHandler {
+public abstract class NamedQueryHandler extends NamespaceAwareNestedTagHandler {
 
     static final String CACHE_GROUP_TAG = "cacheGroup";
 
     protected final DataMap map;
 
-    protected QueryDescriptorHandler(NamespaceAwareNestedTagHandler parentHandler, DataMap map) {
+    protected NamedQueryHandler(NamespaceAwareNestedTagHandler parentHandler, DataMap map) {
         super(parentHandler);
         this.map = map;
     }
 
     @Override
     protected void beforeScopeEnd() {
-        map.addQueryDescriptor(getQueryDescriptor());
+        map.addNamedQuery(getNamedQuery());
     }
 
     /**
-     * Returns the descriptor of the query being read, or null before the query tag is processed.
+     * Returns the named query being read, or null before the query tag is processed.
      */
-    public abstract QueryDescriptor getQueryDescriptor();
+    public abstract NamedQuery getNamedQuery();
 
     /**
-     * Reads the attributes common to all the query tags into a descriptor.
+     * Reads the attributes common to all the query tags into a named query.
      */
-    protected void loadQuerySettings(QueryDescriptor descriptor, Attributes attributes) throws SAXException {
+    protected void loadQuerySettings(NamedQuery namedQuery, Attributes attributes) throws SAXException {
         String name = attributes.getValue("name");
         if (name == null) {
             throw new SAXException("Query has no name");
         }
 
-        descriptor.setName(name);
-        descriptor.setDataMap(map);
+        namedQuery.setName(name);
+        namedQuery.setDataMap(map);
 
         String cacheStrategy = attributes.getValue("cacheStrategy");
         if (cacheStrategy != null) {
-            descriptor.setCacheStrategy(QueryCacheStrategy.safeValueOf(cacheStrategy));
+            namedQuery.setCacheStrategy(QueryCacheStrategy.safeValueOf(cacheStrategy));
         }
 
-        descriptor.setFetchingDataRows("true".equals(attributes.getValue("dataRows")));
-        descriptor.setPageSize(intAttribute(attributes, "pageSize"));
-        descriptor.setStatementFetchSize(intAttribute(attributes, "statementFetchSize"));
+        namedQuery.setFetchingDataRows("true".equals(attributes.getValue("dataRows")));
+        namedQuery.setPageSize(intAttribute(attributes, "pageSize"));
+        namedQuery.setStatementFetchSize(intAttribute(attributes, "statementFetchSize"));
     }
 
     /**
@@ -86,11 +86,11 @@ public abstract class QueryDescriptorHandler extends NamespaceAwareNestedTagHand
         }
 
         Object root = switch (rootType) {
-            case QueryDescriptor.OBJ_ENTITY_ROOT -> map.getObjEntity(rootName);
-            case QueryDescriptor.DB_ENTITY_ROOT -> map.getDbEntity(rootName);
-            case QueryDescriptor.PROCEDURE_ROOT -> map.getProcedure(rootName);
+            case NamedQuery.OBJ_ENTITY_ROOT -> map.getObjEntity(rootName);
+            case NamedQuery.DB_ENTITY_ROOT -> map.getDbEntity(rootName);
+            case NamedQuery.PROCEDURE_ROOT -> map.getProcedure(rootName);
             // the root is kept as an ObjEntity, since creating a Class requires the knowledge of the ClassLoader
-            case QueryDescriptor.JAVA_CLASS_ROOT -> map.getObjEntityForJavaClass(rootName);
+            case NamedQuery.JAVA_CLASS_ROOT -> map.getObjEntityForJavaClass(rootName);
             default -> null;
         };
 

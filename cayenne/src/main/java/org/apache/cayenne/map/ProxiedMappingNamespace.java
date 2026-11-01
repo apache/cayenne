@@ -57,8 +57,8 @@ abstract class ProxiedMappingNamespace implements MappingNamespace {
         return getDelegate().getProcedure(procedureName);
     }
 
-    public QueryDescriptor getQueryDescriptor(String queryName) {
-        return getDelegate().getQueryDescriptor(queryName);
+    public NamedQuery getNamedQuery(String queryName) {
+        return getDelegate().getNamedQuery(queryName);
     }
 
     public DbEntity getDbEntity(String name) {
@@ -89,8 +89,8 @@ abstract class ProxiedMappingNamespace implements MappingNamespace {
         return getDelegate().getProcedures();
     }
 
-    public Collection<QueryDescriptor> getQueryDescriptors() {
-        return getDelegate().getQueryDescriptors();
+    public Collection<NamedQuery> getNamedQueries() {
+        return getDelegate().getNamedQueries();
     }
 
     public Collection<Embeddable> getEmbeddables() {

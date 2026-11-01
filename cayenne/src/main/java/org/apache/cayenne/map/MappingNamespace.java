@@ -67,7 +67,7 @@ public interface MappingNamespace {
      * Returns Query for a given name, or null if no such Query is found in the
      * MappingNamespace.
      */
-    QueryDescriptor getQueryDescriptor(String name);
+    NamedQuery getNamedQuery(String name);
 
     /**
      * Returns all DbEntities in the namespace.
@@ -87,7 +87,7 @@ public interface MappingNamespace {
     /**
      * Returns all Queries in the namespace.
      */
-    Collection<QueryDescriptor> getQueryDescriptors();
+    Collection<NamedQuery> getNamedQueries();
 
     /**
      * @since 4.0

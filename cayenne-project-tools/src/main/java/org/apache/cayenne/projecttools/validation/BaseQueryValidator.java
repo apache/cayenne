@@ -20,7 +20,7 @@ package org.apache.cayenne.projecttools.validation;
 
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.map.NamedQuery;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationResult;
 
@@ -29,7 +29,7 @@ import java.util.function.Supplier;
 /**
  * Base validation for all query types
  */
-abstract class BaseQueryValidator<T extends QueryDescriptor> extends ProjectNodeValidator<T> {
+abstract class BaseQueryValidator<T extends NamedQuery> extends ProjectNodeValidator<T> {
 
     /**
      * @param configSupplier the config defining the behavior of this validator.
@@ -68,7 +68,7 @@ abstract class BaseQueryValidator<T extends QueryDescriptor> extends ProjectNode
         }
 
         // check for duplicate names in the parent context
-        if (hasDuplicateQueryDescriptorInDataMap(query, map)) {
+        if (hasDuplicateNamedQueryInDataMap(query, map)) {
             addFailure(validationResult, query, "Duplicate query name: %s", name);
             return;
         }
@@ -84,7 +84,7 @@ abstract class BaseQueryValidator<T extends QueryDescriptor> extends ProjectNode
                 continue;
             }
 
-            if (hasDuplicateQueryDescriptorInDataMap(query, nextMap)) {
+            if (hasDuplicateNamedQueryInDataMap(query, nextMap)) {
                 addFailure(validationResult, query, "Duplicate query name in another DataMap: %s", name);
                 return;
             }
@@ -99,13 +99,13 @@ abstract class BaseQueryValidator<T extends QueryDescriptor> extends ProjectNode
         }
     }
 
-    private boolean hasDuplicateQueryDescriptorInDataMap(QueryDescriptor queryDescriptor, DataMap dataMap) {
-        for (final QueryDescriptor otherQuery : dataMap.getQueryDescriptors()) {
-            if (otherQuery == queryDescriptor) {
+    private boolean hasDuplicateNamedQueryInDataMap(NamedQuery namedQuery, DataMap dataMap) {
+        for (final NamedQuery otherQuery : dataMap.getNamedQueries()) {
+            if (otherQuery == namedQuery) {
                 continue;
             }
 
-            if (queryDescriptor.getName().equals(otherQuery.getName())) {
+            if (namedQuery.getName().equals(otherQuery.getName())) {
                 return true;
             }
         }

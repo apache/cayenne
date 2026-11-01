@@ -32,10 +32,10 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
-import org.apache.cayenne.map.ProcedureQueryDescriptor;
-import org.apache.cayenne.map.QueryDescriptor;
-import org.apache.cayenne.map.SQLQueryDescriptor;
-import org.apache.cayenne.map.SelectQueryDescriptor;
+import org.apache.cayenne.map.NamedProcedureQuery;
+import org.apache.cayenne.map.NamedQuery;
+import org.apache.cayenne.map.NamedSQLQuery;
+import org.apache.cayenne.map.NamedSelectQuery;
 import org.apache.cayenne.validation.ValidationResult;
 
 import java.util.HashMap;
@@ -78,9 +78,9 @@ public class DefaultProjectValidator implements ProjectValidator {
         validators.put(EmbeddableAttribute.class, new EmbeddableAttributeValidator(configSupplier));
         validators.put(Procedure.class, new ProcedureValidator(configSupplier));
         validators.put(ProcedureParameter.class, new ProcedureParameterValidator(configSupplier));
-        validators.put(SelectQueryDescriptor.class, new SelectQueryValidator(configSupplier));
-        validators.put(ProcedureQueryDescriptor.class, new ProcedureQueryValidator(configSupplier));
-        validators.put(SQLQueryDescriptor.class, new SQLQueryValidator(configSupplier));
+        validators.put(NamedSelectQuery.class, new SelectQueryValidator(configSupplier));
+        validators.put(NamedProcedureQuery.class, new ProcedureQueryValidator(configSupplier));
+        validators.put(NamedSQLQuery.class, new SQLQueryValidator(configSupplier));
         return validators;
     }
 
@@ -125,7 +125,7 @@ public class DefaultProjectValidator implements ProjectValidator {
                 visitProcedure(proc);
             }
 
-            for (QueryDescriptor q : dataMap.getQueryDescriptors()) {
+            for (NamedQuery q : dataMap.getNamedQueries()) {
                 visitQuery(q);
             }
 
@@ -214,14 +214,14 @@ public class DefaultProjectValidator implements ProjectValidator {
             return validationResult;
         }
 
-        public ValidationResult visitQuery(QueryDescriptor query) {
+        public ValidationResult visitQuery(NamedQuery query) {
             switch (query) {
-                case SelectQueryDescriptor select ->
-                        getValidator(SelectQueryDescriptor.class).validate(select, validationResult);
-                case SQLQueryDescriptor sqlTemplate ->
-                        getValidator(SQLQueryDescriptor.class).validate(sqlTemplate, validationResult);
-                case ProcedureQueryDescriptor procedureQuery ->
-                        getValidator(ProcedureQueryDescriptor.class).validate(procedureQuery, validationResult);
+                case NamedSelectQuery select ->
+                        getValidator(NamedSelectQuery.class).validate(select, validationResult);
+                case NamedSQLQuery sqlTemplate ->
+                        getValidator(NamedSQLQuery.class).validate(sqlTemplate, validationResult);
+                case NamedProcedureQuery procedureQuery ->
+                        getValidator(NamedProcedureQuery.class).validate(procedureQuery, validationResult);
                 default -> {
                     // no other query types
                 }

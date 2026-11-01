@@ -29,7 +29,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
-import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.map.NamedQuery;
 
 /**
  * A {@link ProjectNodeVisitor} that does nothing, used as a convenience superclass
@@ -90,7 +90,7 @@ public abstract class BaseProjectNodeVisitor<T> implements
         throw new UnsupportedOperationException("Not implemented for ProcedureParameter");
     }
 
-    public T visitQuery(QueryDescriptor query) {
+    public T visitQuery(NamedQuery query) {
         throw new UnsupportedOperationException("Not implemented for Query");
     }
 }

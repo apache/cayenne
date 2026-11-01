@@ -25,7 +25,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
-import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.map.NamedQuery;
 import org.apache.cayenne.project.Project;
 
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -261,7 +261,7 @@ public class ProjectTreeModel extends DefaultTreeModel {
 					|| (firstLeaf instanceof DbEntity && dbEntity)
 					|| (firstLeaf instanceof ObjEntity && objEntity)
 					|| (firstLeaf instanceof Embeddable && embeddable)
-					|| (firstLeaf instanceof QueryDescriptor && query)
+					|| (firstLeaf instanceof NamedQuery && query)
 					|| (firstLeaf instanceof Procedure && procedure));
 		}
 	}

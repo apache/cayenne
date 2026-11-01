@@ -31,7 +31,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.map.SelectQueryDescriptor;
+import org.apache.cayenne.map.NamedSelectQuery;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -73,7 +73,7 @@ public class DataMapUtilsTest {
 
     @Test
     public void getParameters() {
-        SelectQueryDescriptor query = query("""
+        NamedSelectQuery query = query("""
                 from Artist where name like $name and born in ($from_date, $to_date) and name != $name""");
 
         assertEquals(List.of(
@@ -86,7 +86,7 @@ public class DataMapUtilsTest {
 
     @Test
     public void getParametersCached() {
-        SelectQueryDescriptor query = query("from Artist where name = $name");
+        NamedSelectQuery query = query("from Artist where name = $name");
         List<QueryParameter> parameters = dataMapUtils.getParameters(query);
         assertSame(parameters, dataMapUtils.getParameters(query));
 
@@ -98,7 +98,7 @@ public class DataMapUtilsTest {
 
     @Test
     public void getParametersUniqueJavaNames() {
-        SelectQueryDescriptor query = query("""
+        NamedSelectQuery query = query("""
                 from Artist where name = $a_b or name = $aB or name = $context or born = $query or born = $class""");
 
         assertEquals(List.of("a_b", "aB", "context", "query", "class"), names(query, QueryParameter::name));
@@ -107,7 +107,7 @@ public class DataMapUtilsTest {
 
     @Test
     public void getParameterType() {
-        SelectQueryDescriptor query = query("""
+        NamedSelectQuery query = query("""
                 from Painting where price > $price and artist = $artist and $flag = true
                     and exists (from Artist where born < $born)""");
 
@@ -120,7 +120,7 @@ public class DataMapUtilsTest {
 
     @Test
     public void getParameterTypeOfIn() {
-        SelectQueryDescriptor query = query("""
+        NamedSelectQuery query = query("""
                 from Artist where name in $names and born not in $dates and name in ($a, $b) and $c in ('x')""");
 
         assertEquals(Map.of(
@@ -133,7 +133,7 @@ public class DataMapUtilsTest {
 
     @Test
     public void getParameterTypeOfConflictingUses() {
-        SelectQueryDescriptor query = query("""
+        NamedSelectQuery query = query("""
                 from Artist where name = $x and born = $x and name = $y and $y = 1 and $z = 1 and born = $z
                     and name in $w and name = $w""");
 
@@ -146,7 +146,7 @@ public class DataMapUtilsTest {
 
     @Test
     public void getParameterTypeOfAlias() {
-        SelectQueryDescriptor query = query("""
+        NamedSelectQuery query = query("""
                 select name as n, count(*) as c from Artist having c > $min and n like $pattern""");
 
         assertTrue(dataMapUtils.isValidParameterNames(query));
@@ -157,7 +157,7 @@ public class DataMapUtilsTest {
     @Test
     public void getParameterTypeOfInvalidPath() {
         // an invalid path is reported by the validator, the parameter helpers never fail on it
-        SelectQueryDescriptor query = query("from Artist where nme = $name and born = $born");
+        NamedSelectQuery query = query("from Artist where nme = $name and born = $born");
 
         assertFalse(dataMapUtils.isValidParameterNames(query));
         assertEquals(List.of("name", "born"), names(query, QueryParameter::javaName));
@@ -188,26 +188,26 @@ public class DataMapUtilsTest {
         assertEquals("java.lang.Object", dataMapUtils.getResultType(query("select name from Artist")));
         assertEquals("java.lang.Object[]", dataMapUtils.getResultType(query("select name, born from Artist")));
 
-        SelectQueryDescriptor dataRows = query("from Artist");
+        NamedSelectQuery dataRows = query("from Artist");
         dataRows.setFetchingDataRows(true);
         assertEquals("org.apache.cayenne.DataRow", dataMapUtils.getResultType(dataRows));
     }
 
-    private List<String> names(SelectQueryDescriptor query, Function<QueryParameter, String> name) {
+    private List<String> names(NamedSelectQuery query, Function<QueryParameter, String> name) {
         return dataMapUtils.getParameters(query).stream().map(name).toList();
     }
 
-    private Map<String, String> types(SelectQueryDescriptor query) {
+    private Map<String, String> types(NamedSelectQuery query) {
         return dataMapUtils.getParameters(query).stream()
                 .collect(Collectors.toMap(QueryParameter::javaName, QueryParameter::type));
     }
 
-    private SelectQueryDescriptor query(String ql) {
-        SelectQueryDescriptor query = new SelectQueryDescriptor();
+    private NamedSelectQuery query(String ql) {
+        NamedSelectQuery query = new NamedSelectQuery();
         query.setName("q");
         query.setQl(ql);
-        dataMap.removeQueryDescriptor("q");
-        dataMap.addQueryDescriptor(query);
+        dataMap.removeNamedQuery("q");
+        dataMap.addNamedQuery(query);
         return query;
     }
 }

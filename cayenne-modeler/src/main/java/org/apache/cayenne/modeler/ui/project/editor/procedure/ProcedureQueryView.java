@@ -33,8 +33,8 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.MappingNamespace;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
-import org.apache.cayenne.map.ProcedureQueryDescriptor;
-import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.map.NamedProcedureQuery;
+import org.apache.cayenne.map.NamedQuery;
 import org.apache.cayenne.modeler.toolkit.combobox.CMUndoableComboBox;
 import org.apache.cayenne.modeler.toolkit.ProjectPanel;
 import org.apache.cayenne.modeler.project.ProjectSession;
@@ -58,7 +58,7 @@ public class ProcedureQueryView extends ProjectPanel {
     protected CMUndoableTextField name;
     protected CMUndoableTextField comment;
     protected JComboBox<Procedure> queryRoot;
-    protected SelectPropertiesPanel<ProcedureQueryDescriptor> properties;
+    protected SelectPropertiesPanel<NamedProcedureQuery> properties;
 
     public ProcedureQueryView(ProjectSession session) {
         super(session);
@@ -117,7 +117,7 @@ public class ProcedureQueryView extends ProjectPanel {
         queryRoot.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent event) {
-                QueryDescriptor query = session.getSelectedQuery();
+                NamedQuery query = session.getSelectedQuery();
                 if (query != null) {
                     query.setRoot(queryRoot.getModel().getSelectedItem());
                     session.fireQueryEvent(QueryEvent.ofChange(this, query));
@@ -133,7 +133,7 @@ public class ProcedureQueryView extends ProjectPanel {
      * query is changed.
      */
     void initFromModel() {
-        if (!(session.getSelectedQuery() instanceof ProcedureQueryDescriptor query)) {
+        if (!(session.getSelectedQuery() instanceof NamedProcedureQuery query)) {
             setVisible(false);
             return;
         }
@@ -173,7 +173,7 @@ public class ProcedureQueryView extends ProjectPanel {
             newName = null;
         }
 
-        QueryDescriptor query = session.getSelectedQuery();
+        NamedQuery query = session.getSelectedQuery();
         if (query == null) {
             return;
         }
@@ -188,14 +188,14 @@ public class ProcedureQueryView extends ProjectPanel {
 
         DataMap map = session.getSelectedDataMap();
 
-        if (map.getQueryDescriptor(newName) == null) {
+        if (map.getNamedQuery(newName) == null) {
             // completely new name, set new name for entity
             String oldName = query.getName();
             QueryEvent e = QueryEvent.ofChange(this, query, oldName, map);
             query.setName(newName);
             query.setDataMap(map);
-            map.removeQueryDescriptor(oldName);
-            map.addQueryDescriptor(query);
+            map.removeNamedQuery(oldName);
+            map.addNamedQuery(query);
             MappingNamespace ns = map.getNamespace();
             if (ns instanceof EntityResolver) {
                 ((EntityResolver) ns).refreshMappingCache();
@@ -210,7 +210,7 @@ public class ProcedureQueryView extends ProjectPanel {
     /**
      * Returns an entity that maps to a procedure query result class.
      */
-    ObjEntity getEntity(ProcedureQueryDescriptor query) {
+    ObjEntity getEntity(NamedProcedureQuery query) {
         String entityName = query.getResultEntityName();
         if (entityName == null) {
             return null;
@@ -225,15 +225,15 @@ public class ProcedureQueryView extends ProjectPanel {
     }
 
     void setEntity(ObjEntity entity) {
-        QueryDescriptor query = session.getSelectedQuery();
-        if (query instanceof ProcedureQueryDescriptor) {
-            ((ProcedureQueryDescriptor) query).setResultEntityName(entity != null ? entity.getName() : null);
+        NamedQuery query = session.getSelectedQuery();
+        if (query instanceof NamedProcedureQuery) {
+            ((NamedProcedureQuery) query).setResultEntityName(entity != null ? entity.getName() : null);
             session.fireQueryEvent(QueryEvent.ofChange(this, query));
         }
     }
 
     private void setQueryComment(String text) {
-        QueryDescriptor query = session.getSelectedQuery();
+        NamedQuery query = session.getSelectedQuery();
         if (query == null) {
             return;
         }
@@ -241,16 +241,16 @@ public class ProcedureQueryView extends ProjectPanel {
         session.fireQueryEvent(QueryEvent.ofChange(this, query));
     }
 
-    private String getQueryComment(QueryDescriptor queryDescriptor) {
-        return ObjectInfo.getFromMetaData(app.getMetaData(), queryDescriptor, ObjectInfo.COMMENT);
+    private String getQueryComment(NamedQuery namedQuery) {
+        return ObjectInfo.getFromMetaData(app.getMetaData(), namedQuery, ObjectInfo.COMMENT);
     }
 
-    final class ProcedureQueryPropertiesPanel extends RawQueryPropertiesPanel<ProcedureQueryDescriptor> {
+    final class ProcedureQueryPropertiesPanel extends RawQueryPropertiesPanel<NamedProcedureQuery> {
 
         private JComboBox<CapsStrategy> labelCase;
 
         ProcedureQueryPropertiesPanel(ProjectSession session) {
-            super(session, ProcedureQueryDescriptor.class);
+            super(session, NamedProcedureQuery.class);
         }
 
         protected PanelBuilder createPanelBuilder() {
@@ -258,8 +258,8 @@ public class ProcedureQueryView extends ProjectPanel {
             labelCase.setRenderer(new LabelCapsRenderer());
             labelCase.addActionListener(event -> {
                 CapsStrategy value = (CapsStrategy) labelCase.getModel().getSelectedItem();
-                setQueryProperty(ProcedureQueryDescriptor::getColumnNamesCapitalization,
-                        ProcedureQueryDescriptor::setColumnNamesCapitalization, value);
+                setQueryProperty(NamedProcedureQuery::getColumnNamesCapitalization,
+                        NamedProcedureQuery::setColumnNamesCapitalization, value);
             });
 
             PanelBuilder builder = super.createPanelBuilder();
@@ -281,7 +281,7 @@ public class ProcedureQueryView extends ProjectPanel {
         }
 
         @Override
-        public void initFromModel(ProcedureQueryDescriptor query) {
+        public void initFromModel(NamedProcedureQuery query) {
             super.initFromModel(query);
 
             fetchOffset.setText(String.valueOf(query.getFetchOffset()));
@@ -297,13 +297,13 @@ public class ProcedureQueryView extends ProjectPanel {
 
         @Override
         protected void setFetchOffset(int fetchOffset) {
-            setQueryProperty(ProcedureQueryDescriptor::getFetchOffset, ProcedureQueryDescriptor::setFetchOffset,
+            setQueryProperty(NamedProcedureQuery::getFetchOffset, NamedProcedureQuery::setFetchOffset,
                     fetchOffset);
         }
 
         @Override
         protected void setFetchLimit(int fetchLimit) {
-            setQueryProperty(ProcedureQueryDescriptor::getFetchLimit, ProcedureQueryDescriptor::setFetchLimit,
+            setQueryProperty(NamedProcedureQuery::getFetchLimit, NamedProcedureQuery::setFetchLimit,
                     fetchLimit);
         }
 
@@ -311,7 +311,7 @@ public class ProcedureQueryView extends ProjectPanel {
             ProcedureQueryView.this.setEntity(entity);
         }
 
-        public ObjEntity getEntity(ProcedureQueryDescriptor query) {
+        public ObjEntity getEntity(NamedProcedureQuery query) {
             return ProcedureQueryView.this.getEntity(query);
         }
     }

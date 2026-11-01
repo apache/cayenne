@@ -28,7 +28,7 @@ import java.util.regex.Pattern;
 import javax.swing.text.Element;
 
 import org.apache.cayenne.exp.ExpressionException;
-import org.apache.cayenne.map.SelectQueryDescriptor;
+import org.apache.cayenne.map.NamedSelectQuery;
 import org.apache.cayenne.modeler.toolkit.text.TextPositions;
 import org.apache.cayenne.projecttools.validation.SelectQueryPaths;
 import org.apache.cayenne.ql.ParseException;
@@ -49,14 +49,14 @@ class QLEditorParser extends AbstractParser {
 
     private static final Pattern POSITION = Pattern.compile("line (\\d+), column (\\d+)");
 
-    private final Supplier<SelectQueryDescriptor> query;
+    private final Supplier<NamedSelectQuery> query;
     private final Consumer<List<String>> problemsListener;
 
     /**
      * @param query            the query edited, that holds the text of the editor
      * @param problemsListener receives the messages of the found problems, empty if there are none
      */
-    QLEditorParser(Supplier<SelectQueryDescriptor> query, Consumer<List<String>> problemsListener) {
+    QLEditorParser(Supplier<NamedSelectQuery> query, Consumer<List<String>> problemsListener) {
         this.query = query;
         this.problemsListener = problemsListener;
     }
@@ -67,17 +67,17 @@ class QLEditorParser extends AbstractParser {
         Element root = doc.getDefaultRootElement();
         result.setParsedLines(0, root.getElementCount() - 1);
 
-        SelectQueryDescriptor descriptor = query.get();
-        if (descriptor == null) {
+        NamedSelectQuery namedQuery = query.get();
+        if (namedQuery == null) {
             return result;
         }
 
         List<String> problems = new ArrayList<>();
-        if (descriptor.getQl() == null || descriptor.getQl().isBlank()) {
+        if (namedQuery.getQl() == null || namedQuery.getQl().isBlank()) {
             problems.add("The query is empty");
-        } else if (!descriptor.isValid()) {
+        } else if (!namedQuery.isValid()) {
             try {
-                descriptor.getParsedQuery();
+                namedQuery.getParsedQuery();
             } catch (ExpressionException e) {
                 String message = TextPositions.firstLine(e.getUnlabeledMessage(), "Invalid query");
                 int[] range = errorRange(e, doc);
@@ -86,7 +86,7 @@ class QLEditorParser extends AbstractParser {
                 problems.add(message);
             }
         } else {
-            for (SelectQueryPaths.Problem problem : SelectQueryPaths.check(descriptor)) {
+            for (SelectQueryPaths.Problem problem : SelectQueryPaths.check(namedQuery)) {
                 for (int[] range : occurrences(doc, problem.name())) {
                     result.addNotice(new DefaultParserNotice(this, problem.message(),
                             TextPositions.lineOf(doc, range[0]), range[0], range[1]));

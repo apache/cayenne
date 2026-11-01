@@ -26,15 +26,15 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.ui.action.CreateQueryAction;
 import org.apache.cayenne.modeler.ui.action.RemoveAction;
 import org.apache.cayenne.modeler.project.ProjectSession;
-import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.map.NamedQuery;
 
 public class CreateQueryUndoableEdit extends CayenneUndoableEdit {
 
     private Project project;
     private DataMap map;
-    private QueryDescriptor query;
+    private NamedQuery query;
 
-    public CreateQueryUndoableEdit(ProjectSession session, Project project, DataMap map, QueryDescriptor query) {
+    public CreateQueryUndoableEdit(ProjectSession session, Project project, DataMap map, NamedQuery query) {
         super(session);
         this.project = project;
         this.map = map;

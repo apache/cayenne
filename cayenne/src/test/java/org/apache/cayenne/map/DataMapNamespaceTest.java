@@ -110,18 +110,18 @@ public class DataMapNamespaceTest {
         MockMappingNamespace namespace = new MockMappingNamespace();
         map.setNamespace(namespace);
 
-        QueryDescriptor q1 = new SelectQueryDescriptor();
+        NamedQuery q1 = new NamedSelectQuery();
         q1.setName("query");
-        QueryDescriptor q2 = new SelectQueryDescriptor();
+        NamedQuery q2 = new NamedSelectQuery();
         q2.setName("query");
-        namespace.addQueryDescriptor(q1);
+        namespace.addNamedQuery(q1);
 
-        assertSame(q1, map.getQueryDescriptor("query"));
+        assertSame(q1, map.getNamedQuery("query"));
 
-        map.addQueryDescriptor(q2);
-        assertSame(q2, map.getQueryDescriptor("query"));
+        map.addNamedQuery(q2);
+        assertSame(q2, map.getNamedQuery("query"));
 
-        map.removeQueryDescriptor("query");
-        assertSame(q1, map.getQueryDescriptor("query"));
+        map.removeNamedQuery("query");
+        assertSame(q1, map.getNamedQuery("query"));
     }
 }

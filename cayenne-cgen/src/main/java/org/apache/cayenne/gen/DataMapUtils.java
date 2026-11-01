@@ -31,8 +31,8 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.map.QueryDescriptor;
-import org.apache.cayenne.map.SelectQueryDescriptor;
+import org.apache.cayenne.map.NamedQuery;
+import org.apache.cayenne.map.NamedSelectQuery;
 import org.apache.cayenne.projecttools.validation.SelectQueryPaths;
 import org.apache.cayenne.projecttools.validation.SelectQueryPaths.Clause;
 import org.apache.cayenne.projecttools.validation.SelectQueryPaths.PathRef;
@@ -64,16 +64,16 @@ public class DataMapUtils {
 
 	// the parameters are requested many times per query by the templates, the identity of the parsed query detects a
 	// change of the query String
-	private final Map<SelectQueryDescriptor, CachedParameters> parameters = new IdentityHashMap<>();
+	private final Map<NamedSelectQuery, CachedParameters> parameters = new IdentityHashMap<>();
 
 	/**
 	 * Return valid method name based on query name (replace all illegal
 	 * characters with underscore '_').
 	 * 
-	 * @param query descriptor
+	 * @param query named query
 	 * @return Method name that perform query.
 	 */
-	public String getQueryMethodName(QueryDescriptor query) {
+	public String getQueryMethodName(NamedQuery query) {
 		return Util.underscoredToJava(query.getName(), true);
 	}
 
@@ -83,7 +83,7 @@ public class DataMapUtils {
 	 *
 	 * @since 5.0
 	 */
-	public List<QueryParameter> getParameters(SelectQueryDescriptor query) {
+	public List<QueryParameter> getParameters(NamedSelectQuery query) {
 		ObjectSelect<?> parsed = query.isValid() ? query.getParsedQuery() : null;
 		CachedParameters cached = parameters.get(query);
 		if (cached == null || cached.parsed() != parsed) {
@@ -97,7 +97,7 @@ public class DataMapUtils {
 	 * Returns whether a method can be generated for the query: the query String can be parsed, its root is mapped,
 	 * and the entity names and paths of all its clauses can be resolved.
 	 */
-	public Boolean isValidParameterNames(SelectQueryDescriptor query) {
+	public Boolean isValidParameterNames(NamedSelectQuery query) {
 		if (!query.isValid() || !(query.getRoot() instanceof ObjEntity || query.getRoot() instanceof DbEntity)) {
 			return false;
 		}
@@ -105,7 +105,7 @@ public class DataMapUtils {
 		return SelectQueryPaths.check(query).isEmpty();
 	}
 
-	public boolean hasParameters(SelectQueryDescriptor query) {
+	public boolean hasParameters(NamedSelectQuery query) {
 		return !getParameters(query).isEmpty();
 	}
 
@@ -115,7 +115,7 @@ public class DataMapUtils {
 	 *
 	 * @since 5.0
 	 */
-	public String getResultType(SelectQueryDescriptor query) {
+	public String getResultType(NamedSelectQuery query) {
 		return switch (query.getResultKind()) {
 			case ENTITY -> ((ObjEntity) query.getRoot()).getClassName();
 			case SCALAR -> OBJECT_TYPE;
@@ -126,7 +126,7 @@ public class DataMapUtils {
 		};
 	}
 
-	private List<QueryParameter> computeParameters(SelectQueryDescriptor query) {
+	private List<QueryParameter> computeParameters(NamedSelectQuery query) {
 		Map<String, String> types = parameterTypes(query.getDataMap(), query.getParsedQuery());
 
 		// the Java names must be unique and must not clash with the keywords and the variables of the generated method

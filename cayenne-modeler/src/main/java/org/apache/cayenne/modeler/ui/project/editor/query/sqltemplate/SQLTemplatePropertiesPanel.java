@@ -22,7 +22,7 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.SQLQueryDescriptor;
+import org.apache.cayenne.map.NamedSQLQuery;
 import org.apache.cayenne.modeler.event.model.QueryEvent;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.toolkit.combobox.CMUndoableComboBox;
@@ -38,12 +38,12 @@ import com.jgoodies.forms.layout.RowSpec;
  * The properties of a SQLTemplate that are not a part of its SQL: caching, the result objects, the page size and the
  * capitalization of the result column labels.
  */
-class SQLTemplatePropertiesPanel extends RawQueryPropertiesPanel<SQLQueryDescriptor> {
+class SQLTemplatePropertiesPanel extends RawQueryPropertiesPanel<NamedSQLQuery> {
 
     private JComboBox<CapsStrategy> labelCase;
 
     SQLTemplatePropertiesPanel(ProjectSession session) {
-        super(session, SQLQueryDescriptor.class);
+        super(session, NamedSQLQuery.class);
     }
 
     @Override
@@ -53,8 +53,8 @@ class SQLTemplatePropertiesPanel extends RawQueryPropertiesPanel<SQLQueryDescrip
 
         labelCase.addActionListener(event -> {
             CapsStrategy value = (CapsStrategy) labelCase.getModel().getSelectedItem();
-            setQueryProperty(SQLQueryDescriptor::getColumnNamesCapitalization,
-                    SQLQueryDescriptor::setColumnNamesCapitalization, value);
+            setQueryProperty(NamedSQLQuery::getColumnNamesCapitalization,
+                    NamedSQLQuery::setColumnNamesCapitalization, value);
         });
 
         PanelBuilder builder = super.createPanelBuilder();
@@ -69,7 +69,7 @@ class SQLTemplatePropertiesPanel extends RawQueryPropertiesPanel<SQLQueryDescrip
     }
 
     @Override
-    public void initFromModel(SQLQueryDescriptor query) {
+    public void initFromModel(NamedSQLQuery query) {
         super.initFromModel(query);
 
         DefaultComboBoxModel<CapsStrategy> labelCaseModel = new DefaultComboBoxModel<>(LabelCapsRenderer.STRATEGIES);
@@ -82,7 +82,7 @@ class SQLTemplatePropertiesPanel extends RawQueryPropertiesPanel<SQLQueryDescrip
 
     @Override
     protected void setEntity(ObjEntity entity) {
-        SQLQueryDescriptor template = getQuery();
+        NamedSQLQuery template = getQuery();
         if (template != null) {
             // the root of a query that fetches data rows is the DataMap
             template.setRoot(entity != null ? entity : session.getSelectedDataMap());
@@ -91,7 +91,7 @@ class SQLTemplatePropertiesPanel extends RawQueryPropertiesPanel<SQLQueryDescrip
     }
 
     @Override
-    protected ObjEntity getEntity(SQLQueryDescriptor query) {
+    protected ObjEntity getEntity(NamedSQLQuery query) {
         return query.getRoot() instanceof ObjEntity entity ? entity : null;
     }
 

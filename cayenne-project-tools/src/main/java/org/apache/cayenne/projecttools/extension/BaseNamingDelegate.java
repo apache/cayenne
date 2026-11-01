@@ -32,7 +32,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
-import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.map.NamedQuery;
 
 /**
  * @since 4.1
@@ -100,7 +100,7 @@ public class BaseNamingDelegate implements ProjectNodeVisitor<String> {
     }
 
     @Override
-    public String visitQuery(QueryDescriptor query) {
+    public String visitQuery(NamedQuery query) {
         return null;
     }
 }

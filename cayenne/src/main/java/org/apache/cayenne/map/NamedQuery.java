@@ -29,35 +29,20 @@ import org.apache.cayenne.util.XMLSerializable;
 import java.util.Map;
 
 /**
- * Generic descriptor of a Cayenne query.
+ * A query defined in the DataMap under a name. Builds a runtime {@link Query} on demand.
  *
- * @since 4.0
+ * @since 6.0
  */
-public abstract class QueryDescriptor implements ProjectNode, XMLSerializable {
+public abstract class NamedQuery implements ProjectNode, XMLSerializable {
 
-    /**
-     * @since 4.1
-     */
     public static final String OBJ_ENTITY_ROOT = "objEntity";
 
-    /**
-     * @since 4.1
-     */
     public static final String DB_ENTITY_ROOT = "dbEntity";
 
-    /**
-     * @since 4.1
-     */
     public static final String PROCEDURE_ROOT = "procedure";
 
-    /**
-     * @since 4.1
-     */
     public static final String DATA_MAP_ROOT = "dataMap";
 
-    /**
-     * @since 4.1
-     */
     public static final String JAVA_CLASS_ROOT = "javaClass";
 
     protected String name;
@@ -108,56 +93,39 @@ public abstract class QueryDescriptor implements ProjectNode, XMLSerializable {
 
     /**
      * Returns the page size of the query. Zero means no pagination.
-     *
-     * @since 5.0
      */
     public int getPageSize() {
         return pageSize;
     }
 
-    /**
-     * @since 5.0
-     */
     public void setPageSize(int pageSize) {
         this.pageSize = pageSize;
     }
 
     /**
      * Returns the JDBC statement fetch size of the query. Zero means the driver default.
-     *
-     * @since 5.0
      */
     public int getStatementFetchSize() {
         return statementFetchSize;
     }
 
-    /**
-     * @since 5.0
-     */
     public void setStatementFetchSize(int statementFetchSize) {
         this.statementFetchSize = statementFetchSize;
     }
 
     /**
      * Returns whether the query fetches DataRows instead of Persistent objects.
-     *
-     * @since 5.0
      */
     public boolean isFetchingDataRows() {
         return fetchingDataRows;
     }
 
-    /**
-     * @since 5.0
-     */
     public void setFetchingDataRows(boolean fetchingDataRows) {
         this.fetchingDataRows = fetchingDataRows;
     }
 
     /**
      * Returns the cache strategy of the query, that is never null.
-     *
-     * @since 5.0
      */
     public QueryCacheStrategy getCacheStrategy() {
         return cacheStrategy;
@@ -165,8 +133,6 @@ public abstract class QueryDescriptor implements ProjectNode, XMLSerializable {
 
     /**
      * Sets the cache strategy of the query. A null value resets it to the default strategy.
-     *
-     * @since 5.0
      */
     public void setCacheStrategy(QueryCacheStrategy cacheStrategy) {
         this.cacheStrategy = cacheStrategy != null ? cacheStrategy : QueryCacheStrategy.getDefaultStrategy();
@@ -174,30 +140,23 @@ public abstract class QueryDescriptor implements ProjectNode, XMLSerializable {
 
     /**
      * Returns the cache group of the query, or null if none is set.
-     *
-     * @since 5.0
      */
     public String getCacheGroup() {
         return cacheGroup;
     }
 
-    /**
-     * @since 5.0
-     */
     public void setCacheGroup(String cacheGroup) {
         this.cacheGroup = cacheGroup;
     }
 
     /**
-     * Assembles Cayenne query instance of appropriate type from this descriptor.
+     * Assembles Cayenne query instance of appropriate type from this named query.
      */
     public abstract Query<?> buildQuery();
 
     /**
-     * Assembles Cayenne query instance of appropriate type from this descriptor, applying a map of named
+     * Assembles Cayenne query instance of appropriate type from this named query, applying a map of named
      * parameters to it.
-     *
-     * @since 5.0
      */
     public abstract Query<?> buildQuery(Map<String, ?> parameters);
 

@@ -38,7 +38,7 @@ import org.apache.cayenne.modeler.project.ProjectComparators;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
-import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.map.NamedQuery;
 import org.apache.cayenne.modeler.ui.project.editor.EditorForm;
 
 /**
@@ -46,7 +46,7 @@ import org.apache.cayenne.modeler.ui.project.editor.EditorForm;
  * supporting Persistent objects retrieval.
  * 
  */
-public abstract class RawQueryPropertiesPanel<Q extends QueryDescriptor> extends SelectPropertiesPanel<Q> {
+public abstract class RawQueryPropertiesPanel<Q extends NamedQuery> extends SelectPropertiesPanel<Q> {
 
     protected JCheckBox persistentObjects;
     protected JComboBox<ObjEntity> entities;
@@ -139,7 +139,7 @@ public abstract class RawQueryPropertiesPanel<Q extends QueryDescriptor> extends
             entities.getModel().setSelectedItem(null);
         }
 
-        setQueryProperty(QueryDescriptor::isFetchingDataRows, QueryDescriptor::setFetchingDataRows,
+        setQueryProperty(NamedQuery::isFetchingDataRows, NamedQuery::setFetchingDataRows,
                 !fetchingPersistentObjects);
     }
 }

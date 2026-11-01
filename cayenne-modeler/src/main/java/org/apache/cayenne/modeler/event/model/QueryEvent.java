@@ -20,48 +20,48 @@
 package org.apache.cayenne.modeler.event.model;
 
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.map.NamedQuery;
 
 public class QueryEvent extends ModelEvent {
 
-    private final QueryDescriptor query;
+    private final NamedQuery query;
     private final DataMap map;
 
-    public static QueryEvent ofAdd(Object source, QueryDescriptor query) {
+    public static QueryEvent ofAdd(Object source, NamedQuery query) {
         return new QueryEvent(source, query, null, Type.ADD, null);
     }
 
-    public static QueryEvent ofAdd(Object source, QueryDescriptor query, DataMap map) {
+    public static QueryEvent ofAdd(Object source, NamedQuery query, DataMap map) {
         return new QueryEvent(source, query, map, Type.ADD, null);
     }
 
-    public static QueryEvent ofChange(Object source, QueryDescriptor query) {
+    public static QueryEvent ofChange(Object source, NamedQuery query) {
         return new QueryEvent(source, query, null, Type.CHANGE, null);
     }
 
-    public static QueryEvent ofChange(Object source, QueryDescriptor query, String oldName) {
+    public static QueryEvent ofChange(Object source, NamedQuery query, String oldName) {
         return new QueryEvent(source, query, null, Type.CHANGE, oldName);
     }
 
-    public static QueryEvent ofChange(Object source, QueryDescriptor query, String oldName, DataMap map) {
+    public static QueryEvent ofChange(Object source, NamedQuery query, String oldName, DataMap map) {
         return new QueryEvent(source, query, map, Type.CHANGE, oldName);
     }
 
-    public static QueryEvent ofRemove(Object source, QueryDescriptor query) {
+    public static QueryEvent ofRemove(Object source, NamedQuery query) {
         return new QueryEvent(source, query, null, Type.REMOVE, null);
     }
 
-    public static QueryEvent ofRemove(Object source, QueryDescriptor query, DataMap map) {
+    public static QueryEvent ofRemove(Object source, NamedQuery query, DataMap map) {
         return new QueryEvent(source, query, map, Type.REMOVE, null);
     }
 
-    private QueryEvent(Object source, QueryDescriptor query, DataMap map, Type type, String oldName) {
+    private QueryEvent(Object source, NamedQuery query, DataMap map, Type type, String oldName) {
         super(source, type, oldName);
         this.query = query;
         this.map = map;
     }
 
-    public QueryDescriptor getQuery() {
+    public NamedQuery getQuery() {
         return query;
     }
 

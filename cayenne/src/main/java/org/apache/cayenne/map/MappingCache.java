@@ -40,7 +40,7 @@ class MappingCache implements MappingNamespace {
     protected static final Logger LOGGER = LoggerFactory.getLogger(MappingCache.class);
 
     protected Collection<DataMap> maps;
-    protected Map<String, QueryDescriptor> queryDesriptors;
+    protected Map<String, NamedQuery> namedQueries;
     protected Map<String, Embeddable> embeddables;
     protected Map<String, DbEntity> dbEntities;
     protected Map<String, ObjEntity> objEntities;
@@ -53,7 +53,7 @@ class MappingCache implements MappingNamespace {
         this.maps = maps;
 
         this.embeddables = new HashMap<>();
-        this.queryDesriptors = new HashMap<>();
+        this.namedQueries = new HashMap<>();
         this.dbEntities = new HashMap<>();
         this.objEntities = new HashMap<>();
         this.objEntitiesByClassName = new HashMap<>();
@@ -102,8 +102,8 @@ class MappingCache implements MappingNamespace {
             // index embeddables
             embeddables.putAll(map.getEmbeddableMap());
 
-            // index query descriptors
-            queryDesriptors.putAll(map.getQueryDescriptorMap());
+            // index named queries
+            namedQueries.putAll(map.getNamedQueryMap());
         }
 
         // restart the map iterator to index inheritance
@@ -178,8 +178,8 @@ class MappingCache implements MappingNamespace {
         return procedures.get(procedureName);
     }
 
-    public QueryDescriptor getQueryDescriptor(String queryName) {
-        return queryDesriptors.get(queryName);
+    public NamedQuery getNamedQuery(String queryName) {
+        return namedQueries.get(queryName);
     }
 
     public DbEntity getDbEntity(String name) {
@@ -255,7 +255,7 @@ class MappingCache implements MappingNamespace {
         return c;
     }
 
-    public Collection<QueryDescriptor> getQueryDescriptors() {
+    public Collection<NamedQuery> getNamedQueries() {
         // TODO: LEGACY SUPPORT:
         // some downstream code (like Modeler and merge framework) expect
         // always fresh list here, so instead of doing the right thing of
@@ -266,12 +266,12 @@ class MappingCache implements MappingNamespace {
         }
 
         if (maps.size() == 1) {
-            return maps.iterator().next().getQueryDescriptors();
+            return maps.iterator().next().getNamedQueries();
         }
 
-        CompositeCollection<QueryDescriptor> c = new CompositeCollection<>();
+        CompositeCollection<NamedQuery> c = new CompositeCollection<>();
         for (DataMap map : maps) {
-            c.addComposited(map.getQueryDescriptors());
+            c.addComposited(map.getNamedQueries());
         }
 
         return c;

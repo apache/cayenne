@@ -34,7 +34,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
-import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.map.NamedQuery;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.toolkit.AppAction;
@@ -208,7 +208,7 @@ public class PasteAction extends AppAction implements FlavorListener {
                         .build());
             }
 
-            for (QueryDescriptor query : dataMap.getQueryDescriptors()) {
+            for (NamedQuery query : dataMap.getNamedQueries()) {
                 query.setName(NameBuilder.of(query, dataMap)
                         .preferredName(query.getName())
                         .dupesPattern(COPY_PATTERN)
@@ -286,7 +286,7 @@ public class PasteAction extends AppAction implements FlavorListener {
                         session,
                         dataMap,
                         embeddable);
-            } else if (content instanceof QueryDescriptor query) {
+            } else if (content instanceof NamedQuery query) {
 
                 query.setName(NameBuilder
                         .of(query, dataMap)
@@ -295,7 +295,7 @@ public class PasteAction extends AppAction implements FlavorListener {
                         .build());
                 query.setDataMap(dataMap);
 
-                dataMap.addQueryDescriptor(query);
+                dataMap.addNamedQuery(query);
                 QueryTypeDialog.fireQueryEvent(this, session, dataMap, query);
             } else if (content instanceof Procedure procedure) {
                 // paste Procedure to DataMap

@@ -19,14 +19,14 @@
 package org.apache.cayenne.projecttools.validation;
 
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.SQLQueryDescriptor;
+import org.apache.cayenne.map.NamedSQLQuery;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationResult;
 
 import java.util.Map;
 import java.util.function.Supplier;
 
-class SQLQueryValidator extends BaseQueryValidator<SQLQueryDescriptor> {
+class SQLQueryValidator extends BaseQueryValidator<NamedSQLQuery> {
 
     /**
      * @param configSupplier the config defining the behavior of this validator.
@@ -37,21 +37,21 @@ class SQLQueryValidator extends BaseQueryValidator<SQLQueryDescriptor> {
     }
 
     @Override
-    protected ProjectNodeValidator<SQLQueryDescriptor>.Performer<SQLQueryDescriptor> validateQuery(
-            SQLQueryDescriptor query, ValidationResult validationResult) {
+    protected ProjectNodeValidator<NamedSQLQuery>.Performer<NamedSQLQuery> validateQuery(
+            NamedSQLQuery query, ValidationResult validationResult) {
         return super.validateQuery(query, validationResult)
                 .performIfEnabled(Inspection.SQL_TEMPLATE_NO_ROOT, this::checkForRoot)
                 .performIfEnabled(Inspection.SQL_TEMPLATE_NO_DEFAULT_SQL, this::checkForDefaultSQL);
     }
 
-    private void checkForRoot(SQLQueryDescriptor query, ValidationResult validationResult) {
+    private void checkForRoot(NamedSQLQuery query, ValidationResult validationResult) {
         DataMap map = query.getDataMap();
         if (query.getRoot() == null && map != null) {
             addFailure(validationResult, query, "SQLTemplate query '%s' has no root", query.getName());
         }
     }
 
-    private void checkForDefaultSQL(SQLQueryDescriptor query, ValidationResult validationResult) {
+    private void checkForDefaultSQL(NamedSQLQuery query, ValidationResult validationResult) {
         if (!Util.isEmptyString(query.getSql())) {
             return;
         }

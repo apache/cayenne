@@ -31,7 +31,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
-import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.map.NamedQuery;
 
 import java.util.Objects;
 import java.util.function.Predicate;
@@ -97,7 +97,7 @@ public class NameBuilder {
             case DbRelationship ignored -> "untitledRel";
             case Procedure ignored -> "procedure";
             case ProcedureParameter ignored -> "UntitledProcedureParameter";
-            case QueryDescriptor ignored -> "query";
+            case NamedQuery ignored -> "query";
             default -> throw new IllegalArgumentException("Unsupported node type: " + node.getClass().getName());
         };
     }
@@ -133,7 +133,7 @@ public class NameBuilder {
             case DbRelationship ignored -> this::dbEntityPropertyExists;
             case Procedure ignored -> name -> ((DataMap) parent).getProcedure(name) != null;
             case ProcedureParameter ignored -> this::procedureParameterExists;
-            case QueryDescriptor ignored -> name -> ((DataMap) parent).getQueryDescriptor(name) != null;
+            case NamedQuery ignored -> name -> ((DataMap) parent).getNamedQuery(name) != null;
             default -> throw new IllegalArgumentException("Unsupported node type: " + node.getClass().getName());
         };
 

@@ -76,10 +76,10 @@ public class DataMapHandler extends NamespaceAwareNestedTagHandler {
                 case DbRelationshipHandler.DB_RELATIONSHIP_TAG -> new DbRelationshipHandler(this, dataMap);
                 case ObjRelationshipHandler.OBJ_RELATIONSHIP_TAG -> new ObjRelationshipHandler(this, dataMap);
                 case ProcedureHandler.PROCEDURE_TAG -> new ProcedureHandler(this, dataMap);
-                case SelectQueryDescriptorHandler.OBJECT_QUERY_TAG -> new SelectQueryDescriptorHandler(this, dataMap);
-                case SQLQueryDescriptorHandler.SQL_QUERY_TAG -> new SQLQueryDescriptorHandler(this, dataMap);
-                case ProcedureQueryDescriptorHandler.PROCEDURE_QUERY_TAG ->
-                        new ProcedureQueryDescriptorHandler(this, dataMap);
+                case NamedSelectQueryHandler.OBJECT_QUERY_TAG -> new NamedSelectQueryHandler(this, dataMap);
+                case NamedSQLQueryHandler.SQL_QUERY_TAG -> new NamedSQLQueryHandler(this, dataMap);
+                case NamedProcedureQueryHandler.PROCEDURE_QUERY_TAG ->
+                        new NamedProcedureQueryHandler(this, dataMap);
                 case EmbeddableHandler.EMBEDDABLE_TAG -> new EmbeddableHandler(this, dataMap);
                 default -> super.createChildTagHandler(namespaceURI, localName, qName, attributes);
             };

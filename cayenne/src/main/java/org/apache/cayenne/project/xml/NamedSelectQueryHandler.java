@@ -19,53 +19,62 @@
 package org.apache.cayenne.project.xml;
 
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.ProcedureQueryDescriptor;
+import org.apache.cayenne.map.NamedSelectQuery;
+import org.apache.cayenne.query.ObjectSelect;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
 /**
- * A handler of the "procedureQuery" tag of a DataMap.
+ * A handler of the "objectQuery" tag of a DataMap. The query is defined by a single String in the syntax of
+ * {@link ObjectSelect#parse(String, Object...)}.
  *
  * @since 5.0
  */
-public class ProcedureQueryDescriptorHandler extends QueryDescriptorHandler {
+public class NamedSelectQueryHandler extends NamedQueryHandler {
 
-    static final String PROCEDURE_QUERY_TAG = "procedureQuery";
+    static final String OBJECT_QUERY_TAG = "objectQuery";
+    private static final String QL_TAG = "ql";
 
-    private ProcedureQueryDescriptor descriptor;
+    private NamedSelectQuery namedQuery;
 
-    public ProcedureQueryDescriptorHandler(NamespaceAwareNestedTagHandler parentHandler, DataMap map) {
+    public NamedSelectQueryHandler(NamespaceAwareNestedTagHandler parentHandler, DataMap map) {
         super(parentHandler, map);
     }
 
     @Override
-    public ProcedureQueryDescriptor getQueryDescriptor() {
-        return descriptor;
+    public NamedSelectQuery getNamedQuery() {
+        return namedQuery;
     }
 
     @Override
     protected boolean processElement(String namespaceURI, String localName, Attributes attributes) throws SAXException {
         return switch (localName) {
-            case PROCEDURE_QUERY_TAG -> {
-                descriptor = new ProcedureQueryDescriptor();
-                loadQuerySettings(descriptor, attributes);
-                descriptor.setRoot(resolveRoot(attributes));
-                descriptor.setResultEntityName(attributes.getValue("resultEntity"));
-                descriptor.setFetchLimit(intAttribute(attributes, "fetchLimit"));
-                descriptor.setFetchOffset(intAttribute(attributes, "fetchOffset"));
-                descriptor.setColumnNamesCapitalization(columnNameCapitalization(attributes));
+            case OBJECT_QUERY_TAG -> {
+                namedQuery = new NamedSelectQuery();
+                loadQuerySettings(namedQuery, attributes);
                 yield true;
             }
-            case CACHE_GROUP_TAG -> true;
+            case QL_TAG, CACHE_GROUP_TAG -> true;
             default -> false;
         };
     }
 
     @Override
     protected boolean processCharData(String localName, String data) {
-        if (CACHE_GROUP_TAG.equals(localName)) {
-            descriptor.setCacheGroup(data);
+        switch (localName) {
+            case QL_TAG -> setSelect(data);
+            case CACHE_GROUP_TAG -> namedQuery.setCacheGroup(data);
         }
         return true;
+    }
+
+    /**
+     * Sets the query from its String form. The String is not parsed here: a String that can't be parsed is kept as is,
+     * and fails when the query is run, or the project is validated.
+     */
+    private void setSelect(String select) {
+        if (!select.isBlank()) {
+            namedQuery.setQl(select);
+        }
     }
 }

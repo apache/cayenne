@@ -35,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class ProcedureQueryDescriptorTest {
+public class NamedProcedureQueryTest {
 
     private static EntityResolver resolver(String procedureName) {
         DataMap map = new DataMap("m");
@@ -45,11 +45,11 @@ public class ProcedureQueryDescriptorTest {
 
     @Test
     public void buildQueryWithParameters() {
-        ProcedureQueryDescriptor descriptor = new ProcedureQueryDescriptor();
-        descriptor.setRoot("p1");
+        NamedProcedureQuery namedQuery = new NamedProcedureQuery();
+        namedQuery.setRoot("p1");
 
         Map<String, Object> params = Map.of("a", "1", "b", "2");
-        ProcedureQuery<?> query = descriptor.buildQuery(params);
+        ProcedureQuery<?> query = namedQuery.buildQuery(params);
 
         assertEquals(params, query.resolve(resolver("p1")).params());
     }
@@ -65,7 +65,7 @@ public class ProcedureQueryDescriptorTest {
         entity.setDbEntity(table);
         map.addObjEntity(entity);
 
-        ProcedureQueryDescriptor builder = new ProcedureQueryDescriptor();
+        NamedProcedureQuery builder = new NamedProcedureQuery();
         builder.setRoot(procedure);
         builder.setResultEntityName("A");
 
@@ -81,7 +81,7 @@ public class ProcedureQueryDescriptorTest {
         Procedure procedure = new Procedure("p1");
         map.addProcedure(procedure);
 
-        ProcedureQueryDescriptor builder = new ProcedureQueryDescriptor();
+        NamedProcedureQuery builder = new NamedProcedureQuery();
         builder.setRoot("p1");
 
         ResolvedProcedure metadata = builder.buildQuery().resolve(new EntityResolver(List.of(map)));
@@ -92,7 +92,7 @@ public class ProcedureQueryDescriptorTest {
 
     @Test
     public void getQueryNoRoot() {
-        ProcedureQueryDescriptor builder = new ProcedureQueryDescriptor();
+        NamedProcedureQuery builder = new NamedProcedureQuery();
         builder.setName("q");
         assertThrows(CayenneRuntimeException.class, builder::buildQuery);
 
@@ -102,7 +102,7 @@ public class ProcedureQueryDescriptorTest {
 
     @Test
     public void getQueryProperties() {
-        ProcedureQueryDescriptor builder = new ProcedureQueryDescriptor();
+        NamedProcedureQuery builder = new NamedProcedureQuery();
         builder.setRoot("p1");
         builder.setFetchLimit(5);
         builder.setFetchOffset(2);
@@ -126,7 +126,7 @@ public class ProcedureQueryDescriptorTest {
 
     @Test
     public void columnNamesCapitalization() {
-        ProcedureQueryDescriptor builder = new ProcedureQueryDescriptor();
+        NamedProcedureQuery builder = new NamedProcedureQuery();
         builder.setRoot("p1");
         assertNull(builder.getColumnNamesCapitalization());
 

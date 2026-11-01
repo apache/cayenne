@@ -22,7 +22,7 @@ package org.apache.cayenne.modeler.toolkit.checkbox;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.SQLQueryDescriptor;
+import org.apache.cayenne.map.NamedSQLQuery;
 import org.apache.cayenne.modeler.ui.project.ProjectView;
 import org.apache.cayenne.modeler.ui.project.editor.EditorPanelView;
 
@@ -78,7 +78,7 @@ public class CMCheckBoxUndoableEdit extends AbstractUndoableEdit {
             tabbedPane = editor.getObjDetailView();
         }
 
-        if (targetObject instanceof SQLQueryDescriptor) {
+        if (targetObject instanceof NamedSQLQuery) {
             tabbedPane = editor.getSqlTemplateView();
         }
 

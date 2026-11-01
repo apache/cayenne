@@ -23,9 +23,9 @@ import org.apache.cayenne.modeler.ui.project.editor.query.PrefetchModel;
 import org.apache.cayenne.modeler.event.model.QueryEvent;
 import org.apache.cayenne.map.Attribute;
 import org.apache.cayenne.map.Entity;
-import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.map.NamedQuery;
 import org.apache.cayenne.map.Relationship;
-import org.apache.cayenne.map.SQLQueryDescriptor;
+import org.apache.cayenne.map.NamedSQLQuery;
 import org.apache.cayenne.modeler.toolkit.ProjectPanel;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.toolkit.AppAction;
@@ -67,7 +67,7 @@ public class SQLTemplatePrefetchTab extends ProjectPanel {
     private static final String REAL_PANEL = "real";
     private static final String PLACEHOLDER_PANEL = "placeholder";
 
-    protected SQLQueryDescriptor sqlTemplate;
+    protected NamedSQLQuery sqlTemplate;
 
     protected ColumnViewPanel browser;
     protected CMTable table;
@@ -110,9 +110,9 @@ public class SQLTemplatePrefetchTab extends ProjectPanel {
     }
 
     protected void initFromModel() {
-        QueryDescriptor query = session.getSelectedQuery();
+        NamedQuery query = session.getSelectedQuery();
 
-        if (!(query instanceof SQLQueryDescriptor)) {
+        if (!(query instanceof NamedSQLQuery)) {
             processInvalidModel("Unknown query.");
             return;
         }
@@ -122,7 +122,7 @@ public class SQLTemplatePrefetchTab extends ProjectPanel {
             return;
         }
 
-        this.sqlTemplate = (SQLQueryDescriptor) query;
+        this.sqlTemplate = (NamedSQLQuery) query;
         browser.setModel(createBrowserModel((Entity<?,?,?>) sqlTemplate.getRoot()));
 
         table.setModel(createTableModel());

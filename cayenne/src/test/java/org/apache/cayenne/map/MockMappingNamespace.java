@@ -29,7 +29,7 @@ public class MockMappingNamespace implements MappingNamespace {
 
 	private Map<String, DbEntity> dbEntities = new HashMap<>();
 	private Map<String, ObjEntity> objEntities = new HashMap<>();
-	private Map<String, QueryDescriptor> queryDescriptors = new HashMap<>();
+	private Map<String, NamedQuery> namedQueries = new HashMap<>();
 	private Map<String, Procedure> procedures = new HashMap<>();
 
 	public Embeddable getEmbeddable(String className) {
@@ -44,8 +44,8 @@ public class MockMappingNamespace implements MappingNamespace {
 		objEntities.put(entity.getName(), entity);
 	}
 
-	public void addQueryDescriptor(QueryDescriptor queryDescriptor) {
-		queryDescriptors.put(queryDescriptor.getName(), queryDescriptor);
+	public void addNamedQuery(NamedQuery namedQuery) {
+		namedQueries.put(namedQuery.getName(), namedQuery);
 	}
 
 	public void addProcedure(Procedure procedure) {
@@ -64,8 +64,8 @@ public class MockMappingNamespace implements MappingNamespace {
 		return procedures.get(name);
 	}
 
-	public QueryDescriptor getQueryDescriptor(String name) {
-		return queryDescriptors.get(name);
+	public NamedQuery getNamedQuery(String name) {
+		return namedQueries.get(name);
 	}
 
 	public Collection<DbEntity> getDbEntities() {
@@ -80,8 +80,8 @@ public class MockMappingNamespace implements MappingNamespace {
 		return procedures.values();
 	}
 
-	public Collection<QueryDescriptor> getQueryDescriptors() {
-		return queryDescriptors.values();
+	public Collection<NamedQuery> getNamedQueries() {
+		return namedQueries.values();
 	}
 
 	public Collection<Embeddable> getEmbeddables() {

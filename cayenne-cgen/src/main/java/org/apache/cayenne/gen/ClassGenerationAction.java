@@ -211,7 +211,7 @@ public class ClassGenerationAction {
             return;
         }
 
-        Artifact artifact = new DataMapArtifact(configuration.getDataMap(), dataMap.getQueryDescriptors());
+        Artifact artifact = new DataMapArtifact(configuration.getDataMap(), dataMap.getNamedQueries());
         if (!configuration.getArtifacts().contains(artifact)) {
             configuration.addArtifact(artifact);
         }

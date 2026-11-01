@@ -20,12 +20,12 @@ package org.apache.cayenne.projecttools.validation;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Procedure;
-import org.apache.cayenne.map.ProcedureQueryDescriptor;
+import org.apache.cayenne.map.NamedProcedureQuery;
 import org.apache.cayenne.validation.ValidationResult;
 
 import java.util.function.Supplier;
 
-class ProcedureQueryValidator extends BaseQueryValidator<ProcedureQueryDescriptor> {
+class ProcedureQueryValidator extends BaseQueryValidator<NamedProcedureQuery> {
 
     /**
      * @param configSupplier the config defining the behavior of this validator.
@@ -36,14 +36,14 @@ class ProcedureQueryValidator extends BaseQueryValidator<ProcedureQueryDescripto
     }
 
     @Override
-    protected ProjectNodeValidator<ProcedureQueryDescriptor>.Performer<ProcedureQueryDescriptor> validateQuery(
-            ProcedureQueryDescriptor query, ValidationResult validationResult) {
+    protected ProjectNodeValidator<NamedProcedureQuery>.Performer<NamedProcedureQuery> validateQuery(
+            NamedProcedureQuery query, ValidationResult validationResult) {
         return super.validateQuery(query, validationResult)
                 .performIfEnabled(Inspection.PROCEDURE_QUERY_NO_ROOT, this::checkForRoot)
                 .performIfEnabled(Inspection.PROCEDURE_QUERY_INVALID_ROOT, this::validateRoot);
     }
 
-    private void checkForRoot(ProcedureQueryDescriptor query, ValidationResult validationResult) {
+    private void checkForRoot(NamedProcedureQuery query, ValidationResult validationResult) {
         DataMap map = query.getDataMap();
         Object root = query.getRoot();
 
@@ -52,7 +52,7 @@ class ProcedureQueryValidator extends BaseQueryValidator<ProcedureQueryDescripto
         }
     }
 
-    private void validateRoot(ProcedureQueryDescriptor query, ValidationResult validationResult) {
+    private void validateRoot(NamedProcedureQuery query, ValidationResult validationResult) {
         DataMap map = query.getDataMap();
         Object root = query.getRoot();
         if (root == null) {

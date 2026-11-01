@@ -27,8 +27,8 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.map.QueryDescriptor;
-import org.apache.cayenne.map.SelectQueryDescriptor;
+import org.apache.cayenne.map.NamedQuery;
+import org.apache.cayenne.map.NamedSelectQuery;
 import org.apache.cayenne.util.XMLEncoder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -127,11 +127,11 @@ public class EOModelProcessorTest {
     protected void assertLoadedQueries(DataMap map) throws Exception {
 
         // queries
-        QueryDescriptor query = map.getQueryDescriptor("ExhibitType_TestQuery");
+        NamedQuery query = map.getNamedQuery("ExhibitType_TestQuery");
 
         assertNotNull(query);
-        assertInstanceOf(SelectQueryDescriptor.class, query);
-        assertTrue(query instanceof SelectQueryDescriptor);
+        assertInstanceOf(NamedSelectQuery.class, query);
+        assertTrue(query instanceof NamedSelectQuery);
 
         assertSame(map.getObjEntity("ExhibitType"), query.getRoot());
     }

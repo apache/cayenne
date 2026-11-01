@@ -27,7 +27,7 @@ import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
-import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.map.NamedQuery;
 import org.apache.cayenne.modeler.event.display.DataMapDisplayEvent;
 import org.apache.cayenne.modeler.event.display.DataMapDisplayListener;
 import org.apache.cayenne.modeler.event.display.DbEntityDisplayEvent;
@@ -470,7 +470,7 @@ public class ProjectTree extends JTree
             return;
         }
 
-        QueryDescriptor query = e.getQuery();
+        NamedQuery query = e.getQuery();
         DefaultMutableTreeNode currentNode = new DefaultMutableTreeNode(query, false);
         positionNode(node, currentNode, ProjectComparators.forDataMapChildren());
         navigateTo(currentNode);
@@ -728,7 +728,7 @@ public class ProjectTree extends JTree
                     project,
                     (DataMap) data[data.length - 2],
                     proc));
-        } else if (obj instanceof QueryDescriptor qd) {
+        } else if (obj instanceof NamedQuery qd) {
             session.displayQuery(new QueryDisplayEvent(
                     this,
                     project,

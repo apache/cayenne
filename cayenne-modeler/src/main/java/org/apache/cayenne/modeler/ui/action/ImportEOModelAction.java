@@ -37,7 +37,7 @@ import org.apache.cayenne.dbsync.naming.NameBuilder;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.map.NamedQuery;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.event.display.DataMapDisplayEvent;
 import org.apache.cayenne.modeler.event.model.DbEntityEvent;
@@ -156,7 +156,7 @@ public class ImportEOModelAction extends AppAction {
 
             Collection<ObjEntity> originalOE = new ArrayList<>(currentMap.getObjEntities());
             Collection<DbEntity> originalDE = new ArrayList<>(currentMap.getDbEntities());
-            Collection<QueryDescriptor> originalQueries = new ArrayList<>(currentMap.getQueryDescriptors());
+            Collection<NamedQuery> originalQueries = new ArrayList<>(currentMap.getNamedQueries());
 
             currentMap.mergeWithDataMap(map);
             map = currentMap;
@@ -164,7 +164,7 @@ public class ImportEOModelAction extends AppAction {
             // postprocess changes
             Collection<ObjEntity> newOE = new ArrayList<>(currentMap.getObjEntities());
             Collection<DbEntity> newDE = new ArrayList<>(currentMap.getDbEntities());
-            Collection<QueryDescriptor> newQueries = new ArrayList<>(currentMap.getQueryDescriptors());
+            Collection<NamedQuery> newQueries = new ArrayList<>(currentMap.getNamedQueries());
 
             Object src = app.getFrame();
 
@@ -195,15 +195,15 @@ public class ImportEOModelAction extends AppAction {
             }
 
             // 3. queries
-            Collection<QueryDescriptor> addedQueries = new ArrayList<>(newQueries);
+            Collection<NamedQuery> addedQueries = new ArrayList<>(newQueries);
             addedQueries.removeAll(originalQueries);
-            for (QueryDescriptor q : addedQueries) {
+            for (NamedQuery q : addedQueries) {
                 session.fireQueryEvent(QueryEvent.ofAdd(src, q));
             }
 
-            Collection<QueryDescriptor> removedQueries = new ArrayList<>(originalQueries);
+            Collection<NamedQuery> removedQueries = new ArrayList<>(originalQueries);
             removedQueries.removeAll(newQueries);
-            for (QueryDescriptor q : removedQueries) {
+            for (NamedQuery q : removedQueries) {
                 session.fireQueryEvent(QueryEvent.ofRemove(src, q));
             }
 

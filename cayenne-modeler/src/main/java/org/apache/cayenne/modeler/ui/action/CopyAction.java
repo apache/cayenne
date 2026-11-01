@@ -30,7 +30,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
-import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.map.NamedQuery;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.toolkit.AppAction;
@@ -106,7 +106,7 @@ public class CopyAction extends AppAction {
         }
 
         return object instanceof DataMap
-                || object instanceof QueryDescriptor
+                || object instanceof NamedQuery
                 || object instanceof DbEntity
                 || object instanceof ObjEntity
                 || object instanceof Embeddable

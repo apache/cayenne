@@ -28,9 +28,9 @@ import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.map.QueryDescriptor;
-import org.apache.cayenne.map.SQLQueryDescriptor;
-import org.apache.cayenne.map.SelectQueryDescriptor;
+import org.apache.cayenne.map.NamedQuery;
+import org.apache.cayenne.map.NamedSQLQuery;
+import org.apache.cayenne.map.NamedSelectQuery;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.PrefetchTreeNode;
@@ -208,7 +208,7 @@ public class EOModelProcessor {
 	 * 
 	 * @since 1.1
 	 */
-	protected QueryDescriptor makeQuery(EOModelHelper helper, EOObjEntity entity, String queryName) {
+	protected NamedQuery makeQuery(EOModelHelper helper, EOObjEntity entity, String queryName) {
 
 		DataMap dataMap = helper.getDataMap();
 		Map queryPlist = helper.queryPListMap(entity.getName(), queryName);
@@ -216,19 +216,19 @@ public class EOModelProcessor {
 			return null;
 		}
 
-		QueryDescriptor query;
+		NamedQuery query;
 		if (queryPlist.containsKey("hints")) { // just a predefined SQL query
-			query = makeEOSQLQueryDescriptor(entity, queryPlist);
+			query = makeEONamedSQLQuery(entity, queryPlist);
 		} else {
-			query = makeEOQueryDescriptor(entity, queryPlist);
+			query = makeEONamedQuery(entity, queryPlist);
 		}
 		query.setName(entity.qualifiedQueryName(queryName));
-		dataMap.addQueryDescriptor(query);
+		dataMap.addNamedQuery(query);
 
 		return query;
 	}
 
-	protected QueryDescriptor makeEOQueryDescriptor(ObjEntity root, Map plistMap) {
+	protected NamedQuery makeEONamedQuery(ObjEntity root, Map plistMap) {
 		// assemble the query with the fluent API, and store it as a String
 		ObjectSelect<?> query = ObjectSelect.query(Object.class, root.getName());
 
@@ -276,22 +276,22 @@ public class EOModelProcessor {
 			}
 		}
 
-		SelectQueryDescriptor descriptor = new SelectQueryDescriptor();
-		descriptor.setQl(query.toQL());
+		NamedSelectQuery namedQuery = new NamedSelectQuery();
+		namedQuery.setQl(query.toQL());
 
 		// data rows - note that we do not support fetching individual columns
 		// in the
 		// modeler...
 		if (plistMap.containsKey("rawRowKeyPaths")) {
-			descriptor.setFetchingDataRows(true);
+			namedQuery.setFetchingDataRows(true);
 		}
 
-		return descriptor;
+		return namedQuery;
 	}
 
-	protected QueryDescriptor makeEOSQLQueryDescriptor(ObjEntity root, Map plistMap) {
-		SQLQueryDescriptor descriptor = new SQLQueryDescriptor();
-		descriptor.setRoot(root);
+	protected NamedQuery makeEONamedSQLQuery(ObjEntity root, Map plistMap) {
+		NamedSQLQuery namedQuery = new NamedSQLQuery();
+		namedQuery.setRoot(root);
 
 		// the limit of a SQL query can only be a part of its SQL
 		Object fetchLimit = plistMap.get("fetchLimit");
@@ -306,11 +306,11 @@ public class EOModelProcessor {
 		if (hints != null && !hints.isEmpty()) {
 			String sqlExpression = (String) hints.get("EOCustomQueryExpressionHintKey");
 			if (sqlExpression != null) {
-				descriptor.setSql(sqlExpression);
+				namedQuery.setSql(sqlExpression);
 			}
 		}
 
-		return descriptor;
+		return namedQuery;
 	}
 
 	/**

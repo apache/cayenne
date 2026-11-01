@@ -36,13 +36,13 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Relationship;
-import org.apache.cayenne.map.SelectQueryDescriptor;
+import org.apache.cayenne.map.NamedSelectQuery;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.PrefetchTreeNode;
 
 /**
- * Checks the entity names and paths of a parsed {@link SelectQueryDescriptor} against the mapping. Used by the project
+ * Checks the entity names and paths of a parsed {@link NamedSelectQuery} against the mapping. Used by the project
  * validator, and by the Modeler to mark the problems in the query String. The walk of the query that resolves the
  * paths is available on its own, see {@link #walk(DataMap, ObjectSelect, PathVisitor)}.
  *
@@ -100,7 +100,7 @@ public final class SelectQueryPaths {
      * Returns the problems with the entity names and paths of a query, empty if there are none, or if the query
      * String can't be parsed, or the query is not in a DataMap.
      */
-    public static List<Problem> check(SelectQueryDescriptor query) {
+    public static List<Problem> check(NamedSelectQuery query) {
         if (query.getDataMap() == null || !query.isValid()) {
             return List.of();
         }

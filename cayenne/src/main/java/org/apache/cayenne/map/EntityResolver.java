@@ -153,9 +153,9 @@ public class EntityResolver implements MappingNamespace {
         return mappingCache.getProcedures();
     }
 
-    public Collection<QueryDescriptor> getQueryDescriptors() {
+    public Collection<NamedQuery> getNamedQueries() {
         checkMappingCache();
-        return mappingCache.getQueryDescriptors();
+        return mappingCache.getNamedQueries();
     }
 
     public DbEntity getDbEntity(String name) {
@@ -203,15 +203,15 @@ public class EntityResolver implements MappingNamespace {
     /**
      * Returns a named query or null if no query exists for a given name.
      */
-    public QueryDescriptor getQueryDescriptor(String name) {
+    public NamedQuery getNamedQuery(String name) {
         checkMappingCache();
 
-        QueryDescriptor result = mappingCache.getQueryDescriptor(name);
+        NamedQuery result = mappingCache.getNamedQuery(name);
         if (result == null) {
             // reconstruct cache just in case some of the datamaps
             // have changed and now contain the required information
             refreshMappingCache();
-            result = mappingCache.getQueryDescriptor(name);
+            result = mappingCache.getNamedQuery(name);
         }
         return result;
     }

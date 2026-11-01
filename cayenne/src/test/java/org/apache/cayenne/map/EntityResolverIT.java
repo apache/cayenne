@@ -146,20 +146,20 @@ public class EntityResolverIT {
     public void getQuery() {
         // create a resolver with a single map
         DataMap m1 = new DataMap();
-        QueryDescriptor q = new SelectQueryDescriptor();
+        NamedQuery q = new NamedSelectQuery();
         q.setName("query1");
-        m1.addQueryDescriptor(q);
+        m1.addNamedQuery(q);
 
         EntityResolver resolver = new EntityResolver(Collections.singleton(m1));
-        assertSame(q, resolver.getQueryDescriptor("query1"));
+        assertSame(q, resolver.getNamedQuery("query1"));
 
         // check that the query added on-the-fly will be recognized
-        assertNull(resolver.getQueryDescriptor("query2"));
+        assertNull(resolver.getNamedQuery("query2"));
 
-        QueryDescriptor q2 = new SelectQueryDescriptor();
+        NamedQuery q2 = new NamedSelectQuery();
         q2.setName("query2");
-        m1.addQueryDescriptor(q2);
-        assertSame(q2, resolver.getQueryDescriptor("query2"));
+        m1.addNamedQuery(q2);
+        assertSame(q2, resolver.getNamedQuery("query2"));
     }
 
     private void assertIsArtistObjEntity(ObjEntity ae) {

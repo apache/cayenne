@@ -105,7 +105,7 @@ public class EOObjEntity extends ObjEntity {
      */
     public Collection getEOQueries() {
         if (filteredQueries == null) {
-            Collection queries = getDataMap().getQueryDescriptors();
+            Collection queries = getDataMap().getNamedQueries();
             if (queries.isEmpty()) {
                 filteredQueries = Collections.EMPTY_LIST;
             }

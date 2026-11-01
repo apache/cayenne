@@ -22,7 +22,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
-import org.apache.cayenne.map.SQLQueryDescriptor;
+import org.apache.cayenne.map.NamedSQLQuery;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.QueryCacheStrategy;
@@ -33,7 +33,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class SQLQueryDescriptorHandlerTest extends BaseHandlerTest {
+public class NamedSQLQueryHandlerTest extends BaseHandlerTest {
 
     private DataMap map;
 
@@ -42,14 +42,14 @@ public class SQLQueryDescriptorHandlerTest extends BaseHandlerTest {
         map = new DataMap("map");
     }
 
-    private SQLQueryDescriptor parseQuery(String xml) throws Exception {
-        parse("sqlQuery", xml, parent -> new SQLQueryDescriptorHandler(parent, map));
-        return (SQLQueryDescriptor) map.getQueryDescriptor("q");
+    private NamedSQLQuery parseQuery(String xml) throws Exception {
+        parse("sqlQuery", xml, parent -> new NamedSQLQueryHandler(parent, map));
+        return (NamedSQLQuery) map.getNamedQuery("q");
     }
 
     @Test
     public void sqlQuery() throws Exception {
-        SQLQueryDescriptor descriptor = parseQuery("""
+        NamedSQLQuery namedQuery = parseQuery("""
                 <sqlQuery name="q" cacheStrategy="LOCAL_CACHE" dataRows="true" pageSize="5" statementFetchSize="7"
                           columnNameCapitalization="lower">
                     <sql>select * from ARTIST</sql>
@@ -63,37 +63,37 @@ public class SQLQueryDescriptorHandlerTest extends BaseHandlerTest {
                 </sqlQuery>
                 """);
 
-        assertEquals("q", descriptor.getName());
-        assertSame(map, descriptor.getDataMap());
-        assertEquals(QueryCacheStrategy.LOCAL_CACHE, descriptor.getCacheStrategy());
-        assertEquals("g", descriptor.getCacheGroup());
-        assertTrue(descriptor.isFetchingDataRows());
-        assertEquals(5, descriptor.getPageSize());
-        assertEquals(7, descriptor.getStatementFetchSize());
-        assertEquals(CapsStrategy.LOWER, descriptor.getColumnNamesCapitalization());
+        assertEquals("q", namedQuery.getName());
+        assertSame(map, namedQuery.getDataMap());
+        assertEquals(QueryCacheStrategy.LOCAL_CACHE, namedQuery.getCacheStrategy());
+        assertEquals("g", namedQuery.getCacheGroup());
+        assertTrue(namedQuery.isFetchingDataRows());
+        assertEquals(5, namedQuery.getPageSize());
+        assertEquals(7, namedQuery.getStatementFetchSize());
+        assertEquals(CapsStrategy.LOWER, namedQuery.getColumnNamesCapitalization());
 
-        assertEquals("select * from ARTIST", descriptor.getSql());
+        assertEquals("select * from ARTIST", namedQuery.getSql());
         assertEquals(Map.of("org.apache.cayenne.dba.postgres.PostgresAdapter", "select * from ARTIST_PG"),
-                descriptor.getAdapterSql());
+                namedQuery.getAdapterSql());
         assertEquals(Map.of(
                         "paintings", PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS,
                         "paintings.gallery", PrefetchTreeNode.DISJOINT_PREFETCH_SEMANTICS,
                         "exhibits", PrefetchTreeNode.DISJOINT_BY_ID_PREFETCH_SEMANTICS,
                         "groups", PrefetchTreeNode.UNDEFINED_SEMANTICS),
-                descriptor.getPrefetchesMap());
+                namedQuery.getPrefetchesMap());
     }
 
     @Test
     public void sqlQueryMinimal() throws Exception {
-        SQLQueryDescriptor descriptor = parseQuery("""
+        NamedSQLQuery namedQuery = parseQuery("""
                 <sqlQuery name="q"/>
                 """);
 
-        assertSame(map, descriptor.getRoot());
-        assertNull(descriptor.getSql());
-        assertTrue(descriptor.getAdapterSql().isEmpty());
-        assertTrue(descriptor.getPrefetchesMap().isEmpty());
-        assertNull(descriptor.getColumnNamesCapitalization());
+        assertSame(map, namedQuery.getRoot());
+        assertNull(namedQuery.getSql());
+        assertTrue(namedQuery.getAdapterSql().isEmpty());
+        assertTrue(namedQuery.getPrefetchesMap().isEmpty());
+        assertNull(namedQuery.getColumnNamesCapitalization());
     }
 
     @Test

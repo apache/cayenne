@@ -20,7 +20,7 @@ package org.apache.cayenne.project.xml;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.SQLQueryDescriptor;
+import org.apache.cayenne.map.NamedSQLQuery;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -30,33 +30,33 @@ import org.xml.sax.SAXException;
  *
  * @since 5.0
  */
-public class SQLQueryDescriptorHandler extends QueryDescriptorHandler {
+public class NamedSQLQueryHandler extends NamedQueryHandler {
 
     static final String SQL_QUERY_TAG = "sqlQuery";
     private static final String SQL_TAG = "sql";
     private static final String PREFETCH_TAG = "prefetch";
 
-    private SQLQueryDescriptor descriptor;
+    private NamedSQLQuery namedQuery;
     private String sqlAdapterClass;
     private int prefetchSemantics;
 
-    public SQLQueryDescriptorHandler(NamespaceAwareNestedTagHandler parentHandler, DataMap map) {
+    public NamedSQLQueryHandler(NamespaceAwareNestedTagHandler parentHandler, DataMap map) {
         super(parentHandler, map);
     }
 
     @Override
-    public SQLQueryDescriptor getQueryDescriptor() {
-        return descriptor;
+    public NamedSQLQuery getNamedQuery() {
+        return namedQuery;
     }
 
     @Override
     protected boolean processElement(String namespaceURI, String localName, Attributes attributes) throws SAXException {
         return switch (localName) {
             case SQL_QUERY_TAG -> {
-                descriptor = new SQLQueryDescriptor();
-                loadQuerySettings(descriptor, attributes);
-                descriptor.setRoot(sqlQueryRoot(attributes));
-                descriptor.setColumnNamesCapitalization(columnNameCapitalization(attributes));
+                namedQuery = new NamedSQLQuery();
+                loadQuerySettings(namedQuery, attributes);
+                namedQuery.setRoot(sqlQueryRoot(attributes));
+                namedQuery.setColumnNamesCapitalization(columnNameCapitalization(attributes));
                 yield true;
             }
             case SQL_TAG -> {
@@ -84,7 +84,7 @@ public class SQLQueryDescriptorHandler extends QueryDescriptorHandler {
         switch (localName) {
             case SQL_TAG -> addSql(data);
             case PREFETCH_TAG -> addPrefetch(data);
-            case CACHE_GROUP_TAG -> descriptor.setCacheGroup(data);
+            case CACHE_GROUP_TAG -> namedQuery.setCacheGroup(data);
         }
         return true;
     }
@@ -95,15 +95,15 @@ public class SQLQueryDescriptorHandler extends QueryDescriptorHandler {
      */
     private void addSql(String sql) {
         if (sqlAdapterClass == null) {
-            descriptor.setSql(sql);
+            namedQuery.setSql(sql);
         } else {
-            descriptor.getAdapterSql().put(sqlAdapterClass, sql);
+            namedQuery.getAdapterSql().put(sqlAdapterClass, sql);
         }
     }
 
     private void addPrefetch(String path) {
         if (!path.isBlank()) {
-            descriptor.addPrefetch(path.trim(), prefetchSemantics);
+            namedQuery.addPrefetch(path.trim(), prefetchSemantics);
         }
     }
 

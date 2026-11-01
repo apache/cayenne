@@ -34,7 +34,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
-import org.apache.cayenne.map.QueryDescriptor;
+import org.apache.cayenne.map.NamedQuery;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.modeler.event.display.DataMapDisplayEvent;
 import org.apache.cayenne.modeler.event.display.DbAttributeDisplayEvent;
@@ -487,7 +487,7 @@ public final class ProjectPrefs extends PrefsAdapter {
         if (dataMap == null) {
             return;
         }
-        QueryDescriptor query = dataMap.getQueryDescriptor(prefs.get(QUERY_KEY, ""));
+        NamedQuery query = dataMap.getNamedQuery(prefs.get(QUERY_KEY, ""));
         if (query == null) {
             return;
         }
@@ -610,8 +610,8 @@ public final class ProjectPrefs extends PrefsAdapter {
                 result.add(dataMap.getEmbeddable(name));
             } else if (dataMap.getProcedure(name) != null) {
                 result.add(dataMap.getProcedure(name));
-            } else if (dataMap.getQueryDescriptor(name) != null) {
-                result.add(dataMap.getQueryDescriptor(name));
+            } else if (dataMap.getNamedQuery(name) != null) {
+                result.add(dataMap.getNamedQuery(name));
             }
         }
         return result.toArray(new ProjectNode[0]);
@@ -656,7 +656,7 @@ public final class ProjectPrefs extends PrefsAdapter {
             case DataMap dm -> dm.getName();
             case Embeddable e -> e.getClassName();
             case EmbeddableAttribute ea -> ea.getName();
-            case QueryDescriptor qd -> qd.getName();
+            case NamedQuery qd -> qd.getName();
             default -> "";
         };
     }
