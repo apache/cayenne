@@ -73,38 +73,20 @@ public class SQLQuery<T> implements Query<T> {
     private PrefetchTreeNode prefetches;
 
     /**
-     * Creates a query running provided SQL against the default database. If the SQL selects, the rows are returned as
-     * DataRows. This is the form to use for updates, deletes and DDL, when the shape of the result does not matter.
+     * Creates a query running provided SQL. If the SQL selects, the rows are returned as DataRows. This is the form to
+     * use for updates, deletes and DDL, when the shape of the result does not matter. A query without a persistent type
+     * is routed to the default DataNode, unless {@link #dataMap(String)} or {@link #dataNode(String)} says otherwise.
      */
     public static SQLQuery<DataRow> query(String sql) {
         return new SQLQuery<>(sql).fetchingDataRows();
     }
 
     /**
-     * Creates a query running provided SQL against the database of the named DataMap. If the SQL selects, the rows
-     * are returned as DataRows. This is the form to use for updates, deletes and DDL, when the shape of the result
-     * does not matter.
-     */
-    public static SQLQuery<DataRow> query(String dataMapName, String sql) {
-        SQLQuery<DataRow> query = new SQLQuery<>(sql);
-        query.dataMapName = dataMapName;
-        return query.fetchingDataRows();
-    }
-
-    /**
-     * Creates a query running provided SQL against the default database, returning the rows as DataRows with the
-     * columns read as the given Java types, in the order of the columns.
+     * Creates a query running provided SQL, returning the rows as DataRows with the columns read as the given Java
+     * types, in the order of the columns.
      */
     public static SQLQuery<DataRow> query(String sql, Class<?>... types) {
         return query(sql).resultColumnsTypes(types);
-    }
-
-    /**
-     * Creates a query running provided SQL against the database of the named DataMap, returning the rows as DataRows
-     * with the columns read as the given Java types, in the order of the columns.
-     */
-    public static SQLQuery<DataRow> query(String dataMapName, String sql, Class<?>... types) {
-        return query(dataMapName, sql).resultColumnsTypes(types);
     }
 
     /**
@@ -127,7 +109,7 @@ public class SQLQuery<T> implements Query<T> {
     }
 
     /**
-     * Creates query that selects scalar value and uses default routing
+     * Creates query that selects scalar value.
      */
     public static <T> SQLQuery<T> scalarQuery(String sql, Class<T> type) {
         SQLQuery<T> query = new SQLQuery<>(sql);
@@ -135,16 +117,7 @@ public class SQLQuery<T> implements Query<T> {
     }
 
     /**
-     * Creates query that selects scalar value and uses routing based on the provided DataMap name.
-     */
-    public static <T> SQLQuery<T> scalarQuery(String sql, String dataMapName, Class<T> type) {
-        SQLQuery<T> query = new SQLQuery<>(sql);
-        query.dataMapName = dataMapName;
-        return query.resultColumnsTypes(type).useScalar();
-    }
-
-    /**
-     * Creates query that selects scalar values (as Object[]) and uses default routing
+     * Creates query that selects scalar values (as Object[]).
      */
     public static SQLQuery<Object[]> columnQuery(String sql) {
         SQLQuery<Object[]> query = new SQLQuery<>(sql);
@@ -152,28 +125,11 @@ public class SQLQuery<T> implements Query<T> {
     }
 
     /**
-     * Creates query that selects scalar values (as Object[]) and uses routing based on the provided DataMap name.
-     */
-    public static SQLQuery<Object[]> columnQuery(String sql, String dataMapName) {
-        SQLQuery<Object[]> query = new SQLQuery<>(sql);
-        query.dataMapName = dataMapName;
-        return query.useScalar();
-    }
-
-    /**
-     * Creates query that selects scalar values (as Object[]) and uses default routing
+     * Creates query that selects scalar values (as Object[]), with the columns read as the given Java types, in the
+     * order of the columns.
      */
     public static SQLQuery<Object[]> columnQuery(String sql, Class<?>... types) {
         SQLQuery<Object[]> query = new SQLQuery<>(sql);
-        return query.resultColumnsTypes(types).useScalar();
-    }
-
-    /**
-     * Creates query that selects scalar values (as Object[]) and uses routing based on the provided DataMap name.
-     */
-    public static SQLQuery<Object[]> columnQuery(String sql, String dataMapName, Class<?>... types) {
-        SQLQuery<Object[]> query = new SQLQuery<>(sql);
-        query.dataMapName = dataMapName;
         return query.resultColumnsTypes(types).useScalar();
     }
 
@@ -544,10 +500,23 @@ public class SQLQuery<T> implements Query<T> {
     }
 
     /**
+     * Routes the query to the DataNode of the named DataMap. Only used by queries that have no persistent type, as a
+     * typed query is routed by the DataMap of its entity. Without it, and without a {@link #dataNode(String) node
+     * name}, such queries are routed to the default DataNode.
+     *
+     * @param dataMapName the name of the DataMap whose DataNode runs the query
+     * @since 6.0
+     */
+    public SQLQuery<T> dataMap(String dataMapName) {
+        this.dataMapName = dataMapName;
+        return this;
+    }
+
+    /**
      * Routes the query to the DataNode with the given name. This allows to run SQL in a project without any mapping,
      * as the query needs neither a persistent type nor a DataMap to find its database. The node name is only used by
-     * queries that have no other routing information, i.e. created with factory methods that take neither a
-     * persistent type nor a DataMap name. Without it such queries are routed to the default DataNode.
+     * queries that have neither a persistent type nor a {@link #dataMap(String) DataMap name}. Without it such queries
+     * are routed to the default DataNode.
      *
      * @param dataNodeName the name of the DataNode to run the query against
      */

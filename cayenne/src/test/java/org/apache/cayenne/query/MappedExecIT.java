@@ -41,7 +41,7 @@ public class MappedExecIT {
 
     @Test
     public void update() {
-        int[] updated = MappedExec.query("NonSelectingQuery").update(env.context());
+        int[] updated = MappedExec.query("NonSelectingQuery").updateBatch(env.context());
         assertArrayEquals(new int[]{1}, updated);
 
         Painting painting = ObjectSelect.query(Painting.class).selectOne(env.context());
@@ -52,6 +52,6 @@ public class MappedExecIT {
     public void fluentChain_KeepsType() {
         // the chained assignment of the pre-6.0 code must still compile
         MappedExec query = MappedExec.query("NonSelectingQuery").params(Map.of()).name("NonSelectingQuery");
-        assertArrayEquals(new int[]{1}, query.update(env.context()));
+        assertArrayEquals(new int[]{1}, query.updateBatch(env.context()));
     }
 }

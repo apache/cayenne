@@ -121,7 +121,7 @@ public class SQLQueryDescriptor extends QueryDescriptor {
             case null -> SQLQuery.query(getSql());
             case String entityName -> SQLQuery.entityQuery(entityName, getSql());
             case ObjEntity entity -> SQLQuery.entityQuery(entity.getName(), getSql());
-            case DataMap map -> SQLQuery.query(map.getName(), getSql());
+            case DataMap map -> SQLQuery.query(getSql()).dataMap(map.getName());
             default -> throw new CayenneRuntimeException("Unsupported SQL query root: %s", root);
         };
 

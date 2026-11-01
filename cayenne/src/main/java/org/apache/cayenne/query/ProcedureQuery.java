@@ -22,8 +22,6 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.QueryResult;
-import org.apache.cayenne.UpdateResult;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
@@ -82,7 +80,7 @@ public class ProcedureQuery<T> implements Query<T> {
         return query;
     }
 
-    private final String procedureName;
+    protected final String procedureName;
     // the type of the fetched objects: at most one of the two is set
     Class<T> resultClass;
     private String resultEntityName;
@@ -236,39 +234,6 @@ public class ProcedureQuery<T> implements Query<T> {
     @Override
     public T selectFirst(ObjectContext context) {
         return context.selectFirst(limit(1));
-    }
-
-    /**
-     * @deprecated since 6.0 in favor of {@link #execute(ObjectContext)}
-     */
-    @Deprecated(since = "6.0", forRemoval = true)
-    public List<QueryResult> call(ObjectContext context) {
-        return execute(context);
-    }
-
-    /**
-     * @deprecated since 6.0, read the counts from the {@link UpdateResult} items of {@link #execute(ObjectContext)}
-     */
-    @Deprecated(since = "6.0", forRemoval = true)
-    public int[] batchUpdate(ObjectContext context) {
-        return firstUpdate(context).counts();
-    }
-
-    /**
-     * @deprecated since 6.0, read the count from the {@link UpdateResult} items of {@link #execute(ObjectContext)}
-     */
-    @Deprecated(since = "6.0", forRemoval = true)
-    public int update(ObjectContext context) {
-        return firstUpdate(context).count();
-    }
-
-    private UpdateResult firstUpdate(ObjectContext context) {
-        for (QueryResult item : execute(context)) {
-            if (item instanceof UpdateResult update) {
-                return update;
-            }
-        }
-        throw new CayenneRuntimeException("Procedure '%s' produced no updates", procedureName);
     }
 
     @Override

@@ -147,8 +147,8 @@ public class OneWayRelationshipsIT {
 
 		assertEquals(2, t3.getManyOneWayDb().size());
 
-		SQLQuery<Integer> fksQuery = SQLQuery.scalarQuery("SELECT TABLE3_ID FROM oneway_table4",
-				"oneway-rels",Integer.class);
+		SQLQuery<Integer> fksQuery = SQLQuery.scalarQuery("SELECT TABLE3_ID FROM oneway_table4", Integer.class)
+				.dataMap("oneway-rels");
 
 		List<Integer> fks = env.context().select(fksQuery);
 		assertEquals(2, fks.size());
@@ -176,8 +176,8 @@ public class OneWayRelationshipsIT {
 
 		assertEquals(2, t3.getManyOneWayDb().size());
 
-		SQLQuery<Integer> fksQuery = SQLQuery.scalarQuery("SELECT TABLE3_ID FROM oneway_table4",
-				"oneway-rels", Integer.class);
+		SQLQuery<Integer> fksQuery = SQLQuery.scalarQuery("SELECT TABLE3_ID FROM oneway_table4", Integer.class)
+				.dataMap("oneway-rels");
 
 		List<Integer> fks = env.context().select(fksQuery);
 		assertEquals(2, fks.size());
@@ -206,8 +206,8 @@ public class OneWayRelationshipsIT {
 
 		assertEquals(1, t3.getManyOneWayDb().size());
 
-		SQLQuery<Integer> fksQuery = SQLQuery.scalarQuery("SELECT TABLE3_ID FROM oneway_table4",
-				"oneway-rels", Integer.class);
+		SQLQuery<Integer> fksQuery = SQLQuery.scalarQuery("SELECT TABLE3_ID FROM oneway_table4", Integer.class)
+				.dataMap("oneway-rels");
 
 		List<Integer> fks = env.context().select(fksQuery);
 		assertEquals(2, fks.size());

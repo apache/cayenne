@@ -73,7 +73,7 @@ public class SQLQueryResultIT {
 
 	@Test
 	public void testSQLTemplateForDataMap() {
-		SQLQuery<DataRow> q1 = SQLQuery.query("testmap", "SELECT * FROM ARTIST");
+		SQLQuery<DataRow> q1 = SQLQuery.query("SELECT * FROM ARTIST").dataMap("testmap");
 		List<DataRow> result = context.select(q1);
 		assertEquals(0, result.size());
 	}
@@ -82,7 +82,7 @@ public class SQLQueryResultIT {
 	public void testSQLTemplateForDataMapWithInsert() throws SQLException {
 		createArtistDataSet();
 
-		SQLQuery<DataRow> q2 = SQLQuery.query("testmap", "SELECT * FROM ARTIST");
+		SQLQuery<DataRow> q2 = SQLQuery.query("SELECT * FROM ARTIST").dataMap("testmap");
 		List<DataRow> result = context.select(q2);
 		assertEquals(2, result.size());
 	}
@@ -91,13 +91,13 @@ public class SQLQueryResultIT {
 	public void testReturnGeneratedKeys() {
 		if(testDbAdapter.supportsGeneratedKeys()) {
 			String sql = "INSERT INTO GENERATED_COLUMN (NAME) VALUES ('Surikov')";
-			SQLQuery<DataRow> q1 = SQLQuery.query("testmap", sql);
+			SQLQuery<DataRow> q1 = SQLQuery.query(sql).dataMap("testmap");
 			q1.returnGeneratedKeys(true);
 			List<DataRow> response = context.select(q1);
 			assertEquals(1, response.size());
 
 			String sql1 = "INSERT INTO GENERATED_COLUMN (NAME) VALUES ('Test')";
-			SQLQuery<DataRow> q2 = SQLQuery.query("testmap", sql1);
+			SQLQuery<DataRow> q2 = SQLQuery.query(sql1).dataMap("testmap");
 			q2.returnGeneratedKeys(false);
 			List<DataRow> response1 = context.select(q2);
 			assertEquals(0, response1.size());
@@ -154,7 +154,7 @@ public class SQLQueryResultIT {
 	public void testDataRowWithTypes() throws SQLException {
 		createArtistDataSet();
 
-		SQLQuery<DataRow> q3 = SQLQuery.query("testmap", "SELECT ARTIST_ID, ARTIST_NAME FROM ARTIST");
+		SQLQuery<DataRow> q3 = SQLQuery.query("SELECT ARTIST_ID, ARTIST_NAME FROM ARTIST").dataMap("testmap");
 		q3.resultColumnsTypes(Double.class, String.class);
 		q3.columnNameCaps(CapsStrategy.UPPER);
 		List<DataRow> artists = context.select(q3);
@@ -167,7 +167,7 @@ public class SQLQueryResultIT {
 	public void testDataRowReturnAndDirectives() throws SQLException {
 		createArtistDataSet();
 
-		SQLQuery<DataRow> q3 = SQLQuery.query("testmap", "SELECT #result('ARTIST_ID' 'java.lang.Long'), #result('ARTIST_NAME' 'java.lang.String') FROM ARTIST");
+		SQLQuery<DataRow> q3 = SQLQuery.query("SELECT #result('ARTIST_ID' 'java.lang.Long'), #result('ARTIST_NAME' 'java.lang.String') FROM ARTIST").dataMap("testmap");
 		List<DataRow> result = context.select(q3);
 		assertEquals(2, result.size());
 		assertTrue(result.get(0) instanceof DataRow);
@@ -181,7 +181,7 @@ public class SQLQueryResultIT {
 		createArtistDataSet();
 
 		assertThrows(CayenneRuntimeException.class, () -> {
-			SQLQuery<DataRow> q3 = SQLQuery.query("testmap", "SELECT #result('ARTIST_ID' 'java.lang.Long'), #result('ARTIST_NAME' 'java.lang.String') FROM ARTIST");
+			SQLQuery<DataRow> q3 = SQLQuery.query("SELECT #result('ARTIST_ID' 'java.lang.Long'), #result('ARTIST_NAME' 'java.lang.String') FROM ARTIST").dataMap("testmap");
 			q3.resultColumnsTypes(Integer.class, String.class);
 			context.select(q3);
 		});

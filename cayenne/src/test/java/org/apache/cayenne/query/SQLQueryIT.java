@@ -32,7 +32,6 @@ import org.apache.cayenne.QueryResult;
 import org.apache.cayenne.ResultBatchIterator;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.SelectResult;
-import org.apache.cayenne.UpdateResult;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.frontbase.FrontBaseAdapter;
@@ -88,7 +87,7 @@ public class SQLQueryIT {
 	public void dataRows_DataMapNameRoot() throws Exception {
 		createPaintingsDataSet();
 
-		SQLQuery<DataRow> q1 = SQLQuery.query("testmap", "SELECT * FROM PAINTING");
+		SQLQuery<DataRow> q1 = SQLQuery.query("SELECT * FROM PAINTING").dataMap("testmap");
 		assertTrue(q1.resolve(env.resolver()).fetchingDataRows());
 
 		List<DataRow> result = context.select(q1);
@@ -613,14 +612,29 @@ public class SQLQueryIT {
 	// --- non-selecting SQL, formerly tested via SQLExec ---
 
 	private int update(SQLQuery<?> query) {
-		List<QueryResult> results = query.execute(context);
-		assertEquals(1, results.size());
-		return ((UpdateResult) results.getFirst()).count();
+		return query.update(context);
+	}
+
+	@Test
+	public void update_NoUpdateResult() {
+		SQLQuery<DataRow> query = SQLQuery.query("SELECT * FROM ARTIST");
+		assertThrows(CayenneRuntimeException.class, () -> query.update(context));
+	}
+
+	@Test
+	public void update_IgnoresGeneratedKeys() {
+		if (env.testDbAdapter().supportsGeneratedKeys()) {
+			int inserted = SQLQuery.query("INSERT INTO GENERATED_COLUMN (NAME) VALUES ('Surikov')")
+					.returnGeneratedKeys(true)
+					.update(context);
+			assertEquals(1, inserted);
+		}
 	}
 
 	@Test
 	public void execute_Update_DataMapNameRoot() throws Exception {
-		int inserted = update(SQLQuery.query("testmap", "INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (1, 'a')"));
+		int inserted = update(SQLQuery.query("INSERT INTO ARTIST (ARTIST_ID, ARTIST_NAME) VALUES (1, 'a')")
+				.dataMap("testmap"));
 		assertEquals(1, inserted);
 	}
 
@@ -684,12 +698,14 @@ public class SQLQueryIT {
 	@Test
 	public void execute_ReturnGeneratedKeys() {
 		if (env.testDbAdapter().supportsGeneratedKeys()) {
-			List<QueryResult> response = SQLQuery.query("testmap", "INSERT INTO GENERATED_COLUMN (NAME) VALUES ('Surikov')")
+			List<QueryResult> response = SQLQuery.query("INSERT INTO GENERATED_COLUMN (NAME) VALUES ('Surikov')")
+					.dataMap("testmap")
 					.returnGeneratedKeys(true)
 					.execute(context);
 			assertEquals(2, response.size());
 
-			List<QueryResult> response1 = SQLQuery.query("testmap", "INSERT INTO GENERATED_COLUMN (NAME) VALUES ('Sidorov')")
+			List<QueryResult> response1 = SQLQuery.query("INSERT INTO GENERATED_COLUMN (NAME) VALUES ('Sidorov')")
+					.dataMap("testmap")
 					.returnGeneratedKeys(false)
 					.execute(context);
 			assertEquals(1, response1.size());

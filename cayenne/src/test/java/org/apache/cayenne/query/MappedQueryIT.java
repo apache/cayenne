@@ -22,7 +22,6 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.QueryResult;
 import org.apache.cayenne.ResultBatchIterator;
 import org.apache.cayenne.SelectResult;
-import org.apache.cayenne.UpdateResult;
 import org.apache.cayenne.log.NoopSQLLogger;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -139,8 +138,7 @@ public class MappedQueryIT {
 
     @Test
     public void sqlTemplateUpdate() throws Exception {
-        List<QueryResult> result = MappedQuery.query("NonSelectingQuery").execute(env.context());
-        int updated = ((UpdateResult) result.getFirst()).count();
+        int updated = MappedQuery.query("NonSelectingQuery").update(env.context());
 
         assertEquals(1, updated);
 

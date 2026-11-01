@@ -34,7 +34,7 @@ import java.util.Map;
  *
  * @since 4.0
  * @deprecated in favor of {@link SQLQuery}, that combines selecting and non-selecting SQL in a single
- * query. Update counts are read from the {@link UpdateResult} items of {@link SQLQuery#execute(ObjectContext)}.
+ * query. Batch update counts are read from the {@link UpdateResult} items of {@link SQLQuery#execute(ObjectContext)}.
  */
 @Deprecated(since = "6.0", forRemoval = true)
 public class SQLExec extends SQLQuery<DataRow> {
@@ -76,17 +76,6 @@ public class SQLExec extends SQLQuery<DataRow> {
     }
 
     /**
-     * Executes the query, returning the count of its single update.
-     *
-     * @throws CayenneRuntimeException if the query produced anything other than a single update result.
-     * @deprecated Read the count from the {@link UpdateResult} returned by {@link #execute(ObjectContext)}.
-     */
-    @Deprecated(since = "6.0", forRemoval = true)
-    public int update(ObjectContext context) {
-        return singleUpdate(context).count();
-    }
-
-    /**
      * Executes the query, returning the counts of its single batch update.
      *
      * @throws CayenneRuntimeException if the query produced anything other than a single update result.
@@ -95,17 +84,13 @@ public class SQLExec extends SQLQuery<DataRow> {
      */
     @Deprecated(since = "6.0", forRemoval = true)
     public int[] updateBatch(ObjectContext context) {
-        return singleUpdate(context).counts();
-    }
-
-    private UpdateResult singleUpdate(ObjectContext context) {
         List<QueryResult> results = execute(context);
         if (results.size() != 1) {
             throw new CayenneRuntimeException("Expected a single update result. Got a total of %d", results.size());
         }
 
         if (results.getFirst() instanceof UpdateResult update) {
-            return update;
+            return update.counts();
         }
 
         throw new CayenneRuntimeException("Expected an update result. Got %s", results.getFirst());

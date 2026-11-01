@@ -97,26 +97,32 @@ public class SQLQueryTest extends BaseTest {
                 .dataNode("docs")
                 .select(context);
 
-        List<QueryResult> inserted = SQLQuery
+        int inserted = SQLQuery
                 .query("INSERT INTO ARTIST (ID, NAME) VALUES (55, 'Picasso')")
                 .dataNode("docs")
-                .execute(context);
+                .update(context);
         // end::dataNode[]
 
         assertEquals("Aivazovsky", names.get(0));
-        assertEquals(1, ((UpdateResult) inserted.getFirst()).count());
+        assertEquals(1, inserted);
     }
 
     @Test
     public void exec() {
         // tag::exec[]
-        // the same query runs any SQL; everything it produced, update counts here, comes back as a list of results
-        List<QueryResult> results = SQLQuery
+        // the same query runs any SQL; "update" returns the count of the rows it affected
+        int inserted = SQLQuery
                 .query("INSERT INTO ARTIST (ID, NAME) VALUES (55, 'Picasso')")
+                .update(context);
+
+        // "execute" returns everything the SQL produced, update counts, result sets, generated keys, as a list
+        List<QueryResult> results = SQLQuery
+                .query("INSERT INTO ARTIST (ID, NAME) VALUES (56, 'Dali')")
                 .execute(context);
-        int inserted = ((UpdateResult) results.getFirst()).count();
+        int insertedToo = ((UpdateResult) results.getFirst()).count();
         // end::exec[]
 
         assertEquals(1, inserted);
+        assertEquals(1, insertedToo);
     }
 }

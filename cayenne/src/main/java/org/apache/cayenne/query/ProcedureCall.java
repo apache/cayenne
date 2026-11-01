@@ -18,7 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
+import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.QueryResult;
+import org.apache.cayenne.UpdateResult;
+
+import java.util.List;
 
 /**
  * The former name of {@link ProcedureQuery}, kept for one release for compatibility.
@@ -30,7 +36,7 @@ import org.apache.cayenne.DataRow;
 public class ProcedureCall<T> extends ProcedureQuery<T> {
 
     /**
-     * @deprecated since 6.0 in favor of {@link ProcedureQuery#query(String)}
+     * @deprecated in favor of {@link ProcedureQuery#query(String)}
      */
     @Deprecated(since = "6.0", forRemoval = true)
     public static ProcedureCall<DataRow> query(String procedure) {
@@ -38,7 +44,7 @@ public class ProcedureCall<T> extends ProcedureQuery<T> {
     }
 
     /**
-     * @deprecated since 6.0 in favor of {@link ProcedureQuery#query(String)}
+     * @deprecated in favor of {@link ProcedureQuery#query(String)}
      */
     @Deprecated(since = "6.0", forRemoval = true)
     public static ProcedureCall<DataRow> dataRowQuery(String procedure) {
@@ -46,7 +52,7 @@ public class ProcedureCall<T> extends ProcedureQuery<T> {
     }
 
     /**
-     * @deprecated since 6.0 in favor of {@link ProcedureQuery#query(String, Class)}
+     * @deprecated in favor of {@link ProcedureQuery#query(String, Class)}
      */
     @Deprecated(since = "6.0", forRemoval = true)
     public static <T> ProcedureCall<T> query(String procedure, Class<T> resultClass) {
@@ -61,5 +67,26 @@ public class ProcedureCall<T> extends ProcedureQuery<T> {
     public ProcedureCall(String procedureName, Class<T> resultClass) {
         super(procedureName);
         this.resultClass = resultClass;
+    }
+
+    /**
+     * @deprecated since 6.0 in favor of {@link #execute(ObjectContext)}
+     */
+    @Deprecated(since = "6.0", forRemoval = true)
+    public List<QueryResult> call(ObjectContext context) {
+        return execute(context);
+    }
+
+    /**
+     * @deprecated since 6.0, read the counts from the {@link UpdateResult} items of {@link #execute(ObjectContext)}
+     */
+    @Deprecated(since = "6.0", forRemoval = true)
+    public int[] batchUpdate(ObjectContext context) {
+        for (QueryResult item : execute(context)) {
+            if (item instanceof UpdateResult update) {
+                return update.counts();
+            }
+        }
+        throw new CayenneRuntimeException("Procedure '%s' produced no updates", procedureName);
     }
 }

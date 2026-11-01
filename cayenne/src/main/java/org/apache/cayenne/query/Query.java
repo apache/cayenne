@@ -25,6 +25,7 @@ import org.apache.cayenne.QueryResult;
 import org.apache.cayenne.ResultBatchIterator;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.ResultIteratorCallback;
+import org.apache.cayenne.UpdateResult;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.resolved.ResolvedQuery;
 
@@ -34,7 +35,8 @@ import java.util.List;
  * A query that can be executed against an {@link ObjectContext}. Any query can be run via
  * {@link #execute(ObjectContext)}, returning everything it produced: result sets, update counts, OUT parameters. A
  * query that selects rows of a known type also has a set of selecting shortcuts, such as
- * {@link #select(ObjectContext)}, returning the rows of its first result set.
+ * {@link #select(ObjectContext)}, returning the rows of its first result set. A non-selecting query has
+ * {@link #update(ObjectContext)}, returning the count of its first update.
  *
  * @param <T> the type of the rows the query selects. Queries that produce no rows (updates, DDL, batches) are typed
  *            as {@code Query<?>}.
@@ -53,12 +55,32 @@ public interface Query<T> {
 
     /**
      * Executes the query, returning all of its result sets, update counts, iterators and OUT parameters in the order
-     * they were produced. Essentially the inversion of "ObjectContext.execute(Query)".
+     * they were produced. This is the generic way to call any query regardless of the operation it performs and the
+     * type of the result returned.
      *
      * @since 6.0
      */
     default List<QueryResult> execute(ObjectContext context) {
         return context.execute(this);
+    }
+
+    /**
+     * Executes a non-selecting query, returning the update count of the first {@link UpdateResult} it produced. Any
+     * other items, such as generated keys or OUT parameters, are ignored. A query that produces more than one update,
+     * or a batch update, should use {@link #execute(ObjectContext)} and read the counts of its {@link UpdateResult}
+     * items instead.
+     *
+     * @throws CayenneRuntimeException if the query produced no update results, or its first update is a batch.
+     * @since 6.0
+     */
+    default int update(ObjectContext context) {
+        for (QueryResult item : execute(context)) {
+            if (item instanceof UpdateResult update) {
+                return update.count();
+            }
+        }
+
+        throw new CayenneRuntimeException("Query produced no update results: %s", this);
     }
 
     /**

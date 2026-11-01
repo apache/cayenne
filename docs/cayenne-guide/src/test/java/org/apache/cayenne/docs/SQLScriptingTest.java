@@ -19,7 +19,6 @@
 package org.apache.cayenne.docs;
 
 import org.apache.cayenne.DataRow;
-import org.apache.cayenne.UpdateResult;
 import org.apache.cayenne.docs.persistent.Artist;
 import org.apache.cayenne.docs.persistent.Painting;
 import org.apache.cayenne.query.ObjectSelect;
@@ -40,7 +39,7 @@ public class SQLScriptingTest extends BaseTest {
                 .param("tableName", "PUBLIC.PAINTING");
         // end::variable[]
 
-        assertEquals(4, ((UpdateResult) query.execute(context).getFirst()).count());
+        assertEquals(4, query.update(context));
     }
 
     @Test

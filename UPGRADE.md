@@ -71,16 +71,17 @@
    The user-facing queries are aligned with this shape:
 
    * `SQLSelect` and `SQLExec` are merged into `SQLQuery`, and are deprecated as its subclasses. `SQLQuery.query(sql)`
-     and `SQLQuery.query(dataMapName, sql)` replace `SQLExec.query(..)`, and the other `SQLSelect` factory methods are
-     kept under the same names. There is no `update(..)` on `SQLQuery`: the counts are read from the `UpdateResult`
-     items returned by `execute(..)`, as in `((UpdateResult) query.execute(context).getFirst()).count()`.
+     and `SQLQuery.query(sql).dataMap(dataMapName)` replace `SQLExec.query(..)`, and the other `SQLSelect` factory methods are
+     kept under the same names. There is no `updateBatch(..)`: batch counts are read from the
+     `UpdateResult` items returned by `execute(..)`, as in `((UpdateResult) query.execute(context).getFirst()).counts()`.
    * `SQLSelect.map(..)` and `ColumnSelect.map(..)` are removed without a replacement. Map the selected rows with
      a `Stream`.
-   * `MappedSelect` and `MappedExec` are merged into `MappedQuery`, and are deprecated as its subclasses. Update counts
-     are read from `execute(..)` the same way.
-   * `ProcedureCall.call(..)` is deprecated in favor of the inherited `execute(..)`, and its `update(..)` and
-     `batchUpdate(..)` in favor of reading the `UpdateResult` items of `execute(..)`. `ProcedureCall.select(..)` no
-     longer throws when the procedure produced no result sets, returning an empty list like every other query.
+   * `MappedSelect` and `MappedExec` are merged into `MappedQuery`, and are deprecated as its subclasses.
+     `MappedExec.update(..)`, that returned an `int[]`, is renamed to `updateBatch(..)`, as `update(..)` inherited from
+     `Query` returns a single `int`. Batch counts are read from `execute(..)` the same way.
+   * `ProcedureCall.call(..)` is deprecated in favor of the inherited `execute(..)`, and its `batchUpdate(..)` in
+     favor of reading the `UpdateResult` items of `execute(..)`. `ProcedureCall.select(..)` no longer throws when the
+     procedure produced no result sets, returning an empty list like every other query.
 
 *  Per [CAY-3068](https://issues.apache.org/jira/browse/CAY-3068) a query is resolved ahead of its execution. `Query`
    has a single abstract method, `ResolvedQuery resolve(EntityResolver)`, returning an immutable description of the
@@ -350,7 +351,7 @@ List<Artist> artists = ObjectSelect
      `ProcedureQuery` now implement `Select<T>`, so every selecting query can be passed to
      `select(..)`.
    - The `DataContext` convenience methods `performNonSelectingQuery(..)` and `performQuery(String, ..)` (all
-     flavors) are deprecated. Use `execute(Query)`, `SQLExec` / `MappedExec` `update(..)`, and
+     flavors) are deprecated. Use `execute(Query)`, `update(Query)`, and
      `MappedSelect.query(name).select(context)` instead.
 
    ```java

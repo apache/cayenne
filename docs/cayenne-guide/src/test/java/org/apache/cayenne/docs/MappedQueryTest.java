@@ -18,8 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.docs;
 
-import org.apache.cayenne.QueryResult;
-import org.apache.cayenne.UpdateResult;
 import org.apache.cayenne.docs.persistent.Artist;
 import org.apache.cayenne.query.MappedQuery;
 import org.junit.jupiter.api.Test;
@@ -48,13 +46,11 @@ public class MappedQueryTest extends BaseTest {
         createArtistsDataSet();
 
         // tag::mappedExec[]
-        List<QueryResult> result = MappedQuery.query("updatePaintingTitle")
+        int updated = MappedQuery.query("updatePaintingTitle")
                 .param("title", "Untitled")
-                .execute(context);
-        UpdateResult update = (UpdateResult) result.getFirst();
-        System.out.println("Rows updated: " + update.count());
+                .update(context);
         // end::mappedExec[]
 
-        assertEquals(4, update.count());
+        assertEquals(4, updated);
     }
 }

@@ -31,8 +31,9 @@ import java.util.Map;
  *
  * @since 4.0
  * @deprecated in favor of {@link MappedQuery}, that combines selecting and non-selecting mapped queries in
- * a single query. Update counts are read from the {@link UpdateResult} items of
- * {@link MappedQuery#execute(ObjectContext)}. */
+ * a single query. Batch update counts are read from the {@link UpdateResult} items of
+ * {@link MappedQuery#execute(ObjectContext)}.
+ */
 @Deprecated(since = "6.0", forRemoval = true)
 public class MappedExec extends MappedQuery<Object> {
 
@@ -61,13 +62,14 @@ public class MappedExec extends MappedQuery<Object> {
     }
 
     /**
-     * Executes the query, returning the counts of its first update result.
+     * Executes the query, returning the counts of its first update result. This is the former {@code update(..)} of
+     * this class, renamed because {@link #update(ObjectContext)} now returns a single count for every query.
      *
      * @throws CayenneRuntimeException if the query produced no update results.
      * @deprecated Read the counts from the {@link UpdateResult} returned by {@link #execute(ObjectContext)}.
      */
     @Deprecated(since = "6.0", forRemoval = true)
-    public int[] update(ObjectContext context) {
+    public int[] updateBatch(ObjectContext context) {
         for (QueryResult item : execute(context)) {
             if (item instanceof UpdateResult update) {
                 return update.counts();
