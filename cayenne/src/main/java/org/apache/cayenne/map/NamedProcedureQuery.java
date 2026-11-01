@@ -18,25 +18,26 @@
  ****************************************************************/
 package org.apache.cayenne.map;
 
-import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.project.ProjectNodeVisitor;
 import org.apache.cayenne.query.CapsStrategy;
-import org.apache.cayenne.query.ProcedureQuery;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.resolved.ResolvedQuery;
 import org.apache.cayenne.util.XMLEncoder;
 
-import java.util.Map;
-
 /**
  * @since 4.0
  */
-public class NamedProcedureQuery extends NamedQuery {
+public final class NamedProcedureQuery extends NamedQuery {
 
-    protected String resultEntityName;
-    protected int fetchLimit = ResolvedQuery.FETCH_LIMIT_DEFAULT;
-    protected int fetchOffset = ResolvedQuery.FETCH_OFFSET_DEFAULT;
-    protected CapsStrategy columnNamesCapitalization;
+    private String resultEntityName;
+    private int fetchLimit;
+    private int fetchOffset;
+    private CapsStrategy columnNamesCapitalization;
+
+    public NamedProcedureQuery() {
+        this.fetchLimit = ResolvedQuery.FETCH_LIMIT_DEFAULT;
+        this.fetchOffset = ResolvedQuery.FETCH_OFFSET_DEFAULT;
+    }
 
     /**
      * Returns result entity name.
@@ -98,44 +99,6 @@ public class NamedProcedureQuery extends NamedQuery {
      */
     public void setColumnNamesCapitalization(CapsStrategy columnNamesCapitalization) {
         this.columnNamesCapitalization = columnNamesCapitalization;
-    }
-
-    @Override
-    public ProcedureQuery<?> buildQuery() {
-        String procedureName = switch (root) {
-            case String name -> name;
-            case Procedure procedure -> procedure.getName();
-            case null, default -> throw new CayenneRuntimeException("ProcedureQuery '%s' has no procedure", getName());
-        };
-
-        ProcedureQuery<?> procedureQuery = resultEntityName != null
-                ? ProcedureQuery.entityQuery(procedureName, resultEntityName)
-                : ProcedureQuery.query(procedureName);
-
-        // without a result entity the rows are DataRows regardless of the flag
-        if (fetchingDataRows && resultEntityName != null) {
-            procedureQuery = procedureQuery.fetchDataRows();
-        }
-
-        return procedureQuery
-                .limit(fetchLimit)
-                .offset(fetchOffset)
-                .pageSize(pageSize)
-                .statementFetchSize(statementFetchSize)
-                .cacheStrategy(cacheStrategy, cacheGroup)
-                .capsStrategy(columnNamesCapitalization);
-    }
-
-    /**
-     * @since 5.0
-     */
-    @Override
-    public ProcedureQuery<?> buildQuery(Map<String, ?> parameters) {
-        ProcedureQuery<?> procedureQuery = buildQuery();
-        if (parameters != null && !parameters.isEmpty()) {
-            procedureQuery.params(parameters);
-        }
-        return procedureQuery;
     }
 
     @Override

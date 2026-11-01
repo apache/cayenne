@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.map;
 
-import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.ExpressionParameter;
@@ -26,13 +25,13 @@ import org.apache.cayenne.exp.SubqueryExp;
 import org.apache.cayenne.exp.TraversalHandler;
 import org.apache.cayenne.exp.property.Property;
 import org.apache.cayenne.project.ProjectNodeVisitor;
+import org.apache.cayenne.query.MappedQuery;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.util.XMLEncoder;
 
 import java.util.LinkedHashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -45,7 +44,7 @@ import java.util.regex.Pattern;
  *
  * @since 4.0
  */
-public class NamedSelectQuery extends NamedQuery {
+public final class NamedSelectQuery extends NamedQuery {
 
     // a single or double quoted string literal of the query grammar, with its backslash escapes
     private static final String QUOTED_STRING = "'(?:[^'\\\\]|\\\\.)*'|\"(?:[^\"\\\\]|\\\\.)*\"";
@@ -87,7 +86,7 @@ public class NamedSelectQuery extends NamedQuery {
 
     /**
      * Returns the parsed query String with its "$name" parameters unbound. The returned query is shared and must not
-     * be modified or run, use {@link #buildQuery(Map)} to get a query to run.
+     * be modified or run, use {@link MappedQuery} to run the query.
      *
      * @throws ExpressionException if the String is empty or can't be parsed
      * @since 5.0
@@ -235,51 +234,6 @@ public class NamedSelectQuery extends NamedQuery {
     @Override
     public void setRoot(Object root) {
         throw new UnsupportedOperationException("The root of a select query is defined by its 'from' clause");
-    }
-
-    /**
-     * Returns the query with its "$name" parameters unbound.
-     */
-    @Override
-    public ObjectSelect<?> buildQuery() {
-        return configure(parse(null));
-    }
-
-    /**
-     * Returns the query with its "$name" parameters bound to the values from the map. The smallest condition that
-     * contains a parameter missing from the map is pruned.
-     *
-     * @since 5.0
-     */
-    @Override
-    public ObjectSelect<?> buildQuery(Map<String, ?> parameters) {
-        return configure(parse(parameters != null ? parameters : Map.of()));
-    }
-
-    // each call parses the String anew, so that the query can be modified by the caller
-    private ObjectSelect<?> parse(Map<String, ?> parameters) {
-        if (ql == null || ql.isBlank()) {
-            throw new CayenneRuntimeException("Query '%s' is empty", name);
-        }
-
-        try {
-            return ObjectSelect.parse(ql, parameters);
-        } catch (ExpressionException e) {
-            throw new CayenneRuntimeException("Query '%s' can't be parsed: %s", e, name, e.getUnlabeledMessage());
-        }
-    }
-
-    private ObjectSelect<?> configure(ObjectSelect<?> query) {
-        query.pageSize(pageSize)
-                .statementFetchSize(statementFetchSize)
-                .cacheStrategy(cacheStrategy, cacheGroup);
-
-        // a query rooted in a DbEntity fetches DataRows anyway, and a column query can't fetch them
-        if (fetchingDataRows && !query.isColumnQuery()) {
-            query.fetchDataRows();
-        }
-
-        return query;
     }
 
     @Override

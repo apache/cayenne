@@ -23,6 +23,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.NamedQuery;
 import org.apache.cayenne.map.NamedSelectQuery;
+import org.apache.cayenne.query.MappedQuery;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.PrefetchTreeNode;
@@ -55,7 +56,7 @@ public class EOFetchSpecificationParserTest {
         NamedSelectQuery namedSelectQuery = assertInstanceOf(NamedSelectQuery.class, namedQuery);
         assertSame(map.getObjEntity("Entity1"), namedSelectQuery.getRoot());
 
-        ObjectSelect<?> query = namedSelectQuery.buildQuery();
+        ObjectSelect<?> query = namedSelectQuery.getParsedQuery();
 
         assertNotNull(query.getWhere());
         assertEquals(
@@ -75,7 +76,9 @@ public class EOFetchSpecificationParserTest {
 
         assertTrue(query.toQL().startsWith("select distinct self from Entity1 "), query.toQL());
 
-        ResolvedQuery resolved = query.resolve(new EntityResolver(List.of(map)));
+        // the settings of the named query are applied when it is run as a mapped query
+        assertTrue(namedSelectQuery.isFetchingDataRows());
+        ResolvedQuery resolved = MappedQuery.query("Entity1_E1FS1").resolve(new EntityResolver(List.of(map)));
         assertEquals(500, resolved.fetchLimit());
         assertTrue(resolved.fetchingDataRows());
         assertEquals(0, resolved.pageSize());

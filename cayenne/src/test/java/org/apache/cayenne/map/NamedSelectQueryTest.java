@@ -22,18 +22,12 @@ package org.apache.cayenne.map;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
-import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.exp.ExpressionException;
-import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.exp.SubqueryExp;
 import org.apache.cayenne.map.NamedSelectQuery.ResultKind;
 import org.apache.cayenne.project.EmptyProjectNodeVisitor;
-import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.QueryCacheStrategy;
-import org.apache.cayenne.query.resolved.ResolvedSelect;
 import org.apache.cayenne.util.XMLEncoder;
 import org.junit.jupiter.api.Test;
 
@@ -41,136 +35,6 @@ import static org.apache.cayenne.map.NamedSelectQuery.renamePattern;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class NamedSelectQueryTest {
-
-    @Test
-    public void buildQuery() {
-        NamedSelectQuery namedQuery = namedQuery("from FakeRoot where abc = 5");
-
-        ObjectSelect<?> query = namedQuery.buildQuery();
-        assertInstanceOf(ObjectSelect.class, query);
-        assertEquals("FakeRoot", query.getEntityName());
-        assertEquals(ExpressionFactory.exp("abc = 5"), query.getWhere());
-    }
-
-    @Test
-    public void buildQueryIsACopy() {
-        NamedSelectQuery namedQuery = namedQuery("from FakeRoot");
-        assertNotSame(namedQuery.buildQuery(), namedQuery.buildQuery());
-        assertNotSame(namedQuery.getParsedQuery(), namedQuery.buildQuery());
-    }
-
-    @Test
-    public void buildQueryWithParameters() {
-        NamedSelectQuery namedQuery = namedQuery("from FakeRoot where abc = $a and def = $b");
-
-        // parameters with no matching value are pruned from the qualifier
-        assertEquals(ExpressionFactory.exp("abc = 5"), namedQuery.buildQuery(Map.of("a", 5)).getWhere());
-    }
-
-    @Test
-    public void buildQueryWithoutParameters() {
-        NamedSelectQuery namedQuery = namedQuery("from FakeRoot where abc = $a");
-        assertNull(namedQuery.buildQuery(Map.of()).getWhere());
-        assertEquals(ExpressionFactory.exp("abc = $a"), namedQuery.buildQuery().getWhere());
-    }
-
-    @Test
-    public void buildQueryWithSubqueryParameters() {
-        NamedSelectQuery namedQuery = namedQuery(
-                "from Artist where exists (from Painting where artist = enclosing(self) and price > $price)");
-
-        SubqueryExp bound = (SubqueryExp) namedQuery.buildQuery(Map.of("price", 5)).getWhere().getOperand(0);
-        assertEquals(ExpressionFactory.exp("artist = enclosing(self) and price > 5"), bound.getQuery().getWhere());
-
-        SubqueryExp pruned = (SubqueryExp) namedQuery.buildQuery(Map.of()).getWhere().getOperand(0);
-        assertEquals(ExpressionFactory.exp("artist = enclosing(self)"), pruned.getQuery().getWhere());
-    }
-
-    @Test
-    public void buildColumnQuery() {
-        NamedSelectQuery namedQuery = namedQuery("select name, count(*) from Artist having count(*) > $min");
-        namedQuery.setPageSize(10);
-
-        ObjectSelect<?> query = namedQuery.buildQuery(Map.of("min", 2));
-        assertTrue(query.isColumnQuery());
-        assertEquals(ExpressionFactory.exp("count(*) > 2"), query.getHaving());
-        assertTrue(namedQuery.isColumnQuery());
-        assertFalse(namedQuery.isDbQuery());
-    }
-
-    @Test
-    public void buildDbQuery() {
-        DataMap map = new DataMap();
-        DbEntity entity = new DbEntity("ARTIST");
-        map.addDbEntity(entity);
-
-        NamedSelectQuery namedQuery = namedQuery("from db:ARTIST where NAME = 'a'");
-        namedQuery.setDataMap(map);
-
-        ObjectSelect<?> query = namedQuery.buildQuery();
-        assertEquals("ARTIST", query.getDbEntityName());
-        assertTrue(query.resolve(new EntityResolver(List.of(map))).fetchingDataRows());
-        assertTrue(namedQuery.isDbQuery());
-        assertSame(entity, namedQuery.getRoot());
-    }
-
-    @Test
-    public void buildQueryInvalid() {
-        NamedSelectQuery namedQuery = namedQuery("from Artist where");
-        namedQuery.setName("q");
-
-        CayenneRuntimeException e = assertThrows(CayenneRuntimeException.class, namedQuery::buildQuery);
-        assertTrue(e.getUnlabeledMessage().startsWith("Query 'q' can't be parsed"), e.getUnlabeledMessage());
-    }
-
-    @Test
-    public void buildQueryEmpty() {
-        NamedSelectQuery namedQuery = new NamedSelectQuery();
-        namedQuery.setName("q");
-        assertThrows(CayenneRuntimeException.class, namedQuery::buildQuery);
-    }
-
-    @Test
-    public void getQueryProperties() {
-        NamedSelectQuery namedQuery = namedQuery("select distinct self from FakeRoot limit 5 offset 2");
-        namedQuery.setPageSize(10);
-        namedQuery.setStatementFetchSize(6);
-        namedQuery.setFetchingDataRows(true);
-        namedQuery.setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
-        namedQuery.setCacheGroup("g1");
-
-        ObjectSelect<?> query = namedQuery.buildQuery();
-        assertEquals("select distinct self from FakeRoot limit 5 offset 2", query.toQL());
-
-        // the settings that the query String has no syntax for are only visible once the query is resolved
-        ResolvedSelect resolved = query.resolve(fakeRootResolver());
-        assertEquals(5, resolved.fetchLimit());
-        assertEquals(2, resolved.fetchOffset());
-        assertEquals(10, resolved.pageSize());
-        assertEquals(6, resolved.statementFetchSize());
-        assertTrue(resolved.fetchingDataRows());
-        assertEquals(QueryCacheStrategy.SHARED_CACHE, resolved.cacheStrategy());
-        assertEquals("g1", resolved.cacheGroup());
-    }
-
-    @Test
-    public void getQueryPropertiesDefaults() {
-        ObjectSelect<?> query = namedQuery("from FakeRoot").buildQuery();
-        assertEquals("from FakeRoot", query.toQL());
-
-        ResolvedSelect resolved = query.resolve(fakeRootResolver());
-        assertEquals(0, resolved.pageSize());
-        assertEquals(0, resolved.statementFetchSize());
-        assertFalse(resolved.fetchingDataRows());
-        assertEquals(QueryCacheStrategy.NO_CACHE, resolved.cacheStrategy());
-        assertNull(resolved.cacheGroup());
-    }
-
-    private static EntityResolver fakeRootResolver() {
-        DataMap map = new DataMap("map");
-        map.addObjEntity(new ObjEntity("FakeRoot"));
-        return new EntityResolver(List.of(map));
-    }
 
     @Test
     public void getRoot() {

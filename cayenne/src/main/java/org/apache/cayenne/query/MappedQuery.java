@@ -21,8 +21,15 @@ package org.apache.cayenne.query;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.exp.ExpressionException;
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.NamedProcedureQuery;
 import org.apache.cayenne.map.NamedQuery;
+import org.apache.cayenne.map.NamedSQLQuery;
+import org.apache.cayenne.map.NamedSelectQuery;
+import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.query.resolved.ResolvedQuery;
 
 import java.sql.Statement;
@@ -195,80 +202,158 @@ public class MappedQuery<T> implements Query<T> {
             throw new CayenneRuntimeException("Unknown query name: %s", queryName);
         }
 
-        Query<?> query = namedQuery.buildQuery(normalizedParameters());
-
-        switch (query) {
-            case ObjectSelect<?> select -> {
-                if (fetchLimit != null) {
-                    select.limit(fetchLimit);
-                }
-                if (fetchOffset != null) {
-                    select.offset(fetchOffset);
-                }
-                if (statementFetchSize != null) {
-                    select.statementFetchSize(statementFetchSize);
-                }
-                if (queryTimeout != null) {
-                    select.queryTimeout(queryTimeout);
-                }
-                if (pageSize != null) {
-                    select.pageSize(pageSize);
-                }
-                if (forceNoCache) {
-                    select.cacheStrategy(refreshing(namedQuery.getCacheStrategy()), namedQuery.getCacheGroup());
-                }
-            }
-            case SQLQuery<?> sql -> {
-                if (fetchLimit != null) {
-                    sql.limit(fetchLimit);
-                }
-                if (fetchOffset != null) {
-                    sql.offset(fetchOffset);
-                }
-                if (statementFetchSize != null) {
-                    sql.statementFetchSize(statementFetchSize);
-                }
-                if (queryTimeout != null) {
-                    sql.queryTimeout(queryTimeout);
-                }
-                if (pageSize != null) {
-                    sql.pageSize(pageSize);
-                }
-                if (forceNoCache) {
-                    sql.cacheStrategy(refreshing(namedQuery.getCacheStrategy()), namedQuery.getCacheGroup());
-                }
-            }
-            case ProcedureQuery<?> procedure -> {
-                if (fetchLimit != null) {
-                    procedure.limit(fetchLimit);
-                }
-                if (fetchOffset != null) {
-                    procedure.offset(fetchOffset);
-                }
-                if (statementFetchSize != null) {
-                    procedure.statementFetchSize(statementFetchSize);
-                }
-                if (queryTimeout != null) {
-                    procedure.queryTimeout(queryTimeout);
-                }
-                if (pageSize != null) {
-                    procedure.pageSize(pageSize);
-                }
-                if (forceNoCache) {
-                    procedure.cacheStrategy(refreshing(namedQuery.getCacheStrategy()), namedQuery.getCacheGroup());
-                }
-            }
-            default -> throw new CayenneRuntimeException("Unknown query type: %s", query.getClass().getName());
-        }
-
-        return query.resolve(resolver);
+        return resolveNamedQuery(namedQuery).resolve(resolver);
     }
 
     /**
-     * Returns the refreshing counterpart of a caching strategy, so that the query bypasses the cache but still fills
-     * it; a non-caching strategy is returned as is.
+     * Assembles the runtime query of a named query, binding the parameters of this query to it and applying the
+     * settings of this query over the ones of the named query.
      */
-    private static QueryCacheStrategy refreshing(QueryCacheStrategy strategy) {
+    Query<?> resolveNamedQuery(NamedQuery namedQuery) {
+        Map<String, ?> parameters = normalizedParameters();
+        return switch (namedQuery) {
+            case NamedSelectQuery select -> resolveNamedSelect(select, parameters);
+            case NamedSQLQuery sql -> resolveNamedSQL(sql, parameters);
+            case NamedProcedureQuery procedure -> resolveNamedProcedure(procedure, parameters);
+        };
+    }
+
+    /**
+     * Parses the query String with its "$name" parameters bound to the values from the map. The smallest condition
+     * that contains a parameter missing from the map is pruned. The String is parsed anew for every query, as the
+     * query is modified here and by the caller.
+     */
+    private ObjectSelect<?> resolveNamedSelect(NamedSelectQuery namedQuery, Map<String, ?> parameters) {
+        String ql = namedQuery.getQl();
+        if (ql == null || ql.isBlank()) {
+            throw new CayenneRuntimeException("Query '%s' is empty", namedQuery.getName());
+        }
+
+        ObjectSelect<?> query;
+        try {
+            query = ObjectSelect.parse(ql, parameters);
+        } catch (ExpressionException e) {
+            throw new CayenneRuntimeException("Query '%s' can't be parsed: %s", e, namedQuery.getName(),
+                    e.getUnlabeledMessage());
+        }
+
+        // a query rooted in a DbEntity fetches DataRows anyway, and a column query can't fetch them
+        if (namedQuery.isFetchingDataRows() && !query.isColumnQuery()) {
+            query.fetchDataRows();
+        }
+
+        // the limit and the offset of the String stay unless set here
+        if (fetchLimit != null) {
+            query.limit(fetchLimit);
+        }
+        if (fetchOffset != null) {
+            query.offset(fetchOffset);
+        }
+        if (queryTimeout != null) {
+            query.queryTimeout(queryTimeout);
+        }
+
+        return query.pageSize(pageSize(namedQuery))
+                .statementFetchSize(statementFetchSize(namedQuery))
+                .cacheStrategy(cacheStrategy(namedQuery), namedQuery.getCacheGroup());
+    }
+
+    private SQLQuery<?> resolveNamedSQL(NamedSQLQuery namedQuery, Map<String, ?> parameters) {
+        String sql = namedQuery.getSql();
+        SQLQuery<?> query = switch (namedQuery.getRoot()) {
+            case null -> SQLQuery.query(sql);
+            case String entityName -> SQLQuery.entityQuery(entityName, sql);
+            case ObjEntity entity -> SQLQuery.entityQuery(entity.getName(), sql);
+            case DataMap map -> SQLQuery.query(sql).dataMap(map.getName());
+            default -> throw new CayenneRuntimeException("Unsupported SQL query root: %s", namedQuery.getRoot());
+        };
+
+        if (namedQuery.isFetchingDataRows()) {
+            query = query.fetchDataRows();
+        }
+
+        Map<String, Integer> prefetches = namedQuery.getPrefetchesMap();
+        if (prefetches != null) {
+            for (Map.Entry<String, Integer> entry : prefetches.entrySet()) {
+                query.addPrefetch(entry.getKey(), entry.getValue());
+            }
+        }
+
+        Map<String, String> adapterSql = namedQuery.getAdapterSql();
+        if (adapterSql != null) {
+            for (Map.Entry<String, String> entry : adapterSql.entrySet()) {
+                if (entry.getKey() != null && entry.getValue() != null) {
+                    query.dialect(entry.getKey(), entry.getValue());
+                }
+            }
+        }
+
+        if (!parameters.isEmpty()) {
+            query.params(parameters);
+        }
+        if (fetchLimit != null) {
+            query.limit(fetchLimit);
+        }
+        if (fetchOffset != null) {
+            query.offset(fetchOffset);
+        }
+        if (queryTimeout != null) {
+            query.queryTimeout(queryTimeout);
+        }
+
+        return query.pageSize(pageSize(namedQuery))
+                .statementFetchSize(statementFetchSize(namedQuery))
+                .cacheStrategy(cacheStrategy(namedQuery), namedQuery.getCacheGroup())
+                .columnNameCaps(namedQuery.getColumnNamesCapitalization());
+    }
+
+    private ProcedureQuery<?> resolveNamedProcedure(NamedProcedureQuery namedQuery, Map<String, ?> parameters) {
+        String procedureName = switch (namedQuery.getRoot()) {
+            case String name -> name;
+            case Procedure procedure -> procedure.getName();
+            case null, default -> throw new CayenneRuntimeException("ProcedureQuery '%s' has no procedure",
+                    namedQuery.getName());
+        };
+
+        String resultEntityName = namedQuery.getResultEntityName();
+        ProcedureQuery<?> query = resultEntityName != null
+                ? ProcedureQuery.entityQuery(procedureName, resultEntityName)
+                : ProcedureQuery.query(procedureName);
+
+        // without a result entity the rows are DataRows regardless of the flag
+        if (namedQuery.isFetchingDataRows() && resultEntityName != null) {
+            query = query.fetchDataRows();
+        }
+
+        if (!parameters.isEmpty()) {
+            query.params(parameters);
+        }
+        if (queryTimeout != null) {
+            query.queryTimeout(queryTimeout);
+        }
+
+        return query.limit(fetchLimit != null ? fetchLimit : namedQuery.getFetchLimit())
+                .offset(fetchOffset != null ? fetchOffset : namedQuery.getFetchOffset())
+                .pageSize(pageSize(namedQuery))
+                .statementFetchSize(statementFetchSize(namedQuery))
+                .cacheStrategy(cacheStrategy(namedQuery), namedQuery.getCacheGroup())
+                .capsStrategy(namedQuery.getColumnNamesCapitalization());
+    }
+
+    private int pageSize(NamedQuery namedQuery) {
+        return pageSize != null ? pageSize : namedQuery.getPageSize();
+    }
+
+    private int statementFetchSize(NamedQuery namedQuery) {
+        return statementFetchSize != null ? statementFetchSize : namedQuery.getStatementFetchSize();
+    }
+    
+    private QueryCacheStrategy cacheStrategy(NamedQuery namedQuery) {
+        QueryCacheStrategy strategy = namedQuery.getCacheStrategy();
+        if (!forceNoCache) {
+            return strategy;
+        }
+
         return switch (strategy) {
             case LOCAL_CACHE -> QueryCacheStrategy.LOCAL_CACHE_REFRESH;
             case SHARED_CACHE -> QueryCacheStrategy.SHARED_CACHE_REFRESH;

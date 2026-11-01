@@ -18,12 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.map;
 
-import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.project.ProjectNodeVisitor;
 import org.apache.cayenne.query.CapsStrategy;
-import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.PrefetchTreeNode;
-import org.apache.cayenne.query.SQLQuery;
+import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.util.XMLEncoder;
 
 import java.util.HashMap;
@@ -33,13 +31,17 @@ import java.util.TreeSet;
 /**
  * @since 4.0
  */
-public class NamedSQLQuery extends NamedQuery {
+public final class NamedSQLQuery extends NamedQuery {
 
-    protected String sql;
-    protected Map<String, Integer> prefetchesMap = new HashMap<>();
+    private String sql;
+    private Map<String, Integer> prefetchesMap;
+    private Map<String, String> adapterSql;
+    private CapsStrategy columnNamesCapitalization;
 
-    protected Map<String, String> adapterSql = new HashMap<>();
-    protected CapsStrategy columnNamesCapitalization;
+    public NamedSQLQuery() {
+        this.prefetchesMap = new HashMap<>();
+        this.adapterSql = new HashMap<>();
+    }
 
     /**
      * Returns default SQL statement for this query.
@@ -113,57 +115,6 @@ public class NamedSQLQuery extends NamedQuery {
      */
     public void removePrefetch(String prefetchPath) {
         this.prefetchesMap.remove(prefetchPath);
-    }
-
-    @Override
-    public SQLQuery<?> buildQuery() {
-        SQLQuery<?> query = switch (root) {
-            case null -> SQLQuery.query(getSql());
-            case String entityName -> SQLQuery.entityQuery(entityName, getSql());
-            case ObjEntity entity -> SQLQuery.entityQuery(entity.getName(), getSql());
-            case DataMap map -> SQLQuery.query(getSql()).dataMap(map.getName());
-            default -> throw new CayenneRuntimeException("Unsupported SQL query root: %s", root);
-        };
-
-        if (fetchingDataRows) {
-            query = query.fetchDataRows();
-        }
-
-        if (prefetchesMap != null) {
-            for (Map.Entry<String, Integer> entry : prefetchesMap.entrySet()) {
-                query.addPrefetch(entry.getKey(), entry.getValue());
-            }
-        }
-
-        query.pageSize(pageSize)
-                .statementFetchSize(statementFetchSize)
-                .cacheStrategy(cacheStrategy, cacheGroup)
-                .columnNameCaps(columnNamesCapitalization);
-
-        Map<String, String> adapterSql = this.getAdapterSql();
-        if (adapterSql != null) {
-            for (Map.Entry<String, String> entry : adapterSql.entrySet()) {
-                String key = entry.getKey();
-                String value = entry.getValue();
-                if (key != null && value != null) {
-                    query.dialect(key, value);
-                }
-            }
-        }
-
-        return query;
-    }
-
-    /**
-     * Creates a query from this named query, with the given named parameters.
-     */
-    @Override
-    public SQLQuery<?> buildQuery(Map<String, ?> parameters) {
-        SQLQuery<?> query = buildQuery();
-        if (parameters != null && !parameters.isEmpty()) {
-            query.params(parameters);
-        }
-        return query;
     }
 
     @Override

@@ -20,51 +20,47 @@ package org.apache.cayenne.map;
 
 import org.apache.cayenne.project.ProjectNode;
 import org.apache.cayenne.project.ProjectNodeVisitor;
-import org.apache.cayenne.query.Query;
+import org.apache.cayenne.query.MappedQuery;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.resolved.ResolvedQuery;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
 
-import java.util.Map;
-
 /**
- * A query defined in the DataMap under a name. Builds a runtime {@link Query} on demand.
+ * A query defined in the DataMap under a name. It is a description of the query, that is assembled into a runtime
+ * query by {@link MappedQuery}.
  *
  * @since 6.0
  */
-public abstract class NamedQuery implements ProjectNode, XMLSerializable {
+public abstract sealed class NamedQuery implements ProjectNode, XMLSerializable
+        permits NamedSelectQuery, NamedSQLQuery, NamedProcedureQuery {
 
     public static final String OBJ_ENTITY_ROOT = "objEntity";
-
     public static final String DB_ENTITY_ROOT = "dbEntity";
-
     public static final String PROCEDURE_ROOT = "procedure";
-
     public static final String DATA_MAP_ROOT = "dataMap";
-
     public static final String JAVA_CLASS_ROOT = "javaClass";
 
     protected String name;
     protected DataMap dataMap;
     protected Object root;
-
-    protected QueryCacheStrategy cacheStrategy = QueryCacheStrategy.getDefaultStrategy();
+    protected QueryCacheStrategy cacheStrategy;
     protected String cacheGroup;
-    protected boolean fetchingDataRows = ResolvedQuery.FETCHING_DATA_ROWS_DEFAULT;
-    protected int pageSize = ResolvedQuery.PAGE_SIZE_DEFAULT;
-    protected int statementFetchSize = ResolvedQuery.STATEMENT_FETCH_SIZE_DEFAULT;
+    protected boolean fetchingDataRows;
+    protected int pageSize;
+    protected int statementFetchSize;
 
-    /**
-     * Returns name of the query.
-     */
+    protected NamedQuery() {
+        this.cacheStrategy = QueryCacheStrategy.getDefaultStrategy();
+        this.fetchingDataRows = ResolvedQuery.FETCHING_DATA_ROWS_DEFAULT;
+        this.pageSize = ResolvedQuery.PAGE_SIZE_DEFAULT;
+        this.statementFetchSize = ResolvedQuery.STATEMENT_FETCH_SIZE_DEFAULT;
+    }
+
     public String getName() {
         return name;
     }
 
-    /**
-     * Sets name of the query.
-     */
     public void setName(String name) {
         this.name = name;
     }
@@ -77,23 +73,14 @@ public abstract class NamedQuery implements ProjectNode, XMLSerializable {
         this.dataMap = dataMap;
     }
 
-    /**
-     * Returns the root of this query.
-     */
     public Object getRoot() {
         return root;
     }
 
-    /**
-     * Sets the root of this query.
-     */
     public void setRoot(Object root) {
         this.root = root;
     }
 
-    /**
-     * Returns the page size of the query. Zero means no pagination.
-     */
     public int getPageSize() {
         return pageSize;
     }
@@ -102,9 +89,6 @@ public abstract class NamedQuery implements ProjectNode, XMLSerializable {
         this.pageSize = pageSize;
     }
 
-    /**
-     * Returns the JDBC statement fetch size of the query. Zero means the driver default.
-     */
     public int getStatementFetchSize() {
         return statementFetchSize;
     }
@@ -113,9 +97,6 @@ public abstract class NamedQuery implements ProjectNode, XMLSerializable {
         this.statementFetchSize = statementFetchSize;
     }
 
-    /**
-     * Returns whether the query fetches DataRows instead of Persistent objects.
-     */
     public boolean isFetchingDataRows() {
         return fetchingDataRows;
     }
@@ -124,23 +105,14 @@ public abstract class NamedQuery implements ProjectNode, XMLSerializable {
         this.fetchingDataRows = fetchingDataRows;
     }
 
-    /**
-     * Returns the cache strategy of the query, that is never null.
-     */
     public QueryCacheStrategy getCacheStrategy() {
         return cacheStrategy;
     }
 
-    /**
-     * Sets the cache strategy of the query. A null value resets it to the default strategy.
-     */
     public void setCacheStrategy(QueryCacheStrategy cacheStrategy) {
         this.cacheStrategy = cacheStrategy != null ? cacheStrategy : QueryCacheStrategy.getDefaultStrategy();
     }
 
-    /**
-     * Returns the cache group of the query, or null if none is set.
-     */
     public String getCacheGroup() {
         return cacheGroup;
     }
@@ -149,23 +121,12 @@ public abstract class NamedQuery implements ProjectNode, XMLSerializable {
         this.cacheGroup = cacheGroup;
     }
 
-    /**
-     * Assembles Cayenne query instance of appropriate type from this named query.
-     */
-    public abstract Query<?> buildQuery();
-
-    /**
-     * Assembles Cayenne query instance of appropriate type from this named query, applying a map of named
-     * parameters to it.
-     */
-    public abstract Query<?> buildQuery(Map<String, ?> parameters);
-
     @Override
     public <T> T acceptVisitor(ProjectNodeVisitor<T> visitor) {
         return visitor.visitQuery(this);
     }
 
-    void encodeCacheGroup(XMLEncoder encoder) {
+    protected void encodeCacheGroup(XMLEncoder encoder) {
         if (cacheGroup != null && !cacheGroup.isEmpty()) {
             encoder.start("cacheGroup").cdata(cacheGroup, true).end();
         }
