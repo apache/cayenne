@@ -29,6 +29,11 @@ Bootstrap `CayenneRuntime` and use `ObjectContext` for CRUD in a Java applicatio
 
 - `${CLAUDE_PLUGIN_ROOT}/references/runtime-api.md` — `CayenneRuntimeBuilder` methods, `ObjectContext` API, transaction patterns, lifecycle rules.
 
+## Step 0 — Check the Cayenne version
+
+This plugin is for Cayenne 6.0. Look at the project's build file first: if it depends on Cayenne 5.x, the API below
+doesn't apply. Tell the user to install `apache-cayenne-5@apache-cayenne` instead, and stop.
+
 ## Step 1 — Find or create the bootstrap site
 
 Where does the user's app construct `CayenneRuntime`? Common patterns:

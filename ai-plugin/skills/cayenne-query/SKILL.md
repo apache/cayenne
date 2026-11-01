@@ -29,6 +29,11 @@ Write idiomatic Cayenne 6.0 queries — `ObjectSelect`, `SQLQuery`, expressions,
 
 - `${CLAUDE_PLUGIN_ROOT}/references/query-api.md` — every query mechanism with examples (ObjectSelect incl. column queries, SQLQuery, Expression, selecting by id).
 
+## Step 0 — Check the Cayenne version
+
+This plugin is for Cayenne 6.0. Look at the project's build file first: if it depends on Cayenne 5.x, the API below
+doesn't apply. Tell the user to install `apache-cayenne-5@apache-cayenne` instead, and stop.
+
 ## Step 1 — Identify the query shape
 
 | Intent | Use |
