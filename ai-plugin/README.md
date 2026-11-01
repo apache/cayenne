@@ -33,7 +33,7 @@ The plugin assumes downstream **users of Cayenne** writing their own Java apps. 
 
 ## Install
 
-**Cayenne 5.0+ only.** The MCP server ships with Cayenne 5.0. Skills that depend on it (`cayenne-cgen`, `cayenne-modeler`, `cayenne-db-import`, `cayenne-full-db-sync`) will not work against earlier Cayenne versions. The XML-editing, runtime, and query skills also target 5.0 idioms — for older Cayenne, this plugin is not the right tool.
+**Cayenne 5.0.** This is the plugin for the 5.0 release line; the `apache-cayenne` plugin from the same marketplace is for Cayenne 6.0. The MCP server ships with Cayenne 5.0. Skills that depend on it (`cayenne-cgen`, `cayenne-modeler`, `cayenne-db-import`, `cayenne-full-db-sync`) will not work against earlier Cayenne versions. The XML-editing, runtime, and query skills also target 5.0 idioms — for older Cayenne, this plugin is not the right tool.
 
 The plugin is distributed from the Apache Cayenne GitHub repository: **https://github.com/apache/cayenne**. Inside Claude Code:
 
@@ -41,8 +41,9 @@ The plugin is distributed from the Apache Cayenne GitHub repository: **https://g
 # register the "marketplace"
 /plugin marketplace add apache/cayenne
 
-# install the plugin
-/plugin install apache-cayenne@apache-cayenne
+# install the plugin for Cayenne 5.0. Note the "-5" suffix: the plain "apache-cayenne" plugin
+# is for Cayenne 6.0, and its skills teach API that doesn't exist in 5.0
+/plugin install apache-cayenne-5@apache-cayenne
 
 # Install the MCP server (requires a local CayenneModeler install)
 claude mcp add cayenne --scope user -- java -jar /path/to/CayenneMCPServer.jar

@@ -13,16 +13,19 @@
 // License.
 
 
-=== `apache-cayenne` Claude Code Plugin
+=== `apache-cayenne-5` Claude Code Plugin
 
-(Claude Code specific) Install the `apache-cayenne` plugin with Cayenne skills under Claude Code:
+(Claude Code specific) Install the `apache-cayenne-5` plugin with Cayenne skills under Claude Code:
 
 [source,bash]
 ----
 /plugin marketplace add apache/cayenne
-/plugin install apache-cayenne@apache-cayenne
+/plugin install apache-cayenne-5@apache-cayenne
 /reload-plugins
 ----
+
+The plugin follows the Cayenne version: `apache-cayenne-5` is for Cayenne 5.0, while the plain `apache-cayenne` from
+the same marketplace is for Cayenne 6.0 and teaches API that doesn't exist in 5.0.
 
 The plugin adds skills for DataMap editing, class generation, reverse engineering, query writing, and runtime setup.
 The skills work best with the MCP server present (see the next chapter).
