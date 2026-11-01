@@ -122,9 +122,9 @@
    * `isColumnQuery()` and `isSingleColumn()` are added to `ObjectSelect` to inspect the shape of a query, e.g. one
      returned by `SelectQueryDescriptor.getParsedQuery()`. The getters of the execution settings
      (`getCacheStrategy()`, `getCacheGroup()`, `getPageSize()`, `getStatementFetchSize()`, `getQueryTimeout()`,
-     `isFetchingDataRows()`) are removed, like those of `SQLQuery`: read them from the `ResolvedSelect` the query
-     resolves to. The getters that describe the parsed query String (`getWhere()`, `getColumns()`, `getOrderings()`,
-     `getLimit()`, etc.) stay.
+     `isFetchingDataRows()`) are removed, like those of `SQLQuery`, and so are `getLimit()`, `getOffset()`,
+     `getEntityType()` and `isDistinct()`: read them from the `ResolvedSelect` the query resolves to. The getters that describe the clauses of a parsed query String (`getWhere()`,
+     `getColumns()`, `getOrderings()`, etc.) stay for now.
    * `QLSelectPrinter` is removed. A query prints itself in the query language with `ObjectSelect.toQL()` (or
      `appendQL(Appendable)`), and its `toString()` returns the same.
 

@@ -140,9 +140,7 @@ public class SelectQueryDescriptorTest {
         descriptor.setCacheGroup("g1");
 
         ObjectSelect<?> query = descriptor.buildQuery();
-        assertEquals(5, query.getLimit());
-        assertEquals(2, query.getOffset());
-        assertTrue(query.isDistinct());
+        assertEquals("select distinct self from FakeRoot limit 5 offset 2", query.toQL());
 
         // the settings that the query String has no syntax for are only visible once the query is resolved
         ResolvedSelect resolved = query.resolve(fakeRootResolver());
@@ -158,9 +156,7 @@ public class SelectQueryDescriptorTest {
     @Test
     public void getQueryPropertiesDefaults() {
         ObjectSelect<?> query = descriptor("from FakeRoot").buildQuery();
-        assertEquals(0, query.getLimit());
-        assertEquals(0, query.getOffset());
-        assertFalse(query.isDistinct());
+        assertEquals("from FakeRoot", query.toQL());
 
         ResolvedSelect resolved = query.resolve(fakeRootResolver());
         assertEquals(0, resolved.pageSize());

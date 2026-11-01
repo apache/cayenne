@@ -254,12 +254,12 @@ public class ObjectSelect_ColumnsTest {
     @Test
     public void testOffsetCopyFromObjectSelect() {
         ObjectSelect<Artist> select = ObjectSelect.query(Artist.class).offset(10).limit(10);
-        assertEquals(10, select.getOffset());
-        assertEquals(10, select.getLimit());
+        assertEquals(10, select.fetchOffset);
+        assertEquals(10, select.fetchLimit);
 
         ObjectSelect<String> columnSelect = select.column(Artist.ARTIST_NAME);
-        assertEquals(10, columnSelect.getOffset());
-        assertEquals(10, columnSelect.getLimit());
+        assertEquals(10, columnSelect.fetchOffset);
+        assertEquals(10, columnSelect.fetchLimit);
     }
 
 }

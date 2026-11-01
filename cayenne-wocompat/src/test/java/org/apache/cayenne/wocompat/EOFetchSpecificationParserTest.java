@@ -73,10 +73,10 @@ public class EOFetchSpecificationParserTest {
         assertEquals("name", ordering.getSortSpecString());
         assertFalse(ordering.isAscending());
 
-        assertEquals(500, query.getLimit());
-        assertTrue(query.isDistinct());
+        assertTrue(query.toQL().startsWith("select distinct self from Entity1 "), query.toQL());
 
         ResolvedQuery resolved = query.resolve(new EntityResolver(List.of(map)));
+        assertEquals(500, resolved.fetchLimit());
         assertTrue(resolved.fetchingDataRows());
         assertEquals(0, resolved.pageSize());
     }

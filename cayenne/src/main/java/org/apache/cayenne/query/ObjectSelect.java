@@ -977,18 +977,6 @@ public class ObjectSelect<T> implements Query<T> {
         return context.selectFirst(limit(1));
     }
 
-    public int getLimit() {
-        return fetchLimit;
-    }
-
-    public int getOffset() {
-        return fetchOffset;
-    }
-
-    public Class<?> getEntityType() {
-        return entityType;
-    }
-
     public String getEntityName() {
         return entityName;
     }
@@ -1045,13 +1033,6 @@ public class ObjectSelect<T> implements Query<T> {
      */
     public boolean isSingleColumn() {
         return columns != null && singleColumn;
-    }
-
-    /**
-     * @since 4.2
-     */
-    public boolean isDistinct() {
-        return distinct;
     }
 
     protected void setActiveExpression(Expression exp) {

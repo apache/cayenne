@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.project.xml;
 
-import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.SelectQueryDescriptor;
@@ -99,8 +98,9 @@ public class SelectQueryDescriptorHandlerTest extends BaseHandlerTest {
                         prefetch paintings joint""", descriptor.getQl());
 
         // parameters are preserved, to be bound when the query is executed
-        assertEquals(ExpressionFactory.exp("artistName like $name"), descriptor.getParsedQuery().getWhere());
-        assertEquals(10, descriptor.getParsedQuery().getLimit());
+        assertEquals("select distinct self from Artist where artistName like $name "
+                + "order by artistName desc insensitive, dateOfBirth limit 10 offset 20 prefetch paintings joint",
+                descriptor.getParsedQuery().toQL());
     }
 
     @Test

@@ -99,14 +99,13 @@ public class ObjectSelect_ParseTest {
         ObjectSelect<?> q = ObjectSelect.parse("select distinct self from Artist");
 
         assertInstanceOf(ObjectSelect.class, q);
-        assertTrue(q.isDistinct());
+        assertEquals("select distinct self from Artist", q.toQL());
     }
 
     @Test
     public void offsetWithoutLimit() {
         ObjectSelect<?> q = ObjectSelect.parse("from Artist offset 20");
-        assertEquals(0, q.getLimit());
-        assertEquals(20, q.getOffset());
+        assertEquals("from Artist offset 20", q.toQL());
     }
 
     @Test
@@ -116,8 +115,7 @@ public class ObjectSelect_ParseTest {
                         + "limit 10 offset 20");
 
         assertEquals(Artist.ARTIST_NAME.like("A%"), q.getWhere());
-        assertEquals(10, q.getLimit());
-        assertEquals(20, q.getOffset());
+        assertTrue(q.toQL().endsWith(" limit 10 offset 20"), q.toQL());
 
         List<Ordering> orderings = orderings(q);
         assertEquals(2, orderings.size());
@@ -284,7 +282,7 @@ public class ObjectSelect_ParseTest {
 
         assertTrue(q.isColumnQuery());
         assertTrue(q.isSingleColumn());
-        assertTrue(q.isDistinct());
+        assertTrue(q.toQL().startsWith("select distinct "), q.toQL());
         assertEquals(Artist.PAINTINGS.dot(Painting.PAINTING_TITLE).getExpression(),
                 columns(q).get(0).getExpression());
     }
@@ -407,7 +405,7 @@ public class ObjectSelect_ParseTest {
 
         ObjectSelect<?> subquery = subquery(exp, 1);
         assertEquals(ExpressionFactory.greaterExp("estimatedPrice", 100), subquery.getWhere());
-        assertEquals(5, subquery.getLimit());
+        assertTrue(subquery.toQL().endsWith(" limit 5"), subquery.toQL());
     }
 
     @Test

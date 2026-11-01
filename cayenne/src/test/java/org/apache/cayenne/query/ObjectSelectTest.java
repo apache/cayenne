@@ -52,10 +52,7 @@ public class ObjectSelectTest {
 		ObjectSelect<DataRow> q = ObjectSelect.dataRowQuery(Artist.class);
 		assertNotNull(q);
 		assertTrue(resolve(q).fetchingDataRows());
-
-		assertEquals(Artist.class, q.getEntityType());
-		assertNull(q.getEntityName());
-		assertNull(q.getDbEntityName());
+		assertEquals("from Artist", q.toQL());
 	}
 
 	@Test
@@ -64,10 +61,7 @@ public class ObjectSelectTest {
 		assertNotNull(q);
 		assertNull(q.getWhere());
 		assertFalse(resolve(q).fetchingDataRows());
-
-		assertEquals(Artist.class, q.getEntityType());
-		assertNull(q.getEntityName());
-		assertNull(q.getDbEntityName());
+		assertEquals("from Artist", q.toQL());
 	}
 
 	@Test
@@ -76,10 +70,7 @@ public class ObjectSelectTest {
 		assertNotNull(q);
 		assertEquals("a = \"A\"", q.getWhere().toString());
 		assertFalse(resolve(q).fetchingDataRows());
-
-		assertEquals(Artist.class, q.getEntityType());
-		assertNull(q.getEntityName());
-		assertNull(q.getDbEntityName());
+		assertEquals("from Artist where a = \"A\"", q.toQL());
 	}
 
 	@Test
@@ -87,10 +78,7 @@ public class ObjectSelectTest {
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class, "Painting");
 		assertNotNull(q);
 		assertFalse(resolve(q).fetchingDataRows());
-
-		assertNull(q.getEntityType());
-		assertEquals("Painting", q.getEntityName());
-		assertNull(q.getDbEntityName());
+		assertEquals("from Painting", q.toQL());
 	}
 
 	@Test
@@ -98,10 +86,7 @@ public class ObjectSelectTest {
 		ObjectSelect<DataRow> q = ObjectSelect.dbQuery("PAINTING");
 		assertNotNull(q);
 		assertTrue(resolve(q).fetchingDataRows());
-
-		assertNull(q.getEntityType());
-		assertNull(q.getEntityName());
-		assertEquals("PAINTING", q.getDbEntityName());
+		assertEquals("from db:PAINTING", q.toQL());
 	}
 
 	@Test
@@ -346,24 +331,24 @@ public class ObjectSelectTest {
 	public void limit() {
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class);
 
-		assertEquals(0, q.getLimit());
+		assertEquals(0, resolve(q).fetchLimit());
 		q.limit(2);
-		assertEquals(2, q.getLimit());
+		assertEquals(2, resolve(q).fetchLimit());
 
 		q.limit(3).limit(5);
-		assertEquals(5, q.getLimit());
+		assertEquals(5, resolve(q).fetchLimit());
 	}
 
 	@Test
 	public void offset() {
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class);
 
-		assertEquals(0, q.getOffset());
+		assertEquals(0, resolve(q).fetchOffset());
 		q.offset(2);
-		assertEquals(2, q.getOffset());
+		assertEquals(2, resolve(q).fetchOffset());
 
 		q.offset(3).offset(5);
-		assertEquals(5, q.getOffset());
+		assertEquals(5, resolve(q).fetchOffset());
 	}
 
 	@Test

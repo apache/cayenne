@@ -20,7 +20,6 @@
 package org.apache.cayenne.exp.property;
 
 import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.ExistsExp;
 import org.apache.cayenne.exp.NotExistsExp;
 import org.apache.cayenne.exp.SubqueryExp;
@@ -48,8 +47,7 @@ public class SelfPropertyTest {
         ObjectSelect<Artist> query = property.query();
 
         assertNotNull(query);
-        assertEquals(Artist.class, query.getEntityType());
-        assertNull(query.getWhere());
+        assertEquals("from Artist", query.toQL());
     }
 
     @Test
@@ -57,8 +55,7 @@ public class SelfPropertyTest {
         ObjectSelect<Artist> query = property.query(Artist.ARTIST_NAME.eq("test"));
 
         assertNotNull(query);
-        assertEquals(Artist.class, query.getEntityType());
-        assertEquals(ExpressionFactory.exp("artistName = 'test'"), query.getWhere());
+        assertEquals("from Artist where artistName = \"test\"", query.toQL());
     }
 
     @Test
@@ -66,7 +63,7 @@ public class SelfPropertyTest {
         ObjectSelect<String> query = property.columnQuery(Artist.ARTIST_NAME);
 
         assertNotNull(query);
-        assertEquals(Artist.class, query.getEntityType());
+        assertEquals("select artistName from Artist", query.toQL());
         assertEquals(1, query.getColumns().size());
         assertEquals(Artist.ARTIST_NAME, query.getColumns().iterator().next());
         assertNull(query.getWhere());
@@ -77,7 +74,7 @@ public class SelfPropertyTest {
         ObjectSelect<Object[]> query = property.columnQuery(Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH);
 
         assertNotNull(query);
-        assertEquals(Artist.class, query.getEntityType());
+        assertEquals("select artistName, dateOfBirth from Artist", query.toQL());
         assertEquals(2, query.getColumns().size());
         Iterator<Property<?>> iterator = query.getColumns().iterator();
         assertEquals(Artist.ARTIST_NAME, iterator.next());
@@ -100,8 +97,7 @@ public class SelfPropertyTest {
         assertTrue(subquery.getQuery() instanceof ObjectSelect);
 
         ObjectSelect<?> subSelect = (ObjectSelect<?>) subquery.getQuery();
-        assertEquals(Artist.class, subSelect.getEntityType());
-        assertEquals(ExpressionFactory.exp("artistName = 'test'"), subSelect.getWhere());
+        assertEquals("from Artist where artistName = \"test\"", subSelect.toQL());
     }
 
     @Test
@@ -119,7 +115,6 @@ public class SelfPropertyTest {
         assertTrue(subquery.getQuery() instanceof ObjectSelect);
 
         ObjectSelect<?> subSelect = (ObjectSelect<?>) subquery.getQuery();
-        assertEquals(Artist.class, subSelect.getEntityType());
-        assertEquals(ExpressionFactory.exp("artistName = 'test'"), subSelect.getWhere());
+        assertEquals("from Artist where artistName = \"test\"", subSelect.toQL());
     }
 }
