@@ -20,16 +20,14 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.DataRowLayout;
 import org.apache.cayenne.DataRow;
-import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.DataRowLayout;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.reflect.AdditionalDbEntityDescriptor;
 import org.apache.cayenne.reflect.ClassDescriptor;
@@ -208,7 +206,7 @@ class ObjectResolver {
 				if (isDirty(object)) {
 					return false;
 				}
-				merge(object, row, classDescriptor, plan);
+				merge(object, row, plan);
 				return true;
 			});
 
@@ -218,7 +216,7 @@ class ObjectResolver {
 		}
 
 		return store.withChangesLock(() -> store.withObjectLock(anId, () -> {
-			merge(object, row, classDescriptor, plan);
+			merge(object, row, plan);
 			return object;
 		}));
 	}
@@ -232,7 +230,7 @@ class ObjectResolver {
 	 * Merges the row into the object under the object lock held by the caller, unless the object already reflects a
 	 * newer snapshot than the row.
 	 */
-	private void merge(Persistent object, DataRow row, ClassDescriptor classDescriptor, MergePlan plan) {
+	private void merge(Persistent object, DataRow row, MergePlan plan) {
 		switch (object.getPersistenceState()) {
 		case PersistenceState.COMMITTED:
 		case PersistenceState.MODIFIED:
@@ -281,14 +279,6 @@ class ObjectResolver {
 
 	ClassDescriptor getDescriptor() {
 		return descriptor;
-	}
-
-	EntityResolver getEntityResolver() {
-		return context.getEntityResolver();
-	}
-
-	ObjectContext getContext() {
-		return context;
 	}
 
 	ObjectId createObjectId(DataRow dataRow, ObjEntity objEntity, CayennePath namePrefix) {
