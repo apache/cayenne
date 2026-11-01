@@ -83,7 +83,7 @@ The server exposes three tools. Your agent will discover them on its own, but it
 capabilities and possible prompts. All tools operate on a Cayenne project descriptor (a `cayenne-*.xml` file) and take
 absolute paths — agents should resolve relative paths against the current workspace before invoking.
 
-If you are using the `apache-cayenne` Claude Code plugin, its skills (`cayenne-cgen`, `cayenne-modeler`, `cayenne-db-import`)
+If you are using the `apache-cayenne-5` Claude Code plugin, its skills (`cayenne-cgen`, `cayenne-modeler`, `cayenne-db-import`)
 call these tools automatically. You can verify the server is available with `claude mcp list` — look for an entry named `cayenne`.
 
 ===== open_project

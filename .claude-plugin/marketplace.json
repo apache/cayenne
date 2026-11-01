@@ -8,9 +8,11 @@
   },
   "plugins": [
     {
-      "name": "apache-cayenne",
-      "description": "Apache Cayenne 5.0 ORM — design DataMaps, reverse-engineer schemas, generate classes, write runtime code.",
-      "author": { "name": "Apache Cayenne" },
+      "name": "apache-cayenne-6",
+      "description": "Apache Cayenne 6.0 ORM — design DataMaps, reverse-engineer schemas, generate classes, write runtime code.",
+      "author": {
+        "name": "Apache Cayenne"
+      },
       "source": {
         "source": "git-subdir",
         "url": "https://github.com/apache/cayenne.git",
@@ -18,7 +20,35 @@
         "ref": "master"
       },
       "category": "development",
-      "tags": ["java", "orm", "cayenne", "database"]
+      "tags": [
+        "java",
+        "orm",
+        "cayenne",
+        "database"
+      ]
+    },
+    {
+      "name": "apache-cayenne-5",
+      "description": "Apache Cayenne 5.0 ORM — the same skills for projects on the 5.0 release line.",
+      "author": {
+        "name": "Apache Cayenne"
+      },
+      "source": {
+        "source": "git-subdir",
+        "url": "https://github.com/apache/cayenne.git",
+        "path": "ai-plugin",
+        "ref": "STABLE-5.0"
+      },
+      "category": "development",
+      "tags": [
+        "java",
+        "orm",
+        "cayenne",
+        "database"
+      ]
     }
-  ]
+  ],
+  "renames": {
+    "apache-cayenne": "apache-cayenne-5"
+  }
 }

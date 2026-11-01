@@ -24,8 +24,8 @@
 /reload-plugins
 ----
 
-The plugin follows the Cayenne version: `apache-cayenne-5` is for Cayenne 5.0, while the plain `apache-cayenne` from
-the same marketplace is for Cayenne 6.0 and teaches API that doesn't exist in 5.0.
+The plugin is versioned with Cayenne: `apache-cayenne-5` is for Cayenne 5.0, while `apache-cayenne-6` from the same
+marketplace is for Cayenne 6.0 and teaches API that doesn't exist in 5.0. There is no unversioned plugin.
 
 The plugin adds skills for DataMap editing, class generation, reverse engineering, query writing, and runtime setup.
 The skills work best with the MCP server present (see the next chapter).

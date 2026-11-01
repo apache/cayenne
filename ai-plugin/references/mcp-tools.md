@@ -28,7 +28,7 @@ Setup is documented in `cayenne-mcp-server/README.md` at the repo root. Quick fo
 claude mcp add cayenne --scope user -- java -jar /path/to/CayenneMCPServer.jar
 ```
 
-Verify the server is registered with `claude mcp list` — you should see an entry named `cayenne` (the MCP server alias from the `claude mcp add cayenne` command above) showing as connected. This is unrelated to the plugin name `apache-cayenne`.
+Verify the server is registered with `claude mcp list` — you should see an entry named `cayenne` (the MCP server alias from the `claude mcp add cayenne` command above) showing as connected. This is unrelated to the plugin name `apache-cayenne-5`.
 
 ## Tool: `cgen_run`
 
