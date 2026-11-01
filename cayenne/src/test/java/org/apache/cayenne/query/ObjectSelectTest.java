@@ -25,8 +25,10 @@ import java.util.Collections;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.query.resolved.ResolvedSelect;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.junit.jupiter.api.Test;
 
@@ -36,11 +38,20 @@ import static org.mockito.Mockito.when;
 
 public class ObjectSelectTest {
 
+	// the execution settings of a query are not readable from the query itself, only from the resolved query
+	private static ResolvedSelect resolve(ObjectSelect<?> query) {
+		EntityResolver resolver = mock(EntityResolver.class);
+		when(resolver.getObjEntity(Artist.class)).thenReturn(new ObjEntity("Artist"));
+		when(resolver.getObjEntity("Painting")).thenReturn(new ObjEntity("Painting"));
+		when(resolver.getDbEntity("PAINTING")).thenReturn(new DbEntity("PAINTING"));
+		return query.resolve(resolver);
+	}
+
 	@Test
 	public void dataRowQuery() {
 		ObjectSelect<DataRow> q = ObjectSelect.dataRowQuery(Artist.class);
 		assertNotNull(q);
-		assertTrue(q.isFetchingDataRows());
+		assertTrue(resolve(q).fetchingDataRows());
 
 		assertEquals(Artist.class, q.getEntityType());
 		assertNull(q.getEntityName());
@@ -52,7 +63,7 @@ public class ObjectSelectTest {
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class);
 		assertNotNull(q);
 		assertNull(q.getWhere());
-		assertFalse(q.isFetchingDataRows());
+		assertFalse(resolve(q).fetchingDataRows());
 
 		assertEquals(Artist.class, q.getEntityType());
 		assertNull(q.getEntityName());
@@ -64,7 +75,7 @@ public class ObjectSelectTest {
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class).where(ExpressionFactory.matchExp("a", "A"));
 		assertNotNull(q);
 		assertEquals("a = \"A\"", q.getWhere().toString());
-		assertFalse(q.isFetchingDataRows());
+		assertFalse(resolve(q).fetchingDataRows());
 
 		assertEquals(Artist.class, q.getEntityType());
 		assertNull(q.getEntityName());
@@ -75,7 +86,7 @@ public class ObjectSelectTest {
 	public void query_TypeAndEntity() {
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class, "Painting");
 		assertNotNull(q);
-		assertFalse(q.isFetchingDataRows());
+		assertFalse(resolve(q).fetchingDataRows());
 
 		assertNull(q.getEntityType());
 		assertEquals("Painting", q.getEntityName());
@@ -86,7 +97,7 @@ public class ObjectSelectTest {
 	public void query_TypeAndDbEntity() {
 		ObjectSelect<DataRow> q = ObjectSelect.dbQuery("PAINTING");
 		assertNotNull(q);
-		assertTrue(q.isFetchingDataRows());
+		assertTrue(resolve(q).fetchingDataRows());
 
 		assertNull(q.getEntityType());
 		assertNull(q.getEntityName());
@@ -359,91 +370,89 @@ public class ObjectSelectTest {
 	public void statementFetchSize() {
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class);
 
-		assertEquals(0, q.getStatementFetchSize());
+		assertEquals(0, resolve(q).statementFetchSize());
 		q.statementFetchSize(2);
-		assertEquals(2, q.getStatementFetchSize());
+		assertEquals(2, resolve(q).statementFetchSize());
 
 		q.statementFetchSize(3).statementFetchSize(5);
-		assertEquals(5, q.getStatementFetchSize());
+		assertEquals(5, resolve(q).statementFetchSize());
 	}
 
 	@Test
 	public void cacheGroups_Collection() {
 		ObjectSelect<DataRow> q = ObjectSelect.dataRowQuery(Artist.class);
 
-		assertEquals(QueryCacheStrategy.NO_CACHE, q.getCacheStrategy());
-		assertNull(q.getCacheGroup());
+		assertEquals(QueryCacheStrategy.NO_CACHE, resolve(q).cacheStrategy());
+		assertNull(resolve(q).cacheGroup());
 
 		q.cacheGroup("a");
-		assertEquals(QueryCacheStrategy.NO_CACHE, q.getCacheStrategy());
-		assertEquals("a", q.getCacheGroup());
+		assertEquals(QueryCacheStrategy.NO_CACHE, resolve(q).cacheStrategy());
+		assertEquals("a", resolve(q).cacheGroup());
 	}
 
 	@Test
 	public void cacheStrategy() {
 		ObjectSelect<DataRow> q = ObjectSelect.dataRowQuery(Artist.class);
 
-		assertEquals(QueryCacheStrategy.NO_CACHE, q.getCacheStrategy());
-		assertNull(q.getCacheGroup());
+		assertEquals(QueryCacheStrategy.NO_CACHE, resolve(q).cacheStrategy());
+		assertNull(resolve(q).cacheGroup());
 
 		q.cacheStrategy(QueryCacheStrategy.LOCAL_CACHE, "b");
-		assertSame(QueryCacheStrategy.LOCAL_CACHE, q.getCacheStrategy());
-		assertEquals("b", q.getCacheGroup());
+		assertSame(QueryCacheStrategy.LOCAL_CACHE, resolve(q).cacheStrategy());
+		assertEquals("b", resolve(q).cacheGroup());
 
 		q.cacheStrategy(QueryCacheStrategy.SHARED_CACHE);
-		assertSame(QueryCacheStrategy.SHARED_CACHE, q.getCacheStrategy());
-		assertNull(q.getCacheGroup());
+		assertSame(QueryCacheStrategy.SHARED_CACHE, resolve(q).cacheStrategy());
+		assertNull(resolve(q).cacheGroup());
 	}
 
 	@Test
 	public void localCache() {
 		ObjectSelect<DataRow> q = ObjectSelect.dataRowQuery(Artist.class);
 
-		assertEquals(QueryCacheStrategy.NO_CACHE, q.getCacheStrategy());
-		assertNull(q.getCacheGroup());
+		assertEquals(QueryCacheStrategy.NO_CACHE, resolve(q).cacheStrategy());
+		assertNull(resolve(q).cacheGroup());
 
 		q.localCache("a");
-		assertSame(QueryCacheStrategy.LOCAL_CACHE, q.getCacheStrategy());
-		assertEquals("a", q.getCacheGroup());
+		assertSame(QueryCacheStrategy.LOCAL_CACHE, resolve(q).cacheStrategy());
+		assertEquals("a", resolve(q).cacheGroup());
 
 		q.localCache();
-		assertSame(QueryCacheStrategy.LOCAL_CACHE, q.getCacheStrategy());
-		assertNull(q.getCacheGroup());
+		assertSame(QueryCacheStrategy.LOCAL_CACHE, resolve(q).cacheStrategy());
+		assertNull(resolve(q).cacheGroup());
 	}
 
 	@Test
 	public void sharedCache() {
 		ObjectSelect<DataRow> q = ObjectSelect.dataRowQuery(Artist.class);
 
-		assertEquals(QueryCacheStrategy.NO_CACHE, q.getCacheStrategy());
-		assertNull(q.getCacheGroup());
+		assertEquals(QueryCacheStrategy.NO_CACHE, resolve(q).cacheStrategy());
+		assertNull(resolve(q).cacheGroup());
 
 		q.sharedCache("b");
-		assertSame(QueryCacheStrategy.SHARED_CACHE, q.getCacheStrategy());
-		assertEquals("b", q.getCacheGroup());
+		assertSame(QueryCacheStrategy.SHARED_CACHE, resolve(q).cacheStrategy());
+		assertEquals("b", resolve(q).cacheGroup());
 
 		q.sharedCache();
-		assertSame(QueryCacheStrategy.SHARED_CACHE, q.getCacheStrategy());
-		assertNull(q.getCacheGroup());
+		assertSame(QueryCacheStrategy.SHARED_CACHE, resolve(q).cacheStrategy());
+		assertNull(resolve(q).cacheGroup());
 	}
 
 	@Test
 	public void queryTimeout() {
 		ObjectSelect<Artist> query = ObjectSelect.query(Artist.class);
-		assertEquals(-1, query.getQueryTimeout());
+		assertEquals(-1, resolve(query).queryTimeout());
 
 		query.queryTimeout(10);
-		assertEquals(10, query.getQueryTimeout());
+		assertEquals(10, resolve(query).queryTimeout());
 
 		query.queryTimeout(1).queryTimeout(2);
-		assertEquals(2, query.getQueryTimeout());
+		assertEquals(2, resolve(query).queryTimeout());
 	}
 
 	@Test
 	public void readOnlyMetadata() {
-		EntityResolver resolver = mock(EntityResolver.class);
-		when(resolver.getObjEntity(Artist.class)).thenReturn(new ObjEntity("Artist"));
-		assertTrue(ObjectSelect.query(Artist.class).resolve(resolver).readOnly());
+		assertTrue(resolve(ObjectSelect.query(Artist.class)).readOnly());
 	}
 
 }

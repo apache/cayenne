@@ -22,9 +22,9 @@ package org.apache.cayenne.exp.property;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.FunctionExpressionFactory;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.exp.PathExp;
 import org.apache.cayenne.exp.path.CayennePath;
-import org.apache.cayenne.query.ColumnSelect;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.Orderings;
 import org.apache.cayenne.query.SortOrder;
@@ -415,14 +415,14 @@ public class BaseProperty<E> implements Property<E> {
     /**
      * @return An expression for finding objects with values in the given subquery
      */
-    public Expression in(ColumnSelect<? extends E> subquery) {
+    public Expression in(ObjectSelect<? extends E> subquery) {
         return ExpressionFactory.inExp(getExpression(), subquery);
     }
 
     /**
      * @return An expression for finding objects with values not in the given subquery
      */
-    public Expression nin(ColumnSelect<? extends E> subquery) {
+    public Expression nin(ObjectSelect<? extends E> subquery) {
         return ExpressionFactory.notInExp(getExpression(), subquery);
     }
 

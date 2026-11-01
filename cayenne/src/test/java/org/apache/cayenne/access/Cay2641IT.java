@@ -22,7 +22,6 @@ import org.apache.cayenne.Fault;
 import org.apache.cayenne.access.translator.select.DbAdapterDelegatedSelectTranslator;
 import org.apache.cayenne.access.translator.TranslatedSelect;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.query.ColumnSelect;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.cay_2641.ArtistLazy;
@@ -76,7 +75,7 @@ public class Cay2641IT {
         String pattern = "SELECT SURNAME( c0)?, ID( c1)? FROM ArtistLazy";
         MatcherAssert.assertThat(sql, Matchers.matchesPattern(pattern));
 
-        ColumnSelect<String> select = ObjectSelect.columnQuery(ArtistLazy.class, ArtistLazy.NAME);
+        ObjectSelect<String> select = ObjectSelect.columnQuery(ArtistLazy.class, ArtistLazy.NAME);
         translator = new DbAdapterDelegatedSelectTranslator().translate(select.resolve(env.context().getEntityResolver()), adapter, env.context().getEntityResolver());
         sql = translator.sql();
 

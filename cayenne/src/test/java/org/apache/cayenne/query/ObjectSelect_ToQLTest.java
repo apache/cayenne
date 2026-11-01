@@ -16,22 +16,18 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.ql;
+package org.apache.cayenne.query;
 
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.query.Ordering;
-import org.apache.cayenne.query.PrefetchTreeNode;
-import org.apache.cayenne.query.SortOrder;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class QLSelectPrinterTest {
+public class ObjectSelect_ToQLTest {
 
     @Test
     public void printFromOnly() {
-        assertEquals("from Artist", QLSelectPrinter.print(ObjectSelect.query(Object.class, "Artist")));
+        assertEquals("from Artist", ObjectSelect.query(Object.class, "Artist").toQL());
     }
 
     @Test
@@ -51,13 +47,13 @@ public class QLSelectPrinterTest {
         assertEquals("select distinct self from Artist where artistName like $name "
                         + "order by artistName desc insensitive, dateOfBirth limit 10 offset 20 "
                         + "prefetch paintings joint, paintings.gallery disjoint, exhibits disjointById, groups",
-                QLSelectPrinter.print(query));
+                query.toQL());
     }
 
     @Test
     public void printOffsetWithoutLimit() {
         assertEquals("from Artist offset 20",
-                QLSelectPrinter.print(ObjectSelect.query(Object.class, "Artist").offset(20)));
+                ObjectSelect.query(Object.class, "Artist").offset(20).toQL());
     }
 
     @Test
@@ -65,6 +61,6 @@ public class QLSelectPrinterTest {
         // a prefetch of a nested path implies its parents, that are phantom nodes and are not printed
         ObjectSelect<?> query = ObjectSelect.query(Object.class, "Artist")
                 .prefetch("paintings.gallery", PrefetchTreeNode.DISJOINT_PREFETCH_SEMANTICS);
-        assertEquals("from Artist prefetch paintings.gallery disjoint", QLSelectPrinter.print(query));
+        assertEquals("from Artist prefetch paintings.gallery disjoint", query.toQL());
     }
 }

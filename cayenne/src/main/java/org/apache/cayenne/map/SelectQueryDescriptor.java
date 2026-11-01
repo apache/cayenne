@@ -26,8 +26,6 @@ import org.apache.cayenne.exp.SubqueryExp;
 import org.apache.cayenne.exp.TraversalHandler;
 import org.apache.cayenne.exp.property.Property;
 import org.apache.cayenne.project.ProjectNodeVisitor;
-import org.apache.cayenne.query.ColumnSelect;
-import org.apache.cayenne.query.FluentSelect;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.PrefetchTreeNode;
@@ -59,7 +57,7 @@ public class SelectQueryDescriptor extends QueryDescriptor {
     private String ql;
 
     // the parsed "ql", or the error of parsing it, both lazily set. Inspected, but never run, as it is not a copy
-    private FluentSelect<?, ?> parsed;
+    private ObjectSelect<?> parsed;
     private ExpressionException parseError;
 
     /**
@@ -98,15 +96,15 @@ public class SelectQueryDescriptor extends QueryDescriptor {
      * @throws ExpressionException if the String is empty or can't be parsed
      * @since 5.0
      */
-    public FluentSelect<?, ?> getParsedQuery() {
-        FluentSelect<?, ?> query = parsedOrNull();
+    public ObjectSelect<?> getParsedQuery() {
+        ObjectSelect<?> query = parsedOrNull();
         if (query == null) {
             throw parseError;
         }
         return query;
     }
 
-    private FluentSelect<?, ?> parsedOrNull() {
+    private ObjectSelect<?> parsedOrNull() {
         if (parsed == null && parseError == null) {
             if (ql == null || ql.isBlank()) {
                 parseError = new ExpressionException("The query is empty");
@@ -127,7 +125,8 @@ public class SelectQueryDescriptor extends QueryDescriptor {
      * @since 5.0
      */
     public boolean isColumnQuery() {
-        return parsedOrNull() instanceof ColumnSelect;
+        ObjectSelect<?> query = parsedOrNull();
+        return query != null && query.isColumnQuery();
     }
 
     /**
@@ -136,7 +135,7 @@ public class SelectQueryDescriptor extends QueryDescriptor {
      * @since 5.0
      */
     public boolean isDbQuery() {
-        FluentSelect<?, ?> query = parsedOrNull();
+        ObjectSelect<?> query = parsedOrNull();
         return query != null && query.getDbEntityName() != null;
     }
 
@@ -146,8 +145,9 @@ public class SelectQueryDescriptor extends QueryDescriptor {
      * @since 5.0
      */
     public ResultKind getResultKind() {
-        if (parsedOrNull() instanceof ColumnSelect<?> columnSelect) {
-            return columnSelect.getColumns().size() == 1 ? ResultKind.SCALAR : ResultKind.ARRAY;
+        ObjectSelect<?> query = parsedOrNull();
+        if (query != null && query.isColumnQuery()) {
+            return query.isSingleColumn() ? ResultKind.SCALAR : ResultKind.ARRAY;
         }
 
         return switch (getRoot()) {
@@ -170,7 +170,7 @@ public class SelectQueryDescriptor extends QueryDescriptor {
         return names;
     }
 
-    private static void collectParameterNames(FluentSelect<?, ?> query, Set<String> names) {
+    private static void collectParameterNames(ObjectSelect<?> query, Set<String> names) {
         ParameterCollector collector = new ParameterCollector(names);
         if (query.getColumns() != null) {
             for (Property<?> column : query.getColumns()) {
@@ -218,7 +218,7 @@ public class SelectQueryDescriptor extends QueryDescriptor {
      */
     @Override
     public Object getRoot() {
-        FluentSelect<?, ?> query = parsedOrNull();
+        ObjectSelect<?> query = parsedOrNull();
         if (query == null) {
             return null;
         }
@@ -246,7 +246,7 @@ public class SelectQueryDescriptor extends QueryDescriptor {
      */
     @Deprecated(since = "5.0", forRemoval = true)
     public boolean isDistinct() {
-        FluentSelect<?, ?> query = parsedOrNull();
+        ObjectSelect<?> query = parsedOrNull();
         return query != null && query.isDistinct();
     }
 
@@ -257,7 +257,7 @@ public class SelectQueryDescriptor extends QueryDescriptor {
      */
     @Deprecated(since = "5.0", forRemoval = true)
     public Expression getQualifier() {
-        FluentSelect<?, ?> query = parsedOrNull();
+        ObjectSelect<?> query = parsedOrNull();
         return query != null ? query.getWhere() : null;
     }
 
@@ -268,7 +268,7 @@ public class SelectQueryDescriptor extends QueryDescriptor {
      */
     @Deprecated(since = "5.0", forRemoval = true)
     public List<Ordering> getOrderings() {
-        FluentSelect<?, ?> query = parsedOrNull();
+        ObjectSelect<?> query = parsedOrNull();
         return query != null && query.getOrderings() != null
                 ? new ArrayList<>(query.getOrderings())
                 : new ArrayList<>();
@@ -283,7 +283,7 @@ public class SelectQueryDescriptor extends QueryDescriptor {
     @Deprecated(since = "5.0", forRemoval = true)
     public Map<String, Integer> getPrefetchesMap() {
         Map<String, Integer> prefetches = new HashMap<>();
-        FluentSelect<?, ?> query = parsedOrNull();
+        ObjectSelect<?> query = parsedOrNull();
         if (query != null && query.getPrefetches() != null) {
             for (PrefetchTreeNode node : query.getPrefetches().nonPhantomNodes()) {
                 // the root of the tree is not a prefetch
@@ -299,7 +299,7 @@ public class SelectQueryDescriptor extends QueryDescriptor {
      * Returns the query with its "$name" parameters unbound.
      */
     @Override
-    public FluentSelect<?, ?> buildQuery() {
+    public ObjectSelect<?> buildQuery() {
         return configure(parse(null));
     }
 
@@ -310,12 +310,12 @@ public class SelectQueryDescriptor extends QueryDescriptor {
      * @since 5.0
      */
     @Override
-    public FluentSelect<?, ?> buildQuery(Map<String, ?> parameters) {
+    public ObjectSelect<?> buildQuery(Map<String, ?> parameters) {
         return configure(parse(parameters != null ? parameters : Map.of()));
     }
 
     // each call parses the String anew, so that the query can be modified by the caller
-    private FluentSelect<?, ?> parse(Map<String, ?> parameters) {
+    private ObjectSelect<?> parse(Map<String, ?> parameters) {
         if (ql == null || ql.isBlank()) {
             throw new CayenneRuntimeException("Query '%s' is empty", name);
         }
@@ -327,14 +327,14 @@ public class SelectQueryDescriptor extends QueryDescriptor {
         }
     }
 
-    private FluentSelect<?, ?> configure(FluentSelect<?, ?> query) {
+    private ObjectSelect<?> configure(ObjectSelect<?> query) {
         query.pageSize(pageSize)
                 .statementFetchSize(statementFetchSize)
                 .cacheStrategy(cacheStrategy, cacheGroup);
 
         // a query rooted in a DbEntity fetches DataRows anyway, and a column query can't fetch them
-        if (fetchingDataRows && query instanceof ObjectSelect<?> select) {
-            select.fetchDataRows();
+        if (fetchingDataRows && !query.isColumnQuery()) {
+            query.fetchDataRows();
         }
 
         return query;

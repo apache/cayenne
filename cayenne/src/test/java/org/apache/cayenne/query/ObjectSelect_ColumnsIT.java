@@ -56,7 +56,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ColumnSelectIT {
+public class ObjectSelect_ColumnsIT {
 
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
@@ -319,11 +319,8 @@ public class ColumnSelectIT {
         NumericProperty<BigDecimal> estimatedPrice = Artist.PAINTINGS.dot(Painting.ESTIMATED_PRICE);
         Object[] minMaxAvgPrice = ObjectSelect.query(Artist.class)
                 .where(estimatedPrice.gte(min))
-                .min(estimatedPrice)
-                .max(estimatedPrice)
-                .avg(estimatedPrice)
-                .sum(estimatedPrice)
-                .count()
+                .columns(estimatedPrice.min(), estimatedPrice.max(), estimatedPrice.avg(), estimatedPrice.sum(),
+                        PropertyFactory.COUNT)
                 .selectOne(context);
 
         assertEquals(0, min.compareTo((BigDecimal)minMaxAvgPrice[0]));
@@ -344,11 +341,11 @@ public class ColumnSelectIT {
         NumericProperty<BigDecimal> estimatedPrice = Artist.PAINTINGS.dot(Painting.ESTIMATED_PRICE);
         Object[] minMaxAvgPrice = ObjectSelect.query(Artist.class)
                 .where(estimatedPrice.gte(min))
-                .aggregate(estimatedPrice, "min", BigDecimal.class)
-                .aggregate(estimatedPrice, "max", BigDecimal.class)
-                .aggregate(estimatedPrice, "avg", BigDecimal.class)
-                .aggregate(estimatedPrice, "sum", BigDecimal.class)
-                .aggregate(estimatedPrice, "count", BigDecimal.class)
+                .columns(estimatedPrice.aggregate("min", BigDecimal.class),
+                        estimatedPrice.aggregate("max", BigDecimal.class),
+                        estimatedPrice.aggregate("avg", BigDecimal.class),
+                        estimatedPrice.aggregate("sum", BigDecimal.class),
+                        estimatedPrice.aggregate("count", BigDecimal.class))
                 .selectOne(context);
 
         assertEquals(0, min.compareTo((BigDecimal)minMaxAvgPrice[0]));
@@ -518,7 +515,7 @@ public class ColumnSelectIT {
 
     @Test
     public void iterationSingleColumn() {
-        ColumnSelect<String> columnSelect = Artist.SELF.columnQuery(Artist.ARTIST_NAME);
+        ObjectSelect<String> columnSelect = Artist.SELF.columnQuery(Artist.ARTIST_NAME);
 
         final int[] count = new int[1];
         columnSelect.iterate(context, object -> {
@@ -531,7 +528,7 @@ public class ColumnSelectIT {
 
     @Test
     public void batchIterationSingleColumn() {
-        ColumnSelect<String> columnSelect = Artist.SELF.columnQuery(Artist.ARTIST_NAME);
+        ObjectSelect<String> columnSelect = Artist.SELF.columnQuery(Artist.ARTIST_NAME);
 
         try(ResultBatchIterator<String> it = columnSelect.batchIterator(context, 10)) {
             List<String> next = it.next();
@@ -542,7 +539,7 @@ public class ColumnSelectIT {
 
     @Test
     public void iterationMultiColumns() {
-        ColumnSelect<Object[]> columnSelect = Artist.SELF.columnQuery(Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH);
+        ObjectSelect<Object[]> columnSelect = Artist.SELF.columnQuery(Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH);
 
         final int[] count = new int[1];
         columnSelect.iterate(context, object -> {
@@ -556,7 +553,7 @@ public class ColumnSelectIT {
 
     @Test
     public void batchIterationMultiColumns() {
-        ColumnSelect<Object[]> columnSelect = Artist.SELF.columnQuery(Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH);
+        ObjectSelect<Object[]> columnSelect = Artist.SELF.columnQuery(Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH);
 
         try(ResultBatchIterator<Object[]> it = columnSelect.batchIterator(context, 10)) {
             List<Object[]> next = it.next();
@@ -1140,7 +1137,7 @@ public class ColumnSelectIT {
 
     @Test
     public void sharedCache() {
-        ColumnSelect<Object[]> query = ObjectSelect.query(Artist.class)
+        ObjectSelect<Object[]> query = ObjectSelect.query(Artist.class)
                 .columns(Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH, Artist.SELF)
                 .orderBy(Artist.ARTIST_ID_PK_PROPERTY.asc())
                 .cacheStrategy(QueryCacheStrategy.SHARED_CACHE);

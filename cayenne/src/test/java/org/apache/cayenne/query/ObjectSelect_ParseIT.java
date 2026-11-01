@@ -109,12 +109,12 @@ public class ObjectSelect_ParseIT {
         assertEquals(1, rows.size());
         assertEquals("artist3", rows.get(0).get("ARTIST_NAME").toString().trim());
 
-        List<String> names = ObjectSelect.parseColumn(String.class, "select artistName from Artist order by artistName")
+        List<String> names = ObjectSelect.parse(String.class, "select artistName from Artist order by artistName")
                 .select(context);
         assertEquals(5, names.size());
         assertEquals("artist1", names.get(0));
 
-        List<Object[]> columns = ObjectSelect.parseColumns("select artistName, count(paintings) from Artist "
+        List<Object[]> columns = ObjectSelect.parse(Object[].class, "select artistName, count(paintings) from Artist "
                 + "order by artistName").select(context);
         assertEquals(4, columns.size());
         assertEquals(2L, columns.get(0)[1]);

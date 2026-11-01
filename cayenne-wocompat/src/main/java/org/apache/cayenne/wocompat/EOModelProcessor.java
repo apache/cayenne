@@ -31,7 +31,6 @@ import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.SQLQueryDescriptor;
 import org.apache.cayenne.map.SelectQueryDescriptor;
-import org.apache.cayenne.ql.QLSelectPrinter;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.PrefetchTreeNode;
@@ -278,7 +277,7 @@ public class EOModelProcessor {
 		}
 
 		SelectQueryDescriptor descriptor = new SelectQueryDescriptor();
-		descriptor.setQl(QLSelectPrinter.print(query));
+		descriptor.setQl(query.toQL());
 
 		// data rows - note that we do not support fetching individual columns
 		// in the

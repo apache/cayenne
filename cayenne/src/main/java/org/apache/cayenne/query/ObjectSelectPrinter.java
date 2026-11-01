@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.ql;
+package org.apache.cayenne.query;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -25,76 +25,57 @@ import java.util.Collection;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.DbPathExp;
 import org.apache.cayenne.exp.property.Property;
-import org.apache.cayenne.query.FluentSelect;
-import org.apache.cayenne.query.Ordering;
-import org.apache.cayenne.query.PrefetchTreeNode;
 
 /**
- * Prints a select query as a String that {@link QLParser} can parse back, the opposite of {@link QLSelectBuilder}.
- * Used to print the nested selects of an expression and to store the queries mapped in a DataMap.
- * <p>
- * Just like the expressions that it consists of, a printed query may not be parseable if it contains values that have
- * no String representation in the grammar (dates, persistent objects, etc.) Also there is no access to the mapping
- * here, so a root defined as a Java class is printed as a simple name of that class, that is the name of the entity
- * by convention, but doesn't have to be.
+ * Prints a select query in the query language that {@link ObjectSelect#parse(String, Object...)} parses, the opposite
+ * of the parser's builder. The implementation of {@link ObjectSelect#toQL()}, that reads the fields of the query
+ * directly, so that the query needs no public getters for its clauses.
  *
  * @since 5.0
  */
-public class QLSelectPrinter {
+final class ObjectSelectPrinter {
 
-    /**
-     * Returns a query String that {@link org.apache.cayenne.query.ObjectSelect#parse(String, Object...)} can parse
-     * back into an equivalent query.
-     */
-    public static String print(FluentSelect<?, ?> query) {
-        StringBuilder out = new StringBuilder();
-        try {
-            append(query, out);
-        } catch (IOException e) {
-            // StringBuilder doesn't throw
-            throw new IllegalStateException(e);
-        }
-        return out.toString();
+    private ObjectSelectPrinter() {
     }
 
-    public static void append(FluentSelect<?, ?> query, Appendable out) throws IOException {
+    static void append(ObjectSelect<?> query, Appendable out) throws IOException {
         appendSelect(query, out);
         appendFrom(query, out);
 
-        if (query.getWhere() != null) {
+        if (query.where != null) {
             out.append(" where ");
-            query.getWhere().appendAsString(out);
+            query.where.appendAsString(out);
         }
 
-        if (query.getHaving() != null) {
+        if (query.having != null) {
             out.append(" having ");
-            query.getHaving().appendAsString(out);
+            query.having.appendAsString(out);
         }
 
         appendOrderings(query, out);
 
-        if (query.getLimit() > 0) {
-            out.append(" limit ").append(String.valueOf(query.getLimit()));
+        if (query.fetchLimit > 0) {
+            out.append(" limit ").append(String.valueOf(query.fetchLimit));
         }
 
-        if (query.getOffset() > 0) {
-            out.append(" offset ").append(String.valueOf(query.getOffset()));
+        if (query.fetchOffset > 0) {
+            out.append(" offset ").append(String.valueOf(query.fetchOffset));
         }
 
         appendPrefetches(query, out);
     }
 
-    private static void appendSelect(FluentSelect<?, ?> query, Appendable out) throws IOException {
-        Collection<Property<?>> columns = query.getColumns();
+    private static void appendSelect(ObjectSelect<?> query, Appendable out) throws IOException {
+        Collection<Property<?>> columns = query.columns;
         boolean hasColumns = columns != null && !columns.isEmpty();
 
         // a query of the root objects needs no "select" clause, unless there's something to say about it
-        if (!hasColumns && !query.isDistinct()) {
+        if (!hasColumns && !query.distinct) {
             return;
         }
 
         out.append("select ");
-        if (query.isDistinct()) {
+        if (query.distinct) {
             out.append("distinct ");
         }
 
@@ -118,19 +99,19 @@ public class QLSelectPrinter {
         out.append(' ');
     }
 
-    private static void appendFrom(FluentSelect<?, ?> query, Appendable out) throws IOException {
+    private static void appendFrom(ObjectSelect<?> query, Appendable out) throws IOException {
         out.append("from ");
-        if (query.getEntityName() != null) {
-            out.append(query.getEntityName());
-        } else if (query.getDbEntityName() != null) {
-            out.append(DbPathExp.DB_PREFIX).append(query.getDbEntityName());
-        } else if (query.getEntityType() != null) {
-            out.append(query.getEntityType().getSimpleName());
+        if (query.entityName != null) {
+            out.append(query.entityName);
+        } else if (query.dbEntityName != null) {
+            out.append(DbPathExp.DB_PREFIX).append(query.dbEntityName);
+        } else if (query.entityType != null) {
+            out.append(query.entityType.getSimpleName());
         }
     }
 
-    private static void appendOrderings(FluentSelect<?, ?> query, Appendable out) throws IOException {
-        Collection<Ordering> orderings = query.getOrderings();
+    private static void appendOrderings(ObjectSelect<?> query, Appendable out) throws IOException {
+        Collection<Ordering> orderings = query.orderings;
         if (orderings == null || orderings.isEmpty()) {
             return;
         }
@@ -154,8 +135,8 @@ public class QLSelectPrinter {
         }
     }
 
-    private static void appendPrefetches(FluentSelect<?, ?> query, Appendable out) throws IOException {
-        PrefetchTreeNode prefetches = query.getPrefetches();
+    private static void appendPrefetches(ObjectSelect<?> query, Appendable out) throws IOException {
+        PrefetchTreeNode prefetches = query.prefetches;
         if (prefetches == null) {
             return;
         }

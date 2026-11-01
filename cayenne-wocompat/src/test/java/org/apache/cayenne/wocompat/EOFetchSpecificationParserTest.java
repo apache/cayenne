@@ -20,15 +20,18 @@
 package org.apache.cayenne.wocompat;
 
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.QueryDescriptor;
 import org.apache.cayenne.map.SelectQueryDescriptor;
-import org.apache.cayenne.query.FluentSelect;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.PrefetchTreeNode;
+import org.apache.cayenne.query.resolved.ResolvedQuery;
 import org.junit.jupiter.api.Test;
 
 import java.net.URL;
 import java.util.Collection;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -52,7 +55,7 @@ public class EOFetchSpecificationParserTest {
         SelectQueryDescriptor selectDescriptor = assertInstanceOf(SelectQueryDescriptor.class, descriptor);
         assertSame(map.getObjEntity("Entity1"), selectDescriptor.getRoot());
 
-        FluentSelect<?, ?> query = selectDescriptor.buildQuery();
+        ObjectSelect<?> query = selectDescriptor.buildQuery();
 
         assertNotNull(query.getWhere());
         assertEquals(
@@ -70,9 +73,11 @@ public class EOFetchSpecificationParserTest {
         assertEquals("name", ordering.getSortSpecString());
         assertFalse(ordering.isAscending());
 
-        assertTrue(query.isFetchingDataRows());
         assertEquals(500, query.getLimit());
-        assertEquals(0, query.getPageSize());
         assertTrue(query.isDistinct());
+
+        ResolvedQuery resolved = query.resolve(new EntityResolver(List.of(map)));
+        assertTrue(resolved.fetchingDataRows());
+        assertEquals(0, resolved.pageSize());
     }
 }

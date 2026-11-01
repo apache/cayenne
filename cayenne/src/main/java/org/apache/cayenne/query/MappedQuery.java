@@ -198,7 +198,7 @@ public class MappedQuery<T> implements Query<T> {
         Query<?> query = descriptor.buildQuery(normalizedParameters());
 
         switch (query) {
-            case FluentSelect<?, ?> select -> {
+            case ObjectSelect<?> select -> {
                 if (fetchLimit != null) {
                     select.limit(fetchLimit);
                 }

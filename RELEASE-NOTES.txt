@@ -23,6 +23,7 @@ CAY-3064 SQLSelect / SQLExec explicit DataNode routing
 CAY-3065 Redesign query pipeline around a mutable execution context
 CAY-3067 Unified Query shape
 CAY-3068 Resolve queries ahead of execution
+CAY-3069 Combine ObjectSelect and ColumnSelect
 
 ----------------------------------
 Release: 5.0-RC1

@@ -29,15 +29,13 @@ import org.apache.cayenne.exp.property.BaseProperty;
 import org.apache.cayenne.exp.property.Property;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.exp.FullObjectExp;
-import org.apache.cayenne.query.ColumnSelect;
-import org.apache.cayenne.query.FluentSelect;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.SortOrder;
 
 /**
- * Collects the clauses of a select query as {@link QLParser} encounters them, and assembles either an ObjectSelect or
- * a ColumnSelect at the end. The assembled query is the same as one built with the fluent API. No mapping metadata
+ * Collects the clauses of a select query as {@link QLParser} encounters them, and assembles an {@link ObjectSelect} at
+ * the end. The assembled query is the same as one built with the fluent API. No mapping metadata
  * is needed, so the columns are created without a Java type, to be resolved against the model when the query is run.
  */
 class QLSelectBuilder {
@@ -107,22 +105,24 @@ class QLSelectBuilder {
         prefetchSemantics.add(semantics);
     }
 
-    FluentSelect<?, ?> build() {
-        ObjectSelect<?> objectSelect = dbRoot
+    ObjectSelect<?> build() {
+        ObjectSelect<?> query = dbRoot
                 ? ObjectSelect.dbQuery(entityName)
                 : ObjectSelect.query(Object.class, entityName);
 
-        FluentSelect<?, ?> query = selectingRoot ? objectSelect : columnSelect(objectSelect);
+        if (!selectingRoot) {
+            selectColumns(query);
+        }
 
         // "where" must be set before "having", as "having" switches the query to append to itself
         if (where != null) {
             query.where(rootPaths(where));
         }
-
-        switch (query) {
-            case ObjectSelect<?> select -> configure(select);
-            case ColumnSelect<?> select -> configure(select);
-            default -> throw new IllegalStateException("Unexpected query type: " + query.getClass().getName());
+        if (distinct) {
+            query.distinct();
+        }
+        if (having != null) {
+            query.having(rootPaths(having));
         }
 
         for (Ordering ordering : orderings) {
@@ -140,34 +140,17 @@ class QLSelectBuilder {
         return query;
     }
 
-    private void configure(ObjectSelect<?> query) {
-        if (distinct) {
-            query.distinct();
-        }
-        if (having != null) {
-            query.having(rootPaths(having));
-        }
-    }
-
-    private void configure(ColumnSelect<?> query) {
-        if (distinct) {
-            query.distinct();
-        }
-        if (having != null) {
-            query.having(rootPaths(having));
-        }
-    }
-
-    private ColumnSelect<?> columnSelect(ObjectSelect<?> objectSelect) {
+    private void selectColumns(ObjectSelect<?> query) {
         if (columns.size() == 1) {
-            return objectSelect.column(rootPaths(columns.get(0)));
+            query.column(rootPaths(columns.get(0)));
+            return;
         }
 
         Property<?>[] properties = new Property<?>[columns.size()];
         for (int i = 0; i < properties.length; i++) {
             properties[i] = rootPaths(columns.get(i));
         }
-        return objectSelect.columns(properties);
+        query.columns(properties);
     }
 
     private static boolean isSelf(Expression expression) {

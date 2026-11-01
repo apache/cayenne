@@ -215,7 +215,7 @@ public class ObjectSelect_CacheKeyIT {
         assertNotEquals(q1.resolve(env.entityResolver()).cacheKey(), q4.resolve(env.entityResolver()).cacheKey());
     }
 
-    private String cacheKey(FluentSelect<?, ?> query) {
+    private String cacheKey(ObjectSelect<?> query) {
         return query.resolve(env.entityResolver()).cacheKey();
     }
 
@@ -225,7 +225,7 @@ public class ObjectSelect_CacheKeyIT {
                 .and(ExpressionFactory.greaterExp("estimatedPrice", price));
     }
 
-    private static ColumnSelect<String> artistNamesLike(String pattern) {
+    private static ObjectSelect<String> artistNamesLike(String pattern) {
         return ObjectSelect.columnQuery(Artist.class, Artist.ARTIST_NAME).where(Artist.ARTIST_NAME.like(pattern));
     }
 
@@ -309,11 +309,11 @@ public class ObjectSelect_CacheKeyIT {
 
     @Test
     public void uniqueKeySubqueryInHavingAndColumnQuery() {
-        ColumnSelect<String> q1 = ObjectSelect.columnQuery(Artist.class, Artist.ARTIST_NAME)
+        ObjectSelect<String> q1 = ObjectSelect.columnQuery(Artist.class, Artist.ARTIST_NAME)
                 .localCache()
                 .having(ExpressionFactory.exists(paintingsOver(5)));
 
-        ColumnSelect<String> q2 = ObjectSelect.columnQuery(Artist.class, Artist.ARTIST_NAME)
+        ObjectSelect<String> q2 = ObjectSelect.columnQuery(Artist.class, Artist.ARTIST_NAME)
                 .localCache()
                 .having(ExpressionFactory.exists(paintingsOver(500)));
 

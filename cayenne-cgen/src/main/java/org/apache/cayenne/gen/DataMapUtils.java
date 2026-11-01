@@ -36,7 +36,7 @@ import org.apache.cayenne.map.SelectQueryDescriptor;
 import org.apache.cayenne.projecttools.validation.SelectQueryPaths;
 import org.apache.cayenne.projecttools.validation.SelectQueryPaths.Clause;
 import org.apache.cayenne.projecttools.validation.SelectQueryPaths.PathRef;
-import org.apache.cayenne.query.FluentSelect;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.util.Util;
 
 import java.util.ArrayList;
@@ -98,7 +98,7 @@ public class DataMapUtils {
 	 * @since 5.0
 	 */
 	public List<QueryParameter> getParameters(SelectQueryDescriptor query) {
-		FluentSelect<?, ?> parsed = query.isValid() ? query.getParsedQuery() : null;
+		ObjectSelect<?> parsed = query.isValid() ? query.getParsedQuery() : null;
 		CachedParameters cached = parameters.get(query);
 		if (cached == null || cached.parsed() != parsed) {
 			cached = new CachedParameters(parsed, parsed != null ? computeParameters(query) : List.of());
@@ -184,7 +184,7 @@ public class DataMapUtils {
 		return javaName;
 	}
 
-	private static Map<String, String> parameterTypes(DataMap dataMap, FluentSelect<?, ?> query) {
+	private static Map<String, String> parameterTypes(DataMap dataMap, ObjectSelect<?> query) {
 		Map<String, String> types = new HashMap<>();
 		if (dataMap == null) {
 			return types;
@@ -250,7 +250,7 @@ public class DataMapUtils {
 		return OBJECT_TYPE.equals(type2) ? type1 : OBJECT_TYPE;
 	}
 
-	private record CachedParameters(FluentSelect<?, ?> parsed, List<QueryParameter> parameters) {
+	private record CachedParameters(ObjectSelect<?> parsed, List<QueryParameter> parameters) {
 	}
 
 	/**

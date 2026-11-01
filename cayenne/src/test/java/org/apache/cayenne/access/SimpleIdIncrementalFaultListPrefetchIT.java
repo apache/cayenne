@@ -202,7 +202,7 @@ public class SimpleIdIncrementalFaultListPrefetchIT {
         IncrementalFaultList<?> result = (IncrementalFaultList<Painting>) env.context().select(q);
 
         // get an objects from the second page
-        final Persistent p1 = (Persistent) result.get(q.getPageSize());
+        final Persistent p1 = (Persistent) result.get(result.getPageSize());
 
         env.runWithQueriesBlocked(() -> {
             Object toOnePrefetch = p1.readNestedProperty("artist");

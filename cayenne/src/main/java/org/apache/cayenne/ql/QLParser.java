@@ -29,7 +29,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.exp.*;
-import org.apache.cayenne.query.FluentSelect;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.PrefetchTreeNode;
 
 /**
@@ -256,14 +256,14 @@ public class QLParser/*@bgen(jjtree)*/implements QLParserTreeConstants, QLParser
     throw new Error("Missing return statement in function");
 }
 
-  final public FluentSelect<?, ?> query() throws ParseException {FluentSelect<?, ?> query;
+  final public ObjectSelect<?> query() throws ParseException {ObjectSelect<?> query;
     query = select(true);
     jj_consume_token(0);
 {if ("" != null) return query;}
     throw new Error("Missing return statement in function");
 }
 
-  final public FluentSelect<?, ?> select(boolean root) throws ParseException {QLSelectBuilder builder = new QLSelectBuilder();
+  final public ObjectSelect<?> select(boolean root) throws ParseException {QLSelectBuilder builder = new QLSelectBuilder();
     if (isKeyword(1, "select")) {
       selectClause(builder);
     } else {
@@ -521,7 +521,7 @@ builder.prefetch(path.image, semantics);
 }
 
 // a nested select in parentheses; pushes a single subquery node on the stack
-  final public void subquery() throws ParseException {FluentSelect<?, ?> query;
+  final public void subquery() throws ParseException {ObjectSelect<?> query;
     jj_consume_token(3);
     query = select(false);
     jj_consume_token(4);

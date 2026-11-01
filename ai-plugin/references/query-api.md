@@ -18,14 +18,14 @@
 -->
 # Query API reference
 
-How to fetch and filter persistent objects with Cayenne 5.0.
+How to fetch and filter persistent objects with Cayenne 6.0.
 
 ## Three query mechanisms
 
 | API | When to use |
 |---|---|
 | `ObjectSelect` | Default for selecting Java entities. Fluent, type-safe. |
-| `SQLSelect` / `SQLExec` | Raw SQL with Cayenne parameter binding. |
+| `SQLQuery` | Raw SQL with Cayenne parameter binding, selecting or updating. |
 | Named queries (XML) | When the same query is reused many places; lives in the DataMap. |
 
 ## ObjectSelect — primary fluent query API
@@ -140,18 +140,21 @@ Use `sharedCache` for reference data. Invalidate by group via `cayenne-cache-inv
 ### Aggregates and column-only queries
 
 ```java
-import org.apache.cayenne.query.ColumnSelect;
 import org.apache.cayenne.exp.property.PropertyFactory;
 
+// there is no separate column query class: column(..) and columns(..) retype the ObjectSelect to the row type
+
 // Single column
-List<String> names = ObjectSelect.columnQuery(Artist.class, Artist.ARTIST_NAME).select(ctx);
+List<String> names = ObjectSelect.query(Artist.class).column(Artist.ARTIST_NAME).select(ctx);
 
 // Multiple columns
-List<Object[]> rows = ObjectSelect.columnQuery(Artist.class,
-        Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH).select(ctx);
+List<Object[]> rows = ObjectSelect.query(Artist.class)
+        .columns(Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH).select(ctx);
 
-// Aggregate
+// Aggregates: count(), min(..), max(..), avg(..), sum(..) select a single aggregate; list several as columns
 long count = ObjectSelect.query(Artist.class).selectCount(ctx);
+List<Object[]> perArtist = ObjectSelect.query(Artist.class)
+        .columns(Artist.ARTIST_NAME, Artist.PAINTINGS.count()).select(ctx);
 ```
 
 ### Selecting by primary key
@@ -173,25 +176,28 @@ ObjectSelect.query(Painting.class).where(Painting.TO_ARTIST.eqId(42));
 
 `SelectById` was removed in 6.0 — do not use it.
 
-## SQLSelect / SQLExec — raw SQL
+## SQLQuery — raw SQL
+
+`SQLSelect` and `SQLExec` were merged into `SQLQuery` in 6.0 and remain only as deprecated subclasses — do not use them.
 
 ```java
-import org.apache.cayenne.query.SQLSelect;
-import org.apache.cayenne.query.SQLExec;
+import org.apache.cayenne.query.SQLQuery;
 
 // Select into entities
-List<Artist> artists = SQLSelect.query(Artist.class,
+List<Artist> artists = SQLQuery.query(Artist.class,
         "SELECT * FROM ARTIST WHERE ARTIST_NAME LIKE #bind($name)")
         .params(Map.of("name", "P%"))
         .select(ctx);
 
-// Select into raw rows
-List<Object[]> rows = SQLSelect.scalarQuery(Object[].class,
-        "SELECT ARTIST_ID, ARTIST_NAME FROM ARTIST")
-        .select(ctx);
+// Select into DataRows
+List<DataRow> dataRows = SQLQuery.query("SELECT * FROM ARTIST").select(ctx);
+
+// Select columns into Object[] rows, or a single column into its type
+List<Object[]> rows = SQLQuery.columnQuery("SELECT ARTIST_ID, ARTIST_NAME FROM ARTIST").select(ctx);
+List<String> names = SQLQuery.scalarQuery("SELECT ARTIST_NAME FROM ARTIST", String.class).select(ctx);
 
 // Execute (insert/update/delete)
-int affected = SQLExec.query(
+int affected = SQLQuery.query(
         "UPDATE ARTIST SET ARTIST_NAME = UPPER(ARTIST_NAME)")
         .update(ctx);
 ```

@@ -23,8 +23,7 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.ql.QLParser;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.Entity;
-import org.apache.cayenne.query.ColumnSelect;
-import org.apache.cayenne.query.FluentSelect;
+import org.apache.cayenne.query.ObjectSelect;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -1211,10 +1210,10 @@ public class ExpressionFactory {
 	}
 
 	/**
-	 * @param subQuery {@link org.apache.cayenne.query.ObjectSelect} or {@link ColumnSelect}
+	 * @param subQuery a query of the root objects or of columns
 	 * @since 4.2
 	 */
-	public static Expression exists(FluentSelect<?, ?> subQuery) {
+	public static Expression exists(ObjectSelect<?> subQuery) {
 		return new ExistsExp(new SubqueryExp(subQuery));
 	}
 
@@ -1229,10 +1228,10 @@ public class ExpressionFactory {
 	}
 
 	/**
-	 * @param subQuery {@link org.apache.cayenne.query.ObjectSelect} or {@link ColumnSelect}
+	 * @param subQuery a query of the root objects or of columns
 	 * @since 4.2
 	 */
-	public static Expression notExists(FluentSelect<?, ?> subQuery) {
+	public static Expression notExists(ObjectSelect<?> subQuery) {
 		return new NotExistsExp(new SubqueryExp(subQuery));
 	}
 
@@ -1249,28 +1248,28 @@ public class ExpressionFactory {
 	/**
 	 * @since 4.2
 	 */
-	public static Expression inExp(Expression exp, ColumnSelect<?> subQuery) {
+	public static Expression inExp(Expression exp, ObjectSelect<?> subQuery) {
 		return new InExp(exp, new SubqueryExp(subQuery));
 	}
 
 	/**
 	 * @since 4.2
 	 */
-	public static Expression notInExp(Expression exp, ColumnSelect<?> subQuery) {
+	public static Expression notInExp(Expression exp, ObjectSelect<?> subQuery) {
 		return new NotInExp(exp, new SubqueryExp(subQuery));
 	}
 
 	/**
 	 * @since 5.0
 	 */
-	public static Expression all(ColumnSelect<?> subquery) {
+	public static Expression all(ObjectSelect<?> subquery) {
 		return new AllExp(new SubqueryExp(subquery));
 	}
 
 	/**
 	 * @since 5.0
 	 */
-	public static Expression any(ColumnSelect<?> subquery) {
+	public static Expression any(ObjectSelect<?> subquery) {
 		return new AnyExp(new SubqueryExp(subquery));
 	}
 

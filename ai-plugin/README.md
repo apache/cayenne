@@ -27,7 +27,7 @@ This plugin teaches Claude how to:
 - Polish the reverse-engineered Object-layer names (entities, attributes, relationships) into idiomatic Java, fixing the few cases the deterministic name generator can't.
 - Regenerate Java entity classes from a DataMap.
 - Run a full DB sync — import, name cleanup, and class regeneration — as a single end-to-end workflow.
-- Bootstrap `CayenneRuntime` in a Java application and write `ObjectSelect` / `SQLSelect` queries.
+- Bootstrap `CayenneRuntime` in a Java application and write `ObjectSelect` / `SQLQuery` queries.
 
 The plugin assumes downstream **users of Cayenne** writing their own Java apps. It does *not* cover contributor workflows for hacking on Cayenne itself.
 
@@ -66,7 +66,7 @@ ai-plugin/
 │   ├── cayenne-full-db-sync/    # orchestrate import → name cleanup → cgen
 │   ├── cayenne-modeler/         # open the GUI on a project
 │   ├── cayenne-runtime/         # bootstrap CayenneRuntime in an app
-│   └── cayenne-query/           # write ObjectSelect / SQLSelect queries
+│   └── cayenne-query/           # write ObjectSelect / SQLQuery queries
 └── references/                  # source-of-truth docs loaded by skills
     ├── project-layout.md
     ├── datamap-schema.md

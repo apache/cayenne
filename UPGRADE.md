@@ -104,6 +104,30 @@
      its fluent API. `ProcedureCall` remains as a deprecated
      subclass for one release.
 
+*  Per [CAY-3069](https://issues.apache.org/jira/browse/CAY-3069) `ColumnSelect` and `FluentSelect` are merged into
+   `ObjectSelect`. A single `ObjectSelect<T>` now selects the root objects, DataRows or columns, with `T` being the type
+   of result row: `column(..)`, `columns(..)` and the aggregate shortcuts (`count()`, `min(..)`, etc.) retype the
+   query in place, the same way `fetchDataRows()` always did. So:
+
+   * Replace `ColumnSelect<E>` in declarations with `ObjectSelect<E>`, and `FluentSelect<?, ?>` with `ObjectSelect<?>`.
+     The fluent chains themselves compile as before, except for the appending aggregates of `ColumnSelect`:
+     `columns(A).count()` now selects the count alone, so list all the columns in one call, e.g.
+     `columns(A, PropertyFactory.COUNT)`.
+   * `column(..)`, `columns(..)` and the aggregates modify the query they are called on instead of returning a copy.
+     `selectCount(..)` still leaves the query unchanged.
+   * `ObjectSelect.parseColumn(..)` and `parseColumns(..)` are replaced by `parse(Class<T>, ..)` with the type of a
+     column or `Object[].class`. The subquery methods (`ExpressionFactory.inExp(..)`, `all(..)`, `any(..)`,
+     `BaseProperty.in(..)`, `ComparableProperty.ltAll(..)`, etc.) accept any `ObjectSelect`, and check that it selects a
+     single column at runtime.
+   * `isColumnQuery()` and `isSingleColumn()` are added to `ObjectSelect` to inspect the shape of a query, e.g. one
+     returned by `SelectQueryDescriptor.getParsedQuery()`. The getters of the execution settings
+     (`getCacheStrategy()`, `getCacheGroup()`, `getPageSize()`, `getStatementFetchSize()`, `getQueryTimeout()`,
+     `isFetchingDataRows()`) are removed, like those of `SQLQuery`: read them from the `ResolvedSelect` the query
+     resolves to. The getters that describe the parsed query String (`getWhere()`, `getColumns()`, `getOrderings()`,
+     `getLimit()`, etc.) stay.
+   * `QLSelectPrinter` is removed. A query prints itself in the query language with `ObjectSelect.toQL()` (or
+     `appendQL(Appendable)`), and its `toString()` returns the same.
+
 ## What's New in 5.0
 
 This is a high-level overview of 5.0 changes. Check the next section for milestone-by-milestone upgrade instructions.

@@ -50,7 +50,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.query.EmbeddableResultSegment;
 import org.apache.cayenne.query.EntityResultSegment;
-import org.apache.cayenne.query.FluentSelect;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.PrefetchProcessor;
 import org.apache.cayenne.query.PrefetchTreeNode;
@@ -69,7 +69,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * A resolved select of objects, data rows or columns of an entity, produced by a {@link FluentSelect}. Besides the
+ * A resolved select of objects, data rows or columns of an entity, produced by an {@link ObjectSelect}. Besides the
  * facts common to all queries, it carries the translation inputs (qualifier, orderings, columns, aliases) and the
  * selects that fetch its disjoint prefetches, as {@link #prefetches() children}. A child select is distinguished by a
  * non-null {@link #prefetchPath()}; it may select extra {@link #resultPaths() result paths} needed to attach its rows

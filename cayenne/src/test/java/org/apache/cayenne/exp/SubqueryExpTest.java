@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.exp;
 
-import org.apache.cayenne.query.ColumnSelect;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
@@ -29,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class SubqueryExpTest {
 
-    private static final ColumnSelect<String> NAMES = ObjectSelect.columnQuery(Artist.class, Artist.ARTIST_NAME);
+    private static final ObjectSelect<String> NAMES = ObjectSelect.columnQuery(Artist.class, Artist.ARTIST_NAME);
 
     @Test
     public void existsToString() {
@@ -69,7 +68,7 @@ public class SubqueryExpTest {
 
     @Test
     public void allClausesToString() {
-        ColumnSelect<Object[]> subquery = ObjectSelect.query(Artist.class)
+        ObjectSelect<Object[]> subquery = ObjectSelect.query(Artist.class)
                 .columns(Artist.ARTIST_NAME.alias("n"), Artist.PAINTINGS.count())
                 .distinct()
                 .where(Artist.ARTIST_NAME.like("a%"))

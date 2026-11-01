@@ -25,7 +25,6 @@ import org.apache.cayenne.exp.ExistsExp;
 import org.apache.cayenne.exp.NotExistsExp;
 import org.apache.cayenne.exp.SubqueryExp;
 import org.apache.cayenne.exp.path.CayennePath;
-import org.apache.cayenne.query.ColumnSelect;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.junit.jupiter.api.BeforeEach;
@@ -64,7 +63,7 @@ public class SelfPropertyTest {
 
     @Test
     public void columnQuery() {
-        ColumnSelect<String> query = property.columnQuery(Artist.ARTIST_NAME);
+        ObjectSelect<String> query = property.columnQuery(Artist.ARTIST_NAME);
 
         assertNotNull(query);
         assertEquals(Artist.class, query.getEntityType());
@@ -75,7 +74,7 @@ public class SelfPropertyTest {
 
     @Test
     public void columnsQuery() {
-        ColumnSelect<Object[]> query = property.columnQuery(Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH);
+        ObjectSelect<Object[]> query = property.columnQuery(Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH);
 
         assertNotNull(query);
         assertEquals(Artist.class, query.getEntityType());

@@ -21,7 +21,6 @@ package org.apache.cayenne.project.upgrade;
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.ql.QLSelectPrinter;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.PrefetchTreeNode;
@@ -304,7 +303,7 @@ public final class UpgradeHandler_V14 implements UpgradeHandler {
             query.getParentNode().removeChild(query);
             upgradeUnit.recordChange("""
                     Query '%s' was removed from the DataMap, as EJBQL queries are no longer supported. \
-                    Replace it with an ObjectSelect or ColumnSelect parsed from a String"""
+                    Replace it with an ObjectSelect parsed from a String"""
                     .formatted(query.getAttribute("name")), true);
         }
     }
@@ -324,7 +323,7 @@ public final class UpgradeHandler_V14 implements UpgradeHandler {
                 continue;
             }
 
-            String select = QLSelectPrinter.print(select(name, rootEntity, query));
+            String select = select(name, rootEntity, query).toQL();
 
             query.removeAttribute("root");
             query.removeAttribute("root-name");

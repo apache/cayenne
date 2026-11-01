@@ -30,7 +30,6 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.query.ColumnSelect;
 import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.resolved.ResolvedQuery;
@@ -38,10 +37,10 @@ import org.apache.cayenne.query.ResultSegment;
 import java.util.Objects;
 
 /**
- * FaultList that is used for paginated {@link ColumnSelect} queries.
+ * FaultList that is used for paginated column queries, see the column methods of {@link ObjectSelect}.
  * It expects data as Object[] where ids are stored instead of Persistent objects (as raw value for single PK
  * or Map for compound PKs).
- * Scalar values that were fetched from ColumnSelect not processed in any way,
+ * Scalar values that were fetched by the column query are not processed in any way,
  * if there is no Persistent objects in the result Collection it will be iterated as is, without faulting anything.
  *
  * @see QueryMetadata#getPageSize()

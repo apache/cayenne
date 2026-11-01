@@ -22,7 +22,6 @@ import java.util.Set;
 
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.query.FluentSelect;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.testdo.inheritance_vertical.IvRoot;
@@ -47,7 +46,7 @@ public class DescriptorColumnExtractorVerticalInheritanceIT {
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.INHERITANCE_VERTICAL_PROJECT);
 
-    private SelectTranslatorContext extract(FluentSelect<?, ?> query, String entityName) {
+    private SelectTranslatorContext extract(ObjectSelect<?> query, String entityName) {
         EntityResolver resolver = env.context().getEntityResolver();
         ClassDescriptor classDescriptor = resolver.getClassDescriptor(entityName);
 
@@ -58,7 +57,7 @@ public class DescriptorColumnExtractorVerticalInheritanceIT {
         return translatorContext;
     }
 
-    private void assertFieldCountMatchesColumnCount(FluentSelect<?, ?> query, String entityName) {
+    private void assertFieldCountMatchesColumnCount(ObjectSelect<?> query, String entityName) {
         SelectTranslatorContext context = extract(query, entityName);
         EntityResolver resolver = env.context().getEntityResolver();
 

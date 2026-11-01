@@ -23,9 +23,8 @@ import java.io.IOException;
 
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.query.FluentSelect;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.Ordering;
-import org.apache.cayenne.ql.QLSelectPrinter;
 
 /**
  * @since 5.0
@@ -42,14 +41,14 @@ public final class SubqueryExp extends Expression {
         }
     };
 
-    private final FluentSelect<?, ?> query;
+    private final ObjectSelect<?> query;
 
     /**
      * Creates a subquery node wrapping the given select, or an empty one without arguments.
      */
     public SubqueryExp(Object... operands) {
         if (operands != null && operands.length > 0) {
-            if (operands.length > 1 || !(operands[0] instanceof FluentSelect<?, ?> select)) {
+            if (operands.length > 1 || !(operands[0] instanceof ObjectSelect<?> select)) {
                 throw new IllegalArgumentException("A subquery takes a single select");
             }
             this.query = select;
@@ -78,7 +77,7 @@ public final class SubqueryExp extends Expression {
     /**
      * Check that we can execute this subquery directly
      */
-    private void validateForInmemory(FluentSelect<?, ?> query) {
+    private void validateForInmemory(ObjectSelect<?> query) {
         query.getWhere().traverse(IN_MEMORY_VALIDATOR);
         query.getHaving().traverse(IN_MEMORY_VALIDATOR);
         for(Ordering ordering : query.getOrderings()) {
@@ -94,11 +93,11 @@ public final class SubqueryExp extends Expression {
     @Override
     public void appendAsString(Appendable out) throws IOException {
         out.append('(');
-        QLSelectPrinter.append(query, out);
+        query.appendQL(out);
         out.append(')');
     }
 
-    public FluentSelect<?, ?> getQuery() {
+    public ObjectSelect<?> getQuery() {
         return query;
     }
 

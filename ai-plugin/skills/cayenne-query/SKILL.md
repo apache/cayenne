@@ -1,6 +1,6 @@
 ---
 name: cayenne-query
-description: "Use this skill whenever the user wants to write or modify a Cayenne query — fetching entities by criteria, joining, prefetching to avoid N+1, ordering, paginating, aggregating, or running raw SQL through Cayenne. Trigger on phrases like 'query for X', 'fetch all artists where ...', 'write an ObjectSelect', 'use SQLSelect', 'add a prefetch', 'get distinct values', 'count rows', 'find by ID', 'load by primary key', 'build a Cayenne expression', 'why am I getting N+1', 'how do I paginate', 'select a single column', 'select columns into a DTO', 'named query in the DataMap'. Do NOT trigger for modeling changes (use cayenne-modeling) or runtime bootstrap (use cayenne-runtime)."
+description: "Use this skill whenever the user wants to write or modify a Cayenne query — fetching entities by criteria, joining, prefetching to avoid N+1, ordering, paginating, aggregating, or running raw SQL through Cayenne. Trigger on phrases like 'query for X', 'fetch all artists where ...', 'write an ObjectSelect', 'use SQLQuery', 'add a prefetch', 'get distinct values', 'count rows', 'find by ID', 'load by primary key', 'build a Cayenne expression', 'why am I getting N+1', 'how do I paginate', 'select a single column', 'select columns into a DTO', 'named query in the DataMap'. Do NOT trigger for modeling changes (use cayenne-modeling) or runtime bootstrap (use cayenne-runtime)."
 ---
 
 <!--
@@ -23,11 +23,11 @@ description: "Use this skill whenever the user wants to write or modify a Cayenn
 -->
 # cayenne-query
 
-Write idiomatic Cayenne 5.0 queries — `ObjectSelect`, `SQLSelect`, expressions, prefetch, pagination, aggregates.
+Write idiomatic Cayenne 6.0 queries — `ObjectSelect`, `SQLQuery`, expressions, prefetch, pagination, aggregates.
 
 ## Required reading
 
-- `${CLAUDE_PLUGIN_ROOT}/references/query-api.md` — every query mechanism with examples (ObjectSelect, SQLSelect/SQLExec, Expression, ColumnSelect, selecting by id).
+- `${CLAUDE_PLUGIN_ROOT}/references/query-api.md` — every query mechanism with examples (ObjectSelect incl. column queries, SQLQuery, Expression, selecting by id).
 
 ## Step 1 — Identify the query shape
 
@@ -35,10 +35,10 @@ Write idiomatic Cayenne 5.0 queries — `ObjectSelect`, `SQLSelect`, expressions
 |---|---|
 | Fetch one or more entities matching criteria | `ObjectSelect.query(Cls.class).where(...).select(ctx)` |
 | Fetch by primary key | `ObjectSelect.query(Cls.class).byId(pk).selectOne(ctx)` |
-| Aggregate (count, sum) | `ObjectSelect.query(Cls.class).selectCount(ctx)` or `ColumnSelect` with aggregate functions |
-| One or a few columns only (DTO-style) | `ObjectSelect.columnQuery(Cls.class, Cls.NAME, Cls.AGE).select(ctx)` |
-| Raw SQL with parameter binding | `SQLSelect.query(Cls.class, "SELECT ...").params(...).select(ctx)` |
-| Insert/update/delete bulk | `SQLExec.query("UPDATE ...").update(ctx)` |
+| Aggregate (count, sum) | `ObjectSelect.query(Cls.class).selectCount(ctx)` or `ObjectSelect.query(Cls.class).columns(..)` with aggregate functions |
+| One or a few columns only (DTO-style) | `ObjectSelect.query(Cls.class).columns(Cls.NAME, Cls.AGE).select(ctx)` |
+| Raw SQL with parameter binding | `SQLQuery.query(Cls.class, "SELECT ...").params(...).select(ctx)` |
+| Insert/update/delete bulk | `SQLQuery.query("UPDATE ...").update(ctx)` |
 | Reused named query stored in DataMap | XML `<objectQuery>` / `<sqlQuery>` / `<procedureQuery>` (see `${CLAUDE_PLUGIN_ROOT}/references/datamap-schema.md`) loaded via `NamedQuery` |
 
 ### Primary-key lookups: use `byId(..)` / `byIds(..)`
@@ -110,7 +110,7 @@ Use `sharedCache` for reference data (rarely changes, read often). Use `pageSize
 ## Step 5 — Raw SQL when needed
 
 ```java
-List<Artist> hits = SQLSelect.query(Artist.class,
+List<Artist> hits = SQLQuery.query(Artist.class,
         "SELECT * FROM ARTIST WHERE ARTIST_NAME LIKE #bind($pattern)")
     .params(Map.of("pattern", userInput + "%"))
     .select(ctx);

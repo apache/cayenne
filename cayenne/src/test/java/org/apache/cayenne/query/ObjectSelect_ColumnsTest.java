@@ -34,11 +34,11 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ColumnSelectTest {
+public class ObjectSelect_ColumnsTest {
 
     @Test
     public void query() {
-        ColumnSelect<Artist> q = new ColumnSelect<>();
+        ObjectSelect<Artist> q = new ObjectSelect<>();
         assertNull(q.getColumns());
         assertNull(q.getHaving());
         assertNull(q.getWhere());
@@ -46,7 +46,7 @@ public class ColumnSelectTest {
 
     @Test
     public void queryWithOneColumn() {
-        ColumnSelect<String> q = ObjectSelect.columnQuery(Artist.class, Artist.ARTIST_NAME);
+        ObjectSelect<String> q = ObjectSelect.columnQuery(Artist.class, Artist.ARTIST_NAME);
         assertEquals(Collections.singletonList(Artist.ARTIST_NAME), q.getColumns());
         assertTrue(q.singleColumn);
         assertNull(q.getHaving());
@@ -55,7 +55,7 @@ public class ColumnSelectTest {
 
     @Test
     public void queryWithOneColumn2() {
-        ColumnSelect<String> q = ObjectSelect.query(Artist.class).column(Artist.ARTIST_NAME);
+        ObjectSelect<String> q = ObjectSelect.query(Artist.class).column(Artist.ARTIST_NAME);
         assertEquals(Collections.singletonList(Artist.ARTIST_NAME), q.getColumns());
         assertTrue(q.singleColumn);
         assertNull(q.getHaving());
@@ -64,7 +64,7 @@ public class ColumnSelectTest {
 
     @Test
     public void queryWithOneColumn3() {
-        ColumnSelect<Object[]> q = ObjectSelect.query(Artist.class).columns(Artist.ARTIST_NAME);
+        ObjectSelect<Object[]> q = ObjectSelect.query(Artist.class).columns(Artist.ARTIST_NAME);
         assertEquals(Collections.singletonList(Artist.ARTIST_NAME), q.getColumns());
         assertFalse(q.singleColumn);
         assertNull(q.getHaving());
@@ -73,7 +73,7 @@ public class ColumnSelectTest {
 
     @Test
     public void queryWithMultipleColumns() {
-        ColumnSelect<Object[]> q = ObjectSelect.columnQuery(Artist.class, Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH);
+        ObjectSelect<Object[]> q = ObjectSelect.columnQuery(Artist.class, Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH);
         assertEquals(Arrays.asList(Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH), q.getColumns());
         assertFalse(q.singleColumn);
         assertNull(q.getHaving());
@@ -82,7 +82,7 @@ public class ColumnSelectTest {
 
     @Test
     public void queryCount() {
-        ColumnSelect<Long> q = ObjectSelect.query(Artist.class).count();
+        ObjectSelect<Long> q = ObjectSelect.query(Artist.class).count();
         assertEquals(Collections.singletonList(PropertyFactory.COUNT), q.getColumns());
         assertNull(q.getHaving());
         assertNull(q.getWhere());
@@ -90,7 +90,7 @@ public class ColumnSelectTest {
 
     @Test
     public void queryCountWithProperty() {
-        ColumnSelect<Long> q = ObjectSelect.query(Artist.class).count(Artist.ARTIST_NAME);
+        ObjectSelect<Long> q = ObjectSelect.query(Artist.class).count(Artist.ARTIST_NAME);
         assertEquals(Collections.singletonList(Artist.ARTIST_NAME.count()), q.getColumns());
         assertNull(q.getHaving());
         assertNull(q.getWhere());
@@ -98,7 +98,7 @@ public class ColumnSelectTest {
 
     @Test
     public void queryMinWithProperty() {
-        ColumnSelect<BigDecimal> q = ObjectSelect.query(Artist.class).min(Artist.PAINTINGS.dot(Painting.ESTIMATED_PRICE));
+        ObjectSelect<BigDecimal> q = ObjectSelect.query(Artist.class).min(Artist.PAINTINGS.dot(Painting.ESTIMATED_PRICE));
         assertEquals(Collections.singletonList(Artist.PAINTINGS.dot(Painting.ESTIMATED_PRICE).min()), q.getColumns());
         assertNull(q.getHaving());
         assertNull(q.getWhere());
@@ -106,7 +106,7 @@ public class ColumnSelectTest {
 
     @Test
     public void columns() {
-        ColumnSelect<?> q = new ColumnSelect<>();
+        ObjectSelect<?> q = new ObjectSelect<>();
         assertNull(q.getColumns());
         q.columns(Artist.ARTIST_NAME, Artist.PAINTINGS);
         assertEquals(Arrays.asList(Artist.ARTIST_NAME, Artist.PAINTINGS), q.getColumns());
@@ -119,7 +119,7 @@ public class ColumnSelectTest {
 
     @Test
     public void havingExpression() {
-        ColumnSelect<?> q = new ColumnSelect<>();
+        ObjectSelect<?> q = new ObjectSelect<>();
         assertNull(q.getHaving());
         assertNull(q.getWhere());
 
@@ -136,7 +136,7 @@ public class ColumnSelectTest {
 
     @Test
     public void havingString() {
-        ColumnSelect<?> q = new ColumnSelect<>();
+        ObjectSelect<?> q = new ObjectSelect<>();
         assertNull(q.getHaving());
         assertNull(q.getWhere());
 
@@ -153,7 +153,7 @@ public class ColumnSelectTest {
 
     @Test
     public void and() {
-        ColumnSelect<?> q = new ColumnSelect<>();
+        ObjectSelect<?> q = new ObjectSelect<>();
         assertNull(q.getHaving());
         assertNull(q.getWhere());
 
@@ -172,7 +172,7 @@ public class ColumnSelectTest {
 
     @Test
     public void or() {
-        ColumnSelect<?> q = new ColumnSelect<>();
+        ObjectSelect<?> q = new ObjectSelect<>();
         assertNull(q.getHaving());
         assertNull(q.getWhere());
 
@@ -191,7 +191,7 @@ public class ColumnSelectTest {
 
     @Test
     public void testColumnsAddByOne() {
-        ColumnSelect<Artist> q = new ColumnSelect<>();
+        ObjectSelect<Artist> q = new ObjectSelect<>();
 
         assertNull(q.getColumns());
 
@@ -205,7 +205,7 @@ public class ColumnSelectTest {
 
     @Test
     public void testColumnsAddAll() {
-        ColumnSelect<Artist> q = new ColumnSelect<>();
+        ObjectSelect<Artist> q = new ObjectSelect<>();
 
         assertNull(q.getColumns());
 
@@ -220,7 +220,7 @@ public class ColumnSelectTest {
 
     @Test
     public void testColumnAddByOne() {
-        ColumnSelect<Artist> q = new ColumnSelect<>();
+        ObjectSelect<Artist> q = new ObjectSelect<>();
 
         assertNull(q.getColumns());
 
@@ -235,7 +235,7 @@ public class ColumnSelectTest {
 
     @Test
     public void testDistinct() {
-        ColumnSelect<Artist> q = new ColumnSelect<>();
+        ObjectSelect<Artist> q = new ObjectSelect<>();
 
         assertFalse(q.distinct);
         assertFalse(q.suppressingDistinct);
@@ -257,7 +257,7 @@ public class ColumnSelectTest {
         assertEquals(10, select.getOffset());
         assertEquals(10, select.getLimit());
 
-        ColumnSelect<String> columnSelect = select.column(Artist.ARTIST_NAME);
+        ObjectSelect<String> columnSelect = select.column(Artist.ARTIST_NAME);
         assertEquals(10, columnSelect.getOffset());
         assertEquals(10, columnSelect.getLimit());
     }

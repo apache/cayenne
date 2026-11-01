@@ -23,7 +23,6 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.path.CayennePath;
-import org.apache.cayenne.query.ColumnSelect;
 import org.apache.cayenne.query.ObjectSelect;
 
 /**
@@ -68,11 +67,11 @@ public class SelfProperty<E extends Persistent> extends EntityProperty<E> {
         return ObjectSelect.query(getType());
     }
 
-    public <T> ColumnSelect<T> columnQuery(Property<T> property) {
+    public <T> ObjectSelect<T> columnQuery(Property<T> property) {
         return ObjectSelect.columnQuery(getType(), property);
     }
 
-    public ColumnSelect<Object[]> columnQuery(Property<?>... properties) {
+    public ObjectSelect<Object[]> columnQuery(Property<?>... properties) {
         return ObjectSelect.columnQuery(getType(), properties);
     }
 }

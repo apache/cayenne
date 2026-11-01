@@ -44,7 +44,7 @@ import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**
  * Extracts SQL columns for a query with an explicit column list. Each column is classified by the result segment
- * the query metadata built for it (see {@code ColumnSelectMetadata}), so entity, embeddable and scalar columns and
+ * the query metadata built for it (see {@code ResolvedSelect}), so entity, embeddable and scalar columns and
  * scalar Java types are decided once, against the model, rather than from the column's declared Java type.
  *
  * @since 4.2

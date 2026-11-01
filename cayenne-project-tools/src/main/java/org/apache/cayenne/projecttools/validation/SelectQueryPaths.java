@@ -37,14 +37,14 @@ import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.map.SelectQueryDescriptor;
-import org.apache.cayenne.query.FluentSelect;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.PrefetchTreeNode;
 
 /**
  * Checks the entity names and paths of a parsed {@link SelectQueryDescriptor} against the mapping. Used by the project
  * validator, and by the Modeler to mark the problems in the query String. The walk of the query that resolves the
- * paths is available on its own, see {@link #walk(DataMap, FluentSelect, PathVisitor)}.
+ * paths is available on its own, see {@link #walk(DataMap, ObjectSelect, PathVisitor)}.
  *
  * @since 5.0
  */
@@ -72,13 +72,13 @@ public final class SelectQueryPaths {
     }
 
     /**
-     * A callback of {@link #walk(DataMap, FluentSelect, PathVisitor)}.
+     * A callback of {@link #walk(DataMap, ObjectSelect, PathVisitor)}.
      */
     public interface PathVisitor {
 
         void visitPath(PathRef path);
 
-        default void visitUnknownRoot(FluentSelect<?, ?> query) {
+        default void visitUnknownRoot(ObjectSelect<?> query) {
         }
     }
 
@@ -106,7 +106,7 @@ public final class SelectQueryPaths {
         }
 
         List<Problem> problems = new ArrayList<>();
-        FluentSelect<?, ?> parsed = query.getParsedQuery();
+        ObjectSelect<?> parsed = query.getParsedQuery();
         Entity<?, ?, ?> root = walk(query.getDataMap(), parsed, new PathVisitor() {
 
             @Override
@@ -118,7 +118,7 @@ public final class SelectQueryPaths {
             }
 
             @Override
-            public void visitUnknownRoot(FluentSelect<?, ?> unknown) {
+            public void visitUnknownRoot(ObjectSelect<?> unknown) {
                 problems.add(unknown.getDbEntityName() != null
                         ? new Problem(unknown.getDbEntityName(), Clause.FROM,
                                 "Unknown DbEntity '" + unknown.getDbEntityName() + "'")
@@ -144,7 +144,7 @@ public final class SelectQueryPaths {
      *
      * @return the root entity of the query, or null if it is not mapped
      */
-    public static Entity<?, ?, ?> walk(DataMap dataMap, FluentSelect<?, ?> query, PathVisitor visitor) {
+    public static Entity<?, ?, ?> walk(DataMap dataMap, ObjectSelect<?> query, PathVisitor visitor) {
         Entity<?, ?, ?> entity = query.getDbEntityName() != null
                 ? dataMap.getDbEntity(query.getDbEntityName())
                 : dataMap.getObjEntity(query.getEntityName());
@@ -157,7 +157,7 @@ public final class SelectQueryPaths {
         return entity;
     }
 
-    private void walkClauses(FluentSelect<?, ?> query) {
+    private void walkClauses(ObjectSelect<?> query) {
         if (query.getColumns() != null) {
             for (Property<?> column : query.getColumns()) {
                 PathRef path = walkExpression(column.getExpression(), null, Clause.SELECT);

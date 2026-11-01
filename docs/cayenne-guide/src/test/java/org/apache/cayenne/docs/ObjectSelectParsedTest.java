@@ -24,8 +24,6 @@ import org.apache.cayenne.docs.persistent.Gallery;
 import org.apache.cayenne.docs.persistent.Painting;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.property.PropertyFactory;
-import org.apache.cayenne.query.ColumnSelect;
-import org.apache.cayenne.query.FluentSelect;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.PrefetchTreeNode;
@@ -52,11 +50,11 @@ public class ObjectSelectParsedTest extends BaseTest {
         return example("objectselect-parsed.txt", tag);
     }
 
-    private void assertSameResult(FluentSelect<?, ?> parsed, FluentSelect<?, ?> fluent) {
+    private void assertSameResult(ObjectSelect<?> parsed, ObjectSelect<?> fluent) {
         assertSameResult(parsed, fluent, false);
     }
 
-    private void assertSameResult(FluentSelect<?, ?> parsed, FluentSelect<?, ?> fluent, boolean emptyExpected) {
+    private void assertSameResult(ObjectSelect<?> parsed, ObjectSelect<?> fluent, boolean emptyExpected) {
         List<?> parsedResult = parsed.select(context);
         List<?> fluentResult = fluent.select(context);
 
@@ -136,18 +134,18 @@ public class ObjectSelectParsedTest extends BaseTest {
         createArtistsDataSet();
 
         // tag::api[]
-        // any query. Returns either an ObjectSelect or a ColumnSelect
-        FluentSelect<?, ?> q1 = ObjectSelect.parse("from Artist");
+        // any query, with the row type unknown
+        ObjectSelect<?> q1 = ObjectSelect.parse("from Artist");
 
         // a query of the root objects. "DataRow.class" is used to fetch the data rows instead of objects
         ObjectSelect<Artist> q2 = ObjectSelect.parse(Artist.class, "from Artist");
         ObjectSelect<DataRow> q3 = ObjectSelect.parse(DataRow.class, "from Artist");
 
         // a query with a single column
-        ColumnSelect<String> q4 = ObjectSelect.parseColumn(String.class, "select name from Artist");
+        ObjectSelect<String> q4 = ObjectSelect.parse(String.class, "select name from Artist");
 
         // a query with multiple columns
-        ColumnSelect<Object[]> q5 = ObjectSelect.parseColumns("select name, dateOfBirth from Artist");
+        ObjectSelect<Object[]> q5 = ObjectSelect.parse(Object[].class, "select name, dateOfBirth from Artist");
         // end::api[]
 
         assertInstanceOf(ObjectSelect.class, q1);
@@ -203,7 +201,7 @@ public class ObjectSelectParsedTest extends BaseTest {
         createArtistsDataSet();
 
         // tag::columns[]
-        ColumnSelect<Object[]> query = ObjectSelect
+        ObjectSelect<Object[]> query = ObjectSelect
                 .columnQuery(Artist.class, Artist.NAME, Artist.DATE_OF_BIRTH)
                 .orderBy(Artist.NAME.asc());
         // end::columns[]
@@ -216,7 +214,7 @@ public class ObjectSelectParsedTest extends BaseTest {
         createArtistsDataSet();
 
         // tag::column[]
-        ColumnSelect<String> query = ObjectSelect
+        ObjectSelect<String> query = ObjectSelect
                 .columnQuery(Painting.class, Painting.GALLERY.dot(Gallery.NAME))
                 .distinct();
         // end::column[]
@@ -229,7 +227,7 @@ public class ObjectSelectParsedTest extends BaseTest {
     public void columnExpressions() {
         createArtistsDataSet();
 
-        List<Object[]> result = ObjectSelect.parseColumns(ql("columnExpressions")).select(context);
+        List<Object[]> result = ObjectSelect.parse(Object[].class, ql("columnExpressions")).select(context);
         assertEquals(3, result.size());
         assertInstanceOf(String.class, result.get(0)[0]);
         assertInstanceOf(Number.class, result.get(0)[1]);
@@ -241,7 +239,7 @@ public class ObjectSelectParsedTest extends BaseTest {
         BigDecimal min = BigDecimal.valueOf(1000);
 
         // tag::aggregates[]
-        ColumnSelect<Object[]> query = ObjectSelect
+        ObjectSelect<Object[]> query = ObjectSelect
                 .columnQuery(Painting.class,
                         Painting.ARTIST.dot(Artist.NAME),
                         Painting.ESTIMATED_PRICE.sum(),
@@ -263,7 +261,7 @@ public class ObjectSelectParsedTest extends BaseTest {
         context.commitChanges();
 
         // tag::self[]
-        ColumnSelect<Object[]> query = ObjectSelect
+        ObjectSelect<Object[]> query = ObjectSelect
                 .columnQuery(Artist.class, Artist.SELF, Artist.PAINTINGS.outer().count())
                 .orderBy(Artist.PAINTINGS.outer().count().desc());
         // end::self[]
@@ -276,7 +274,7 @@ public class ObjectSelectParsedTest extends BaseTest {
         createArtistsDataSet();
 
         // tag::toOne[]
-        ColumnSelect<Object[]> query = ObjectSelect
+        ObjectSelect<Object[]> query = ObjectSelect
                 .columnQuery(Painting.class, Painting.TITLE, Painting.ARTIST, Painting.GALLERY);
         // end::toOne[]
 
@@ -289,7 +287,7 @@ public class ObjectSelectParsedTest extends BaseTest {
         createArtistsDataSet();
 
         // tag::toMany[]
-        ColumnSelect<Object[]> query = ObjectSelect
+        ObjectSelect<Object[]> query = ObjectSelect
                 .columnQuery(Artist.class, Artist.NAME, Artist.PAINTINGS.flat());
         // end::toMany[]
 

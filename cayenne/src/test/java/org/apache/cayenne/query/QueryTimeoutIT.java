@@ -55,7 +55,7 @@ public class QueryTimeoutIT {
 
     @Test
     public void columnSelect() {
-        ColumnSelect<String> columnSelect = ObjectSelect
+        ObjectSelect<String> columnSelect = ObjectSelect
                 .columnQuery(Artist.class, Artist.ARTIST_NAME)
                 .queryTimeout(10);
         assertEquals(10, columnSelect

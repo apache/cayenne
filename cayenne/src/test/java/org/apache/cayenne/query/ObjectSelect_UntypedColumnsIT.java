@@ -46,7 +46,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * Columns declared without a Java type: the type and the column kind (scalar, entity, embeddable) are resolved
  * against the model when the query is executed.
  */
-public class ColumnSelect_UntypedColumnsIT {
+public class ObjectSelect_UntypedColumnsIT {
 
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
@@ -221,7 +221,7 @@ public class ColumnSelect_UntypedColumnsIT {
 
     @Test
     public void resultSetMappingCarriesResolvedTypes() {
-        ColumnSelect<Object[]> query = ObjectSelect.columnQuery(Painting.class,
+        ObjectSelect<Object[]> query = ObjectSelect.columnQuery(Painting.class,
                 untyped("paintingTitle"),
                 untyped("artist"),
                 Painting.ESTIMATED_PRICE,

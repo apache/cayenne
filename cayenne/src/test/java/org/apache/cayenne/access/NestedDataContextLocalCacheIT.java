@@ -23,6 +23,7 @@ import java.util.List;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.QueryCacheStrategy;
+import org.apache.cayenne.query.resolved.ResolvedQuery;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
@@ -43,18 +44,13 @@ public class NestedDataContextLocalCacheIT {
                 .cacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
 
         ObjectContext child1 = env.runtime().newContext(env.context());
+        ResolvedQuery resolved = query.resolve(child1.getEntityResolver());
 
-        assertNull(((DataContext) child1).getQueryCache().get(
-                query.resolve(child1.getEntityResolver()).cacheKey(), query.getCacheGroup()));
-
-        assertNull(env.context().getQueryCache().get(
-                query.resolve(env.context().getEntityResolver()).cacheKey(), query.getCacheGroup()));
+        assertNull(((DataContext) child1).getQueryCache().get(resolved.cacheKey(), resolved.cacheGroup()));
+        assertNull(env.context().getQueryCache().get(resolved.cacheKey(), resolved.cacheGroup()));
 
         List<?> results = child1.select(query);
-        assertSame(results, ((DataContext) child1).getQueryCache().get(
-                query.resolve(child1.getEntityResolver()).cacheKey(), query.getCacheGroup()));
-
-        assertNull(env.context().getQueryCache().get(
-                query.resolve(env.context().getEntityResolver()).cacheKey(), query.getCacheGroup()));
+        assertSame(results, ((DataContext) child1).getQueryCache().get(resolved.cacheKey(), resolved.cacheGroup()));
+        assertNull(env.context().getQueryCache().get(resolved.cacheKey(), resolved.cacheGroup()));
     }
 }

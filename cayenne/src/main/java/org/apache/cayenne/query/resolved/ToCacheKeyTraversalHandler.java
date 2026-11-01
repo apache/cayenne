@@ -24,7 +24,7 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.types.ValueObjectType;
 import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.query.FluentSelect;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.exp.TraversalHandler;
 import org.apache.cayenne.exp.FunctionCallExp;
 import org.apache.cayenne.exp.ScalarExp;
@@ -44,7 +44,7 @@ class ToCacheKeyTraversalHandler implements TraversalHandler {
 
     private ValueObjectTypeRegistry registry;
     private StringBuilder out;
-    private Function<FluentSelect<?, ?>, String> subqueryKeyBuilder;
+    private Function<ObjectSelect<?>, String> subqueryKeyBuilder;
 
     ToCacheKeyTraversalHandler(ValueObjectTypeRegistry registry, StringBuilder out) {
         this(registry, out, null);
@@ -56,7 +56,7 @@ class ToCacheKeyTraversalHandler implements TraversalHandler {
     ToCacheKeyTraversalHandler(
             ValueObjectTypeRegistry registry,
             StringBuilder out,
-            Function<FluentSelect<?, ?>, String> subqueryKeyBuilder) {
+            Function<ObjectSelect<?>, String> subqueryKeyBuilder) {
         this.subqueryKeyBuilder = subqueryKeyBuilder;
         this.registry = registry;
         this.out = out;

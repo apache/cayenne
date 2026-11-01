@@ -23,7 +23,6 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.flush.operation.DbRowOpSorter;
 import org.apache.cayenne.access.flush.operation.GraphBasedDbRowOpSorter;
-import org.apache.cayenne.query.ColumnSelect;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.CayenneRuntime;
@@ -1048,7 +1047,7 @@ public class VerticalInheritanceIT {
 		assertEquals(data[0], subsubdata[0]);
 		assertEquals("3DQa", subsubdata[1]);
 
-		ColumnSelect<IvSub1> originalQueryForSub1 = ObjectSelect.query(IvSub1.class)
+		ObjectSelect<IvSub1> originalQueryForSub1 = ObjectSelect.query(IvSub1.class)
 				.column(IvSub1.SELF);
 
 		IvSub1 result = originalQueryForSub1.selectOne(env.context());
@@ -1091,7 +1090,7 @@ public class VerticalInheritanceIT {
 		assertEquals(data[0], subsubdata[0]);
 		assertEquals("3DQa", subsubdata[1]);
 
-		ColumnSelect<IvSub1Sub1> originalQueryForSub1Sub1 = ObjectSelect.query(IvSub1Sub1.class)
+		ObjectSelect<IvSub1Sub1> originalQueryForSub1Sub1 = ObjectSelect.query(IvSub1Sub1.class)
 				.column(IvSub1Sub1.SELF);
 
 		IvSub1Sub1 result = originalQueryForSub1Sub1.selectOne(env.context());

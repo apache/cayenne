@@ -14,7 +14,7 @@
 [[ql]]
 === Object Query Language
 
-An `ObjectSelect` or a `ColumnSelect` can be created from a String. This is an alternative to the fluent API.
+An `ObjectSelect` can be created from a String. This is an alternative to the fluent API.
 E.g.:
 
 [source,java,indent=0]
@@ -72,9 +72,9 @@ an expression is valid in a query: comparisons, `like`, `in`, `between`, arithme
 * The keywords are case-sensitive, and must be spelled exactly as shown here, which is also true for the expressions.
 The words that start the clauses are not reserved, and can be used as property names. The only reserved word is
 `self`, that denotes the root object. A property called "self" has to be written as `obj:self`.
-* A query with no `select` clause, or the one with `select self`, fetches the root objects and is an `ObjectSelect`.
-Any other `select` clause results in a `ColumnSelect`.
-* There is no `group by` clause. Just like with the fluent `ColumnSelect`, when any of the columns is an aggregate
+* A query with no `select` clause, or the one with `select self`, fetches the root objects.
+Any other `select` clause fetches the listed columns, like `ObjectSelect.columns(..)` of the fluent API.
+* There is no `group by` clause. Just like with the fluent `ObjectSelect.columns(..)`, when any of the columns is an aggregate
 function, all the other columns become the grouping columns.
 * Only selecting queries are supported. There is no `update` or `delete`.
 
@@ -95,15 +95,16 @@ integer literals.
 
 ==== Java API
 
-There are four methods to parse a query, that differ in the type of the result:
+A query can be parsed with or without a type of its result rows:
 
 [source,java,indent=0]
 ----
 include::{java-examples}/ObjectSelectParsedTest.java[tags=api]
 ----
 
-The last three are there to avoid the type casts. They throw an exception if the query is of a different kind,
-e.g. if a `select` clause is passed to `parse(Artist.class, ..)`.
+The typed form is there to avoid the type casts. It throws an exception if the `select` clause of the query doesn't
+match the type, e.g. if `Object[].class` is passed with a single-column `select` clause, or `DataRow.class` with any
+`select` clause.
 
 The parser needs no mapping information, so the names of entities and properties, as well as the types of the columns,
 are only checked when the query is executed.

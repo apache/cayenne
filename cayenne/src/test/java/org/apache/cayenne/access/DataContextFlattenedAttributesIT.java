@@ -25,7 +25,6 @@ import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.access.translator.select.DbAdapterDelegatedSelectTranslator;
 import org.apache.cayenne.access.translator.TranslatedSelect;
 import org.apache.cayenne.query.EntityResultSegment;
-import org.apache.cayenne.query.ColumnSelect;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.reflect.PersistentDescriptor;
 import org.apache.cayenne.CayenneRuntime;
@@ -200,7 +199,7 @@ public class DataContextFlattenedAttributesIT {
     @Test
     public void columnQueryWithFlattenedAttribute() throws Exception {
         createTestDataSet();
-        ColumnSelect<Object[]> originalQuery = ObjectSelect.query(CompoundPaintingLongNames.class)
+        ObjectSelect<Object[]> originalQuery = ObjectSelect.query(CompoundPaintingLongNames.class)
                 .columns(CompoundPaintingLongNames.SELF);
 
         DataNode dataNode = context.getChannel().getDataDomain().getDataNodes().iterator().next();
@@ -218,7 +217,7 @@ public class DataContextFlattenedAttributesIT {
     public void selectColumnQuery() throws Exception {
         createTestDataWithDeletion();
 
-        ColumnSelect<CompoundPaintingLongNames> originalQuery = ObjectSelect.query(CompoundPaintingLongNames.class)
+        ObjectSelect<CompoundPaintingLongNames> originalQuery = ObjectSelect.query(CompoundPaintingLongNames.class)
                 .column(CompoundPaintingLongNames.SELF);
 
         CompoundPaintingLongNames beforeCompoundPainting = originalQuery

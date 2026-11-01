@@ -29,7 +29,12 @@ import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.ExpressionParameter;
 import org.apache.cayenne.exp.SubqueryExp;
 import org.apache.cayenne.exp.property.Property;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.ql.ParseException;
+import org.apache.cayenne.query.resolved.ResolvedSelect;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.junit.jupiter.api.Test;
@@ -48,33 +53,41 @@ import org.apache.cayenne.exp.NotInExp;
 
 public class ObjectSelect_ParseTest {
 
-    private static List<Property<?>> columns(FluentSelect<?, ?> query) {
+    private static List<Property<?>> columns(ObjectSelect<?> query) {
         return new ArrayList<>(query.getColumns());
     }
 
-    private static List<Ordering> orderings(FluentSelect<?, ?> query) {
+    private static List<Ordering> orderings(ObjectSelect<?> query) {
         return new ArrayList<>(query.getOrderings());
     }
 
-    private static FluentSelect<?, ?> subquery(Expression parent, int operand) {
+    private static ObjectSelect<?> subquery(Expression parent, int operand) {
         return assertInstanceOf(SubqueryExp.class, parent.getOperand(operand)).getQuery();
+    }
+
+    // whether a query fetches DataRows is only visible once the query is resolved against a model
+    private static ResolvedSelect resolve(ObjectSelect<?> query) {
+        DataMap map = new DataMap("map");
+        map.addObjEntity(new ObjEntity("Artist"));
+        map.addDbEntity(new DbEntity("ARTIST"));
+        return query.resolve(new EntityResolver(List.of(map)));
     }
 
     @Test
     public void fromOnly() {
-        FluentSelect<?, ?> q = ObjectSelect.parse("from Artist");
+        ObjectSelect<?> q = ObjectSelect.parse("from Artist");
 
         assertInstanceOf(ObjectSelect.class, q);
         assertEquals("Artist", q.getEntityName());
         assertNull(q.getDbEntityName());
         assertNull(q.getWhere());
         assertNull(q.getColumns());
-        assertFalse(q.isFetchingDataRows());
+        assertFalse(resolve(q).fetchingDataRows());
     }
 
     @Test
     public void selectSelf() {
-        FluentSelect<?, ?> q = ObjectSelect.parse("select self from Artist");
+        ObjectSelect<?> q = ObjectSelect.parse("select self from Artist");
 
         assertInstanceOf(ObjectSelect.class, q);
         assertEquals("Artist", q.getEntityName());
@@ -83,7 +96,7 @@ public class ObjectSelect_ParseTest {
 
     @Test
     public void selectDistinctSelf() {
-        FluentSelect<?, ?> q = ObjectSelect.parse("select distinct self from Artist");
+        ObjectSelect<?> q = ObjectSelect.parse("select distinct self from Artist");
 
         assertInstanceOf(ObjectSelect.class, q);
         assertTrue(q.isDistinct());
@@ -91,14 +104,14 @@ public class ObjectSelect_ParseTest {
 
     @Test
     public void offsetWithoutLimit() {
-        FluentSelect<?, ?> q = ObjectSelect.parse("from Artist offset 20");
+        ObjectSelect<?> q = ObjectSelect.parse("from Artist offset 20");
         assertEquals(0, q.getLimit());
         assertEquals(20, q.getOffset());
     }
 
     @Test
     public void whereOrderLimitOffset() {
-        FluentSelect<?, ?> q = ObjectSelect.parse(
+        ObjectSelect<?> q = ObjectSelect.parse(
                 "from Artist where artistName like 'A%' order by dateOfBirth desc, artistName asc insensitive "
                         + "limit 10 offset 20");
 
@@ -127,7 +140,7 @@ public class ObjectSelect_ParseTest {
 
     @Test
     public void keywordsAreValidPropertyNames() {
-        FluentSelect<?, ?> q = ObjectSelect.parse("from from where where = 1 and order > limit order by offset, as");
+        ObjectSelect<?> q = ObjectSelect.parse("from from where where = 1 and order > limit order by offset, as");
 
         assertEquals("from", q.getEntityName());
         assertEquals(ExpressionFactory.exp("where = 1 and order > limit"), q.getWhere());
@@ -139,7 +152,7 @@ public class ObjectSelect_ParseTest {
 
     @Test
     public void positionalParameters() {
-        FluentSelect<?, ?> q = ObjectSelect.parse(
+        ObjectSelect<?> q = ObjectSelect.parse(
                 "from Painting where paintingTitle = $t and estimatedPrice between $low and $high "
                         + "or paintingTitle = $t", "T", 10, 500);
 
@@ -149,7 +162,7 @@ public class ObjectSelect_ParseTest {
 
     @Test
     public void parametersAcrossClausesAndSubqueries() {
-        FluentSelect<?, ?> q = ObjectSelect.parse(
+        ObjectSelect<?> q = ObjectSelect.parse(
                 "select artistName from Artist where artistName in (select artistName from Artist where x = $a) "
                         + "and y = $b having count(*) > $c", 1, 2, 3L);
 
@@ -167,7 +180,7 @@ public class ObjectSelect_ParseTest {
 
     @Test
     public void noValuesPreserveParameters() {
-        FluentSelect<?, ?> q = ObjectSelect.parse(
+        ObjectSelect<?> q = ObjectSelect.parse(
                 "from Artist where a = $a and exists (from Painting where b = $b) having count(*) > $c");
 
         assertEquals(new ExpressionParameter("a"), ((Expression) q.getWhere().getOperand(0)).getOperand(1));
@@ -177,7 +190,7 @@ public class ObjectSelect_ParseTest {
 
     @Test
     public void namedParameters() {
-        FluentSelect<?, ?> q = ObjectSelect.parse(
+        ObjectSelect<?> q = ObjectSelect.parse(
                 "select artistName from Artist where (artistName = $name or artistName = $name "
                         + "and db:ARTIST_ID in $ids) and exists (from Painting where x = $x and y = $y) "
                         + "having count(*) > $c",
@@ -202,13 +215,14 @@ public class ObjectSelect_ParseTest {
                 Map.of("name", "T"));
         assertEquals(ExpressionFactory.exp("artistName = 'T'"), artists.getWhere());
 
-        ColumnSelect<String> names = ObjectSelect.parseColumn(String.class,
+        ObjectSelect<String> names = ObjectSelect.parse(String.class,
                 "select artistName from Artist where artistName = $name", Map.of("name", "T"));
         assertEquals(ExpressionFactory.exp("artistName = 'T'"), names.getWhere());
 
         assertThrows(ExpressionException.class,
-                () -> ObjectSelect.parse(Artist.class, "select artistName from Artist", Map.of()));
-        assertThrows(ExpressionException.class, () -> ObjectSelect.parseColumn(String.class, "from Artist", Map.of()));
+                () -> ObjectSelect.parse(DataRow.class, "select artistName from Artist", Map.of()));
+        assertThrows(ExpressionException.class,
+                () -> ObjectSelect.parse(Object[].class, "select artistName from Artist", Map.of()));
     }
 
     @Test
@@ -245,16 +259,16 @@ public class ObjectSelect_ParseTest {
 
     @Test
     public void collectionParameter() {
-        FluentSelect<?, ?> q = ObjectSelect.parse("from Artist where db:ARTIST_ID in $ids", List.of(1, 2));
+        ObjectSelect<?> q = ObjectSelect.parse("from Artist where db:ARTIST_ID in $ids", List.of(1, 2));
         assertEquals(ExpressionFactory.inDbExp("ARTIST_ID", 1, 2), q.getWhere());
     }
 
     @Test
     public void columns() {
-        FluentSelect<?, ?> q = ObjectSelect.parse("select artistName, dateOfBirth from Artist order by artistName");
+        ObjectSelect<?> q = ObjectSelect.parse("select artistName, dateOfBirth from Artist order by artistName");
 
-        ColumnSelect<?> columnSelect = assertInstanceOf(ColumnSelect.class, q);
-        assertFalse(columnSelect.isSingleColumn());
+        assertTrue(q.isColumnQuery());
+        assertFalse(q.isSingleColumn());
         assertEquals("Artist", q.getEntityName());
 
         List<Property<?>> columns = columns(q);
@@ -266,10 +280,10 @@ public class ObjectSelect_ParseTest {
 
     @Test
     public void singleDistinctColumn() {
-        FluentSelect<?, ?> q = ObjectSelect.parse("select distinct paintings.paintingTitle from Artist");
+        ObjectSelect<?> q = ObjectSelect.parse("select distinct paintings.paintingTitle from Artist");
 
-        ColumnSelect<?> columnSelect = assertInstanceOf(ColumnSelect.class, q);
-        assertTrue(columnSelect.isSingleColumn());
+        assertTrue(q.isColumnQuery());
+        assertTrue(q.isSingleColumn());
         assertTrue(q.isDistinct());
         assertEquals(Artist.PAINTINGS.dot(Painting.PAINTING_TITLE).getExpression(),
                 columns(q).get(0).getExpression());
@@ -277,7 +291,7 @@ public class ObjectSelect_ParseTest {
 
     @Test
     public void selfWithAggregateAndHaving() {
-        FluentSelect<?, ?> q = ObjectSelect.parse(
+        ObjectSelect<?> q = ObjectSelect.parse(
                 "select self, count(paintings) as n from Artist having count(paintings) > 2");
 
         List<Property<?>> columns = columns(q);
@@ -306,7 +320,7 @@ public class ObjectSelect_ParseTest {
 
     @Test
     public void prefetch() {
-        FluentSelect<?, ?> q = ObjectSelect.parse(
+        ObjectSelect<?> q = ObjectSelect.parse(
                 "from Artist where artistName = $name limit 10 prefetch paintings joint, "
                         + "artistExhibits disjointById, paintings.gallery", "X");
 
@@ -319,12 +333,12 @@ public class ObjectSelect_ParseTest {
 
     @Test
     public void existsSubquery() {
-        FluentSelect<?, ?> q = ObjectSelect.parse(
+        ObjectSelect<?> q = ObjectSelect.parse(
                 "from Artist where exists (select self from Painting where artist = enclosing(self) "
                         + "and estimatedPrice > 1000)");
 
         assertInstanceOf(ExistsExp.class, q.getWhere());
-        FluentSelect<?, ?> subquery = subquery(q.getWhere(), 0);
+        ObjectSelect<?> subquery = subquery(q.getWhere(), 0);
         assertInstanceOf(ObjectSelect.class, subquery);
         assertEquals("Painting", subquery.getEntityName());
         Expression expected = Painting.ARTIST.eq(Artist.SELF.enclosing())
@@ -334,7 +348,7 @@ public class ObjectSelect_ParseTest {
 
     @Test
     public void multilineQuery() {
-        FluentSelect<?, ?> q = ObjectSelect.parse("""
+        ObjectSelect<?> q = ObjectSelect.parse("""
                 from Artist where exists (
                     from Painting where artist = enclosing(self) and estimatedPrice > $price)
                 order by artistName""", 1000);
@@ -345,7 +359,7 @@ public class ObjectSelect_ParseTest {
 
     @Test
     public void notExistsSubquery() {
-        FluentSelect<?, ?> q = ObjectSelect.parse(
+        ObjectSelect<?> q = ObjectSelect.parse(
                 "from Artist where artistName = 'a' and not exists (from Painting where artist = enclosing(self))");
 
         Expression notExists = (Expression) q.getWhere().getOperand(1);
@@ -355,25 +369,25 @@ public class ObjectSelect_ParseTest {
 
     @Test
     public void existsPathIsPreserved() {
-        FluentSelect<?, ?> q = ObjectSelect.parse("from Artist where exists paintings and not exists (a = 1)");
+        ObjectSelect<?> q = ObjectSelect.parse("from Artist where exists paintings and not exists (a = 1)");
         assertEquals(ExpressionFactory.exp("exists paintings and not exists (a = 1)"), q.getWhere());
     }
 
     @Test
     public void inSubquery() {
-        FluentSelect<?, ?> q = ObjectSelect.parse(
+        ObjectSelect<?> q = ObjectSelect.parse(
                 "from Painting where artist.artistName not in "
                         + "(select artistName from Artist where dateOfBirth < $d)", 5);
 
         assertInstanceOf(NotInExp.class, q.getWhere());
-        ColumnSelect<?> subquery = assertInstanceOf(ColumnSelect.class, subquery(q.getWhere(), 1));
+        ObjectSelect<?> subquery = subquery(q.getWhere(), 1);
         assertTrue(subquery.isSingleColumn());
         assertEquals(ExpressionFactory.exp("dateOfBirth < 5"), subquery.getWhere());
     }
 
     @Test
     public void allAndAnySubqueries() {
-        FluentSelect<?, ?> q = ObjectSelect.parse(
+        ObjectSelect<?> q = ObjectSelect.parse(
                 "from Painting where estimatedPrice > all (select estimatedPrice from Painting where x = 'P2') "
                         + "or estimatedPrice = any (select max(estimatedPrice) from Painting)");
 
@@ -391,7 +405,7 @@ public class ObjectSelect_ParseTest {
         Expression exp = ExpressionFactory.exp(
                 "artistName in (select artist.artistName from Painting where estimatedPrice > $p limit 5)", 100);
 
-        FluentSelect<?, ?> subquery = subquery(exp, 1);
+        ObjectSelect<?> subquery = subquery(exp, 1);
         assertEquals(ExpressionFactory.greaterExp("estimatedPrice", 100), subquery.getWhere());
         assertEquals(5, subquery.getLimit());
     }
@@ -421,12 +435,12 @@ public class ObjectSelect_ParseTest {
 
     @Test
     public void dbRoot() {
-        FluentSelect<?, ?> q = ObjectSelect.parse("from db:ARTIST where ARTIST_NAME like 'A%' order by ARTIST_ID desc");
+        ObjectSelect<?> q = ObjectSelect.parse("from db:ARTIST where ARTIST_NAME like 'A%' order by ARTIST_ID desc");
 
         assertInstanceOf(ObjectSelect.class, q);
         assertEquals("ARTIST", q.getDbEntityName());
         assertNull(q.getEntityName());
-        assertTrue(q.isFetchingDataRows());
+        assertTrue(resolve(q).fetchingDataRows());
         assertEquals(ExpressionFactory.likeDbExp("ARTIST_NAME", "A%"), q.getWhere());
         assertEquals(ExpressionFactory.dbPathExp("ARTIST_ID"), orderings(q).get(0).getSortSpec());
     }
@@ -435,27 +449,30 @@ public class ObjectSelect_ParseTest {
     public void typedParse() {
         ObjectSelect<Artist> objects = ObjectSelect.parse(Artist.class, "from Artist where artistName = $n", "a");
         assertEquals(Artist.ARTIST_NAME.eq("a"), objects.getWhere());
-        assertFalse(objects.isFetchingDataRows());
+        assertFalse(resolve(objects).fetchingDataRows());
 
         ObjectSelect<DataRow> rows = ObjectSelect.parse(DataRow.class, "from Artist");
-        assertTrue(rows.isFetchingDataRows());
+        assertTrue(resolve(rows).fetchingDataRows());
 
-        ColumnSelect<String> column = ObjectSelect.parseColumn(String.class, "select artistName from Artist");
+        ObjectSelect<String> column = ObjectSelect.parse(String.class, "select artistName from Artist");
         assertTrue(column.isSingleColumn());
 
-        ColumnSelect<Object[]> columns = ObjectSelect.parseColumns("select artistName, count(*) from Artist");
+        ObjectSelect<Object[]> columns = ObjectSelect.parse(Object[].class, "select artistName, count(*) from Artist");
         assertEquals(2, columns.getColumns().size());
     }
 
     @Test
     public void typedParseShapeMismatch() {
+        // the parser can't tell a root query from a single-column one without the model, but the other mismatches
+        // are detected
         assertThrows(ExpressionException.class,
-                () -> ObjectSelect.parse(Artist.class, "select artistName from Artist"));
-        assertThrows(ExpressionException.class, () -> ObjectSelect.parseColumn(String.class, "from Artist"));
+                () -> ObjectSelect.parse(Artist.class, "select a, b from Artist"));
         assertThrows(ExpressionException.class,
-                () -> ObjectSelect.parseColumn(String.class, "select a, b from Artist"));
-        assertThrows(ExpressionException.class, () -> ObjectSelect.parseColumns("select a from Artist"));
-        assertThrows(ExpressionException.class, () -> ObjectSelect.parseColumns("from Artist"));
+                () -> ObjectSelect.parse(DataRow.class, "select artistName from Artist"));
+        assertThrows(ExpressionException.class,
+                () -> ObjectSelect.parse(String.class, "select a, b from Artist"));
+        assertThrows(ExpressionException.class, () -> ObjectSelect.parse(Object[].class, "select a from Artist"));
+        assertThrows(ExpressionException.class, () -> ObjectSelect.parse(Object[].class, "from Artist"));
     }
 
     @Test

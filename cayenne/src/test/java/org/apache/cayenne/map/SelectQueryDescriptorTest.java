@@ -31,12 +31,11 @@ import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.SubqueryExp;
 import org.apache.cayenne.map.SelectQueryDescriptor.ResultKind;
 import org.apache.cayenne.project.EmptyProjectNodeVisitor;
-import org.apache.cayenne.query.ColumnSelect;
-import org.apache.cayenne.query.FluentSelect;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.QueryCacheStrategy;
+import org.apache.cayenne.query.resolved.ResolvedSelect;
 import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.util.XMLEncoder;
 import org.junit.jupiter.api.Test;
@@ -50,7 +49,7 @@ public class SelectQueryDescriptorTest {
     public void buildQuery() {
         SelectQueryDescriptor descriptor = descriptor("from FakeRoot where abc = 5");
 
-        FluentSelect<?, ?> query = descriptor.buildQuery();
+        ObjectSelect<?> query = descriptor.buildQuery();
         assertInstanceOf(ObjectSelect.class, query);
         assertEquals("FakeRoot", query.getEntityName());
         assertEquals(ExpressionFactory.exp("abc = 5"), query.getWhere());
@@ -95,10 +94,9 @@ public class SelectQueryDescriptorTest {
         SelectQueryDescriptor descriptor = descriptor("select name, count(*) from Artist having count(*) > $min");
         descriptor.setPageSize(10);
 
-        FluentSelect<?, ?> query = descriptor.buildQuery(Map.of("min", 2));
-        assertInstanceOf(ColumnSelect.class, query);
+        ObjectSelect<?> query = descriptor.buildQuery(Map.of("min", 2));
+        assertTrue(query.isColumnQuery());
         assertEquals(ExpressionFactory.exp("count(*) > 2"), query.getHaving());
-        assertEquals(10, query.getPageSize());
         assertTrue(descriptor.isColumnQuery());
         assertFalse(descriptor.isDbQuery());
     }
@@ -112,9 +110,9 @@ public class SelectQueryDescriptorTest {
         SelectQueryDescriptor descriptor = descriptor("from db:ARTIST where NAME = 'a'");
         descriptor.setDataMap(map);
 
-        FluentSelect<?, ?> query = descriptor.buildQuery();
+        ObjectSelect<?> query = descriptor.buildQuery();
         assertEquals("ARTIST", query.getDbEntityName());
-        assertTrue(query.isFetchingDataRows());
+        assertTrue(query.resolve(new EntityResolver(List.of(map))).fetchingDataRows());
         assertTrue(descriptor.isDbQuery());
         assertSame(entity, descriptor.getRoot());
     }
@@ -144,28 +142,41 @@ public class SelectQueryDescriptorTest {
         descriptor.setCacheStrategy(QueryCacheStrategy.SHARED_CACHE);
         descriptor.setCacheGroup("g1");
 
-        FluentSelect<?, ?> query = descriptor.buildQuery();
+        ObjectSelect<?> query = descriptor.buildQuery();
         assertEquals(5, query.getLimit());
         assertEquals(2, query.getOffset());
-        assertEquals(10, query.getPageSize());
-        assertEquals(6, query.getStatementFetchSize());
-        assertTrue(query.isFetchingDataRows());
-        assertEquals(QueryCacheStrategy.SHARED_CACHE, query.getCacheStrategy());
-        assertEquals("g1", query.getCacheGroup());
         assertTrue(query.isDistinct());
+
+        // the settings that the query String has no syntax for are only visible once the query is resolved
+        ResolvedSelect resolved = query.resolve(fakeRootResolver());
+        assertEquals(5, resolved.fetchLimit());
+        assertEquals(2, resolved.fetchOffset());
+        assertEquals(10, resolved.pageSize());
+        assertEquals(6, resolved.statementFetchSize());
+        assertTrue(resolved.fetchingDataRows());
+        assertEquals(QueryCacheStrategy.SHARED_CACHE, resolved.cacheStrategy());
+        assertEquals("g1", resolved.cacheGroup());
     }
 
     @Test
     public void getQueryPropertiesDefaults() {
-        FluentSelect<?, ?> query = descriptor("from FakeRoot").buildQuery();
+        ObjectSelect<?> query = descriptor("from FakeRoot").buildQuery();
         assertEquals(0, query.getLimit());
         assertEquals(0, query.getOffset());
-        assertEquals(0, query.getPageSize());
-        assertEquals(0, query.getStatementFetchSize());
-        assertFalse(query.isFetchingDataRows());
-        assertEquals(QueryCacheStrategy.NO_CACHE, query.getCacheStrategy());
-        assertNull(query.getCacheGroup());
         assertFalse(query.isDistinct());
+
+        ResolvedSelect resolved = query.resolve(fakeRootResolver());
+        assertEquals(0, resolved.pageSize());
+        assertEquals(0, resolved.statementFetchSize());
+        assertFalse(resolved.fetchingDataRows());
+        assertEquals(QueryCacheStrategy.NO_CACHE, resolved.cacheStrategy());
+        assertNull(resolved.cacheGroup());
+    }
+
+    private static EntityResolver fakeRootResolver() {
+        DataMap map = new DataMap("map");
+        map.addObjEntity(new ObjEntity("FakeRoot"));
+        return new EntityResolver(List.of(map));
     }
 
     @Test

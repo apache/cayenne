@@ -101,7 +101,7 @@ public class ObjectSelect_SubqueryIT {
                 .andExp(Painting.PAINTING_TITLE.like("painting%"))
                 .andExp(Artist.ARTIST_NAME.enclosing().like("art%"));
 
-        ColumnSelect<String> subQuery = ObjectSelect.columnQuery(Painting.class, Painting.PAINTING_TITLE).where(exp);
+        ObjectSelect<String> subQuery = ObjectSelect.columnQuery(Painting.class, Painting.PAINTING_TITLE).where(exp);
         long count = ObjectSelect.query(Artist.class)
                 .where(ExpressionFactory.exists(subQuery))
                 .selectCount(context);
@@ -164,7 +164,7 @@ public class ObjectSelect_SubqueryIT {
     @Test
     public void columnSelect_simpleInSubquery() {
 
-        ColumnSelect<String> subquery = ObjectSelect.columnQuery(Artist.class, Artist.ARTIST_NAME)
+        ObjectSelect<String> subquery = ObjectSelect.columnQuery(Artist.class, Artist.ARTIST_NAME)
                 .where(Artist.DATE_OF_BIRTH.lt(new Date()));
 
         long count = ObjectSelect.query(Painting.class)
@@ -177,7 +177,7 @@ public class ObjectSelect_SubqueryIT {
     @Test
     public void columnSelect_simpleNotInSubquery() {
 
-        ColumnSelect<String> subquery = ObjectSelect.columnQuery(Artist.class, Artist.ARTIST_NAME)
+        ObjectSelect<String> subquery = ObjectSelect.columnQuery(Artist.class, Artist.ARTIST_NAME)
                 .where(Artist.DATE_OF_BIRTH.lt(new Date()));
 
         long count = ObjectSelect.query(Painting.class)
