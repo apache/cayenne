@@ -70,7 +70,6 @@ public interface Query<T> {
      * or a batch update, should use {@link #execute(ObjectContext)} and read the counts of its {@link UpdateResult}
      * items instead.
      *
-     * @throws CayenneRuntimeException if the query produced no update results, or its first update is a batch.
      * @since 6.0
      */
     default int update(ObjectContext context) {
@@ -89,7 +88,7 @@ public interface Query<T> {
      * <p>
      * Essentially the inversion of "ObjectContext.select(Query)".
      *
-     * @since 4.0
+     * @since 6.0
      */
     default List<T> select(ObjectContext context) {
         return context.select(this);
@@ -102,7 +101,7 @@ public interface Query<T> {
      * <p>
      * Essentially the inversion of "ObjectContext.selectOne(Query)".
      *
-     * @since 4.0
+     * @since 6.0
      */
     default T selectOne(ObjectContext context) {
         return context.selectOne(this);
@@ -120,7 +119,7 @@ public interface Query<T> {
      * "ObjectContext.selectFirst(Query)", because queries that support a fetch limit set it to one, optimizing the
      * generated SQL. The default implementation does not touch the limit.
      *
-     * @since 4.0
+     * @since 6.0
      */
     default T selectFirst(ObjectContext context) {
         return context.selectFirst(this);
@@ -132,7 +131,7 @@ public interface Query<T> {
      * <p>
      * Essentially the inversion of "ObjectContext.iterate(Query, ResultIteratorCallback)".
      *
-     * @since 4.0
+     * @since 6.0
      */
     default void iterate(ObjectContext context, ResultIteratorCallback<T> callback) {
         context.iterate(this, callback);
@@ -146,7 +145,7 @@ public interface Query<T> {
      * <p>
      * Essentially the inversion of "ObjectContext.iterator(Query)".
      *
-     * @since 4.0
+     * @since 6.0
      */
     default ResultIterator<T> iterator(ObjectContext context) {
         return context.iterator(this);
@@ -157,7 +156,7 @@ public interface Query<T> {
      * result set and is useful for processing of large data sets, preserving a constant memory footprint. The caller
      * must wrap iteration in try-with-resources and close the ResultBatchIterator explicitly.
      *
-     * @since 4.0
+     * @since 6.0
      */
     default ResultBatchIterator<T> batchIterator(ObjectContext context, int size) {
         return context.batchIterator(this, size);
