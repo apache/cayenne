@@ -82,7 +82,6 @@ public class ObjectSelect<T> implements Query<T> {
 
     protected Expression where;
     protected Expression having;
-    protected boolean havingExpressionIsActive;
 
     protected Collection<Ordering> orderings;
     protected boolean distinct;
@@ -274,7 +273,6 @@ public class ObjectSelect<T> implements Query<T> {
         this.dbEntityName = other.dbEntityName;
         this.where = other.where;
         this.having = other.having;
-        this.havingExpressionIsActive = other.havingExpressionIsActive;
         this.orderings = other.orderings != null ? new ArrayList<>(other.orderings) : null;
         this.distinct = other.distinct;
         this.suppressingDistinct = other.suppressingDistinct;
@@ -475,27 +473,31 @@ public class ObjectSelect<T> implements Query<T> {
             Collection<Expression> expressions,
             Function<Collection<Expression>, Expression> joiner) {
 
-        if (expressions == null || expressions.isEmpty()) {
-            return this;
-        }
-
-        Collection<Expression> all;
-        Expression activeExpression = getActiveExpression();
-        if (activeExpression != null) {
-            all = new ArrayList<>(expressions.size() + 1);
-            all.add(activeExpression);
-            all.addAll(expressions);
-        } else {
-            all = expressions;
-        }
-
-        if (havingExpressionIsActive) {
-            having = joiner.apply(all);
-        } else {
-            where = joiner.apply(all);
-        }
-
+        this.where = joinExpression(where, expressions, joiner);
         return this;
+    }
+
+    /**
+     * Joins the existing expression (if any) with the provided ones using the joiner, returning the combined
+     * expression. Returns the existing expression unchanged when there is nothing to add.
+     */
+    protected static Expression joinExpression(
+            Expression existing,
+            Collection<Expression> expressions,
+            Function<Collection<Expression>, Expression> joiner) {
+
+        if (expressions == null || expressions.isEmpty()) {
+            return existing;
+        }
+
+        if (existing == null) {
+            return joiner.apply(expressions);
+        }
+
+        Collection<Expression> all = new ArrayList<>(expressions.size() + 1);
+        all.add(existing);
+        all.addAll(expressions);
+        return joiner.apply(all);
     }
 
     /**
@@ -520,28 +522,79 @@ public class ObjectSelect<T> implements Query<T> {
     }
 
     /**
-     * Appends a having qualifier expression of this query. An equivalent to {@link #and(Expression...)} that can be
-     * used as syntactic sugar. Once a "having" is set, {@code and(..)} and {@code or(..)} append to it rather than to
-     * the "where" clause.
+     * Appends a HAVING qualifier expression of this query. If a HAVING expression is already set, the new one is
+     * AND'ed to it. Unlike {@code where(..)}, this does not affect {@link #and(Expression...)} and
+     * {@link #or(Expression...)}, which always work with the WHERE clause. Use {@link #havingAnd(Expression...)} and
+     * {@link #havingOr(Expression...)} to extend the HAVING clause.
      *
      * @return this object
      * @since 4.2
      */
     public ObjectSelect<T> having(Expression expression) {
-        havingExpressionIsActive = true;
-        return and(expression);
+        return expression != null ? havingAnd(expression) : this;
     }
 
     /**
-     * Appends a having qualifier expression of this query, using provided expression String and an array of
-     * position parameters. This is an equivalent to calling "and".
+     * Appends a HAVING qualifier expression of this query, using provided expression String and an array of position
+     * parameters. If a HAVING expression is already set, the new one is AND'ed to it.
      *
      * @return this object
      * @since 4.2
      */
     public ObjectSelect<T> having(String expressionString, Object... parameters) {
-        havingExpressionIsActive = true;
-        return and(ExpressionFactory.exp(expressionString, parameters));
+        return having(ExpressionFactory.exp(expressionString, parameters));
+    }
+
+    /**
+     * AND's provided expressions to the existing HAVING clause expression. A HAVING counterpart of
+     * {@link #and(Expression...)}.
+     *
+     * @return this object
+     * @since 6.0
+     */
+    public ObjectSelect<T> havingAnd(Expression... expressions) {
+        if (expressions == null || expressions.length == 0) {
+            return this;
+        }
+        return havingAnd(Arrays.asList(expressions));
+    }
+
+    /**
+     * AND's provided expressions to the existing HAVING clause expression. A HAVING counterpart of
+     * {@link #and(Collection)}.
+     *
+     * @return this object
+     * @since 6.0
+     */
+    public ObjectSelect<T> havingAnd(Collection<Expression> expressions) {
+        this.having = joinExpression(having, expressions, ExpressionFactory::and);
+        return this;
+    }
+
+    /**
+     * OR's provided expressions to the existing HAVING clause expression. A HAVING counterpart of
+     * {@link #or(Expression...)}.
+     *
+     * @return this object
+     * @since 6.0
+     */
+    public ObjectSelect<T> havingOr(Expression... expressions) {
+        if (expressions == null || expressions.length == 0) {
+            return this;
+        }
+        return havingOr(Arrays.asList(expressions));
+    }
+
+    /**
+     * OR's provided expressions to the existing HAVING clause expression. A HAVING counterpart of
+     * {@link #or(Collection)}.
+     *
+     * @return this object
+     * @since 6.0
+     */
+    public ObjectSelect<T> havingOr(Collection<Expression> expressions) {
+        this.having = joinExpression(having, expressions, ExpressionFactory::or);
+        return this;
     }
 
     /**
@@ -982,10 +1035,6 @@ public class ObjectSelect<T> implements Query<T> {
     @Override
     public T selectFirst(ObjectContext context) {
         return context.selectFirst(limit(1));
-    }
-
-    protected Expression getActiveExpression() {
-        return havingExpressionIsActive ? having : where;
     }
 
     @Override

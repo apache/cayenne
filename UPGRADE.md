@@ -133,6 +133,11 @@
      `getColumns()`, `getOrderings()`, etc.) stay for now.
    * `QLSelectPrinter` is removed. A query prints itself in the query language with `ObjectSelect.toQL()` (or
      `appendQL(Appendable)`), and its `toString()` returns the same.
+   * `where(..)`, `and(..)` and `or(..)` always work with the WHERE clause. Previously, once `having(..)` was called
+     on a query, they silently appended to the HAVING clause instead. `having(..)` AND's its expression to any
+     HAVING set before, and the new `havingAnd(..)` and `havingOr(..)` extend the HAVING clause the way `and(..)`
+     and `or(..)` extend WHERE. So replace `having(a).and(b)` with `having(a).havingAnd(b)` (or `having(a).having(b)`),
+     and `having(a).or(b)` with `having(a).havingOr(b)`.
    * An expression with a subquery (`exists(..)`, `in(..)` with a select, `all(..)`, `any(..)`) is temporarily not
      evaluable in memory, e.g. with `Expression.filterObjects(..)` or `match(..)`: it throws an `ExpressionException`.
      Previously an uncorrelated `exists` subquery was silently run against the database for every evaluated object,

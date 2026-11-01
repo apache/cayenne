@@ -23,6 +23,7 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
@@ -163,11 +164,74 @@ public class ObjectSelect_ColumnsTest {
         assertNull(q.having);
         assertEquals(ExpressionFactory.exp("true and true"), q.where);
 
+        // and() keeps targeting WHERE regardless of a HAVING being present
         Expression expFalse = ExpressionFactory.expFalse();
         q.having("false");
         q.and(expFalse);
-        assertEquals(ExpressionFactory.exp("false and false"), q.having);
-        assertEquals(ExpressionFactory.exp("true and true"), q.where);
+        assertEquals(expFalse, q.having);
+        assertEquals(ExpressionFactory.and(ExpressionFactory.and(expTrue, expTrue), expFalse), q.where);
+    }
+
+    @Test
+    public void havingAppends() {
+        ObjectSelect<?> q = new ObjectSelect<>();
+        assertNull(q.having);
+
+        q.having(ExpressionFactory.expTrue());
+        assertEquals(ExpressionFactory.expTrue(), q.having);
+        assertNull(q.where);
+
+        q.having("false");
+        assertEquals(ExpressionFactory.exp("true and false"), q.having);
+        assertNull(q.where);
+    }
+
+    @Test
+    public void havingAnd() {
+        ObjectSelect<?> q = new ObjectSelect<>();
+        Expression expTrue = ExpressionFactory.expTrue();
+        Expression expFalse = ExpressionFactory.expFalse();
+
+        q.havingAnd(expTrue);
+        assertEquals(expTrue, q.having);
+        assertNull(q.where);
+
+        q.havingAnd(expTrue, expFalse);
+        assertEquals(ExpressionFactory.and(expTrue, expTrue, expFalse), q.having);
+        assertNull(q.where);
+
+        q.havingAnd();
+        q.havingAnd((Expression[]) null);
+        assertEquals(ExpressionFactory.and(expTrue, expTrue, expFalse), q.having);
+    }
+
+    @Test
+    public void havingOr() {
+        ObjectSelect<?> q = new ObjectSelect<>();
+        Expression expTrue = ExpressionFactory.expTrue();
+        Expression expFalse = ExpressionFactory.expFalse();
+
+        q.where(expTrue);
+        q.having(expTrue);
+        q.havingOr(expFalse);
+        assertEquals(ExpressionFactory.or(expTrue, expFalse), q.having);
+        assertEquals(expTrue, q.where);
+
+        q.havingOr(List.of(expTrue));
+        assertEquals(ExpressionFactory.or(ExpressionFactory.or(expTrue, expFalse), expTrue), q.having);
+        assertEquals(expTrue, q.where);
+    }
+
+    @Test
+    public void havingNull() {
+        ObjectSelect<?> q = new ObjectSelect<>();
+        q.having((Expression) null);
+        assertNull(q.having);
+
+        Expression expTrue = ExpressionFactory.expTrue();
+        q.having(expTrue);
+        q.having((Expression) null);
+        assertEquals(expTrue, q.having);
     }
 
     @Test
@@ -182,11 +246,12 @@ public class ObjectSelect_ColumnsTest {
         assertNull(q.having);
         assertEquals(ExpressionFactory.exp("true or true"), q.where);
 
+        // or() keeps targeting WHERE regardless of a HAVING being present
         Expression expFalse = ExpressionFactory.expFalse();
         q.having("false");
         q.or(expFalse);
-        assertEquals(ExpressionFactory.exp("false or false"), q.having);
-        assertEquals(ExpressionFactory.exp("true or true"), q.where);
+        assertEquals(expFalse, q.having);
+        assertEquals(ExpressionFactory.or(ExpressionFactory.or(expTrue, expTrue), expFalse), q.where);
     }
 
     @Test
