@@ -26,6 +26,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.NamedSelectQuery;
 import org.apache.cayenne.modeler.project.ProjectSession;
+import org.apache.cayenne.projecttools.SelectQueryInfo;
 import org.apache.cayenne.modeler.ui.project.editor.query.ObjectQueryPropertiesPanel;
 import org.apache.cayenne.modeler.ui.project.editor.query.TextQueryView;
 
@@ -79,7 +80,7 @@ public class ObjectSelectView extends TextQueryView<NamedSelectQuery> {
         // own root, or with no tree if its String can't be parsed
         if (query != browserQuery) {
             browserQuery = query;
-            pathBrowser.setEntity(rootEntity(query));
+            pathBrowser.setEntity(SelectQueryInfo.parse(query).root());
         }
 
         // the entity may have changed since the tree was built
@@ -87,13 +88,13 @@ public class ObjectSelectView extends TextQueryView<NamedSelectQuery> {
     }
 
     // a reaction to each check of the query String by the editor
-    private void queryChecked(List<String> problems) {
+    private void queryChecked(SelectQueryInfo info, List<String> problems) {
         NamedSelectQuery query = getQuery();
-        statusLine.update(query, problems);
+        statusLine.update(query != null ? info : null, problems);
         if (query != null) {
-            if (query != browserQuery || query.isValid()) {
+            if (query != browserQuery || info.isValid()) {
                 browserQuery = query;
-                pathBrowser.setEntity(rootEntity(query));
+                pathBrowser.setEntity(info.isValid() ? info.root() : null);
             } else {
                 RootRef root = rootRef(query.getQl());
                 if (root == null) {
@@ -105,13 +106,10 @@ public class ObjectSelectView extends TextQueryView<NamedSelectQuery> {
                     }
                 }
             }
-            properties.updateDataRowsEnabled(query);
+            properties.updateDataRowsEnabled(info);
         }
     }
 
-    private static Entity<?, ?, ?> rootEntity(NamedSelectQuery query) {
-        return query.getRoot() instanceof Entity<?, ?, ?> entity ? entity : null;
-    }
 
     /**
      * Returns the entity named in the first "from" clause of a query String, that may not be parseable, or null if

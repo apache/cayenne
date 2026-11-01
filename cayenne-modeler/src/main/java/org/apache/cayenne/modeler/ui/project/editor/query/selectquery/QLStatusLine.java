@@ -22,10 +22,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.cayenne.map.Entity;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.NamedSelectQuery;
 import org.apache.cayenne.modeler.toolkit.text.QueryStatusLine;
+import org.apache.cayenne.projecttools.SelectQueryInfo;
 
 /**
  * A line under the query editor that shows what the query returns and its parameters, or the first problem of the
@@ -36,32 +34,33 @@ class QLStatusLine extends QueryStatusLine {
     /**
      * Shows the state of the query after it was checked.
      *
+     * @param info     the parsed query, or null if there is no query
      * @param problems the problems found in the query, empty if there are none
      */
-    void update(NamedSelectQuery query, List<String> problems) {
-        if (query == null) {
+    void update(SelectQueryInfo info, List<String> problems) {
+        if (info == null) {
             clear();
         } else if (!problems.isEmpty()) {
             showErrors(problems);
         } else {
-            Set<String> parameters = query.getParameterNames();
+            Set<String> parameters = info.parameterNames();
             String parametersText = parameters.isEmpty()
                     ? "none"
                     : parameters.stream().map(p -> "$" + p).collect(Collectors.joining(", "));
-            showOk("Returns: " + resultType(query) + "    Parameters: " + parametersText);
+            showOk("Returns: " + resultType(info) + "    Parameters: " + parametersText);
         }
     }
 
     /**
      * Returns a description of the objects that a valid query returns.
      */
-    static String resultType(NamedSelectQuery query) {
-        return switch (query.getResultKind()) {
-            case ENTITY -> ((ObjEntity) query.getRoot()).getName();
-            case DATA_ROW -> "DataRow (" + ((Entity<?, ?, ?>) query.getRoot()).getName() + ")";
+    static String resultType(SelectQueryInfo info) {
+        return switch (info.resultKind()) {
+            case ENTITY -> info.root().getName();
+            case DATA_ROW -> "DataRow (" + info.root().getName() + ")";
             case SCALAR -> "Object (1 column)";
-            case ARRAY -> "Object[] (" + query.getParsedQuery().getColumns().size() + " columns)";
-            case null -> String.valueOf(query.getRoot());
+            case ARRAY -> "Object[] (" + info.columnCount() + " columns)";
+            case null -> String.valueOf(info.rootName());
         };
     }
 }

@@ -26,6 +26,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.ql.ParsedObjectSelect;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.NamedQuery;
 import org.apache.cayenne.map.NamedSelectQuery;
@@ -40,7 +41,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 public class EOModelProcessorTest {
@@ -130,10 +130,10 @@ public class EOModelProcessorTest {
         NamedQuery query = map.getNamedQuery("ExhibitType_TestQuery");
 
         assertNotNull(query);
-        assertInstanceOf(NamedSelectQuery.class, query);
-        assertTrue(query instanceof NamedSelectQuery);
+        NamedSelectQuery select = assertInstanceOf(NamedSelectQuery.class, query);
 
-        assertSame(map.getObjEntity("ExhibitType"), query.getRoot());
+        // a select query names its root entity in the "from" clause of its String
+        assertEquals("ExhibitType", ParsedObjectSelect.parse(select.getQl()).getEntityName());
     }
 
     protected void assertLoadedCustomTypes(DataMap map) throws Exception {

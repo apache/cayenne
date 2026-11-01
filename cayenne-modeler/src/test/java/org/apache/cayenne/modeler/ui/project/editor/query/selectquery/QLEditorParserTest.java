@@ -28,6 +28,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.NamedSelectQuery;
+import org.apache.cayenne.projecttools.SelectQueryInfo;
 import org.fife.ui.rsyntaxtextarea.RSyntaxDocument;
 import org.fife.ui.rsyntaxtextarea.parser.ParseResult;
 import org.fife.ui.rsyntaxtextarea.parser.ParserNotice;
@@ -35,7 +36,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class QLEditorParserTest {
 
@@ -87,7 +88,7 @@ public class QLEditorParserTest {
         map.addNamedQuery(query);
 
         List<List<String>> reported = new ArrayList<>();
-        QLEditorParser parser = new QLEditorParser(() -> query, reported::add);
+        QLEditorParser parser = new QLEditorParser(() -> query, (info, problems) -> reported.add(problems));
 
         String valid = "from Artist where name = $name";
         query.setQl(valid);
@@ -110,7 +111,9 @@ public class QLEditorParserTest {
     private static ExpressionException parseError(String ql) {
         NamedSelectQuery query = new NamedSelectQuery();
         query.setQl(ql);
-        return assertThrows(ExpressionException.class, query::getParsedQuery);
+        ExpressionException error = SelectQueryInfo.parse(query).error();
+        assertNotNull(error, ql);
+        return error;
     }
 
     private static RSyntaxDocument document(String text) throws BadLocationException {

@@ -24,10 +24,10 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.NamedQuery;
 import org.apache.cayenne.map.NamedSelectQuery;
 import org.apache.cayenne.query.MappedQuery;
-import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.resolved.ResolvedQuery;
+import org.apache.cayenne.ql.ParsedObjectSelect;
 import org.junit.jupiter.api.Test;
 
 import java.net.URL;
@@ -38,7 +38,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class EOFetchSpecificationParserTest {
@@ -54,9 +53,9 @@ public class EOFetchSpecificationParserTest {
         NamedQuery namedQuery = map.getNamedQuery("Entity1_E1FS1");
         assertNotNull(namedQuery);
         NamedSelectQuery namedSelectQuery = assertInstanceOf(NamedSelectQuery.class, namedQuery);
-        assertSame(map.getObjEntity("Entity1"), namedSelectQuery.getRoot());
 
-        ObjectSelect<?> query = namedSelectQuery.getParsedQuery();
+        ParsedObjectSelect query = ParsedObjectSelect.parse(namedSelectQuery.getQl());
+        assertEquals("Entity1", query.getEntityName());
 
         assertNotNull(query.getWhere());
         assertEquals(

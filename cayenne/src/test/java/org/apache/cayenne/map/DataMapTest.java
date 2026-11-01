@@ -63,7 +63,6 @@ public class DataMapTest {
         map.renameObjEntity(artist, "Painter");
 
         assertEquals("from Painter\nwhere name = $name", rooted.getQl());
-        assertSame(artist, rooted.getRoot());
         assertEquals("from Painting where exists (from Painter where artist = enclosing(self))", subquery.getQl());
         assertEquals("from Painting where artist.name = 'Artist'", unrelated.getQl());
 
@@ -86,7 +85,6 @@ public class DataMapTest {
         map.renameDbEntity(table, "PAINTER");
 
         assertEquals("from db:PAINTER where NAME = 'a'", db.getQl());
-        assertSame(table, db.getRoot());
         assertEquals("from ARTIST where NAME = 'a'", obj.getQl());
     }
 
@@ -117,7 +115,6 @@ public class DataMapTest {
 
         assertEquals("from Painter", inA.getQl());
         assertEquals("from Painter where exists (from Painting where artist = enclosing(self))", inB.getQl());
-        assertSame(artist, inB.getRoot());
         assertEquals("from Painting where exists (from Painter where artist = enclosing(self))", subqueryInB.getQl());
     }
 
@@ -141,7 +138,6 @@ public class DataMapTest {
         mapA.renameDbEntity(table, "PAINTER");
 
         assertEquals("from db:PAINTER where NAME = 'a'", db.getQl());
-        assertSame(table, db.getRoot());
         assertEquals("from ARTIST where NAME = 'a'", obj.getQl());
     }
 

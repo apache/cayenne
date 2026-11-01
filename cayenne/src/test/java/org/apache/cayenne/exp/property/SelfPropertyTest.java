@@ -29,7 +29,6 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.Iterator;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -64,9 +63,6 @@ public class SelfPropertyTest {
 
         assertNotNull(query);
         assertEquals("select artistName from Artist", query.toQL());
-        assertEquals(1, query.getColumns().size());
-        assertEquals(Artist.ARTIST_NAME, query.getColumns().iterator().next());
-        assertNull(query.getWhere());
     }
 
     @Test
@@ -75,11 +71,6 @@ public class SelfPropertyTest {
 
         assertNotNull(query);
         assertEquals("select artistName, dateOfBirth from Artist", query.toQL());
-        assertEquals(2, query.getColumns().size());
-        Iterator<Property<?>> iterator = query.getColumns().iterator();
-        assertEquals(Artist.ARTIST_NAME, iterator.next());
-        assertEquals(Artist.DATE_OF_BIRTH, iterator.next());
-        assertNull(query.getWhere());
     }
 
     @Test

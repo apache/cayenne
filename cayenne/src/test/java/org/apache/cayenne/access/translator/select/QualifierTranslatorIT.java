@@ -74,7 +74,7 @@ public class QualifierTranslatorIT {
 
         QualifierTranslator qualifierTranslator = context.getQualifierTranslator();
 
-        Node node = qualifierTranslator.translate(query.getWhere());
+        Node node = qualifierTranslator.translate(context.getSelect().where());
 
         SQLGenerationVisitor visitor = new SQLGenerationVisitor(new DefaultSQLAppendable(null), null);
         node.visit(visitor);
@@ -99,7 +99,7 @@ public class QualifierTranslatorIT {
 
         QualifierTranslator qualifierTranslator = context.getQualifierTranslator();
 
-        Node node = qualifierTranslator.translate(query.getWhere());
+        Node node = qualifierTranslator.translate(context.getSelect().where());
 
         SQLGenerationVisitor visitor = new SQLGenerationVisitor(new DefaultSQLAppendable(null), null);
         node.visit(visitor);
@@ -117,7 +117,7 @@ public class QualifierTranslatorIT {
 
         QualifierTranslator qualifierTranslator = context.getQualifierTranslator();
 
-        Node node = qualifierTranslator.translate(query.getWhere());
+        Node node = qualifierTranslator.translate(context.getSelect().where());
 
         SQLGenerationVisitor visitor = new SQLGenerationVisitor(new DefaultSQLAppendable(null), null);
         node.visit(visitor);
@@ -177,7 +177,7 @@ public class QualifierTranslatorIT {
 
     private String translate(ObjectSelect<?> query) {
         SelectTranslatorContext context = new SelectTranslatorContext(query.resolve(env.context().getEntityResolver()), runtime.getDataDomain().getDefaultNode().getAdapter(), env.context().getEntityResolver(), null);
-        Node node = context.getQualifierTranslator().translate(query.getWhere());
+        Node node = context.getQualifierTranslator().translate(context.getSelect().where());
         SQLGenerationVisitor visitor = new SQLGenerationVisitor(new DefaultSQLAppendable(null), null);
         node.visit(visitor);
         return visitor.getSQLString();

@@ -33,6 +33,7 @@ import java.util.TreeSet;
  */
 public final class NamedSQLQuery extends NamedQuery {
 
+    private Object root;
     private String sql;
     private Map<String, Integer> prefetchesMap;
     private Map<String, String> adapterSql;
@@ -41,6 +42,21 @@ public final class NamedSQLQuery extends NamedQuery {
     public NamedSQLQuery() {
         this.prefetchesMap = new HashMap<>();
         this.adapterSql = new HashMap<>();
+    }
+
+    /**
+     * Returns the root of the query: the ObjEntity whose objects the query selects, or the DataMap of the query if it
+     * selects DataRows or updates. Null if no root is set.
+     */
+    public Object getRoot() {
+        return root;
+    }
+
+    /**
+     * Sets the root of the query, an ObjEntity, a DataMap, or the name of an ObjEntity.
+     */
+    public void setRoot(Object root) {
+        this.root = root;
     }
 
     /**

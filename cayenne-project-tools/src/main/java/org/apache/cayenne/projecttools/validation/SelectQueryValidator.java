@@ -21,8 +21,8 @@ package org.apache.cayenne.projecttools.validation;
 import java.util.List;
 import java.util.function.Supplier;
 
-import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.map.NamedSelectQuery;
+import org.apache.cayenne.projecttools.SelectQueryInfo;
 import org.apache.cayenne.validation.ValidationResult;
 
 class SelectQueryValidator extends BaseQueryValidator<NamedSelectQuery> {
@@ -40,18 +40,21 @@ class SelectQueryValidator extends BaseQueryValidator<NamedSelectQuery> {
         ProjectNodeValidator<NamedSelectQuery>.Performer<NamedSelectQuery> performer =
                 validateQuery(node, validationResult);
 
-        if (node.getQl() == null || node.getQl().isBlank()) {
+        SelectQueryInfo info = SelectQueryInfo.parse(node);
+        if (info.isEmpty()) {
             performer.performIfEnabled(Inspection.SELECT_QUERY_NO_ROOT,
                     () -> addFailure(validationResult, node, "Query '%s' is empty", node.getName()));
             return;
         }
 
-        if (!node.isValid()) {
-            performer.performIfEnabled(Inspection.SELECT_QUERY_INVALID_QL, () -> checkSyntax(node, validationResult));
+        if (!info.isValid()) {
+            performer.performIfEnabled(Inspection.SELECT_QUERY_INVALID_QL,
+                    () -> addFailure(validationResult, node, "Query '%s' can't be parsed: %s", node.getName(),
+                            info.error().getUnlabeledMessage()));
             return;
         }
 
-        List<SelectQueryPaths.Problem> problems = SelectQueryPaths.check(node);
+        List<SelectQueryPaths.Problem> problems = SelectQueryPaths.check(info);
         for (SelectQueryPaths.Problem problem : problems) {
             Inspection inspection = switch (problem.clause()) {
                 case FROM -> Inspection.SELECT_QUERY_NO_ROOT;
@@ -61,15 +64,6 @@ class SelectQueryValidator extends BaseQueryValidator<NamedSelectQuery> {
             };
             performer.performIfEnabled(inspection, () -> addFailure(validationResult, node, "Query '%s': %s",
                     node.getName(), problem.message()));
-        }
-    }
-
-    private void checkSyntax(NamedSelectQuery query, ValidationResult validationResult) {
-        try {
-            query.getParsedQuery();
-        } catch (ExpressionException e) {
-            addFailure(validationResult, query, "Query '%s' can't be parsed: %s", query.getName(),
-                    e.getUnlabeledMessage());
         }
     }
 }

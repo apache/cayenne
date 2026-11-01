@@ -39,175 +39,175 @@ public class ObjectSelect_ColumnsTest {
     @Test
     public void query() {
         ObjectSelect<Artist> q = new ObjectSelect<>();
-        assertNull(q.getColumns());
-        assertNull(q.getHaving());
-        assertNull(q.getWhere());
+        assertNull(q.columns);
+        assertNull(q.having);
+        assertNull(q.where);
     }
 
     @Test
     public void queryWithOneColumn() {
         ObjectSelect<String> q = ObjectSelect.columnQuery(Artist.class, Artist.ARTIST_NAME);
-        assertEquals(Collections.singletonList(Artist.ARTIST_NAME), q.getColumns());
+        assertEquals(Collections.singletonList(Artist.ARTIST_NAME), q.columns);
         assertTrue(q.singleColumn);
-        assertNull(q.getHaving());
-        assertNull(q.getWhere());
+        assertNull(q.having);
+        assertNull(q.where);
     }
 
     @Test
     public void queryWithOneColumn2() {
         ObjectSelect<String> q = ObjectSelect.query(Artist.class).column(Artist.ARTIST_NAME);
-        assertEquals(Collections.singletonList(Artist.ARTIST_NAME), q.getColumns());
+        assertEquals(Collections.singletonList(Artist.ARTIST_NAME), q.columns);
         assertTrue(q.singleColumn);
-        assertNull(q.getHaving());
-        assertNull(q.getWhere());
+        assertNull(q.having);
+        assertNull(q.where);
     }
 
     @Test
     public void queryWithOneColumn3() {
         ObjectSelect<Object[]> q = ObjectSelect.query(Artist.class).columns(Artist.ARTIST_NAME);
-        assertEquals(Collections.singletonList(Artist.ARTIST_NAME), q.getColumns());
+        assertEquals(Collections.singletonList(Artist.ARTIST_NAME), q.columns);
         assertFalse(q.singleColumn);
-        assertNull(q.getHaving());
-        assertNull(q.getWhere());
+        assertNull(q.having);
+        assertNull(q.where);
     }
 
     @Test
     public void queryWithMultipleColumns() {
         ObjectSelect<Object[]> q = ObjectSelect.columnQuery(Artist.class, Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH);
-        assertEquals(Arrays.asList(Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH), q.getColumns());
+        assertEquals(Arrays.asList(Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH), q.columns);
         assertFalse(q.singleColumn);
-        assertNull(q.getHaving());
-        assertNull(q.getWhere());
+        assertNull(q.having);
+        assertNull(q.where);
     }
 
     @Test
     public void queryCount() {
         ObjectSelect<Long> q = ObjectSelect.query(Artist.class).count();
-        assertEquals(Collections.singletonList(PropertyFactory.COUNT), q.getColumns());
-        assertNull(q.getHaving());
-        assertNull(q.getWhere());
+        assertEquals(Collections.singletonList(PropertyFactory.COUNT), q.columns);
+        assertNull(q.having);
+        assertNull(q.where);
     }
 
     @Test
     public void queryCountWithProperty() {
         ObjectSelect<Long> q = ObjectSelect.query(Artist.class).count(Artist.ARTIST_NAME);
-        assertEquals(Collections.singletonList(Artist.ARTIST_NAME.count()), q.getColumns());
-        assertNull(q.getHaving());
-        assertNull(q.getWhere());
+        assertEquals(Collections.singletonList(Artist.ARTIST_NAME.count()), q.columns);
+        assertNull(q.having);
+        assertNull(q.where);
     }
 
     @Test
     public void queryMinWithProperty() {
         ObjectSelect<BigDecimal> q = ObjectSelect.query(Artist.class).min(Artist.PAINTINGS.dot(Painting.ESTIMATED_PRICE));
-        assertEquals(Collections.singletonList(Artist.PAINTINGS.dot(Painting.ESTIMATED_PRICE).min()), q.getColumns());
-        assertNull(q.getHaving());
-        assertNull(q.getWhere());
+        assertEquals(Collections.singletonList(Artist.PAINTINGS.dot(Painting.ESTIMATED_PRICE).min()), q.columns);
+        assertNull(q.having);
+        assertNull(q.where);
     }
 
     @Test
     public void columns() {
         ObjectSelect<?> q = new ObjectSelect<>();
-        assertNull(q.getColumns());
+        assertNull(q.columns);
         q.columns(Artist.ARTIST_NAME, Artist.PAINTINGS);
-        assertEquals(Arrays.asList(Artist.ARTIST_NAME, Artist.PAINTINGS), q.getColumns());
+        assertEquals(Arrays.asList(Artist.ARTIST_NAME, Artist.PAINTINGS), q.columns);
 
         q = ObjectSelect.columnQuery(Artist.class, Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH);
-        assertEquals(Arrays.asList(Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH), q.getColumns());
+        assertEquals(Arrays.asList(Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH), q.columns);
         q.columns(Artist.PAINTINGS);
-        assertEquals(Arrays.asList(Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH, Artist.PAINTINGS), q.getColumns());
+        assertEquals(Arrays.asList(Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH, Artist.PAINTINGS), q.columns);
     }
 
     @Test
     public void havingExpression() {
         ObjectSelect<?> q = new ObjectSelect<>();
-        assertNull(q.getHaving());
-        assertNull(q.getWhere());
+        assertNull(q.having);
+        assertNull(q.where);
 
         Expression expTrue = ExpressionFactory.expTrue();
         q.where(expTrue);
-        assertNull(q.getHaving());
-        assertEquals(expTrue, q.getWhere());
+        assertNull(q.having);
+        assertEquals(expTrue, q.where);
 
         Expression expFalse = ExpressionFactory.expFalse();
         q.having(expFalse);
-        assertEquals(expFalse, q.getHaving());
-        assertEquals(expTrue, q.getWhere());
+        assertEquals(expFalse, q.having);
+        assertEquals(expTrue, q.where);
     }
 
     @Test
     public void havingString() {
         ObjectSelect<?> q = new ObjectSelect<>();
-        assertNull(q.getHaving());
-        assertNull(q.getWhere());
+        assertNull(q.having);
+        assertNull(q.where);
 
         Expression expTrue = ExpressionFactory.expTrue();
         q.where(expTrue);
-        assertNull(q.getHaving());
-        assertEquals(expTrue, q.getWhere());
+        assertNull(q.having);
+        assertEquals(expTrue, q.where);
 
         Expression expFalse = ExpressionFactory.expFalse();
         q.having("false");
-        assertEquals(expFalse, q.getHaving());
-        assertEquals(expTrue, q.getWhere());
+        assertEquals(expFalse, q.having);
+        assertEquals(expTrue, q.where);
     }
 
     @Test
     public void and() {
         ObjectSelect<?> q = new ObjectSelect<>();
-        assertNull(q.getHaving());
-        assertNull(q.getWhere());
+        assertNull(q.having);
+        assertNull(q.where);
 
         Expression expTrue = ExpressionFactory.expTrue();
         q.where(expTrue);
         q.and(expTrue);
-        assertNull(q.getHaving());
-        assertEquals(ExpressionFactory.exp("true and true"), q.getWhere());
+        assertNull(q.having);
+        assertEquals(ExpressionFactory.exp("true and true"), q.where);
 
         Expression expFalse = ExpressionFactory.expFalse();
         q.having("false");
         q.and(expFalse);
-        assertEquals(ExpressionFactory.exp("false and false"), q.getHaving());
-        assertEquals(ExpressionFactory.exp("true and true"), q.getWhere());
+        assertEquals(ExpressionFactory.exp("false and false"), q.having);
+        assertEquals(ExpressionFactory.exp("true and true"), q.where);
     }
 
     @Test
     public void or() {
         ObjectSelect<?> q = new ObjectSelect<>();
-        assertNull(q.getHaving());
-        assertNull(q.getWhere());
+        assertNull(q.having);
+        assertNull(q.where);
 
         Expression expTrue = ExpressionFactory.expTrue();
         q.where(expTrue);
         q.or(expTrue);
-        assertNull(q.getHaving());
-        assertEquals(ExpressionFactory.exp("true or true"), q.getWhere());
+        assertNull(q.having);
+        assertEquals(ExpressionFactory.exp("true or true"), q.where);
 
         Expression expFalse = ExpressionFactory.expFalse();
         q.having("false");
         q.or(expFalse);
-        assertEquals(ExpressionFactory.exp("false or false"), q.getHaving());
-        assertEquals(ExpressionFactory.exp("true or true"), q.getWhere());
+        assertEquals(ExpressionFactory.exp("false or false"), q.having);
+        assertEquals(ExpressionFactory.exp("true or true"), q.where);
     }
 
     @Test
     public void testColumnsAddByOne() {
         ObjectSelect<Artist> q = new ObjectSelect<>();
 
-        assertNull(q.getColumns());
+        assertNull(q.columns);
 
         q.columns(Artist.ARTIST_NAME);
         q.columns(Artist.DATE_OF_BIRTH);
         q.columns(Artist.PAINTINGS);
 
         Collection<Property<?>> properties = Arrays.asList(Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH, Artist.PAINTINGS);
-        assertEquals(properties, q.getColumns());
+        assertEquals(properties, q.columns);
     }
 
     @Test
     public void testColumnsAddAll() {
         ObjectSelect<Artist> q = new ObjectSelect<>();
 
-        assertNull(q.getColumns());
+        assertNull(q.columns);
 
         q.columns(Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH, Artist.PAINTINGS);
         q.columns(Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH, Artist.PAINTINGS);
@@ -215,14 +215,14 @@ public class ObjectSelect_ColumnsTest {
         Collection<Property<?>> properties = Arrays.asList(
                 Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH, Artist.PAINTINGS,
                 Artist.ARTIST_NAME, Artist.DATE_OF_BIRTH, Artist.PAINTINGS); // should it be Set instead of List?
-        assertEquals(properties, q.getColumns());
+        assertEquals(properties, q.columns);
     }
 
     @Test
     public void testColumnAddByOne() {
         ObjectSelect<Artist> q = new ObjectSelect<>();
 
-        assertNull(q.getColumns());
+        assertNull(q.columns);
 
         q.column(Artist.ARTIST_NAME);
         q.column(Artist.DATE_OF_BIRTH);
@@ -230,7 +230,7 @@ public class ObjectSelect_ColumnsTest {
         q.column(paintings);
 
         Collection<Property<?>> properties = Collections.singletonList(paintings);
-        assertEquals(properties, q.getColumns());
+        assertEquals(properties, q.columns);
     }
 
     @Test

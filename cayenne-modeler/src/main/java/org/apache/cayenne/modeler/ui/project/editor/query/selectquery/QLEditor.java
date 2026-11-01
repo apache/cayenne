@@ -21,9 +21,10 @@ package org.apache.cayenne.modeler.ui.project.editor.query.selectquery;
 import java.awt.BorderLayout;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 import org.apache.cayenne.map.NamedSelectQuery;
+import org.apache.cayenne.projecttools.SelectQueryInfo;
 import org.apache.cayenne.modeler.event.model.QueryEvent;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.toolkit.ProjectPanel;
@@ -44,12 +45,12 @@ class QLEditor extends ProjectPanel {
     private NamedSelectQuery query;
 
     /**
-     * @param problemsListener receives the problems of the query after each check, empty if there are none
+     * @param checkListener receives the parsed query and its problems after each check, empty if there are none
      */
-    QLEditor(ProjectSession session, Consumer<List<String>> problemsListener) {
+    QLEditor(ProjectSession session, BiConsumer<SelectQueryInfo, List<String>> checkListener) {
         super(session);
         this.editor = new QueryTextEditor(app.getUndoManager(), QLTokenMaker.SYNTAX_STYLE,
-                new QLEditorParser(() -> query, problemsListener));
+                new QLEditorParser(() -> query, checkListener));
         initLayout();
         initBindings();
     }

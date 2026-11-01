@@ -34,8 +34,12 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
+import org.apache.cayenne.map.NamedProcedureQuery;
 import org.apache.cayenne.map.NamedQuery;
+import org.apache.cayenne.map.NamedSQLQuery;
+import org.apache.cayenne.map.NamedSelectQuery;
 import org.apache.cayenne.map.Relationship;
+import org.apache.cayenne.projecttools.SelectQueryInfo;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.event.model.DataMapEvent;
 import org.apache.cayenne.modeler.event.model.DbAttributeEvent;
@@ -356,11 +360,26 @@ ObjRelationshipEvent e = ObjRelationshipEvent.ofRemove(app.getFrame(), rel, enti
 
         // clone to be able to remove within iterator...
         for (NamedQuery query : new ArrayList<>(map.getNamedQueries())) {
-            Object root = query.getRoot();
-            if (root == entity || (root instanceof String && root.toString().equals(entity.getName()))) {
+            if (isRootedIn(query, entity)) {
                 removeQuery(map, query);
             }
         }
+    }
+
+    /**
+     * Returns whether a query selects the objects of an ObjEntity. A select query names its root entity in the "from"
+     * clause of its String, the other queries hold a reference to it, or its name.
+     */
+    private static boolean isRootedIn(NamedQuery query, ObjEntity entity) {
+        Object root = switch (query) {
+            case NamedSelectQuery select -> {
+                SelectQueryInfo info = SelectQueryInfo.parse(select);
+                yield info.isDbQuery() ? null : info.rootName();
+            }
+            case NamedSQLQuery sql -> sql.getRoot();
+            case NamedProcedureQuery ignored -> null;
+        };
+        return root == entity || (root instanceof String name && name.equals(entity.getName()));
     }
 
     public void removeEmbeddable(DataMap map, Embeddable embeddable) {

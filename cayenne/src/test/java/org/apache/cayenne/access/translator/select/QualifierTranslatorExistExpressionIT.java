@@ -51,7 +51,7 @@ public class QualifierTranslatorExistExpressionIT {
 
         QualifierTranslator qualifierTranslator = context.getQualifierTranslator();
 
-        Node node = qualifierTranslator.translate(query.getWhere());
+        Node node = qualifierTranslator.translate(context.getSelect().where());
 
         assertSQL(" EXISTS (" +
                 "SELECT p.PAINTING_ID FROM PAINTING p " +
@@ -70,7 +70,7 @@ public class QualifierTranslatorExistExpressionIT {
 
         QualifierTranslator qualifierTranslator = context.getQualifierTranslator();
 
-        Node node = qualifierTranslator.translate(query.getWhere());
+        Node node = qualifierTranslator.translate(context.getSelect().where());
 
         assertSQL(" EXISTS (" +
                 "SELECT p.PAINTING_ID FROM PAINTING p " +
@@ -91,7 +91,7 @@ public class QualifierTranslatorExistExpressionIT {
 
         QualifierTranslator qualifierTranslator = context.getQualifierTranslator();
 
-        Node node = qualifierTranslator.translate(query.getWhere());
+        Node node = qualifierTranslator.translate(context.getSelect().where());
 
         assertSQL(" a.ARTIST_NAME IS NOT NULL", node);
     }
@@ -109,7 +109,7 @@ public class QualifierTranslatorExistExpressionIT {
 
         QualifierTranslator qualifierTranslator = context.getQualifierTranslator();
 
-        Node node = qualifierTranslator.translate(query.getWhere());
+        Node node = qualifierTranslator.translate(context.getSelect().where());
 
         assertSQL(" EXISTS (" +
                 "SELECT p.PAINTING_ID FROM PAINTING p " +
@@ -130,7 +130,7 @@ public class QualifierTranslatorExistExpressionIT {
 
         QualifierTranslator qualifierTranslator = context.getQualifierTranslator();
 
-        Node node = qualifierTranslator.translate(query.getWhere());
+        Node node = qualifierTranslator.translate(context.getSelect().where());
 
         assertSQL(" EXISTS (" +
                 "SELECT p.PAINTING_ID FROM PAINTING p " +
@@ -151,7 +151,7 @@ public class QualifierTranslatorExistExpressionIT {
 
         QualifierTranslator qualifierTranslator = context.getQualifierTranslator();
 
-        Node node = qualifierTranslator.translate(query.getWhere());
+        Node node = qualifierTranslator.translate(context.getSelect().where());
 
         assertSQL(" EXISTS (" +
                 "SELECT DISTINCT ag.ARTIST_ID, ag.GROUP_ID FROM ARTIST_GROUP ag " +
@@ -174,7 +174,7 @@ public class QualifierTranslatorExistExpressionIT {
 
         QualifierTranslator qualifierTranslator = context.getQualifierTranslator();
 
-        Node node = qualifierTranslator.translate(query.getWhere());
+        Node node = qualifierTranslator.translate(context.getSelect().where());
 
         assertSQL(" EXISTS (" +
                 "SELECT p.PAINTING_ID FROM PAINTING p " +
@@ -196,7 +196,7 @@ public class QualifierTranslatorExistExpressionIT {
 
         QualifierTranslator qualifierTranslator = context.getQualifierTranslator();
 
-        Node node = qualifierTranslator.translate(query.getWhere());
+        Node node = qualifierTranslator.translate(context.getSelect().where());
 
         assertSQL(" EXISTS (" +
                 "SELECT p.PAINTING_ID FROM PAINTING p " +
@@ -218,7 +218,7 @@ public class QualifierTranslatorExistExpressionIT {
 
         QualifierTranslator qualifierTranslator = context.getQualifierTranslator();
 
-        Node node = qualifierTranslator.translate(query.getWhere());
+        Node node = qualifierTranslator.translate(context.getSelect().where());
 
         assertSQL(" EXISTS (" +
                 "SELECT p.PAINTING_ID FROM PAINTING p " +
@@ -241,7 +241,7 @@ public class QualifierTranslatorExistExpressionIT {
 
         QualifierTranslator qualifierTranslator = context.getQualifierTranslator();
 
-        Node node = qualifierTranslator.translate(query.getWhere());
+        Node node = qualifierTranslator.translate(context.getSelect().where());
 
         assertSQL(" EXISTS (" +
                     "SELECT p.PAINTING_ID FROM PAINTING p " +
@@ -268,7 +268,7 @@ public class QualifierTranslatorExistExpressionIT {
 
         QualifierTranslator qualifierTranslator = context.getQualifierTranslator();
 
-        Node node = qualifierTranslator.translate(query.getWhere());
+        Node node = qualifierTranslator.translate(context.getSelect().where());
 
         assertSQL(" EXISTS (" +
                     "SELECT p.PAINTING_ID FROM PAINTING p " +
@@ -301,7 +301,7 @@ public class QualifierTranslatorExistExpressionIT {
 
         QualifierTranslator qualifierTranslator = context.getQualifierTranslator();
 
-        Node node = qualifierTranslator.translate(query.getWhere());
+        Node node = qualifierTranslator.translate(context.getSelect().where());
 
         assertSQL(" EXISTS (" +
                     "SELECT p.PAINTING_ID FROM PAINTING p " +

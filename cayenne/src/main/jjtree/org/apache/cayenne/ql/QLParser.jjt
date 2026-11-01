@@ -43,7 +43,6 @@ import java.util.HashMap;
 import java.util.Map;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.exp.*;
-import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.PrefetchTreeNode;
 
 /**
@@ -275,8 +274,8 @@ Expression expression() : {}
     }
 }
 
-ObjectSelect<?> query() : {
-    ObjectSelect<?> query;
+ParsedObjectSelect query() : {
+    ParsedObjectSelect query;
 }
 {
     query = select(true) <EOF>
@@ -285,7 +284,7 @@ ObjectSelect<?> query() : {
     }
 }
 
-ObjectSelect<?> select(boolean root) : {
+ParsedObjectSelect select(boolean root) : {
     QLSelectBuilder builder = new QLSelectBuilder();
 }
 {
@@ -426,7 +425,7 @@ void prefetch(QLSelectBuilder builder) : {
 
 // a nested select in parentheses; pushes a single subquery node on the stack
 void subquery() : {
-    ObjectSelect<?> query;
+    ParsedObjectSelect query;
 }
 {
     "(" query = select(false) ")"

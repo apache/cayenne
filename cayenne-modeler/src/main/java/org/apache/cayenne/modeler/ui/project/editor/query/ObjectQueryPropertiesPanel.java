@@ -28,6 +28,7 @@ import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.map.NamedQuery;
 import org.apache.cayenne.map.NamedSelectQuery;
+import org.apache.cayenne.projecttools.SelectQueryInfo;
 import org.apache.cayenne.modeler.ui.project.editor.EditorForm;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -101,13 +102,13 @@ public class ObjectQueryPropertiesPanel extends SelectPropertiesPanel<NamedSelec
 
         dataRows.setSelected(query.isFetchingDataRows());
         statementFetchSize.setText(String.valueOf(query.getStatementFetchSize()));
-        updateDataRowsEnabled(query);
+        updateDataRowsEnabled(SelectQueryInfo.parse(query));
     }
 
     /**
      * Enables the "Fetch Data Rows" option only for the queries that fetch objects, which the query String defines.
      */
-    public void updateDataRowsEnabled(NamedSelectQuery query) {
+    public void updateDataRowsEnabled(SelectQueryInfo query) {
         boolean fetchesObjects = !query.isColumnQuery() && !query.isDbQuery();
         dataRows.setEnabled(fetchesObjects);
         dataRows.setToolTipText(fetchesObjects ? null : DATA_ROWS_TOOLTIP);

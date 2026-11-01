@@ -21,6 +21,7 @@ package org.apache.cayenne.project.xml;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.NamedSelectQuery;
+import org.apache.cayenne.ql.ParsedObjectSelect;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.junit.jupiter.api.Test;
 
@@ -40,7 +41,7 @@ public class PrefetchTypeForSelectQueryHandlerTest extends BaseHandlerTest{
         });
 
         NamedSelectQuery namedSelectQuery = (NamedSelectQuery) map.getNamedQuery("query");
-        PrefetchTreeNode prefetches = namedSelectQuery.getParsedQuery().getPrefetches();
+        PrefetchTreeNode prefetches = ParsedObjectSelect.parse(namedSelectQuery.getQl()).getPrefetches();
         assertEquals(3, prefetches.nonPhantomNodes().size());
 
         assertEquals(1, prefetches.getNode("paintings").getSemantics());

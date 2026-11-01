@@ -29,6 +29,7 @@ import org.apache.cayenne.util.XMLEncoder;
  */
 public final class NamedProcedureQuery extends NamedQuery {
 
+    private Object root;
     private String resultEntityName;
     private int fetchLimit;
     private int fetchOffset;
@@ -37,6 +38,20 @@ public final class NamedProcedureQuery extends NamedQuery {
     public NamedProcedureQuery() {
         this.fetchLimit = ResolvedQuery.FETCH_LIMIT_DEFAULT;
         this.fetchOffset = ResolvedQuery.FETCH_OFFSET_DEFAULT;
+    }
+
+    /**
+     * Returns the root of the query: the Procedure it calls, or its name. Null if no root is set.
+     */
+    public Object getRoot() {
+        return root;
+    }
+
+    /**
+     * Sets the root of the query, a Procedure or the name of a Procedure.
+     */
+    public void setRoot(Object root) {
+        this.root = root;
     }
 
     /**

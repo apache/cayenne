@@ -20,7 +20,7 @@ package org.apache.cayenne.modeler.ui.project.editor.query.selectquery;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -30,6 +30,7 @@ import javax.swing.text.Element;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.map.NamedSelectQuery;
 import org.apache.cayenne.modeler.toolkit.text.TextPositions;
+import org.apache.cayenne.projecttools.SelectQueryInfo;
 import org.apache.cayenne.projecttools.validation.SelectQueryPaths;
 import org.apache.cayenne.ql.ParseException;
 import org.fife.ui.rsyntaxtextarea.RSyntaxDocument;
@@ -42,23 +43,23 @@ import org.fife.ui.rsyntaxtextarea.parser.ParseResult;
 
 /**
  * Checks the query String in the editor: marks a syntax error, or the entity names and paths that can't be resolved
- * against the mapping, and reports the found problems to a listener. Runs on the event dispatch thread, after a delay
- * since the last edit.
+ * against the mapping, and reports the parsed query and the found problems to a listener. Runs on the event dispatch
+ * thread, after a delay since the last edit.
  */
 class QLEditorParser extends AbstractParser {
 
     private static final Pattern POSITION = Pattern.compile("line (\\d+), column (\\d+)");
 
     private final Supplier<NamedSelectQuery> query;
-    private final Consumer<List<String>> problemsListener;
+    private final BiConsumer<SelectQueryInfo, List<String>> checkListener;
 
     /**
-     * @param query            the query edited, that holds the text of the editor
-     * @param problemsListener receives the messages of the found problems, empty if there are none
+     * @param query         the query edited, that holds the text of the editor
+     * @param checkListener receives the parsed query and the messages of the found problems, empty if there are none
      */
-    QLEditorParser(Supplier<NamedSelectQuery> query, Consumer<List<String>> problemsListener) {
+    QLEditorParser(Supplier<NamedSelectQuery> query, BiConsumer<SelectQueryInfo, List<String>> checkListener) {
         this.query = query;
-        this.problemsListener = problemsListener;
+        this.checkListener = checkListener;
     }
 
     @Override
@@ -73,20 +74,18 @@ class QLEditorParser extends AbstractParser {
         }
 
         List<String> problems = new ArrayList<>();
-        if (namedQuery.getQl() == null || namedQuery.getQl().isBlank()) {
+        SelectQueryInfo info = SelectQueryInfo.parse(namedQuery);
+        if (info.isEmpty()) {
             problems.add("The query is empty");
-        } else if (!namedQuery.isValid()) {
-            try {
-                namedQuery.getParsedQuery();
-            } catch (ExpressionException e) {
-                String message = TextPositions.firstLine(e.getUnlabeledMessage(), "Invalid query");
-                int[] range = errorRange(e, doc);
-                result.addNotice(new DefaultParserNotice(this, message, TextPositions.lineOf(doc, range[0]),
-                        range[0], range[1]));
-                problems.add(message);
-            }
+        } else if (!info.isValid()) {
+            ExpressionException e = info.error();
+            String message = TextPositions.firstLine(e.getUnlabeledMessage(), "Invalid query");
+            int[] range = errorRange(e, doc);
+            result.addNotice(new DefaultParserNotice(this, message, TextPositions.lineOf(doc, range[0]),
+                    range[0], range[1]));
+            problems.add(message);
         } else {
-            for (SelectQueryPaths.Problem problem : SelectQueryPaths.check(namedQuery)) {
+            for (SelectQueryPaths.Problem problem : SelectQueryPaths.check(info)) {
                 for (int[] range : occurrences(doc, problem.name())) {
                     result.addNotice(new DefaultParserNotice(this, problem.message(),
                             TextPositions.lineOf(doc, range[0]), range[0], range[1]));
@@ -95,7 +94,7 @@ class QLEditorParser extends AbstractParser {
             }
         }
 
-        problemsListener.accept(problems);
+        checkListener.accept(info, problems);
         return result;
     }
 

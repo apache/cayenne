@@ -21,11 +21,7 @@ package org.apache.cayenne.map;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.List;
-import java.util.Set;
 
-import org.apache.cayenne.exp.ExpressionException;
-import org.apache.cayenne.map.NamedSelectQuery.ResultKind;
 import org.apache.cayenne.project.EmptyProjectNodeVisitor;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.util.XMLEncoder;
@@ -35,87 +31,6 @@ import static org.apache.cayenne.map.NamedSelectQuery.renamePattern;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class NamedSelectQueryTest {
-
-    @Test
-    public void getRoot() {
-        DataMap map = new DataMap();
-        ObjEntity entity = new ObjEntity("A");
-        map.addObjEntity(entity);
-
-        NamedSelectQuery namedQuery = namedQuery("from A");
-        assertEquals("A", namedQuery.getRoot());
-
-        namedQuery.setDataMap(map);
-        assertSame(entity, namedQuery.getRoot());
-
-        // a String that can't be parsed has no root
-        namedQuery.setQl("from B where");
-        assertNull(namedQuery.getRoot());
-        assertFalse(namedQuery.isDbQuery());
-
-        namedQuery.setQl("from B");
-        assertEquals("B", namedQuery.getRoot());
-    }
-
-    @Test
-    public void getResultKind() {
-        DataMap map = new DataMap();
-        map.addObjEntity(new ObjEntity("A"));
-        map.addDbEntity(new DbEntity("T"));
-
-        NamedSelectQuery namedQuery = namedQuery("from A");
-        namedQuery.setDataMap(map);
-        assertEquals(ResultKind.ENTITY, namedQuery.getResultKind());
-
-        namedQuery.setFetchingDataRows(true);
-        assertEquals(ResultKind.DATA_ROW, namedQuery.getResultKind());
-        namedQuery.setFetchingDataRows(false);
-
-        namedQuery.setQl("from db:T");
-        assertEquals(ResultKind.DATA_ROW, namedQuery.getResultKind());
-
-        namedQuery.setQl("select a from A");
-        assertEquals(ResultKind.SCALAR, namedQuery.getResultKind());
-
-        namedQuery.setQl("select a, b from A");
-        assertEquals(ResultKind.ARRAY, namedQuery.getResultKind());
-
-        // the columns are known without the mapping
-        namedQuery.setQl("select a, b from B");
-        assertEquals(ResultKind.ARRAY, namedQuery.getResultKind());
-
-        // an unmapped root, or a String that can't be parsed
-        namedQuery.setQl("from B");
-        assertNull(namedQuery.getResultKind());
-        namedQuery.setQl("from A where");
-        assertNull(namedQuery.getResultKind());
-    }
-
-    @Test
-    public void setRoot() {
-        assertThrows(UnsupportedOperationException.class, () -> new NamedSelectQuery().setRoot("A"));
-    }
-
-    @Test
-    public void invalidQl() {
-        NamedSelectQuery namedQuery = namedQuery("from Artist where");
-        assertEquals("from Artist where", namedQuery.getQl());
-        assertFalse(namedQuery.isValid());
-        assertThrows(ExpressionException.class, namedQuery::getParsedQuery);
-
-        namedQuery.setQl("from Artist");
-        assertTrue(namedQuery.isValid());
-        assertNotNull(namedQuery.getParsedQuery());
-    }
-
-    @Test
-    public void getParameterNames() {
-        NamedSelectQuery namedQuery = namedQuery("""
-                from Artist where name like $name and dateOfBirth in ($d1, $d2)
-                    and exists (from Painting where price > $price and name like $name)""");
-        assertEquals(List.of("name", "d1", "d2", "price"), List.copyOf(namedQuery.getParameterNames()));
-        assertEquals(Set.of(), namedQuery("from Artist").getParameterNames());
-    }
 
     @Test
     public void encodeAsXML() {
@@ -165,7 +80,6 @@ public class NamedSelectQueryTest {
         NamedSelectQuery namedQuery = namedQuery("select name from  Artist\n  order by name");
         namedQuery.renameEntity(renamePattern("Artist", false), "Painter");
         assertEquals("select name from  Painter\n  order by name", namedQuery.getQl());
-        assertEquals("Painter", namedQuery.getParsedQuery().getEntityName());
     }
 
     @Test

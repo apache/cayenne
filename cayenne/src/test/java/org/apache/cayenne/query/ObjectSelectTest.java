@@ -59,7 +59,7 @@ public class ObjectSelectTest {
 	public void query_RootType() {
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class);
 		assertNotNull(q);
-		assertNull(q.getWhere());
+		assertNull(q.where);
 		assertFalse(resolve(q).fetchingDataRows());
 		assertEquals("from Artist", q.toQL());
 	}
@@ -68,7 +68,7 @@ public class ObjectSelectTest {
 	public void query_RootType_WithQualifier() {
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class).where(ExpressionFactory.matchExp("a", "A"));
 		assertNotNull(q);
-		assertEquals("a = \"A\"", q.getWhere().toString());
+		assertEquals("a = \"A\"", q.where.toString());
 		assertFalse(resolve(q).fetchingDataRows());
 		assertEquals("from Artist where a = \"A\"", q.toQL());
 	}
@@ -95,10 +95,10 @@ public class ObjectSelectTest {
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class);
 
 		q.where(ExpressionFactory.matchExp("a", 3));
-		assertEquals("a = 3", q.getWhere().toString());
+		assertEquals("a = 3", q.where.toString());
 
 		q.where(ExpressionFactory.matchExp("b", 4));
-		assertEquals("(a = 3) and (b = 4)", q.getWhere().toString());
+		assertEquals("(a = 3) and (b = 4)", q.where.toString());
 	}
 
 	@Test
@@ -107,10 +107,10 @@ public class ObjectSelectTest {
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class);
 
 		q.where(ExpressionFactory.matchExp("a", 3));
-		assertEquals("a = 3", q.getWhere().toString());
+		assertEquals("a = 3", q.where.toString());
 
 		q.and(ExpressionFactory.matchExp("b", 4), ExpressionFactory.greaterExp("c", 5));
-		assertEquals("(a = 3) and (b = 4) and (c > 5)", q.getWhere().toString());
+		assertEquals("(a = 3) and (b = 4) and (c > 5)", q.where.toString());
 	}
 
 	@Test
@@ -119,13 +119,13 @@ public class ObjectSelectTest {
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class);
 
 		q.where(ExpressionFactory.matchExp("a", 3));
-		assertEquals("a = 3", q.getWhere().toString());
+		assertEquals("a = 3", q.where.toString());
 
 		Collection<Expression> exps = Arrays.asList(ExpressionFactory.matchExp("b", 4),
 				ExpressionFactory.greaterExp("c", 5));
 
 		q.and(exps);
-		assertEquals("(a = 3) and (b = 4) and (c > 5)", q.getWhere().toString());
+		assertEquals("(a = 3) and (b = 4) and (c > 5)", q.where.toString());
 	}
 
 	@Test
@@ -134,10 +134,10 @@ public class ObjectSelectTest {
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class);
 
 		q.where(ExpressionFactory.matchExp("a", 3));
-		assertEquals("a = 3", q.getWhere().toString());
+		assertEquals("a = 3", q.where.toString());
 
 		q.and();
-		assertEquals("a = 3", q.getWhere().toString());
+		assertEquals("a = 3", q.where.toString());
 	}
 
 	@Test
@@ -146,10 +146,10 @@ public class ObjectSelectTest {
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class);
 
 		q.where(ExpressionFactory.matchExp("a", 3));
-		assertEquals("a = 3", q.getWhere().toString());
+		assertEquals("a = 3", q.where.toString());
 
 		q.and(new Expression[0]);
-		assertEquals("a = 3", q.getWhere().toString());
+		assertEquals("a = 3", q.where.toString());
 	}
 
 	@Test
@@ -158,10 +158,10 @@ public class ObjectSelectTest {
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class);
 
 		q.where(ExpressionFactory.matchExp("a", 3));
-		assertEquals("a = 3", q.getWhere().toString());
+		assertEquals("a = 3", q.where.toString());
 
 		q.and(Collections.<Expression> emptyList());
-		assertEquals("a = 3", q.getWhere().toString());
+		assertEquals("a = 3", q.where.toString());
 	}
 
 	@Test
@@ -170,10 +170,10 @@ public class ObjectSelectTest {
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class);
 
 		q.where(ExpressionFactory.matchExp("a", 3));
-		assertEquals("a = 3", q.getWhere().toString());
+		assertEquals("a = 3", q.where.toString());
 
 		q.or(ExpressionFactory.matchExp("b", 4), ExpressionFactory.greaterExp("c", 5));
-		assertEquals("(a = 3) or (b = 4) or (c > 5)", q.getWhere().toString());
+		assertEquals("(a = 3) or (b = 4) or (c > 5)", q.where.toString());
 	}
 
 	@Test
@@ -182,13 +182,13 @@ public class ObjectSelectTest {
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class);
 
 		q.where(ExpressionFactory.matchExp("a", 3));
-		assertEquals("a = 3", q.getWhere().toString());
+		assertEquals("a = 3", q.where.toString());
 
 		Collection<Expression> exps = Arrays.asList(ExpressionFactory.matchExp("b", 4),
 				ExpressionFactory.greaterExp("c", 5));
 
 		q.or(exps);
-		assertEquals("(a = 3) or (b = 4) or (c > 5)", q.getWhere().toString());
+		assertEquals("(a = 3) or (b = 4) or (c > 5)", q.where.toString());
 	}
 
 	@Test
@@ -199,14 +199,14 @@ public class ObjectSelectTest {
 		Ordering o1 = new Ordering("x");
 		q.orderBy(o1);
 
-		Object[] result1 = q.getOrderings().toArray();
+		Object[] result1 = q.orderings.toArray();
 		assertEquals(1, result1.length);
 		assertSame(o1, result1[0]);
 
 		Ordering o2 = new Ordering("y");
 		q.orderBy(o2);
 
-		Object[] result2 = q.getOrderings().toArray();
+		Object[] result2 = q.orderings.toArray();
 		assertEquals(2, result2.length);
 		assertSame(o1, result2[0]);
 		assertSame(o2, result2[1]);
@@ -220,14 +220,14 @@ public class ObjectSelectTest {
 		Ordering o1 = new Ordering("x");
 		q.orderBy(Collections.singletonList(o1));
 
-		Object[] result1 = q.getOrderings().toArray();
+		Object[] result1 = q.orderings.toArray();
 		assertEquals(1, result1.length);
 		assertSame(o1, result1[0]);
 
 		Ordering o2 = new Ordering("y");
 		q.orderBy(Collections.singletonList(o2));
 
-		Object[] result2 = q.getOrderings().toArray();
+		Object[] result2 = q.orderings.toArray();
 		assertEquals(2, result2.length);
 		assertSame(o1, result2[0]);
 		assertSame(o2, result2[1]);
@@ -240,13 +240,13 @@ public class ObjectSelectTest {
 
 		q.orderBy("x", SortOrder.ASCENDING_INSENSITIVE);
 
-		Object[] result1 = q.getOrderings().toArray();
+		Object[] result1 = q.orderings.toArray();
 		assertEquals(1, result1.length);
 		assertEquals(new Ordering("x", SortOrder.ASCENDING_INSENSITIVE), result1[0]);
 
 		q.orderBy("y", SortOrder.DESCENDING);
 
-		Object[] result2 = q.getOrderings().toArray();
+		Object[] result2 = q.orderings.toArray();
 		assertEquals(2, result2.length);
 		assertEquals(new Ordering("y", SortOrder.DESCENDING), result2[1]);
 	}
@@ -258,13 +258,13 @@ public class ObjectSelectTest {
 
 		q.orderBy("x");
 
-		Object[] result1 = q.getOrderings().toArray();
+		Object[] result1 = q.orderings.toArray();
 		assertEquals(1, result1.length);
 		assertEquals(new Ordering("x", SortOrder.ASCENDING), result1[0]);
 
 		q.orderBy("y");
 
-		Object[] result2 = q.getOrderings().toArray();
+		Object[] result2 = q.orderings.toArray();
 		assertEquals(2, result2.length);
 		assertEquals(new Ordering("x", SortOrder.ASCENDING), result2[0]);
 		assertEquals(new Ordering("y", SortOrder.ASCENDING), result2[1]);
@@ -278,7 +278,7 @@ public class ObjectSelectTest {
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class);
 		q.prefetch(root);
 
-		PrefetchTreeNode root1 = q.getPrefetches();
+		PrefetchTreeNode root1 = q.prefetches;
 		assertNotNull(root1);
 		assertNotNull(root1.getNode("a.b"));
 		assertEquals(PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS, root1.getNode("a.b").getSemantics());
@@ -289,13 +289,13 @@ public class ObjectSelectTest {
 
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class);
 		q.prefetch("a.b", PrefetchTreeNode.DISJOINT_PREFETCH_SEMANTICS);
-		PrefetchTreeNode root1 = q.getPrefetches();
+		PrefetchTreeNode root1 = q.prefetches;
 
 		assertNotNull(root1);
 		assertNotNull(root1.getNode("a.b"));
 
 		q.prefetch("a.c", PrefetchTreeNode.DISJOINT_PREFETCH_SEMANTICS);
-		PrefetchTreeNode root2 = q.getPrefetches();
+		PrefetchTreeNode root2 = q.prefetches;
 
 		assertNotNull(root2);
 		assertNotNull(root2.getNode("a.c"));
@@ -310,7 +310,7 @@ public class ObjectSelectTest {
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class);
 		q.prefetch(root);
 
-		PrefetchTreeNode root1 = q.getPrefetches();
+		PrefetchTreeNode root1 = q.prefetches;
 		assertNotNull(root1);
 		assertNotNull(root1.getNode("a.b"));
 		assertEquals(PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS, root1.getNode("a.b").getSemantics());
@@ -318,7 +318,7 @@ public class ObjectSelectTest {
 		PrefetchTreeNode subRoot = PrefetchTreeNode.withPath("a.b.c", PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
 		q.prefetch(subRoot);
 
-		root1 = q.getPrefetches();
+		root1 = q.prefetches;
 		assertNotNull(root1);
 		assertNotNull(root1.getNode("a.b"));
 		assertEquals(PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS, root1.getNode("a.b").getSemantics());

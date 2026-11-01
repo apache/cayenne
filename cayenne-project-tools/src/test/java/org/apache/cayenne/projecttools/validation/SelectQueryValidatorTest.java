@@ -111,12 +111,19 @@ public class SelectQueryValidatorTest {
     }
 
     private List<String> validate(String ql) {
+        return validate(query(ql));
+    }
+
+    private NamedSelectQuery query(String ql) {
         NamedSelectQuery query = new NamedSelectQuery();
         query.setName("q");
         query.setQl(ql);
         map.removeNamedQuery("q");
         map.addNamedQuery(query);
+        return query;
+    }
 
+    private List<String> validate(NamedSelectQuery query) {
         return new DefaultProjectValidator().validate(query).getFailures().stream()
                 .map(ValidationFailure::getDescription)
                 .toList();

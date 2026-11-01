@@ -105,10 +105,8 @@ class QLSelectBuilder {
         prefetchSemantics.add(semantics);
     }
 
-    ObjectSelect<?> build() {
-        ObjectSelect<?> query = dbRoot
-                ? ObjectSelect.dbQuery(entityName)
-                : ObjectSelect.query(Object.class, entityName);
+    ParsedObjectSelect build() {
+        ParsedObjectSelect query = new ParsedObjectSelect(entityName, dbRoot);
 
         if (!selectingRoot) {
             selectColumns(query);

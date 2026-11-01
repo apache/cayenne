@@ -117,8 +117,7 @@ public class ProcedureQueryView extends ProjectPanel {
         queryRoot.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent event) {
-                NamedQuery query = session.getSelectedQuery();
-                if (query != null) {
+                if (session.getSelectedQuery() instanceof NamedProcedureQuery query) {
                     query.setRoot(queryRoot.getModel().getSelectedItem());
                     session.fireQueryEvent(QueryEvent.ofChange(this, query));
                 }

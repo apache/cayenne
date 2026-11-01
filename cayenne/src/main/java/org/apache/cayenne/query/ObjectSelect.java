@@ -82,7 +82,7 @@ public class ObjectSelect<T> implements Query<T> {
 
     protected Expression where;
     protected Expression having;
-    protected boolean havingExpressionIsActive = false;
+    protected boolean havingExpressionIsActive;
 
     protected Collection<Ordering> orderings;
     protected boolean distinct;
@@ -982,64 +982,6 @@ public class ObjectSelect<T> implements Query<T> {
     @Override
     public T selectFirst(ObjectContext context) {
         return context.selectFirst(limit(1));
-    }
-
-    public String getEntityName() {
-        return entityName;
-    }
-
-    public String getDbEntityName() {
-        return dbEntityName;
-    }
-
-    /**
-     * Returns a WHERE clause Expression of this query.
-     */
-    public Expression getWhere() {
-        return where;
-    }
-
-    /**
-     * Returns a HAVING clause Expression of this query.
-     */
-    public Expression getHaving() {
-        return having;
-    }
-
-    public Collection<Ordering> getOrderings() {
-        return orderings;
-    }
-
-    public PrefetchTreeNode getPrefetches() {
-        return prefetches;
-    }
-
-    /**
-     * Returns the columns selected by this query, or null if it selects the root objects.
-     *
-     * @since 4.2
-     */
-    public Collection<Property<?>> getColumns() {
-        return columns;
-    }
-
-    /**
-     * Returns whether this query selects columns rather than the root objects.
-     *
-     * @since 6.0
-     */
-    public boolean isColumnQuery() {
-        return columns != null;
-    }
-
-    /**
-     * Returns whether this query selects a single column, so that each result row is the value of that column
-     * rather than an {@code Object[]}. Always false for a query of the root objects.
-     *
-     * @since 6.0
-     */
-    public boolean isSingleColumn() {
-        return columns != null && singleColumn;
     }
 
     protected Expression getActiveExpression() {

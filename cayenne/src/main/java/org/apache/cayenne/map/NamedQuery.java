@@ -43,7 +43,6 @@ public abstract sealed class NamedQuery implements ProjectNode, XMLSerializable
 
     protected String name;
     protected DataMap dataMap;
-    protected Object root;
     protected QueryCacheStrategy cacheStrategy;
     protected String cacheGroup;
     protected boolean fetchingDataRows;
@@ -71,14 +70,6 @@ public abstract sealed class NamedQuery implements ProjectNode, XMLSerializable
 
     public void setDataMap(DataMap dataMap) {
         this.dataMap = dataMap;
-    }
-
-    public Object getRoot() {
-        return root;
-    }
-
-    public void setRoot(Object root) {
-        this.root = root;
     }
 
     public int getPageSize() {

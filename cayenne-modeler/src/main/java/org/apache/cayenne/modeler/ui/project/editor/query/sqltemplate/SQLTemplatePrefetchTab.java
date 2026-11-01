@@ -112,18 +112,18 @@ public class SQLTemplatePrefetchTab extends ProjectPanel {
     protected void initFromModel() {
         NamedQuery query = session.getSelectedQuery();
 
-        if (!(query instanceof NamedSQLQuery)) {
+        if (!(query instanceof NamedSQLQuery sqlQuery)) {
             processInvalidModel("Unknown query.");
             return;
         }
 
-        if (!(query.getRoot() instanceof Entity)) {
+        if (!(sqlQuery.getRoot() instanceof Entity<?, ?, ?> root)) {
             processInvalidModel("SQLTemplate has no root set.");
             return;
         }
 
-        this.sqlTemplate = (NamedSQLQuery) query;
-        browser.setModel(createBrowserModel((Entity<?,?,?>) sqlTemplate.getRoot()));
+        this.sqlTemplate = sqlQuery;
+        browser.setModel(createBrowserModel(root));
 
         table.setModel(createTableModel());
         setUpPrefetchBox(table.getColumnModel().getColumn(2));

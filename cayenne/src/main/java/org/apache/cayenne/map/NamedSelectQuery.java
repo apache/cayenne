@@ -18,29 +18,21 @@
  ****************************************************************/
 package org.apache.cayenne.map;
 
-import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.ExpressionException;
-import org.apache.cayenne.exp.ExpressionParameter;
-import org.apache.cayenne.exp.SubqueryExp;
-import org.apache.cayenne.exp.TraversalHandler;
-import org.apache.cayenne.exp.property.Property;
 import org.apache.cayenne.project.ProjectNodeVisitor;
-import org.apache.cayenne.query.MappedQuery;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.util.XMLEncoder;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
  * A mapped select query, defined by a String in the syntax of {@link ObjectSelect#parse(String, Object...)}.
- * The root of the query is defined by its "from" clause, so it is null while the String can't be parsed.
- * The settings that the String has no syntax for (caching, page size, etc.) are the properties of the
- * named query.
+ * The settings that the String has no syntax for (caching, page size, etc.) are the properties of the named query.
+ * <p>
+ * The String is stored as is and is never parsed here: the runtime parses it when the query is run, and the tools
+ * that inspect the mapping parse it on their own. Unlike the other named queries, a select query has no root of its
+ * own: its root entity is the "from" clause of the String.
  *
  * @since 4.0
  */
@@ -50,10 +42,6 @@ public final class NamedSelectQuery extends NamedQuery {
     private static final String QUOTED_STRING = "'(?:[^'\\\\]|\\\\.)*'|\"(?:[^\"\\\\]|\\\\.)*\"";
 
     private String ql;
-
-    // the parsed "ql", or the error of parsing it, both lazily set. Inspected, but never run, as it is not a copy
-    private ObjectSelect<?> parsed;
-    private ExpressionException parseError;
 
     /**
      * Returns the query String, exactly as it was set.
@@ -65,120 +53,12 @@ public final class NamedSelectQuery extends NamedQuery {
     }
 
     /**
-     * Sets the query String. The String is stored as is, and is not validated until the query is parsed.
+     * Sets the query String. The String is stored as is, and is not validated.
      *
      * @since 5.0
      */
     public void setQl(String ql) {
         this.ql = ql;
-        this.parsed = null;
-        this.parseError = null;
-    }
-
-    /**
-     * Returns whether the query String can be parsed.
-     *
-     * @since 5.0
-     */
-    public boolean isValid() {
-        return parsedOrNull() != null;
-    }
-
-    /**
-     * Returns the parsed query String with its "$name" parameters unbound. The returned query is shared and must not
-     * be modified or run, use {@link MappedQuery} to run the query.
-     *
-     * @throws ExpressionException if the String is empty or can't be parsed
-     * @since 5.0
-     */
-    public ObjectSelect<?> getParsedQuery() {
-        ObjectSelect<?> query = parsedOrNull();
-        if (query == null) {
-            throw parseError;
-        }
-        return query;
-    }
-
-    private ObjectSelect<?> parsedOrNull() {
-        if (parsed == null && parseError == null) {
-            if (ql == null || ql.isBlank()) {
-                parseError = new ExpressionException("The query is empty");
-            } else {
-                try {
-                    parsed = ObjectSelect.parse(ql);
-                } catch (ExpressionException e) {
-                    parseError = e;
-                }
-            }
-        }
-        return parsed;
-    }
-
-    /**
-     * Returns whether this query selects columns, and not the root objects.
-     *
-     * @since 5.0
-     */
-    public boolean isColumnQuery() {
-        ObjectSelect<?> query = parsedOrNull();
-        return query != null && query.isColumnQuery();
-    }
-
-    /**
-     * Returns whether this query is rooted in a DbEntity.
-     *
-     * @since 5.0
-     */
-    public boolean isDbQuery() {
-        ObjectSelect<?> query = parsedOrNull();
-        return query != null && query.getDbEntityName() != null;
-    }
-
-    /**
-     * Returns the kind of the objects that the query fetches.
-     *
-     * @since 5.0
-     */
-    public ResultKind getResultKind() {
-        ObjectSelect<?> query = parsedOrNull();
-        if (query != null && query.isColumnQuery()) {
-            return query.isSingleColumn() ? ResultKind.SCALAR : ResultKind.ARRAY;
-        }
-
-        return switch (getRoot()) {
-            case ObjEntity ignored when !fetchingDataRows -> ResultKind.ENTITY;
-            case ObjEntity ignored -> ResultKind.DATA_ROW;
-            case DbEntity ignored -> ResultKind.DATA_ROW;
-            case null, default -> null;
-        };
-    }
-
-    /**
-     * Returns the names of the "$name" parameters of the query, in the order of their first occurrence.
-     *
-     * @throws ExpressionException if the query String can't be parsed
-     * @since 5.0
-     */
-    public Set<String> getParameterNames() {
-        Set<String> names = new LinkedHashSet<>();
-        collectParameterNames(getParsedQuery(), names);
-        return names;
-    }
-
-    private static void collectParameterNames(ObjectSelect<?> query, Set<String> names) {
-        ParameterCollector collector = new ParameterCollector(names);
-        if (query.getColumns() != null) {
-            for (Property<?> column : query.getColumns()) {
-                collector.collect(column.getExpression());
-            }
-        }
-        collector.collect(query.getWhere());
-        collector.collect(query.getHaving());
-        if (query.getOrderings() != null) {
-            for (Ordering ordering : query.getOrderings()) {
-                collector.collect(ordering.getSortSpec());
-            }
-        }
     }
 
     /**
@@ -207,39 +87,8 @@ public final class NamedSelectQuery extends NamedQuery {
         }
     }
 
-    /**
-     * Returns the root of the query defined by its "from" clause: an ObjEntity, a DbEntity or, if no such entity is
-     * mapped, its name. Returns null if the query String can't be parsed.
-     */
-    @Override
-    public Object getRoot() {
-        ObjectSelect<?> query = parsedOrNull();
-        if (query == null) {
-            return null;
-        }
-
-        boolean dbRoot = query.getDbEntityName() != null;
-        String rootName = dbRoot ? query.getDbEntityName() : query.getEntityName();
-        if (dataMap == null) {
-            return rootName;
-        }
-
-        Object entity = dbRoot ? dataMap.getDbEntity(rootName) : dataMap.getObjEntity(rootName);
-        return entity != null ? entity : rootName;
-    }
-
-    /**
-     * Not supported, as the root is defined by the "from" clause of the query String.
-     */
-    @Override
-    public void setRoot(Object root) {
-        throw new UnsupportedOperationException("The root of a select query is defined by its 'from' clause");
-    }
-
     @Override
     public void encodeAsXML(XMLEncoder encoder, ProjectNodeVisitor<?> delegate) {
-        // the String defines the root and all the clauses of the query, the rest of the properties are stored
-        // separately
         encoder.start("objectQuery")
                 .attribute("name", getName())
                 .attribute("cacheStrategy", cacheStrategy != QueryCacheStrategy.NO_CACHE ? cacheStrategy.name() : null)
@@ -255,66 +104,5 @@ public final class NamedSelectQuery extends NamedQuery {
 
         delegate.visitQuery(this);
         encoder.end();
-    }
-
-    /**
-     * The kind of the objects that a select query fetches, see {@link #getResultKind()}.
-     *
-     * @since 5.0
-     */
-    public enum ResultKind {
-
-        /**
-         * The persistent objects of the root ObjEntity.
-         */
-        ENTITY,
-
-        /**
-         * DataRows, for a query rooted in a DbEntity or fetching DataRows.
-         */
-        DATA_ROW,
-
-        /**
-         * The values of the single column of a column query.
-         */
-        SCALAR,
-
-        /**
-         * The arrays of the values of the multiple columns of a column query.
-         */
-        ARRAY
-    }
-
-    // collects the names of the unbound "$name" parameters of the expressions, including those of the subqueries
-    private record ParameterCollector(Set<String> names) implements TraversalHandler {
-
-        void collect(Expression expression) {
-            if (expression != null) {
-                expression.traverse(this);
-            }
-        }
-
-        @Override
-        public void startNode(Expression node, Expression parentNode) {
-            // a subquery keeps its select out of the expression tree
-            if (node instanceof SubqueryExp subquery && subquery.getQuery() != null) {
-                collectParameterNames(subquery.getQuery(), names);
-            }
-        }
-
-        @Override
-        public void objectNode(Object leaf, Expression parentNode) {
-            switch (leaf) {
-                case ExpressionParameter parameter -> names.add(parameter.getName());
-                // a list of values is stored as a single array operand
-                case Object[] values -> {
-                    for (Object value : values) {
-                        objectNode(value, parentNode);
-                    }
-                }
-                case null, default -> {
-                }
-            }
-        }
     }
 }

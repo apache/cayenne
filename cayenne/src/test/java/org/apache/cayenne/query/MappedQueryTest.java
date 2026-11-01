@@ -31,6 +31,7 @@ import org.apache.cayenne.map.NamedSQLQuery;
 import org.apache.cayenne.map.NamedSelectQuery;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
+import org.apache.cayenne.ql.ParsedObjectSelect;
 import org.apache.cayenne.query.resolved.ResolvedProcedure;
 import org.apache.cayenne.query.resolved.ResolvedQuery;
 import org.apache.cayenne.query.resolved.ResolvedSQL;
@@ -103,15 +104,14 @@ public class MappedQueryTest {
     @Test
     public void select() {
         ObjectSelect<?> query = (ObjectSelect<?>) build(selectQuery("from FakeRoot where abc = 5"));
-        assertEquals("FakeRoot", query.getEntityName());
-        assertEquals(ExpressionFactory.exp("abc = 5"), query.getWhere());
+        assertEquals("FakeRoot", query.entityName);
+        assertEquals(ExpressionFactory.exp("abc = 5"), query.where);
     }
 
     @Test
     public void selectIsACopy() {
         NamedSelectQuery namedQuery = selectQuery("from FakeRoot");
         assertNotSame(build(namedQuery), build(namedQuery));
-        assertNotSame(namedQuery.getParsedQuery(), build(namedQuery));
     }
 
     @Test
@@ -120,14 +120,14 @@ public class MappedQueryTest {
 
         // parameters with no matching value are pruned from the qualifier
         ObjectSelect<?> query = (ObjectSelect<?>) build(namedQuery, Map.of("a", 5));
-        assertEquals(ExpressionFactory.exp("abc = 5"), query.getWhere());
+        assertEquals(ExpressionFactory.exp("abc = 5"), query.where);
     }
 
     @Test
     public void selectWithoutParameters() {
         NamedSelectQuery namedQuery = selectQuery("from FakeRoot where abc = $a");
-        assertNull(((ObjectSelect<?>) build(namedQuery)).getWhere());
-        assertEquals(ExpressionFactory.exp("abc = $a"), namedQuery.getParsedQuery().getWhere());
+        assertNull(((ObjectSelect<?>) build(namedQuery)).where);
+        assertEquals(ExpressionFactory.exp("abc = $a"), ParsedObjectSelect.parse(namedQuery.getQl()).where);
     }
 
     @Test
@@ -136,12 +136,12 @@ public class MappedQueryTest {
                 "from Artist where exists (from Painting where artist = enclosing(self) and price > $price)");
 
         ObjectSelect<?> boundQuery = (ObjectSelect<?>) build(namedQuery, Map.of("price", 5));
-        SubqueryExp bound = (SubqueryExp) boundQuery.getWhere().getOperand(0);
-        assertEquals(ExpressionFactory.exp("artist = enclosing(self) and price > 5"), bound.getQuery().getWhere());
+        SubqueryExp bound = (SubqueryExp) boundQuery.where.getOperand(0);
+        assertEquals(ExpressionFactory.exp("artist = enclosing(self) and price > 5"), bound.getQuery().where);
 
         ObjectSelect<?> prunedQuery = (ObjectSelect<?>) build(namedQuery);
-        SubqueryExp pruned = (SubqueryExp) prunedQuery.getWhere().getOperand(0);
-        assertEquals(ExpressionFactory.exp("artist = enclosing(self)"), pruned.getQuery().getWhere());
+        SubqueryExp pruned = (SubqueryExp) prunedQuery.where.getOperand(0);
+        assertEquals(ExpressionFactory.exp("artist = enclosing(self)"), pruned.getQuery().where);
     }
 
     @Test
@@ -151,10 +151,8 @@ public class MappedQueryTest {
         namedQuery.setFetchingDataRows(true);
 
         ObjectSelect<?> query = (ObjectSelect<?>) build(namedQuery, Map.of("min", 2));
-        assertTrue(query.isColumnQuery());
-        assertEquals(ExpressionFactory.exp("count(*) > 2"), query.getHaving());
-        assertTrue(namedQuery.isColumnQuery());
-        assertFalse(namedQuery.isDbQuery());
+        assertNotNull(query.columns);
+        assertEquals(ExpressionFactory.exp("count(*) > 2"), query.having);
     }
 
     @Test
@@ -167,10 +165,8 @@ public class MappedQueryTest {
         namedQuery.setDataMap(map);
 
         ObjectSelect<?> query = (ObjectSelect<?>) build(namedQuery);
-        assertEquals("ARTIST", query.getDbEntityName());
+        assertEquals("ARTIST", query.dbEntityName);
         assertTrue(query.resolve(new EntityResolver(List.of(map))).fetchingDataRows());
-        assertTrue(namedQuery.isDbQuery());
-        assertSame(entity, namedQuery.getRoot());
     }
 
     @Test

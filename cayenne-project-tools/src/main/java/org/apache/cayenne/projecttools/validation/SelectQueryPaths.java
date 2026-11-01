@@ -36,15 +36,15 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Relationship;
-import org.apache.cayenne.map.NamedSelectQuery;
-import org.apache.cayenne.query.ObjectSelect;
+import org.apache.cayenne.projecttools.SelectQueryInfo;
+import org.apache.cayenne.ql.ParsedObjectSelect;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.PrefetchTreeNode;
 
 /**
- * Checks the entity names and paths of a parsed {@link NamedSelectQuery} against the mapping. Used by the project
- * validator, and by the Modeler to mark the problems in the query String. The walk of the query that resolves the
- * paths is available on its own, see {@link #walk(DataMap, ObjectSelect, PathVisitor)}.
+ * Checks the entity names and paths of a parsed select query against the mapping. Used by the project validator, and
+ * by the Modeler to mark the problems in the query String. The walk of the query that resolves the paths is
+ * available on its own, see {@link #walk(DataMap, ParsedObjectSelect, PathVisitor)}.
  *
  * @since 5.0
  */
@@ -72,13 +72,13 @@ public final class SelectQueryPaths {
     }
 
     /**
-     * A callback of {@link #walk(DataMap, ObjectSelect, PathVisitor)}.
+     * A callback of {@link #walk(DataMap, ParsedObjectSelect, PathVisitor)}.
      */
     public interface PathVisitor {
 
         void visitPath(PathRef path);
 
-        default void visitUnknownRoot(ObjectSelect<?> query) {
+        default void visitUnknownRoot(ParsedObjectSelect query) {
         }
     }
 
@@ -100,14 +100,14 @@ public final class SelectQueryPaths {
      * Returns the problems with the entity names and paths of a query, empty if there are none, or if the query
      * String can't be parsed, or the query is not in a DataMap.
      */
-    public static List<Problem> check(NamedSelectQuery query) {
-        if (query.getDataMap() == null || !query.isValid()) {
+    public static List<Problem> check(SelectQueryInfo query) {
+        if (query.query().getDataMap() == null || !query.isValid()) {
             return List.of();
         }
 
         List<Problem> problems = new ArrayList<>();
-        ObjectSelect<?> parsed = query.getParsedQuery();
-        Entity<?, ?, ?> root = walk(query.getDataMap(), parsed, new PathVisitor() {
+        ParsedObjectSelect parsed = query.parsed();
+        Entity<?, ?, ?> root = walk(query.query().getDataMap(), parsed, new PathVisitor() {
 
             @Override
             public void visitPath(PathRef path) {
@@ -118,7 +118,7 @@ public final class SelectQueryPaths {
             }
 
             @Override
-            public void visitUnknownRoot(ObjectSelect<?> unknown) {
+            public void visitUnknownRoot(ParsedObjectSelect unknown) {
                 problems.add(unknown.getDbEntityName() != null
                         ? new Problem(unknown.getDbEntityName(), Clause.FROM,
                                 "Unknown DbEntity '" + unknown.getDbEntityName() + "'")
@@ -144,8 +144,8 @@ public final class SelectQueryPaths {
      *
      * @return the root entity of the query, or null if it is not mapped
      */
-    public static Entity<?, ?, ?> walk(DataMap dataMap, ObjectSelect<?> query, PathVisitor visitor) {
-        Entity<?, ?, ?> entity = query.getDbEntityName() != null
+    public static Entity<?, ?, ?> walk(DataMap dataMap, ParsedObjectSelect query, PathVisitor visitor) {
+        Entity<?, ?, ?> entity = query.isDbQuery()
                 ? dataMap.getDbEntity(query.getDbEntityName())
                 : dataMap.getObjEntity(query.getEntityName());
         if (entity == null) {
@@ -157,7 +157,7 @@ public final class SelectQueryPaths {
         return entity;
     }
 
-    private void walkClauses(ObjectSelect<?> query) {
+    private void walkClauses(ParsedObjectSelect query) {
         if (query.getColumns() != null) {
             for (Property<?> column : query.getColumns()) {
                 PathRef path = walkExpression(column.getExpression(), null, Clause.SELECT);
@@ -170,10 +170,8 @@ public final class SelectQueryPaths {
         walkExpression(query.getWhere(), null, Clause.WHERE);
         walkExpression(query.getHaving(), null, Clause.HAVING);
 
-        if (query.getOrderings() != null) {
-            for (Ordering ordering : query.getOrderings()) {
-                walkExpression(ordering.getSortSpec(), null, Clause.ORDER_BY);
-            }
+        for (Ordering ordering : query.getOrderings()) {
+            walkExpression(ordering.getSortSpec(), null, Clause.ORDER_BY);
         }
     }
 
@@ -186,9 +184,10 @@ public final class SelectQueryPaths {
         PathRef path = switch (expression) {
             // the path of an enclosing object is relative to the outer query, that is walked on its own
             case EnclosingObjectExp ignored -> null;
+            // a subquery of a parsed select is a parsed select too
             case SubqueryExp subquery -> {
-                if (subquery.getQuery() != null) {
-                    walk(dataMap, subquery.getQuery(), visitor);
+                if (subquery.getQuery() instanceof ParsedObjectSelect nested) {
+                    walk(dataMap, nested, visitor);
                 }
                 yield null;
             }

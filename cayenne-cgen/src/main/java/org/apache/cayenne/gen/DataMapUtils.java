@@ -27,16 +27,16 @@ import org.apache.cayenne.exp.ListExp;
 import org.apache.cayenne.exp.NotInExp;
 import org.apache.cayenne.exp.ObjPathExp;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.NamedQuery;
 import org.apache.cayenne.map.NamedSelectQuery;
+import org.apache.cayenne.projecttools.SelectQueryInfo;
 import org.apache.cayenne.projecttools.validation.SelectQueryPaths;
 import org.apache.cayenne.projecttools.validation.SelectQueryPaths.Clause;
 import org.apache.cayenne.projecttools.validation.SelectQueryPaths.PathRef;
-import org.apache.cayenne.query.ObjectSelect;
+import org.apache.cayenne.ql.ParsedObjectSelect;
 import org.apache.cayenne.util.Util;
 
 import java.util.ArrayList;
@@ -46,6 +46,7 @@ import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.lang.model.SourceVersion;
@@ -62,9 +63,8 @@ public class DataMapUtils {
 	// the names of the variables of the generated query methods
 	private static final Set<String> RESERVED_NAMES = Set.of("context", "query");
 
-	// the parameters are requested many times per query by the templates, the identity of the parsed query detects a
-	// change of the query String
-	private final Map<NamedSelectQuery, CachedParameters> parameters = new IdentityHashMap<>();
+	// the queries are inspected many times each by the templates, so each is parsed once per query String
+	private final Map<NamedSelectQuery, CachedInfo> infos = new IdentityHashMap<>();
 
 	/**
 	 * Return valid method name based on query name (replace all illegal
@@ -84,13 +84,7 @@ public class DataMapUtils {
 	 * @since 5.0
 	 */
 	public List<QueryParameter> getParameters(NamedSelectQuery query) {
-		ObjectSelect<?> parsed = query.isValid() ? query.getParsedQuery() : null;
-		CachedParameters cached = parameters.get(query);
-		if (cached == null || cached.parsed() != parsed) {
-			cached = new CachedParameters(parsed, parsed != null ? computeParameters(query) : List.of());
-			parameters.put(query, cached);
-		}
-		return cached.parameters();
+		return info(query).parameters();
 	}
 
 	/**
@@ -98,11 +92,8 @@ public class DataMapUtils {
 	 * and the entity names and paths of all its clauses can be resolved.
 	 */
 	public Boolean isValidParameterNames(NamedSelectQuery query) {
-		if (!query.isValid() || !(query.getRoot() instanceof ObjEntity || query.getRoot() instanceof DbEntity)) {
-			return false;
-		}
-
-		return SelectQueryPaths.check(query).isEmpty();
+		SelectQueryInfo info = info(query).info();
+		return info.isValid() && info.root() != null && SelectQueryPaths.check(info).isEmpty();
 	}
 
 	public boolean hasParameters(NamedSelectQuery query) {
@@ -116,8 +107,9 @@ public class DataMapUtils {
 	 * @since 5.0
 	 */
 	public String getResultType(NamedSelectQuery query) {
-		return switch (query.getResultKind()) {
-			case ENTITY -> ((ObjEntity) query.getRoot()).getClassName();
+		SelectQueryInfo info = info(query).info();
+		return switch (info.resultKind()) {
+			case ENTITY -> ((ObjEntity) info.root()).getClassName();
 			case SCALAR -> OBJECT_TYPE;
 			case ARRAY -> Object[].class.getCanonicalName();
 			case DATA_ROW -> DataRow.class.getName();
@@ -126,13 +118,23 @@ public class DataMapUtils {
 		};
 	}
 
-	private List<QueryParameter> computeParameters(NamedSelectQuery query) {
-		Map<String, String> types = parameterTypes(query.getDataMap(), query.getParsedQuery());
+	private CachedInfo info(NamedSelectQuery query) {
+		CachedInfo cached = infos.get(query);
+		if (cached == null || !Objects.equals(cached.ql(), query.getQl())) {
+			SelectQueryInfo info = SelectQueryInfo.parse(query);
+			cached = new CachedInfo(query.getQl(), info, info.isValid() ? computeParameters(info) : List.of());
+			infos.put(query, cached);
+		}
+		return cached;
+	}
+
+	private List<QueryParameter> computeParameters(SelectQueryInfo info) {
+		Map<String, String> types = parameterTypes(info.query().getDataMap(), info.parsed());
 
 		// the Java names must be unique and must not clash with the keywords and the variables of the generated method
 		Set<String> javaNames = new HashSet<>(RESERVED_NAMES);
 		List<QueryParameter> result = new ArrayList<>();
-		for (String name : query.getParameterNames()) {
+		for (String name : info.parameterNames()) {
 			String javaName = uniqueJavaName(name, javaNames);
 			result.add(new QueryParameter(name, javaName, types.getOrDefault(name, OBJECT_TYPE)));
 		}
@@ -152,7 +154,7 @@ public class DataMapUtils {
 		return javaName;
 	}
 
-	private static Map<String, String> parameterTypes(DataMap dataMap, ObjectSelect<?> query) {
+	private static Map<String, String> parameterTypes(DataMap dataMap, ParsedObjectSelect query) {
 		Map<String, String> types = new HashMap<>();
 		if (dataMap == null) {
 			return types;
@@ -218,7 +220,8 @@ public class DataMapUtils {
 		return OBJECT_TYPE.equals(type2) ? type1 : OBJECT_TYPE;
 	}
 
-	private record CachedParameters(ObjectSelect<?> parsed, List<QueryParameter> parameters) {
+	// the info of a query String, and the parameters derived from it
+	private record CachedInfo(String ql, SelectQueryInfo info, List<QueryParameter> parameters) {
 	}
 
 	/**

@@ -30,6 +30,7 @@ import org.apache.cayenne.map.NamedSQLQuery;
 import org.apache.cayenne.map.NamedSelectQuery;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
+import org.apache.cayenne.ql.ParsedObjectSelect;
 import org.apache.cayenne.query.resolved.ResolvedQuery;
 
 import java.sql.Statement;
@@ -229,9 +230,9 @@ public class MappedQuery<T> implements Query<T> {
             throw new CayenneRuntimeException("Query '%s' is empty", namedQuery.getName());
         }
 
-        ObjectSelect<?> query;
+        ParsedObjectSelect query;
         try {
-            query = ObjectSelect.parse(ql, parameters);
+            query = ParsedObjectSelect.parse(ql, parameters);
         } catch (ExpressionException e) {
             throw new CayenneRuntimeException("Query '%s' can't be parsed: %s", e, namedQuery.getName(),
                     e.getUnlabeledMessage());
@@ -347,7 +348,7 @@ public class MappedQuery<T> implements Query<T> {
     private int statementFetchSize(NamedQuery namedQuery) {
         return statementFetchSize != null ? statementFetchSize : namedQuery.getStatementFetchSize();
     }
-    
+
     private QueryCacheStrategy cacheStrategy(NamedQuery namedQuery) {
         QueryCacheStrategy strategy = namedQuery.getCacheStrategy();
         if (!forceNoCache) {

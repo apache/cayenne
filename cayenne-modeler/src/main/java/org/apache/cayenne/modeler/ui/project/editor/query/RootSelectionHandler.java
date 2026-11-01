@@ -21,7 +21,10 @@ package org.apache.cayenne.modeler.ui.project.editor.query;
 
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Entity;
+import org.apache.cayenne.map.NamedProcedureQuery;
 import org.apache.cayenne.map.NamedQuery;
+import org.apache.cayenne.map.NamedSQLQuery;
+import org.apache.cayenne.map.NamedSelectQuery;
 import org.apache.cayenne.modeler.toolkit.Renderers;
 
 import java.awt.event.ActionEvent;
@@ -48,7 +51,7 @@ class RootSelectionHandler implements FocusListener, ActionListener {
             Entity<?, ?, ?> root = (Entity<?, ?, ?>) queryTab.getQueryRoot().getModel().getSelectedItem();
 
             if (root != null) {
-                query.setRoot(root);
+                setRoot(query, root);
 
                 if (needChangeName) { //not changed by user
                     /*
@@ -98,9 +101,28 @@ class RootSelectionHandler implements FocusListener, ActionListener {
      * We cannot follow user input because tab might be opened many times
      */
     boolean hasDefaultName(NamedQuery query) {
-        String prefix = query.getRoot() == null ? "UntitledQuery" :
-                Renderers.asString(query.getRoot(), queryTab.getSession().getSelectedDataMap()) + "Query";
+        Object root = rootOf(query);
+        String prefix = root == null ? "UntitledQuery" :
+                Renderers.asString(root, queryTab.getSession().getSelectedDataMap()) + "Query";
 
         return queryTab.getNameField().getText().startsWith(prefix);
+    }
+
+    // a select query has no root of its own, its root is the "from" clause of its String
+    private static Object rootOf(NamedQuery query) {
+        return switch (query) {
+            case NamedSQLQuery sql -> sql.getRoot();
+            case NamedProcedureQuery procedure -> procedure.getRoot();
+            case NamedSelectQuery ignored -> null;
+        };
+    }
+
+    private static void setRoot(NamedQuery query, Object root) {
+        switch (query) {
+            case NamedSQLQuery sql -> sql.setRoot(root);
+            case NamedProcedureQuery procedure -> procedure.setRoot(root);
+            case NamedSelectQuery ignored -> {
+            }
+        }
     }
 }

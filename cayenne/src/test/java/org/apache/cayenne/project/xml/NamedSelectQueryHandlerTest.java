@@ -18,9 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.project.xml;
 
+import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.NamedSelectQuery;
+import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.ql.ParsedObjectSelect;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -89,8 +91,6 @@ public class NamedSelectQueryHandlerTest extends BaseHandlerTest {
                 </objectQuery>
                 """);
 
-        assertSame(entity, namedQuery.getRoot());
-
         // the String is kept as is, with its formatting
         assertEquals("""
                 select distinct self from Artist where artistName like $name
@@ -100,7 +100,7 @@ public class NamedSelectQueryHandlerTest extends BaseHandlerTest {
         // parameters are preserved, to be bound when the query is executed
         assertEquals("select distinct self from Artist where artistName like $name "
                 + "order by artistName desc insensitive, dateOfBirth limit 10 offset 20 prefetch paintings joint",
-                namedQuery.getParsedQuery().toQL());
+                ParsedObjectSelect.parse(namedQuery.getQl()).toQL());
     }
 
     @Test
@@ -111,8 +111,6 @@ public class NamedSelectQueryHandlerTest extends BaseHandlerTest {
                 </objectQuery>
                 """);
 
-        // unlike the other queries, a select query is never rooted in a DataMap
-        assertNull(namedQuery.getRoot());
         assertNull(namedQuery.getQl());
     }
 
@@ -124,8 +122,8 @@ public class NamedSelectQueryHandlerTest extends BaseHandlerTest {
                 </objectQuery>
                 """);
 
-        // an entity that is not in the DataMap is kept by name
-        assertEquals("Artist", namedQuery.getRoot());
+        // an entity that is not in the DataMap is a problem of the validator, the String is loaded as is
+        assertEquals("from Artist where artistName = 'a'", namedQuery.getQl());
     }
 
     @Test
@@ -136,7 +134,7 @@ public class NamedSelectQueryHandlerTest extends BaseHandlerTest {
                 "from db:ARTIST")) {
             NamedSelectQuery namedQuery = parseQuery("<objectQuery name=\"q\"><ql>" + ql + "</ql></objectQuery>");
             assertEquals(ql, namedQuery.getQl());
-            assertTrue(namedQuery.isValid(), ql);
+            assertNotNull(ParsedObjectSelect.parse(namedQuery.getQl()), ql);
             map.removeNamedQuery("q");
         }
     }
@@ -151,6 +149,6 @@ public class NamedSelectQueryHandlerTest extends BaseHandlerTest {
                 """);
 
         assertEquals("from Artist where", namedQuery.getQl());
-        assertFalse(namedQuery.isValid());
+        assertThrows(ExpressionException.class, () -> ParsedObjectSelect.parse(namedQuery.getQl()));
     }
 }
