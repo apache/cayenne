@@ -35,7 +35,7 @@ public class ParsedObjectSelectTest {
 
     @Test
     public void parse() {
-        ParsedObjectSelect select = ParsedObjectSelect.parse("""
+        ParsedObjectSelect select = ParsedObjectSelect.parseUnbound("""
                 select distinct name, count(paintings) as total from Artist
                 where name like $name and born > $born
                 having count(paintings) > 1
@@ -72,7 +72,7 @@ public class ParsedObjectSelectTest {
 
     @Test
     public void parseDefaults() {
-        ParsedObjectSelect select = ParsedObjectSelect.parse("from Artist");
+        ParsedObjectSelect select = ParsedObjectSelect.parseUnbound("from Artist");
         assertFalse(select.isColumnQuery());
         assertFalse(select.isSingleColumn());
         assertNull(select.getColumns());
@@ -87,7 +87,7 @@ public class ParsedObjectSelectTest {
 
     @Test
     public void parseDbQuery() {
-        ParsedObjectSelect select = ParsedObjectSelect.parse("from db:ARTIST where NAME = 'a'");
+        ParsedObjectSelect select = ParsedObjectSelect.parseUnbound("from db:ARTIST where NAME = 'a'");
         assertNull(select.getEntityName());
         assertEquals("ARTIST", select.getDbEntityName());
         assertTrue(select.isDbQuery());
@@ -96,14 +96,14 @@ public class ParsedObjectSelectTest {
 
     @Test
     public void parseSingleColumn() {
-        ParsedObjectSelect select = ParsedObjectSelect.parse("select name from Artist");
+        ParsedObjectSelect select = ParsedObjectSelect.parseUnbound("select name from Artist");
         assertTrue(select.isColumnQuery());
         assertTrue(select.isSingleColumn());
     }
 
     @Test
     public void parseSubquery() {
-        ParsedObjectSelect select = ParsedObjectSelect.parse(
+        ParsedObjectSelect select = ParsedObjectSelect.parseUnbound(
                 "from Artist where exists (from Painting where artist = enclosing(self) and price > $price)");
 
         // a subquery is parsed the same way, and is reachable through the expression tree
@@ -114,9 +114,16 @@ public class ParsedObjectSelectTest {
     }
 
     @Test
+    public void parseWithNullParameters() {
+        NullPointerException e = assertThrows(NullPointerException.class,
+                () -> ParsedObjectSelect.parse("from Artist", (Map<String, ?>) null));
+        assertTrue(e.getMessage().contains("parseUnbound"), e.getMessage());
+    }
+
+    @Test
     public void parseInvalid() {
-        assertThrows(ExpressionException.class, () -> ParsedObjectSelect.parse("from Artist where"));
-        assertThrows(ExpressionException.class, () -> ParsedObjectSelect.parse(""));
+        assertThrows(ExpressionException.class, () -> ParsedObjectSelect.parseUnbound("from Artist where"));
+        assertThrows(ExpressionException.class, () -> ParsedObjectSelect.parseUnbound(""));
     }
 
     @Test

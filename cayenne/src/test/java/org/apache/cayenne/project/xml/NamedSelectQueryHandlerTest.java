@@ -100,7 +100,7 @@ public class NamedSelectQueryHandlerTest extends BaseHandlerTest {
         // parameters are preserved, to be bound when the query is executed
         assertEquals("select distinct self from Artist where artistName like $name "
                 + "order by artistName desc insensitive, dateOfBirth limit 10 offset 20 prefetch paintings joint",
-                ParsedObjectSelect.parse(namedQuery.getQl()).toQL());
+                ParsedObjectSelect.parseUnbound(namedQuery.getQl()).toQL());
     }
 
     @Test
@@ -134,7 +134,7 @@ public class NamedSelectQueryHandlerTest extends BaseHandlerTest {
                 "from db:ARTIST")) {
             NamedSelectQuery namedQuery = parseQuery("<objectQuery name=\"q\"><ql>" + ql + "</ql></objectQuery>");
             assertEquals(ql, namedQuery.getQl());
-            assertNotNull(ParsedObjectSelect.parse(namedQuery.getQl()), ql);
+            assertNotNull(ParsedObjectSelect.parseUnbound(namedQuery.getQl()), ql);
             map.removeNamedQuery("q");
         }
     }
@@ -149,6 +149,6 @@ public class NamedSelectQueryHandlerTest extends BaseHandlerTest {
                 """);
 
         assertEquals("from Artist where", namedQuery.getQl());
-        assertThrows(ExpressionException.class, () -> ParsedObjectSelect.parse(namedQuery.getQl()));
+        assertThrows(ExpressionException.class, () -> ParsedObjectSelect.parseUnbound(namedQuery.getQl()));
     }
 }

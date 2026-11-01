@@ -127,7 +127,7 @@ public class MappedQueryTest {
     public void selectWithoutParameters() {
         NamedSelectQuery namedQuery = selectQuery("from FakeRoot where abc = $a");
         assertNull(((ObjectSelect<?>) build(namedQuery)).where);
-        assertEquals(ExpressionFactory.exp("abc = $a"), ParsedObjectSelect.parse(namedQuery.getQl()).where);
+        assertEquals(ExpressionFactory.exp("abc = $a"), ParsedObjectSelect.parseUnbound(namedQuery.getQl()).where);
     }
 
     @Test

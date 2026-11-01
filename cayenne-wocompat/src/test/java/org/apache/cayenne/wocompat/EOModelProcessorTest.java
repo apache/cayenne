@@ -133,7 +133,7 @@ public class EOModelProcessorTest {
         NamedSelectQuery select = assertInstanceOf(NamedSelectQuery.class, query);
 
         // a select query names its root entity in the "from" clause of its String
-        assertEquals("ExhibitType", ParsedObjectSelect.parse(select.getQl()).getEntityName());
+        assertEquals("ExhibitType", ParsedObjectSelect.parseUnbound(select.getQl()).getEntityName());
     }
 
     protected void assertLoadedCustomTypes(DataMap map) throws Exception {

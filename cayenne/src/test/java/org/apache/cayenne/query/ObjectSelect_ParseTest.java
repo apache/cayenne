@@ -203,9 +203,8 @@ public class ObjectSelect_ParseTest {
 
         assertNull(ObjectSelect.parse("from Artist where a = $a", Map.of()).where);
 
-        // a null map preserves the parameters, like no values
-        assertEquals(ExpressionFactory.exp("a = $a"),
-                ObjectSelect.parse("from Artist where a = $a", (Map<String, ?>) null).where);
+        // no values preserve the parameters
+        assertEquals(ExpressionFactory.exp("a = $a"), ObjectSelect.parse("from Artist where a = $a").where);
     }
 
     @Test

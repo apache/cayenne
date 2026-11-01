@@ -41,7 +41,7 @@ public class PrefetchTypeForSelectQueryHandlerTest extends BaseHandlerTest{
         });
 
         NamedSelectQuery namedSelectQuery = (NamedSelectQuery) map.getNamedQuery("query");
-        PrefetchTreeNode prefetches = ParsedObjectSelect.parse(namedSelectQuery.getQl()).getPrefetches();
+        PrefetchTreeNode prefetches = ParsedObjectSelect.parseUnbound(namedSelectQuery.getQl()).getPrefetches();
         assertEquals(3, prefetches.nonPhantomNodes().size());
 
         assertEquals(1, prefetches.getNode("paintings").getSemantics());

@@ -37,6 +37,7 @@ import org.apache.cayenne.exp.property.SelfProperty;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.ql.ParsedObjectSelect;
 import org.apache.cayenne.ql.QLParser;
 import org.apache.cayenne.query.resolved.ResolvedQuery;
 import org.apache.cayenne.query.resolved.ResolvedSelect;
@@ -194,18 +195,13 @@ public class ObjectSelect<T> implements Query<T> {
      * parameters. A null value in the map is bound as is.
      *
      * @param query  a query String
-     * @param params values of the "$name" parameters in the String by name, or null to preserve the parameters in
-     *               the query, like {@link #parse(String, Object...)} with no values
+     * @param params values of the "$name" parameters in the String by name. To preserve all the parameters in the
+     *               query, parse the String with no values, see {@link #parse(String, Object...)}
      * @see #parse(String, Object...)
      * @since 5.0
      */
     public static ObjectSelect<?> parse(String query, Map<String, ?> params) {
-        return QLParser.parse(query, parser -> {
-            if (params != null) {
-                parser.setParameters(params);
-            }
-            return parser.query();
-        });
+        return ParsedObjectSelect.parse(query, params);
     }
 
     /**

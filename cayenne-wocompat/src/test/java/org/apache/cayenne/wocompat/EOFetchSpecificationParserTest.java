@@ -54,7 +54,7 @@ public class EOFetchSpecificationParserTest {
         assertNotNull(namedQuery);
         NamedSelectQuery namedSelectQuery = assertInstanceOf(NamedSelectQuery.class, namedQuery);
 
-        ParsedObjectSelect query = ParsedObjectSelect.parse(namedSelectQuery.getQl());
+        ParsedObjectSelect query = ParsedObjectSelect.parseUnbound(namedSelectQuery.getQl());
         assertEquals("Entity1", query.getEntityName());
 
         assertNotNull(query.getWhere());

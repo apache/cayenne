@@ -81,7 +81,7 @@ public final class SelectQueryInfo {
         }
 
         try {
-            return new SelectQueryInfo(query, ParsedObjectSelect.parse(ql), null);
+            return new SelectQueryInfo(query, ParsedObjectSelect.parseUnbound(ql), null);
         } catch (ExpressionException e) {
             return new SelectQueryInfo(query, null, e);
         }

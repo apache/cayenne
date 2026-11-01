@@ -19,7 +19,6 @@
 package org.apache.cayenne.ql;
 
 import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.property.Property;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.Ordering;
@@ -28,6 +27,7 @@ import org.apache.cayenne.query.PrefetchTreeNode;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * An ObjectSelect subclass produced by parsing Cayenne QL. Extends super with methods to inspect its contents.
@@ -38,26 +38,20 @@ import java.util.Map;
 public final class ParsedObjectSelect extends ObjectSelect<Object> {
 
     /**
-     * Parses a query String for inspection, keeping its "$name" parameters in the parsed clauses.
-     *
-     * @throws ExpressionException if the String can't be parsed
+     * Parses a query String for inspection, keeping its "$name" parameters in the parsed clauses unpruned.
      */
-    public static ParsedObjectSelect parse(String ql) {
-        return parse(ql, (Map<String, ?>) null);
+    public static ParsedObjectSelect parseUnbound(String ql) {
+        return QLParser.parse(ql, QLParser::query);
     }
 
     /**
      * Parses a query String, binding the values of its "$name" parameters by name, and pruning the conditions whose
      * parameters have no value, as {@link ObjectSelect#parse(String, Map)} does.
-     *
-     * @param params the values of the parameters by name, or null to keep the parameters in the parsed clauses
-     * @throws ExpressionException if the String can't be parsed
      */
     public static ParsedObjectSelect parse(String ql, Map<String, ?> params) {
+        Objects.requireNonNull(params, "Null parameters, use parseUnbound(..) to keep the parameters of the query");
         return QLParser.parse(ql, parser -> {
-            if (params != null) {
-                parser.setParameters(params);
-            }
+            parser.setParameters(params);
             return parser.query();
         });
     }
