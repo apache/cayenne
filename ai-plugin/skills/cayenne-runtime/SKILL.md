@@ -43,20 +43,21 @@ If none exists yet, create one. Apply `runtime-api.md` patterns:
 ```java
 CayenneRuntime runtime = CayenneRuntime.of()
         .addConfig("cayenne-mydb.xml")
-        .dataSource(externalDataSource)   // or .url(...).jdbcDriver(...).user(...).password(...)
+        .defaultDataNode(dataSource)   // any javax.sql.DataSource, or a DataNodeDescriptor
         .build();
 ```
 
 ## Step 2 — Decide on the DataSource path
 
-Two paths from `CayenneRuntimeBuilder`:
+The project XML lists DataMaps only; the connection is always wired in code, as the `DataSource` of a DataNode:
 
 | When | Use |
 |---|---|
-| Production app with Spring/Bootique/Hikari already managing the pool | `.dataSource(ds)` — Cayenne reuses the external pool. |
-| Standalone tool or test fixture with no external DI | `.url(...).jdbcDriver(...).user(...).password(...)` — Cayenne's built-in pool. |
+| Production app with Spring/Bootique/Hikari already managing the pool | `.defaultDataNode(ds)` — Cayenne reuses the external pool. |
+| Standalone tool or test fixture with no external DI | `CayenneDataSource.of(url).userName(..).password(..).pool(min, max).build()` — Cayenne's built-in pool, passed to `.defaultDataNode(..)`. |
+| A node that needs a stable name, a pinned adapter or schema creation on startup | `DataNodeDescriptor.of("name").dataSource(ds).createSchemaIfNeeded().build()`, passed to `.defaultDataNode(..)` or `.addDataNode(.., "map1", "map2")`. |
 
-The `.dataSource()` path is preferred when possible. Never put JDBC credentials in `cayenne-*.xml` for production code — keep them in the application's normal config mechanism.
+Prefer the external `DataSource` when the app has one. Never put JDBC credentials in source control — keep them in the application's normal config mechanism.
 
 ## Step 3 — Use `ObjectContext`
 
@@ -93,7 +94,7 @@ Tell the user how to smoke-test:
 1. Build and run the app.
 2. From a request handler: `ObjectContext ctx = runtime.newContext(); long count = ObjectSelect.query(SomeEntity.class).selectCount(ctx);` — should return a number without throwing.
 
-If they hit `CayenneRuntimeException: No DataNode...`, the descriptor's `<map>` reference doesn't have a node — confirm the DataSource wiring went through `CayenneRuntimeBuilder.dataSource(...)` (Cayenne synthesizes a node from this).
+If they hit `CayenneRuntimeException: No DataNode...`, the descriptor's `<map>` reference doesn't have a node — confirm the DataSource wiring went through `CayenneRuntimeBuilder.defaultDataNode(...)`, or that `addDataNode(..)` lists that map.
 
 ## Anti-patterns
 

@@ -20,82 +20,58 @@
 
 Reference for editing the top-level Cayenne project descriptor.
 
-- **Namespace**: `http://cayenne.apache.org/schema/12/domain`
-- **XSD**: `http://cayenne.apache.org/schema/12/domain.xsd`
-- **Project version**: `12` (Cayenne 5.0)
+- **Namespace**: `http://cayenne.apache.org/schema/15/project`
+- **XSD**: `http://cayenne.apache.org/schema/15/project.xsd`
+- **Cayenne version**: 6.0. The schema version is the number in the namespace; there is no `project-version`
+  attribute anymore. Descriptors of older versions (including the 5.0-era `<domain>` root) are upgraded
+  automatically when loaded.
 
 ## Minimal descriptor
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
-<domain xmlns="http://cayenne.apache.org/schema/12/domain"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://cayenne.apache.org/schema/12/domain https://cayenne.apache.org/schema/12/domain.xsd"
-        project-version="12">
+<project xmlns="http://cayenne.apache.org/schema/15/project"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://cayenne.apache.org/schema/15/project https://cayenne.apache.org/schema/15/project.xsd">
     <map name="mydb"/>
-</domain>
+</project>
 ```
 
 This references a sibling `mydb.map.xml`.
 
-## With a DataNode (DB connection)
+## Contents
 
-Most production setups configure the DataSource in code via `CayenneRuntimeBuilder` (see `runtime-api.md`) rather than the descriptor — keeps secrets out of source control. But the descriptor *can* hold a DataNode:
-
-```xml
-<domain ...>
-    <map name="mydb"/>
-    <node name="mydb-node"
-          factory="org.apache.cayenne.configuration.runtime.XMLPoolingDataSourceFactory"
-          schema-update-strategy="org.apache.cayenne.access.dbsync.SkipSchemaUpdateStrategy">
-        <map-ref name="mydb"/>
-        <data-source>
-            <driver value="org.postgresql.Driver"/>
-            <url value="jdbc:postgresql://localhost:5432/mydb"/>
-            <connectionPool min="1" max="10"/>
-            <login userName="cayenne" password="secret"/>
-        </data-source>
-    </node>
-</domain>
-```
+The descriptor is a list of DataMaps plus two project-wide switches. That is all the schema allows.
 
 | Element/attribute | Meaning |
 |---|---|
-| `<map name="...">` | References a sibling DataMap file. Must match the `*.map.xml` file name minus the extension. |
-| `<node name="...">` | A DataNode (database). The `factory=` selects the DataSource factory. |
-| `factory=` | `XMLPoolingDataSourceFactory` reads the inline `<data-source>` block. `DBCPDataSourceFactory`, `JNDIDataSourceFactory` are alternatives. |
-| `schema-update-strategy=` | What to do on startup when DB schema disagrees with the model. `SkipSchemaUpdateStrategy` is the safe default. |
-| `<map-ref name="...">` | Which DataMap this node serves. A node can serve multiple maps. |
-
-## Multi-map projects
-
-A descriptor can reference multiple DataMaps:
+| `<map name="...">` | References a sibling DataMap file. Must match the `*.map.xml` file name minus the extension. A descriptor may list any number of maps. |
+| `sharedCache="false"` | Attribute of `<project>`. Turns off the snapshot cache shared between all `ObjectContext`s. Default `true`. |
+| `validateOnCommit="false"` | Attribute of `<project>`. Turns off object validation before commit. Default `true`. |
 
 ```xml
-<domain ...>
+<project xmlns="http://cayenne.apache.org/schema/15/project" ...
+         sharedCache="true"
+         validateOnCommit="true">
     <map name="customers"/>
     <map name="orders"/>
-    <node name="primary">
-        <map-ref name="customers"/>
-        <map-ref name="orders"/>
-        ...
-    </node>
-</domain>
+</project>
 ```
 
 All referenced `*.map.xml` files must sit in the same directory as the descriptor.
 
-## Recommended pattern
+## Where the database connection goes
 
-For a typical app:
-
-- Descriptor lists DataMaps with `<map>` only; **no** `<node>` element.
-- Wire the DataSource in code via `CayenneRuntimeBuilder.dataSource(...)` or `.url(...).jdbcDriver(...)`. See `runtime-api.md`.
-
+**Not here.** DataNodes (database connections) are not a part of the XML project. They are defined in code when the
+runtime is created: `CayenneRuntimeBuilder.defaultDataNode(..)` and `addDataNode(..)`, see `runtime-api.md`.
 This keeps DB credentials out of XML and lets the app pick the DataSource per environment (test, dev, prod).
+
+The `<node>`, `<map-ref>` and `<data-source>` elements of the 4.x descriptors are gone. An old descriptor that
+still has them can't be upgraded in memory by the runtime: open it in CayenneModeler, which drops the nodes and
+reports each removal, and move the connection into the code.
 
 ## Anti-patterns
 
-- Putting JDBC credentials in `cayenne-*.xml` and committing them to source control. Use code-level configuration.
+- Adding `<node>` or `<data-source>` elements, or a `project-version` attribute, from memory of older Cayenne
+  versions — the schema rejects them.
 - Referencing a DataMap that doesn't exist as a sibling file — the runtime will fail to load.
-- Forgetting `project-version="12"` — older versions are silently rejected by Cayenne 5.0.

@@ -26,3 +26,6 @@
 
 The plugin adds skills for DataMap editing, class generation, reverse engineering, query writing, and runtime setup.
 The skills work best with the MCP server present (see the next chapter).
+
+The plugin follows the Cayenne version: `apache-cayenne` is for Cayenne 6.0. A project on Cayenne 5.0 should install
+`apache-cayenne-5` from the same marketplace instead.

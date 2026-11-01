@@ -20,45 +20,72 @@
 
 How to bootstrap Cayenne in a Java application and use `ObjectContext` for CRUD.
 
-**Availability: Cayenne 5.0+ only.** `CayenneRuntime` and `CayenneRuntimeBuilder` are 5.0 names — they were called `ServerRuntime` and `ServerRuntimeBuilder` (in package `org.apache.cayenne.configuration.server`) in Cayenne 4.x. If the user's project is on 4.x, the patterns below won't compile — this plugin is targeted at 5.0.
+**Availability: Cayenne 5.0 and later.** `CayenneRuntime` and `CayenneRuntimeBuilder` are 5.0 names — they were called `ServerRuntime` and `ServerRuntimeBuilder` (in package `org.apache.cayenne.configuration.server`) in Cayenne 4.x. If the user's project is on 4.x, the patterns below won't compile — this plugin is targeted at 6.0.
 
 ## CayenneRuntime — top-level container
 
 `org.apache.cayenne.CayenneRuntime` is the entry point. One per application lifetime (or per data domain in multi-DB setups).
 
-Two creation paths:
+The project XML lists the DataMaps only. The database connections (DataNodes) are defined in code, on the builder.
+A DataNode is either a bare `DataSource`, or a `DataNodeDescriptor` when it needs a stable name or custom settings.
 
-### 1. With a built-in connection pool
+### 1. With the built-in connection pool
 
 ```java
+import javax.sql.DataSource;
 import org.apache.cayenne.CayenneRuntime;
-import org.apache.cayenne.CayenneRuntimeBuilder;
+import org.apache.cayenne.datasource.CayenneDataSource;
+
+DataSource dataSource = CayenneDataSource.of("jdbc:postgresql://localhost:5432/mydb")
+        .userName("cayenne")
+        .password("secret")
+        .pool(1, 10)
+        .build();
 
 CayenneRuntime runtime = CayenneRuntime.of()
         .addConfig("cayenne-mydb.xml")
-        .url("jdbc:postgresql://localhost:5432/mydb")
-        .jdbcDriver("org.postgresql.Driver")
-        .user("cayenne")
-        .password("secret")
-        .minConnections(1)
-        .maxConnections(10)
+        .defaultDataNode(dataSource)
         .build();
 ```
+
+`CayenneDataSource.of(url)` detects the driver from the URL; `driverClass(String)` pins it. Other pool settings:
+`validationQuery(String)`, `maxQueueWaitTime(long)`. `CayenneDataSource.fromProperties(Map)` reads the
+`cayenne.jdbc.*` properties.
 
 ### 2. With an external DataSource (Spring, HikariCP, Bootique, etc.)
 
 ```java
-import javax.sql.DataSource;
-
 DataSource ds = ...; // created elsewhere in your app
 
 CayenneRuntime runtime = CayenneRuntime.of()
         .addConfig("cayenne-mydb.xml")
-        .dataSource(ds)
+        .defaultDataNode(ds)
         .build();
 ```
 
 This path is preferred in production — your existing DI framework manages the pool, and Cayenne uses it.
+
+### 3. Customized or multiple DataNodes
+
+Use `org.apache.cayenne.project.DataNodeDescriptor` to name a node, pin its adapter, or set the schema update
+strategy. Link a node to its DataMaps by name with `addDataNode(..)`; the default node picks up every DataMap not
+linked explicitly:
+
+```java
+import org.apache.cayenne.project.DataNodeDescriptor;
+
+DataNodeDescriptor node = DataNodeDescriptor.of("main")
+        .dataSource(dataSource)
+        .createSchemaIfNeeded()   // create tables on first connection if the schema is missing
+        .build();
+
+CayenneRuntime runtime = CayenneRuntime.of()
+        .addConfig("cayenne-project.xml")
+        .addDataNode(ds1, "map1", "map2")
+        .addDataNode(node, "map3")
+        .defaultDataNode(ds3)
+        .build();
+```
 
 ### CayenneRuntimeBuilder methods
 
@@ -67,17 +94,17 @@ From `cayenne/src/main/java/org/apache/cayenne/CayenneRuntimeBuilder.java`:
 | Method | Purpose |
 |---|---|
 | `addConfig(String)` | Add a Cayenne project descriptor (`cayenne-*.xml`) location. Resolved via classpath. |
-| `addConfigs(String...)` | Add multiple descriptors. |
-| `dataSource(DataSource)` | Use an existing DataSource. Overrides anything in the XML. |
-| `url(String)` | Built-in pool: JDBC URL. |
-| `jdbcDriver(String)` | Built-in pool: driver class name. |
-| `user(String)` / `password(String)` | Built-in pool: credentials. |
-| `minConnections(int)` / `maxConnections(int)` | Built-in pool: bounds. |
-| `validationQuery(String)` | Built-in pool: pool validation query (e.g. `SELECT 1`). |
-| `maxQueueWaitTime(long)` | Built-in pool: max ms to wait for a connection. |
-| `addModule(Module)` | Add a Cayenne DI module to override defaults. |
+| `addConfigs(String...)` / `addConfigs(Collection)` | Add multiple descriptors. |
+| `defaultDataNode(DataSource)` | The node for every DataMap not linked to another node. Named automatically. |
+| `defaultDataNode(DataNodeDescriptor)` | The same, with a named and customized node. |
+| `addDataNode(DataSource, String... maps)` | A node serving the named DataMaps. |
+| `addDataNode(DataNodeDescriptor, String... maps)` | The same, with a named and customized node. |
+| `addModule(Module)` / `addModules(Collection)` | Add Cayenne DI modules to override defaults. |
 | `disableModulesAutoLoading()` | Skip the `META-INF/services/CayenneRuntimeModuleProvider` auto-load — for tightly-controlled DI. |
 | `build()` | Construct the `CayenneRuntime`. |
+
+`DataNodeDescriptor.Builder` settings: `dataSource(DataSource)`, `adapter(Class<? extends DbAdapter>)`,
+`schemaUpdateStrategy(Class)`, `createSchemaIfNeeded()`, `throwOnPartialSchema()`, `pkGenerator(PkGenerator)`.
 
 ## Lifecycle
 

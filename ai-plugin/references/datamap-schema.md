@@ -22,7 +22,8 @@ Reference for editing Cayenne DataMap files directly.
 
 - **Namespace**: `http://cayenne.apache.org/schema/15/dataMap`
 - **XSD**: `http://cayenne.apache.org/schema/15/dataMap.xsd`
-- **Project version**: `12` (Cayenne 5.0)
+- **Cayenne version**: 6.0. The schema version is the number in the namespace; there is no `project-version`
+  attribute anymore. Files of older versions are upgraded automatically when loaded.
 - **Working example**: `cayenne-ant/src/test/resources/testmap.map.xml`
 
 ## Root element
