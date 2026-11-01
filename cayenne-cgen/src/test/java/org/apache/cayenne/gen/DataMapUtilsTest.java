@@ -166,15 +166,6 @@ public class DataMapUtilsTest {
     }
 
     @Test
-    @SuppressWarnings("deprecation")
-    public void deprecatedParameterMethods() {
-        SelectQueryDescriptor query = query("from Artist where born = $from_date");
-
-        assertEquals(List.of("fromDate"), List.copyOf(dataMapUtils.getParameterNames(query)));
-        assertEquals("java.time.LocalDate", dataMapUtils.getParameterType(query, "fromDate"));
-    }
-
-    @Test
     public void isValidParameterNames() {
         assertTrue(dataMapUtils.isValidParameterNames(query("from Artist where name = $name order by born")));
         assertTrue(dataMapUtils.isValidParameterNames(query("from db:ARTIST where NAME = $name")));

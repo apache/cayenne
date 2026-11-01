@@ -28,14 +28,10 @@ import org.apache.cayenne.exp.property.Property;
 import org.apache.cayenne.project.ProjectNodeVisitor;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.Ordering;
-import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.util.XMLEncoder;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -239,60 +235,6 @@ public class SelectQueryDescriptor extends QueryDescriptor {
     @Override
     public void setRoot(Object root) {
         throw new UnsupportedOperationException("The root of a select query is defined by its 'from' clause");
-    }
-
-    /**
-     * @deprecated since 5.0, as the query is defined by a String, see {@link #getParsedQuery()}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public boolean isDistinct() {
-        ObjectSelect<?> query = parsedOrNull();
-        return query != null && query.isDistinct();
-    }
-
-    /**
-     * Returns the "where" clause of the query, or null if it has none or can't be parsed.
-     *
-     * @deprecated since 5.0, as the query is defined by a String, see {@link #getParsedQuery()}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public Expression getQualifier() {
-        ObjectSelect<?> query = parsedOrNull();
-        return query != null ? query.getWhere() : null;
-    }
-
-    /**
-     * Returns a list of the orderings of the query, empty if it has none or can't be parsed.
-     *
-     * @deprecated since 5.0, as the query is defined by a String, see {@link #getParsedQuery()}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public List<Ordering> getOrderings() {
-        ObjectSelect<?> query = parsedOrNull();
-        return query != null && query.getOrderings() != null
-                ? new ArrayList<>(query.getOrderings())
-                : new ArrayList<>();
-    }
-
-    /**
-     * Returns a map of the prefetch paths of the query with their semantics, empty if it has none or can't be parsed.
-     *
-     * @since 4.1
-     * @deprecated since 5.0, as the query is defined by a String, see {@link #getParsedQuery()}
-     */
-    @Deprecated(since = "5.0", forRemoval = true)
-    public Map<String, Integer> getPrefetchesMap() {
-        Map<String, Integer> prefetches = new HashMap<>();
-        ObjectSelect<?> query = parsedOrNull();
-        if (query != null && query.getPrefetches() != null) {
-            for (PrefetchTreeNode node : query.getPrefetches().nonPhantomNodes()) {
-                // the root of the tree is not a prefetch
-                if (node.getParent() != null) {
-                    prefetches.put(node.getPath().value(), node.getSemantics());
-                }
-            }
-        }
-        return prefetches;
     }
 
     /**

@@ -52,27 +52,6 @@ public class CayenneRuntimeBuilder {
     private DataNodeDescriptor defaultNode;
     private final Map<DataNodeDescriptor, Set<String>> mapsByNode;
 
-    @Deprecated
-    private String jdbcDriver;
-
-    @Deprecated
-    private String jdbcUser;
-
-    @Deprecated
-    private String jdbcPassword;
-
-    @Deprecated
-    private int jdbcMinConnections;
-
-    @Deprecated
-    private int jdbcMaxConnections;
-
-    @Deprecated
-    private long maxQueueWaitTime;
-
-    @Deprecated
-    private String validationQuery;
-
     /**
      * Creates a builder with a fixed name of the DataDomain of the resulting
      * CayenneRuntime. Specifying explicit name is often needed for consistency

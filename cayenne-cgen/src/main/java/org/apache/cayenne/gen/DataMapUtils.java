@@ -78,20 +78,6 @@ public class DataMapUtils {
 	}
 
 	/**
-	 * Get all parameter names used in the query, in the order of their first occurrence. The names are the Java names
-	 * of the parameters, see {@link QueryParameter#javaName()}.
-	 *
-	 * @param query select query descriptor
-	 * @return Parameter names.
-	 * @deprecated since 5.0, use {@link #getParameters(SelectQueryDescriptor)}, that provides both the names to bind
-	 * the parameters by and their Java names
-	 */
-	@Deprecated(since = "5.0")
-	public Collection<String> getParameterNames(SelectQueryDescriptor query) {
-		return getParameters(query).stream().map(QueryParameter::javaName).toList();
-	}
-
-	/**
 	 * Returns the "$name" parameters of the query, in the order of their first occurrence, each with the name to bind
 	 * it by, a unique Java identifier to use for it in the generated code, and its type.
 	 *
@@ -121,24 +107,6 @@ public class DataMapUtils {
 
 	public boolean hasParameters(SelectQueryDescriptor query) {
 		return !getParameters(query).isEmpty();
-	}
-
-	/**
-	 * Get type of parameter for given name.
-	 *
-	 * @param query descriptor
-	 * @param name the Java name of the parameter, see {@link QueryParameter#javaName()}
-	 * @return Parameter type.
-	 * @deprecated since 5.0, use {@link #getParameters(SelectQueryDescriptor)}
-	 */
-	@Deprecated(since = "5.0")
-	public String getParameterType(SelectQueryDescriptor query, String name) {
-		for (QueryParameter parameter : getParameters(query)) {
-			if (parameter.javaName().equals(name)) {
-				return parameter.type();
-			}
-		}
-		return null;
 	}
 
 	/**

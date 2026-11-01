@@ -32,11 +32,8 @@ import org.apache.cayenne.exp.SubqueryExp;
 import org.apache.cayenne.map.SelectQueryDescriptor.ResultKind;
 import org.apache.cayenne.project.EmptyProjectNodeVisitor;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.query.Ordering;
-import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.resolved.ResolvedSelect;
-import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.util.XMLEncoder;
 import org.junit.jupiter.api.Test;
 
@@ -258,24 +255,6 @@ public class SelectQueryDescriptorTest {
                     and exists (from Painting where price > $price and name like $name)""");
         assertEquals(List.of("name", "d1", "d2", "price"), List.copyOf(descriptor.getParameterNames()));
         assertEquals(Set.of(), descriptor("from Artist").getParameterNames());
-    }
-
-    @Test
-    @SuppressWarnings("deprecation")
-    public void deprecatedPartGetters() {
-        SelectQueryDescriptor descriptor = descriptor("""
-                select distinct self from Artist where artistName like $name
-                order by artistName desc insensitive, dateOfBirth
-                prefetch paintings joint, paintings.gallery disjoint""");
-
-        assertTrue(descriptor.isDistinct());
-        assertEquals(ExpressionFactory.exp("artistName like $name"), descriptor.getQualifier());
-        assertEquals(List.of(
-                new Ordering("artistName", SortOrder.DESCENDING_INSENSITIVE),
-                new Ordering("dateOfBirth", SortOrder.ASCENDING)), descriptor.getOrderings());
-        assertEquals(Map.of(
-                "paintings", PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS,
-                "paintings.gallery", PrefetchTreeNode.DISJOINT_PREFETCH_SEMANTICS), descriptor.getPrefetchesMap());
     }
 
     @Test
