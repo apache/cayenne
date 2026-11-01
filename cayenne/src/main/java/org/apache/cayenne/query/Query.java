@@ -39,7 +39,7 @@ import java.util.List;
  * {@link #update(ObjectContext)}, returning the count of its first update.
  *
  * @param <T> the type of the rows the query selects. Queries that produce no rows (updates, DDL, batches) are typed
- *            as {@code Query<?>}.
+ *            as {@code Query<?>} or, sometimes, {@code Query<DataRow>}.
  */
 public interface Query<T> {
 
