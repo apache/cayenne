@@ -16,7 +16,7 @@
 	specific language governing permissions and limitations
 	under the License.   
 -->
-# apache-cayenne — Claude Code plugin
+# apache-cayenne-6 — Claude Code plugin
 
 Apache Cayenne ORM workflows for Claude Code.
 
@@ -33,7 +33,7 @@ The plugin assumes downstream **users of Cayenne** writing their own Java apps. 
 
 ## Install
 
-**Cayenne 6.0.** This version of the plugin targets Cayenne 6.0: the XML-editing, runtime, and query skills teach 6.0 idioms and API. Projects on Cayenne 5.0 should install `apache-cayenne-5` instead, which is the same plugin from the `STABLE-5.0` branch. The MCP server ships with CayenneModeler 5.0 and later; skills that depend on it (`cayenne-cgen`, `cayenne-modeler`, `cayenne-db-import`, `cayenne-full-db-sync`) will not work against earlier Cayenne versions. For Cayenne 4.x and older, this plugin is not the right tool.
+**Cayenne 6.0.** The plugin is versioned with Cayenne: `apache-cayenne-6` targets Cayenne 6.0, and its XML-editing, runtime, and query skills teach 6.0 idioms and API. Projects on Cayenne 5.0 should install `apache-cayenne-5` instead, which is the same plugin from the `STABLE-5.0` branch. There is no unversioned plugin; pick the one matching the project's Cayenne major version. The MCP server ships with CayenneModeler 5.0 and later; skills that depend on it (`cayenne-cgen`, `cayenne-modeler`, `cayenne-db-import`, `cayenne-full-db-sync`) will not work against earlier Cayenne versions. For Cayenne 4.x and older, this plugin is not the right tool.
 
 The plugin is distributed from the Apache Cayenne GitHub repository: **https://github.com/apache/cayenne**. Inside Claude Code:
 
@@ -41,8 +41,8 @@ The plugin is distributed from the Apache Cayenne GitHub repository: **https://g
 # register the "marketplace"
 /plugin marketplace add apache/cayenne
 
-# install the plugin
-/plugin install apache-cayenne@apache-cayenne
+# install the plugin for Cayenne 6.0
+/plugin install apache-cayenne-6@apache-cayenne
 
 # or, for a project on Cayenne 5.0
 /plugin install apache-cayenne-5@apache-cayenne

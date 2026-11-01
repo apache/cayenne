@@ -1,6 +1,7 @@
 {
-  "name": "apache-cayenne",
+  "name": "apache-cayenne-6",
   "description": "Apache Cayenne ORM — design DataMaps, reverse-engineer schemas, generate classes, and write runtime code. Drives the cayenne MCP server when present.",
-  "version": "6.0.0",
-  "author": { "name": "Apache Cayenne" }
+  "author": {
+    "name": "Apache Cayenne"
+  }
 }

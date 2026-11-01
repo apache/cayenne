@@ -85,7 +85,7 @@ committed to the version control system along with the rest of your code.
 
 === With Claude
 
-With the `apache-cayenne` plugin installed (see <<Claude Code (optional)>>), Claude already knows how to do most of the
+With the `apache-cayenne-6` plugin installed (see <<Claude Code (optional)>>), Claude already knows how to do most of the
 steps in this tutorial, so you only need to describe what you want. There is one exception though.
 Claude does not know how to connect to your database, and it should not. The connection settings (including the
 password) are kept in the CayenneModeler preferences on your machine, and the Cayenne MCP server uses them to run
