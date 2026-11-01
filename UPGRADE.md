@@ -127,6 +127,11 @@
      `getColumns()`, `getOrderings()`, etc.) stay for now.
    * `QLSelectPrinter` is removed. A query prints itself in the query language with `ObjectSelect.toQL()` (or
      `appendQL(Appendable)`), and its `toString()` returns the same.
+   * An expression with a subquery (`exists(..)`, `in(..)` with a select, `all(..)`, `any(..)`) is temporarily not
+     evaluable in memory, e.g. with `Expression.filterObjects(..)` or `match(..)`: it throws an `ExpressionException`.
+     Previously an uncorrelated `exists` subquery was silently run against the database for every evaluated object,
+     while the other shapes failed anyway. Until a proper in-memory evaluation is designed, such expressions are for
+     query qualifiers only.
 
 ## What's New in 5.0
 

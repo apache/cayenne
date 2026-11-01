@@ -70,6 +70,18 @@ public class ExistsExpIT {
     }
 
     @Test
+    public void evaluateInMemoryUncorrelatedSubquery() {
+        // even a subquery that doesn't refer to the enclosing object can't be evaluated in memory: it would need a
+        // trip to the database for every object
+        ObjectSelect<Painting> subQuery = ObjectSelect.query(Painting.class)
+                .where(Painting.PAINTING_TITLE.like("p%"));
+        Expression exp = ExpressionFactory.exists(subQuery);
+
+        List<Artist> artists = ObjectSelect.query(Artist.class).select(env.context());
+        env.runWithQueriesBlocked(() -> assertThrows(ExpressionException.class, () -> exp.filterObjects(artists)));
+    }
+
+    @Test
     public void evaluateInMemoryExistsExpression() {
         doEvaluateNoQuery(Artist.PAINTINGS.exists());
 

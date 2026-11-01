@@ -375,8 +375,9 @@ class QualifierTranslator implements TraversalHandler {
                 // Translate via parent context's translator
                 Expression expression = (Expression) enclosing.getOperand(0);
                 if (context.getParentContext() == null) {
-                    throw new CayenneRuntimeException(
-                            "Unable to translate qualifier, no parent context to use for expression " + node);
+                    throw new CayenneRuntimeException("""
+                            An 'enclosing' reference is only valid inside a subquery, as it refers to a row of the \
+                            enclosing query. This query is run on its own: %s""", node);
                 }
                 expressionsToSkip.add(expression);
                 yield context.getParentContext().getQualifierTranslator().translate(expression);

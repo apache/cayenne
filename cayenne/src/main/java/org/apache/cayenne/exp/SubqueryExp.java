@@ -21,26 +21,12 @@ package org.apache.cayenne.exp;
 
 import java.io.IOException;
 
-import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.Persistent;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.query.Ordering;
 
 /**
  * @since 5.0
  */
 public final class SubqueryExp extends Expression {
-    private static final TraversalHandler IN_MEMORY_VALIDATOR = new TraversalHandler() {
-        @Override
-        public void startNode(Expression node, Expression parentNode) {
-            if (node instanceof EnclosingObjectExp) {
-                throw new UnsupportedOperationException(
-                        "Can't evaluate subquery expression with enclosing object expression."
-                );
-            }
-        }
-    };
-
     private final ObjectSelect<?> query;
 
     /**
@@ -62,27 +48,15 @@ public final class SubqueryExp extends Expression {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * In-memory evaluation of a subquery is not supported yet, as it ranges over all the objects of an entity, which
+     * are only available in the database. Until it is, an expression with a subquery can only be used as a query
+     * qualifier.
+     */
     @Override
     protected Object evaluateNode(Object o) {
-        ObjectContext context;
-        if(o instanceof Persistent) {
-            context = ((Persistent) o).getObjectContext();
-        } else {
-            throw new UnsupportedOperationException("Can't evaluate subquery expression against non-persistent object");
-        }
-        validateForInmemory(query);
-        return context.select(query);
-    }
-
-    /**
-     * Check that we can execute this subquery directly
-     */
-    private void validateForInmemory(ObjectSelect<?> query) {
-        query.getWhere().traverse(IN_MEMORY_VALIDATOR);
-        query.getHaving().traverse(IN_MEMORY_VALIDATOR);
-        for(Ordering ordering : query.getOrderings()) {
-            ordering.getSortSpec().traverse(IN_MEMORY_VALIDATOR);
-        }
+        throw new UnsupportedOperationException(
+                "In-memory evaluation of a subquery is not supported, use it in a query: " + this);
     }
 
     @Override
