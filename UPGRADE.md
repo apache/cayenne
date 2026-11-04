@@ -88,7 +88,7 @@ List<Artist> artists = ObjectSelect
         .select(context);
 ```
 
-## Upgrading to 5.0-M4
+## Upgrading to 5.0-RC1
 
 *  Per [CAY-2826](https://issues.apache.org/jira/browse/CAY-2826) `CoreModule` and `CoreModuleExtender` were moved from
    `org.apache.cayenne.configuration.runtime` to the `org.apache.cayenne` package — fix your imports accordingly.
