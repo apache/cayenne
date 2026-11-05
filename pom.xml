@@ -39,6 +39,8 @@
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <!-- Fixed timestamp of the archive entries, for reproducible builds. "release:prepare" updates it -->
+        <project.build.outputTimestamp>2026-11-03T00:00:00Z</project.build.outputTimestamp>
 
         <maven.build.timestamp.format>MMM dd yyyy HH:mm:ss</maven.build.timestamp.format>
         <project.build.datetime>${maven.build.timestamp}</project.build.datetime>
@@ -109,7 +111,7 @@
         <module>cayenne-ant</module>
         <module>cayenne-cache-invalidation</module>
         <module>cayenne-cgen</module>
-<module>cayenne-crypto</module>
+        <module>cayenne-crypto</module>
         <module>cayenne-dbsync</module>
         <module>cayenne-di</module>
         <module>cayenne-gradle-plugin</module>
@@ -730,6 +732,7 @@
                     <version>${maven-release-plugin.version}</version>
                     <configuration>
                         <tagNameFormat>@{project.version}</tagNameFormat>
+                        <releaseProfiles>release</releaseProfiles>
                     </configuration>
                 </plugin>
                 <plugin>

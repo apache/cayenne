@@ -15,7 +15,7 @@
 	limitations under the License.
 -->
 <assembly>
-	<id>generic</id>
+	<id>windows</id>
 
 	<formats>
 		<format>zip</format>
@@ -41,7 +41,7 @@
 			<outputDirectory>.</outputDirectory>
 			<includes>
 				<include>RELEASE-NOTES.txt</include>
-				<include>UPGRADE.txt</include>
+				<include>UPGRADE.md</include>
 				<include>KEYS</include>
 			</includes>
 		</fileSet>

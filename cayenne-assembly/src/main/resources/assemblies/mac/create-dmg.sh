@@ -41,25 +41,30 @@ SIZE=`echo "${SIZE} + 1.0" | bc | awk '{print int($20+0.5)}'`
 
 if [ $? -ne 0 ]; then
    echo "Error: Cannot compute size of staging dir"
-   exit
+   exit 1
 fi
 
 # create the temp DMG file
 hdiutil create -srcfolder "${STAGING_DIR}" -volname "${VOL_NAME}" -fs HFS+ \
-      -fsargs "-c c=64,a=16,e=16" -format UDRW -size ${SIZE}M "${DMG_TMP}"
+      -fsargs "-c c=64,a=16,e=16" -format UDRW -size ${SIZE}M "${DMG_TMP}" || exit 1
 
 echo "Created DMG: ${DMG_TMP}"
 
 # mount it and save the device
 DEVICE=$(hdiutil attach -readwrite -noverify "${DMG_TMP}" | \
-         egrep '^/dev/' | sed 1q | awk '{print $1}')
+         grep -E '^/dev/' | sed 1q | awk '{print $1}')
+
+if [ -z "${DEVICE}" ]; then
+   echo "Error: Cannot mount ${DMG_TMP}"
+   exit 1
+fi
 
 sleep 2
 
 # add a link to the Applications dir
-pushd /Volumes/"${VOL_NAME}"
+pushd /Volumes/"${VOL_NAME}" || exit 1
 ln -s /Applications
-popd
+popd || exit 1
 
 # add a background image
 mkdir /Volumes/"${VOL_NAME}"/.background
@@ -90,16 +95,23 @@ echo '
            delay 2
      end tell
    end tell
-' | osascript
- 
+' | osascript || echo "WARNING: Finder layout of the DMG window failed, the DMG will have the default layout"
+
 sync
-# unmount it
-hdiutil detach "${DEVICE}"
+# unmount it. Retry, as Spotlight or Finder may still hold the volume for a while
+for i in 1 2 3 4 5; do
+   hdiutil detach "${DEVICE}" && break
+   if [ "$i" -eq 5 ]; then
+      echo "Error: Cannot unmount ${DEVICE}"
+      exit 1
+   fi
+   sleep 3
+done
  
 # now make the final image a compressed disk image
 echo "Creating compressed image"
-hdiutil convert "${DMG_TMP}" -format UDZO -imagekey zlib-level=9 -o "${DMG_FINAL}"
+hdiutil convert "${DMG_TMP}" -format UDZO -imagekey zlib-level=9 -o "${DMG_FINAL}" || exit 1
  
 echo 'Done.'
- 
-exit
+
+exit 0

@@ -35,11 +35,13 @@
                 <exclude>**/*.iml</exclude>
                 <exclude>**/.classpath</exclude>
                 <exclude>**/.project</exclude>
-                <exclude>**/.settings</exclude>
+                <exclude>**/.settings/**</exclude>
+                <exclude>cayenne-gradle-plugin/bin/**</exclude>
 				<exclude>**/out/**</exclude>
 				<exclude>**/build/**</exclude>
 				<exclude>**/gradle/**</exclude>
 				<exclude>**/.gradle/**</exclude>
+				<exclude>.claude/settings.local.json</exclude>
 			</excludes>
 		</fileSet>
 		<fileSet>
