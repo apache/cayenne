@@ -1,0 +1,103 @@
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements. See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License. You may obtain a copy of the License at
+#
+# https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Builds the Mac .dmg from the source release made by the "source" job of "release-dist.yml", and uploads it as the
+# "dist-mac" artifact. Called only from "release-dist.yml", as it needs that run's "src-tarball" artifact.
+#
+# Signing and notarization of the app with the ASF Apple certificate (CAY-2997) plug in here: the "release"
+# environment with the Infra-managed secrets, a throwaway keychain, and the "mac.sign.*" / "mac.notary.*" Maven
+# properties. Until then "sign" must be false.
+
+name: build mac
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        required: true
+        type: string
+      java-version:
+        required: false
+        default: '21'
+        type: string
+      sign:
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+jobs:
+  dmg:
+    name: Mac dmg
+    runs-on: macos-15
+    timeout-minutes: 90
+    steps:
+      - name: Check signing support
+        if: ${{ inputs.sign }}
+        run: |
+          echo "::error::Signing of the Mac app is not available yet (CAY-2997), run with sign-mac=false"
+          exit 1
+
+      - name: Check out the workflow helpers
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          sparse-checkout: .github
+
+      - name: Build
+        id: build
+        uses: ./.github/actions/build-from-src
+        with:
+          version: ${{ inputs.version }}
+          profile: mac
+          java-version: ${{ inputs.java-version }}
+
+      - name: Check the dmg
+        env:
+          DMG: ${{ steps.build.outputs.dir }}/cayenne-assembly/target/cayenne-${{ inputs.version }}-macosx.dmg
+          VERSION: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+          hdiutil verify "$DMG"
+          MOUNT=$(mktemp -d)
+          hdiutil attach -readonly -nobrowse -mountpoint "$MOUNT" "$DMG"
+          trap 'hdiutil detach "$MOUNT" || true' EXIT
+          for f in \
+              CayenneModeler.app/Contents/MacOS/CayenneModeler \
+              CayenneModeler.app/Contents/Info.plist \
+              "cayenne-$VERSION/LICENSE.txt" \
+              "cayenne-$VERSION/NOTICE.txt" \
+              "cayenne-$VERSION/RELEASE-NOTES.txt" \
+              "cayenne-$VERSION/UPGRADE.md"; do
+            if [ ! -e "$MOUNT/$f" ]; then
+              echo "::error::$f is missing from the dmg"
+              exit 1
+            fi
+          done
+          if [ ! -x "$MOUNT/CayenneModeler.app/Contents/MacOS/CayenneModeler" ]; then
+            echo "::error::The Modeler launcher in the dmg is not executable"
+            exit 1
+          fi
+          ls -la "$MOUNT" "$MOUNT/cayenne-$VERSION"
+
+      - name: Upload
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: dist-mac
+          path: ${{ steps.build.outputs.dir }}/cayenne-assembly/target/cayenne-${{ inputs.version }}-macosx.dmg
+          if-no-files-found: error
+          retention-days: 7

@@ -1,0 +1,250 @@
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements. See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License. You may obtain a copy of the License at
+#
+# https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Builds all the distribution files of a release from its tag: the source release, and the generic, Mac and Windows
+# binary assemblies, each built from the unpacked source release. Adds a .sha512 for each and publishes them as one
+# workflow artifact.
+#
+# Per the ASF policy (https://infra.apache.org/release-signing.html) the files are NOT GPG-signed here: the release
+# manager downloads the bundle and signs it locally with "build-tools/release/sign-and-stage.sh". The workflow only
+# reads the repository: the tag is made by "mvn release:prepare" on the release manager's machine.
+# See "build-tools/release/README.md".
+
+name: release dist
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag to build, e.g. 5.0-M4
+        required: true
+        type: string
+      java-version:
+        description: JDK to build with
+        required: false
+        default: '21'
+        type: string
+      sign-mac:
+        description: Sign and notarize the Mac app
+        required: false
+        default: false
+        type: boolean
+      dry-run:
+        description: Allow running outside of apache/cayenne and on a SNAPSHOT version, to test the workflow
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-dist-${{ inputs.tag }}
+  cancel-in-progress: false
+
+jobs:
+  source:
+    name: Source release
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      commit: ${{ steps.version.outputs.commit }}
+    steps:
+      - name: Check the repository
+        if: ${{ !inputs.dry-run && github.repository != 'apache/cayenne' }}
+        run: |
+          echo "::error::Releases are built only in apache/cayenne, use dry-run to test in a fork"
+          exit 1
+
+      # Workflow helpers come from the branch the workflow runs on, the sources come from the tag
+      - name: Check out the workflow helpers
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          sparse-checkout: .github
+
+      - name: Check out the tag
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: refs/tags/${{ inputs.tag }}
+          path: src
+          persist-credentials: false
+
+      - name: Set up Java
+        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: ${{ inputs.java-version }}
+
+      - name: Check the version
+        id: version
+        working-directory: src
+        env:
+          TAG: ${{ inputs.tag }}
+          DRY_RUN: ${{ inputs.dry-run }}
+        run: |
+          set -euo pipefail
+          VERSION=$(mvn -B -ntp -q help:evaluate -Dexpression=project.version -DforceStdout)
+          echo "Tag: $TAG, POM version: $VERSION"
+          if [[ "$DRY_RUN" != "true" ]]; then
+            if [[ "$VERSION" != "$TAG" ]]; then
+              echo "::error::POM version $VERSION does not match the tag $TAG"
+              exit 1
+            fi
+            if [[ "$VERSION" == *SNAPSHOT* ]]; then
+              echo "::error::Can not release a SNAPSHOT version"
+              exit 1
+            fi
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "commit=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Check license headers
+        working-directory: src
+        run: mvn -B -ntp apache-rat:check
+
+      - name: Build the source release
+        working-directory: src
+        run: mvn -B -ntp clean install -DskipTests -Passembly,src
+
+      - name: Check the source release against git
+        working-directory: src
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: ../.github/scripts/check-src-tarball.sh "cayenne-assembly/target/cayenne-$VERSION-src.tar.gz" "$VERSION"
+
+      - name: Upload the source release
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: src-tarball
+          path: src/cayenne-assembly/target/cayenne-${{ steps.version.outputs.version }}-src.tar.gz
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Upload the Gradle wrapper
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: gradle-wrapper
+          path: src/cayenne-gradle-plugin/gradle/
+          if-no-files-found: error
+          retention-days: 7
+
+  generic:
+    name: Generic assembly
+    needs: source
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Check out the workflow helpers
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          sparse-checkout: .github
+
+      - name: Build
+        id: build
+        uses: ./.github/actions/build-from-src
+        with:
+          version: ${{ needs.source.outputs.version }}
+          profile: generic
+          java-version: ${{ inputs.java-version }}
+
+      - name: Upload
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: dist-generic
+          path: ${{ steps.build.outputs.dir }}/cayenne-assembly/target/cayenne-${{ needs.source.outputs.version }}.tar.gz
+          if-no-files-found: error
+          retention-days: 7
+
+  windows:
+    name: Windows assembly
+    needs: source
+    runs-on: windows-latest
+    timeout-minutes: 90
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Check out the workflow helpers
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          sparse-checkout: .github
+
+      - name: Build
+        id: build
+        uses: ./.github/actions/build-from-src
+        with:
+          version: ${{ needs.source.outputs.version }}
+          profile: windows
+          java-version: ${{ inputs.java-version }}
+
+      - name: Upload
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: dist-windows
+          path: ${{ steps.build.outputs.dir }}/cayenne-assembly/target/cayenne-${{ needs.source.outputs.version }}-win.zip
+          if-no-files-found: error
+          retention-days: 7
+
+  mac:
+    name: Mac assembly
+    needs: source
+    uses: ./.github/workflows/build-mac.yml
+    with:
+      version: ${{ needs.source.outputs.version }}
+      java-version: ${{ inputs.java-version }}
+      sign: ${{ inputs.sign-mac }}
+    secrets: inherit
+
+  bundle:
+    name: Release bundle
+    needs: [source, generic, windows, mac]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out the workflow helpers
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          sparse-checkout: .github
+
+      - name: Download the distribution files
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          pattern: '{src-tarball,dist-*}'
+          path: dist/${{ needs.source.outputs.version }}
+          merge-multiple: true
+
+      - name: Check, checksum and summarize
+        env:
+          VERSION: ${{ needs.source.outputs.version }}
+          TAG: ${{ inputs.tag }}
+          COMMIT: ${{ needs.source.outputs.commit }}
+          MAC_SIGNED: ${{ inputs.sign-mac }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          RUN_ID: ${{ github.run_id }}
+          REPOSITORY: ${{ github.repository }}
+        run: .github/scripts/bundle-dist.sh "dist/$VERSION" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload the release bundle
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: cayenne-${{ needs.source.outputs.version }}-dist
+          path: dist/${{ needs.source.outputs.version }}/
+          if-no-files-found: error
+          retention-days: 30

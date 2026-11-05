@@ -1,0 +1,88 @@
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements. See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License. You may obtain a copy of the License at
+#
+# https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+name: Build from the source release
+description: >
+  Unpacks the source release tarball built by the "source" job of the "release dist" workflow and builds a binary
+  assembly from it, the same way the release guide does it by hand. This proves the voted source release builds.
+
+inputs:
+  version:
+    description: Release version, e.g. 5.0-M4
+    required: true
+  profile:
+    description: Platform assembly profile, combined with "assembly" (generic, mac or windows)
+    required: true
+  java-version:
+    description: JDK version to build with
+    required: false
+    default: '21'
+  maven-args:
+    description: Extra arguments passed to Maven
+    required: false
+    default: ''
+
+outputs:
+  dir:
+    description: The unpacked source tree, the assemblies are in its "cayenne-assembly/target"
+    value: ${{ steps.unpack.outputs.dir }}
+
+runs:
+  using: composite
+  steps:
+    - name: Download the source release
+      uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+      with:
+        name: src-tarball
+        path: ${{ runner.temp }}/src-tarball
+
+    # The source release has no binaries, so it has no Gradle wrapper jar. Restore it from the tag
+    - name: Download the Gradle wrapper
+      uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+      with:
+        name: gradle-wrapper
+        path: ${{ runner.temp }}/gradle-wrapper
+
+    - name: Unpack the source release
+      id: unpack
+      shell: bash
+      env:
+        VERSION: ${{ inputs.version }}
+      run: |
+        set -euo pipefail
+        cd "$RUNNER_TEMP"
+        tar -xzf "src-tarball/cayenne-$VERSION-src.tar.gz"
+        DIR="$RUNNER_TEMP/cayenne-$VERSION-src"
+        mkdir -p "$DIR/cayenne-gradle-plugin/gradle"
+        cp -R gradle-wrapper/. "$DIR/cayenne-gradle-plugin/gradle/"
+        echo "dir=$DIR" >> "$GITHUB_OUTPUT"
+
+    - name: Set up Java
+      uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+      with:
+        distribution: temurin
+        java-version: ${{ inputs.java-version }}
+
+    - name: Build the "${{ inputs.profile }}" assembly
+      shell: bash
+      working-directory: ${{ steps.unpack.outputs.dir }}
+      env:
+        PROFILE: ${{ inputs.profile }}
+        MAVEN_ARGS_EXTRA: ${{ inputs.maven-args }}
+      # MAVEN_ARGS_EXTRA is intentionally unquoted, to split it into separate arguments
+      run: |
+        set -euo pipefail
+        # shellcheck disable=SC2086
+        mvn -B -ntp clean install -DskipTests -Passembly,"$PROFILE" $MAVEN_ARGS_EXTRA
