@@ -31,7 +31,6 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -57,15 +56,14 @@ public class SchemaUpdateStrategyBase {
 		node = env.dataNode();
 		DataMap map = env.resolver().getDataMap("sus-map");
 
-		// Ensure that we run all drop queries on a single connection
-		try (Connection con = node.getDataSource().getConnection(); Statement st = con.createStatement()) {
-			for (String name : existingTables()) {
+		for (String name : existingTables()) {
+			// run in a transaction to ensure a single connection is used for all queries
+			env.runtime().performInTransaction(() -> {
 				for (String drop : node.getAdapter().dropTableStatements(map.getDbEntity(name))) {
-					st.execute(drop);
+					context.execute(SQLQuery.query(drop));
 				}
-			}
-		} catch (SQLException e) {
-			throw new CayenneRuntimeException(e);
+				return null;
+			});
 		}
 	}
 
