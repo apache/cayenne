@@ -20,7 +20,7 @@
 # Per the ASF policy (https://infra.apache.org/release-signing.html) the files are NOT GPG-signed here: the release
 # manager downloads the bundle and signs it locally with "build-tools/release/sign-and-stage.sh". The workflow only
 # reads the repository: the tag is made by "mvn release:prepare" on the release manager's machine.
-# See "build-tools/release/README.md".
+# See https://cayenne.apache.org/dev/release-guide.html
 
 name: release dist
 
