@@ -59,6 +59,7 @@ public class SQLExecIT {
                     .returnGeneratedKeys(true)
                     .execute(env.context());
             assertEquals(2, response.size());
+            assertEquals(1, ((UpdateResult) response.getLast()).count());
 
             List<QueryResult> response1 = SQLExec.query("testmap", "INSERT INTO GENERATED_COLUMN (NAME) VALUES ('Sidorov')")
                     .returnGeneratedKeys(false)

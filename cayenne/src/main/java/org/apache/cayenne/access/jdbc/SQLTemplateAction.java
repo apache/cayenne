@@ -178,6 +178,10 @@ public class SQLTemplateAction implements SQLAction {
             // process a mix of results
             boolean isResultSet = statement.execute();
 
+            // read the first update count before the generated keys, as some drivers (e.g. Derby) reset it once
+            // the generated keys are read
+            int firstUpdateCount = isResultSet ? -1 : statement.getUpdateCount();
+
             if (query.isReturnGeneratedKeys()) {
                 ResultSet generatedKeysResultSet = statement.getGeneratedKeys();
                 if (generatedKeysResultSet != null) {
@@ -187,9 +191,7 @@ public class SQLTemplateAction implements SQLAction {
 
             boolean firstIteration = true;
             while (true) {
-                if (firstIteration) {
-                    firstIteration = false;
-                } else {
+                if (!firstIteration) {
                     isResultSet = statement.getMoreResults();
                 }
 
@@ -212,13 +214,15 @@ public class SQLTemplateAction implements SQLAction {
                         }
                     }
                 } else {
-                    int updateCount = statement.getUpdateCount();
+                    int updateCount = firstIteration ? firstUpdateCount : statement.getUpdateCount();
                     if (updateCount == -1) {
                         break;
                     }
 
                     updateCounts.add(updateCount);
                 }
+
+                firstIteration = false;
             }
         } finally {
             if (!iteratedResult) {
