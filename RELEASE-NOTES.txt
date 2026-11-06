@@ -25,6 +25,10 @@ CAY-3067 Unified Query shape
 CAY-3068 Resolve queries ahead of execution
 CAY-3069 Combine ObjectSelect and ColumnSelect
 
+Bug fixes:
+
+CAY-3071 DataNodeSQLAction could lose update count info
+
 ----------------------------------
 Release: 5.0-RC1
 Date: Oct 30, 2026
