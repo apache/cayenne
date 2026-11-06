@@ -55,10 +55,13 @@ public class SchemaUpdateStrategyBase {
 		node = env.dataNode();
 		DataMap map = node.getEntityResolver().getDataMap("sus-map");
 		for (String name : existingTables()) {
-
-			for (String drop : node.getAdapter().dropTableStatements(map.getDbEntity(name))) {
-				context.execute(new SQLTemplate(Object.class, drop));
-			}
+			// run in a transaction to ensure a single connection is used for all queries
+			env.runtime().performInTransaction(() -> {
+				for (String drop : node.getAdapter().dropTableStatements(map.getDbEntity(name))) {
+					context.execute(new SQLTemplate<>(Object.class, drop));
+				}
+				return null;
+			});
 		}
 	}
 
