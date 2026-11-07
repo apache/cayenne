@@ -144,132 +144,358 @@
      while the other shapes failed anyway. Until a proper in-memory evaluation is designed, such expressions are for
      query qualifiers only.
 
-## What's New in 5.0
+## Upgrading from 4.2 to 5.0
 
-This is a high-level overview of 5.0 changes. Check the next section for milestone-by-milestone upgrade instructions.
+Cayenne 5.0 removes a lot of legacy API and changes the project structure. Read (or, more likely, feed the notes below 
+to your agent) to understand the changes that may be required to be done in your mapping and code.
 
-### New Dev Versioning Scheme
+If you are upgrading from a version older than 4.2, follow [UPGRADE-4.2-and-older.md](UPGRADE-4.2-and-older.md)
+first.
 
-Snapshot versions are now a constant value — the dev version of 5.0 will always be `5.0-SNAPSHOT`,
-so you can stay at the bleeding edge of development if needed:
+### Prerequisites and Build
 
-```xml
-<dependency>
-    <groupId>org.apache.cayenne</groupId>
-    <artifactId>cayenne</artifactId>
-    <version>5.0-SNAPSHOT</version>
-</dependency>
-```
+*  Per [CAY-2935](https://issues.apache.org/jira/browse/CAY-2935) the minimum required Java version is 21.
 
-### New Class Generation UI
+*  Per [CAY-2737](https://issues.apache.org/jira/browse/CAY-2737) all code deprecated in Cayenne 4.1 and 4.2 was
+   deleted. The most notable removal is `SelectQuery` (use `ObjectSelect`, see "Queries" below).
 
-The new Class Generation UI in CayenneModeler simplifies configuration, allows multiple `cgen` setups
-per project, and includes a template editor. Custom templates are now part of the project XML
-configuration and don't require separate setup in either Modeler or Maven/Gradle plugins.
+*  Per [CAY-2822](https://issues.apache.org/jira/browse/CAY-2822) the `cayenne-server` module is renamed to `cayenne`:
+   ```xml
+   <dependency>
+       <groupId>org.apache.cayenne</groupId>
+       <artifactId>cayenne</artifactId>
+       <version>{version}</version>
+   </dependency>
+   ```
 
-### Improved `(not)exists` Queries
+*  The `cayenne-project` module was split. The project XML upgrade handlers (`UpgradeHandler`, `UpgradeHandler_V10`
+   and later, `UpgradeType`) moved to the core `cayenne` module, package `org.apache.cayenne.project.upgrade`. The rest
+   (saving, validation and the file-level upgrade driver) was renamed to `cayenne-project-tools`, placed in the 
+   `org.apache.cayenne.projecttools` package. In an unlikely event that your code relied on `cayenne-project`, update
+   its coordinates.
 
-`(not)exists` is now directly supported by the Expression API (including `Expression`, the expression
-parser, and the Property API) — no need to construct a subquery manually. The feature can handle any
-expression and spawn several sub-queries per expression if needed:
+*  Per [CAY-2947](https://issues.apache.org/jira/browse/CAY-2947) the `cayenne-commitlog` artifact has been removed.
+   Commit log support is now part of the core `cayenne` artifact — no extra dependency needed. Migrate as follows:
+   - Remove the `cayenne-commitlog` dependency from your build.
+   - Replace `CommitLogModule.extend(binder).addListener(l).excludeFromTransaction()` with:
+     ```java
+     CoreModule.extend(binder).addCommitLogListener(l).excludeCommitLogFromTransaction();
+     ```
+   - Replace `@org.apache.cayenne.commitlog.CommitLog` on entity classes with
+     `@org.apache.cayenne.annotation.CommitLog`.
 
-```java
-long count = ObjectSelect.query(Artist.class)
-        .where(Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE).like("painting%").exists())
-        .selectCount(context);
-```
+*  The `groupId` of `cayenne-modeler` and `cayenne-wocompat` changed from `org.apache.cayenne.modeler` to
+   `org.apache.cayenne`. Artifact ids and versions are unchanged. If you depend on any of them directly, update the
+   coordinates:
+   ```xml
+   <dependency>
+       <groupId>org.apache.cayenne</groupId>
+       <artifactId>cayenne-modeler</artifactId>
+       <version>{version}</version>
+   </dependency>
+   ```
 
-### Improved SQL Support
+*  The following modules were removed, following the general direction of focusing on the Cayenne core and dropping
+   external integrations:
+   - `cayenne-client`, `cayenne-client-jetty`, `cayenne-rop-server`, `cayenne-protostuff`, `cayenne-web` (ROP and
+     web support)
+   - `cayenne-jgroups`, `cayenne-jms`, `cayenne-xmpp` (remote event bridges)
+   - `cayenne-dbcp2`, `cayenne-joda`
+   - `cayenne-modeler-maven-plugin` ([CAY-2925](https://issues.apache.org/jira/browse/CAY-2925)). Launch
+     CayenneModeler from the downloaded distribution instead. A CLI option exists for all platform flavors:
+     ```
+     java -jar CayenneModeler.jar path/to/cayenne-project.xml
+     ```
+   - `cayenne-osgi` ([CAY-3034](https://issues.apache.org/jira/browse/CAY-3034)). Users running Cayenne in an OSGi
+     container are welcome to copy the module's code into their own project: it consisted of a few small classes that
+     provide an OSGi-aware `ClassLoaderManager` and a `Provider<DataDomain>` that swaps the thread context ClassLoader
+     while the `DataDomain` is created, bound via a `CayenneRuntime` module.
+   - `cayenne-lifecycle` ([CAY-3035](https://issues.apache.org/jira/browse/CAY-3035)). It was an opinionated way of
+     encoding `ObjectId`s as Strings (`IdCoder`, `EntityIdCoder`, `StringIdFetcher`), with an even more opinionated
+     `@ObjectIdRelationship` annotation and `ObjectIdRelationshipFilter` on top of it to resolve "virtual"
+     relationships stored as such String IDs. There's no appetite to keep supporting this in Cayenne. The users who
+     still need it are welcome to grab the source code of `IdCoder` and friends from the Cayenne git history and
+     incorporate it in their projects.
+   - `cayenne-project-compatibility` ([CAY-3036](https://issues.apache.org/jira/browse/CAY-3036)). The runtime now
+     upgrades older project XML on its own, see "Project XML and CayenneModeler" below.
 
-`ANY` and `ALL` subqueries are now supported, as well as `case-when` expressions:
+### Project XML and CayenneModeler
 
-```java
-import static org.apache.cayenne.exp.ExpressionFactory.*;
-// ...
-Expression caseWhenExp = caseWhen(
-        List.of(betweenExp("estimatedPrice", 0, 9),
-                betweenExp("estimatedPrice", 10, 20)),
-        List.of(wrapScalarValue("low"),
-                wrapScalarValue("high")),
-        wrapScalarValue("error"));
-```
+*  The project XML version is bumped to 14. Projects are upgraded automatically, either in memory by the runtime, or
+   permanently by CayenneModeler:
+   - Per [CAY-3036](https://issues.apache.org/jira/browse/CAY-3036) the runtime upgrades project XML created by
+     older Cayenne versions on its own, in memory and without extra dependencies, logging a warning that recommends a
+     permanent upgrade in CayenneModeler. An upgrade that would drop a part of the project without a replacement
+     (e.g. DataNodes, or a `SQLTemplate` with a fetch limit, see below) still fails to load; open such a project in
+     CayenneModeler to upgrade it.
+   - Per [CAY-3041](https://issues.apache.org/jira/browse/CAY-3041) the oldest project that can be upgraded is of
+     version 9, i.e. the one created by Cayenne 4.0. The older projects (versions 6 to 8, created by Cayenne 3.1 or
+     the early 4.0 milestones) must first be upgraded with CayenneModeler 4.2 or older.
 
-### Queries Parsed from Strings - a Replacement for EJBQLQuery
+*  The upgrade changes the XML format itself. Any custom code or scripts that read or generate the project XML must
+   be updated:
+   - Per [CAY-3041](https://issues.apache.org/jira/browse/CAY-3041) all tags and attributes use camelCase, so the
+     hyphenated names were renamed: e.g. `data-map` is now `dataMap`, `db-entity` is `dbEntity` and
+     `db-attribute-path` is `dbAttributePath`. The `project-version` attribute of the root tags was removed, as the
+     version is already a part of the schema namespace (e.g. `http://cayenne.apache.org/schema/14/dataMap`). The
+     boolean attributes of `dbAttribute` lost the "is" prefix (`isMandatory` is now `mandatory`, etc.), and the delete
+     rules are stored in lowercase (`nullify`, `cascade`, `deny`).
+   - Per [CAY-3042](https://issues.apache.org/jira/browse/CAY-3042) "domain" is now called "project" in the project
+     XML, the API and CayenneModeler. The root tag of the project XML is `project` instead of `domain`.
+   - Per [CAY-3037](https://issues.apache.org/jira/browse/CAY-3037) a `SelectQuery` in a DataMap is stored as a
+     single query String in the syntax of `ObjectSelect.parse(..)`, instead of the root attributes and the separate
+     `qualifier`, `ordering` and `prefetch` elements. CayenneModeler edits a mapped `ObjectSelect` as a query String.
+     A query String that can't be parsed no longer fails the DataMap loading: the
+     query fails when executed, and the project validator reports it.
 
-`ObjectSelect` and `ColumnSelect` can now be created from a String, which is intended as a replacement for
-`EJBQLQuery`. The new query language (QL) is 100% aligned with the structure of those two queries and the parser produces 
-a regular `ObjectSelect` or `ColumnSelect`, the same as the one built with the fluent API:
+*  The upgrade drops the parts of the project that have no replacement in 5.0, reporting each removal:
+   - Per [CAY-2981](https://issues.apache.org/jira/browse/CAY-2981) DataNodes are no longer a part of the XML mapping.
+     Every `<node>` element is dropped. DataNodes / DataSources are defined in runtime instead, see "Runtime Bootstrap
+     and Dependency Injection" below. In CayenneModeler, the DataNode editors and the "Create DataNode" / "Link
+     DataMap" actions were removed.
+   - Per [CAY-2937](https://issues.apache.org/jira/browse/CAY-2937) the visual graph feature (entity layout diagrams)
+     has been removed from CayenneModeler. Existing `.graph.xml` files are deleted and their references removed from
+     `cayenne-project.xml`.
+   - Per [CAY-3038](https://issues.apache.org/jira/browse/CAY-3038) an `EJBQLQuery` stored in a DataMap is dropped
+     with a warning, as there is no automatic conversion of EJBQL to the new query language. It must be recreated as
+     an `ObjectSelect` query String, see `EJBQLQuery` under "Queries" below.
+   - Per [CAY-3040](https://issues.apache.org/jira/browse/CAY-3040) a fetch limit or offset of a `SQLTemplate`
+     stored in a DataMap is dropped, and must be moved into the query SQL. A DataMap with such a query can not be
+     upgraded in memory by the runtime; open the project in CayenneModeler to upgrade it.
 
-```java
-// EJBQL
-EJBQLQuery<Artist> query = new EJBQLQuery<>(
-        "select a from Artist a where a.artistName like :name order by a.dateOfBirth desc");
-query.setParameter("name", "A%");
-List<Artist> artists = context.select(query);
+*  Per [CAY-3042](https://issues.apache.org/jira/browse/CAY-3042) the project API follows the "domain" to "project"
+   rename. `DataChannelDescriptor` was renamed to `Project`, `ConfigurationNode` to `ProjectNode`, and the related
+   classes follow (`ProjectLoader`, `ProjectMerger`, `ProjectMetaData`, `ProjectNodeVisitor`, etc.). The old
+   `org.apache.cayenne.project.Project` wrapper, `ProjectLoader` of the `cayenne-project` module and
+   `ConfigurationTree` were removed: `ProjectLoader` returns a `Project`, and `ProjectSaver` takes a `ProjectNode`. The
+   runtime `DataDomain` is not affected.
 
-// the same query as a parsed ObjectSelect
-List<Artist> artists = ObjectSelect
-        .parse(Artist.class, "from Artist where artistName like $name order by dateOfBirth desc", "A%")
-        .select(context);
+### Runtime Bootstrap and Dependency Injection
 
-// More examples:
-List<Object[]> counts = ObjectSelect
-        .parseColumns("select self, count(paintingArray) from Artist having count(paintingArray) > 2")
-        .select(context);
+*  Per [CAY-2981](https://issues.apache.org/jira/browse/CAY-2981) DataNodes are no longer a part of the XML mapping.
+   DataNodes / DataSources are defined in runtime, and DataMaps are linked to them in runtime as well. A node is 
+   defined either from a bare `DataSource`, or from a `DataNodeDescriptor`. The `DataSource` flavor is a
+   shortcut for a node that needs no customization — it gets a generated name and the default settings:
+   ```java
+   DataSource dataSource = CayenneDataSource.of("jdbc:postgresql://localhost:5432/mydb")
+           .userName("user")
+           .password("secret")
+           .pool(1, 5)
+           .build();
 
-List<Artist> withExpensivePaintings = ObjectSelect
-        .parse(Artist.class, """
-                from Artist where exists (
-                    from Painting where toArtist = enclosing(self) and estimatedPrice > $price)""", 1000)
-        .select(context);
+   CayenneRuntime runtime = CayenneRuntime.of()
+           .addConfig("cayenne-project.xml")
+           .defaultDataNode(dataSource)
+           .build();
+   ```
 
-// parameters bound by name, the equivalent of EJBQLQuery.setParameter(name, value). A parameter without a value
-// is dropped from the query together with its condition
-List<Artist> artists = ObjectSelect
-        .parse(Artist.class, "from Artist where artistName like $name and dateOfBirth > $born", Map.of("name", "A%"))
-        .select(context);
-```
+   Use a `DataNodeDescriptor` when the node has to be customized, e.g., to let Cayenne create the
+   schema on the first connection, pin the adapter, give the node a stable name, etc.:
+   ```java
+   DataNodeDescriptor node = DataNodeDescriptor.of("node1")
+                   .dataSource(dataSource)
+                   .createSchemaIfNeeded()
+                   .build();
+   CayenneRuntime runtime = CayenneRuntime.of()
+           .addConfig("cayenne-project.xml")
+           .defaultDataNode(node)
+           .build();
+   ```
 
-## Upgrading to 5.0-RC1
+   Both flavors work with any number of nodes. Projects that used to declare several `<node>`s link each node to its
+   DataMaps by name, mixing the two forms as needed. A default node remains optional, and picks up every DataMap not
+   linked to a node explicitly:
+   ```java
+   CayenneRuntime runtime = CayenneRuntime.of()
+           .addConfig("cayenne-project.xml")
+           .addDataNode(ds1, "map1", "map2")
+           .addDataNode(DataNodeDescriptor.of("node2").dataSource(ds2).createSchemaIfNeeded().build(), "map3")
+           .defaultDataNode(ds3)
+           .build();
+   ```
+   `cayenne.jdbc.*` properties are still recognized.
 
-*  Per [CAY-2826](https://issues.apache.org/jira/browse/CAY-2826) `CoreModule` and `CoreModuleExtender` were moved from
-   `org.apache.cayenne.configuration.runtime` to the `org.apache.cayenne` package — fix your imports accordingly.
+   Core API changes:
+   - Nodes defined from a bare `DataSource` are named after the domain (`cayenne-0`, `cayenne-1`, ...). Use a
+     `DataNodeDescriptor` if you need a stable name for `DataDomain.getDataNode(String)`,
+     `CayenneRuntime.getDataSource(String)` or `SQLTemplate.setDataNodeName(String)`.
+   - `org.apache.cayenne.configuration.runtime.DataSourceFactory` was removed and is no longer an extension point
+   - `org.apache.cayenne.configuration.runtime.DbAdapterFactory` was removed and is no longer an extension point.
+     A recommended way to add a custom adapter is `CoreModule.extend(binder).addAdapterDetector(...)`, or you can set
+     it directly on DataNodeDescriptor
+   - `org.apache.cayenne.access.dbsync.SchemaUpdateStrategyFactory` was removed and is no longer an extension point.
+     Set it directly on DataNodeDescriptor if needed.
 
-*  The `cayenne-project` module was renamed to `cayenne-project-tools`, and its `org.apache.cayenne.project` package to
-   `org.apache.cayenne.projecttools`. `ProjectModule`, `ProjectModuleExtender` and `ProjectModuleProvider` are now
-   `ProjectToolsModule`, `ProjectToolsModuleExtender` and `ProjectToolsModuleProvider`. Update the dependency and fix
-   your imports accordingly.
+*  Per [CAY-2823](https://issues.apache.org/jira/browse/CAY-2823) `ServerRuntime` is deprecated. Use
+   `org.apache.cayenne.CayenneRuntime` instead. Per [CAY-2826](https://issues.apache.org/jira/browse/CAY-2826)
+   `ServerModule` is renamed to `CoreModule`, and `CoreModule` / `CoreModuleExtender` live in the `org.apache.cayenne`
+   package. The new builder pattern combining both changes:
+   ```java
+   CayenneRuntime runtime = CayenneRuntime.of()
+           .addConfig("cayenne-project.xml")
+           .addModule(b -> CoreModule.extend(b).setProperty("some_property", "some_value"))
+           .build();
+   ```
 
-*  The `org.apache.cayenne.configuration` package of the core module and its `xml` and `upgrade` subpackages were
-   renamed to `org.apache.cayenne.project` (`Project`, `ProjectLoader`, `DataNodeDescriptor`, etc.) — fix your imports
-   accordingly. The deprecated `ServerRuntime` stays in `org.apache.cayenne.configuration.server`.
+*  Per [CAY-2772](https://issues.apache.org/jira/browse/CAY-2772) most modules, including the core one, is now
+   customized through a Binder-aware "extender", which is more convenient than the earlier "contributeXyz" and "extend"
+   methods:
+   ```java
+   // before
+   ServerRuntime.builder()
+           .addModule(binder -> ServerModule.contributeUserTypes(binder).add(new MyType()))
+           .addModule(CacheInvalidationModule.extend().addHandler(MyHandler.class).module())
+           .build();
 
-*  `RuntimeProperties` and `DefaultRuntimeProperties` were moved from `org.apache.cayenne.configuration` to the
-   `org.apache.cayenne` package. The `org.apache.cayenne.configuration.Constants` interface is deprecated and only
-   keeps the constants it had in 4.2 as aliases of the new ones:
-   - The DI collection keys (`PROPERTIES_MAP`, `DEFAULT_TYPES_LIST`, `USER_TYPES_LIST`, `TYPE_FACTORIES_LIST`, etc.)
-     are now defined in `CoreModule`. E.g. a custom `DbAdapter` constructor should use
-     `@Inject(CoreModule.USER_TYPES_LIST)` instead of `@Inject(Constants.SERVER_USER_TYPES_LIST)`.
-   - The property names (`JDBC_URL_PROPERTY`, `EXTERNAL_TX_PROPERTY`, `QUERY_CACHE_SIZE_PROPERTY`, etc.) are now
-     defined in `RuntimeProperties`.
-   - The unused `RESOURCE_LOCATOR` key was removed.
+   // after
+   CayenneRuntime.of()
+           .addModule(b -> CoreModule.extend(b).addUserExtendedType(new MyType()))
+           .addModule(b -> CacheInvalidationModule.extend(b).addHandler(MyHandler.class))
+           .build();
+   ```
 
-*  Per [CAY-2875](https://issues.apache.org/jira/browse/CAY-2875) a `java.util.UUID` attribute now honors the JDBC
-   type of the column it is mapped to, instead of always being converted to a 36-char string:
+*  Per [CAY-2824](https://issues.apache.org/jira/browse/CAY-2824) `CayenneServerModuleProvider` was renamed to
+   `CayenneRuntimeModuleProvider` and moved to the `org.apache.cayenne` package. If you are using the auto-loading
+   mechanism for your custom modules, update your `META-INF/services` reference accordingly.
 
-   - A binary column (`BINARY`, `VARBINARY`, `LONGVARBINARY`) stores the UUID in its 16-byte big-endian form, most
-     significant bits first. `VARBINARY(16)` is the recommended mapping for new models — it uses less than half the
-     space of `VARCHAR(36)` and indexes better.
-   - A character column keeps storing the canonical string, so existing models are unaffected and need no data
-     migration.
-   - Any other JDBC type is passed to the driver as an object, which makes a PostgreSQL native `uuid` column work.
+*  Several core packages were renamed — fix your imports accordingly:
 
-   `UUIDValueType` is deprecated and no longer registered, replaced by
-   `org.apache.cayenne.access.types.UUIDType`.
+   | 4.2                                                                    | 5.0                                                                                   |
+   |------------------------------------------------------------------------|---------------------------------------------------------------------------------------|
+   | `org.apache.cayenne.configuration.server` ([CAY-2825](https://issues.apache.org/jira/browse/CAY-2825)) | `org.apache.cayenne.configuration.runtime` (the deprecated `ServerRuntime` stays in `configuration.server`) |
+   | `org.apache.cayenne.configuration.server.ServerModule`                 | `org.apache.cayenne.CoreModule`                                                       |
+   | `org.apache.cayenne.configuration` and its `xml` and `upgrade` subpackages (`Project`, `ProjectLoader`, `DataNodeDescriptor`, etc.) | `org.apache.cayenne.project`                              |
+   | `org.apache.cayenne.configuration.RuntimeProperties`, `DefaultRuntimeProperties` | `org.apache.cayenne.RuntimeProperties`, `DefaultRuntimeProperties`          |
+   | `org.apache.cayenne.project` (the `cayenne-project` module)            | `org.apache.cayenne.projecttools` (the `cayenne-project-tools` module)                |
 
-*  Per [CAY-3007](https://issues.apache.org/jira/browse/CAY-3007) `SelectById` is deprecated. Instead, use `ObjectSelect`
-   directly with the new `byId(..)` and `byIds(..)` methods:
+*  Per [CAY-2828](https://issues.apache.org/jira/browse/CAY-2828) the `server` prefix was removed from the names of
+   runtime properties. Update deployment scripts, startup flags and config files that set them as system properties.
+   The `cayenne.jdbc.*` properties and the other properties not listed here are unchanged:
 
+   | 4.2                                                     | 5.0                                                                 |
+   |---------------------------------------------------------|---------------------------------------------------------------------|
+   | `cayenne.server.domain.name`                            | `cayenne.domain.name`                                               |
+   | `cayenne.server.external_tx`                            | `cayenne.external_tx`                                               |
+   | `cayenne.server.contexts_sync_strategy`                 | `cayenne.contexts_sync_strategy`                                    |
+   | `cayenne.server.object_retain_strategy`                 | `cayenne.object_retain_strategy`                                    |
+   | `cayenne.server.max_id_qualifier_size`                  | `cayenne.max_id_qualifier_size`                                     |
+   | `cayenne.server.query_execution_time_logging_threshold` | `cayenne.query_execution_time_logging_threshold`, but ignored, see [CAY-2912](https://issues.apache.org/jira/browse/CAY-2912) below |
+   | `cayenne.server.rop_event_bridge_factory`               | removed with ROP                                                    |
+
+   The constants for the property names moved from `org.apache.cayenne.configuration.Constants` to
+   `RuntimeProperties` (`EXTERNAL_TX_PROPERTY`, `MAX_ID_QUALIFIER_SIZE_PROPERTY`, etc.).
+
+*  Per [CAY-2751](https://issues.apache.org/jira/browse/CAY-2751) there is no more JNDI DataSource provided by
+   Cayenne, nor password encoding capabilities. If you need these, provide your own custom DataSource.
+
+*  The thread-bound runtime is gone: `CayenneRuntime.bindThreadInjector(..)` and `getThreadInjector()` were
+   removed without a replacement. Keep the `CayenneRuntime` in your application's own scope (a static holder, a DI
+   singleton, a `ScopedValue`) and pass it or its contexts to the code that needs them. `BaseContext` was removed as
+   well; its thread-bound `ObjectContext` moved to `DataContext.getThreadObjectContext()` /
+   `bindThreadObjectContext(..)` and is deprecated for removal, so treat it the same way:
+   ```java
+   // before
+   CayenneRuntime.bindThreadInjector(runtime.getInjector());
+   BaseContext.bindThreadObjectContext(runtime.newContext());
+   ObjectContext context = BaseContext.getThreadObjectContext();
+
+   // after: no thread-bound runtime; thread-bound context still works, but is deprecated
+   DataContext.bindThreadObjectContext(runtime.newContext());
+   ObjectContext context = DataContext.getThreadObjectContext();
+   ```
+
+### Persistent Objects and Generated Code
+
+*  Per [CAY-2845](https://issues.apache.org/jira/browse/CAY-2845) the `DataObject` interface and the `BaseDataObject`
+   class were deprecated and all logic moved to the `Persistent` interface and the `PersistentObject` class.
+   `CayenneDataObject` and `HybridDataObject` were removed; the default superclass of generated classes is
+   `GenericPersistentObject`. A JSON mapper that introspects bean properties sees the same Cayenne getters on
+   `PersistentObject` as before plus one more: `getObjectContext()`, `getObjectId()`, `getPersistenceState()` and
+   now `getSnapshotVersion()`. Update Jackson mixins or `@JsonIgnore` lists that were written against `BaseDataObject`
+   or `CayenneDataObject`.
+
+*  `PersistentObjectList`, `PersistentObjectMap` and the other `ValueHolder`-based collections were removed with ROP.
+   `ToManyList`, the to-many collection of a `PersistentObject`, no longer extends `PersistentObjectList`; declare
+   and check against `ToManyList` or plain `List`.
+
+*  Per [CAY-3020](https://issues.apache.org/jira/browse/CAY-3020) Cayenne no longer supports Java serialization of
+   contexts, queries and mapping objects. `Persistent`, `ObjectContext`, `ObjectId`, `Query`, `Expression`, `Ordering`,
+   `EntityResolver`, `DataMap`, etc. do not implement `java.io.Serializable` anymore, and the custom
+   `readObject` / `writeObject` logic that re-attached deserialized contexts and objects to the runtime is gone. The
+   class generation templates no longer emit `serialVersionUID`, `writeObject` / `readObject` and
+   `writeState` / `readState`.
+
+*  Class generation (`cgen`) changed in a few ways:
+   - Custom templates are now part of the project XML configuration, edited in the Class Generation UI of
+     CayenneModeler (which also allows multiple `cgen` setups per project), and don't require a separate setup in
+     either the Modeler or the Maven / Gradle plugins. Per
+     [CAY-2752](https://issues.apache.org/jira/browse/CAY-2752) the code generation configuration of the Maven, Gradle
+     and Ant plugins has minor changes — review and update the configs accordingly.
+   - Per [CAY-2986](https://issues.apache.org/jira/browse/CAY-2986) cgen now runs unconditionally. Previously it
+     compared the DataMap file mtime against the mtime of the generated classes and skipped generation when the
+     classes looked newer. That optimization saved very little (cgen is idempotent and fast) while regularly
+     producing stale classes after project upgrades or when switching between machines and branches. The `force`
+     flag is now a deprecated no-op — its former behavior is the only behavior.
+   - Per [CAY-3023](https://issues.apache.org/jira/browse/CAY-3023) the templates emit `List<QueryResult>` instead of
+     the old `QueryResult<?>` for the `perform*` methods of mapped exec queries (see "Queries" below).
+
+*  Regenerate your model classes once the project XML is upgraded, via the cgen tool in CayenneModeler ("Tools" →
+   "Generate Classes"), the Maven / Gradle plugins or the AI plugin. This picks up the `Persistent` superclass, the
+   removed serialization code and the new query result types in one go.
+
+### Queries
+
+*  `SelectQuery`, deprecated in 4.2, was removed per [CAY-2737](https://issues.apache.org/jira/browse/CAY-2737). Use
+   `ObjectSelect` instead.
+
+*  Per [CAY-3038](https://issues.apache.org/jira/browse/CAY-3038) `EJBQLQuery` was removed. The replacement is an
+   `ObjectSelect` or `ColumnSelect` parsed from a String with `ObjectSelect.parse(..)` / `parseColumns(..)`. The query
+   language (QL) follows the structure of those two queries, and the parser produces a regular `ObjectSelect` or
+   `ColumnSelect`, the same as the one built with the fluent API. There is no automatic conversion of EJBQL to QL, so
+   each query must be rewritten by hand:
+   ```java
+   // before
+   EJBQLQuery<Artist> query = new EJBQLQuery<>(
+           "select a from Artist a where a.artistName like :name order by a.dateOfBirth desc");
+   query.setParameter("name", "A%");
+   List<Artist> artists = context.select(query);
+
+   // after
+   List<Artist> artists = ObjectSelect
+           .parse(Artist.class, "from Artist where artistName like $name order by dateOfBirth desc", "A%")
+           .select(context);
+
+   // parameters bound by name, the equivalent of EJBQLQuery.setParameter(name, value). A parameter without a value
+   // is dropped from the query together with its condition
+   List<Artist> artists = ObjectSelect
+           .parse(Artist.class, "from Artist where artistName like $name and dateOfBirth > $born", Map.of("name", "A%"))
+           .select(context);
+
+   // column queries, aggregates and subqueries
+   List<Object[]> counts = ObjectSelect
+           .parseColumns("select self, count(paintingArray) from Artist having count(paintingArray) > 2")
+           .select(context);
+
+   List<Artist> withExpensivePaintings = ObjectSelect
+           .parse(Artist.class, """
+                   from Artist where exists (
+                       from Painting where toArtist = enclosing(self) and estimatedPrice > $price)""", 1000)
+           .select(context);
+   ```
+   QL is a select-only language. The EJBQL bulk `UPDATE` and `DELETE` statements have no replacement; rewrite them as
+   SQL run via `SQLExec`:
+   ```java
+   // before
+   context.performGenericQuery(new EJBQLQuery("delete from Painting p where p.estimatedPrice < 100"));
+
+   // after
+   SQLExec.query("DELETE FROM PAINTING WHERE ESTIMATED_PRICE < 100").execute(context);
+   ```
+   An `EJBQLQuery` stored in a DataMap is dropped by the project upgrade with a warning, and must be recreated in
+   CayenneModeler as an `ObjectSelect` query String.
+
+*  Per [CAY-3007](https://issues.apache.org/jira/browse/CAY-3007) `SelectById` is deprecated. Instead, use
+   `ObjectSelect` directly with the new `byId(..)` and `byIds(..)` methods:
    ```java
    // before
    Artist a = SelectById.query(Artist.class, 42).selectOne(ctx);
@@ -281,15 +507,204 @@ List<Artist> artists = ObjectSelect
    List<Artist> list = ObjectSelect.query(Artist.class).byIds(1, 2, 3).select(ctx);
    DataRow row = ObjectSelect.query(Artist.class).byId(42).fetchDataRows().selectOne(ctx);
    ```
-
    The same matches are available as expressions via the entity `SELF` property (`Artist.SELF.eqId(42)`,
    `Artist.SELF.idsIn(1, 2, 3)`, `Artist.SELF.eqIdMap(map)`, etc.) and on to-one relationship properties.
 
+*  Per [CAY-3022](https://issues.apache.org/jira/browse/CAY-3022) the `ObjectContext` query API was cleaned up:
+   - `ObjectContext.performGenericQuery(Query)` was renamed to `execute(Query)`.
+   - `ObjectContext.performQuery(Query)` and `Cayenne.objectForQuery(ObjectContext, Query)` are deprecated in favor
+     of `ObjectContext.select(Select)` and `ObjectContext.selectOne(Select)`. `SQLTemplate` and `ProcedureQuery` now
+     implement `Select<T>`, so every selecting query can be passed to `select(..)`.
+   - The `DataContext` convenience methods `performNonSelectingQuery(..)` and `performQuery(String, ..)` (all
+     flavors) are deprecated. Use `execute(Query)`, `update(Query)`, and
+     `MappedSelect.query(name).select(context)` instead.
+   - `DataContext.performIteratedQuery(Query)` was removed. Use `ObjectContext.iterator(Select)` instead; to iterate
+     over `DataRow`s, pass a `DataRow` query, e.g. `ObjectSelect.dataRowQuery(Artist.class)` or
+     `SQLSelect.dataRowQuery(sql)`.
+
+   ```java
+   // before
+   List<Artist> artists = context.performQuery(new SQLTemplate(Artist.class, "SELECT * FROM ARTIST"));
+   QueryResponse response = context.performGenericQuery(SQLExec.query("DELETE FROM ARTIST"));
+
+   // after
+   List<Artist> artists = context.select(new SQLTemplate<>(Artist.class, "SELECT * FROM ARTIST"));
+   List<QueryResult> result = context.execute(SQLExec.query("DELETE FROM ARTIST"));
+   ```
+
+*  Per [CAY-3023](https://issues.apache.org/jira/browse/CAY-3023) `QueryResult` was redesigned from a class holding
+   the entire multipart result to a sealed interface describing a single item of it. `SQLExec.execute(..)`,
+   `MappedExec.execute(..)` and `ProcedureCall.call(..)` now return a `List<QueryResult>` holding the items in the
+   order the query produced them, so callers that know the shape of their query should access them by index.
+   `QueryResult` has four permitted subtypes: the `SelectResult`, `UpdateResult` and `OutParametersResult` records,
+   and `ResultIterator`, reported directly as an item of an iterated query. They replace the `isSelectResult()` /
+   `getSelectResult()` / `getUpdateCount()` accessors, so a multipart result can also be scanned with a
+   pattern-matching switch:
+   ```java
+   List<QueryResult> result = SQLExec.query(sql).execute(context);
+   int updated = ((UpdateResult) result.getFirst()).count();
+
+   for (QueryResult item : result) {
+       switch (item) {
+           case SelectResult<?> select -> process(select.objects());
+           case UpdateResult update -> process(update.counts());
+           case ResultIterator<?> iterator -> process(iterator);
+           case OutParametersResult out -> process(out.values());
+       }
+   }
+   ```
+   Stored procedure OUT parameters are no longer disguised as a one-row result set. They arrive as a dedicated
+   `OutParametersResult` item (a map keyed by parameter name).
+
+*  Per [CAY-3024](https://issues.apache.org/jira/browse/CAY-3024) `org.apache.cayenne.QueryResponse` was removed.
+   Everything that used to return a `QueryResponse` - `ObjectContext.performGenericQuery(..)`, etc. - now returns
+   `List<QueryResult>`. See CAY-3023 above for the example of how to process the result. Custom
+   `DataChannelQueryFilter` implementations now require a new signature (see "Stack Customizations" below).
+
+*  Per [CAY-3014](https://issues.apache.org/jira/browse/CAY-3014) `org.apache.cayenne.query.QueryChain` was removed.
+   To run several queries together, execute them one by one, wrapping them in an explicit transaction if they must
+   share one:
+   ```java
+   runtime.performInTransaction(() -> {
+       List<Artist> artists = ObjectSelect.query(Artist.class).select(context);
+       List<Painting> paintings = ObjectSelect.query(Painting.class).select(context);
+       return null;
+   });
+   ```
+
+*  Per [CAY-3015](https://issues.apache.org/jira/browse/CAY-3015) `org.apache.cayenne.query.RefreshQuery` was
+   removed. It was not a query, but a carrier for four cache management operations, each of which has a direct
+   replacement:
+   - `new RefreshQuery(objects)` / `new RefreshQuery(object)` &rarr; `context.invalidateObjects(objects)`. In nested
+     contexts, there was previously an issue with cascading invalidation (intermediate contexts would not get
+     invalidated). This was fixed in the current version of `invalidateObjects`.
+   - `new RefreshQuery("group1", "group2")` &rarr; `runtime.getDataDomain().getQueryCache().removeGroup("group1")`,
+     once per group.
+   - `new RefreshQuery(query)` &rarr; run the query itself, with its cache strategy set to `LOCAL_CACHE_REFRESH` or
+     `SHARED_CACHE_REFRESH`. A query with no caching needs no change, as refreshing it was the same as running it:
+     ```java
+     ObjectSelect.query(Artist.class)
+             .cacheStrategy(QueryCacheStrategy.SHARED_CACHE_REFRESH)
+             .cacheGroup("artists")
+             .select(context);
+     ```
+   - `new RefreshQuery()` (refresh everything) has no direct replacement. To start over, create a new
+     `ObjectContext`. To also drop shared state, call `runtime.getDataDomain().getQueryCache().clear()` and
+     `runtime.getDataDomain().getSharedSnapshotCache().clear()`.
+
+*  Per [CAY-3016](https://issues.apache.org/jira/browse/CAY-3016) `org.apache.cayenne.query.RelationshipQuery` was
+   removed. It was an internal mechanism for resolving relationship faults. If you were running it explicitly, use
+   `ObjectSelect` matching on the reverse relationship instead:
+   ```java
+   // before
+   // List<Painting> paintings = context.performQuery(new RelationshipQuery(artist.getObjectId(), "paintingArray"));
+
+   // after
+   List<Painting> paintings = ObjectSelect.query(Painting.class)
+           .where(Painting.TO_ARTIST.eq(artist))
+           .select(context);
+   ```
+
+*  Per [CAY-3021](https://issues.apache.org/jira/browse/CAY-3021) `org.apache.cayenne.query.ObjectIdQuery` was
+   removed. It was an internal mechanism for resolving objects by id via the caches. Its use cases have direct
+   replacements:
+   ```java
+   // object lookup via the caches (ObjectIdQuery.CACHE)
+   Artist a = (Artist) context.objectForPK(id);
+
+   // forced refresh from the database (ObjectIdQuery.CACHE_REFRESH)
+   Artist a = ObjectSelect.query(Artist.class).where(Artist.SELF.eqId(id)).selectOne(context);
+
+   // committed snapshot lookup (fetchingDataRows == true), from the snapshot cache or the database
+   DataRow row = context.getObjectStore().getSnapshot(id);
+
+   // committed snapshot lookup in the snapshot cache only (ObjectIdQuery.CACHE_NOREFRESH)
+   DataRow row = context.getObjectStore().getCachedSnapshot(id);
+   ```
+
+*  Per [CAY-3032](https://issues.apache.org/jira/browse/CAY-3032) a `ColumnSelect` with an entity column over a
+   to-many relationship no longer filters out the root rows that have no related objects. It now uses an outer join,
+   same as the to-one entity columns always did, so such rows are returned with a `null` in place of the related
+   object:
+   ```java
+   List<Object[]> rows = ObjectSelect
+       .columnQuery(Artist.class, Artist.ARTIST_NAME, Artist.PAINTING_ARRAY.flat())
+       .select(context);
+
+   // before: artists with no paintings were missing from the result
+   // after: they are present as ["artist name", null]
+   ```
+   If you relied on the old behavior, check the related object for `null`, or exclude such rows explicitly by
+   adding a condition on the relationship path to `where(..)` (e.g. `Artist.PAINTING_ARRAY.exists()`). Entity columns
+   whose path is also used in the `where(..)` clause are not affected, as they share the join with the qualifier.
+   Scalar columns (`Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE)`) and aggregates are not affected either.
+
+*  Per [CAY-3050](https://issues.apache.org/jira/browse/CAY-3050) `DataRow` is now immutable: `put`, `putAll`,
+   `remove` and `clear` throw `UnsupportedOperationException`, including on rows returned by `dataRows()` queries.
+
+### Expressions
+
+*  Per [CAY-3039](https://issues.apache.org/jira/browse/CAY-3039) the expression node classes are no longer tied to
+   the parser. They moved from `org.apache.cayenne.exp.parser` to `org.apache.cayenne.exp` and lost the `AST` prefix:
+   `ASTObjPath` is now `ObjPathExp`, `ASTEqual` is `EqualExp`, `ASTAnd` is `AndExp`, etc. The rename is mechanical
+   and can be done with a search and replace: drop the `AST` prefix and append `Exp`. The only 4.2 node classes
+   without a counterpart are the parser-internal `ASTEnum` and `ASTNamedParameter`: enum literals and `$name`
+   placeholders are now plain operands (`EnumRef`, `ExpressionParameter`) of the enclosing node.
+
+   Expression nodes no longer know their parent, so `jjtGetParent()` / `jjtSetParent(n)` have no replacement. As a
+   result an expression can be shared between trees: `a.andExp(b)` no longer changes how `a` itself prints, and a node
+   taken out of a tree prints without the parentheses it used to keep.
+
+   The node classes are now a sealed hierarchy, and the kind of node is its class. `Expression.getType()`,
+   `Expression.setType(..)` and the `Expression.OBJ_PATH`, `Expression.EQUAL_TO`, etc. int constants are removed
+   without replacement: use `instanceof` or a pattern-matching `switch` over `ObjPathExp`, `EqualExp`, etc. instead.
+   This also removed the int-typed factory methods: `ExpressionFactory.expressionOfType(int)` and
+   `ExpressionFactory.joinExp(int, ..)` are gone (use `ExpressionFactory.and(..)` / `or(..)`), and so are
+   `Expression.joinExp(int, ..)` (use `andExp(..)` / `orExp(..)`). `ExpressionFactory.matchAllExp(Map, int)`,
+   `matchAnyExp(Map, int)`, `matchAllDbExp(Map, int)` and `matchAnyDbExp(Map, int)` lost the pair type parameter and
+   always match by equality.
+
+### Database and SQL Behavior
+
+*  Per [CAY-2954](https://issues.apache.org/jira/browse/CAY-2954) selecting queries are no longer wrapped in
+   transactions internally by Cayenne. Using connections in "auto-commit" mode instead has a significant positive
+   impact on DB performance. This should not affect manually-managed transactions. But in theory, in some rare cases
+   this may still change consistency behavior of disjoint prefetches (as multiple related selects will no longer be
+   wrapped in a single transaction). We'd like to look at the actual cases to propose a mitigation approach, but one
+   possible solution may be changing to "joint" prefetches.
+
+*  Per [CAY-2917](https://issues.apache.org/jira/browse/CAY-2917) joins are generated in a different order in the
+   Select SQL. This should not affect any logic except if your code relies on the generated SQL in any way.
+
+*  Per [CAY-2912](https://issues.apache.org/jira/browse/CAY-2912) SQL logging was redesigned to be compact and
+   single-line. The `JdbcEventLogger` interface and its `Slf4jJdbcEventLogger` / `FormattedSlf4jJdbcEventLogger`
+   implementations were removed and replaced by `org.apache.cayenne.log.SqlLogger` (default implementation
+   `Slf4jSqlLogger`). Log output now goes to a logger named `cayenne-sql` (previously
+   `org.apache.cayenne.log.JdbcEventLogger`) — update your logging configuration accordingly. Each statement is logged
+   as one line combining the SQL, its bindings and the result count (e.g. `... bind:[user_id:15] selected:1`);
+   transaction boundaries moved to `DEBUG`. If you bound a custom `JdbcEventLogger` in a DI module, rebind `SqlLogger`
+   instead.
+
+   As part of this change the `cayenne.query_execution_time_logging_threshold` property no longer has any effect —
+   the slow-query threshold warning it controlled has been removed. The
+   `RuntimeProperties.QUERY_EXECUTION_TIME_LOGGING_THRESHOLD_PROPERTY` constant is retained (deprecated) but ignored.
+   A new `cayenne.jdbc.log.batch.threshold` property (default 3) controls how many batch rows are logged in full
+   before the bindings are truncated to `[first]..N..[last]`.
+
+*  Per [CAY-2875](https://issues.apache.org/jira/browse/CAY-2875) a `java.util.UUID` attribute now honors the JDBC
+   type of the column it is mapped to, instead of always being converted to a 36-char string:
+   - A binary column (`BINARY`, `VARBINARY`, `LONGVARBINARY`) stores the UUID in its 16-byte big-endian form, most
+     significant bits first. `VARBINARY(16)` is the recommended mapping for new models — it uses less than half the
+     space of `VARCHAR(36)` and indexes better.
+   - A character column keeps storing the canonical string, so existing models are unaffected and need no data
+     migration.
+   - Any other JDBC type is passed to the driver as an object, which makes a PostgreSQL native `uuid` column work.
+
+   `UUIDValueType` is deprecated and no longer registered, replaced by `org.apache.cayenne.access.types.UUIDType`.
 
 *  Per [CAY-3010](https://issues.apache.org/jira/browse/CAY-3010) `LocalDate`, `LocalTime` and `LocalDateTime` are
    passed to and from the JDBC driver directly, instead of being converted through `java.sql.Date` / `Time` /
    `Timestamp` in the JVM default time zone. Reads are faster, and application behavior changes in these cases:
-
    - A `LocalDateTime` inside a DST gap of the JVM zone is no longer shifted. E.g. with the JVM in `America/New_York`,
      `LocalDateTime.of(2021, 3, 14, 2, 35)` (a time that does not exist in that zone) used to be stored and read back
      as `03:35`; now it round-trips as `02:35`. MySQL already behaved this way.
@@ -306,182 +721,158 @@ List<Artist> artists = ObjectSelect
    engine / driver limitations. `LocalDateValueType`, `LocalTimeValueType` and `LocalDateTimeValueType` are deprecated
    and no longer registered.
 
-*  Per [CAY-3014](https://issues.apache.org/jira/browse/CAY-3014) `org.apache.cayenne.query.QueryChain`
-   (deprecated in 5.0-M3) was removed. To run several queries together, execute them one by one, wrapping them in an
-   explicit transaction if they must share one:
+*  Two legacy database adapters were removed:
+   - Per [CAY-2956](https://issues.apache.org/jira/browse/CAY-2956) the dedicated Oracle 8 adapter.
+     `org.apache.cayenne.dba.oracle.Oracle8Adapter` and its supporting classes no longer exist, and the
+     `OracleSniffer` now maps all Oracle versions to `OracleAdapter` regardless of the JDBC driver version. If you
+     referenced `Oracle8Adapter` explicitly (e.g. in a DataNode adapter configuration or custom DI bindings), switch
+     to `org.apache.cayenne.dba.oracle.OracleAdapter`.
+   - Per [CAY-2957](https://issues.apache.org/jira/browse/CAY-2957) the legacy HSQLDB adapter (HSQL <= 1.8).
+     `org.apache.cayenne.dba.hsqldb.HSQLDBNoSchemaAdapter` no longer exists, and the `HSQLDBSniffer` now maps all
+     HSQL versions to `HSQLDBAdapter`. If you happen to be on those older HSQL versions, update to the latest one.
 
-   ```java
-   runtime.performInTransaction(() -> {
-       List<Artist> artists = ObjectSelect.query(Artist.class).select(context);
-       List<Painting> paintings = ObjectSelect.query(Painting.class).select(context);
-       return null;
-   });
-   ```
+### Stack Customizations
 
-*  Per [CAY-3015](https://issues.apache.org/jira/browse/CAY-3015) `org.apache.cayenne.query.RefreshQuery` was removed. It was not a query, but a carrier for 
-   four cache management operations, each of which has a direct replacement:
+This section only matters if you customize the Cayenne stack: bind your own services in a DI module, subclass
+`DbAdapter`, `DataContext`, `DataDomain` or the SQL translators, or implement `DataChannel` filters. A plain
+application can skip it.
 
-   - `new RefreshQuery(objects)` / `new RefreshQuery(object)` &rarr; `context.invalidateObjects(objects)`. In nested 
-     contexts, there was previously an issue with cascading invalidation (intermediate contexts would not get
-     invalidated). This was fixed in the current version of `invalidateObjects`.
-   - `new RefreshQuery("group1", "group2")` &rarr; `runtime.getDataDomain().getQueryCache().removeGroup("group1")`,
-     once per group.
-   - `new RefreshQuery(query)` &rarr; run the query itself, with its cache strategy set to `LOCAL_CACHE_REFRESH` or
-     `SHARED_CACHE_REFRESH`. A query with no caching needs no change, as refreshing it was the same as running it:
+*  The supported customization surface is `CoreModule.extend(binder)`. Anything
+   it doesn't cover is done by overriding a `CoreModule` binding in your own module, which is loaded after the core
+   one: `binder.bind(SomeService.class).to(MyService.class)`. The 4.2 hooks map as follows:
 
+   | 4.2                                                                | 5.0                                                                   |
+   |--------------------------------------------------------------------|-----------------------------------------------------------------------|
+   | `ServerModule.contributeUserTypes(binder)`                         | `addUserExtendedType(..)`                                             |
+   | `ServerModule.contributeDefaultTypes(binder)`                      | `addDefaultExtendedType(..)`                                          |
+   | `ServerModule.contributeTypeFactories(binder)`                     | `addExtendedTypeFactory(..)`                                          |
+   | `ServerModule.contributeValueObjectTypes(binder)`                  | `addValueObjectType(..)`                                              |
+   | `ServerModule.contributeAdapterDetectors(binder)`                  | `addAdapterDetector(..)`                                              |
+   | `ServerModule.contributeDomainQueryFilters(binder)`                | `addQueryFilter(..)`                                                  |
+   | `ServerModule.contributeDomainSyncFilters(binder)`                 | `addSyncFilter(..)`                                                   |
+   | `ServerModule.contributeDomainFilters(binder)` (`DataChannelFilter`) | removed; implement `DataChannelQueryFilter` and / or `DataChannelSyncFilter` instead |
+   | `ServerModule.contributeDomainListeners(binder)`                   | `addListener(..)` / `addListenerType(..)`                             |
+   | `ServerModule.contributeProjectLocations(binder)`                  | `addProjectLocation(..)`                                              |
+   | `ServerModule.contributeProperties(binder)`                        | `setProperty(..)`                                                     |
+   | `ServerModule.useExternalTransactions(binder, true)`               | `externalTransactions()`                                              |
+   | `ServerModule.setSnapshotCacheSize(binder, n)`                     | `snapshotCacheSize(n)`                                                |
+   | `ServerModule.contributePkGenerators(binder)`                      | removed; see `PkGenerator` below                                      |
+   | `bind(DataSourceFactory.class)`                                    | removed; `DataNodeDescriptor.of(..).dataSource(..)`                   |
+   | `bind(DbAdapterFactory.class)`                                     | removed; `addAdapterDetector(..)` or `DataNodeDescriptor.of(..).adapter(..)` |
+   | `bind(SchemaUpdateStrategyFactory.class)`                          | removed; `DataNodeDescriptor.of(..).schemaUpdateStrategy(..)`         |
+   | `bind(JdbcEventLogger.class)`                                      | `bind(SQLLogger.class)`, see [CAY-2912](https://issues.apache.org/jira/browse/CAY-2912) above |
+   | `bind(EntitySorter.class)`                                         | `bind(EntitySorterFactory.class)`                                     |
+   | `bind(SelectTranslatorFactory.class)`                              | `bind(SelectTranslator.class)`, see translators below                 |
+   | `bind(BatchTranslatorFactory.class)`                               | `bind(Key.get(BatchTranslator.class, BatchTranslator.INSERT))`, `UPDATE`, `DELETE`; soft delete via `softDeleteIfColumnPresent(..)` |
+   | `bind(SQLTemplateProcessor.class)`                                 | `bind(SQLTemplateTranslator.class)`                                   |
+   | `bind(ObjectStoreFactory.class)`, `bind(ObjectMapRetainStrategy.class)` | removed; override `DataContextFactory.newBuilder(..)`, the retain strategy is the `cayenne.object_retain_strategy` property |
+   | `bind(ObjectContextFactory.class)`, `bind(QueryCache.class)`, `bind(EventManager.class)`, `bind(DataRowStoreFactory.class)`, `bind(TransactionFactory.class)`, `bind(DataDomainFlushActionFactory.class)`, `bind(RowReaderFactory.class)`, `bind(AdhocObjectFactory.class)`, `bind(ClassLoaderManager.class)` | unchanged |
+   | -                                                                  | `bind(DataNodeFactory.class)`, new: creates `DataNode`s from `DataNodeDescriptor`s, including their `PkGenerator` |
+
+*  The same prefix removal applies to the DI collection keys, which moved from `Constants` to `CoreModule`:
+   `cayenne.server.user_types` is now `cayenne.user_types` (`CoreModule.USER_TYPES_LIST`), etc.
+   `cayenne.server.domain_filters`, `cayenne.server.resource_locator` and `cayenne.server.rop_event_bridge_properties`
+   were removed. This does not affect deployment, but may break service customizations that reference these
+   collections by their String key, e.g.
+   `@Inject("cayenne.server.user_types")` or `binder.bindList(ExtendedType.class, "cayenne.server.user_types")`, as
+   the old names are gone. Reference `CoreModule` to pick the right key constant.
+
+*  A custom `DbAdapter` needs a few changes:
+   - The constructor: the DI collection keys moved to `CoreModule`, and the `ResourceLocator` parameter is gone.
      ```java
-     ObjectSelect.query(Artist.class)
-             .cacheStrategy(QueryCacheStrategy.SHARED_CACHE_REFRESH)
-             .cacheGroup("artists")
-             .select(context);
+     // before
+     public MyAdapter(@Inject RuntimeProperties runtimeProperties,
+                      @Inject(Constants.SERVER_DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
+                      @Inject(Constants.SERVER_USER_TYPES_LIST) List<ExtendedType> userExtendedTypes,
+                      @Inject(Constants.SERVER_TYPE_FACTORIES_LIST) List<ExtendedTypeFactory> extendedTypeFactories,
+                      @Inject(Constants.SERVER_RESOURCE_LOCATOR) ResourceLocator resourceLocator,
+                      @Inject ValueObjectTypeRegistry valueObjectTypeRegistry) {
+         super(runtimeProperties, defaultExtendedTypes, userExtendedTypes, extendedTypeFactories, resourceLocator,
+                 valueObjectTypeRegistry);
+     }
+
+     // after
+     public MyAdapter(@Inject RuntimeProperties runtimeProperties,
+                      @Inject(CoreModule.DEFAULT_TYPES_LIST) List<ExtendedType> defaultExtendedTypes,
+                      @Inject(CoreModule.USER_TYPES_LIST) List<ExtendedType> userExtendedTypes,
+                      @Inject(CoreModule.TYPE_FACTORIES_LIST) List<ExtendedTypeFactory> extendedTypeFactories,
+                      @Inject ValueObjectTypeRegistry valueObjectTypeRegistry) {
+         super(runtimeProperties, defaultExtendedTypes, userExtendedTypes, extendedTypeFactories,
+                 valueObjectTypeRegistry);
+     }
      ```
+   - Per [CAY-2963](https://issues.apache.org/jira/browse/CAY-2963) the `types.xml` resource and `TypesHandler` are
+     gone. The JDBC-to-native type mapping is a `NativeColumnType[]` returned by `createNativeTypes()`, override it
+     to adjust the mapping.
+   - `bindParameter(PreparedStatement, ParameterBinding)` became `bindParameter(PreparedStatement, PSParameter<?>)`,
+     plus `bindParameter(CallableStatement, CSParameter<?>)` for procedure parameters.
+   - `getPkGenerator()` / `setPkGenerator(..)` became `createPkGenerator()`, see `PkGenerator` below.
+   - Registration: pin the adapter on a node with `DataNodeDescriptor.of("node").adapter(MyAdapter.class)`, or add
+     a `DbAdapterDetector` via `CoreModule.extend(binder).addAdapterDetector(..)` to detect it from the JDBC
+     metadata. `DbAdapterFactory` is gone.
 
-   - `new RefreshQuery()` (refresh everything) has no direct replacement. To start over, create a new
-     `ObjectContext`. To also drop shared state, call `runtime.getDataDomain().getQueryCache().clear()` and
-     `runtime.getDataDomain().getSharedSnapshotCache().clear()`.
+*  The SQL translators are stateless services now, bound in `CoreModule` and configured per `DataNode`:
+   - `SelectTranslatorFactory` is gone. `SelectTranslator` is a single service with
+     `translate(Select<?>, DbAdapter, EntityResolver)` returning a `TranslatedSelect`. The default
+     `DbAdapterDelegatedSelectTranslator` delegates to `DbAdapter.getSelectTranslator(..)`, so a custom adapter can
+     still supply its own. `DefaultSelectTranslator` was rewritten as a chain of `TranslationStage`s, so a 4.2
+     subclass of it has to be redone against the new stages.
+   - `BatchTranslatorFactory` and the `legacy` batch translators are gone. The insert, update and delete translators
+     are bound separately under the `BatchTranslator.INSERT`, `UPDATE` and `DELETE` keys, and can also be set on a
+     `DataNode`. `SoftDeleteBatchTranslator` is replaced by `CoreModule.extend(binder).softDeleteIfColumnPresent(..)`.
+   - `SQLTemplateProcessor` is now `SQLTemplateTranslator`. The `cayenne-velocity` module still provides the Velocity
+     flavor, as `VelocitySQLTemplateTranslator`.
 
-*  Per [CAY-3016](https://issues.apache.org/jira/browse/CAY-3016) `org.apache.cayenne.query.RelationshipQuery` was removed. It was an internal mechanism for 
-   resolving relationship faults. If you were running it explicitly, use `ObjectSelect` matching on the reverse 
-   relationship instead:
-
+*  A custom `ObjectContext` is installed via the `ObjectContextFactory` binding, as before, but `DataContext` lost its
+   public constructors. Subclass `DataContext` through its protected constructor, extend `DataContextFactory` and
+   override `newBuilder(DataChannel)` to produce your subclass, then bind the factory:
    ```java
-   // before
-   // List<Painting> paintings = context.performQuery(new RelationshipQuery(artist.getObjectId(), "paintingArray"));
-
-   // after
-   List<Painting> paintings = ObjectSelect.query(Painting.class)
-           .where(Painting.TO_ARTIST.eq(artist))
-           .select(context);
+   CayenneRuntime.of()
+           .addConfig("cayenne-project.xml")
+           .addModule(b -> b.bind(ObjectContextFactory.class).to(MyDataContextFactory.class))
+           .build();
    ```
 
-*  Per [CAY-3017](https://issues.apache.org/jira/browse/CAY-3017) `ObjectContext` no longer extends `DataChannel`. This 
-   doesn't change the overall architecture (there are still "channels" downstream from an ObjectContext). But the channel 
-   methods are no longer accessible on the context itself. Application code wasn't ever not supposed to use them, as 
+*  Per [CAY-2985](https://issues.apache.org/jira/browse/CAY-2985) `DataDomain` became mostly immutable. The
+   `DataDomain(String)` constructor and all the setters below were removed in favor of a single full constructor that
+   takes every collaborator and setting. Only DataNodes, DataMaps, filters and listeners can still be added (and
+   removed) after creation. Replacements for the removed setters:
+   - `setName(String)` — the name comes from the project XML, and can be overridden with the
+     `cayenne.domain.name` property (`RuntimeProperties.DOMAIN_NAME_PROPERTY`).
+   - `setEntityResolver(EntityResolver)` — keep using `addDataMap(..)` / `removeDataMap(..)` to change resolver
+     contents.
+   - `setEntitySorter(EntitySorter)` — the sorter is produced by the new `EntitySorterFactory` DI service. Bind your
+     own `EntitySorterFactory` to replace it.
+   - `setEventManager(EventManager)` — bind `EventManager` in a DI module instead.
+   - `setQueryCache(QueryCache)` — bind `QueryCache` in a DI module instead.
+   - `setSharedSnapshotCache(DataRowStore)`, `setDataRowStoreFactory(DataRowStoreFactory)` and
+     `getDataRowStoreFactory()` — bind `DataRowStoreFactory` in a DI module to customize the cache.
+   - `setSharedCacheEnabled(boolean)` — use the "Shared Cache" checkbox in the Modeler.
+   - `setValidatingObjectsOnCommit(boolean)` — use the "Object Validation" checkbox in the Modeler.
+   - `setMaxIdQualifierSize(int)` — use the `cayenne.max_id_qualifier_size` property
+     (`RuntimeProperties.MAX_ID_QUALIFIER_SIZE_PROPERTY`).
+
+*  Per [CAY-2987](https://issues.apache.org/jira/browse/CAY-2987), `PkGenerator` is now owned by `DataNode` rather
+   than by `DbAdapter`. A `DbAdapter` is only the source of the default generator for its database. This change is
+   entirely transparent unless you need to install a custom PkGenerator. You can do that via a custom injected
+   `DefaultDataNodeFactory`, an explicit call to `dataNode.setPkGenerator(..)` or use a custom adapter.
+
+*  Per [CAY-2955](https://issues.apache.org/jira/browse/CAY-2955) the obsolete `QueryEngine` abstraction
+   (`org.apache.cayenne.access.QueryEngine`) has been removed. `DataNode` is now used directly wherever `QueryEngine`
+   was previously referenced. So you must subclass `DataNode` and override `performQueries()` if you previously
+   implemented a custom `QueryEngine`.
+
+*  Per [CAY-3017](https://issues.apache.org/jira/browse/CAY-3017) `ObjectContext` no longer extends `DataChannel`.
+   This doesn't change the overall architecture (there are still "channels" downstream from an ObjectContext). But the
+   channel methods are no longer accessible on the context itself. Application code was never supposed to use them, as
    everything you need to do, you can do via the ObjectContext API.
-
-*  Per [CAY-3020](https://issues.apache.org/jira/browse/CAY-3020) Cayenne no longer supports Java serialization of
-   contexts, queries and mapping objects. `Persistent`, `ObjectContext`, `ObjectId`, `Query`, `Expression`, `Ordering`,
-   `EntityResolver`, `DataMap`, etc. do not implement `java.io.Serializable` anymore, and the custom
-   `readObject` / `writeObject` logic that re-attached deserialized contexts and objects to the runtime is gone. The 
-   class generation templates no longer emit `serialVersionUID`, `writeObject` / `readObject` and
-   `writeState` / `readState`.
-
-*  Per [CAY-3021](https://issues.apache.org/jira/browse/CAY-3021) `org.apache.cayenne.query.ObjectIdQuery` was removed.
-   It was an internal mechanism for resolving objects by id via the caches. Its use cases have direct replacements:
-
-   ```java
-   // object lookup via the caches (ObjectIdQuery.CACHE)
-   Artist a = (Artist) context.objectForPK(id);
-
-   // forced refresh from the database (ObjectIdQuery.CACHE_REFRESH)
-   Artist a = ObjectSelect.query(Artist.class).where(Artist.SELF.eqId(id)).selectOne(context);
-
-   // committed snapshot lookup (fetchingDataRows == true), from the snapshot cache or the database
-   DataRow row = context.getObjectStore().getSnapshot(id);
-
-   // committed snapshot lookup in the snapshot cache only (ObjectIdQuery.CACHE_NOREFRESH)
-   DataRow row = context.getObjectStore().getCachedSnapshot(id);
-   ```
-
-*  Per [CAY-3022](https://issues.apache.org/jira/browse/CAY-3022) the `ObjectContext` query API was cleaned up:
-
-   - `ObjectContext.performGenericQuery(Query)` was renamed to `execute(Query)`.
-   - `ObjectContext.performQuery(Query)` and `Cayenne.objectForQuery(ObjectContext, Query)` are deprecated in favor
-     of `ObjectContext.select(Select)` and `ObjectContext.selectOne(Select)`. `EJBQLQuery`, `SQLTemplate` and
-     `ProcedureQuery` now implement `Select<T>`, so every selecting query can be passed to
-     `select(..)`.
-   - The `DataContext` convenience methods `performNonSelectingQuery(..)` and `performQuery(String, ..)` (all
-     flavors) are deprecated. Use `execute(Query)`, `update(Query)`, and
-     `MappedSelect.query(name).select(context)` instead.
-
-   ```java
-   // before
-   List<Artist> artists = context.performQuery(new EJBQLQuery("select a from Artist a"));
-   List<QueryResult> result = context.performGenericQuery(SQLExec.query("DELETE FROM ARTIST"));
-
-   // after
-   List<Artist> artists = context.select(new EJBQLQuery<>("select a from Artist a"));
-   List<QueryResult> result = context.execute(SQLExec.query("DELETE FROM ARTIST"));
-   ```
-
-*  Per [CAY-3023](https://issues.apache.org/jira/browse/CAY-3023) `QueryResult` was redesigned from a class holding
-   the entire multipart result to a sealed interface describing a single item of it. `SQLExec.execute(..)`,
-   `MappedExec.execute(..)` and `ProcedureCall.call(..)` now return a `List<QueryResult>` holding the items in the
-   order the query produced them, so callers that know the shape of their query should access them by index.
-   `QueryResult` has four permitted subtypes: the `SelectResult`, `UpdateResult` and `OutParametersResult` records,
-   and `ResultIterator`, reported directly as an item of an iterated query. They replace the `isSelectResult()` /
-   `getSelectResult()` / `getUpdateCount()` accessors, so a multipart result can also be scanned with a
-   pattern-matching switch:
-
-   ```java
-   List<QueryResult> result = SQLExec.query(sql).execute(context);
-   int updated = ((UpdateResult) result.getFirst()).count();
-
-   for (QueryResult item : result) {
-       switch (item) {
-           case SelectResult<?> select -> process(select.objects());
-           case UpdateResult update -> process(update.counts());
-           case ResultIterator<?> iterator -> process(iterator);
-           case OutParametersResult out -> process(out.values());
-       }
-   }
-   ```
-
-   Stored procedure OUT parameters are no longer disguised as a one-row result set. They arrive as a dedicated
-   `OutParametersResult` item (a map keyed by parameter name).
-
-   The cgen templates now emit `List<QueryResult>` instead of the old `QueryResult<?>` for the `perform*` methods
-   of mapped exec queries, so regenerate your classes via Modeler ("Tools" → "Generate Classes") or the AI plugin
-   if you have generated classes with multipart queries.
-
-*  Per [CAY-3024](https://issues.apache.org/jira/browse/CAY-3024) `org.apache.cayenne.QueryResponse` was removed. Everything that
-   used to return a `QueryResponse` - `ObjectContext.performGenericQuery(..)`, etc. - now return
-   `List<QueryResult>`. See CAY-3023 above for the example of how to process the result. Custom 
-   `DataChannelQueryFilter` implementations now require a new signature.
-
-
-*  Per [CAY-3032](https://issues.apache.org/jira/browse/CAY-3032) a `ColumnSelect` with an entity column over a
-   to-many relationship no longer filters out the root rows that have no related objects. It now uses an outer join,
-   same as the to-one entity columns always did, so such rows are returned with a `null` in place of the related
-   object:
-
-   ```java
-   List<Object[]> rows = ObjectSelect
-       .columnQuery(Artist.class, Artist.ARTIST_NAME, Artist.PAINTING_ARRAY.flat())
-       .select(context);
-
-   // before: artists with no paintings were missing from the result
-   // after: they are present as ["artist name", null]
-   ```
-
-   If you relied on the old behavior, check the related object for `null`, or exclude such rows explicitly by
-   adding a condition on the relationship path to `where(..)` (e.g. `Artist.PAINTING_ARRAY.exists()`). Entity columns
-   whose path is also used in the `where(..)` clause are not affected, as they share the join with the qualifier.
-   Scalar columns (`Artist.PAINTING_ARRAY.dot(Painting.PAINTING_TITLE)`) and aggregates are not affected either.
-
-*  The `org.apache.cayenne.query.ParameterizedQuery` interface was removed, together with the `createQuery(Map)`
-   methods of `SQLTemplate`, `ProcedureQuery` and `ObjectSelect` that implemented it. Applying parameters to a mapped
-   query is now the job of the query descriptor - override `QueryDescriptor.buildQuery(Map)` if you have a custom
-   `QueryDescriptor` that supports parameters. This does not affect the user-facing `MappedSelect` / `MappedExec` API.
-
-*  The `groupId` of `cayenne-modeler` and `cayenne-wocompat` changed from `org.apache.cayenne.modeler` to
-   `org.apache.cayenne`. Artifact ids and versions are unchanged. If you depend on any of them directly, update the
-   coordinates:
-
-   ```xml
-   <dependency>
-       <groupId>org.apache.cayenne</groupId>
-       <artifactId>cayenne-modeler</artifactId>
-       <version>5.0-XX</version>
-   </dependency>
-   ```
 
 *  `DataChannel.onQuery(..)`, `DataChannelQueryFilter.onQuery(..)` and `DataChannelQueryFilterChain.onQuery(..)`
    take an extra `boolean iteratedResult` parameter, which is `true` when the caller expects a `ResultIterator` (via
    `ObjectContext.iterator(..)` and friends) rather than a list. It replaces the internal `IteratedQueryDecorator`
-   wrapper, so query filters now see the actual query instead of the wrapper. Custom `DataChannel` implementations and
-   query filters need to add the parameter and pass it down the chain:
-
+   wrapper, so query filters now see the actual query instead of the wrapper. Together with the `List<QueryResult>`
+   return type (see "Queries" above), custom `DataChannel` implementations and query filters need to add the parameter
+   and pass it down the chain:
    ```java
    public List<QueryResult> onQuery(ObjectContext context, Query query, boolean iteratedResult,
                                     DataChannelQueryFilterChain chain) {
@@ -489,14 +880,9 @@ List<Artist> artists = ObjectSelect
    }
    ```
 
-*  `DataContext.performIteratedQuery(Query)` (deprecated earlier in 5.0) was removed. Use `ObjectContext.iterator(Select)`
-   instead; to iterate over `DataRow`s, pass a `DataRow` query, e.g. `ObjectSelect.dataRowQuery(Artist.class)` or
-   `SQLSelect.dataRowQuery(sql)`.
-
 *  `EventManager` listener registration no longer takes a listener method name to be looked up via reflection.
    `addListener(..)` and `addNonBlockingListener(..)` now take the event class and an `EventHandler` callback,
    which is normally an unbound method reference to the listener method:
-
    ```java
    // before
    eventManager.addListener(this, "snapshotsChanged", SnapshotEvent.class, subject, sender);
@@ -504,7 +890,6 @@ List<Artist> artists = ObjectSelect
    // after
    eventManager.addListener(this, SnapshotEvent.class, MyListener::snapshotsChanged, subject, sender);
    ```
-
    The listener object is still passed and is still held via a weak reference, so an unregistered listener is
    released once it becomes unreachable. This only holds when the handler does not capture the listener: a bound
    reference such as `this::snapshotsChanged` or a capturing lambda keeps the listener alive for as long as the
@@ -512,350 +897,8 @@ List<Artist> artists = ObjectSelect
    `org.apache.cayenne.util.Invocation` class and the `SnapshotEventListener` interface (which was only ever a
    naming convention for the reflective lookup) were removed.
 
-*  Per [CAY-3034](https://issues.apache.org/jira/browse/CAY-3034) the `cayenne-osgi` module was removed, following
-   the general direction of focusing on the Cayenne core and dropping external integrations. Users running Cayenne in
-   an OSGi container are welcome to copy the module's code into their own project: it consisted of a few small classes
-   that provide an OSGi-aware `ClassLoaderManager` and a `Provider<DataDomain>` that swaps the thread context
-   ClassLoader while the `DataDomain` is created, bound via a `CayenneRuntime` module.
-
-*  Per [CAY-3035](https://issues.apache.org/jira/browse/CAY-3035) the `cayenne-lifecycle` module was removed. It was
-   an opinionated way of encoding `ObjectId`s as Strings (`IdCoder`, `EntityIdCoder`, `StringIdFetcher`), with an
-   even more opinionated `@ObjectIdRelationship` annotation and `ObjectIdRelationshipFilter` on top of it to resolve
-   "virtual" relationships stored as such String IDs. There's no appetite to keep supporting this in Cayenne. The users
-   who still need it are welcome to grab the source code of `IdCoder` and friends from the Cayenne git history and
-   incorporate it in their projects.
-*  Per [CAY-3036](https://issues.apache.org/jira/browse/CAY-3036) the `cayenne-project-compatibility` module was removed.
-   The runtime now upgrades project XML created by older Cayenne versions on its own, in memory and without extra
-   dependencies, logging a warning that recommends a permanent upgrade in CayenneModeler. An upgrade that would
-   drop a part of the project without a replacement (e.g. DataNodes, removed in project version 13) still fails to
-   load; open such a project in CayenneModeler to upgrade it.
-*  Per [CAY-3037](https://issues.apache.org/jira/browse/CAY-3037) the project XML version is bumped to 14, and a
-   `SelectQuery` in a DataMap is now stored as a single query String in the syntax of `ObjectSelect.parse(..)`, instead
-   of the root attributes and the separate `qualifier`, `ordering` and `prefetch` elements. Projects are upgraded 
-   automatically, either in memory by the runtime, or permanently by CayenneModeler.
-*  `SelectQueryDescriptor` now holds the query String as is (`getQl()` / `setQl(..)`), and derives the rest from it.
-   The query String can define any `ObjectSelect` or `ColumnSelect`, including column queries, `having` and queries
-   rooted in a DbEntity (`from db:ARTIST`). Its root is defined by the "from" clause, so `setRoot(..)` is not supported.
-   The setters of the query parts (`setQualifier(..)`, `addOrdering(..)`, `addPrefetch(..)`, `setDistinct(..)`, etc.)
-   were removed and their getters are deprecated, use `getParsedQuery()` instead. `buildQuery(..)` returns a
-   `FluentSelect`, not an `ObjectSelect`. A query String that can't be parsed no longer fails the DataMap loading, but
-   the execution of the query, and is reported by the project validator. CayenneModeler edits a mapped `ObjectSelect`
-   as a query String.
-*  Per [CAY-3038](https://issues.apache.org/jira/browse/CAY-3038) `EJBQLQuery` was removed. The replacement is `ObjectSelect` / `ColumnSelect` parsed from a String
-   (see "Queries Parsed from Strings" above). As there is no automatic conversion of EJBQL to the new query language,
-   an `EJBQLQuery` stored in a DataMap is dropped by the upgrade to project version 14 with a warning, and must be
-   recreated as an `ObjectSelect`:
-
-   ```java
-   // before
-   EJBQLQuery query = new EJBQLQuery("select a from Artist a where a.artistName like :name");
-   query.setParameter("name", "P%");
-   List<Artist> artists = context.performQuery(query);
-
-   // after
-   List<Artist> artists = ObjectSelect.parse(Artist.class, "from Artist where artistName like $name", "P%")
-           .select(context);
-   ```
-
-*  Per [CAY-3039](https://issues.apache.org/jira/browse/CAY-3039) the expression node classes are no longer tied to
-   the parser. They moved from `org.apache.cayenne.exp.parser` to `org.apache.cayenne.exp` and lost the `AST` prefix:
-   `ASTObjPath` is now `ObjPathExp`, `ASTEqual` is `EqualExp`, `ASTAnd` is `AndExp`, etc. 
-
-   Expression nodes no longer know their parent, so `jjtGetParent()` / `jjtSetParent(n)` have no replacement. As a
-   result an expression can be shared between trees: `a.andExp(b)` no longer changes how `a` itself prints, and a node
-   taken out of a tree prints without the parentheses it used to keep.
-
-   The node classes are now a sealed hierarchy, and the kind of node is its class. `Expression.getType()`,
-   `Expression.setType(..)` and the `Expression.OBJ_PATH`, `Expression.EQUAL_TO`, etc. int constants are removed
-   without replacement: use `instanceof` or a pattern-matching `switch` over `ObjPathExp`, `EqualExp`, etc. instead.
-   This also removed the int-typed factory methods: `ExpressionFactory.expressionOfType(int)` and
-   `ExpressionFactory.joinExp(int, ..)` are gone (use `ExpressionFactory.and(..)` / `or(..)`), and so are
-   `Expression.joinExp(int, ..)` (use `andExp(..)` / `orExp(..)`). `ExpressionFactory.matchAllExp(Map, int)`,
-   `matchAnyExp(Map, int)`, `matchAllDbExp(Map, int)` and `matchAnyDbExp(Map, int)` lost the pair type parameter and
-   always match by equality.
-*  Per [CAY-3040](https://issues.apache.org/jira/browse/CAY-3040) a fetch limit or offset of a `SQLTemplate` stored in
-   a DataMap is dropped by the upgrade to project version 14, and must be moved into the query SQL. A DataMap with such
-   a query can not be upgraded in memory by the runtime; open the project in CayenneModeler to upgrade it.
-*  Per [CAY-3041](https://issues.apache.org/jira/browse/CAY-3041) all tags and attributes of the project XML use
-   camelCase, so the hyphenated names were renamed as a part of project version 14: e.g. `data-map` is now `dataMap`,
-   `db-entity` is `dbEntity` and `db-attribute-path` is `dbAttributePath`. The `project-version` attribute of the root
-   tags was removed, as the version is already a part of the schema namespace (e.g.
-   `http://cayenne.apache.org/schema/14/dataMap`). The boolean attributes of
-   `dbAttribute` lost the "is" prefix (`isMandatory` is now `mandatory`, etc.), and the delete rules are stored in
-   lowercase (`nullify`, `cascade`, `deny`). Projects are upgraded automatically. Any custom code or scripts that read
-   or generate the project XML must be updated.
-*  Per [CAY-3041](https://issues.apache.org/jira/browse/CAY-3041) the oldest project that can be upgraded is now of
-   version 9, i.e. the one created by Cayenne 4.0. The older projects (versions 6 to 8, created by Cayenne 3.1 or the
-   early 4.0 milestones) must first be upgraded with CayenneModeler 4.2 or older.
-*  Per [CAY-3042](https://issues.apache.org/jira/browse/CAY-3042) "domain" is now called "project" in the project XML,
-   the API and CayenneModeler. The root tag of the project XML is `project` instead of `domain` (projects are upgraded
-   automatically). `DataChannelDescriptor` was renamed to `Project`, `ConfigurationNode` to `ProjectNode`, and the
-   related classes follow (`ProjectLoader`, `ProjectMerger`, `ProjectMetaData`, `ProjectNodeVisitor`, etc.). The old
-   `org.apache.cayenne.project.Project` wrapper, `ProjectLoader` of the `cayenne-project` module and `ConfigurationTree`
-   were removed: `ProjectLoader` returns a `Project`, and `ProjectSaver` takes a `ProjectNode`. The runtime `DataDomain`
-   is not affected.
 *  Per [CAY-3051](https://issues.apache.org/jira/browse/CAY-3051) `PropertyVisitor`, `PropertyDescriptor.visit(..)`
-   and the `ClassDescriptor` methods `visitProperties(..)`,
-   `visitDeclaredProperties(..)` and `visitAllProperties(..)` are deprecated. Iterate over the new
-   `ClassDescriptor.getProperties()`, `getDeclaredProperties()` or `getAllProperties()` and switch on the property type
-   (`AttributeProperty`, `ToOneProperty`, `ToManyProperty`) instead. A custom `ClassDescriptor` must implement the
-   three accessors; the deprecated visit methods are now default methods on top of them.
-
-*  Per [CAY-3050](https://issues.apache.org/jira/browse/CAY-3050) `DataRow` is now immutable: `put`, `putAll`, `remove` and `clear` throw 
-   `UnsupportedOperationException`, including on rows returned by `dataRows()` queries. 
-
-## Upgrading to 5.0-M3
-
-
-* Per [CAY-2912](https://issues.apache.org/jira/browse/CAY-2912) SQL logging was redesigned to be compact and
-  single-line. The `JdbcEventLogger` interface and its `Slf4jJdbcEventLogger` / `FormattedSlf4jJdbcEventLogger`
-  implementations were removed and replaced by `org.apache.cayenne.log.SqlLogger` (default implementation
-  `Slf4jSqlLogger`). Log output now goes to a logger named `cayenne-sql` (previously `org.apache.cayenne.log.JdbcEventLogger`) —
-  update your logging configuration accordingly. Each statement is logged as one line combining the SQL, its bindings
-  and the result count (e.g. `... bind:[user_id:15] selected:1`); transaction boundaries moved to `DEBUG`. If you bound
-  a custom `JdbcEventLogger` in a DI module, rebind `SqlLogger` instead.
-
-  As part of this change the `cayenne.query_execution_time_logging_threshold` property no longer has any effect — the
-  slow-query threshold warning it controlled has been removed. The `RuntimeProperties.QUERY_EXECUTION_TIME_LOGGING_THRESHOLD_PROPERTY`
-  constant is retained (deprecated) but ignored. A new `cayenne.jdbc.log.batch.threshold` property (default 3) controls how
-  many batch rows are logged in full before the bindings are truncated to `[first]..N..[last]`.
-
-* Per [CAY-2954](https://issues.apache.org/jira/browse/CAY-2954) selecting queries are no longer wrapped in
-transactions internally by Cayenne. Using connections in "auto-commit" mode instead has a significant positive impact 
-on DB performance. This should not affect manually-managed transactions. But in theory, in some rare cases this may 
-still change consistency behavior of disjoint prefetches (as multiple related selects will no longer be wrapped in a 
-single transaction). We'd like to look at the actual cases to propose a mitigation approach, but one possible 
-solution may be changing to "joint" prefetches.
-
-* Per [CAY-2956](https://issues.apache.org/jira/browse/CAY-2956) the dedicated Oracle 8 adapter has been removed.
-  `org.apache.cayenne.dba.oracle.Oracle8Adapter` and its supporting classes no longer exist, and the
-  `OracleSniffer` now maps all Oracle versions to `OracleAdapter` regardless of the JDBC driver version.
-  If you referenced `Oracle8Adapter` explicitly (e.g. in a DataNode adapter configuration or custom DI
-  bindings), switch to `org.apache.cayenne.dba.oracle.OracleAdapter`.
-
-* Per [CAY-2957](https://issues.apache.org/jira/browse/CAY-2957) the legacy HSQLDB adapter (HSQL <= 1.8) has been removed.
-  `org.apache.cayenne.dba.hsqldb.HSQLDBNoSchemaAdapter` no longer exists, and the `HSQLDBSniffer` now maps all. If you
-  happen to be on those older HSQL versions, update to the latest one.
-
-* Per [CAY-2970](https://issues.apache.org/jira/browse/CAY-2970) deferred batch parameter values (e.g. a generated PK
-  propagated to a dependent PK or FK within the same transaction) are now represented by the dedicated
-  `org.apache.cayenne.access.DeferredValue` type instead of a bare `java.util.function.Supplier`. Cayenne now resolves
-  only its own `DeferredValue` instances, leaving user-supplied `Supplier` attribute values untouched. If you have
-  custom code that fed deferred values into batch bindings or `ObjectId` snapshots via `Supplier`, implement
-  `DeferredValue` instead — it is a `@FunctionalInterface`, so an existing lambda or `Supplier` implementation can
-  usually be adapted with a minimal change.
-
-* Per [CAY-2981](https://issues.apache.org/jira/browse/CAY-2981) DataNodes are no longer a part of the XML mapping. DataNodes / DataSources are defined in 
-  runtime. DataMaps are linked to them in runtime as well. Opening a project in the Modeler upgrades it to version 
-  13, which drops every `<node>` element (reporting any encountered removals). The new API to replace
-  XML mapping is described below.
-
-  A node is defined either from a bare `DataSource`, or from a `DataNodeDescriptor`. The `DataSource` flavor is a
-  shortcut for a node that needs no customization — it gets a generated name and the default settings:
-  ```java
-  DataSource dataSource = CayenneDataSource.of("jdbc:postgresql://localhost:5432/mydb")
-          .userName("user")
-          .password("secret")
-          .pool(1, 5)
-          .build();
-
-  CayenneRuntime runtime = CayenneRuntime.of()
-          .addConfig("cayenne-project.xml")
-          .defaultDataNode(dataSource)
-          .build();
-  ```
-
-  Switch to a `DataNodeDescriptor` when the node has to be customized, e.g., to let Cayenne create the
-  schema on the first connection, pin the adapter, give the node a stable name, etc.:
-  ```java
-  DataNodeDescriptor node = DataNodeDescriptor.of("node1")
-                  .dataSource(dataSource)
-                  .createSchemaIfNeeded()
-                  .build();
-  CayenneRuntime runtime = CayenneRuntime.of()
-          .addConfig("cayenne-project.xml")
-          .defaultDataNode(node)
-          .build();
-  ```
-
-  Both flavors work with any number of nodes. Projects that used to declare several `<node>`s link each node to its
-  DataMaps by name, mixing the two forms as needed. A default node remains optional, and picks up every DataMap not
-  linked to a node explicitly:
-  ```java
-  CayenneRuntime runtime = CayenneRuntime.of()
-          .addConfig("cayenne-project.xml")
-          .addDataNode(ds1, "map1", "map2")
-          .addDataNode(DataNodeDescriptor.of("node2").dataSource(ds2).createSchemaIfNeeded().build(), "map3")
-          .defaultDataNode(ds3)
-          .build();
-  ```
-  `cayenne.jdbc.*` properties are still recognized.
-
-  Core API changes:
-  - The set of DataNodes is supplied to the stack as a single `DataNodeDescriptors` DI binding.
-  - Nodes defined from a bare `DataSource` are named after the domain (`cayenne-0`, `cayenne-1`, ...). Use a
-    `DataNodeDescriptor` if you need a stable name for `DataDomain.getDataNode(String)`,
-    `CayenneRuntime.getDataSource(String)` or `SQLTemplate.setDataNodeName(String)`.
-  - In CayenneModeler, the DataNode editors and the "Create DataNode" / "Link DataMap" actions were removed
-  - `org.apache.cayenne.configuration.runtime.DataSourceFactory` was removed and is no longer an extension point
-  - `org.apache.cayenne.configuration.runtime.DbAdapterFactory` was removed and is no longer an extension point. 
-     A recommended way to add a custom adapter is `CoreModule.extend(binder).addAdapterDetector(...)`, or you can set
-     it directly on DataNodeDescriptor
-  - `org.apache.cayenne.access.dbsync.SchemaUpdateStrategyFactory` was removed and is no longer an extension point.
-    Set it directly on DataNodeDescriptor if needed.
-
-* Per [CAY-2985](https://issues.apache.org/jira/browse/CAY-2985) `DataDomain` became mostly immutable. The `DataDomain(String)` constructor and all the setters 
-below were removed in favor of a single full constructor that takes every collaborator and setting. Only DataNodes, 
-DataMaps, filters and listeners can still be added (and removed) after creation. Replacements for the removed setters:
-  - `setName(String)` — the name comes from the project XML, and can be overridden with the
-    `cayenne.domain.name` property (`RuntimeProperties.DOMAIN_NAME_PROPERTY`).
-  - `setEntityResolver(EntityResolver)` — keep using `addDataMap(..)` / `removeDataMap(..)` to change resolver contents.
-  - `setEntitySorter(EntitySorter)` — the sorter is produced by the new `EntitySorterFactory` DI service. Bind your
-    own `EntitySorterFactory` to replace it.
-  - `setEventManager(EventManager)` — bind `EventManager` in a DI module instead.
-  - `setQueryCache(QueryCache)` — bind `QueryCache` in a DI module instead.
-  - `setSharedSnapshotCache(DataRowStore)`, `setDataRowStoreFactory(DataRowStoreFactory)` and
-    `getDataRowStoreFactory()` — bind `DataRowStoreFactory` in a DI module to customize the cache.
-  - `setSharedCacheEnabled(boolean)` — use the "Shared Cache" checkbox in the Modeler.
-  - `setValidatingObjectsOnCommit(boolean)` — use the "Object Validation" checkbox in the Modeler.
-  - `setMaxIdQualifierSize(int)` — use the `cayenne.max_id_qualifier_size` property
-    (`RuntimeProperties.MAX_ID_QUALIFIER_SIZE_PROPERTY`).
-
-* Per [CAY-2986](https://issues.apache.org/jira/browse/CAY-2986) cgen now runs unconditionally. Previously it compared
-  the DataMap file mtime against the mtime of the generated classes and skipped generation when the classes looked
-  newer. That optimization saved very little (cgen is idempotent and fast) while regularly producing stale classes
-  after project upgrades or when switching between machines and branches. Consequences:
-  - The `force` flag is now a deprecated no-op — its former behavior is the only behavior.
-
-* Per [CAY-2987](https://issues.apache.org/jira/browse/CAY-2987), `PkGenerator` is now owned by `DataNode` rather than
-  by `DbAdapter`. A `DbAdapter` is only the source of the default generator for its database. This change is
-  entirely transparent unless you need to install a custom PkGenerator. You can do that via a custom injected 
- `DefaultDataNodeFactory`, an explicit call to `dataNode.setPkGenerator(..)` or use a custom adapter.
-
-## Upgrading to 5.0-M2
-
-* Per [CAY-2947](https://issues.apache.org/jira/browse/CAY-2947) the `cayenne-commitlog` artifact has been removed. Commit log support is now part of the
-  core `cayenne` artifact — no extra dependency needed. Migrate as follows:
-  - Remove the `cayenne-commitlog` dependency from your build.
-  - Replace `CommitLogModule.extend(binder).addListener(l)` with:
-    ```java
-    CoreModule.extend(binder).addCommitLogListener(l)
-    ```
-  - `excludeFromTransaction()` is now `excludeCommitLogFromTransaction()` on `CoreModuleExtender`.
-  - Replace `@org.apache.cayenne.commitlog.CommitLog` on entity classes with
-    `@org.apache.cayenne.annotation.CommitLog`.
-  - The `CommitLogListener`, `ChangeMap`, `ObjectChange` and related model classes remain in the
-    `org.apache.cayenne.commitlog` package (now part of the core artifact).
-
-* Per [CAY-2935](https://issues.apache.org/jira/browse/CAY-2935) Minimum required Java version for Apache Cayenne 5.0 is 21.
-
-* Per [CAY-2937](https://issues.apache.org/jira/browse/CAY-2937) the visual graph feature (entity layout diagrams) has been removed from CayenneModeler.
-  Existing `.graph.xml` files will be automatically deleted and their references removed from
-  `cayenne-project.xml` when a project is opened in the Modeler and upgraded to the newest format.
-
-* Per [CAY-2859](https://issues.apache.org/jira/browse/CAY-2859) `SelectById` query factory methods are redesigned with a bunch of old methods deprecated —
-  update your calls accordingly.
-
-* Per [CAY-2917](https://issues.apache.org/jira/browse/CAY-2917) joins are generated in a different order in the Select SQL. This should not affect any
-  logic except if your code relies on the generated SQL in any way.
-
-* Per [CAY-2924](https://issues.apache.org/jira/browse/CAY-2924) the `org.apache.cayenne.map.event` package (mapping events and listener interfaces) was
-  moved from the core to the CayenneModeler module — these events are not used at runtime. As part of this:
-  - `DbEntity`, `ObjEntity` and `DataMap` no longer implement the `*Listener` interfaces and no longer
-    expose the internal event-consumer methods (`dbEntityChanged`, `objEntityChanged`, `dbAttributeAdded`,
-    `handleAttributeUpdate`, etc.).
-  - New public rename APIs replace the previous "set name + fire change event" pattern:
-    `DataMap.renameDbEntity(DbEntity, String)`, `DataMap.renameObjEntity(ObjEntity, String)`,
-    `DbEntity.renameAttribute(DbAttribute, String)` and `DbEntity.renameRelationship(DbRelationship, String)`.
-    Prefer these over `setName(...)` for renames, as they re-key the parent maps and update dependent
-    references.
-  - `DbAttribute.setPrimaryKey(boolean)` and `DbAttribute.setGenerated(boolean)` no longer fire events;
-    they update their parent `DbEntity`'s cached collections via direct method calls, behavior-equivalent
-    to before. If your application code subscribed to these mapping events at runtime, migrate to direct
-    calls or to the Modeler.
-
-* Per [CAY-2925](https://issues.apache.org/jira/browse/CAY-2925) the `cayenne-modeler-maven-plugin` was removed. Launch CayenneModeler from the downloaded
-  distribution instead. A CLI option also exists for all platform flavors:
-  ```
-  java -jar CayenneModeler.jar path/to/cayenne-project.xml
-  ```
-  or on macOS:
-  ```
-  open CayenneModeler.app --args path/to/cayenne-project.xml
-  ```
-
-* Per [CAY-2955](https://issues.apache.org/jira/browse/CAY-2955) the obsolete `QueryEngine` abstraction (`org.apache.cayenne.access.QueryEngine`) has been removed.
-  `DataNode` is now used directly wherever `QueryEngine` was previously referenced. So you must subclass `DataNode` 
-  and override `performQueries()` if you previously implemented a custom `QueryEngine`.
-
-## Upgrading to 5.0-M1
-
-* Per [CAY-2737](https://issues.apache.org/jira/browse/CAY-2737) All code deprecated in Cayenne 4.1 and 4.2 was deleted — please review your code before
-  upgrading. Most notable removals are `SelectQuery` and these Cayenne modules:
-  - `cayenne-dbcp2`
-  - `cayenne-joda`
-  - `cayenne-client`
-  - `cayenne-client-jetty`
-  - `cayenne-protostuff`
-  - `cayenne-rop-server`
-  - `cayenne-web`
-  - `cayenne-jgroups`
-  - `cayenne-jms`
-  - `cayenne-xmpp`
-
-* Per [CAY-2742](https://issues.apache.org/jira/browse/CAY-2742) Minimum required Java version for Apache Cayenne is 11.
-
-* Per [CAY-2747](https://issues.apache.org/jira/browse/CAY-2747) Cayenne XML schemas are updated — update your projects by opening them in the Modeler or
-  using the `cayenne-project-compatibility` module.
-
-* Per [CAY-2751](https://issues.apache.org/jira/browse/CAY-2751) There is no more JNDI DataSource provided by Cayenne, nor password encoding capabilities.
-  If you need these, provide your own custom DataSource.
-
-* Per [CAY-2752](https://issues.apache.org/jira/browse/CAY-2752) Code generation configuration has minor changes — review and update Maven, Gradle and Ant
-  configs accordingly.
-
-* Per [CAY-2772](https://issues.apache.org/jira/browse/CAY-2772) Module extension is done differently. This may result in compile errors in some module
-  extensions. If you encounter those, change how you configure the modules, following this general pattern
-  (using `CacheInvalidationModule` as an example):
-  ```java
-  CayenneRuntime.of(..)
-      .addModule(b -> CacheInvalidationModule.extend(b).addHandler(MyHandler.class))
-      .build();
-  ```
-  Two things to note: (1) a module-specific extender is created using an `extend(Binder)` method of the
-  module, and (2) an extender does not produce a `Module` — instead it adds services directly to the
-  `Binder`. So it is usually invoked within a lambda that produces a `Module`, or within an app `Module`.
-
-* Per [CAY-2822](https://issues.apache.org/jira/browse/CAY-2822) `cayenne-server` module is renamed to `cayenne` — update your build scripts accordingly:
-  ```xml
-  <dependency>
-      <groupId>org.apache.cayenne</groupId>
-      <artifactId>cayenne</artifactId>
-      <version>{version}</version>
-  </dependency>
-  ```
-
-* Per [CAY-2823](https://issues.apache.org/jira/browse/CAY-2823) `ServerRuntime` is deprecated. Use `org.apache.cayenne.CayenneRuntime` instead.
-
-* Per [CAY-2824](https://issues.apache.org/jira/browse/CAY-2824) `CayenneServerModuleProvider` was renamed to `CayenneRuntimeModuleProvider` and moved to
-  the `org.apache.cayenne` package. If you are using the auto-loading mechanism for your custom
-  modules, update your `META-INF/services` reference accordingly.
-
-* Per [CAY-2825](https://issues.apache.org/jira/browse/CAY-2825) Package `org.apache.cayenne.configuration.server` was renamed to
-  `org.apache.cayenne.configuration.runtime` — fix your imports accordingly.
-
-* Per [CAY-2826](https://issues.apache.org/jira/browse/CAY-2826) `ServerModule` renamed to `CoreModule`. The new builder pattern combining both changes:
-  ```java
-  CayenneRuntime runtime = CayenneRuntime.of()
-          .addConfig("cayenne-project.xml")
-          .module(b -> CoreModule.extend(b).setProperty("some_property", "some_value"))
-          .build();
-  ```
-
-* Per [CAY-2828](https://issues.apache.org/jira/browse/CAY-2828) The `server` prefix was removed from the names of runtime properties and named collections
-  defined in `org.apache.cayenne.configuration.Constants`. Update references in code and in any scripts
-  that use them as system properties.
-
-* Per [CAY-2845](https://issues.apache.org/jira/browse/CAY-2845) `DataObject` interface and `BaseDataObject` class were deprecated and all logic moved to
-  the `Persistent` interface and `PersistentObject` class. Regenerate model classes via the cgen tool in
-  CayenneModeler or Maven/Gradle plugins.
+   and the `ClassDescriptor` methods `visitProperties(..)`, `visitDeclaredProperties(..)` and
+   `visitAllProperties(..)` are deprecated. Iterate over the new `ClassDescriptor.getProperties()`,
+   `getDeclaredProperties()` or `getAllProperties()` and switch on the property type (`AttributeProperty`,
+   `ToOneProperty`, `ToManyProperty`) instead.
