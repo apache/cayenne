@@ -143,6 +143,59 @@
      Previously an uncorrelated `exists` subquery was silently run against the database for every evaluated object,
      while the other shapes failed anyway. Until a proper in-memory evaluation is designed, such expressions are for
      query qualifiers only.
+*  Per [CAY-3058](https://issues.apache.org/jira/browse/CAY-3058) the runtime no longer works with the authored
+   mapping classes (`EntityResolver`, `ObjEntity`, `DbEntity`, `ObjAttribute`, `DbAttribute`, `ObjRelationship`,
+   `DbRelationship`, `DbJoin`, ...) or the `ClassDescriptor` family of `org.apache.cayenne.reflect`. On startup the
+   DataMaps are compiled into an immutable `org.apache.cayenne.map.compiled.CompiledMapping`, an object graph of
+   `CompiledEntity`, `CompiledAttribute`, `CompiledRelationship` (`CompiledToOneRelationship` /
+   `CompiledToManyRelationship`), `CompiledTable`, `CompiledColumn`, `CompiledJoin` and
+   `CompiledForeignKey`, with every reference resolved and every derived fact (inherited attributes, snapshot layout,
+   inheritance qualifiers, table dependency order) computed once. The authored classes remain the model of the
+   Modeler, the project files and the tools. So:
+
+   * `Fault` is an interface, and `Fault.resolveFault(Persistent, String)` is now `resolveFault(Persistent)`: a fault
+     is compiled for each relationship and each lazy attribute, and knows its property. `FaultFactory` and
+     `SingletonFaultFactory` are removed. Classes generated before 6.0 with lazy attributes call the old signature and must be regenerated.
+   * `DataChannel.getEntityResolver()` and `ObjectContext.getEntityResolver()` are replaced with `getMapping()`,
+     returning the `CompiledMapping`. Metadata lookups are `mapping.entity(name)`, `mapping.entity(Class)`,
+     `mapping.query(name)`, and on the DB side `mapping.schema().table(name)`, `mapping.schema().procedure(name)`,
+     `mapping.schema().map(name)`. The compiled accessors have no
+     `get` prefix: `entity.name()`, `entity.attribute("name")`, `entity.relationship("name")`, `table.column("ID")`.
+   * `ClassDescriptor`, `PropertyDescriptor`, `AttributeProperty`, `ArcProperty`, `ToOneProperty`, `ToManyProperty`,
+     `ToManyMapProperty`, `ClassDescriptorMap`, `ClassDescriptorFactory`, `PersistentDescriptor`,
+     `PersistentDescriptorFactory`, `LazyClassDescriptorDecorator`, `EmbeddableDescriptor`,
+     `AdditionalDbEntityDescriptor` and the `reflect.generic` descriptor factory are removed. The compiled entity is the
+     descriptor: `CompiledEntity.createObject()`, `attributes()`, `relationships()`, `idAttributes()`,
+     `snapshotLayout()`, `injectValueHolders(..)`, `shallowMerge(..)`, and the compiled attributes and relationships
+     read and write the properties of an object (`readProperty`, `writePropertyDirectly`, `setTarget`, `addTarget`,
+     ...). `Cayenne.getObjEntity(Persistent)` is renamed `Cayenne.getEntity(Persistent)` and returns the compiled
+     entity; `Cayenne.getClassDescriptor(..)` and `Cayenne.getProperty(..)` are removed.
+   * `Query.resolve(..)` takes the `CompiledMapping`, and the `ResolvedQuery` records refer to the compiled entities,
+     tables and procedures; `ResolvedQuery.classDescriptor()` is removed in favor of `entity()`.
+     `EntityResultSegment` holds the `CompiledEntity`, `EmbeddableResultSegment` a `CompiledEmbeddable`.
+   * The DDL methods of `DbAdapter` (`createTable`, `dropTableStatements`, `createUniqueConstraint`,
+     `createFkConstraint`, `createTableAppendColumn`, `getQuotingStrategy`, `preferredNativeColumnType`) and
+     `PkGenerator` take `CompiledTable` / `CompiledColumn`; tools compile the schema of their DataMaps with
+     `SchemaCompiler.compile(maps)`, which needs neither the persistent classes nor a DI container, before generating
+     DDL. `DbGenerator` is constructed with the `CompiledSchema` and the name of the map to generate, excludes tables by
+     name, and takes the names of the maps on the same database in place of a `DataDomain` to tell the foreign keys
+     that cross databases. `SchemaUpdateStrategy.updateSchema(..)` and `DataNodeFactory.createDataNode(..)` take
+     the `CompiledSchema` of the domain and the names of the node's maps instead of the authored DataMaps, and the
+     strategy no longer receives the `SQLLogger`: a strategy is created through DI and injects the services it
+     needs. A `CompiledSchema` is the DB half of a `CompiledMapping`, available as `mapping.schema()`.
+   * `EntitySorter`, `EntitySorterFactory` and `AshwoodEntitySorter` are removed. The dependency order of the tables
+     is a fact of the mapping: sort tables by `CompiledTable.dependencyIndex()` for the insert order and reverse it
+     for the delete order; `CompiledTable.isReflexive()` and the flush-time `ReflexiveObjectSorter` cover the rows
+     of self-referencing tables. `WeightedAshwoodEntitySorter` is a standalone helper over a `CompiledMapping`.
+   * `DataDomain` is constructed with a `MappingCompiler`, gets its mapping from `recompile(dataMaps)` and keeps
+     only the compiled mapping: the authored DataMaps are not retained by the runtime, so `DataDomain.getDataMaps()`,
+     `getDataMap(name)`, `addDataMap(..)` and `removeDataMap(..)` are gone, and `addNode(..)` takes the names of the
+     node's DataMaps. Code that needs the authored model at runtime loads it with the `ProjectLoader` of the
+     runtime's injector, and code that changes the authored DataMaps of a running domain keeps them and calls
+     `DataDomain.recompile(dataMaps)` for the runtime to notice. `EntityResolver.applyDBLayerDefaults()` is gone: the
+     compiler synthesizes the missing reverse DbRelationships, and infers the FK side of a DbRelationship pair flagged
+     on both sides or neither, logging a warning. `ValueComparisonStrategyFactory.getStrategy(..)` takes the value
+     `Class` instead of an `ObjAttribute`.
 
 ## Upgrading from 4.2 to 5.0
 

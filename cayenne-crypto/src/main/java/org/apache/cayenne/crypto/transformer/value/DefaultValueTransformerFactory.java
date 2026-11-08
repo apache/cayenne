@@ -21,11 +21,10 @@ package org.apache.cayenne.crypto.transformer.value;
 import org.apache.cayenne.crypto.key.KeySource;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.ObjAttribute;
-import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.compiled.CompiledColumn;
+import org.apache.cayenne.map.compiled.CompiledTable;
+import org.apache.cayenne.map.compiled.CompiledAttribute;
+import org.apache.cayenne.map.compiled.CompiledEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,8 +57,8 @@ public class DefaultValueTransformerFactory implements ValueTransformerFactory {
     private final Map<String, BytesConverter<?>> objectToBytes;
     private final Map<Integer, BytesConverter<?>> dbToBytes;
 
-    private final ConcurrentMap<DbAttribute, ValueEncryptor> encryptors;
-    private final ConcurrentMap<DbAttribute, ValueDecryptor> decryptors;
+    private final ConcurrentMap<CompiledColumn, ValueEncryptor> encryptors;
+    private final ConcurrentMap<CompiledColumn, ValueDecryptor> decryptors;
 
     public DefaultValueTransformerFactory(@Inject KeySource keySource,
                       @Inject(DB_TO_BYTE_CONVERTERS_KEY) Map<String, BytesConverter<?>> dbToBytes,
@@ -80,7 +79,7 @@ public class DefaultValueTransformerFactory implements ValueTransformerFactory {
     }
 
     @Override
-    public ValueDecryptor decryptor(DbAttribute a) {
+    public ValueDecryptor decryptor(CompiledColumn a) {
         ValueDecryptor e = decryptors.get(a);
 
         if (e == null) {
@@ -95,7 +94,7 @@ public class DefaultValueTransformerFactory implements ValueTransformerFactory {
     }
 
     @Override
-    public ValueEncryptor encryptor(DbAttribute a) {
+    public ValueEncryptor encryptor(CompiledColumn a) {
         ValueEncryptor e = encryptors.get(a);
 
         if (e == null) {
@@ -109,7 +108,7 @@ public class DefaultValueTransformerFactory implements ValueTransformerFactory {
         return e;
     }
 
-    protected ValueEncryptor createEncryptor(DbAttribute a) {
+    protected ValueEncryptor createEncryptor(CompiledColumn a) {
 
         String type = getJavaType(a);
 
@@ -119,20 +118,20 @@ public class DefaultValueTransformerFactory implements ValueTransformerFactory {
                     + " has no object-to-bytes conversion");
         }
 
-        BytesConverter<?> fromBytes = dbToBytes.get(a.getType());
+        BytesConverter<?> fromBytes = dbToBytes.get(a.jdbcType());
         if (fromBytes == null) {
-            throw new IllegalArgumentException("The type " + TypesMapping.getSqlNameByType(a.getType())
+            throw new IllegalArgumentException("The type " + TypesMapping.getSqlNameByType(a.jdbcType())
                     + " for attribute " + a + " has no bytes-to-db conversion");
         }
 
         return new DefaultValueEncryptor(toBytes, fromBytes);
     }
 
-    protected ValueDecryptor createDecryptor(DbAttribute a) {
+    protected ValueDecryptor createDecryptor(CompiledColumn a) {
 
-        BytesConverter<?> toBytes = dbToBytes.get(a.getType());
+        BytesConverter<?> toBytes = dbToBytes.get(a.jdbcType());
         if (toBytes == null) {
-            throw new IllegalArgumentException("The type " + TypesMapping.getSqlNameByType(a.getType())
+            throw new IllegalArgumentException("The type " + TypesMapping.getSqlNameByType(a.jdbcType())
                     + " for attribute " + a + " has no db-to-bytes conversion");
         }
 
@@ -148,27 +147,23 @@ public class DefaultValueTransformerFactory implements ValueTransformerFactory {
 
     // TODO: calculating Java type of ObjAttribute may become unneeded per
     // CAY-1752, as DbAttribute will have it.
-    protected String getJavaType(DbAttribute a) {
+    protected String getJavaType(CompiledColumn a) {
 
-        DbEntity dbEntity = a.getEntity();
-        DataMap dataMap = dbEntity.getDataMap();
+        CompiledTable table = a.table();
         Collection<String> javaTypes = new HashSet<>();
 
-        for(ObjEntity objEntity : dataMap.getMappedEntities(dbEntity)) {
-            for (ObjAttribute oa : objEntity.getAttributes()) {
-                if(oa.getDbAttributePath().length() > 1) {
-                    // TODO: this won't pick up flattened attributes
-                    continue;
-                }
-                if (a.getName().equals(oa.getDbAttributePath().first().value())) {
-                    javaTypes.add(oa.getType());
+        for (CompiledEntity entity : table.entities()) {
+            for (CompiledAttribute attribute : entity.attributes()) {
+                // TODO: this won't pick up flattened attributes
+                if (!attribute.isFlattened() && !attribute.isSynthetic() && attribute.column() == a) {
+                    javaTypes.add(attribute.valueClassName());
                 }
             }
         }
 
         if (javaTypes.size() != 1) {
-            String javaType = TypesMapping.getJavaBySqlType(a);
-            String attributeName = dbEntity.getName() + "." + a.getName();
+            String javaType = TypesMapping.getJavaBySqlType(a.jdbcType(), a.maxLength(), a.scale());
+            String attributeName = table.name() + "." + a.name();
             String msg = javaTypes.size() > 1 ? "ObjAttributes with different java types" : "No ObjAttributes";
             // Warn user about this problem as there is nothing else we can do
             LOGGER.warn("{} bound to DbAttribute '{}', {} type will be used.", msg, attributeName, javaType);

@@ -26,8 +26,7 @@ import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.ObjectStore;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.reflect.ClassDescriptor;
+import org.apache.cayenne.map.compiled.CompiledEntity;
 
 /**
  * A ParentAttachmentStrategy that extracts parent ObjectId from the joined columns in the
@@ -36,21 +35,20 @@ import org.apache.cayenne.reflect.ClassDescriptor;
 class JoinedIdParentAttachmentStrategy implements ParentAttachmentStrategy {
 
     private final CayennePath relatedIdPrefix;
-    private final Collection<ObjEntity> sourceEntities;
+    private final Collection<CompiledEntity> sourceEntities;
     private final PrefetchProcessorNode node;
     private final ObjectStore objectStore;
 
     JoinedIdParentAttachmentStrategy(ObjectStore objectStore, PrefetchProcessorNode node) {
-        ClassDescriptor parentDescriptor = ((PrefetchProcessorNode) node.getParent())
+        CompiledEntity parentEntity = ((PrefetchProcessorNode) node.getParent())
                 .getResolver()
-                .getDescriptor();
+                .getEntity();
 
         relatedIdPrefix = node
                 .getIncoming()
-                .getRelationship()
-                .getReverseDbRelationshipPath();
+                .reverseDbPath();
 
-        sourceEntities = parentDescriptor.getEntityInheritanceTree().allSubEntities();
+        sourceEntities = parentEntity.allSubEntities();
 
         this.node = node;
         this.objectStore = objectStore;
@@ -59,7 +57,7 @@ class JoinedIdParentAttachmentStrategy implements ParentAttachmentStrategy {
     public void linkToParent(DataRow row, Persistent object) {
         Persistent parentObject = null;
 
-        for (ObjEntity entity : sourceEntities) {
+        for (CompiledEntity entity : sourceEntities) {
             if (entity.isAbstract()) {
                 continue;
             }
@@ -67,7 +65,7 @@ class JoinedIdParentAttachmentStrategy implements ParentAttachmentStrategy {
             ObjectId id = node.getResolver().createObjectId(row, entity, relatedIdPrefix);
             if (id == null) {
                 throw new CayenneRuntimeException("Can't build ObjectId from row: %s, entity: %s, prefix: %s"
-                        , row, entity.getName(), relatedIdPrefix);
+                        , row, entity.name(), relatedIdPrefix);
             }
 
             parentObject = objectStore.getObject(id);

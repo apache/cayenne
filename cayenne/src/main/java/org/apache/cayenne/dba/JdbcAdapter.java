@@ -45,12 +45,13 @@ import org.apache.cayenne.access.types.ValueObjectTypeFactory;
 import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.RuntimeProperties;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DbJoin;
-import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.compiled.CompiledColumnPair;
+import org.apache.cayenne.map.compiled.CompiledDataMap;
+import org.apache.cayenne.map.compiled.CompiledColumn;
+import org.apache.cayenne.map.compiled.CompiledTable;
+import org.apache.cayenne.map.compiled.CompiledJoin;
+import org.apache.cayenne.map.compiled.CompiledMapping;
 import org.apache.cayenne.query.resolved.ResolvedProcedure;
 import org.apache.cayenne.query.resolved.ResolvedSelect;
 
@@ -277,10 +278,10 @@ public class JdbcAdapter implements DbAdapter {
      * @since 3.0
      */
     @Override
-    public Collection<String> dropTableStatements(DbEntity table) {
+    public Collection<String> dropTableStatements(CompiledTable table) {
         QuotingStrategy quotes = getQuotingStrategy(table);
         StringBuilder buf = new StringBuilder("DROP TABLE ");
-        quotes.appendFQN(buf, table.getCatalog(), table.getSchema(), table.getName());
+        quotes.appendFQN(buf, table.catalog(), table.schema(), table.name());
         return Collections.singleton(buf.toString());
     }
 
@@ -289,17 +290,17 @@ public class JdbcAdapter implements DbAdapter {
      * corresponding to <code>ent</code> parameter.
      */
     @Override
-    public String createTable(DbEntity entity) {
+    public String createTable(CompiledTable table) {
 
-        QuotingStrategy quotes = getQuotingStrategy(entity);
+        QuotingStrategy quotes = getQuotingStrategy(table);
 
         StringBuffer sqlBuffer = new StringBuffer();
         sqlBuffer.append("CREATE TABLE ");
-        quotes.appendFQN(sqlBuffer, entity.getCatalog(), entity.getSchema(), entity.getName());
+        quotes.appendFQN(sqlBuffer, table.catalog(), table.schema(), table.name());
 
         sqlBuffer.append(" (");
         // columns
-        Iterator<DbAttribute> it = entity.getAttributes().iterator();
+        Iterator<CompiledColumn> it = table.columns().iterator();
         if (it.hasNext()) {
             boolean first = true;
             while (it.hasNext()) {
@@ -309,18 +310,18 @@ public class JdbcAdapter implements DbAdapter {
                     sqlBuffer.append(", ");
                 }
 
-                DbAttribute column = it.next();
+                CompiledColumn column = it.next();
 
                 // attribute may not be fully valid, do a simple check
-                if (column.getType() == TypesMapping.NOT_DEFINED) {
+                if (column.jdbcType() == TypesMapping.NOT_DEFINED) {
                     throw new CayenneRuntimeException("Undefined type for attribute '%s.%s'."
-                            , entity.getFullyQualifiedName(), column.getName());
+                            , table.fullyQualifiedName(), column.name());
                 }
 
                 createTableAppendColumn(sqlBuffer, column);
             }
 
-            createTableAppendPKClause(sqlBuffer, entity);
+            createTableAppendPKClause(sqlBuffer, table);
         }
 
         sqlBuffer.append(')');
@@ -330,11 +331,11 @@ public class JdbcAdapter implements DbAdapter {
     /**
      * @since 1.2
      */
-    protected void createTableAppendPKClause(StringBuffer sqlBuffer, DbEntity entity) {
+    protected void createTableAppendPKClause(StringBuffer sqlBuffer, CompiledTable table) {
 
-        QuotingStrategy quotes = getQuotingStrategy(entity);
+        QuotingStrategy quotes = getQuotingStrategy(table);
 
-        Iterator<DbAttribute> pkit = entity.getPrimaryKeys().iterator();
+        Iterator<CompiledColumn> pkit = table.primaryKey().iterator();
         if (pkit.hasNext()) {
             sqlBuffer.append(", PRIMARY KEY (");
             boolean firstPk = true;
@@ -346,10 +347,10 @@ public class JdbcAdapter implements DbAdapter {
                     sqlBuffer.append(", ");
                 }
 
-                DbAttribute at = pkit.next();
+                CompiledColumn column = pkit.next();
 
                 quotes.appendStart(sqlBuffer);
-                sqlBuffer.append(at.getName());
+                sqlBuffer.append(column.name());
                 quotes.appendEnd(sqlBuffer);
             }
             sqlBuffer.append(')');
@@ -362,10 +363,10 @@ public class JdbcAdapter implements DbAdapter {
      * @since 1.2
      */
     @Override
-    public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
-        QuotingStrategy quotes = getQuotingStrategy(column.getEntity());
+    public void createTableAppendColumn(StringBuffer sqlBuffer, CompiledColumn column) {
+        QuotingStrategy quotes = getQuotingStrategy(column.table());
         quotes.appendStart(sqlBuffer);
-        sqlBuffer.append(column.getName());
+        sqlBuffer.append(column.name());
         quotes.appendEnd(sqlBuffer);
         sqlBuffer.append(' ').append(preferredNativeColumnType(column).nativeType());
 
@@ -373,12 +374,22 @@ public class JdbcAdapter implements DbAdapter {
         sqlBuffer.append(column.isMandatory() ? " NOT NULL" : " NULL");
     }
 
-    public static String sizeAndScale(DbAdapter adapter, DbAttribute column) {
-        int type = column.getType();
+    public static String sizeAndScale(DbAdapter adapter, CompiledColumn column) {
+        return sizeAndScale(adapter, column, column.maxLength());
+    }
+
+    /**
+     * Same as {@link #sizeAndScale(DbAdapter, CompiledColumn)}, but with an explicit length instead of the
+     * column's own. Used by the adapters that need to adjust the length of a column in the DDL.
+     *
+     * @since 6.0
+     */
+    public static String sizeAndScale(DbAdapter adapter, CompiledColumn column, int maxLength) {
+        int type = column.jdbcType();
 
         // an unconstrained character column either uses a length-free native type, or falls back to the
         // adapter's default length for databases that require one
-        if (TypesMapping.isCharacterWithMaxLengthSupport(type) && column.getMaxLength() <= 0) {
+        if (TypesMapping.isCharacterWithMaxLengthSupport(type) && maxLength <= 0) {
             return adapter.preferredNativeColumnType(column).unconstrained() ? "" : "(" + adapter.defaultCharColumnLength() + ")";
         }
 
@@ -386,16 +397,16 @@ public class JdbcAdapter implements DbAdapter {
             return "";
         }
 
-        int len = column.getMaxLength();
-        int scale = TypesMapping.isDateTime(column.getType())
-                || TypesMapping.isDecimal(column.getType()) && column.getType() != Types.FLOAT
-                ? column.getScale() : -1;
+        int len = maxLength;
+        int scale = TypesMapping.isDateTime(column.jdbcType())
+                || TypesMapping.isDecimal(column.jdbcType()) && column.jdbcType() != Types.FLOAT
+                ? column.scale() : -1;
 
         if (len > 0) {
             return "(" + len + (scale >= 0 && len > scale ? ", " + scale : "") + ")";
         }
 
-        if (scale >= 0 && TypesMapping.isDateTime(column.getType())) {
+        if (scale >= 0 && TypesMapping.isDateTime(column.jdbcType())) {
             return "(" + scale + ")";
         }
 
@@ -408,7 +419,7 @@ public class JdbcAdapter implements DbAdapter {
      * @since 1.1
      */
     @Override
-    public String createUniqueConstraint(DbEntity source, Collection<DbAttribute> columns) {
+    public String createUniqueConstraint(CompiledTable source, Collection<CompiledColumn> columns) {
 
         if (columns == null || columns.isEmpty()) {
             throw new CayenneRuntimeException("Can't create UNIQUE constraint - no columns specified.");
@@ -419,20 +430,20 @@ public class JdbcAdapter implements DbAdapter {
         StringBuilder buf = new StringBuilder();
 
         buf.append("ALTER TABLE ");
-        quotes.appendFQN(buf, source.getCatalog(), source.getSchema(), source.getName());
+        quotes.appendFQN(buf, source.catalog(), source.schema(), source.name());
         buf.append(" ADD UNIQUE (");
 
-        Iterator<DbAttribute> it = columns.iterator();
-        DbAttribute first = it.next();
+        Iterator<CompiledColumn> it = columns.iterator();
+        CompiledColumn first = it.next();
         quotes.appendStart(buf);
-        buf.append(first.getName());
+        buf.append(first.name());
         quotes.appendEnd(buf);
 
         while (it.hasNext()) {
-            DbAttribute next = it.next();
+            CompiledColumn next = it.next();
             buf.append(", ");
             quotes.appendStart(buf);
-            buf.append(next.getName());
+            buf.append(next.name());
             quotes.appendEnd(buf);
         }
 
@@ -446,28 +457,28 @@ public class JdbcAdapter implements DbAdapter {
      * for the relationship.
      */
     @Override
-    public String createFkConstraint(DbRelationship rel) {
+    public String createFkConstraint(CompiledJoin rel) {
 
-        DbEntity source = rel.getSourceEntity();
+        CompiledTable source = rel.source();
         QuotingStrategy quotes = getQuotingStrategy(source);
         StringBuilder buf = new StringBuilder();
         StringBuilder refBuf = new StringBuilder();
 
         buf.append("ALTER TABLE ");
 
-        quotes.appendFQN(buf, source.getCatalog(), source.getSchema(), source.getName());
+        quotes.appendFQN(buf, source.catalog(), source.schema(), source.name());
         buf.append(" ADD FOREIGN KEY (");
 
         boolean first = true;
 
         // sort joins in the order PK are set in target, to avoid errors on some DBs
-        List<DbJoin> joins = rel.getJoins();
+        List<CompiledColumnPair> joins = new ArrayList<>(rel.columnPairs());
         if (rel.isToPrimaryKey()) {
-            List<DbAttribute> pks = rel.getTargetEntity().getPrimaryKeys();
-            joins.sort(Comparator.comparingInt(join -> pks.indexOf(join.getTarget())));
+            List<CompiledColumn> pks = rel.target().primaryKey();
+            joins.sort(Comparator.comparingInt(join -> pks.indexOf(join.target())));
         }
 
-        for (DbJoin join : joins) {
+        for (CompiledColumnPair join : joins) {
             if (first) {
                 first = false;
             } else {
@@ -476,17 +487,17 @@ public class JdbcAdapter implements DbAdapter {
             }
 
             quotes.appendStart(buf);
-            buf.append(join.getSourceName());
+            buf.append(join.source().name());
             quotes.appendEnd(buf);
             quotes.appendStart(refBuf);
-            refBuf.append(join.getTargetName());
+            refBuf.append(join.target().name());
             quotes.appendEnd(refBuf);
         }
 
         buf.append(") REFERENCES ");
 
-        DbEntity target = rel.getTargetEntity();
-        quotes.appendFQN(buf, target.getCatalog(), target.getSchema(), target.getName());
+        CompiledTable target = rel.target();
+        quotes.appendFQN(buf, target.catalog(), target.schema(), target.name());
 
         buf.append(" (").append(refBuf).append(')');
         return buf.toString();
@@ -569,7 +580,7 @@ public class JdbcAdapter implements DbAdapter {
     }
 
     @Override
-    public SelectTranslator getSelectTranslator(ResolvedSelect select, EntityResolver entityResolver) {
+    public SelectTranslator getSelectTranslator(ResolvedSelect select, CompiledMapping mapping) {
         return new DefaultSelectTranslator();
     }
 
@@ -651,9 +662,9 @@ public class JdbcAdapter implements DbAdapter {
     }
 
     @Override
-    public QuotingStrategy getQuotingStrategy(DbEntity entity) {
-        DataMap dataMap = entity != null ? entity.getDataMap() : null;
-        return dataMap != null && dataMap.isQuotingSQLIdentifiers() ? quotingStrategy : QuotingStrategy.NONE;
+    public QuotingStrategy getQuotingStrategy(CompiledTable table) {
+        CompiledDataMap dataMap = table != null ? table.map() : null;
+        return dataMap != null && dataMap.quotingSQLIdentifiers() ? quotingStrategy : QuotingStrategy.NONE;
     }
 
 }

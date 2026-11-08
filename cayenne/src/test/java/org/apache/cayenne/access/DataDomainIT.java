@@ -23,11 +23,13 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.compiled.TestMappings;
 import org.apache.cayenne.query.resolved.ResolvedSQL;
 import org.apache.cayenne.query.resolved.ResolvedQueries;
 import org.apache.cayenne.query.SQLQuery;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.compiled.CompiledMapping;
+
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
@@ -54,18 +56,16 @@ public class DataDomainIT {
         // an unmapped DataMap falls back to the default node, so drop it to test the "no node" case below
         domain.setDefaultNode(null);
 
-        DataMap m1 = new DataMap("m1");
         DataNode n1 = DataNodes.named("n1");
-        domain.addNode(n1, List.of(m1));
+        domain.addNode(n1, List.of("m1"));
 
-        DataMap m2 = new DataMap("m2");
         DataNode n2 = DataNodes.named("n2");
-        domain.addNode(n2, List.of(m2));
+        domain.addNode(n2, List.of("m2"));
 
-        assertSame(n1, domain.lookupDataNode(m1));
-        assertSame(n2, domain.lookupDataNode(m2));
+        assertSame(n1, domain.lookupDataNode("m1"));
+        assertSame(n2, domain.lookupDataNode("m2"));
 
-        assertThrows(CayenneRuntimeException.class, () -> domain.lookupDataNode(new DataMap("m3")));
+        assertThrows(CayenneRuntimeException.class, () -> domain.lookupDataNode("m3"));
     }
 
     @Test
@@ -73,20 +73,18 @@ public class DataDomainIT {
 
         DataDomain domain = env.runtime().getDataDomain();
 
-        DataMap m1 = new DataMap("m1");
         DataNode n1 = DataNodes.named("n1");
-        domain.addNode(n1, List.of(m1));
+        domain.addNode(n1, List.of("m1"));
         domain.setDefaultNode(n1);
 
-        DataMap m2 = new DataMap("m2");
         DataNode n2 = DataNodes.named("n2");
-        domain.addNode(n2, List.of(m2));
+        domain.addNode(n2, List.of("m2"));
 
-        assertSame(n1, domain.lookupDataNode(m1));
-        assertSame(n2, domain.lookupDataNode(m2));
+        assertSame(n1, domain.lookupDataNode("m1"));
+        assertSame(n2, domain.lookupDataNode("m2"));
 
         // must map to default
-        assertSame(n1, domain.lookupDataNode(new DataMap("m3")));
+        assertSame(n1, domain.lookupDataNode("m3"));
     }
 
     @Test
@@ -99,18 +97,19 @@ public class DataDomainIT {
         DbEntity e1 = new DbEntity("E1");
         m1.addDbEntity(e1);
         DataNode n1 = DataNodes.named("n1");
-        domain.addNode(n1, List.of(m1));
+        domain.addNode(n1, List.of("m1"));
 
         DataNode n2 = DataNodes.named("n2");
         domain.addNode(n2, List.of());
 
         // a query with a root is routed by its DataMap
-        assertSame(n1, domain.lookupDataNode(ResolvedQueries.select(null, e1)));
+        CompiledMapping mapping = TestMappings.compile(m1);
+        assertSame(n1, domain.lookupDataNode(ResolvedQueries.select(null, mapping.schema().table("E1"))));
 
         // a rootless SQL statement by its node name, or else to the default node
-        assertSame(n2, domain.lookupDataNode(SQLQuery.query("SELECT 1").dataNode("n2").resolve(new EntityResolver())));
+        assertSame(n2, domain.lookupDataNode(SQLQuery.query("SELECT 1").dataNode("n2").resolve(mapping)));
         assertThrows(CayenneRuntimeException.class,
-                () -> domain.lookupDataNode(SQLQuery.query("SELECT 1").dataNode("n3").resolve(new EntityResolver())));
+                () -> domain.lookupDataNode(SQLQuery.query("SELECT 1").dataNode("n3").resolve(mapping)));
         assertThrows(CayenneRuntimeException.class, () -> domain.lookupDataNode(ResolvedSQL.raw("SELECT 1")));
 
         domain.setDefaultNode(n1);
@@ -132,38 +131,45 @@ public class DataDomainIT {
     @Test
     public void nodeMaps() {
         DataDomain domain = env.runtime().getDataDomain();
-        assertNull(domain.getDataMap("map"));
+        domain.setDefaultNode(null);
+        assertThrows(CayenneRuntimeException.class, () -> domain.lookupDataNode("map"));
 
         DataNode node = DataNodes.named("1");
-        domain.addNode(node, List.of(new DataMap("map")));
-        assertNotNull(domain.getDataMap("map"));
+        domain.addNode(node, List.of("map"));
+        assertSame(node, domain.lookupDataNode("map"));
     }
 
     @Test
-    public void maps() throws Exception {
-        DataDomain d1 = env.runtime().getDataDomain();
-
-        DataMap m1 = new DataMap("m1");
-        d1.addDataMap(m1);
-        assertSame(m1, d1.getDataMap(m1.getName()));
-
-        d1.removeDataMap(m1.getName());
-        assertNull(d1.getDataMap(m1.getName()));
-    }
-
-    @Test
-    public void entityResolverRefresh() throws Exception {
+    public void recompile() {
         DataDomain domain = env.runtime().getDataDomain();
-        EntityResolver resolver = domain.getEntityResolver();
-        assertNotNull(resolver);
+        CompiledMapping mapping = domain.getMapping();
+        assertNotNull(mapping);
+        assertNull(mapping.entity("TestEntity"));
 
         DataMap map = new DataMap("map");
         ObjEntity entity = new ObjEntity("TestEntity");
         map.addObjEntity(entity);
 
-        domain.addDataMap(map);
+        domain.recompile(List.of(map));
 
-        assertSame(entity, resolver.getObjEntity("TestEntity"));
+        // the mapping is immutable, so the domain replaces it with a recompiled one
+        assertNotSame(mapping, domain.getMapping());
+        assertNotNull(domain.getMapping().entity("TestEntity"));
+        assertEquals("TestEntity", domain.getMapping().entity("TestEntity").name());
+    }
+
+    @Test
+    public void recompileUnroutesMissingMaps() {
+        DataDomain domain = env.runtime().getDataDomain();
+        domain.setDefaultNode(null);
+
+        DataNode node = DataNodes.named("n1");
+        domain.addNode(node, List.of("kept", "dropped"));
+        assertSame(node, domain.lookupDataNode("dropped"));
+
+        domain.recompile(List.of(new DataMap("kept")));
+        assertSame(node, domain.lookupDataNode("kept"));
+        assertThrows(CayenneRuntimeException.class, () -> domain.lookupDataNode("dropped"));
     }
 
     @Test

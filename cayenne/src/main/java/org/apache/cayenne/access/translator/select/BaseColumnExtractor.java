@@ -21,7 +21,7 @@ package org.apache.cayenne.access.translator.select;
 
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.exp.path.CayennePath;
-import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.compiled.CompiledColumn;
 
 import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.table;
 
@@ -36,10 +36,10 @@ abstract class BaseColumnExtractor implements ColumnExtractor {
         this.context = context;
     }
 
-    protected ResultNodeDescriptor addDbAttribute(CayennePath prefix, CayennePath labelPrefix, DbAttribute dba) {
+    protected ResultNodeDescriptor addDbAttribute(CayennePath prefix, CayennePath labelPrefix, CompiledColumn column) {
         String alias = context.getTableTree().aliasForPath(prefix);
-        CayennePath dataRowKey = labelPrefix.dot(dba.getName());
-        Node columnNode = table(alias).column(dba).build();
-        return context.addResultNode(columnNode, dataRowKey).setDbAttribute(dba);
+        CayennePath dataRowKey = labelPrefix.dot(column.name());
+        Node columnNode = table(alias).column(column).build();
+        return context.addResultNode(columnNode, dataRowKey).setDbAttribute(column);
     }
 }

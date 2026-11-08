@@ -63,7 +63,7 @@ public class TrimmingColumnNode extends Node {
         return (getParent().getType() == NodeType.EQUALITY
                 || getParent().getType() == NodeType.LIKE)
                 && columnNode.getAttribute() != null
-                && columnNode.getAttribute().getType() == Types.CLOB;
+                && columnNode.getAttribute().jdbcType() == Types.CLOB;
     }
 
     protected void appendRtrim(SQLAppendable buffer, SQLGenerationContext context) {
@@ -74,7 +74,7 @@ public class TrimmingColumnNode extends Node {
 
     private boolean isCharType() {
         return columnNode.getAttribute() != null
-                && columnNode.getAttribute().getType() == Types.CHAR;
+                && columnNode.getAttribute().jdbcType() == Types.CHAR;
     }
 
     protected boolean isAllowedForTrimming() {
@@ -134,7 +134,7 @@ public class TrimmingColumnNode extends Node {
     }
 
     protected int getColumnSize() {
-        int size = columnNode.getAttribute().getMaxLength();
+        int size = columnNode.getAttribute().maxLength();
         if(size > 0) {
             return size;
         }

@@ -74,7 +74,7 @@ class SQLBindingRenderer {
                 buffer.append(",");
             }
             PSParameter<?> b = bindings[i];
-            appendNamedValue(buffer, b.attribute() != null ? b.attribute().getName() : null, b.binder(), b.value());
+            appendNamedValue(buffer, b.attribute() != null ? b.attribute().name() : null, b.binder(), b.value());
         }
         buffer.append("]");
     }
@@ -89,7 +89,7 @@ class SQLBindingRenderer {
                 buffer.append(",");
             }
             CSParameter<?> b = params[i];
-            appendNamedValue(buffer, b.param() != null ? b.param().getName() : null, b.binder(), b.value());
+            appendNamedValue(buffer, b.param() != null ? b.param().name() : null, b.binder(), b.value());
         }
         buffer.append("]");
     }
@@ -147,7 +147,7 @@ class SQLBindingRenderer {
                 buffer.append(",");
             }
             PSBatchParameter b = bindings[j];
-            appendNamedValue(buffer, b.attribute() != null ? b.attribute().getName() : null, null, b.getValue(row));
+            appendNamedValue(buffer, b.attribute() != null ? b.attribute().name() : null, null, b.getValue(row));
         }
     }
 

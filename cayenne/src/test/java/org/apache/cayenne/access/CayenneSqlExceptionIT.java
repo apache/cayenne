@@ -21,6 +21,7 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.CayenneSqlException;
 import org.apache.cayenne.exp.ExpressionFactory;
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjAttribute;
@@ -93,17 +94,19 @@ public class CayenneSqlExceptionIT {
     public void commitWithNonExistingColumn() {
         // point the "artistName" attribute at a column that does not exist in the ARTIST table, so the generated
         // INSERT references an unknown column and the DB rejects it on commit
-        DbEntity artistDb = context.getEntityResolver().getDbEntity("ARTIST");
+        DataMap map = env.project().dataMap(context.getMapping().schema().table("ARTIST").map().name());
+        DbEntity artistDb = map.getDbEntity("ARTIST");
         DbAttribute nameColumn = artistDb.getAttribute("ARTIST_NAME");
         artistDb.removeAttribute("ARTIST_NAME");
         nameColumn.setName("BOGUS_COLUMN");
         artistDb.addAttribute(nameColumn);
 
-        ObjEntity artistObj = context.getEntityResolver().getObjEntity("Artist");
+        ObjEntity artistObj = map.getObjEntity("Artist");
         ObjAttribute nameAttribute = artistObj.getAttribute("artistName");
         nameAttribute.setDbAttributePath("BOGUS_COLUMN");
 
-        context.getEntityResolver().refreshMappingCache();
+        env.recompile();
+
 
         Artist artist = context.newObject(Artist.class);
         artist.setArtistName("aaa");

@@ -22,14 +22,14 @@ package org.apache.cayenne.reflect;
 import org.apache.cayenne.CayenneRuntimeException;
 
 /**
- * An unchecked exception thrown on errors during property access, either within a
- * Accessor or a Property.
- * 
+ * An unchecked exception thrown on errors during property access, either within an Accessor or a compiled attribute
+ * or relationship.
+ *
  * @since 3.0
  */
 public class PropertyException extends CayenneRuntimeException {
 
-    protected PropertyDescriptor property;
+    protected Object property;
     protected Accessor accessor;
     protected Object source;
 
@@ -54,12 +54,20 @@ public class PropertyException extends CayenneRuntimeException {
         this.source = source;
     }
 
-    public PropertyException(String messageFormat, PropertyDescriptor property, Object source,
+    /**
+     * @param property the compiled attribute or relationship that was accessed
+     * @since 6.0 takes any property object
+     */
+    public PropertyException(String messageFormat, Object property, Object source,
             Object... messageArgs) {
         this(messageFormat, property, source, (Throwable) null, messageArgs);
     }
 
-    public PropertyException(String messageFormat, PropertyDescriptor property, Object source,
+    /**
+     * @param property the compiled attribute or relationship that was accessed
+     * @since 6.0 takes any property object
+     */
+    public PropertyException(String messageFormat, Object property, Object source,
             Throwable cause, Object... messageArgs) {
         super(messageFormat, cause, messageArgs);
 
@@ -74,7 +82,10 @@ public class PropertyException extends CayenneRuntimeException {
         return accessor;
     }
 
-    public PropertyDescriptor getProperty() {
+    /**
+     * Returns the compiled attribute or relationship that was accessed. It may be null.
+     */
+    public Object getProperty() {
         return property;
     }
 

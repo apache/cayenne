@@ -27,6 +27,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.sql.Types;
 
+import static org.apache.cayenne.dba.AdhocTables.compile;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -47,7 +48,7 @@ public class SQLServerAdapterIT {
         dblPrec.setScale(12);
         e.addAttribute(dblPrec);
         
-        String sql = adapter.createTable(e);
+        String sql = adapter.createTable(compile(e));
 
         // CAY-1363.
         // Postgress don't support notations float(a, b) 
@@ -66,6 +67,6 @@ public class SQLServerAdapterIT {
         c.setType(Types.VARCHAR);   // no max length -> unconstrained
         e.addAttribute(c);
 
-        assertEquals("CREATE TABLE Test (c varchar(max) NULL)", adapter.createTable(e));
+        assertEquals("CREATE TABLE Test (c varchar(max) NULL)", adapter.createTable(compile(e)));
     }
 }

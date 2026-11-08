@@ -47,7 +47,6 @@ import org.apache.cayenne.access.translator.sqltemplate.DefaultSQLTemplateTransl
 import org.apache.cayenne.access.translator.sqltemplate.DefaultTemplateContextFactory;
 import org.apache.cayenne.access.translator.sqltemplate.TemplateContextFactory;
 import org.apache.cayenne.access.types.*;
-import org.apache.cayenne.ashwood.AshwoodEntitySorterFactory;
 import org.apache.cayenne.cache.MapQueryCacheProvider;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.commitlog.CommitLogFilter;
@@ -81,7 +80,8 @@ import org.apache.cayenne.event.EventManagerProvider;
 import org.apache.cayenne.event.NoopEventBridgeProvider;
 import org.apache.cayenne.log.SQLLogger;
 import org.apache.cayenne.log.Slf4jSQLLogger;
-import org.apache.cayenne.map.EntitySorterFactory;
+import org.apache.cayenne.map.compiled.DefaultMappingCompiler;
+import org.apache.cayenne.map.compiled.MappingCompiler;
 import org.apache.cayenne.project.ConfigurationNameMapper;
 import org.apache.cayenne.project.DataMapLoader;
 import org.apache.cayenne.project.DefaultConfigurationNameMapper;
@@ -280,7 +280,7 @@ public class CoreModule implements Module {
         // a global properties object
         binder.bind(RuntimeProperties.class).to(DefaultRuntimeProperties.class);
 
-        binder.bind(EntitySorterFactory.class).to(AshwoodEntitySorterFactory.class);
+        binder.bind(MappingCompiler.class).to(DefaultMappingCompiler.class);
 
         binder.bind(Key.get(BatchTranslator.class, BatchTranslator.INSERT)).to(InsertBatchTranslator.class);
         binder.bind(Key.get(BatchTranslator.class, BatchTranslator.UPDATE)).to(UpdateBatchTranslator.class);

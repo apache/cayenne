@@ -33,12 +33,13 @@ import org.apache.cayenne.exp.DbPathExp;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.graph.ArcId;
 import org.apache.cayenne.graph.GraphChangeHandler;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DbJoin;
-import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.map.compiled.CompiledDbPath;
+import org.apache.cayenne.map.compiled.CompiledColumnPair;
+import org.apache.cayenne.map.compiled.CompiledColumn;
+import org.apache.cayenne.map.compiled.CompiledTable;
+import org.apache.cayenne.map.compiled.CompiledJoin;
+import org.apache.cayenne.map.compiled.CompiledEntity;
+import org.apache.cayenne.map.compiled.CompiledRelationship;
 
 /**
  * Graph handler that collects information about arc changes into
@@ -75,32 +76,32 @@ class ArcValuesCreationHandler implements GraphChangeHandler {
             return;
         }
 
-        ObjEntity entity = factory.getDescriptor().getEntity();
-        ObjRelationship objRelationship = entity.getRelationship(arcTarget.getArcId().getForwardArc());
-        if(objRelationship == null) {
+        CompiledEntity entity = factory.getEntity();
+        CompiledRelationship relationship = entity.relationship(arcTarget.getArcId().getForwardArc());
+        if(relationship == null) {
             String arc = arcId.getForwardArc();
             if(arc.startsWith(DbPathExp.DB_PREFIX)) {
                 String relName = arc.substring(DbPathExp.DB_PREFIX.length());
-                DbRelationship dbRelationship = entity.getDbEntity().getRelationship(relName);
-                processRelationship(dbRelationship, arcTarget.getSourceId(), arcTarget.getTargetId(), created);
+                CompiledJoin join = entity.table().join(relName);
+                processRelationship(join, arcTarget.getSourceId(), arcTarget.getTargetId(), created);
             }
             return;
         }
 
-        if(objRelationship.isFlattened()) {
-            FlattenedPathProcessingResult result = processFlattenedPath(arcTarget.getSourceId(), arcTarget.getTargetId(), entity.getDbEntity(),
-                    objRelationship.getDbRelationshipPath(), created);
+        if(relationship.isFlattened()) {
+            FlattenedPathProcessingResult result = processFlattenedPath(arcTarget.getSourceId(), arcTarget.getTargetId(), entity.table(),
+                    relationship.dbPath(), created);
             if(result.isProcessed()) {
                 factory.getProcessedArcs().add(arcTarget);
             }
         } else {
-            DbRelationship dbRelationship = objRelationship.getDbRelationships().get(0);
-            processRelationship(dbRelationship, arcTarget.getSourceId(), arcTarget.getTargetId(), created);
+            CompiledJoin join = relationship.joins().get(0);
+            processRelationship(join, arcTarget.getSourceId(), arcTarget.getTargetId(), created);
             factory.getProcessedArcs().add(arcTarget);
         }
     }
 
-    FlattenedPathProcessingResult processFlattenedPath(ObjectId id, ObjectId finalTargetId, DbEntity entity, CayennePath dbPath, boolean add) {
+    FlattenedPathProcessingResult processFlattenedPath(ObjectId id, ObjectId finalTargetId, CompiledTable table, CayennePath dbPath, boolean add) {
         if(shouldSkipFlattenedOp(id, finalTargetId)) {
             return flattenedResultNotProcessed();
         }
@@ -110,50 +111,50 @@ class ArcValuesCreationHandler implements GraphChangeHandler {
         ObjectId srcId = id;
         ObjectId targetId = null;
 
-        List<Object> dbPathComponents = entity.resolvePath(dbPath);
-        for(int i = 0; i < dbPathComponents.size(); i++) {
-            Object entry = dbPathComponents.get(i);
-            boolean last = i == dbPathComponents.size() - 1;
+        CompiledDbPath resolvedPath = table.resolvePath(dbPath);
+        List<CompiledJoin> joins = resolvedPath.joins();
+        for(int i = 0; i < joins.size(); i++) {
+            CompiledJoin relationship = joins.get(i);
+            // the last join of a path that does not end in a column leads to the arc target
+            boolean last = i == joins.size() - 1 && resolvedPath.column() == null;
             flattenedPath = flattenedPath.dot(CayennePath.segmentOf(dbPath.segments().get(i).value()));
-            if(entry instanceof DbRelationship relationship) {
-                // intermediate db entity to be inserted
-                DbEntity target = relationship.getTargetEntity();
-                // if ID is present, just use it, otherwise create new
-                // if this is the last segment, and it's a relationship, use known target id from arc creation
-                if(last) {
-                    targetId = finalTargetId;
+            // intermediate db entity to be inserted
+            CompiledTable target = relationship.target();
+            // if ID is present, just use it, otherwise create new
+            // if this is the last segment, and it's a relationship, use known target id from arc creation
+            if(last) {
+                targetId = finalTargetId;
+            } else {
+                if(!relationship.isToMany()) {
+                    targetId = factory.getStore().getFlattenedId(id, flattenedPath);
                 } else {
-                    if(!relationship.isToMany()) {
-                        targetId = factory.getStore().getFlattenedId(id, flattenedPath);
-                    } else {
-                        targetId = null;
-                    }
+                    targetId = null;
                 }
-
-                if(targetId == null) {
-                    // should insert, regardless of original operation (insert/update)
-                    targetId = ObjectId.of(DbPathExp.DB_PREFIX + target.getName());
-                    if(!relationship.isToMany()) {
-                        factory.getStore().markFlattenedPath(id, flattenedPath, targetId);
-                    }
-
-                    DbRowOpType type;
-                    if(relationship.isToMany()) {
-                        type = add ? DbRowOpType.INSERT : DbRowOpType.DELETE;
-                        factory.getOrCreate(target, targetId, type);
-                    } else {
-                        type = add ? DbRowOpType.INSERT : DbRowOpType.UPDATE;
-                        factory.<DbRowOpWithValues>getOrCreate(target, targetId, type)
-                                .getValues()
-                                .addFlattenedId(flattenedPath, targetId);
-                    }
-                } else if(!last) {
-                    // should update existing DB row
-                    factory.getOrCreate(target, targetId, add ? DbRowOpType.UPDATE : defaultType);
-                }
-                processRelationship(relationship, srcId, targetId, shouldProcessAsAddition(relationship, add));
-                srcId = targetId; // use target as next source
             }
+
+            if(targetId == null) {
+                // should insert, regardless of original operation (insert/update)
+                targetId = ObjectId.of(DbPathExp.DB_PREFIX + target.name());
+                if(!relationship.isToMany()) {
+                    factory.getStore().markFlattenedPath(id, flattenedPath, targetId);
+                }
+
+                DbRowOpType type;
+                if(relationship.isToMany()) {
+                    type = add ? DbRowOpType.INSERT : DbRowOpType.DELETE;
+                    factory.getOrCreate(target, targetId, type);
+                } else {
+                    type = add ? DbRowOpType.INSERT : DbRowOpType.UPDATE;
+                    factory.<DbRowOpWithValues>getOrCreate(target, targetId, type)
+                            .getValues()
+                            .addFlattenedId(flattenedPath, targetId);
+                }
+            } else if(!last) {
+                // should update existing DB row
+                factory.getOrCreate(target, targetId, add ? DbRowOpType.UPDATE : defaultType);
+            }
+            processRelationship(relationship, srcId, targetId, shouldProcessAsAddition(relationship, add));
+            srcId = targetId; // use target as next source
         }
 
         return flattenedResultId(targetId);
@@ -167,28 +168,28 @@ class ArcValuesCreationHandler implements GraphChangeHandler {
                 && !factory.getStore().getFlattenedIds(finalTargetId).isEmpty();
     }
 
-    private boolean shouldProcessAsAddition(DbRelationship relationship, boolean add) {
+    private boolean shouldProcessAsAddition(CompiledJoin relationship, boolean add) {
         if(add) {
             return true;
         }
 
         // should always add data from one-to-one relationships
-        for(DbJoin join : relationship.getJoins()) {
-            if(!join.getSource().isPrimaryKey() || !join.getTarget().isPrimaryKey()) {
+        for(CompiledColumnPair join : relationship.columnPairs()) {
+            if(!join.source().isPrimaryKey() || !join.target().isPrimaryKey()) {
                 return false;
             }
         }
         return true;
     }
 
-    protected void processRelationship(DbRelationship dbRelationship, ObjectId srcId, ObjectId targetId, boolean add) {
-        for(DbJoin join : dbRelationship.getJoins()) {
-            boolean srcPK = join.getSource().isPrimaryKey();
-            boolean targetPK = join.getTarget().isPrimaryKey();
+    protected void processRelationship(CompiledJoin dbRelationship, ObjectId srcId, ObjectId targetId, boolean add) {
+        for(CompiledColumnPair join : dbRelationship.columnPairs()) {
+            boolean srcPK = join.source().isPrimaryKey();
+            boolean targetPK = join.target().isPrimaryKey();
 
             Object valueToUse;
             DbRowOp rowOp;
-            DbAttribute attribute;
+            CompiledColumn column;
             ObjectId id;
             boolean processDelete;
 
@@ -202,29 +203,29 @@ class ArcValuesCreationHandler implements GraphChangeHandler {
                 processDelete = true;
                 id = null;
                 if(srcPK) {
-                    valueToUse = ObjectIdValueSupplier.getFor(srcId, join.getSourceName());
-                    rowOp = factory.getOrCreate(dbRelationship.getTargetEntity(), targetId, DbRowOpType.UPDATE);
-                    attribute = join.getTarget();
+                    valueToUse = ObjectIdValueSupplier.getFor(srcId, join.source().name());
+                    rowOp = factory.getOrCreate(dbRelationship.target(), targetId, DbRowOpType.UPDATE);
+                    column = join.target();
                 } else {
-                    valueToUse = ObjectIdValueSupplier.getFor(targetId, join.getTargetName());
-                    rowOp = factory.getOrCreate(dbRelationship.getSourceEntity(), srcId, defaultType);
-                    attribute = join.getSource();
+                    valueToUse = ObjectIdValueSupplier.getFor(targetId, join.target().name());
+                    rowOp = factory.getOrCreate(dbRelationship.source(), srcId, defaultType);
+                    column = join.source();
                 }
             } else {
                 // case 2 and 3. The rows of a join table are not updated here, as they are created and deleted whole
                 processDelete = false;
                 if(dbRelationship.isForeignKey()) {
-                    valueToUse = ObjectIdValueSupplier.getFor(targetId, join.getTargetName());
-                    rowOp = factory.getOrCreate(dbRelationship.getSourceEntity(), srcId, defaultType);
-                    attribute = join.getSource();
+                    valueToUse = ObjectIdValueSupplier.getFor(targetId, join.target().name());
+                    rowOp = factory.getOrCreate(dbRelationship.source(), srcId, defaultType);
+                    column = join.source();
                     id = srcId;
-                    if(dbRelationship.getReverseRelationship().isToMany()) {
+                    if(dbRelationship.reverse().isToMany()) {
                         rowOp = null;
                     }
                 } else {
-                    valueToUse = ObjectIdValueSupplier.getFor(srcId, join.getSourceName());
-                    rowOp = factory.getOrCreate(dbRelationship.getTargetEntity(), targetId, DbRowOpType.UPDATE);
-                    attribute = join.getTarget();
+                    valueToUse = ObjectIdValueSupplier.getFor(srcId, join.source().name());
+                    rowOp = factory.getOrCreate(dbRelationship.target(), targetId, DbRowOpType.UPDATE);
+                    column = join.target();
                     id = targetId;
                     if(dbRelationship.isToMany()) {
                         rowOp = null;
@@ -234,23 +235,23 @@ class ArcValuesCreationHandler implements GraphChangeHandler {
 
             // propagated master -> child PK; only an arc creation defines the new id value, an arc deletion
             // must not stomp it with the old target's value
-            if(add && id != null && attribute.isPrimaryKey()) {
-                id.getReplacementIdMap().put(attribute.getName(), valueToUse);
+            if(add && id != null && column.isPrimaryKey()) {
+                id.getReplacementIdMap().put(column.name(), valueToUse);
             }
             if(rowOp != null) {
-                rowOp.accept(new ValuePropagationVisitor(attribute, add, valueToUse, processDelete));
+                rowOp.accept(new ValuePropagationVisitor(column, add, valueToUse, processDelete));
             }
         }
     }
 
     private static class ValuePropagationVisitor implements DbRowOpVisitor<Void> {
-        private final DbAttribute attribute;
+        private final CompiledColumn column;
         private final boolean add;
         private final Object valueToUse;
         private final boolean processDelete;
 
-        private ValuePropagationVisitor(DbAttribute attribute, boolean add, Object valueToUse, boolean processDelete) {
-            this.attribute = attribute;
+        private ValuePropagationVisitor(CompiledColumn column, boolean add, Object valueToUse, boolean processDelete) {
+            this.column = column;
             this.add = add;
             this.valueToUse = valueToUse;
             this.processDelete = processDelete;
@@ -258,20 +259,20 @@ class ArcValuesCreationHandler implements GraphChangeHandler {
 
         @Override
         public Void visitInsert(InsertDbRowOp dbRow) {
-            dbRow.getValues().addValue(attribute, add ? valueToUse : null, true);
+            dbRow.getValues().addValue(column, add ? valueToUse : null, true);
             return null;
         }
 
         @Override
         public Void visitUpdate(UpdateDbRowOp dbRow) {
-            dbRow.getValues().addValue(attribute, add ? valueToUse : null, true);
+            dbRow.getValues().addValue(column, add ? valueToUse : null, true);
             return null;
         }
 
         @Override
         public Void visitDelete(DeleteDbRowOp dbRow) {
             if(processDelete) {
-                dbRow.getQualifier().addAdditionalQualifier(attribute, valueToUse);
+                dbRow.getQualifier().addAdditionalQualifier(column, valueToUse);
             }
             return null;
         }

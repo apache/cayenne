@@ -34,9 +34,9 @@ import org.apache.cayenne.exp.property.NumericProperty;
 import org.apache.cayenne.exp.property.Property;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.exp.property.SelfProperty;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.compiled.CompiledTable;
+import org.apache.cayenne.map.compiled.CompiledMapping;
+import org.apache.cayenne.map.compiled.CompiledEntity;
 import org.apache.cayenne.ql.ParsedObjectSelect;
 import org.apache.cayenne.ql.QLParser;
 import org.apache.cayenne.query.resolved.ResolvedQuery;
@@ -110,14 +110,14 @@ public class ObjectSelect<T> implements Query<T> {
     }
 
     /**
-     * Creates a query that fetches DataRows of an {@link ObjEntity} determined from a provided class.
+     * Creates a query that fetches DataRows of an {@link CompiledEntity} determined from a provided class.
      */
     public static ObjectSelect<DataRow> dataRowQuery(Class<?> entityType) {
         return query(entityType).fetchDataRows();
     }
 
     /**
-     * Creates a query that fetches the objects of an {@link ObjEntity} determined from provided "entityName", but
+     * Creates a query that fetches the objects of an {@link CompiledEntity} determined from provided "entityName", but
      * typed as the provided result type. This factory method is most often used with generic classes that by
      * themselves are not enough to resolve the entity to fetch.
      */
@@ -126,14 +126,14 @@ public class ObjectSelect<T> implements Query<T> {
     }
 
     /**
-     * Creates a query that fetches DataRows of a {@link DbEntity} determined from provided "dbEntityName".
+     * Creates a query that fetches DataRows of a {@link CompiledTable} determined from provided "dbEntityName".
      */
     public static ObjectSelect<DataRow> dbQuery(String dbEntityName) {
         return new ObjectSelect<DataRow>().fetchDataRows().dbEntityName(dbEntityName);
     }
 
     /**
-     * Creates a query that fetches a single column resolved against a given {@link ObjEntity} class. A shortcut for
+     * Creates a query that fetches a single column resolved against a given {@link CompiledEntity} class. A shortcut for
      * {@code query(entityType).column(column)}.
      *
      * @param entityType base persistent class that will be used as a root for this query
@@ -144,7 +144,7 @@ public class ObjectSelect<T> implements Query<T> {
     }
 
     /**
-     * Creates a query that fetches multiple columns of a given {@link ObjEntity}. A shortcut for
+     * Creates a query that fetches multiple columns of a given {@link CompiledEntity}. A shortcut for
      * {@code query(entityType).columns(columns)}.
      *
      * @param entityType base persistent class that will be used as a root for this query
@@ -295,7 +295,7 @@ public class ObjectSelect<T> implements Query<T> {
     }
 
     /**
-     * Sets the {@link ObjEntity} name to fetch without changing the return type of the query. This form is most often
+     * Sets the {@link CompiledEntity} name to fetch without changing the return type of the query. This form is most often
      * used for generic entities that don't map to a distinct class.
      *
      * @return this object
@@ -305,7 +305,7 @@ public class ObjectSelect<T> implements Query<T> {
     }
 
     /**
-     * Sets the {@link DbEntity} name to fetch without changing the return type of the query. This form is most often
+     * Sets the {@link CompiledTable} name to fetch without changing the return type of the query. This form is most often
      * used for generic entities that don't map to a distinct class.
      *
      * @return this object
@@ -1034,7 +1034,7 @@ public class ObjectSelect<T> implements Query<T> {
     }
 
     @Override
-    public ResolvedSelect resolve(EntityResolver resolver) {
+    public ResolvedSelect resolve(CompiledMapping mapping) {
         ResolvedSelect.Builder builder = ResolvedSelect.builder()
                 .source(this)
                 .where(where)
@@ -1061,7 +1061,7 @@ public class ObjectSelect<T> implements Query<T> {
             builder.dbEntityName(dbEntityName);
         }
 
-        return builder.build(resolver);
+        return builder.build(mapping);
     }
 
     /**

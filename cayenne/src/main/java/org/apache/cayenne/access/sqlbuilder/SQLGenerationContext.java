@@ -21,7 +21,7 @@ package org.apache.cayenne.access.sqlbuilder;
 
 import org.apache.cayenne.access.jdbc.PSParameter;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.compiled.CompiledTable;
 
 import java.util.List;
 
@@ -34,7 +34,7 @@ public interface SQLGenerationContext {
 
     List<PSParameter<?>> getBindings();
 
-    DbEntity getRootDbEntity();
+    CompiledTable getRootDbEntity();
 
     /**
      * Returns true if the statement being generated uses a single table, in which case table nodes

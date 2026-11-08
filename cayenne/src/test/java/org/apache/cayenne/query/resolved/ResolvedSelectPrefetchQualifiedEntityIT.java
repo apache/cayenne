@@ -20,8 +20,8 @@
 package org.apache.cayenne.query.resolved;
 
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.compiled.CompiledMapping;
+import org.apache.cayenne.map.compiled.CompiledEntity;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.inheritance_people.Department;
 import org.apache.cayenne.testdo.inheritance_people.Employee;
@@ -37,41 +37,41 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 public class ResolvedSelectPrefetchQualifiedEntityIT extends PeopleTestBase {
 
-    private EntityResolver resolver;
+    private CompiledMapping mapping;
 
     @BeforeEach
     public void setUp() {
-        resolver = env.entityResolver();
+        mapping = env.mapping();
     }
 
     @Test
     public void prefetchEmployee() {
-        ObjEntity departmentEntity = resolver.getObjEntity(Department.class);
+        CompiledEntity departmentEntity = mapping.entity(Department.class);
         ObjectSelect<Employee> query = ObjectSelect.query(Employee.class)
                 .where(Employee.NAME.eq("abc"))
                 .prefetch(Employee.DEPARTMENT.disjoint());
 
-        ResolvedSelect select = query.resolve(resolver);
+        ResolvedSelect select = query.resolve(mapping);
         assertEquals(1, select.prefetches().size());
 
         ResolvedSelect prefetch = select.prefetches().getFirst();
-        assertEquals(departmentEntity, prefetch.objEntity());
+        assertEquals(departmentEntity, prefetch.entity());
         assertEquals(ExpressionFactory.exp("db:employees.NAME = 'abc' and (db:employees.PERSON_TYPE = 'EE' "
                 + "or db:employees.PERSON_TYPE = 'EM')"), prefetch.where());
     }
 
     @Test
     public void prefetchManager() {
-        ObjEntity departmentEntity = resolver.getObjEntity(Department.class);
+        CompiledEntity departmentEntity = mapping.entity(Department.class);
         ObjectSelect<Manager> query = ObjectSelect.query(Manager.class)
                 .where(Employee.NAME.eq("abc"))
                 .prefetch(Manager.DEPARTMENT.disjoint());
 
-        ResolvedSelect select = query.resolve(resolver);
+        ResolvedSelect select = query.resolve(mapping);
         assertEquals(1, select.prefetches().size());
 
         ResolvedSelect prefetch = select.prefetches().getFirst();
-        assertEquals(departmentEntity, prefetch.objEntity());
+        assertEquals(departmentEntity, prefetch.entity());
         assertEquals(ExpressionFactory.exp("db:employees.NAME = 'abc' and db:employees.PERSON_TYPE = 'EM'"),
                 prefetch.where());
     }

@@ -20,9 +20,9 @@
 package org.apache.cayenne.wocompat;
 
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.NamedQuery;
 import org.apache.cayenne.map.NamedSelectQuery;
+import org.apache.cayenne.map.compiled.TestMappings;
 import org.apache.cayenne.query.MappedQuery;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.PrefetchTreeNode;
@@ -77,7 +77,8 @@ public class EOFetchSpecificationParserTest {
 
         // the settings of the named query are applied when it is run as a mapped query
         assertTrue(namedSelectQuery.isFetchingDataRows());
-        ResolvedQuery resolved = MappedQuery.query("Entity1_E1FS1").resolve(new EntityResolver(List.of(map)));
+        ResolvedQuery resolved = MappedQuery.query("Entity1_E1FS1")
+                .resolve(TestMappings.compile(map));
         assertEquals(500, resolved.fetchLimit());
         assertTrue(resolved.fetchingDataRows());
         assertEquals(0, resolved.pageSize());

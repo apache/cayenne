@@ -23,9 +23,9 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.SnapshotVersion;
 import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.compiled.CompiledColumn;
+import org.apache.cayenne.map.compiled.CompiledTable;
+import org.apache.cayenne.map.compiled.CompiledEntity;
 import org.apache.cayenne.query.EmbeddableResultSegment;
 import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.cayenne.query.resolved.ResolvedQuery;
@@ -119,12 +119,12 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
         // For a paginated query only the root PK is read into the IncrementalFaultList - locate the PK columns within
         // this segment by their DbAttribute (see idReader).
         if (query.pageSize() > 0) {
-            ObjEntity objEntity = segment.classDescriptor().getEntity();
+            CompiledEntity entity = segment.entity();
             return idReader(columns,
                     segment.columnOffset(),
                     segment.columnOffset() + columns.length,
-                    objEntity.getDbEntity(),
-                    objEntity.getName(),
+                    entity.table(),
+                    entity.name(),
                     version);
         }
 
@@ -152,7 +152,7 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
                     column.attribute());
         }
 
-        return OffsetRowReader.of(relabeled, startIndex, segment.classDescriptor(), version);
+        return OffsetRowReader.of(relabeled, startIndex, segment.entity(), version);
     }
 
     /**
@@ -161,32 +161,32 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
      */
     protected RowReader<?> noSegmentReader(RSColumn[] columns, ResolvedQuery query, long version) {
         if (query.pageSize() > 0) {
-            ObjEntity objEntity = query.objEntity();
-            return idReader(columns, 0, columns.length, query.dbEntity(),
-                    objEntity != null ? objEntity.getName() : null, version);
+            CompiledEntity entity = query.entity();
+            return idReader(columns, 0, columns.length, query.table(),
+                    entity != null ? entity.name() : null, version);
         }
         return FullRowReader.of(columns, query, version);
     }
 
-    private RowReader<?> idReader(RSColumn[] columns, int from, int to, DbEntity dbEntity, String entityName,
+    private RowReader<?> idReader(RSColumn[] columns, int from, int to, CompiledTable table, String entityName,
                                   long version) {
-        if (dbEntity == null) {
+        if (table == null) {
             throw new CayenneRuntimeException("Null root DbEntity, can't index PK");
         }
 
-        int pkLen = dbEntity.getPrimaryKeys().size();
+        int pkLen = table.primaryKey().size();
         if (pkLen == 0) {
-            throw new CayenneRuntimeException("Root DbEntity has no PK defined: %s", dbEntity.getName());
+            throw new CayenneRuntimeException("Root DbEntity has no PK defined: %s", table.name());
         }
 
         RSColumn[] pkColumns = new RSColumn[pkLen];
         int[] pkIndexes = new int[pkLen];
         int found = 0;
 
-        Set<DbAttribute> seen = new HashSet<>();
+        Set<CompiledColumn> seen = new HashSet<>();
         for (int i = from; i < to && found < pkLen; i++) {
-            DbAttribute attribute = columns[i].attribute();
-            if (attribute != null && attribute.isPrimaryKey() && seen.add(attribute)) {
+            CompiledColumn column = columns[i].attribute();
+            if (column != null && column.isPrimaryKey() && seen.add(column)) {
                 pkColumns[found] = columns[i];
                 pkIndexes[found] = i + 1;
                 found++;
@@ -200,7 +200,7 @@ public class DefaultRowReaderFactory implements RowReaderFactory {
             if (from + pkLen > columns.length) {
                 throw new CayenneRuntimeException(
                         "Result set for paginated query is missing PK column(s) of entity '%s'; expected %s",
-                        entityName, dbEntity.getPrimaryKeys().stream().map(DbAttribute::getName).toList());
+                        entityName, table.primaryKey().stream().map(CompiledColumn::name).toList());
             }
             for (int i = 0; i < pkLen; i++) {
                 pkColumns[i] = columns[from + i];

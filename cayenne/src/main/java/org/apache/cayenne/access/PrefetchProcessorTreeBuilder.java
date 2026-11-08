@@ -23,10 +23,10 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.path.CayennePath;
+import org.apache.cayenne.map.compiled.CompiledEntity;
+import org.apache.cayenne.map.compiled.CompiledRelationship;
 import org.apache.cayenne.query.PrefetchProcessor;
 import org.apache.cayenne.query.PrefetchTreeNode;
-import org.apache.cayenne.reflect.ArcProperty;
-import org.apache.cayenne.reflect.ClassDescriptor;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -40,7 +40,7 @@ final class PrefetchProcessorTreeBuilder implements PrefetchProcessor {
     private PrefetchProcessorNode root;
     private LinkedList<PrefetchProcessorNode> nodeStack;
 
-    private ClassDescriptor descriptor;
+    private CompiledEntity entity;
     private List<DataRow> mainResultRows;
     private Map<CayennePath, List<?>> extraResultsByPath;
     private Map<ObjectId, Persistent> seen;
@@ -51,7 +51,7 @@ final class PrefetchProcessorTreeBuilder implements PrefetchProcessor {
         this.refreshing = objectTreeResolver.refreshing;
         this.mainResultRows = mainResultRows;
         this.extraResultsByPath = extraResultsByPath;
-        this.descriptor = objectTreeResolver.descriptor;
+        this.entity = objectTreeResolver.entity;
     }
 
     PrefetchProcessorNode buildTree(PrefetchTreeNode tree) {
@@ -149,8 +149,8 @@ final class PrefetchProcessorTreeBuilder implements PrefetchProcessor {
     boolean addNode(PrefetchProcessorNode node) {
 
         List<DataRow> rows;
-        ArcProperty arc;
-        ClassDescriptor descriptor;
+        CompiledRelationship arc;
+        CompiledEntity entity;
 
         PrefetchProcessorNode currentNode = getParent();
 
@@ -158,17 +158,17 @@ final class PrefetchProcessorTreeBuilder implements PrefetchProcessor {
             @SuppressWarnings("unchecked")
             List<DataRow> dataRows = (List<DataRow>)extraResultsByPath.get(node.getPath());
             rows = dataRows;
-            arc = (ArcProperty) currentNode.getResolver().getDescriptor().getProperty(node.getName());
+            arc = currentNode.getResolver().getEntity().relationship(node.getName());
 
             if (arc == null) {
                 throw new CayenneRuntimeException("No relationship with name '%s' found in entity '%s'"
-                        , node.getName(), currentNode.getResolver().getEntity().getName());
+                        , node.getName(), currentNode.getResolver().getEntity().name());
             }
 
-            descriptor = arc.getTargetDescriptor();
+            entity = arc.target();
         } else {
             arc = null;
-            descriptor = this.descriptor;
+            entity = this.entity;
             rows = mainResultRows;
         }
 
@@ -177,10 +177,10 @@ final class PrefetchProcessorTreeBuilder implements PrefetchProcessor {
         node.setIncoming(arc);
 
         if (node.getParent() != null && !node.isJointPrefetch()) {
-            node.setResolver(new HierarchicalObjectResolverNode(node, context, descriptor,
+            node.setResolver(new HierarchicalObjectResolverNode(node, context, entity,
                     refreshing, seen));
         } else {
-            node.setResolver(new PrefetchObjectResolver(context, descriptor,
+            node.setResolver(new PrefetchObjectResolver(context, entity,
                     refreshing, seen));
         }
 
@@ -188,7 +188,7 @@ final class PrefetchProcessorTreeBuilder implements PrefetchProcessor {
             node.setParentAttachmentStrategy(new NoopParentAttachmentStrategy());
         } else if (node.isJointPrefetch()) {
             node.setParentAttachmentStrategy(new StackLookupParentAttachmentStrategy(node));
-        } else if (!node.getIncoming().getRelationship().isForeignKey()) {
+        } else if (!node.getIncoming().isForeignKey()) {
             node.setParentAttachmentStrategy(new JoinedIdParentAttachmentStrategy(context.getObjectStore(), node));
         } else {
             node.setParentAttachmentStrategy(new ResultScanParentAttachmentStrategy(node));

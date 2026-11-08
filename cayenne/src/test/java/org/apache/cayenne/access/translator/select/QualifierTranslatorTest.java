@@ -29,6 +29,8 @@ import org.apache.cayenne.exp.AsteriskExp;
 import org.apache.cayenne.exp.ScalarExp;
 import org.apache.cayenne.exp.property.BaseProperty;
 import org.apache.cayenne.map.*;
+import org.apache.cayenne.map.compiled.CompiledMapping;
+import org.apache.cayenne.map.compiled.TestMappings;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.resolved.ResolvedSelect;
 import org.junit.jupiter.api.BeforeEach;
@@ -72,20 +74,17 @@ public class QualifierTranslatorTest {
 
         entity.setDbEntity(dbEntity);
 
-        DataMap dataMap = new DataMap();
+        DataMap dataMap = new DataMap("mock");
         dataMap.addDbEntity(dbEntity);
         dataMap.addObjEntity(entity);
 
-        EntityResolver resolver = new EntityResolver();
-        resolver.addDataMap(dataMap);
+        CompiledMapping mapping = TestMappings.compile(dataMap);
 
         ResolvedSelect query = new MockResolvedSelectBuilder()
-                
-                        .withDbEntity(dbEntity)
-                        .withObjEntity(entity)
-                        
+                .withDbEntity(mapping.schema().table("mock"))
+                .withObjEntity(mapping.entity("mock"))
                 .build();
-        SelectTranslatorContext context = new MockSelectTranslatorContext(query, resolver);
+        SelectTranslatorContext context = new MockSelectTranslatorContext(query, mapping);
         translator = new QualifierTranslator(context);
     }
 

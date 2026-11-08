@@ -23,8 +23,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.DataRowLayout;
 import org.apache.cayenne.access.jdbc.RSColumn;
-import org.apache.cayenne.map.EntityInheritanceTree;
-import org.apache.cayenne.reflect.ClassDescriptor;
+import org.apache.cayenne.map.compiled.CompiledEntity;
 
 import java.sql.ResultSet;
 
@@ -40,11 +39,10 @@ class OffsetRowReader implements RowReader<DataRow> {
     private final int offset;
 
     // possible inheritance
-    static OffsetRowReader of(RSColumn[] columns, int offset, ClassDescriptor cd, long version) {
-        String entityName = cd != null ? cd.getEntity().getName() : null;
-        return cd != null && cd.hasSubclasses()
-                ? new InheritanceAwareOffsetRowReader(columns, offset, entityName, cd.getEntityInheritanceTree(),
-                        version)
+    static OffsetRowReader of(RSColumn[] columns, int offset, CompiledEntity entity, long version) {
+        String entityName = entity != null ? entity.name() : null;
+        return entity != null && entity.hasSubEntities()
+                ? new InheritanceAwareOffsetRowReader(columns, offset, entityName, entity, version)
                 : new OffsetRowReader(columns, offset, entityName, version);
     }
 
@@ -93,21 +91,21 @@ class OffsetRowReader implements RowReader<DataRow> {
 
     private static class InheritanceAwareOffsetRowReader extends OffsetRowReader {
 
-        private final EntityInheritanceTree entityInheritanceTree;
+        private final CompiledEntity rootEntity;
 
         private InheritanceAwareOffsetRowReader(
                 RSColumn[] columns,
                 int startIndex,
                 String entityName,
-                EntityInheritanceTree entityInheritanceTree,
+                CompiledEntity rootEntity,
                 long version) {
             super(columns, startIndex, entityName, version);
-            this.entityInheritanceTree = entityInheritanceTree;
+            this.rootEntity = rootEntity;
         }
 
         @Override
         protected DataRow row(DataRow row) {
-            return FullRowReader.withMatchingEntity(row, entityInheritanceTree, entityName);
+            return FullRowReader.withMatchingEntity(row, rootEntity, entityName);
         }
     }
 }

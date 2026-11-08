@@ -27,7 +27,7 @@ import org.apache.cayenne.dba.frontbase.FrontBaseAdapter;
 import org.apache.cayenne.dba.mysql.MySQLAdapter;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.graph.GraphDiff;
-import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.compiled.CompiledMapping;
 import org.apache.cayenne.query.SQLQuery;
 import org.apache.cayenne.access.lifecycle.LifecycleEventsManager;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -97,8 +97,8 @@ public class DataContextDecoratedStackIT {
         }
 
         @Override
-        public EntityResolver getEntityResolver() {
-            return channel.getEntityResolver();
+        public CompiledMapping getMapping() {
+            return channel.getMapping();
         }
 
         @Override

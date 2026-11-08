@@ -28,9 +28,10 @@ import org.apache.cayenne.access.translator.ProcedureTranslator;
 import org.apache.cayenne.access.translator.SelectTranslator;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.compiled.CompiledColumn;
+import org.apache.cayenne.map.compiled.CompiledTable;
+import org.apache.cayenne.map.compiled.CompiledJoin;
+import org.apache.cayenne.map.compiled.CompiledMapping;
 import org.apache.cayenne.query.resolved.ResolvedProcedure;
 import org.apache.cayenne.query.resolved.ResolvedSelect;
 import org.apache.cayenne.access.translator.TranslatedBatch;
@@ -67,7 +68,7 @@ public interface DbAdapter {
      * @since 4.2
      * @since 6.0 takes a {@link ResolvedSelect}
      */
-    SelectTranslator getSelectTranslator(ResolvedSelect select, EntityResolver entityResolver);
+    SelectTranslator getSelectTranslator(ResolvedSelect select, CompiledMapping mapping);
 
     /**
      * Returns the {@link ProcedureTranslator} for the given procedure call. The default implementation ignores the
@@ -177,14 +178,14 @@ public interface DbAdapter {
     /**
      * @since 5.0
      */
-    default NativeColumnType preferredNativeColumnType(DbAttribute column) {
-        NativeColumnType[] variants = nativeColumnTypes(column.getType());
+    default NativeColumnType preferredNativeColumnType(CompiledColumn column) {
+        NativeColumnType[] variants = nativeColumnTypes(column.jdbcType());
         if (variants == null || variants.length == 0) {
-            String entityName = column.getEntity() != null
-                    ? column.getEntity().getFullyQualifiedName()
+            String entityName = column.table() != null
+                    ? column.table().fullyQualifiedName()
                     : "<null>";
             throw new CayenneRuntimeException("Undefined type for attribute '%s.%s': %s."
-                    , entityName, column.getName(), column.getType());
+                    , entityName, column.name(), column.jdbcType());
         }
 
         if (column.isGenerated()) {
@@ -193,7 +194,7 @@ public interface DbAdapter {
                     return variant;
                 }
             }
-        } else if (TypesMapping.isCharacterWithMaxLengthSupport(column.getType()) && column.getMaxLength() <= 0) {
+        } else if (TypesMapping.isCharacterWithMaxLengthSupport(column.jdbcType()) && column.maxLength() <= 0) {
             for (NativeColumnType variant : variants) {
                 if (variant.unconstrained()) {
                     return variant;
@@ -208,13 +209,13 @@ public interface DbAdapter {
      *
      * @since 3.0
      */
-    Collection<String> dropTableStatements(DbEntity table);
+    Collection<String> dropTableStatements(CompiledTable table);
 
     /**
      * Returns a SQL string that can be used to create database table
      * corresponding to <code>entity</code> parameter.
      */
-    String createTable(DbEntity entity);
+    String createTable(CompiledTable table);
 
     /**
      * Returns a DDL string to create a unique constraint over a set of columns,
@@ -222,13 +223,13 @@ public interface DbAdapter {
      *
      * @since 1.1
      */
-    String createUniqueConstraint(DbEntity source, Collection<DbAttribute> columns);
+    String createUniqueConstraint(CompiledTable source, Collection<CompiledColumn> columns);
 
     /**
      * Returns a SQL string that can be used to create a foreign key constraint
      * for the relationship, or null if foreign keys are not supported.
      */
-    String createFkConstraint(DbRelationship rel);
+    String createFkConstraint(CompiledJoin join);
 
     /**
      * Returns the database-native types that the given JDBC <code>type</code> (see {@link java.sql.Types}) maps to,
@@ -311,10 +312,10 @@ public interface DbAdapter {
      * {@link StringBuffer}
      *
      * @param sqlBuffer the {@link StringBuffer} to append the column type to
-     * @param column    the {@link DbAttribute} defining the column to append type for
+     * @param column    the {@link CompiledColumn} defining the column to append type for
      * @since 3.0
      */
-    void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column);
+    void createTableAppendColumn(StringBuffer sqlBuffer, CompiledColumn column);
 
     /**
      * Resolves the {@link QuotingStrategy} to use for the given entity: this adapter's strategy when the
@@ -322,7 +323,7 @@ public interface DbAdapter {
      *
      * @since 5.0
      */
-    QuotingStrategy getQuotingStrategy(DbEntity entity);
+    QuotingStrategy getQuotingStrategy(CompiledTable table);
 
     /**
      * Returns this adapter. Used to be the way to get to the DB-specific adapter behind the auto-detecting one, but

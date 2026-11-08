@@ -23,6 +23,7 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
+import org.apache.cayenne.dbsync.merge.token.db.CompiledModel;
 import org.apache.cayenne.dbsync.merge.token.db.SetAllowNullToDb;
 import org.apache.cayenne.dbsync.merge.token.db.SetColumnTypeToDb;
 import org.apache.cayenne.dbsync.merge.token.db.SetGeneratedFlagToDb;
@@ -96,7 +97,7 @@ public class H2MergerTokenFactory extends DefaultMergerTokenFactory {
 
             @Override
             protected void appendAutoIncrement(DbAdapter adapter, StringBuffer builder) {
-                adapter.createTableAppendColumn(builder, this.getColumn());
+                adapter.createTableAppendColumn(builder, CompiledModel.column(this.getColumn()));
             }
 
             @Override

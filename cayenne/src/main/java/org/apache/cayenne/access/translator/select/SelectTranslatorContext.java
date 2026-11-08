@@ -30,8 +30,8 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.exp.AggregateFunctionCallExp;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.exp.property.Property;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.compiled.CompiledTable;
+import org.apache.cayenne.map.compiled.CompiledMapping;
 import org.apache.cayenne.query.EntityResult;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.ResultSegments;
@@ -100,7 +100,7 @@ class SelectTranslatorContext implements SQLGenerationContext {
     // whether the query result must be mapped explicitly, i.e. it selects a custom set of columns
     private final boolean needsResultSetMapping;
 
-    private final EntityResolver resolver;
+    private final CompiledMapping mapping;
     private final DbAdapter adapter;
 
     // Select builder that builds final SQL tree
@@ -135,13 +135,13 @@ class SelectTranslatorContext implements SQLGenerationContext {
     // result set mapping resolved against the translated columns, null unless the query selects a custom column set
     private ResultSegments resultSetMapping;
 
-    SelectTranslatorContext(ResolvedSelect select, DbAdapter adapter, EntityResolver resolver,
+    SelectTranslatorContext(ResolvedSelect select, DbAdapter adapter, CompiledMapping mapping,
                             SelectTranslatorContext parentContext) {
         this.select = select;
         this.adapter = adapter;
-        this.resolver = resolver;
+        this.mapping = mapping;
         this.parentContext = parentContext;
-        this.tableTree = new TableTree(select.dbEntity(), parentContext == null ? null : parentContext.getTableTree());
+        this.tableTree = new TableTree(select.table(), parentContext == null ? null : parentContext.getTableTree());
         this.columns = new ArrayList<>();
         this.bindings = new ArrayList<>();
         this.selectBuilder = SQLBuilder.select();
@@ -230,8 +230,8 @@ class SelectTranslatorContext implements SQLGenerationContext {
         return needsResultSetMapping;
     }
 
-    EntityResolver getResolver() {
-        return resolver;
+    CompiledMapping getMapping() {
+        return mapping;
     }
 
     @Override
@@ -240,8 +240,8 @@ class SelectTranslatorContext implements SQLGenerationContext {
     }
 
     @Override
-    public DbEntity getRootDbEntity() {
-        return select.dbEntity();
+    public CompiledTable getRootDbEntity() {
+        return select.table();
     }
 
     @Override

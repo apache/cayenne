@@ -22,6 +22,8 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.compiled.CompiledMapping;
+
 import org.apache.cayenne.query.SQLQuery;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
@@ -34,7 +36,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -54,12 +55,12 @@ public class SchemaUpdateStrategyBase {
 	public void cleanUpDB() {
 		context = env.context();
 		node = env.dataNode();
-		DataMap map = env.resolver().getDataMap("sus-map");
+		CompiledMapping mapping = env.mapping();
 
 		for (String name : existingTables()) {
 			// run in a transaction to ensure a single connection is used for all queries
 			env.runtime().performInTransaction(() -> {
-				for (String drop : node.getAdapter().dropTableStatements(map.getDbEntity(name))) {
+				for (String drop : node.getAdapter().dropTableStatements(mapping.schema().table(name))) {
 					context.execute(SQLQuery.query(drop));
 				}
 				return null;
@@ -68,8 +69,7 @@ public class SchemaUpdateStrategyBase {
 	}
 
 	protected void updateSchema(SchemaUpdateStrategy strategy) throws SQLException {
-		DataMap map = env.resolver().getDataMap("sus-map");
-		strategy.updateSchema(node.getAdapter(), node.getDataSource(), List.of(map), node.getSqlLogger());
+		strategy.updateSchema(node.getAdapter(), node.getDataSource(), env.mapping().schema(), "sus-map");
 	}
 
 	protected Collection<String> existingTables() {
@@ -84,13 +84,12 @@ public class SchemaUpdateStrategyBase {
 	}
 
 	protected void createOneTable(String entityName) {
-		DataMap map = env.resolver().getDataMap("sus-map");
-		String createTable = node.getAdapter().createTable(map.getDbEntity(entityName));
+		String createTable = node.getAdapter().createTable(env.mapping().schema().table(entityName));
 		context.execute(SQLQuery.query(createTable));
 	}
 
 	protected Map<String, Boolean> tablesMap() {
-		DataMap map = env.resolver().getDataMap("sus-map");
+		DataMap map = env.project().dataMap("sus-map");
 		Map<String, String> tables = new HashMap<>();
 
 		// add upper/lower case permutations

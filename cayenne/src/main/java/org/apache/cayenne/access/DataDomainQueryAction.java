@@ -30,10 +30,10 @@ import org.apache.cayenne.SelectResult;
 import org.apache.cayenne.access.lifecycle.LifecycleEventManager;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.cache.QueryCacheEntryFactory;
-import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.exp.path.CayennePath;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.Embeddable;
+import org.apache.cayenne.map.compiled.CompiledEmbeddable;
+import org.apache.cayenne.map.compiled.CompiledMapping;
+import org.apache.cayenne.map.compiled.CompiledEntity;
 import org.apache.cayenne.query.EmbeddableResultSegment;
 import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.cayenne.query.PrefetchTreeNode;
@@ -43,7 +43,6 @@ import org.apache.cayenne.query.ResultSegments;
 import org.apache.cayenne.query.ScalarResultSegment;
 import org.apache.cayenne.query.resolved.ResolvedQuery;
 import org.apache.cayenne.query.resolved.ResolvedSelect;
-import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.DefaultConstructor;
 import org.apache.cayenne.tx.BaseTransaction;
 import org.apache.cayenne.tx.ReadOnlyTransaction;
@@ -77,7 +76,6 @@ class DataDomainQueryAction {
     private final DataContext context;
     private final DataDomain domain;
     private final ResolvedQuery resolved;
-    private final AdhocObjectFactory objectFactory;
 
     private List<QueryResult> response;
     private List<QueryResult> fullResponse;
@@ -100,7 +98,6 @@ class DataDomainQueryAction {
         this.domain = domain;
         this.resolved = execContext.getResolvedQuery();
         this.context = (DataContext) context;
-        this.objectFactory = domain.getObjectFactory();
     }
 
     List<QueryResult> execute() {
@@ -194,7 +191,8 @@ class DataDomainQueryAction {
      */
     private boolean interceptSharedCache() {
 
-        if (resolved.cacheKey() == null) {
+        String cacheKey = resolved.cacheKey(domain.getValueObjectTypeRegistry());
+        if (cacheKey == null) {
             return !DONE;
         }
 
@@ -210,7 +208,7 @@ class DataDomainQueryAction {
 
         if (cache) {
             boolean wasResponseNull = (response == null);
-            List<?> cachedResults = queryCache.get(resolved.cacheKey(), resolved.cacheGroup(), factory);
+            List<?> cachedResults = queryCache.get(cacheKey, resolved.cacheGroup(), factory);
 
             // response may already be initialized by the factory above ...
             // it is null if there was a preexisting cache entry
@@ -232,7 +230,7 @@ class DataDomainQueryAction {
             }
         } else {
             // on cache-refresh request, fetch without blocking and fill the cache
-            queryCache.put(resolved.cacheKey(), resolved.cacheGroup(), factory.createObject());
+            queryCache.put(cacheKey, resolved.cacheGroup(), factory.createObject());
             cachedResult = true; // Still a cached path, lists need copying
             cacheHit = false; // Not a cache hit, we're refreshing
         }
@@ -283,11 +281,12 @@ class DataDomainQueryAction {
                 ? new HashMap<>() : null;
 
         // the operation's own select, and the selects of its disjoint prefetches, if any
-        EntityResolver resolver = domain.getEntityResolver();
-        execContext.addStatementContext(domain.lookupDataNode(resolved), new StatementContext(resolved, resolver));
+        CompiledMapping mapping = domain.getMapping();
+        execContext.addStatementContext(domain.lookupDataNode(resolved), new StatementContext(resolved, mapping));
         if (resolved instanceof ResolvedSelect select) {
             for (ResolvedSelect prefetch : select.prefetches()) {
-                execContext.addStatementContext(domain.lookupDataNode(prefetch), new StatementContext(prefetch, resolver));
+                execContext.addStatementContext(domain.lookupDataNode(prefetch),
+                        new StatementContext(prefetch, mapping));
             }
         }
 
@@ -377,24 +376,38 @@ class DataDomainQueryAction {
         };
     }
 
+    /**
+     * Returns a constructor of the class of an embeddable returned as a result column, which is created without an
+     * owner.
+     */
+    @SuppressWarnings("unchecked")
+    private static DefaultConstructor<? extends EmbeddableObject> embeddableConstructor(CompiledEmbeddable embeddable) {
+        Class<? extends EmbeddableObject> embeddableClass =
+                (Class<? extends EmbeddableObject>) embeddable.objectClass();
+        if (embeddableClass == null) {
+            throw new CayenneRuntimeException("Embeddable class is not bound: %s", embeddable.name());
+        }
+        return new DefaultConstructor<>(embeddableClass);
+    }
+
     abstract static class ObjectConversionStrategy<T, R> {
         abstract List<? extends R> convert(List<T> mainRows);
 
         abstract R convert(T t);
     }
 
-    private PrefetchProcessorNode toResultsTree(ClassDescriptor descriptor, PrefetchTreeNode prefetchTree,
+    private PrefetchProcessorNode toResultsTree(CompiledEntity entity, PrefetchTreeNode prefetchTree,
                                                 List<DataRow> normalizedRows) {
 
         // take a shortcut when no prefetches exist...
         if (prefetchTree == null) {
             // When results come from cache (not a refresh operation), don't refresh objects 
             // to avoid clobbering newer in-memory state
-            return new ObjectResolver(context, descriptor, !shouldSkipRefresh())
+            return new ObjectResolver(context, entity, !shouldSkipRefresh())
                     .rootResultNodeFromDataRows(normalizedRows);
         } else {
             // When results come from cache (not a refresh operation), wrap metadata to prevent refreshing objects
-            return new HierarchicalObjectResolver(context, execContext.getQuery(), resolved.classDescriptor(),
+            return new HierarchicalObjectResolver(context, execContext.getQuery(), resolved.entity(),
                     !shouldSkipRefresh())
                     .rootResultNodeFromDataRows(prefetchTree, normalizedRows, prefetchResultsByPath);
         }
@@ -452,11 +465,11 @@ class DataDomainQueryAction {
                 resultSegment = (EntityResultSegment) rsMapping.segments().getFirst();
             }
 
-            ClassDescriptor descriptor = resultSegment == null
-                    ? resolved.classDescriptor()
-                    : resultSegment.classDescriptor();
+            CompiledEntity entity = resultSegment == null
+                    ? resolved.entity()
+                    : resultSegment.entity();
 
-            return toResultsTree(descriptor, prefetchTree, mainRows);
+            return toResultsTree(entity, prefetchTree, mainRows);
         }
     }
 
@@ -480,9 +493,8 @@ class DataDomainQueryAction {
         @Override
         List<EmbeddableObject> convert(List<DataRow> mainRows) {
             EmbeddableResultSegment resultSegment = (EmbeddableResultSegment) resolved.resultSegments().segments().getFirst();
-            Embeddable embeddable = resultSegment.embeddable();
-            Class<? extends EmbeddableObject> embeddableClass = objectFactory.getJavaClass(embeddable.getClassName());
-            DefaultConstructor<? extends EmbeddableObject> constructor = new DefaultConstructor<>(embeddableClass);
+            CompiledEmbeddable embeddable = resultSegment.embeddable();
+            DefaultConstructor<? extends EmbeddableObject> constructor = embeddableConstructor(embeddable);
             List<EmbeddableObject> result = new ArrayList<>(mainRows.size());
             mainRows.forEach(dataRow -> {
                 EmbeddableObject eo = constructor.newInstance();
@@ -562,7 +574,7 @@ class DataDomainQueryAction {
             return result;
         }
 
-        protected PrefetchProcessorNode toResultsTree(ClassDescriptor descriptor, PrefetchTreeNode prefetchTree,
+        protected PrefetchProcessorNode toResultsTree(CompiledEntity entity, PrefetchTreeNode prefetchTree,
                                                       List<Object[]> rows, int position) {
 
             List<DataRow> rowsColumn = new ArrayList<>(rows.size());
@@ -573,7 +585,7 @@ class DataDomainQueryAction {
             if (prefetchTree != null) {
                 PrefetchTreeNode prefetchTreeNode = null;
                 for (PrefetchTreeNode prefetch : prefetchTree.getChildren()) {
-                    if (descriptor.getEntity().getName().equals(prefetch.getEntityName())) {
+                    if (entity.name().equals(prefetch.getEntityName())) {
                         if (prefetchTreeNode == null) {
                             prefetchTreeNode = new PrefetchTreeNode();
                         }
@@ -586,11 +598,11 @@ class DataDomainQueryAction {
             }
 
             if (prefetchTree == null) {
-                return new ObjectResolver(context, descriptor, true)
+                return new ObjectResolver(context, entity, true)
                         .rootResultNodeFromDataRows(rowsColumn);
             } else {
                 HierarchicalObjectResolver resolver
-                        = new HierarchicalObjectResolver(context, execContext.getQuery(), descriptor, true, true);
+                        = new HierarchicalObjectResolver(context, execContext.getQuery(), entity, true, true);
                 return resolver.rootResultNodeFromDataRows(prefetchTree, rowsColumn, prefetchResultsByPath);
             }
         }
@@ -603,7 +615,7 @@ class DataDomainQueryAction {
             for (int i = 0; i < width; i++) {
                 ResultSegment mapping = resultSetMapping.get(i);
                 if (mapping instanceof EntityResultSegment entitySegment) {
-                    PrefetchProcessorNode nextResult = toResultsTree(entitySegment.classDescriptor(),
+                    PrefetchProcessorNode nextResult = toResultsTree(entitySegment.entity(),
                             resolved.prefetchTree(), result, i);
 
                     segmentNodes.add(nextResult);
@@ -614,10 +626,8 @@ class DataDomainQueryAction {
                         row[i] = objects.get(j);
                     }
                 } else if (mapping instanceof EmbeddableResultSegment resultSegment) {
-                    Embeddable embeddable = resultSegment.embeddable();
-                    Class<? extends EmbeddableObject> embeddableClass = objectFactory
-                            .getJavaClass(embeddable.getClassName());
-                    DefaultConstructor<? extends EmbeddableObject> constructor = new DefaultConstructor<>(embeddableClass);
+                    CompiledEmbeddable embeddable = resultSegment.embeddable();
+                    DefaultConstructor<? extends EmbeddableObject> constructor = embeddableConstructor(embeddable);
                     for (Object[] row : result) {
                         DataRow dataRow = (DataRow) row[i];
                         EmbeddableObject eo = constructor.newInstance();

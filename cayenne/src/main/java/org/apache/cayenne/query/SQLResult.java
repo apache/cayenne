@@ -18,8 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.reflect.ClassDescriptor;
+import org.apache.cayenne.map.compiled.CompiledMapping;
+import org.apache.cayenne.map.compiled.CompiledEntity;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,7 +36,7 @@ public class SQLResult {
 
     protected List<Object> resultDescriptors;
 
-    public List<ResultSegment> getResolvedComponents(EntityResolver resolver) {
+    public List<ResultSegment> getResolvedComponents(CompiledMapping mapping) {
 
         if (resultDescriptors == null) {
             return Collections.emptyList();
@@ -52,15 +52,15 @@ public class SQLResult {
                 offset = offset + 1;
             } else if (component instanceof EntityResult) {
                 EntityResult entityResult = (EntityResult) component;
-                Map<String, String> fields = entityResult.getDbFields(resolver);
+                Map<String, String> fields = entityResult.getDbFields(mapping);
 
                 String entityName = entityResult.getEntityName();
                 if (entityName == null) {
-                    entityName = resolver.getObjEntity(entityResult.getEntityClass()).getName();
+                    entityName = mapping.entity(entityResult.getEntityClass()).name();
                 }
 
-                ClassDescriptor classDescriptor = resolver.getClassDescriptor(entityName);
-                resolvedComponents.add(new EntityResultSegment(classDescriptor, fields, offset));
+                CompiledEntity entity = mapping.entity(entityName);
+                resolvedComponents.add(new EntityResultSegment(entity, fields, offset));
                 offset = offset + fields.size();
             } else if (component instanceof EmbeddedResult) {
                 EmbeddedResult embeddedResult = (EmbeddedResult)component;
@@ -79,7 +79,7 @@ public class SQLResult {
      * Returns a list of "uncompiled" result descriptors. Column descriptors are
      * returned as Strings, entity descriptors - as {@link EntityResult}. To get
      * fully resolved descriptors, use
-     * {@link #getResolvedComponents(EntityResolver)}.
+     * {@link #getResolvedComponents(CompiledMapping)}.
      */
     public List<Object> getComponents() {
         return resultDescriptors != null ? resultDescriptors : Collections.emptyList();

@@ -26,11 +26,10 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.reflect.ArcProperty;
-import org.apache.cayenne.reflect.ClassDescriptor;
-import org.apache.cayenne.reflect.PropertyDescriptor;
-import org.apache.cayenne.reflect.ToManyProperty;
-import org.apache.cayenne.reflect.ToOneProperty;
+import org.apache.cayenne.map.compiled.CompiledEntity;
+import org.apache.cayenne.map.compiled.CompiledRelationship;
+import org.apache.cayenne.map.compiled.CompiledToManyRelationship;
+import org.apache.cayenne.map.compiled.CompiledToOneRelationship;
 
 /**
  * A GraphChangeHandler that loads child ObjectContext diffs into a parent
@@ -82,8 +81,8 @@ public class ChildDiffLoader implements GraphChangeHandler {
 				throw new NullPointerException("Null entity name in id " + id);
 			}
 
-			ClassDescriptor descriptor = context.getEntityResolver().getClassDescriptor(id.getEntityName());
-			Persistent persistent = (Persistent) descriptor.createObject();
+			CompiledEntity entity = context.getMapping().entity(id.getEntityName());
+			Persistent persistent = (Persistent) entity.createObject();
 			persistent.setObjectId(id);
 			context.registerNewObject(persistent);
 		} finally {
@@ -113,12 +112,11 @@ public class ChildDiffLoader implements GraphChangeHandler {
 		// server
 		// objects...
 		Persistent object = findObject(id);
-		ClassDescriptor descriptor = context.getEntityResolver()
-				.getClassDescriptor(id.getEntityName());
+		CompiledEntity entity = context.getMapping().entity(id.getEntityName());
 
 		setExternalChange(Boolean.TRUE);
 		try {
-			descriptor.getProperty(property).writeProperty(object, oldValue, newValue);
+			entity.property(property).writeProperty(object, oldValue, newValue);
 		} catch (Exception e) {
 			throw new CayenneRuntimeException("Error setting property: " + property, e);
 		} finally {
@@ -139,23 +137,16 @@ public class ChildDiffLoader implements GraphChangeHandler {
 			return;
 		}
 
-		ClassDescriptor descriptor = context.getEntityResolver()
-				.getClassDescriptor(id.getEntityName());
-		ArcProperty property = (ArcProperty) descriptor.getProperty(arcId.toString());
+		CompiledEntity entity = context.getMapping().entity(id.getEntityName());
+		CompiledRelationship relationship = entity.relationship(arcId.toString());
 
 		setExternalChange(Boolean.TRUE);
 		try {
-			switch (property) {
-				case ToManyProperty toMany -> {
-					// connect reverse arc if the relationship is marked as "runtime"
-					ArcProperty reverseArc = toMany.getComplementaryReverseArc();
-					boolean autoConnectReverse = reverseArc != null && reverseArc.getRelationship().isRuntime();
-
-					toMany.addTarget(source, target, autoConnectReverse);
-				}
-				case ToOneProperty toOne -> toOne.setTarget(source, target, false);
-				default -> {
-				}
+			switch (relationship) {
+				// the compiled mapping has no synthesized "runtime" reverse relationships that would need to be
+				// connected here, so the reverse arc is left alone
+				case CompiledToManyRelationship toMany -> toMany.addTarget(source, target, false);
+				case CompiledToOneRelationship toOne -> toOne.setTarget(source, target, false);
 			}
 		} finally {
 			setExternalChange(Boolean.FALSE);
@@ -173,18 +164,13 @@ public class ChildDiffLoader implements GraphChangeHandler {
 			return;
 		}
 
-		ClassDescriptor descriptor = context.getEntityResolver()
-				.getClassDescriptor(id.getEntityName());
-		PropertyDescriptor property = descriptor.getProperty(arcId.toString());
+		CompiledEntity entity = context.getMapping().entity(id.getEntityName());
+		CompiledRelationship relationship = entity.relationship(arcId.toString());
 
 		setExternalChange(Boolean.TRUE);
 		try {
-			switch (property) {
-				case ToManyProperty toMany -> {
-					// connect reverse arc if the relationship is marked as "runtime"
-					ArcProperty reverseArc = toMany.getComplementaryReverseArc();
-					boolean autoConnectReverse = reverseArc != null && reverseArc.getRelationship().isRuntime();
-
+			switch (relationship) {
+				case CompiledToManyRelationship toMany -> {
 					Persistent target = findObject(targetId);
 
 					if (target == null) {
@@ -195,12 +181,12 @@ public class ChildDiffLoader implements GraphChangeHandler {
 					}
 
 					if (target != null) {
-						toMany.removeTarget(source, target, autoConnectReverse);
+						// the compiled mapping has no synthesized "runtime" reverse relationships that would need
+						// to be disconnected here, so the reverse arc is left alone
+						toMany.removeTarget(source, target, false);
 					}
 				}
-				case ToOneProperty toOne -> toOne.setTarget(source, null, false);
-				default -> {
-				}
+				case CompiledToOneRelationship toOne -> toOne.setTarget(source, null, false);
 			}
 		} finally {
 			setExternalChange(Boolean.FALSE);

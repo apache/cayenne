@@ -21,7 +21,7 @@ package org.apache.cayenne.access.flush.operation;
 
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.compiled.CompiledTable;
 
 /**
  * A factory of delete row ops used by the commit pipeline.
@@ -34,9 +34,9 @@ public interface DeleteDbRowOpFactory {
      * Creates a delete op for a given object and target table.
      *
      * @param object the object being deleted
-     * @param entity the target DbEntity (may be the root table or an additional / flattened table)
+     * @param table the target CompiledTable (may be the root table or an additional / flattened table)
      * @param id     the id of the row being deleted
      * @return a delete op
      */
-    DeleteDbRowOp createOp(Persistent object, DbEntity entity, ObjectId id);
+    DeleteDbRowOp createOp(Persistent object, CompiledTable table, ObjectId id);
 }

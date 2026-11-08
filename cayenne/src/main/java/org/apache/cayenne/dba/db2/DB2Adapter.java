@@ -37,7 +37,7 @@ import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.compiled.CompiledColumn;
 import org.apache.cayenne.access.translator.TranslatedProcedure;
 
 import java.sql.Connection;
@@ -117,23 +117,19 @@ public class DB2Adapter extends JdbcAdapter {
      * @since 4.0
      */
     @Override
-    public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
+    public void createTableAppendColumn(StringBuffer sqlBuffer, CompiledColumn column) {
         String type = preferredNativeColumnType(column).nativeType();
 
-        QuotingStrategy quotes = getQuotingStrategy(column.getEntity());
+        QuotingStrategy quotes = getQuotingStrategy(column.table());
         quotes.appendStart(sqlBuffer);
-        sqlBuffer.append(column.getName());
+        sqlBuffer.append(column.name());
         quotes.appendEnd(sqlBuffer);
         sqlBuffer.append(' ');
 
         // DB2 GRAPHIC type that is used for NCHAR type length is in characters not in bytes
-        // so divide max size by 2 and later restore the value
-        int maxLength = column.getMaxLength();
-        if(column.getType() == Types.NCHAR) {
-            column.setMaxLength(maxLength / 2);
-        }
-        String length = sizeAndScale(this, column);
-        column.setMaxLength(maxLength);
+        // so divide max size by 2
+        int maxLength = column.jdbcType() == Types.NCHAR ? column.maxLength() / 2 : column.maxLength();
+        String length = sizeAndScale(this, column, maxLength);
 
         // assemble...
         // note that max length for types like XYZ FOR BIT DATA must be entered in the

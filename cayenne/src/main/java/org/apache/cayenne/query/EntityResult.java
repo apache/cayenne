@@ -18,9 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.ObjAttribute;
-import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.compiled.CompiledMapping;
+import org.apache.cayenne.map.compiled.CompiledAttribute;
+import org.apache.cayenne.map.compiled.CompiledEntity;
 import org.apache.cayenne.util.ToStringBuilder;
 
 import java.util.ArrayList;
@@ -55,7 +55,7 @@ public class EntityResult {
      * Returns a map of result column names to attribute db paths from the root
      * entity.
      */
-    public Map<String, String> getDbFields(EntityResolver resolver) {
+    public Map<String, String> getDbFields(CompiledMapping mapping) {
 
         if (this.fields == null) {
             return Collections.emptyMap();
@@ -67,22 +67,22 @@ public class EntityResult {
             if (field.isDbAttribute() || field.getAttributeName().startsWith("fetch.")) {
                 dbFields.put(field.getAttributeName(), field.getColumn());
             } else {
-                ObjEntity entity = field.getEntityName() != null ? resolver.getObjEntity(field.getEntityName())
-                        : getRootEntity(resolver);
+                CompiledEntity entity = field.getEntityName() != null ? mapping.entity(field.getEntityName())
+                        : getRootEntity(mapping);
 
-                ObjAttribute attribute = entity.getAttribute(field.getAttributeName());
-                dbFields.put(attribute.getDbAttributePath().value(), field.getColumn());
+                CompiledAttribute attribute = entity.attribute(field.getAttributeName());
+                dbFields.put(attribute.dbPath().value(), field.getColumn());
             }
         }
 
         return dbFields;
     }
 
-    private ObjEntity getRootEntity(EntityResolver resolver) {
+    private CompiledEntity getRootEntity(CompiledMapping mapping) {
         if (entityName != null) {
-            return resolver.getObjEntity(entityName);
+            return mapping.entity(entityName);
         } else if (entityClass != null) {
-            return resolver.getObjEntity(entityClass);
+            return mapping.entity(entityClass);
         } else {
             throw new IllegalStateException("Both entity name and class are null");
         }

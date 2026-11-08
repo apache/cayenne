@@ -34,10 +34,10 @@ import org.apache.cayenne.RuntimeProperties;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DbJoin;
-import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.compiled.CompiledColumnPair;
+import org.apache.cayenne.map.compiled.CompiledColumn;
+import org.apache.cayenne.map.compiled.CompiledTable;
+import org.apache.cayenne.map.compiled.CompiledJoin;
 import org.apache.cayenne.query.resolved.ResolvedProcedure;
 
 import java.sql.Types;
@@ -136,10 +136,10 @@ public class HSQLDBAdapter extends JdbcAdapter {
      *
      * @since 1.2
      */
-    protected String getTableName(DbEntity entity) {
-        QuotingStrategy quotes = getQuotingStrategy(entity);
+    protected String getTableName(CompiledTable table) {
+        QuotingStrategy quotes = getQuotingStrategy(table);
         StringBuilder buf = new StringBuilder();
-        quotes.appendFQN(buf, entity.getCatalog(), entity.getSchema(), entity.getName());
+        quotes.appendFQN(buf, table.catalog(), table.schema(), table.name());
         return buf.toString();
     }
 
@@ -149,8 +149,8 @@ public class HSQLDBAdapter extends JdbcAdapter {
      *
      * @since 1.2
      */
-    protected String getSchemaName(DbEntity entity) {
-        return entity.getSchema();
+    protected String getSchemaName(CompiledTable table) {
+        return table.schema();
     }
 
     /**
@@ -165,7 +165,7 @@ public class HSQLDBAdapter extends JdbcAdapter {
      * @since 1.1
      */
     @Override
-    public String createUniqueConstraint(DbEntity source, Collection<DbAttribute> columns) {
+    public String createUniqueConstraint(CompiledTable source, Collection<CompiledColumn> columns) {
 
         if (columns == null || columns.isEmpty()) {
             throw new CayenneRuntimeException("Can't create UNIQUE constraint - no columns specified.");
@@ -180,21 +180,21 @@ public class HSQLDBAdapter extends JdbcAdapter {
         buf.append("ALTER TABLE ").append(srcName);
         buf.append(" ADD CONSTRAINT ");
 
-        String name = "U_" + source.getName() + "_" + (long) (System.currentTimeMillis() / (Math.random() * 100000));
-        quotes.appendFQN(buf, source.getSchema(), name);
+        String name = "U_" + source.name() + "_" + (long) (System.currentTimeMillis() / (Math.random() * 100000));
+        quotes.appendFQN(buf, source.schema(), name);
         buf.append(" UNIQUE (");
 
-        Iterator<DbAttribute> it = columns.iterator();
-        DbAttribute first = it.next();
+        Iterator<CompiledColumn> it = columns.iterator();
+        CompiledColumn first = it.next();
         quotes.appendStart(buf);
-        buf.append(first.getName());
+        buf.append(first.name());
         quotes.appendEnd(buf);
 
         while (it.hasNext()) {
-            DbAttribute next = it.next();
+            CompiledColumn next = it.next();
             buf.append(", ");
             quotes.appendStart(buf);
-            buf.append(next.getName());
+            buf.append(next.name());
             quotes.appendEnd(buf);
         }
 
@@ -206,16 +206,16 @@ public class HSQLDBAdapter extends JdbcAdapter {
     /**
      * Adds an ADD CONSTRAINT clause to a relationship constraint.
      *
-     * @see JdbcAdapter#createFkConstraint(DbRelationship)
+     * @see JdbcAdapter#createFkConstraint(CompiledJoin)
      */
     @Override
-    public String createFkConstraint(DbRelationship rel) {
+    public String createFkConstraint(CompiledJoin rel) {
 
         StringBuilder buf = new StringBuilder();
         StringBuilder refBuf = new StringBuilder();
 
-        String srcName = getTableName(rel.getSourceEntity());
-        String dstName = getTableName(rel.getTargetEntity());
+        String srcName = getTableName(rel.source());
+        String dstName = getTableName(rel.target());
 
         buf.append("ALTER TABLE ");
         buf.append(srcName);
@@ -223,17 +223,17 @@ public class HSQLDBAdapter extends JdbcAdapter {
         // hsqldb requires the ADD CONSTRAINT statement
         buf.append(" ADD CONSTRAINT ");
 
-        String name = "U_" + rel.getSourceEntity().getName() + "_"
+        String name = "U_" + rel.source().name() + "_"
                 + (long) (System.currentTimeMillis() / (Math.random() * 100000));
 
-        DbEntity sourceEntity = rel.getSourceEntity();
-        QuotingStrategy quotes = getQuotingStrategy(sourceEntity);
+        CompiledTable sourceTable = rel.source();
+        QuotingStrategy quotes = getQuotingStrategy(sourceTable);
 
-        quotes.appendFQN(buf, sourceEntity.getSchema(), name);
+        quotes.appendFQN(buf, sourceTable.schema(), name);
         buf.append(" FOREIGN KEY (");
 
         boolean first = true;
-        for (DbJoin join : rel.getJoins()) {
+        for (CompiledColumnPair join : rel.columnPairs()) {
             if (!first) {
                 buf.append(", ");
                 refBuf.append(", ");
@@ -242,10 +242,10 @@ public class HSQLDBAdapter extends JdbcAdapter {
             }
 
             quotes.appendStart(buf);
-            buf.append(join.getSourceName());
+            buf.append(join.source().name());
             quotes.appendEnd(buf);
             quotes.appendStart(refBuf);
-            refBuf.append(join.getTargetName());
+            refBuf.append(join.target().name());
             quotes.appendEnd(refBuf);
         }
 
@@ -267,9 +267,9 @@ public class HSQLDBAdapter extends JdbcAdapter {
      * @since 1.2
      */
     @Override
-    public String createTable(DbEntity ent) {
+    public String createTable(CompiledTable table) {
         // SET SCHEMA <schemaname>
-        String sql = super.createTable(ent);
+        String sql = super.createTable(table);
         if (sql != null && sql.toUpperCase().startsWith("CREATE TABLE ")) {
             sql = "CREATE CACHED TABLE " + sql.substring("CREATE TABLE ".length());
         }
@@ -278,15 +278,16 @@ public class HSQLDBAdapter extends JdbcAdapter {
     }
 
     @Override
-    public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
-        // CAY-1095: if the column is type double, temporarily set the max
-        // length to 0 to
-        // avoid adding precision information.
-        if (column.getType() == Types.DOUBLE && column.getMaxLength() > 0) {
-            int len = column.getMaxLength();
-            column.setMaxLength(0);
-            super.createTableAppendColumn(sqlBuffer, column);
-            column.setMaxLength(len);
+    public void createTableAppendColumn(StringBuffer sqlBuffer, CompiledColumn column) {
+        // CAY-1095: if the column is type double, treat the max length as 0 to avoid adding precision information.
+        if (column.jdbcType() == Types.DOUBLE && column.maxLength() > 0) {
+            QuotingStrategy quotes = getQuotingStrategy(column.table());
+            quotes.appendStart(sqlBuffer);
+            sqlBuffer.append(column.name());
+            quotes.appendEnd(sqlBuffer);
+            sqlBuffer.append(' ').append(preferredNativeColumnType(column).nativeType());
+            sqlBuffer.append(sizeAndScale(this, column, 0));
+            sqlBuffer.append(column.isMandatory() ? " NOT NULL" : " NULL");
         } else {
             super.createTableAppendColumn(sqlBuffer, column);
         }

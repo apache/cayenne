@@ -44,25 +44,25 @@ public class EntityResolverIT {
 
     @Test
     public void getObjEntity() {
-        EntityResolver resolver = new EntityResolver(env.runtime().getDataDomain().getDataMaps());
+        EntityResolver resolver = new EntityResolver(env.project().dataMaps());
         assertIsArtistObjEntity(resolver.getObjEntity("Artist"));
     }
 
     @Test
     public void lookupObjEntityByClass() {
-        EntityResolver resolver = new EntityResolver(env.runtime().getDataDomain().getDataMaps());
+        EntityResolver resolver = new EntityResolver(env.project().dataMaps());
         assertIsArtistObjEntity(resolver.getObjEntity(Artist.class));
     }
 
     @Test
     public void lookupObjEntityByInstance() {
-        EntityResolver resolver = new EntityResolver(env.runtime().getDataDomain().getDataMaps());
+        EntityResolver resolver = new EntityResolver(env.project().dataMaps());
         assertIsArtistObjEntity(resolver.getObjEntity(new Artist()));
     }
 
     @Test
     public void lookupObjEntityByPersistentObject() {
-        EntityResolver resolver = new EntityResolver(env.runtime().getDataDomain().getDataMaps());
+        EntityResolver resolver = new EntityResolver(env.project().dataMaps());
         Artist artist = (Artist) env.context().newObject("Artist");
         assertIsArtistObjEntity(resolver.getObjEntity(artist));
     }
@@ -168,7 +168,7 @@ public class EntityResolverIT {
     }
 
     private ObjEntity getObjEntity(String objEntityName) {
-        for (DataMap map : env.runtime().getDataDomain().getDataMaps()) {
+        for (DataMap map : env.project().dataMaps()) {
             for (ObjEntity e : map.getObjEntities()) {
                 if (objEntityName.equals(e.getName())) {
                     return e;

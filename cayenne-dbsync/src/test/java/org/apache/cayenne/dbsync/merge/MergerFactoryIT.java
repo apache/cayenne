@@ -152,6 +152,7 @@ public class MergerFactoryIT extends MergeCase {
         oatr1.setType("java.lang.String");
         objEntity.addAttribute(oatr1);
         map.addObjEntity(objEntity);
+        env.recompile();
 
         for (int i = 0; i < 5; i++) {
             GenericPersistentObject dao = (GenericPersistentObject) env.context().newObject(objEntity.getName());
@@ -162,7 +163,7 @@ public class MergerFactoryIT extends MergeCase {
         // clear up
         map.removeObjEntity(objEntity.getName(), true);
         map.removeDbEntity(dbEntity.getName(), true);
-        resolver.refreshMappingCache();
+        env.recompile();
         assertNull(map.getObjEntity(objEntity.getName()));
         assertNull(map.getDbEntity(dbEntity.getName()));
         assertFalse(map.getDbEntities().contains(dbEntity));
@@ -211,7 +212,7 @@ public class MergerFactoryIT extends MergeCase {
         // remove relationships
         dbEntity.removeRelationship(r1.getName());
         artistDbEntity.removeRelationship(r2.getName());
-        resolver.refreshMappingCache();
+        env.recompile();
         /*
          * Db -Rel 'toArtistR1' - NEW_TABLE 1 -> 1 ARTIST"
 r2 =     * Db -Rel 'toNewTableR2' - ARTIST 1 -> * NEW_TABLE" -- Not generated any more
@@ -222,7 +223,7 @@ r2 =     * Db -Rel 'toNewTableR2' - ARTIST 1 -> * NEW_TABLE" -- Not generated an
         // clear up
         // map.removeObjEntity(objEntity.getName(), true);
         map.removeDbEntity(dbEntity.getName(), true);
-        resolver.refreshMappingCache();
+        env.recompile();
         // assertNull(map.getObjEntity(objEntity.getName()));
         assertNull(map.getDbEntity(dbEntity.getName()));
         assertFalse(map.getDbEntities().contains(dbEntity));
@@ -273,7 +274,7 @@ r2 =     * Db -Rel 'toNewTableR2' - ARTIST 1 -> * NEW_TABLE" -- Not generated an
         // remove relationships
         dbEntity.removeRelationship(r1.getName());
         artistDbEntity.removeRelationship(r2.getName());
-        resolver.refreshMappingCache();
+        env.recompile();
         /*
         * Add Relationship ARTIST->NEW_TABLE To Model -- Not generated any more
         * Drop Relationship NEW_TABLE->ARTIST To DB
@@ -284,7 +285,7 @@ r2 =     * Db -Rel 'toNewTableR2' - ARTIST 1 -> * NEW_TABLE" -- Not generated an
         // clear up
         // map.removeObjEntity(objEntity.getName(), true);
         map.removeDbEntity(dbEntity.getName(), true);
-        resolver.refreshMappingCache();
+        env.recompile();
         // assertNull(map.getObjEntity(objEntity.getName()));
         assertNull(map.getDbEntity(dbEntity.getName()));
         assertFalse(map.getDbEntities().contains(dbEntity));

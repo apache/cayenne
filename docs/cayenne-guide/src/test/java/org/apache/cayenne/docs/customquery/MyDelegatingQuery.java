@@ -20,7 +20,7 @@
 package org.apache.cayenne.docs.customquery;
 
 import org.apache.cayenne.docs.persistent.Artist;
-import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.compiled.CompiledMapping;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLQuery;
 import org.apache.cayenne.query.resolved.ResolvedQuery;
@@ -29,8 +29,8 @@ import org.apache.cayenne.query.resolved.ResolvedQuery;
 public class MyDelegatingQuery implements Query<Artist> {
 
     @Override
-    public ResolvedQuery resolve(EntityResolver resolver) {
-        return SQLQuery.query(Artist.class, generateRawSQL()).resolve(resolver);
+    public ResolvedQuery resolve(CompiledMapping mapping) {
+        return SQLQuery.query(Artist.class, generateRawSQL()).resolve(mapping);
     }
 
     protected String generateRawSQL() {

@@ -29,6 +29,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.sql.Types;
 
+import static org.apache.cayenne.dba.AdhocTables.compile;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -64,6 +65,6 @@ public class OracleAdapterIT {
         e.addAttribute(c);
 
         // Oracle has no length-free character type, so it falls back to VARCHAR2(4000)
-        assertEquals("CREATE TABLE Test (c VARCHAR2(4000) NULL)", adapter.createTable(e));
+        assertEquals("CREATE TABLE Test (c VARCHAR2(4000) NULL)", adapter.createTable(compile(e)));
     }
 }

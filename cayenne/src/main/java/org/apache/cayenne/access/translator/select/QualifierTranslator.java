@@ -66,7 +66,7 @@ import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.exp.property.Property;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.property.PropertyFactory;
-import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.compiled.CompiledMapping;
 import org.apache.cayenne.query.ResultSegments;
 import org.apache.cayenne.query.resolved.ResolvedSelect;
 import org.apache.cayenne.exp.AddExp;
@@ -101,11 +101,12 @@ import org.apache.cayenne.exp.NotLikeIgnoreCaseExp;
 import org.apache.cayenne.exp.SubtractExp;
 import org.apache.cayenne.exp.ThenExp;
 import org.apache.cayenne.exp.WhenExp;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DbJoin;
-import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.Embeddable;
+import org.apache.cayenne.map.compiled.CompiledColumn;
+import org.apache.cayenne.map.compiled.CompiledTable;
+import org.apache.cayenne.map.compiled.CompiledColumnPair;
+import org.apache.cayenne.map.compiled.CompiledJoin;
+import org.apache.cayenne.map.compiled.CompiledEmbeddable;
+import org.apache.cayenne.map.compiled.CompiledEmbeddableAttribute;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -306,11 +307,11 @@ class QualifierTranslator implements TraversalHandler {
         // the common node kinds go first: a pattern switch tests its cases in order
         return switch (node) {
             case ObjPathExp path -> processPathTranslationResult(node, parentNode,
-                    pathTranslator.translatePath(context.getSelect().objEntity(), path.getPath()));
+                    pathTranslator.translatePath(context.getSelect().entity(), path.getPath()));
             case DbIdPathExp path -> processPathTranslationResult(node, parentNode,
-                    pathTranslator.translateIdPath(context.getSelect().objEntity(), path.getPath()));
+                    pathTranslator.translateIdPath(context.getSelect().entity(), path.getPath()));
             case DbPathExp path -> processPathTranslationResult(node, parentNode,
-                    pathTranslator.translatePath(context.getSelect().dbEntity(), path.getPath()));
+                    pathTranslator.translatePath(context.getSelect().table(), path.getPath()));
             case ScalarExp scalar -> {
                 // a value in the place of an expression: a whole clause, or an operand wrapped by the caller
                 Object value = scalar.getValue();
@@ -368,13 +369,13 @@ class QualifierTranslator implements TraversalHandler {
             case AllExp e -> new FunctionNode("ALL", null, false);
             case AnyExp e -> new FunctionNode("ANY", null, false);
             case SubqueryExp subquery -> {
-                ResolvedSelect resolvedSubquery = subquery.getQuery().resolve(context.getResolver());
+                ResolvedSelect resolvedSubquery = subquery.getQuery().resolve(context.getMapping());
                 if (parentNode instanceof AllExp || parentNode instanceof AnyExp
                         || parentNode instanceof InExp || parentNode instanceof NotInExp) {
-                    resolvedSubquery = singleColumnSubquery(resolvedSubquery, parentNode, context.getResolver());
+                    resolvedSubquery = singleColumnSubquery(resolvedSubquery, parentNode, context.getMapping());
                 }
                 SelectTranslatorContext subContext = new SelectTranslatorContext(
-                        resolvedSubquery, context.getAdapter(), context.getResolver(), context);
+                        resolvedSubquery, context.getAdapter(), context.getMapping(), context);
                 // skip SQL translation stage for nested translators, it should be performed by root context only
                 subContext.setSkipSQLGeneration(true);
                 subContext.translate();
@@ -392,13 +393,13 @@ class QualifierTranslator implements TraversalHandler {
                 yield context.getParentContext().getQualifierTranslator().translate(expression);
             }
             case FullObjectExp e -> {
-                Collection<DbAttribute> dbAttributes = context.getSelect().dbEntity().getPrimaryKeys();
+                Collection<CompiledColumn> columns = context.getSelect().table().primaryKey();
                 String alias = context.getTableTree().aliasForPath(CayennePath.EMPTY_PATH);
-                if (dbAttributes.size() > 1) {
-                    yield createMultiPkMatch(node, parentNode, dbAttributes, alias);
+                if (columns.size() > 1) {
+                    yield createMultiPkMatch(node, parentNode, columns, alias);
                 }
-                DbAttribute attribute = dbAttributes.iterator().next();
-                yield table(alias).column(attribute).build();
+                CompiledColumn column = columns.iterator().next();
+                yield table(alias).column(column).build();
             }
 
             case CaseWhenExp e -> new CaseNode();
@@ -416,7 +417,7 @@ class QualifierTranslator implements TraversalHandler {
     private static ResolvedSelect singleColumnSubquery(
             ResolvedSelect subquery,
             Expression comparison,
-            EntityResolver resolver) {
+            CompiledMapping resolver) {
 
         ResultSegments segments = subquery.resultSegments();
 
@@ -431,15 +432,15 @@ class QualifierTranslator implements TraversalHandler {
         }
 
         // a query of the root objects stands for their ids
-        Collection<DbAttribute> pks = subquery.dbEntity().getPrimaryKeys();
+        Collection<CompiledColumn> pks = subquery.table().primaryKey();
         if (pks.size() != 1) {
             throw new CayenneRuntimeException("""
                     A subquery of %s must select a single column. This one selects the root objects, which can't \
                     stand for their ids, as the PK of %s has %d columns: %s""",
-                    operator(comparison), subquery.dbEntity().getName(), pks.size(), subquery.source());
+                    operator(comparison), subquery.table().name(), pks.size(), subquery.source());
         }
 
-        Property<?> pk = PropertyFactory.createBase(ExpressionFactory.dbPathExp(pks.iterator().next().getName()), null);
+        Property<?> pk = PropertyFactory.createBase(ExpressionFactory.dbPathExp(pks.iterator().next().name()), null);
         return withColumn(subquery, pk, resolver);
     }
 
@@ -447,7 +448,7 @@ class QualifierTranslator implements TraversalHandler {
      * Returns a copy of a resolved select that selects the given single column instead of the root objects, with all
      * the other inputs unchanged.
      */
-    private static ResolvedSelect withColumn(ResolvedSelect select, Property<?> column, EntityResolver resolver) {
+    private static ResolvedSelect withColumn(ResolvedSelect select, Property<?> column, CompiledMapping resolver) {
         ResolvedSelect.Builder builder = ResolvedSelect.builder()
                 .source(select.source())
                 .where(select.where())
@@ -466,10 +467,10 @@ class QualifierTranslator implements TraversalHandler {
                 .cacheGroup(select.cacheGroup())
                 .prefetchTree(select.prefetchTree());
 
-        if (select.objEntity() != null) {
-            builder.entityName(select.objEntity().getName());
+        if (select.entity() != null) {
+            builder.entityName(select.entity().name());
         } else {
-            builder.dbEntityName(select.dbEntity().getName());
+            builder.dbEntityName(select.table().name());
         }
         return builder.build(resolver);
     }
@@ -489,7 +490,7 @@ class QualifierTranslator implements TraversalHandler {
             return createEmbeddableMatch(node, parentNode, result);
         } else if (result.getDbRelationship().isPresent()
                 && result.getDbAttributes().size() > 1
-                && result.getDbRelationship().get().getTargetEntity().getPrimaryKeys().size() > 1) {
+                && result.getDbRelationship().get().target().primaryKey().size() > 1) {
             return createMultiAttributeMatch(node, parentNode, result);
         } else if (result.getDbAttributes().isEmpty()) {
             return new EmptyNode();
@@ -504,7 +505,7 @@ class QualifierTranslator implements TraversalHandler {
     }
 
     private Node createEmbeddableMatch(Expression node, Expression parentNode, PathTranslationResult result) {
-        Embeddable embeddable = result.getEmbeddable()
+        CompiledEmbeddable embeddable = result.getEmbeddable()
                 .orElseThrow(() -> new CayenneRuntimeException("Incorrect path '%s' translation, embeddable expected"
                         , result.getFinalPath()));
 
@@ -516,7 +517,7 @@ class QualifierTranslator implements TraversalHandler {
         return buildMultiValueComparison(result, valueSnapshot);
     }
 
-    private Map<String, Object> getEmbeddableValueSnapshot(Embeddable embeddable, Expression node, Expression parentNode) {
+    private Map<String, Object> getEmbeddableValueSnapshot(CompiledEmbeddable embeddable, Expression node, Expression parentNode) {
         int siblings = parentNode.getOperandCount();
         for (int i = 0; i < siblings; i++) {
             Object operand = parentNode.getOperand(i);
@@ -525,34 +526,35 @@ class QualifierTranslator implements TraversalHandler {
             }
 
             if (operand instanceof EmbeddableObject embeddableObject) {
-                Map<String, Object> snapshot = HashMap.newHashMap(embeddable.getAttributes().size());
-                embeddable.getAttributeMap().forEach((name, attr) ->
-                        snapshot.put(attr.getDbAttributeName(), embeddableObject.readPropertyDirectly(name)));
+                Map<String, Object> snapshot = HashMap.newHashMap(embeddable.attributes().size());
+                for (CompiledEmbeddableAttribute attr : embeddable.attributes()) {
+                    snapshot.put(attr.columnName(), embeddableObject.readPropertyDirectly(attr.name()));
+                }
                 return snapshot;
             }
         }
 
-        throw new CayenneRuntimeException("Embeddable attribute ObjPath isn't matched with a valid value.");
+        throw new CayenneRuntimeException("CompiledEmbeddable attribute ObjPath isn't matched with a valid value.");
     }
 
     private Node createMultiAttributeMatch(Expression node, Expression parentNode, PathTranslationResult result) {
-        DbRelationship relationship = result.getDbRelationship()
+        CompiledJoin relationship = result.getDbRelationship()
                 .orElseThrow(() -> new CayenneRuntimeException("Incorrect path '%s' translation, relationship expected"
                         , result.getFinalPath()));
 
-        DbEntity targetEntity = relationship.getTargetEntity();
-        if (result.getDbAttributes().size() != targetEntity.getPrimaryKeys().size()) {
+        CompiledTable targetTable = relationship.target();
+        if (result.getDbAttributes().size() != targetTable.primaryKey().size()) {
             throw new CayenneRuntimeException("Unsupported or incorrect mapping for relationship '%s.%s': " +
                     "target entity has different count of primary keys than count of joins."
-                    , relationship.getSourceEntityName(), relationship.getName());
+                    , relationship.source().name(), relationship.name());
         }
 
         Map<String, Object> valueSnapshot = getMultiAttributeValueSnapshot(node, parentNode);
         // convert snapshot if we have attributes from source, not target
-        if (result.getLastAttribute().getEntity() == relationship.getSourceEntity()) {
-            Map<String, Object> fkSnapshot = HashMap.newHashMap(relationship.getJoins().size());
-            for (DbJoin join : relationship.getJoins()) {
-                fkSnapshot.put(join.getSourceName(), valueSnapshot.get(join.getTargetName()));
+        if (result.getLastAttribute().table() == relationship.source()) {
+            Map<String, Object> fkSnapshot = HashMap.newHashMap(relationship.columnPairs().size());
+            for (CompiledColumnPair join : relationship.columnPairs()) {
+                fkSnapshot.put(join.source().name(), valueSnapshot.get(join.target().name()));
             }
             valueSnapshot = fkSnapshot;
         }
@@ -582,13 +584,13 @@ class QualifierTranslator implements TraversalHandler {
      * root-entity counterpart of {@link #createMultiAttributeMatch(Expression, Expression, PathTranslationResult)}.
      */
     private Node createMultiPkMatch(Expression node, Expression parentNode,
-                                    Collection<DbAttribute> pkAttributes, String alias) {
+                                    Collection<CompiledColumn> pkColumns, String alias) {
         if (parentNode == null) {
             throw new CayenneRuntimeException("Unable to translate reference on entity with more than one PK.");
         }
 
         Map<String, Object> valueSnapshot = getMultiAttributeValueSnapshot(node, parentNode);
-        Node multiValueComparison = buildMultiValueComparison(pkAttributes, alias, valueSnapshot);
+        Node multiValueComparison = buildMultiValueComparison(pkColumns, alias, valueSnapshot);
 
         // replace current node with multi value comparison
         Node currentNodeParent = currentNode.getParent();
@@ -634,14 +636,14 @@ class QualifierTranslator implements TraversalHandler {
         return buildMultiValueComparison(result.getDbAttributes(), alias, valueSnapshot);
     }
 
-    private Node buildMultiValueComparison(Collection<DbAttribute> attributes, String alias,
+    private Node buildMultiValueComparison(Collection<CompiledColumn> columns, String alias,
                                            Map<String, Object> valueSnapshot) {
         ExpressionNodeBuilder expressionNodeBuilder = null;
         ExpressionNodeBuilder eq;
 
-        for (DbAttribute attribute : attributes) {
-            Object nextValue = valueSnapshot.get(attribute.getName());
-            eq = table(alias).column(attribute).eq(value(nextValue));
+        for (CompiledColumn column : columns) {
+            Object nextValue = valueSnapshot.get(column.name());
+            eq = table(alias).column(column).eq(value(nextValue));
             if (expressionNodeBuilder == null) {
                 expressionNodeBuilder = eq;
             } else {
@@ -713,7 +715,7 @@ class QualifierTranslator implements TraversalHandler {
         return (parentNode != null);
     }
 
-    protected DbAttribute findDbAttribute(Expression node) {
+    protected CompiledColumn findDbAttribute(Expression node) {
         if (node == null) {
             return null;
         }
@@ -733,13 +735,13 @@ class QualifierTranslator implements TraversalHandler {
         for (int i = 0; i < node.getOperandCount(); i++) {
             Object op = node.getOperand(i);
             if (op instanceof ObjPathExp) {
-                result = pathTranslator.translatePath(context.getSelect().objEntity(), ((ObjPathExp) op).getPath());
+                result = pathTranslator.translatePath(context.getSelect().entity(), ((ObjPathExp) op).getPath());
                 break;
             } else if (op instanceof DbIdPathExp) {
-                result = pathTranslator.translateIdPath(context.getSelect().objEntity(), ((DbIdPathExp) op).getPath());
+                result = pathTranslator.translateIdPath(context.getSelect().entity(), ((DbIdPathExp) op).getPath());
                 break;
             } else if (op instanceof DbPathExp) {
-                result = pathTranslator.translatePath(context.getSelect().dbEntity(), ((DbPathExp) op).getPath());
+                result = pathTranslator.translatePath(context.getSelect().table(), ((DbPathExp) op).getPath());
                 break;
             }
         }

@@ -32,10 +32,12 @@ import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.ObjectSnapshots;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.SnapshotVersion;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.compiled.CompiledDbPath;
+import org.apache.cayenne.map.compiled.CompiledTable;
+import org.apache.cayenne.map.compiled.CompiledJoin;
+import org.apache.cayenne.map.compiled.CompiledEntity;
 import org.apache.cayenne.query.ObjectSelect;
 
 /**
@@ -53,10 +55,15 @@ public final class DbPathExp extends PathExp {
 	@Override
 	protected Object evaluateNode(Object o) throws Exception {
 
+		if (o instanceof CompiledEntity entity) {
+			return evaluateEntityNode(entity);
+		}
+		if (o instanceof CompiledTable entity) {
+			return evaluateEntityNode(entity);
+		}
 		if (o instanceof Entity) {
 			return evaluateEntityNode((Entity<?,?,?>) o);
 		}
-
 		Map<?, ?> map = toMap(o);
 		String finalPathComponent = path.last().value();
 		return (map != null) ? map.get(finalPathComponent) : null;
@@ -87,30 +94,20 @@ public final class DbPathExp extends PathExp {
 	}
 
 	private Map<?, ?> toMap_AttachedObject_MultiStepPath(ObjectContext context, Persistent persistent) {
-		List<Object> pathComponents = Cayenne.getObjEntity(persistent)
-				.getDbEntity()
-				.resolvePath(path);
-		LinkedList<DbRelationship> reversedPathComponents = new LinkedList<>();
-
-		for (Object component : pathComponents) {
-			if (component instanceof DbRelationship rel) {
-				reversedPathComponents.addFirst(rel.getReverseRelationship());
-			} else {
-				break; // an attribute can only occur at the end of the path
-			}
+		CompiledDbPath resolvedPath = Cayenne.getEntity(persistent).table().resolvePath(path);
+		LinkedList<CompiledJoin> reversedPathComponents = new LinkedList<>();
+		for (CompiledJoin join : resolvedPath.joins()) {
+			reversedPathComponents.addFirst(join.reverse());
 		}
-
-		DbEntity finalEntity = reversedPathComponents.get(0).getSourceEntity();
-
+		CompiledTable finalTable = reversedPathComponents.get(0).source();
 		StringBuilder reversedPathStr = new StringBuilder();
 		for (int i = 0; i < reversedPathComponents.size(); i++) {
-			reversedPathStr.append(reversedPathComponents.get(i).getName());
+			reversedPathStr.append(reversedPathComponents.get(i).name());
 			if (i < reversedPathComponents.size() - 1) {
 				reversedPathStr.append('.');
 			}
 		}
-
-		return ObjectSelect.dbQuery(finalEntity.getName())
+		return ObjectSelect.dbQuery(finalTable.name())
 				.where(ExpressionFactory.matchDbExp(reversedPathStr.toString(), persistent)).selectOne(context);
 	}
 
@@ -165,5 +162,10 @@ public final class DbPathExp extends PathExp {
 			entity = ((ObjEntity) entity).getDbEntity();
 		}
 		return super.evaluateEntityNode(entity);
+	}
+
+	@Override
+	protected Object evaluateEntityNode(CompiledEntity entity) {
+		return evaluateEntityNode(entity.table());
 	}
 }

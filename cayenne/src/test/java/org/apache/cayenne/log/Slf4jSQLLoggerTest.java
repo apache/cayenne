@@ -26,7 +26,7 @@ import org.apache.cayenne.access.translator.TranslatedBatch;
 import org.apache.cayenne.access.translator.TranslatedSelect;
 import org.apache.cayenne.access.translator.TranslatedStatement;
 import org.apache.cayenne.RuntimeProperties;
-import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.unit.CompiledTables;
 import org.apache.cayenne.query.resolved.ResolvedQueries;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -74,7 +74,7 @@ public class Slf4jSQLLoggerTest {
         for (int i = 0; i < rows; i++) {
             values[i] = i;
         }
-        PSBatchParameter id = new PSBatchParameter(values, 1, Types.INTEGER, 0, new DbAttribute("id"));
+        PSBatchParameter id = new PSBatchParameter(values, 1, Types.INTEGER, 0, CompiledTables.column("id"));
         return new TranslatedBatch(ResolvedQueries.batch(), "INSERT INTO t(id) VALUES(?)", new PSBatchParameter[]{id});
     }
 
@@ -83,7 +83,7 @@ public class Slf4jSQLLoggerTest {
         TranslatedSelect select = new TranslatedSelect(
                 ResolvedQueries.select(),
                 "SELECT t0.id FROM my_table t0 WHERE t0.user_id = ?",
-                new PSParameter<?>[]{new PSParameter<>(15, 1, Types.INTEGER, 0, null, new DbAttribute("user_id"))},
+                new PSParameter<?>[]{new PSParameter<>(15, 1, Types.INTEGER, 0, null, CompiledTables.column("user_id"))},
                 new RSColumn[0], null, false, false);
 
         assertEquals(
@@ -96,7 +96,7 @@ public class Slf4jSQLLoggerTest {
         TranslatedSelect select = new TranslatedSelect(
                 ResolvedQueries.select(),
                 "SELECT t0.id FROM my_table t0 WHERE t0.user_id = ?",
-                new PSParameter<?>[]{new PSParameter<>(15, 1, Types.INTEGER, 0, null, new DbAttribute("user_id"))},
+                new PSParameter<?>[]{new PSParameter<>(15, 1, Types.INTEGER, 0, null, CompiledTables.column("user_id"))},
                 new RSColumn[0], null, false, false);
 
         assertEquals(
@@ -119,9 +119,9 @@ public class Slf4jSQLLoggerTest {
     public void batchLineSplitsHeadAndTailAroundElision() {
         // 5 rows, 2 placeholders (id, name); odd threshold 3 -> head 2, tail 1, middle 2 rows elided
         PSBatchParameter id = new PSBatchParameter(
-                new Object[]{3, 1, 5, 4, 2}, 1, Types.INTEGER, 0, new DbAttribute("id"));
+                new Object[]{3, 1, 5, 4, 2}, 1, Types.INTEGER, 0, CompiledTables.column("id"));
         PSBatchParameter name = new PSBatchParameter(
-                new Object[]{"n3", "n1", "n5", "n4", "n2"}, 2, Types.VARCHAR, 0, new DbAttribute("name"));
+                new Object[]{"n3", "n1", "n5", "n4", "n2"}, 2, Types.VARCHAR, 0, CompiledTables.column("name"));
 
         TranslatedBatch batch = new TranslatedBatch(ResolvedQueries.batch(),
                 "INSERT INTO table1(id, name) VALUES(?, ?)", new PSBatchParameter[]{id, name});
@@ -134,9 +134,9 @@ public class Slf4jSQLLoggerTest {
     @Test
     public void singleRowBatchHasNoDoubleBrackets() {
         PSBatchParameter id = new PSBatchParameter(
-                new Object[]{200}, 1, Types.INTEGER, 0, new DbAttribute("ARTIST_ID"));
+                new Object[]{200}, 1, Types.INTEGER, 0, CompiledTables.column("ARTIST_ID"));
         PSBatchParameter name = new PSBatchParameter(
-                new Object[]{"Test"}, 2, Types.VARCHAR, 0, new DbAttribute("ARTIST_NAME"));
+                new Object[]{"Test"}, 2, Types.VARCHAR, 0, CompiledTables.column("ARTIST_NAME"));
 
         TranslatedBatch batch = new TranslatedBatch(ResolvedQueries.batch(),
                 "INSERT INTO ARTIST(ARTIST_ID, ARTIST_NAME) VALUES(?, ?)", new PSBatchParameter[]{id, name});
@@ -149,9 +149,9 @@ public class Slf4jSQLLoggerTest {
     @Test
     public void batchLineRendersByteArrayAsHex() {
         PSBatchParameter binId = new PSBatchParameter(
-                new Object[]{new byte[]{1, 2, (byte) 0xAB}}, 1, Types.BINARY, 0, new DbAttribute("BIN_ID"));
+                new Object[]{new byte[]{1, 2, (byte) 0xAB}}, 1, Types.BINARY, 0, CompiledTables.column("BIN_ID"));
         PSBatchParameter name = new PSBatchParameter(
-                new Object[]{"master1"}, 2, Types.VARCHAR, 0, new DbAttribute("NAME"));
+                new Object[]{"master1"}, 2, Types.VARCHAR, 0, CompiledTables.column("NAME"));
 
         TranslatedBatch batch = new TranslatedBatch(ResolvedQueries.batch(),
                 "INSERT INTO BINARY_PK_TEST1(BIN_ID, NAME) VALUES(?, ?)", new PSBatchParameter[]{binId, name});
@@ -164,7 +164,7 @@ public class Slf4jSQLLoggerTest {
     @Test
     public void batchLineShowsAllRowsBelowThreshold() {
         PSBatchParameter id = new PSBatchParameter(
-                new Object[]{3, 2}, 1, Types.INTEGER, 0, new DbAttribute("id"));
+                new Object[]{3, 2}, 1, Types.INTEGER, 0, CompiledTables.column("id"));
 
         TranslatedBatch batch = new TranslatedBatch(ResolvedQueries.batch(), "INSERT INTO table1(id) VALUES(?)", new PSBatchParameter[]{id});
         assertEquals("INSERT INTO table1(id) VALUES(?) | bind:[id:3][id:2] updated:2",

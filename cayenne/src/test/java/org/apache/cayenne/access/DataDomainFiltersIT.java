@@ -77,7 +77,7 @@ public class DataDomainFiltersIT {
 
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class);
         List<QueryResult> response = domain.onQuery(
-                new QueryContext(env.context(), query, query.resolve(domain.getEntityResolver()), false));
+                new QueryContext(env.context(), query, query.resolve(domain.getMapping()), false));
         assertNotNull(response);
         assertEquals(4, results.size());
         assertEquals("f2start", results.get(0));
@@ -138,7 +138,7 @@ public class DataDomainFiltersIT {
 
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class);
         List<QueryResult> response = domain.onQuery(
-                new QueryContext(env.context(), query, query.resolve(domain.getEntityResolver()), false));
+                new QueryContext(env.context(), query, query.resolve(domain.getMapping()), false));
 
         assertSame(r2, response);
     }

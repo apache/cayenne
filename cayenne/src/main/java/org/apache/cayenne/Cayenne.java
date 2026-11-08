@@ -19,10 +19,9 @@
 package org.apache.cayenne;
 
 import org.apache.cayenne.exp.path.CayennePath;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.reflect.ClassDescriptor;
-import org.apache.cayenne.reflect.PropertyDescriptor;
+import org.apache.cayenne.map.compiled.CompiledTable;
+import org.apache.cayenne.map.compiled.CompiledEntity;
+import org.apache.cayenne.map.compiled.CompiledProperty;
 import org.apache.cayenne.reflect.PropertyUtils;
 
 import java.util.ArrayList;
@@ -55,41 +54,13 @@ public class Cayenne {
     final static String PROPERTY_COLLECTION_SIZE = "@size";
 
     /**
-     * Returns mapped ObjEntity for object. If an object is transient or is not
+     * Returns the mapped entity for object. If an object is transient or is not
      * mapped returns null.
+     *
+     * @since 6.0
      */
-    public static ObjEntity getObjEntity(Persistent p) {
-        return (p.getObjectContext() != null) ? p.getObjectContext().getEntityResolver().getObjEntity(p) : null;
-    }
-
-    /**
-     * Returns class descriptor for the object or null if the object is not
-     * registered with an ObjectContext or descriptor was not found.
-     */
-    public static ClassDescriptor getClassDescriptor(Persistent object) {
-
-        ObjectContext context = object.getObjectContext();
-
-        if (context == null) {
-            return null;
-        }
-
-        return context.getEntityResolver().getClassDescriptor(object.getObjectId().getEntityName());
-    }
-
-    /**
-     * Returns property descriptor for specified property.
-     * 
-     * @param propertyName
-     *            path to the property
-     * @return property descriptor, <code>null</code> if not found
-     */
-    public static PropertyDescriptor getProperty(Persistent object, String propertyName) {
-        ClassDescriptor descriptor = getClassDescriptor(object);
-        if (descriptor == null) {
-            return null;
-        }
-        return descriptor.getProperty(propertyName);
+    public static CompiledEntity getEntity(Persistent p) {
+        return (p.getObjectContext() != null) ? p.getObjectContext().getMapping().entity(p) : null;
     }
 
     /**
@@ -201,12 +172,15 @@ public class Cayenne {
     }
 
     private static Object readSimpleProperty(Object o, String propertyName) {
-        if (o instanceof Persistent) {
+        if (o instanceof Persistent persistent) {
 
-            PropertyDescriptor property = getProperty((Persistent) o, propertyName);
+            CompiledEntity entity = getEntity(persistent);
 
-            if (property != null) {
-                return property.readProperty(o);
+            if (entity != null) {
+                CompiledProperty property = entity.property(propertyName);
+                if (property != null) {
+                    return property.readProperty(o);
+                }
             }
         }
 
@@ -318,11 +292,12 @@ public class Cayenne {
 
         // replacement ID is more tricky... do some sanity check...
         if (id.isReplacementIdAttached()) {
-            ObjEntity objEntity = object.getObjectContext().getEntityResolver().getObjEntity(object);
+            CompiledEntity entity = object.getObjectContext().getMapping().entity(object);
 
-            if (objEntity != null) {
-                DbEntity entity = objEntity.getDbEntity();
-                if (entity != null && entity.isFullReplacementIdAttached(id)) {
+            if (entity != null) {
+                CompiledTable table = entity.table();
+                if (table != null && table.isFullReplacementIdAttached(id)) {
+
                     return id.getReplacementIdMap();
                 }
             }

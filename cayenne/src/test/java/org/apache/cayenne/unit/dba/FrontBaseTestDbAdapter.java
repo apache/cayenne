@@ -19,9 +19,10 @@
 
 package org.apache.cayenne.unit.dba;
 
+import org.apache.cayenne.map.compiled.CompiledDataMap;
+import org.apache.cayenne.map.compiled.CompiledMapping;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.exp.ExtractExp;
-import org.apache.cayenne.map.DataMap;
 
 import java.sql.Connection;
 import java.util.Collection;
@@ -48,7 +49,7 @@ public class FrontBaseTestDbAdapter extends TestDbAdapter {
     }
 
     @Override
-    public void willDropTables(Connection conn, DataMap map, Collection tablesToDrop)
+    public void willDropTables(Connection conn, CompiledMapping mapping, CompiledDataMap map, Collection<String> tablesToDrop)
             throws Exception {
         // avoid dropping constraints...
     }

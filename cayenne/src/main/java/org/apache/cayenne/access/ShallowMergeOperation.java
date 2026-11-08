@@ -21,7 +21,7 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.reflect.ClassDescriptor;
+import org.apache.cayenne.map.compiled.CompiledEntity;
 
 /**
  * An operation that merges changes from a single object registered in some ObjectContext,
@@ -49,8 +49,7 @@ class ShallowMergeOperation {
 
         ObjectId id = peerInParentContext.getObjectId();
 
-        ClassDescriptor descriptor = context.getEntityResolver().getClassDescriptor(
-                id.getEntityName());
+        CompiledEntity entity = context.getMapping().entity(id.getEntityName());
 
         DataContextObjectStore objectStore = context.getObjectStore();
 
@@ -67,7 +66,7 @@ class ShallowMergeOperation {
                         && state != PersistenceState.DELETED
                         && peerInParentContext.getSnapshotVersion() >= object.getSnapshotVersion()) {
 
-                    descriptor.shallowMerge(peerInParentContext, object);
+                    entity.shallowMerge(peerInParentContext, object);
                     object.setSnapshotVersion(peerInParentContext.getSnapshotVersion());
 
                     if (object.getPersistenceState() == PersistenceState.HOLLOW) {

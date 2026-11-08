@@ -25,6 +25,7 @@ import org.apache.cayenne.map.DbKeyGenerator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static org.apache.cayenne.dba.AdhocTables.compile;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class SequencePkGeneratorTest {
@@ -40,7 +41,7 @@ public class SequencePkGeneratorTest {
     @Test
     public void sequenceNameDefault() {
         DbEntity entity = new DbEntity("TEST_ENTITY");
-        assertEquals("pk_test_entity", pkGenerator.sequenceName(entity));
+        assertEquals("pk_test_entity", pkGenerator.sequenceName(compile(entity)));
     }
 
     @Test
@@ -50,7 +51,7 @@ public class SequencePkGeneratorTest {
         customGenerator.setGeneratorType(DbKeyGenerator.ORACLE_TYPE);
         customGenerator.setGeneratorName("CUSTOM_GENERATOR");
         entity.setPrimaryKeyGenerator(customGenerator);
-        assertEquals("custom_generator", pkGenerator.sequenceName(entity));
+        assertEquals("custom_generator", pkGenerator.sequenceName(compile(entity)));
     }
 
     @Test
@@ -59,6 +60,6 @@ public class SequencePkGeneratorTest {
         DbKeyGenerator customGenerator = new DbKeyGenerator();
         customGenerator.setGeneratorType(DbKeyGenerator.NAMED_SEQUENCE_TABLE_TYPE);
         customGenerator.setGeneratorName("CUSTOM_GENERATOR");
-        assertEquals("pk_test_entity", pkGenerator.sequenceName(entity));
+        assertEquals("pk_test_entity", pkGenerator.sequenceName(compile(entity)));
     }
 }

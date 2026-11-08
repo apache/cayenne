@@ -29,6 +29,7 @@ import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.tx.BaseTransaction;
 import org.apache.cayenne.tx.ExternalTransaction;
 import org.apache.cayenne.unit.CayenneProjects;
+import org.apache.cayenne.query.resolved.ResolvedQuery;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -192,11 +193,11 @@ public class MappedQueryIT {
                 .query("ParameterizedQueryWithLocalCache", Artist.class).param("name", "artist2");
 
         assertNotEquals(
-                query1.resolve(env.context().getEntityResolver()).cacheKey(),
-                query2.resolve(env.context().getEntityResolver()).cacheKey());
+                cacheKey(query1.resolve(env.mapping())),
+                cacheKey(query2.resolve(env.mapping())));
         assertEquals(
-                query2.resolve(env.context().getEntityResolver()).cacheKey(),
-                query3.resolve(env.context().getEntityResolver()).cacheKey());
+                cacheKey(query2.resolve(env.mapping())),
+                cacheKey(query3.resolve(env.mapping())));
     }
 
     protected List<QueryResult> runProcedureSelect(MappedQuery<?> q) throws Exception {
@@ -220,4 +221,7 @@ public class MappedQueryIT {
         }
     }
 
+    private static String cacheKey(ResolvedQuery resolved) {
+        return resolved.cacheKey(env.valueObjectTypes());
+    }
 }

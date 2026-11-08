@@ -23,7 +23,7 @@ import java.util.Arrays;
 
 import org.apache.cayenne.access.sqlbuilder.SQLBuilder;
 import org.apache.cayenne.access.sqlbuilder.UpdateBuilder;
-import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.compiled.CompiledColumn;
 import org.apache.cayenne.query.resolved.UpdateBatch;
 
 /**
@@ -36,10 +36,10 @@ public class UpdateBatchTranslator extends BaseBatchTranslator<UpdateBatch> {
         UpdateBatch query = context.getQuery();
 
         UpdateBuilder updateBuilder = SQLBuilder.update(context.getRootDbEntity());
-        for (DbAttribute attr : query.updatedAttributes()) {
+        for (CompiledColumn column : query.updatedAttributes()) {
             updateBuilder.set(SQLBuilder
-                    .column(attr.getName()).attribute(attr)
-                    .eq(SQLBuilder.value(1).attribute(attr))
+                    .column(column.name()).attribute(column)
+                    .eq(SQLBuilder.value(1).attribute(column))
             );
         }
         updateBuilder.where(buildQualifier(context, query.qualifierAttributes()));
@@ -48,8 +48,8 @@ public class UpdateBatchTranslator extends BaseBatchTranslator<UpdateBatch> {
     }
 
     @Override
-    protected boolean isNullAttribute(BatchTranslatorContext<UpdateBatch> context, DbAttribute attribute) {
-        return context.getQuery().isNull(attribute);
+    protected boolean isNullAttribute(BatchTranslatorContext<UpdateBatch> context, CompiledColumn column) {
+        return context.getQuery().isNull(column);
     }
 
     @Override
@@ -65,8 +65,8 @@ public class UpdateBatchTranslator extends BaseBatchTranslator<UpdateBatch> {
         }
 
         // qualifier attributes with null values render as "IS NULL" and have no placeholder
-        for (DbAttribute attribute : updateBatch.qualifierAttributes()) {
-            if (!updateBatch.isNull(attribute)) {
+        for (CompiledColumn column : updateBatch.qualifierAttributes()) {
+            if (!updateBatch.isNull(column)) {
                 indexes[j++] = i;
             }
             i++;

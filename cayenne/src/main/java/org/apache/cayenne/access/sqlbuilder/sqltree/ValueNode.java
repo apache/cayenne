@@ -27,7 +27,7 @@ import org.apache.cayenne.access.sqlbuilder.SQLGenerationContext;
 import org.apache.cayenne.access.jdbc.PSParameter;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.dba.TypesMapping;
-import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.compiled.CompiledColumn;
 
 import java.util.Objects;
 import java.util.function.Supplier;
@@ -39,14 +39,14 @@ public class ValueNode extends Node {
 
     private final Object value;
     private final boolean isArray;
-    private final DbAttribute attribute;
+    private final CompiledColumn column;
     private final boolean needBinding;
 
-    public ValueNode(Object value, boolean isArray, DbAttribute attribute, boolean needBinding) {
+    public ValueNode(Object value, boolean isArray, CompiledColumn column, boolean needBinding) {
         super(NodeType.VALUE);
         this.value = value;
         this.isArray = isArray;
-        this.attribute = attribute;
+        this.column = column;
         this.needBinding = needBinding;
     }
 
@@ -54,8 +54,8 @@ public class ValueNode extends Node {
         return value;
     }
 
-    public DbAttribute getAttribute() {
-        return attribute;
+    public CompiledColumn getAttribute() {
+        return column;
     }
 
     public boolean isArray() {
@@ -133,9 +133,9 @@ public class ValueNode extends Node {
         // 'attribute' is only a type hint and may be absent (e.g. function arguments and other
         // literals not bound to a column); fall back to deriving the JDBC type from the value
         int statementPosition = context.getBindings().size() + 1;
-        PSParameter binding = (attribute != null)
-                ? new PSParameter(value, statementPosition, context.getAdapter().preferredBindingType(attribute.getType()),
-                        attribute.getScale(), extendedType, attribute)
+        PSParameter binding = (column != null)
+                ? new PSParameter(value, statementPosition, context.getAdapter().preferredBindingType(column.jdbcType()),
+                        column.scale(), extendedType, column)
                 : new PSParameter(value, statementPosition, context.getAdapter().preferredBindingType(TypesMapping.getSqlTypeByJava(value.getClass())),
                         -1, extendedType, null);
 
@@ -262,7 +262,7 @@ public class ValueNode extends Node {
 
     @Override
     public Node copy() {
-        return new ValueNode(value, isArray, attribute, needBinding);
+        return new ValueNode(value, isArray, column, needBinding);
     }
 
     public boolean isNeedBinding() {

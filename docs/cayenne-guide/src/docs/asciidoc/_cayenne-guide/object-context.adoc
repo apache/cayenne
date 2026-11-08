@@ -148,8 +148,10 @@ Since an application often works with more than one context, `localObject` is a 
 include::{java-examples}/ObjectContextTest.java[tags=localObject]
 ----
 
-Often an application needs to inspect mapping metadata. This information is stored in the `EntityResolver` object,
-accessible via the `ObjectContext`:
+Often an application needs to inspect mapping metadata. The runtime view of the mapping is the `CompiledMapping`
+object, accessible via the `ObjectContext`. It is compiled from the DataMaps when the runtime starts, so every lookup
+in it is a direct reference, and the entities it returns carry the derived facts of the mapping, such as the full set
+of inherited attributes and the snapshot layout:
 
 [source,java,indent=0]
 ----

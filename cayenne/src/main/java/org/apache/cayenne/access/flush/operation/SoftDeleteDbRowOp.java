@@ -21,8 +21,8 @@ package org.apache.cayenne.access.flush.operation;
 
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.compiled.CompiledColumn;
+import org.apache.cayenne.map.compiled.CompiledTable;
 
 /**
  * A "soft" delete op that is executed as an UPDATE setting the soft-delete flag column to {@code true} instead of a
@@ -35,10 +35,10 @@ public class SoftDeleteDbRowOp extends DeleteDbRowOp implements DbRowOpWithValue
 
     protected final Values values;
 
-    public SoftDeleteDbRowOp(Persistent object, DbEntity entity, ObjectId id, DbAttribute deletedAttribute) {
-        super(object, entity, id);
+    public SoftDeleteDbRowOp(Persistent object, CompiledTable table, ObjectId id, CompiledColumn deletedColumn) {
+        super(object, table, id);
         this.values = new Values(this, false);
-        values.addValue(deletedAttribute, true, false);
+        values.addValue(deletedColumn, true, false);
     }
 
     @Override

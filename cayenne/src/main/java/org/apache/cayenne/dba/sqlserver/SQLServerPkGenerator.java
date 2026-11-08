@@ -23,7 +23,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcPkGenerator;
-import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.compiled.CompiledTable;
 import org.apache.cayenne.tx.BaseTransaction;
 import org.apache.cayenne.tx.Transaction;
 
@@ -91,15 +91,15 @@ public class SQLServerPkGenerator extends JdbcPkGenerator {
 	 *            node that provides access to a DataSource.
 	 */
 	@Override
-	public void createAutoPk(DataNode node, List<DbEntity> dbEntities) {
-		super.createAutoPk(node, dbEntities);
+	public void createAutoPk(DataNode node, List<CompiledTable> tables) {
+		super.createAutoPk(node, tables);
 		runUpdate(node, safePkProcDrop());
 		runUpdate(node, unsafePkProcCreate());
 	}
 
 	@Override
-	public List<String> createAutoPkStatements(DbAdapter adapter, List<DbEntity> dbEntities) {
-		List<String> list = super.createAutoPkStatements(adapter, dbEntities);
+	public List<String> createAutoPkStatements(DbAdapter adapter, List<CompiledTable> tables) {
+		List<String> list = super.createAutoPkStatements(adapter, tables);
 
 		// add stored procedure drop code
 		list.add(safePkProcDrop());
@@ -131,13 +131,13 @@ public class SQLServerPkGenerator extends JdbcPkGenerator {
 	 *            node that provides access to a DataSource.
 	 */
 	@Override
-	public void dropAutoPk(DataNode node, List<DbEntity> dbEntities) {
+	public void dropAutoPk(DataNode node, List<CompiledTable> tables) {
 		runUpdate(node, safePkProcDrop());
 		runUpdate(node, safePkTableDrop());
 	}
 
 	@Override
-	public List<String> dropAutoPkStatements(DbAdapter adapter, List<DbEntity> dbEntities) {
+	public List<String> dropAutoPkStatements(DbAdapter adapter, List<CompiledTable> tables) {
 		List<String> list = new ArrayList<>();
 		list.add(safePkProcDrop());
 		list.add(safePkTableDrop());
@@ -148,7 +148,7 @@ public class SQLServerPkGenerator extends JdbcPkGenerator {
 	 * @since 3.0
 	 */
 	@Override
-	protected long longPkFromDatabase(DataNode node, DbEntity entity) {
+	protected long longPkFromDatabase(DataNode node, CompiledTable table) {
 		// handle CAY-588 - get connection that is separate from the connection
 		// in the current transaction.
 
@@ -162,7 +162,7 @@ public class SQLServerPkGenerator extends JdbcPkGenerator {
 
 		try (Connection connection = node.getDataSource().getConnection()) {
 			try (CallableStatement statement = connection.prepareCall("{call auto_pk_for_table(?, ?)}")) {
-				statement.setString(1, entity.getName());
+				statement.setString(1, table.name());
 				statement.setInt(2, getPkCacheSize());
 
 				// can't use "executeQuery" per http://jtds.sourceforge.net/faq.html#expectingResultSet
@@ -172,16 +172,16 @@ public class SQLServerPkGenerator extends JdbcPkGenerator {
 						if (rs.next()) {
 							return rs.getLong(1);
 						} else {
-							throw new CayenneRuntimeException("Error generating pk for DbEntity %s", entity.getName());
+							throw new CayenneRuntimeException("Error generating pk for DbEntity %s", table.name());
 						}
 					}
 				} else {
 					throw new CayenneRuntimeException("Error generating pk for DbEntity %s"
-							+ ", no result set from stored procedure.", entity.getName());
+							+ ", no result set from stored procedure.", table.name());
 				}
 			}
 		} catch (SQLException e) {
-			throw new CayenneRuntimeException("Error generating pk for DbEntity %s", e, entity.getName());
+			throw new CayenneRuntimeException("Error generating pk for DbEntity %s", e, table.name());
 		} finally {
 			BaseTransaction.bindThreadTransaction(transaction);
 		}

@@ -34,6 +34,10 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.map.compiled.CompiledColumn;
+import org.apache.cayenne.map.compiled.CompiledTable;
+import org.apache.cayenne.map.compiled.CompiledEntity;
+import org.apache.cayenne.map.compiled.CompiledRelationship;
 
 /**
  * @since 5.0
@@ -85,6 +89,12 @@ public final class DbIdPathExp extends PathExp {
 
     @Override
     protected Object evaluateNode(Object o) {
+        if (o instanceof CompiledEntity entity) {
+            return evaluateEntityNode(entity);
+        }
+        if (o instanceof CompiledTable) {
+            throw new CayenneRuntimeException("Unable to evaluate DBID path for DbEntity");
+        }
         if (o instanceof Entity) {
             return evaluateEntityNode((Entity<?,?,?>) o);
         }
@@ -113,6 +123,24 @@ public final class DbIdPathExp extends PathExp {
         DbAttribute pk = objEntity.getDbEntity().getAttribute(id);
         if(pk == null || !pk.isPrimaryKey()) {
             throw new CayenneRuntimeException("Unable to find PK %s for entity %s", id, objEntity.getName());
+        }
+        return pk;
+    }
+
+    @Override
+    protected Object evaluateEntityNode(CompiledEntity entity) {
+        CayennePath objPath = path.parent();
+        String id = path.last().value();
+        if (objPath != null && !objPath.isEmpty()) {
+            Object entry = new ObjPathExp(objPath).evaluateEntityNode(entity);
+            if (!(entry instanceof CompiledRelationship relationship)) {
+                throw new CayenneRuntimeException("Unable to evaluate DBID path %s, relationship expected", path);
+            }
+            entity = relationship.target();
+        }
+        CompiledColumn pk = entity.table() != null ? entity.table().column(id) : null;
+        if (pk == null || !pk.isPrimaryKey()) {
+            throw new CayenneRuntimeException("Unable to find PK %s for entity %s", id, entity.name());
         }
         return pk;
     }

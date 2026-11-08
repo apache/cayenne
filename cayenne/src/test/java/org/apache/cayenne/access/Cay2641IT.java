@@ -66,7 +66,7 @@ public class Cay2641IT {
     public void translatorSql() {
         ObjectSelect<ArtistLazy> artists = ObjectSelect.query(ArtistLazy.class);
 
-        TranslatedSelect translator = new DbAdapterDelegatedSelectTranslator().translate(artists.resolve(env.context().getEntityResolver()), adapter, env.context().getEntityResolver());
+        TranslatedSelect translator = new DbAdapterDelegatedSelectTranslator().translate(artists.resolve(env.context().getMapping()), adapter, env.context().getMapping());
 
         String sql = translator.sql();
         // single-table query: no alias, so the lazy NAME column is simply absent
@@ -76,7 +76,7 @@ public class Cay2641IT {
         MatcherAssert.assertThat(sql, Matchers.matchesPattern(pattern));
 
         ObjectSelect<String> select = ObjectSelect.columnQuery(ArtistLazy.class, ArtistLazy.NAME);
-        translator = new DbAdapterDelegatedSelectTranslator().translate(select.resolve(env.context().getEntityResolver()), adapter, env.context().getEntityResolver());
+        translator = new DbAdapterDelegatedSelectTranslator().translate(select.resolve(env.context().getMapping()), adapter, env.context().getMapping());
         sql = translator.sql();
 
         assertTrue(sql.contains("NAME"));
@@ -108,7 +108,7 @@ public class Cay2641IT {
     @Test
     public void prefetchLazyTranslatorSql() {
         ObjectSelect<PaintingLazy> paintingLazyObjectSelect = ObjectSelect.query(PaintingLazy.class).prefetch(PaintingLazy.ARTIST.joint());
-        TranslatedSelect translator = new DbAdapterDelegatedSelectTranslator().translate(paintingLazyObjectSelect.resolve(env.context().getEntityResolver()), adapter, env.context().getEntityResolver());
+        TranslatedSelect translator = new DbAdapterDelegatedSelectTranslator().translate(paintingLazyObjectSelect.resolve(env.context().getMapping()), adapter, env.context().getMapping());
         String sql = translator.sql();
         assertFalse(sql.contains(".NAME"));
 

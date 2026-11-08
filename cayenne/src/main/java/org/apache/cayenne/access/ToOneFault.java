@@ -27,16 +27,18 @@ import org.apache.cayenne.Persistent;
 import java.util.List;
 
 /**
+ * The fault of a to-one relationship, resolved to the related object.
+ *
+ * @param relationshipName the name of the relationship this fault stands for
  * @since 3.0
  */
-public class ToOneFault extends Fault {
+public record ToOneFault(String relationshipName) implements Fault {
 
     /**
      * Resolves this fault to a Persistent.
      */
     @Override
-    public Object resolveFault(Persistent sourceObject, String relationshipName) {
-
+    public Object resolveFault(Persistent sourceObject) {
         if (sourceObject.getObjectContext() == null) {
             throw new IllegalStateException(
                     "Null ObjectContext. Can't read a to-one relationship '"
@@ -50,7 +52,7 @@ public class ToOneFault extends Fault {
             return null;
         }
 
-        Object target = doResolveFault(sourceObject, relationshipName);
+        Object target = doResolveFault(sourceObject);
 
         // must update the diff for the object
 
@@ -73,7 +75,7 @@ public class ToOneFault extends Fault {
         return target;
     }
 
-    Object doResolveFault(Persistent sourceObject, String relationshipName) {
+    Object doResolveFault(Persistent sourceObject) {
         DataContext context = (DataContext) sourceObject.getObjectContext();
         List<? extends Persistent> objects = context.resolveRelationship(
                 sourceObject.getObjectId(),

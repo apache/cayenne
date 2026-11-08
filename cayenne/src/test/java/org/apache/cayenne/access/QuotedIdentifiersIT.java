@@ -19,8 +19,8 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.ObjectId;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.compiled.CompiledColumn;
+import org.apache.cayenne.map.compiled.CompiledTable;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.resolved.UpdateBatch;
 import org.apache.cayenne.testdo.quotemap.QuoteAdress;
@@ -115,13 +115,14 @@ public class QuotedIdentifiersIT {
 
     @Test
     public void prefetchQuote() {
-        DbEntity entity = env.context().getEntityResolver().getObjEntity(QuoteAdress.class).getDbEntity();
-        List<DbAttribute> idAttributes = Collections.singletonList(entity.getAttribute("City"));
-        List<DbAttribute> updatedAttributes = Collections.singletonList(entity.getAttribute("City"));
+        CompiledTable table = env.context().getMapping().entity(QuoteAdress.class).table();
+        List<CompiledColumn> idColumns = Collections.singletonList(table.column("City"));
+        List<CompiledColumn> updatedColumns = Collections.singletonList(table.column("City"));
 
-        UpdateBatch updateQuery = new UpdateBatch(entity, idAttributes, updatedAttributes, Collections.emptySet(), false, List.of());
 
-        StatementContexts.run(env.dataNode(), env.resolver(), updateQuery);
+        UpdateBatch updateQuery = new UpdateBatch(table, idColumns, updatedColumns, Collections.emptySet(), false, List.of());
+
+        StatementContexts.run(env.dataNode(), env.mapping(), updateQuery);
 
         List<Quote_Person> objects4 = ObjectSelect.query(Quote_Person.class).select(env.context());
         assertEquals(2, objects4.size());

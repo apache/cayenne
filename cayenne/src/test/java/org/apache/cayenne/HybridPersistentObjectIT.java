@@ -21,6 +21,7 @@ package org.apache.cayenne;
 
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
+
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.hybrid.HybridEntity1;
 import org.apache.cayenne.testdo.hybrid.HybridEntity2;
@@ -166,16 +167,21 @@ public class HybridPersistentObjectIT {
     }
 
     private void addRuntimeAttribute(Class<?> entityClass, String attributeName, String attributeType) {
-        ObjEntity entity = env.runtime().getDataDomain().getEntityResolver().getObjEntity(entityClass);
+        ObjEntity entity = authoredEntity(entityClass);
         ObjAttribute attribute = new ObjAttribute();
         attribute.setName(attributeName);
         attribute.setDbAttributePath(attributeName);
         attribute.setType(attributeType);
         entity.addAttribute(attribute);
+        env.recompile();
     }
 
     private void removeRuntimeAttribute(Class<?> entityClass, String attributeName) {
-        ObjEntity entity = env.runtime().getDataDomain().getEntityResolver().getObjEntity(entityClass);
-        entity.removeAttribute(attributeName);
+        authoredEntity(entityClass).removeAttribute(attributeName);
+        env.recompile();
+    }
+
+    private ObjEntity authoredEntity(Class<?> entityClass) {
+        return env.project().objEntity(env.mapping().entity(entityClass));
     }
 }

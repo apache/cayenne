@@ -21,8 +21,8 @@ package org.apache.cayenne.access.translator.select;
 
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.path.CayennePath;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.compiled.CompiledTable;
+import org.apache.cayenne.map.compiled.CompiledJoin;
 import org.apache.cayenne.map.JoinType;
 
 /**
@@ -32,29 +32,29 @@ class TableTreeNode {
 
     // path that spawned this node
     private final CayennePath attributePath;
-    private final DbEntity entity;
+    private final CompiledTable table;
     private final String tableAlias;
     private final JoinType joinType;
 
     // relationship that connects this node with parent (or null if this is root)
-    private final DbRelationship relationship;
+    private final CompiledJoin join;
 
     private final Expression additionalQualifier;
 
-    TableTreeNode(DbEntity entity, String tableAlias) {
+    TableTreeNode(CompiledTable table, String tableAlias) {
         this.attributePath = CayennePath.EMPTY_PATH;
-        this.entity = entity;
+        this.table = table;
         this.tableAlias = tableAlias;
-        this.relationship = null;
+        this.join = null;
         this.joinType = null;
         this.additionalQualifier = null;
     }
 
-    TableTreeNode(CayennePath path, DbRelationship relationship, String tableAlias, JoinType joinType, Expression additionalQualifier) {
+    TableTreeNode(CayennePath path, CompiledJoin join, String tableAlias, JoinType joinType, Expression additionalQualifier) {
         this.attributePath = path;
-        this.entity = relationship.getTargetEntity();
+        this.table = join.target();
         this.tableAlias = tableAlias;
-        this.relationship = relationship;
+        this.join = join;
         this.joinType = joinType;
         this.additionalQualifier = additionalQualifier;
     }
@@ -65,15 +65,15 @@ class TableTreeNode {
     TableTreeNode outer() {
         return joinType == JoinType.LEFT_OUTER
                 ? this
-                : new TableTreeNode(attributePath, relationship, tableAlias, JoinType.LEFT_OUTER, additionalQualifier);
+                : new TableTreeNode(attributePath, join, tableAlias, JoinType.LEFT_OUTER, additionalQualifier);
     }
 
     public CayennePath getAttributePath() {
         return attributePath;
     }
 
-    public DbEntity getEntity() {
-        return entity;
+    public CompiledTable getEntity() {
+        return table;
     }
 
     public String getTableAlias() {
@@ -84,8 +84,8 @@ class TableTreeNode {
         return joinType;
     }
 
-    public DbRelationship getRelationship() {
-        return relationship;
+    public CompiledJoin getRelationship() {
+        return join;
     }
 
     public Expression getAdditionalQualifier() {

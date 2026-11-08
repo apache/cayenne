@@ -28,10 +28,10 @@ import org.apache.cayenne.exp.SubqueryExp;
 import org.apache.cayenne.exp.AggregateConditionExp;
 import org.apache.cayenne.exp.ConditionExp;
 import org.apache.cayenne.exp.path.CayennePath;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DbJoin;
-import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.compiled.CompiledTable;
+import org.apache.cayenne.map.compiled.CompiledColumnPair;
+import org.apache.cayenne.map.compiled.CompiledJoin;
+import org.apache.cayenne.map.compiled.CompiledEntity;
 import org.apache.cayenne.query.ObjectSelect;
 
 import java.util.ArrayDeque;
@@ -70,32 +70,32 @@ class ExistsExpressionTranslator {
             throw new IllegalArgumentException("Expected expression as a child, got " + child);
         }
 
-        DbEntity entity = context.getRootDbEntity();
-        ObjEntity objEntity = context.getSelect().objEntity();
-        if (objEntity != null) {
+        CompiledTable table = context.getRootDbEntity();
+        CompiledEntity entity = context.getSelect().entity();
+        if (entity != null) {
             // unwrap all paths to DB
-            translatedExpression = objEntity.translateToDbPath(translatedExpression);
+            translatedExpression = entity.translateToDbPath(translatedExpression);
         }
 
         // the relationship each path starts with, keyed by the node holding the rest of that path. A path that
         // doesn't start with a relationship of the root entity is not in the map.
-        Map<DbPathExp, DbRelationship> relationships = new IdentityHashMap<>();
+        Map<DbPathExp, CompiledJoin> relationships = new IdentityHashMap<>();
 
         // 0. quick path for a simple case - exists query for a single path expression
         // maybe we should support path as a condition in a general translator too, not only here
         if (translatedExpression instanceof DbPathExp dbPath) {
-            DbPathExp tail = splitPath(entity, dbPath, relationships);
+            DbPathExp tail = splitPath(table, dbPath, relationships);
             Expression pathExistExp = pathCondition(tail);
-            DbRelationship relationship = relationships.get(tail);
-            if(relationship == null) {
+            CompiledJoin join = relationships.get(tail);
+            if(join == null) {
                 return pathExistExp;
             }
-            return subqueryExpression(relationship, pathExistExp);
+            return subqueryExpression(join, pathExistExp);
         }
 
         // 1. transform all paths
         translatedExpression = translatedExpression.transform(
-                o -> o instanceof DbPathExp dbPath ? splitPath(entity, dbPath, relationships) : o
+                o -> o instanceof DbPathExp dbPath ? splitPath(table, dbPath, relationships) : o
         );
         if (relationships.isEmpty()) {
             // no relationships in the original expression, so use it as is
@@ -137,10 +137,10 @@ class ExistsExpressionTranslator {
         return finalExpression;
     }
 
-    private Expression subqueryExpression(DbRelationship relationship, Expression exp) {
-        for (DbJoin join : relationship.getJoins()) {
-            Expression joinMatchExp = ExpressionFactory.matchDbExp(join.getTargetName(),
-                    ExpressionFactory.enclosingObjectExp(ExpressionFactory.dbPathExp(join.getSourceName())));
+    private Expression subqueryExpression(CompiledJoin relationship, Expression exp) {
+        for (CompiledColumnPair join : relationship.columnPairs()) {
+            Expression joinMatchExp = ExpressionFactory.matchDbExp(join.target().name(),
+                    ExpressionFactory.enclosingObjectExp(ExpressionFactory.dbPathExp(join.source().name())));
             if (exp == null) {
                 exp = joinMatchExp;
             } else {
@@ -148,7 +148,7 @@ class ExistsExpressionTranslator {
             }
         }
         ObjectSelect<Persistent> select = ObjectSelect.query(Persistent.class)
-                .dbEntityName(relationship.getTargetEntityName())
+                .dbEntityName(relationship.target().name())
                 .where(exp);
         return (not
                 ? ExpressionFactory.notExists(select)
@@ -171,18 +171,18 @@ class ExistsExpressionTranslator {
      * taken; otherwise each path is taken with its own nearest condition. A null node means a subquery with
      * no qualifier beyond the join.
      */
-    private List<RelationshipToNode> subqueryNodes(Ancestry ancestry, Map<DbPathExp, DbRelationship> relationships) {
+    private List<RelationshipToNode> subqueryNodes(Ancestry ancestry, Map<DbPathExp, CompiledJoin> relationships) {
         List<RelationshipToNode> relationshipToNodes = new ArrayList<>(relationships.size());
-        Map<Expression, Map<DbRelationship, List<DbPathExp>>> parents = new HashMap<>(4);
+        Map<Expression, Map<CompiledJoin, List<DbPathExp>>> parents = new HashMap<>(4);
         for (DbPathExp path : ancestry.paths) {
-            DbRelationship relationship = relationships.get(path);
+            CompiledJoin join = relationships.get(path);
             Expression aggregateCondition = ancestry.aggregateConditions.get(path);
             if (aggregateCondition == null) {
                 // nothing above the path to take as a whole
-                relationshipToNodes.add(new RelationshipToNode(relationship, ancestry.conditions.get(path)));
+                relationshipToNodes.add(new RelationshipToNode(join, ancestry.conditions.get(path)));
             } else {
                 parents.computeIfAbsent(aggregateCondition, p -> new HashMap<>(4))
-                        .computeIfAbsent(relationship, r -> new ArrayList<>(4))
+                        .computeIfAbsent(join, r -> new ArrayList<>(4))
                         .add(path);
             }
         }
@@ -205,21 +205,21 @@ class ExistsExpressionTranslator {
      * node holding the rest, and records the relationship for it in the map. A path that doesn't start with a
      * relationship is returned whole and is not recorded.
      */
-    private DbPathExp splitPath(DbEntity entity, DbPathExp dbPath, Map<DbPathExp, DbRelationship> relationships) {
+    private DbPathExp splitPath(CompiledTable table, DbPathExp dbPath, Map<DbPathExp, CompiledJoin> relationships) {
         CayennePath path = dbPath.getPath();
-        DbRelationship relationship = entity.getRelationship(path.first().value());
-        if (relationship == null) {
+        CompiledJoin join = table.join(path.first().value());
+        if (join == null) {
             return new DbPathExp(path);
         }
         DbPathExp tail = new DbPathExp(path.length() > 1 ? path.tail(1) : CayennePath.EMPTY_PATH);
-        relationships.put(tail, relationship);
+        relationships.put(tail, join);
         return tail;
     }
 
     /**
      * A relationship and the node whose copy qualifies the relationship subquery, null when there is none.
      */
-    private record RelationshipToNode(DbRelationship relationship, Expression node) {
+    private record RelationshipToNode(CompiledJoin relationship, Expression node) {
     }
 
     /**
@@ -234,7 +234,7 @@ class ExistsExpressionTranslator {
         final Map<DbPathExp, Expression> conditions = new IdentityHashMap<>();
         final Map<DbPathExp, Expression> aggregateConditions = new IdentityHashMap<>();
 
-        static Ancestry of(Expression expression, Map<DbPathExp, DbRelationship> relationships) {
+        static Ancestry of(Expression expression, Map<DbPathExp, CompiledJoin> relationships) {
             Ancestry ancestry = new Ancestry();
             Deque<Expression> stack = new ArrayDeque<>();
             expression.traverse(new TraversalHandler() {

@@ -20,7 +20,6 @@ package org.apache.cayenne.crypto.map;
 
 import java.util.regex.Pattern;
 
-import org.apache.cayenne.map.DbAttribute;
 
 /**
  * A {@link ColumnMapper} that decides on whether a column is encrypted by
@@ -38,8 +37,8 @@ public class PatternColumnMapper implements ColumnMapper {
     }
 
     @Override
-    public boolean isEncrypted(DbAttribute column) {
-        return columnNamePattern.matcher(column.getName()).find();
+    public boolean isEncrypted(String tableName, String columnName) {
+        return columnNamePattern.matcher(columnName).find();
     }
 
 }

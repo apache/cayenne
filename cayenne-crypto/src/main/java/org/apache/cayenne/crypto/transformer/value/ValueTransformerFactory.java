@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.transformer.value;
 
-import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.compiled.CompiledColumn;
 
 /**
  * A factory that creates transformers for encryption/decryption of individual
@@ -28,7 +28,7 @@ import org.apache.cayenne.map.DbAttribute;
  */
 public interface ValueTransformerFactory {
 
-    ValueEncryptor encryptor(DbAttribute a);
+    ValueEncryptor encryptor(CompiledColumn a);
 
-    ValueDecryptor decryptor(DbAttribute a);
+    ValueDecryptor decryptor(CompiledColumn a);
 }

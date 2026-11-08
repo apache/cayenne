@@ -22,8 +22,9 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.map.compiled.CompiledEntity;
+import org.apache.cayenne.map.compiled.CompiledRelationship;
+
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -447,9 +448,9 @@ public class NestedDataContextWriteIT {
         childO2.setName("Detail1");
         childO2.addToArtists(childO1);
 
-        ObjEntity ent = childContext.getEntityResolver().getObjEntity("ArtGroup");
-        Collection<ObjRelationship> rels = ent.getDeclaredRelationships();
-        assertEquals(3, rels.size());
+        CompiledEntity entity = childContext.getMapping().entity("ArtGroup");
+        Collection<CompiledRelationship> relationships = entity.declaredRelationships();
+        assertEquals(3, relationships.size());
 
         assertEquals(1, childO1.getGroups().size());
         assertEquals(1, childO2.getArtists().size());

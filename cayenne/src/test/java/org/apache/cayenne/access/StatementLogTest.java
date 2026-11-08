@@ -35,7 +35,7 @@ import org.apache.cayenne.access.translator.TranslatedProcedure;
 import org.apache.cayenne.access.translator.TranslatedSelect;
 import org.apache.cayenne.access.translator.TranslatedStatement;
 import org.apache.cayenne.log.SQLLogger;
-import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.compiled.CompiledMapping;
 import org.apache.cayenne.query.resolved.ResolvedQueries;
 import org.apache.cayenne.query.resolved.ResolvedQuery;
 import org.apache.cayenne.query.resolved.ResolvedSQL;
@@ -138,7 +138,7 @@ public class StatementLogTest {
     }
 
     private static StatementContext statementContext(ResolvedQuery query, SQLLogger logger) {
-        StatementContext statementContext = new StatementContext(query, mock(EntityResolver.class));
+        StatementContext statementContext = new StatementContext(query, mock(CompiledMapping.class));
         statementContext.setLogger(logger);
         return statementContext;
     }
@@ -358,7 +358,7 @@ public class StatementLogTest {
     @Test
     public void iteratorNotWrappedWhenLoggingDisabled() {
         StatementContext statementContext = new StatementContext(ResolvedSQL.raw("SELECT 1"),
-                mock(EntityResolver.class));
+                mock(CompiledMapping.class));
 
         ResultIterator<?> iterator = mock(ResultIterator.class);
         statementContext.setTranslatedStatement(select());

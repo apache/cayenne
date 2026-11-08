@@ -19,15 +19,15 @@
 
 package org.apache.cayenne.query.resolved;
 
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.Procedure;
+import org.apache.cayenne.map.compiled.CompiledDataMap;
+import org.apache.cayenne.map.compiled.CompiledTable;
+import org.apache.cayenne.map.compiled.CompiledEntity;
+import org.apache.cayenne.map.compiled.CompiledProcedure;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.ProcedureColumn;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.query.QueryCacheStrategy;
-import org.apache.cayenne.reflect.ClassDescriptor;
 
 import java.util.List;
 import java.util.Map;
@@ -40,11 +40,10 @@ import java.util.Map;
  */
 public record ResolvedProcedure(
         Query<?> source,
-        Procedure procedure,
-        ObjEntity objEntity,
-        DbEntity dbEntity,
-        DataMap dataMap,
-        ClassDescriptor classDescriptor,
+        CompiledProcedure procedure,
+        CompiledEntity entity,
+        CompiledTable table,
+        CompiledDataMap dataMap,
         Map<String, ?> params,
         List<ProcedureColumn[]> resultDescriptors,
         CapsStrategy columnNameCaps,
@@ -57,4 +56,10 @@ public record ResolvedProcedure(
         QueryCacheStrategy cacheStrategy,
         String cacheKey,
         String cacheGroup) implements ResolvedQuery {
+
+    // the key has no value object types to render, so it is computed by the query
+    @Override
+    public String cacheKey(ValueObjectTypeRegistry valueObjectTypes) {
+        return cacheKey;
+    }
 }

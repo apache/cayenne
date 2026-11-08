@@ -26,11 +26,10 @@ import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.path.CayennePath;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.reflect.AdditionalDbEntityDescriptor;
-import org.apache.cayenne.reflect.ClassDescriptor;
+import org.apache.cayenne.map.compiled.CompiledFlattenedTable;
+import org.apache.cayenne.map.compiled.CompiledColumn;
+import org.apache.cayenne.map.compiled.CompiledTable;
+import org.apache.cayenne.map.compiled.CompiledEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,43 +49,43 @@ class ObjectResolver {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ObjectResolver.class);
 
 	DataContext context;
-	ClassDescriptor descriptor;
-	Collection<DbAttribute> primaryKey;
+	CompiledEntity entity;
+	Collection<CompiledColumn> primaryKey;
 
 	boolean refreshObjects;
 	DataRowStore cache;
-	DescriptorResolutionStrategy descriptorResolutionStrategy;
+	EntityResolutionStrategy entityResolutionStrategy;
 
-	// the plan of the rows being converted, for the root descriptor, and per subclass descriptor when there is
+	// the plan of the rows being converted, for the root entity, and per subentity when there is
 	// inheritance. A plan follows the columns of the rows it is applied to, so it is built once per resolver
 	private MergePlan plan;
-	private Map<ClassDescriptor, MergePlan> subclassPlans;
+	private Map<CompiledEntity, MergePlan> subclassPlans;
 
-	ObjectResolver(DataContext context, ClassDescriptor descriptor, boolean refresh) {
+	ObjectResolver(DataContext context, CompiledEntity entity, boolean refresh) {
 
 		// sanity check
-		if (descriptor == null || descriptor.getEntity() == null) {
+		if (entity == null) {
 			// possible cause: query that is not expected to have result set somehow got it..
-			throw new CayenneRuntimeException("No ClassDescriptor. Maybe DataRows should be fetched instead of objects.");
+			throw new CayenneRuntimeException("No ObjEntity. Maybe DataRows should be fetched instead of objects.");
 		}
 
-		DbEntity dbEntity = descriptor.getEntity().getDbEntity();
-		if (dbEntity == null) {
-			throw new CayenneRuntimeException("ObjEntity '%s' has no DbEntity.", descriptor.getEntity().getName());
+		CompiledTable table = entity.table();
+		if (table == null) {
+			throw new CayenneRuntimeException("ObjEntity '%s' has no DbEntity.", entity.name());
 		}
 
-		this.primaryKey = dbEntity.getPrimaryKeys();
+		this.primaryKey = table.primaryKey();
 		if (primaryKey.isEmpty()) {
 			throw new CayenneRuntimeException("Won't be able to create ObjectId for '%s'. Reason: DbEntity " +
-					"'%s' has no Primary Key defined.", descriptor.getEntity().getName(), dbEntity.getName());
+					"'%s' has no Primary Key defined.", entity.name(), table.name());
 		}
 
 		this.context = context;
 		this.cache = context.getObjectStore().getDataRowCache();
 		this.refreshObjects = refresh;
-		this.descriptor = descriptor;
+		this.entity = entity;
 
-		this.descriptorResolutionStrategy = descriptor.hasSubclasses() ? new InheritanceStrategy()
+		this.entityResolutionStrategy = entity.hasSubEntities() ? new InheritanceStrategy()
 				: new NoInheritanceStrategy();
 	}
 
@@ -118,19 +117,19 @@ class ObjectResolver {
 
 	Persistent objectFromDataRow(DataRow row) {
 		// determine entity to use
-		ClassDescriptor classDescriptor = descriptorResolutionStrategy.descriptorForRow(row);
-		MergePlan plan = planFor(classDescriptor);
-		ObjectId anId = createObjectId(row, classDescriptor, plan);
-		return objectFromDataRow(row, anId, classDescriptor, plan);
+		CompiledEntity rowEntity = entityResolutionStrategy.entityForRow(row);
+		MergePlan plan = planFor(rowEntity);
+		ObjectId anId = createObjectId(row, rowEntity, plan);
+		return objectFromDataRow(row, anId, rowEntity, plan);
 	}
 
 	/**
-	 * Returns the plan of the columns of the given descriptor, built on the first call for the descriptor.
+	 * Returns the plan of the columns of the given entity, built on the first call for the entity.
 	 */
-	MergePlan planFor(ClassDescriptor classDescriptor) {
-		if (classDescriptor == descriptor) {
+	MergePlan planFor(CompiledEntity rowEntity) {
+		if (rowEntity == entity) {
 			if (plan == null) {
-				plan = MergePlan.of(classDescriptor);
+				plan = MergePlan.of(rowEntity);
 			}
 			return plan;
 		}
@@ -138,17 +137,17 @@ class ObjectResolver {
 		if (subclassPlans == null) {
 			subclassPlans = new HashMap<>();
 		}
-		return subclassPlans.computeIfAbsent(classDescriptor, MergePlan::of);
+		return subclassPlans.computeIfAbsent(rowEntity, MergePlan::of);
 	}
 
 	/**
 	 * Returns the id of the row's object, or null if the row has a null PK, which is possible when processing left
 	 * outer joint prefetches.
 	 *
-	 * @param plan the plan of the descriptor, as returned by {@link #planFor(ClassDescriptor)}
+	 * @param plan the plan of the entity, as returned by {@link #planFor(CompiledEntity)}
 	 */
-	ObjectId createObjectId(DataRow row, ClassDescriptor classDescriptor, MergePlan plan) {
-		String name = classDescriptor.getEntity().getName();
+	ObjectId createObjectId(DataRow row, CompiledEntity rowEntity, MergePlan plan) {
+		String name = rowEntity.name();
 		String[] pkNames = plan.pkNames;
 		int[] pkColumns = plan.pkColumns;
 		DataRowLayout.Reader reader = plan.reader;
@@ -181,9 +180,9 @@ class ObjectResolver {
 	}
 
 	/**
-	 * @param plan the plan of the descriptor, as returned by {@link #planFor(ClassDescriptor)}
+	 * @param plan the plan of the entity, as returned by {@link #planFor(CompiledEntity)}
 	 */
-	Persistent objectFromDataRow(DataRow row, ObjectId anId, ClassDescriptor classDescriptor, MergePlan plan) {
+	Persistent objectFromDataRow(DataRow row, ObjectId anId, CompiledEntity rowEntity, MergePlan plan) {
 
 		// this condition is valid - see comments on 'createObjectId' for
 		// details
@@ -195,7 +194,7 @@ class ObjectResolver {
 		Persistent object = context.findOrCreateObject(anId);
 
 		// resolve additional Object IDs for flattened attributes
-		resolveAdditionalIds(row, object, classDescriptor);
+		resolveAdditionalIds(row, object, rowEntity);
 
 		DataContextObjectStore store = context.getObjectStore();
 
@@ -258,43 +257,40 @@ class ObjectResolver {
 		}
 	}
 
-    private void resolveAdditionalIds(DataRow row, Persistent object, ClassDescriptor classDescriptor) {
-	    if(classDescriptor.getAdditionalDbEntities().isEmpty()) {
+    private void resolveAdditionalIds(DataRow row, Persistent object, CompiledEntity rowEntity) {
+	    if(rowEntity.flattenedTables().isEmpty()) {
 	        return;
         }
 
-	    for(Map.Entry<CayennePath, AdditionalDbEntityDescriptor> entry : classDescriptor.getAdditionalDbEntities().entrySet()) {
-            DbEntity dbEntity = entry.getValue().getDbEntity();
+	    for(Map.Entry<CayennePath, CompiledFlattenedTable> entry : rowEntity.flattenedTables().entrySet()) {
+            CompiledTable table = entry.getValue().table();
             CayennePath path = entry.getKey();
-            ObjectId objectId = createObjectId(row, "db:" + dbEntity.getName(), dbEntity.getPrimaryKeys(), path, false);
+            ObjectId objectId = createObjectId(row, "db:" + table.name(), table.primaryKey(), path, false);
             if(objectId != null) {
 				context.getObjectStore().markFlattenedPath(object.getObjectId(), path, objectId);
             }
         }
     }
 
-    ObjEntity getEntity() {
-		return descriptor.getEntity();
+    CompiledEntity getEntity() {
+		return entity;
 	}
 
-	ClassDescriptor getDescriptor() {
-		return descriptor;
-	}
-
-	ObjectId createObjectId(DataRow dataRow, ObjEntity objEntity, CayennePath namePrefix) {
-        Collection<DbAttribute> pk = objEntity == this.descriptor.getEntity()
+	ObjectId createObjectId(DataRow dataRow, CompiledEntity entity, CayennePath namePrefix) {
+        Collection<CompiledColumn> pk = entity == this.entity
                 ? this.primaryKey
-                : objEntity.getDbEntity().getPrimaryKeys();
-        return createObjectId(dataRow, objEntity.getName(), pk, namePrefix, true);
+                : entity.table().primaryKey();
+        return createObjectId(dataRow, entity.name(), pk, namePrefix, true);
     }
 
-    ObjectId createObjectId(DataRow dataRow, String name, Collection<DbAttribute> pk, CayennePath namePrefix, boolean strict) {
+    ObjectId createObjectId(DataRow dataRow, String name, Collection<CompiledColumn> pk, CayennePath namePrefix,
+							boolean strict) {
 		// ... handle special case - PK.size == 1
 		// use some not-so-significant optimizations...
 
 		if (pk.size() == 1) {
-			DbAttribute attribute = pk.iterator().next();
-			String key = namePrefix.dot(attribute.getName()).value();
+			CompiledColumn column = pk.iterator().next();
+			String key = namePrefix.dot(column.name()).value();
 			Object val = dataRow.get(key);
 
 			// this is possible when processing left outer joint prefetches
@@ -306,14 +302,14 @@ class ObjectResolver {
 			}
 
 			// PUT without a prefix
-			return ObjectId.of(name, attribute.getName(), val);
+			return ObjectId.of(name, column.name(), val);
 		}
 
 		// ... handle generic case - PK.size > 1
 
 		Map<String, Object> idMap = HashMap.newHashMap(pk.size());
-		for (final DbAttribute attribute : pk) {
-			String key = namePrefix.dot(attribute.getName()).value();
+		for (final CompiledColumn column : pk) {
+			String key = namePrefix.dot(column.name()).value();
 			Object val = dataRow.get(key);
 
 			// this is possible when processing left outer joint prefetches
@@ -325,37 +321,37 @@ class ObjectResolver {
 			}
 
 			// PUT without a prefix
-			idMap.put(attribute.getName(), val);
+			idMap.put(column.name(), val);
 		}
 
 		return ObjectId.of(name, idMap);
 	}
 
-	interface DescriptorResolutionStrategy {
+	interface EntityResolutionStrategy {
 
-		ClassDescriptor descriptorForRow(DataRow row);
+		CompiledEntity entityForRow(DataRow row);
 	}
 
-	class NoInheritanceStrategy implements DescriptorResolutionStrategy {
+	class NoInheritanceStrategy implements EntityResolutionStrategy {
 
-		public final ClassDescriptor descriptorForRow(DataRow row) {
-			return descriptor;
+		public final CompiledEntity entityForRow(DataRow row) {
+			return entity;
 		}
 	}
 
-	class InheritanceStrategy implements DescriptorResolutionStrategy {
+	class InheritanceStrategy implements EntityResolutionStrategy {
 
-		public final ClassDescriptor descriptorForRow(DataRow row) {
+		public final CompiledEntity entityForRow(DataRow row) {
 			String entityName = row.getEntityName();
 
 			// null either means a bug in Cayenne (e.g. CAY-2101) or the inheritance qualifiers are messed up
 			if(entityName == null) {
-				LOGGER.warn("** Null entity name for DataRow, can't resolve sub descriptor for {}",
-						descriptor.getEntity().getName());
-				return descriptor;
+				LOGGER.warn("** Null entity name for DataRow, can't resolve sub entity for {}", entity.name());
+				return entity;
 			}
 
-			return context.getEntityResolver().getClassDescriptor(entityName);
+			return context.getMapping().entity(entityName);
 		}
 	}
+
 }

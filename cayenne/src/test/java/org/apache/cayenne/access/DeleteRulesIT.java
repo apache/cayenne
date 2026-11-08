@@ -282,38 +282,46 @@ public class DeleteRulesIT {
         }
     }
 
+    /**
+     * Returns the authored entity mapped to the class, to be modified by the test; the domain must be recompiled
+     * for the runtime to see the change.
+     */
+    private ObjEntity authoredEntity(Class<?> entityClass) {
+        return env.project().objEntity(env.mapping().entity(entityClass));
+    }
+
     private DeleteRule changeDeleteRule(DeleteRule deleteRule) {
-        ObjEntity entity = env.context().getEntityResolver().getObjEntity(DeleteRuleFlatA.class);
+        ObjEntity entity = authoredEntity(DeleteRuleFlatA.class);
 
         ObjRelationship relationship = entity.getRelationship(DeleteRuleFlatA.FLAT_B.getName());
         DeleteRule oldRule = relationship.getDeleteRule();
         relationship.setDeleteRule(deleteRule);
+        env.recompile();
         return oldRule;
     }
 
     private ObjRelationship unsetReverse() {
-        ObjEntity entity = env.context().getEntityResolver().getObjEntity(DeleteRuleFlatA.class);
+        ObjEntity entity = authoredEntity(DeleteRuleFlatA.class);
 
         ObjRelationship relationship = entity.getRelationship(DeleteRuleFlatA.FLAT_B.getName());
         ObjRelationship reverse = relationship.getReverseRelationship();
 
         if (reverse != null) {
             reverse.getSourceEntity().removeRelationship(reverse.getName());
-            env.context().getEntityResolver().getClassDescriptorMap().removeDescriptor("DeleteRuleFlatA");
-            env.context().getEntityResolver().getClassDescriptorMap().removeDescriptor("DeleteRuleFlatB");
+            env.recompile();
         }
 
         return reverse;
     }
 
     private void restoreReverse(ObjRelationship reverse) {
-        ObjEntity entity = env.context().getEntityResolver().getObjEntity(DeleteRuleFlatA.class);
+        ObjEntity entity = authoredEntity(DeleteRuleFlatA.class);
 
         ObjRelationship relationship = entity.getRelationship(DeleteRuleFlatA.FLAT_B.getName());
         relationship.getTargetEntity().addRelationship(reverse);
-        env.context().getEntityResolver().getClassDescriptorMap().removeDescriptor("DeleteRuleFlatA");
-        env.context().getEntityResolver().getClassDescriptorMap().removeDescriptor("DeleteRuleFlatB");
+        env.recompile();
     }
+
 
     private void assertJoinDeleted(DeleteRuleFlatA a, DeleteRuleFlatB b) {
 

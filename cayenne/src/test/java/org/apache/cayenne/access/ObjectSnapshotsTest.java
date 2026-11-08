@@ -25,9 +25,12 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.map.compiled.CompiledMapping;
+import org.apache.cayenne.map.compiled.CompiledEntity;
+import org.apache.cayenne.map.compiled.TestMappings;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -45,8 +48,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  */
 public class ObjectSnapshotsTest {
 
-    private ObjEntity order;
-    private ObjEntity customer;
+    private CompiledEntity order;
+    private CompiledEntity customer;
 
     @BeforeEach
     public void buildModel() {
@@ -98,10 +101,10 @@ public class ObjectSnapshotsTest {
         DbRelationship orders = addDbRelationship(customerTable, "orders", "ORDER", true);
         orders.addJoin(new DbJoin(orders, "ID", "CUSTOMER_ID"));
 
-        customer = addObjEntity(map, "Customer", "CUSTOMER");
+        ObjEntity customer = addObjEntity(map, "Customer", "CUSTOMER");
         addObjEntity(map, "Region", "REGION");
         addObjEntity(map, "Address", "ADDRESS");
-        order = addObjEntity(map, "Order", "ORDER");
+        ObjEntity order = addObjEntity(map, "Order", "ORDER");
         addObjRelationship(order, "customer", "Customer", "toCustomer");
         addObjRelationship(order, "customerByName", "Customer", "toCustomerByName");
         addObjRelationship(order, "customerAddress", "Address", "toCustomer.toAddress");
@@ -109,7 +112,10 @@ public class ObjectSnapshotsTest {
         addObjRelationship(order, "altRegion", "Region", "toAltRegion");
         addObjRelationship(customer, "orders", "Order", "orders");
 
-        new EntityResolver(List.of(map));
+        // the structure alone matters here, so the entities need no classes
+        CompiledMapping mapping = TestMappings.compile(map);
+        this.order = mapping.entity("Order");
+        this.customer = mapping.entity("Customer");
     }
 
     @Test
@@ -118,7 +124,7 @@ public class ObjectSnapshotsTest {
         row.put("ID", 1);
         row.put("CUSTOMER_ID", 7);
 
-        ObjectId id = ObjectSnapshots.targetId(order.getRelationship("customer"), row);
+        ObjectId id = ObjectSnapshots.targetId(order.relationship("customer"), row);
         assertEquals(ObjectId.of("Customer", "ID", 7), id);
     }
 
@@ -128,10 +134,10 @@ public class ObjectSnapshotsTest {
         row.put("ID", 1);
         row.put("CUSTOMER_ID", null);
 
-        assertNull(ObjectSnapshots.targetId(order.getRelationship("customer"), row));
+        assertNull(ObjectSnapshots.targetId(order.relationship("customer"), row));
 
         // a partial snapshot without the FK column reads as a null FK
-        assertNull(ObjectSnapshots.targetId(order.getRelationship("customer"), Map.of("ID", 1)));
+        assertNull(ObjectSnapshots.targetId(order.relationship("customer"), Map.of("ID", 1)));
     }
 
     @Test
@@ -141,7 +147,7 @@ public class ObjectSnapshotsTest {
         row.put("COUNTRY", "US");
         row.put("REGION_CODE", "CA");
 
-        ObjectId id = ObjectSnapshots.targetId(order.getRelationship("region"), row);
+        ObjectId id = ObjectSnapshots.targetId(order.relationship("region"), row);
         assertEquals(ObjectId.of("Region", Map.of("COUNTRY", "US", "CODE", "CA")), id);
     }
 
@@ -152,7 +158,7 @@ public class ObjectSnapshotsTest {
         row.put("COUNTRY", null);
         row.put("REGION_CODE", null);
 
-        assertNull(ObjectSnapshots.targetId(order.getRelationship("region"), row));
+        assertNull(ObjectSnapshots.targetId(order.relationship("region"), row));
     }
 
     @Test
@@ -164,12 +170,12 @@ public class ObjectSnapshotsTest {
 
         // a null in a mandatory FK column is an inconsistent snapshot
         assertThrows(CayenneRuntimeException.class,
-                () -> ObjectSnapshots.targetId(order.getRelationship("region"), row));
+                () -> ObjectSnapshots.targetId(order.relationship("region"), row));
 
         // a null in a nullable FK column is a null FK (CAY-284)
         row.put("ALT_COUNTRY", "US");
         row.put("ALT_REGION_CODE", null);
-        assertNull(ObjectSnapshots.targetId(order.getRelationship("altRegion"), row));
+        assertNull(ObjectSnapshots.targetId(order.relationship("altRegion"), row));
     }
 
     @Test
@@ -181,11 +187,11 @@ public class ObjectSnapshotsTest {
 
         // to-many, FK to a non-PK column, flattened
         assertThrows(CayenneRuntimeException.class,
-                () -> ObjectSnapshots.targetId(customer.getRelationship("orders"), row));
+                () -> ObjectSnapshots.targetId(customer.relationship("orders"), row));
         assertThrows(CayenneRuntimeException.class,
-                () -> ObjectSnapshots.targetId(order.getRelationship("customerByName"), row));
+                () -> ObjectSnapshots.targetId(order.relationship("customerByName"), row));
         assertThrows(CayenneRuntimeException.class,
-                () -> ObjectSnapshots.targetId(order.getRelationship("customerAddress"), row));
+                () -> ObjectSnapshots.targetId(order.relationship("customerAddress"), row));
     }
 
     private static DbEntity addDbEntity(DataMap map, String name, String... pkNames) {

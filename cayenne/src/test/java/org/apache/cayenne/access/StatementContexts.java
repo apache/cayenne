@@ -23,7 +23,7 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.QueryResult;
 import org.apache.cayenne.SelectResult;
 import org.apache.cayenne.UpdateResult;
-import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.compiled.CompiledMapping;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.resolved.ResolvedQuery;
 
@@ -41,16 +41,16 @@ public final class StatementContexts {
      * Creates a statement context for the query on the node without executing it, for tests that run an action
      * directly.
      */
-    public static StatementContext newRun(DataNode node, EntityResolver resolver, Query<?> query) {
-        return newRun(node, resolver, query.resolve(resolver));
+    public static StatementContext newRun(DataNode node, CompiledMapping mapping, Query<?> query) {
+        return newRun(node, mapping, query.resolve(mapping));
     }
 
-    public static StatementContext newRun(DataNode node, EntityResolver resolver, ResolvedQuery query) {
-        return new StatementContext(query, resolver);
+    public static StatementContext newRun(DataNode node, CompiledMapping mapping, ResolvedQuery query) {
+        return new StatementContext(query, mapping);
     }
 
-    public static StatementContext run(DataNode node, EntityResolver resolver, ResolvedQuery query) {
-        StatementContext statementContext = newRun(node, resolver, query);
+    public static StatementContext run(DataNode node, CompiledMapping mapping, ResolvedQuery query) {
+        StatementContext statementContext = newRun(node, mapping, query);
         node.execute(List.of(statementContext));
         return statementContext;
     }
@@ -58,8 +58,8 @@ public final class StatementContexts {
     /**
      * Executes the query on the node, returning its statement context with the results.
      */
-    public static StatementContext run(DataNode node, EntityResolver resolver, Query<?> query) {
-        StatementContext statementContext = newRun(node, resolver, query);
+    public static StatementContext run(DataNode node, CompiledMapping mapping, Query<?> query) {
+        StatementContext statementContext = newRun(node, mapping, query);
         node.execute(List.of(statementContext));
         return statementContext;
     }

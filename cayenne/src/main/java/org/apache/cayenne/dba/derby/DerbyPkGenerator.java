@@ -21,7 +21,7 @@ package org.apache.cayenne.dba.derby;
 
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.SequencePkGenerator;
-import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.compiled.CompiledTable;
 
 /**
  * PK generator for Derby that uses sequences.
@@ -34,8 +34,8 @@ public class DerbyPkGenerator extends SequencePkGenerator {
     }
 
     @Override
-    protected String sequenceName(DbEntity entity) {
-        return super.sequenceName(entity).toUpperCase();
+    protected String sequenceName(CompiledTable table) {
+        return super.sequenceName(table).toUpperCase();
     }
 
     @Override
@@ -49,15 +49,15 @@ public class DerbyPkGenerator extends SequencePkGenerator {
     }
 
     @Override
-    protected String dropSequenceString(DbAdapter adapter, DbEntity entity) {
-        return "DROP SEQUENCE " + adapter.getQuotingStrategy(entity).quotedFQN(entity.getCatalog(), entity.getSchema(),
-                sequenceName(entity)) + " RESTRICT";
+    protected String dropSequenceString(DbAdapter adapter, CompiledTable table) {
+        return "DROP SEQUENCE " + adapter.getQuotingStrategy(table).quotedFQN(table.catalog(), table.schema(),
+                sequenceName(table)) + " RESTRICT";
     }
 
     @Override
-    protected String createSequenceString(DbAdapter adapter, DbEntity entity) {
-        return "CREATE SEQUENCE " + adapter.getQuotingStrategy(entity).quotedFQN(entity.getCatalog(),
-                entity.getSchema(), sequenceName(entity)) + " AS BIGINT START WITH "
+    protected String createSequenceString(DbAdapter adapter, CompiledTable table) {
+        return "CREATE SEQUENCE " + adapter.getQuotingStrategy(table).quotedFQN(table.catalog(),
+                table.schema(), sequenceName(table)) + " AS BIGINT START WITH "
                 + pkStartValue + " INCREMENT BY " + getPkCacheSize() + " NO MAXVALUE NO CYCLE";
     }
 }

@@ -34,7 +34,7 @@ import org.apache.cayenne.crypto.transformer.value.ValueTransformerFactory;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.compiled.CompiledColumn;
 import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.cayenne.query.resolved.ResolvedQuery;
 import org.apache.cayenne.query.ResultSegments;
@@ -93,16 +93,16 @@ public class CryptoRowReaderFactoryDecorator extends DefaultRowReaderFactory {
 
         for (int i = 0; i < columns.length; i++) {
             RSColumn column = columns[i];
-            DbAttribute attribute = column.attribute();
+            CompiledColumn attribute = column.attribute();
 
             ExtendedType type = column.reader();
 
-            if (attribute != null && columnMapper.isEncrypted(attribute)) {
+            if (attribute != null && columnMapper.isEncrypted(attribute.table().name(), attribute.name())) {
 
                 // only char or binary columns can store encrypted data
-                if (TypesMapping.isBinary(attribute.getType())) {
+                if (TypesMapping.isBinary(attribute.jdbcType())) {
                     type = typeMap.getRegisteredType(byte[].class);
-                } else if (TypesMapping.isCharacter(attribute.getType())) {
+                } else if (TypesMapping.isCharacter(attribute.jdbcType())) {
                     type = typeMap.getRegisteredType(String.class);
                 }
                 // else - warning?
@@ -123,7 +123,8 @@ public class CryptoRowReaderFactoryDecorator extends DefaultRowReaderFactory {
 
         DecoratedScalarRowReader(RSColumn descriptor, RowReader<?> delegateReader) {
             this.delegateReader = delegateReader;
-            if(descriptor.attribute() != null && columnMapper.isEncrypted(descriptor.attribute())) {
+            CompiledColumn column = descriptor.attribute();
+            if (column != null && columnMapper.isEncrypted(column.table().name(), column.name())) {
                 this.valueDecryptor = valueTransformerFactory.decryptor(descriptor.attribute());
                 this.bytesDecryptor = bytesTransformerFactory.decryptor();
             } else {

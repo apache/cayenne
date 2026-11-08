@@ -32,7 +32,7 @@ class TableTreeQualifierStage implements TranslationStage {
         context.getTableTree().visit(node -> {
             if(node.getRelationship() == null) {
                 // translate only root qualifier here, joined tables are processed in the `TableTreeStage`
-                appendQualifier(context, node, node.getEntity().getQualifier());
+                appendQualifier(context, node, node.getEntity().qualifier());
                 appendQualifier(context, node, node.getAdditionalQualifier());
             }
         });
@@ -42,12 +42,12 @@ class TableTreeQualifierStage implements TranslationStage {
         }
     }
 
-    private static void appendQualifier(SelectTranslatorContext context, TableTreeNode node, Expression dbQualifier) {
-        if (dbQualifier == null) {
+    private static void appendQualifier(SelectTranslatorContext context, TableTreeNode node, Expression tableQualifier) {
+        if (tableQualifier == null) {
             return;
         }
-        dbQualifier = TableTreeStage.translateToDbPath(node, dbQualifier);
-        Node translatedQualifier = context.getQualifierTranslator().translatePredicate(dbQualifier);
+        tableQualifier = TableTreeStage.translateToDbPath(node, tableQualifier);
+        Node translatedQualifier = context.getQualifierTranslator().translatePredicate(tableQualifier);
         if (translatedQualifier != null) {
             context.appendQualifierNode(translatedQualifier);
         }

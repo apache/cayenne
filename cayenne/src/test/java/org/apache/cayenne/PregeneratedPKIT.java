@@ -21,7 +21,7 @@ package org.apache.cayenne;
 
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.compiled.CompiledTable;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
@@ -71,12 +71,13 @@ public class PregeneratedPKIT {
     }
 
     void updateId(DataContext context, ObjectId id) throws Exception {
-        DbEntity entity = context.getEntityResolver().getDbEntity("ARTIST");
-        DataNode node = context.getChannel().getDataDomain().lookupDataNode(entity.getDataMap());
+        CompiledTable table = context.getMapping().schema().table("ARTIST");
+        DataNode node = context.getChannel().getDataDomain().lookupDataNode(table.map());
 
         Object pk = node.getPkGenerator().generatePk(
                 node,
-                entity.getPrimaryKeys().iterator().next());
+                table.primaryKey().iterator().next());
+
         id.getReplacementIdMap().put(Artist.ARTIST_ID_PK_COLUMN, pk);
     }
 }

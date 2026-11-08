@@ -21,8 +21,7 @@ package org.apache.cayenne.access.translator.select;
 
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.exp.Expression;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.reflect.ClassDescriptor;
+import org.apache.cayenne.map.compiled.CompiledEntity;
 
 /**
  * @since 4.2
@@ -36,10 +35,9 @@ class QualifierTranslationStage implements TranslationStage {
         Expression expression = context.getSelect().where();
 
         // Attaching Obj entity's qualifier
-        ObjEntity entity = context.getSelect().objEntity();
+        CompiledEntity entity = context.getSelect().entity();
         if (entity != null) {
-            ClassDescriptor descriptor = context.getSelect().classDescriptor();
-            Expression entityQualifier = descriptor.getEntityInheritanceTree().qualifierForEntityAndSubclasses();
+            Expression entityQualifier = entity.qualifier();
             if (entityQualifier != null) {
                 expression = expression == null ? entityQualifier : expression.andExp(entityQualifier);
             }

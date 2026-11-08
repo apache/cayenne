@@ -22,7 +22,7 @@ package org.apache.cayenne.dba.sqlserver;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.StatementContext;
 import org.apache.cayenne.access.jdbc.DataNodeBatchAction;
-import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.compiled.CompiledColumn;
 import org.apache.cayenne.query.resolved.InsertBatch;
 import org.apache.cayenne.access.translator.TranslatedBatch;
 
@@ -68,7 +68,7 @@ public class SQLServerBatchAction extends DataNodeBatchAction {
 	protected void setIdentityInsert(Connection connection, boolean on) throws SQLException {
 
 		String flag = on ? " ON" : " OFF";
-		String configSQL = "SET IDENTITY_INSERT " + query.dbEntity().getFullyQualifiedName() + flag;
+		String configSQL = "SET IDENTITY_INSERT " + query.table().fullyQualifiedName() + flag;
 
 		dataNode.getSqlLogger().logMessage(configSQL);
 
@@ -86,13 +86,13 @@ public class SQLServerBatchAction extends DataNodeBatchAction {
 			return false;
 		}
 
-		if (!(query instanceof InsertBatch) || query.dbEntity() == null) {
+		if (!(query instanceof InsertBatch) || query.table() == null) {
 			return false;
 		}
 
 		// find identity attributes
-		for (DbAttribute attribute : query.dbEntity().getAttributes()) {
-			if (attribute.isGenerated()) {
+		for (CompiledColumn column : query.table().columns()) {
+			if (column.isGenerated()) {
 				return true;
 			}
 		}

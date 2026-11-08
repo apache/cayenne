@@ -22,7 +22,6 @@ package org.apache.cayenne.reflect.generic;
 import org.apache.cayenne.access.types.ValueObjectType;
 import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.map.ObjAttribute;
 
 import java.util.Objects;
 
@@ -40,8 +39,8 @@ public class DefaultValueComparisonStrategyFactory implements ValueComparisonStr
     }
 
     @Override
-    public ValueComparisonStrategy<Object> getStrategy(ObjAttribute attribute) {
-        ValueObjectType<?, ?> valueObjectType = valueObjectTypeRegistry.getValueType(attribute.getJavaClass());
+    public ValueComparisonStrategy<Object> getStrategy(Class<?> valueType) {
+        ValueObjectType<?, ?> valueObjectType = valueObjectTypeRegistry.getValueType(valueType);
         if(valueObjectType == null) {
             return DEFAULT_STRATEGY;
         } else {

@@ -25,7 +25,7 @@ import java.util.Map;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.compiled.CompiledColumn;
 import org.apache.cayenne.query.resolved.ResolvedQuery;
 
 /**
@@ -36,18 +36,18 @@ import org.apache.cayenne.query.resolved.ResolvedQuery;
  */
 class SimpleIdIncrementalFaultList<E> extends IncrementalFaultList<E> {
 
-    protected DbAttribute pk;
+    protected CompiledColumn pk;
 
     SimpleIdIncrementalFaultList(DataContext dataContext, ResolvedQuery resolved, int maxFetchSize, List<?> data) {
         super(dataContext, resolved, maxFetchSize, data);
 
-        Collection<DbAttribute> pks = rootEntity.getDbEntity().getPrimaryKeys();
+        Collection<CompiledColumn> pks = rootEntity.table().primaryKey();
         if (pks.size() != 1) {
             throw new IllegalArgumentException(
                     "Expected a single column primary key, instead got "
                             + pks.size()
                             + ". ObjEntity: "
-                            + rootEntity.getName());
+                            + rootEntity.name());
         }
 
         pk = pks.iterator().next();
@@ -65,7 +65,7 @@ class SimpleIdIncrementalFaultList<E> extends IncrementalFaultList<E> {
 
     @Override
     protected Expression buildIdQualifier(Object id) {
-        return ExpressionFactory.matchDbExp(pk.getName(), id);
+        return ExpressionFactory.matchDbExp(pk.name(), id);
     }
 
     class SingleIdPersistentListHelper extends
@@ -83,7 +83,7 @@ class SimpleIdIncrementalFaultList<E> extends IncrementalFaultList<E> {
                 Map<String, Object> idSnapshot = persistent.getObjectId().getIdSnapshot();
 
                 return idSnapshot.size() == 1
-                        && objectInTheList.equals(idSnapshot.get(pk.getName()));
+                        && objectInTheList.equals(idSnapshot.get(pk.name()));
             }
         }
 
@@ -97,7 +97,7 @@ class SimpleIdIncrementalFaultList<E> extends IncrementalFaultList<E> {
             Map<String, Object> idSnapshot = persistent.getObjectId().getIdSnapshot();
 
             return idSnapshot.size() == 1
-                    && objectInTheList.equals(idSnapshot.get(pk.getName()));
+                    && objectInTheList.equals(idSnapshot.get(pk.name()));
         }
     }
 
@@ -118,7 +118,7 @@ class SimpleIdIncrementalFaultList<E> extends IncrementalFaultList<E> {
 
                 Map<?, ?> map = (Map<?, ?>) object;
 
-                return objectInTheList.equals(map.get(pk.getName()));
+                return objectInTheList.equals(map.get(pk.name()));
             }
 
             return false;
@@ -132,7 +132,7 @@ class SimpleIdIncrementalFaultList<E> extends IncrementalFaultList<E> {
             }
 
             Map<?, ?> map = (Map<?, ?>) object;
-            return objectInTheList.equals(map.get(pk.getName()));
+            return objectInTheList.equals(map.get(pk.name()));
         }
     }
 }

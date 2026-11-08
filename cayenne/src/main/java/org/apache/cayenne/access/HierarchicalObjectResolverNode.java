@@ -22,7 +22,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.reflect.ClassDescriptor;
+import org.apache.cayenne.map.compiled.CompiledEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,9 +32,9 @@ class HierarchicalObjectResolverNode extends PrefetchObjectResolver {
 
     private PrefetchProcessorNode node;
 
-    HierarchicalObjectResolverNode(PrefetchProcessorNode node, DataContext context, ClassDescriptor descriptor,
+    HierarchicalObjectResolverNode(PrefetchProcessorNode node, DataContext context, CompiledEntity entity,
             boolean refresh, Map<ObjectId, Persistent> seen) {
-        super(context, descriptor, refresh, seen);
+        super(context, entity, refresh, seen);
         this.node = node;
     }
 
@@ -50,12 +50,12 @@ class HierarchicalObjectResolverNode extends PrefetchObjectResolver {
         for (DataRow row : rows) {
 
             // determine entity to use
-            ClassDescriptor classDescriptor = descriptorResolutionStrategy.descriptorForRow(row);
+            CompiledEntity rowEntity = entityResolutionStrategy.entityForRow(row);
 
-            MergePlan plan = planFor(classDescriptor);
-            ObjectId anId = createObjectId(row, classDescriptor, plan);
+            MergePlan plan = planFor(rowEntity);
+            ObjectId anId = createObjectId(row, rowEntity, plan);
 
-            Persistent object = objectFromDataRow(row, anId, classDescriptor, plan);
+            Persistent object = objectFromDataRow(row, anId, rowEntity, plan);
             if (object == null) {
                 throw new CayenneRuntimeException("Can't build Object from row: %s", row);
             }

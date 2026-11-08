@@ -21,11 +21,10 @@ package org.apache.cayenne.access.dbsync;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.log.SQLLogger;
-import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.compiled.CompiledSchema;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.Collection;
 
 /**
  * Defines a strategy to update a DB schema to match the DataMaps of a {@link DataNode}. Run once per node, as a part
@@ -36,9 +35,12 @@ import java.util.Collection;
 public interface SchemaUpdateStrategy {
 
     /**
-     * Checks and possibly updates the schema of the database behind the DataSource to match the DataMaps.
+     * Checks and possibly updates the schema of the database behind the DataSource to match the named maps of the
+     * compiled schema, which are the maps of the node. A strategy named in a node descriptor is created through DI,
+     * so it may inject the services it needs, such as the SQLLogger.
      *
      * @since 6.0
      */
-    void updateSchema(DbAdapter adapter, DataSource dataSource, Collection<DataMap> dataMaps, SQLLogger logger) throws SQLException;
+    void updateSchema(DbAdapter adapter, DataSource dataSource, CompiledSchema schema, String... dataMaps)
+            throws SQLException;
 }

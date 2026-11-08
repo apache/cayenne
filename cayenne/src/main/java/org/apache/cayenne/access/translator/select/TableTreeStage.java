@@ -30,8 +30,8 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.DbPathExp;
 import org.apache.cayenne.exp.PathExp;
 import org.apache.cayenne.exp.path.CayennePath;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbJoin;
+import org.apache.cayenne.map.compiled.CompiledColumn;
+import org.apache.cayenne.map.compiled.CompiledColumnPair;
 
 import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.*;
 
@@ -63,13 +63,13 @@ class TableTreeStage implements TranslationStage {
     }
 
     private NodeBuilder getJoinExpression(SelectTranslatorContext context, TableTreeNode node) {
-        List<DbJoin> joins = node.getRelationship().getJoins();
+        List<CompiledColumnPair> joins = node.getRelationship().columnPairs();
 
         ExpressionNodeBuilder expressionNodeBuilder = null;
         String sourceAlias = context.getTableTree().aliasForPath(node.getAttributePath().parent());
-        for (DbJoin dbJoin : joins) {
-            DbAttribute src = dbJoin.getSource();
-            DbAttribute dst = dbJoin.getTarget();
+        for (CompiledColumnPair dbJoin : joins) {
+            CompiledColumn src = dbJoin.source();
+            CompiledColumn dst = dbJoin.target();
             ExpressionNodeBuilder joinExp = table(sourceAlias).column(src)
                     .eq(table(node.getTableAlias()).column(dst));
 
@@ -81,7 +81,7 @@ class TableTreeStage implements TranslationStage {
         }
 
         // append entity qualifiers
-        expressionNodeBuilder = appendQualifier(expressionNodeBuilder, context, node, node.getEntity().getQualifier());
+        expressionNodeBuilder = appendQualifier(expressionNodeBuilder, context, node, node.getEntity().qualifier());
         expressionNodeBuilder = appendQualifier(expressionNodeBuilder, context, node, node.getAdditionalQualifier());
         return expressionNodeBuilder;
     }
@@ -89,22 +89,22 @@ class TableTreeStage implements TranslationStage {
     private static ExpressionNodeBuilder appendQualifier(ExpressionNodeBuilder joinBuilder,
                                         SelectTranslatorContext context,
                                         TableTreeNode node,
-                                        Expression dbQualifier) {
-        if (dbQualifier == null) {
+                                        Expression tableQualifier) {
+        if (tableQualifier == null) {
             return joinBuilder;
         }
 
-        dbQualifier = translateToDbPath(node, dbQualifier);
+        tableQualifier = translateToDbPath(node, tableQualifier);
         // mark table tree node as current to process qualifier
         context.getTableTree().setActiveNode(node);
-        Node translatedQualifier = context.getQualifierTranslator().translatePredicate(dbQualifier);
+        Node translatedQualifier = context.getQualifierTranslator().translatePredicate(tableQualifier);
         context.getTableTree().setActiveNode(null);
         return translatedQualifier == null ? joinBuilder : joinBuilder.and(() -> translatedQualifier);
     }
 
-    static Expression translateToDbPath(TableTreeNode node, Expression dbQualifier) {
+    static Expression translateToDbPath(TableTreeNode node, Expression tableQualifier) {
         CayennePath pathToRoot = node.getAttributePath();
-        dbQualifier = dbQualifier.transform(input -> {
+        tableQualifier = tableQualifier.transform(input -> {
             // here we are not only marking path, but changing ObjPath to DB
             if (input instanceof PathExp) {
                 // we do not really care about the parent path, as we do not need to join any new table here.
@@ -118,6 +118,6 @@ class TableTreeStage implements TranslationStage {
             }
             return input;
         });
-        return dbQualifier;
+        return tableQualifier;
     }
 }

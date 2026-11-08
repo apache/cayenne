@@ -26,9 +26,9 @@ import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.access.ObjectStoreGraphDiff;
 import org.apache.cayenne.graph.ArcId;
 import org.apache.cayenne.graph.GraphChangeHandler;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.map.compiled.CompiledMapping;
+import org.apache.cayenne.map.compiled.CompiledEntity;
+import org.apache.cayenne.map.compiled.CompiledRelationship;
 
 /**
  * A processor of ObjectStore indirect changes, such as flattened relationships
@@ -38,11 +38,11 @@ import org.apache.cayenne.map.ObjRelationship;
  */
 final class DataDomainIndirectDiffBuilder implements GraphChangeHandler {
 
-    private final EntityResolver resolver;
+    private final CompiledMapping mapping;
     private Collection<ObjectId> indirectModifications;
 
-    DataDomainIndirectDiffBuilder(EntityResolver resolver) {
-        this.resolver = resolver;
+    DataDomainIndirectDiffBuilder(CompiledMapping mapping) {
+        this.mapping = mapping;
     }
 
     void processChanges(ObjectStoreGraphDiff allChanges) {
@@ -66,8 +66,8 @@ final class DataDomainIndirectDiffBuilder implements GraphChangeHandler {
     }
 
     private void processArcChange(ObjectId id, ArcId arcId) {
-        ObjEntity entity = resolver.getObjEntity(id.getEntityName());
-        ObjRelationship relationship = entity.getRelationship(arcId.getForwardArc());
+        CompiledEntity entity = mapping.entity(id.getEntityName());
+        CompiledRelationship relationship = entity.relationship(arcId.getForwardArc());
 
         if (relationship != null && !relationship.isForeignKey()) {
             // do not record temporary id mods...

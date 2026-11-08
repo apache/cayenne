@@ -28,6 +28,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.sql.Types;
 
+import static org.apache.cayenne.dba.AdhocTables.compile;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -47,7 +48,7 @@ public class HSQLDBAdapterIT {
         dblPrec.setMaxLength(22);
         e.addAttribute(dblPrec);
         
-        String sql = adapter.createTable(e);
+        String sql = adapter.createTable(compile(e));
 
         // CAY-1095.
         // Make sure the double type is preserved, but not precision constraints, due to a bug in HSQLDB.
@@ -65,7 +66,7 @@ public class HSQLDBAdapterIT {
         dblPrec.setType(Types.INTEGER);
         e.addAttribute(dblPrec);
         
-        String sql = adapter.createTable(e);
+        String sql = adapter.createTable(compile(e));
 
         assertEquals(0,sql.indexOf("CREATE CACHED TABLE"));
     }
@@ -82,6 +83,6 @@ public class HSQLDBAdapterIT {
         e.addAttribute(c);
 
         // HSQLDB accepts a length-free VARCHAR
-        assertEquals("CREATE CACHED TABLE Test (c VARCHAR NULL)", adapter.createTable(e));
+        assertEquals("CREATE CACHED TABLE Test (c VARCHAR NULL)", adapter.createTable(compile(e)));
     }
 }

@@ -23,21 +23,18 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.map.DbJoin;
-import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.EntityInheritanceTree;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.reflect.ArcProperty;
-import org.apache.cayenne.reflect.AttributeProperty;
-import org.apache.cayenne.reflect.ClassDescriptor;
-import org.apache.cayenne.reflect.PropertyDescriptor;
-import org.apache.cayenne.reflect.ToManyProperty;
-import org.apache.cayenne.reflect.ToOneProperty;
+import org.apache.cayenne.map.compiled.CompiledColumnPair;
+import org.apache.cayenne.map.compiled.CompiledJoin;
+import org.apache.cayenne.map.compiled.CompiledEmbeddedAttribute;
+import org.apache.cayenne.map.compiled.CompiledAttribute;
+import org.apache.cayenne.map.compiled.CompiledEntity;
+import org.apache.cayenne.map.compiled.CompiledRelationship;
+import org.apache.cayenne.map.compiled.CompiledToManyRelationship;
+import org.apache.cayenne.map.compiled.CompiledToOneRelationship;
 import org.apache.cayenne.util.Util;
 
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * DataRowUtils contains a number of static methods to work with DataRows. This is a
@@ -52,7 +49,7 @@ class DataRowUtils {
      * and to-one relationships will be merged. In case an object is already modified,
      * modified properties will not be overwritten.
      *
-     * @param plan the plan of the object's descriptor
+     * @param plan the plan of the object's entity
      */
     static void mergeObjectWithSnapshot(
             DataContext context,
@@ -64,8 +61,8 @@ class DataRowUtils {
 
         if (state == PersistenceState.HOLLOW) {
             refreshObjectWithSnapshot(plan, object, snapshot, true);
-        } else if (state != PersistenceState.COMMITTED && !plan.descriptor.getEntity().isReadOnly()) {
-            forceMergeWithSnapshot(context, plan.descriptor, object, snapshot);
+        } else if (state != PersistenceState.COMMITTED && !plan.entity.isReadOnly()) {
+            forceMergeWithSnapshot(context, plan.entity, object, snapshot);
         } else {
             // do not invalidate relationships: to-many lists might have just been prefetched, and a to-one target
             // whose FK did not change is still valid
@@ -79,7 +76,7 @@ class DataRowUtils {
      * With 'invalidateRelationships' all relationships are turned into faults. Otherwise to-many relationships
      * are left alone, and a resolved to-one target is kept when the snapshot FK still points to it.
      *
-     * @param plan the plan of the object's descriptor
+     * @param plan the plan of the object's entity
      */
     static void refreshObjectWithSnapshot(
             MergePlan plan,
@@ -89,37 +86,39 @@ class DataRowUtils {
 
         boolean isPartialSnapshot = false;
 
+        // the embeddables must exist before their attributes are written
+        for (CompiledEmbeddedAttribute embedded : plan.embeddedAttributes) {
+            embedded.injectValueHolder(object);
+        }
+
         DataRowLayout.Reader reader = plan.reader;
-        AttributeProperty[] attributes = plan.attributes;
+        CompiledAttribute[] attributes = plan.attributes;
         for (int i = 0; i < attributes.length; i++) {
-            AttributeProperty property = attributes[i];
+            CompiledAttribute attribute = attributes[i];
             int column = plan.attributeColumns[i];
             Object value = reader.get(snapshot, column);
 
-            // the embeddable of an embedded attribute must exist before the attribute is written; a no-op otherwise
-            property.injectValueHolder(object);
-
             // a null value is valid, so the column is only checked for when the value is null
             if (value != null || reader.has(snapshot, column)) {
-                property.writePropertyDirectly(object, null, value);
-            } else if (property.getAttribute().isLazy()) {
-                property.writePropertyDirectly(object, null, new AttributeFault(property));
+                attribute.writePropertyDirectly(object, null, value);
+            } else if (attribute.isLazy()) {
+                attribute.writePropertyDirectly(object, null, attribute.fault());
             } else {
-                property.writePropertyDirectly(object, null, null);
+                attribute.writePropertyDirectly(object, null, null);
                 isPartialSnapshot = true;
             }
         }
 
         if (invalidateRelationships) {
             // "to many" relationships have no information to collect from snapshot
-            for (ToManyProperty property : plan.toManys) {
-                property.invalidate(object);
+            for (CompiledToManyRelationship toMany : plan.toManys) {
+                toMany.invalidate(object);
             }
-            for (ToOneProperty property : plan.toOnes) {
-                property.invalidate(object);
+            for (CompiledToOneRelationship toOne : plan.toOnes) {
+                toOne.invalidate(object);
             }
         } else {
-            ToOneProperty[] toOnes = plan.toOnes;
+            CompiledToOneRelationship[] toOnes = plan.toOnes;
             for (int i = 0; i < toOnes.length; i++) {
                 refreshToOne(toOnes[i], object, snapshot, reader, plan.toOneFkColumns[i], plan.toOneTargetNames[i]);
             }
@@ -140,15 +139,15 @@ class DataRowUtils {
      *                    to-dependent-PK relationship is defined by the target rows, so it is invalidated as before
      * @param targetNames the target PK column of each join
      */
-    private static void refreshToOne(ToOneProperty property, Persistent object, DataRow snapshot,
+    private static void refreshToOne(CompiledToOneRelationship toOne, Persistent object, DataRow snapshot,
                                      DataRowLayout.Reader reader, int[] fkColumns, String[] targetNames) {
-        Object current = property.readPropertyDirectly(object);
-        if (property.isFaultValue(current)) {
+        Object current = toOne.readPropertyDirectly(object);
+        if (toOne.isFaultValue(current)) {
             return;
         }
 
         if (fkColumns == null) {
-            property.invalidate(object);
+            toOne.invalidate(object);
             return;
         }
 
@@ -161,23 +160,23 @@ class DataRowUtils {
             if (fk == null) {
                 if (!reader.has(snapshot, fkColumns[i])) {
                     // partial snapshot
-                    property.invalidate(object);
+                    toOne.invalidate(object);
                     return;
                 }
                 nullFks++;
             } else if (currentPk == null || !Util.idValueEquals(fk, currentPk.get(targetNames[i]))) {
-                property.invalidate(object);
+                toOne.invalidate(object);
                 return;
             }
         }
 
         if (nullFks == fkColumns.length) {
             if (current != null) {
-                property.writePropertyDirectly(object, current, null);
+                toOne.writePropertyDirectly(object, current, null);
             }
         } else if (nullFks > 0) {
             // a multi-column FK that is only partially null is inconclusive
-            property.invalidate(object);
+            toOne.invalidate(object);
         }
     }
 
@@ -187,7 +186,7 @@ class DataRowUtils {
      */
     static void forceMergeWithSnapshot(
             DataContext context,
-            ClassDescriptor descriptor,
+            CompiledEntity entity,
             Persistent object,
             Map<String, Object> snapshot) {
 
@@ -196,28 +195,29 @@ class DataRowUtils {
                 .getChangesByObjectId()
                 .get(object.getObjectId());
 
+        // an embeddable the application reset to null is recreated before the snapshot is merged into it
+        for (CompiledEmbeddedAttribute embedded : entity.embeddedAttributes()) {
+            embedded.injectValueHolder(object);
+        }
+        for (CompiledAttribute attribute : entity.attributes()) {
+            mergeAttribute(attribute, object, snapshot, diff);
+        }
+
         // to-many relationships have nothing to merge
-        for (PropertyDescriptor property : descriptor.getProperties()) {
-            switch (property) {
-                case AttributeProperty attribute -> {
-                    // an embeddable the application reset to null is recreated before the snapshot is merged into it
-                    attribute.injectValueHolder(object);
-                    mergeAttribute(attribute, object, snapshot, diff);
-                }
-                case ToOneProperty toOne -> mergeToOne(context, toOne, object, snapshot, diff);
-                default -> {
-                }
+        for (CompiledRelationship relationship : entity.relationships()) {
+            if (relationship instanceof CompiledToOneRelationship toOne) {
+                mergeToOne(context, toOne, object, snapshot, diff);
             }
         }
     }
 
     private static void mergeAttribute(
-            AttributeProperty property,
+            CompiledAttribute attribute,
             Persistent object,
             Map<String, Object> snapshot,
             ObjectDiff diff) {
 
-        String dbAttrPath = property.getAttribute().getDbAttributePath().value();
+        String dbAttrPath = attribute.dbPath().value();
 
         // supports merging of partial snapshots...
         // check for null is cheaper than double lookup for a key...
@@ -225,68 +225,67 @@ class DataRowUtils {
         Object newValue = snapshot.get(dbAttrPath);
         if (newValue != null || snapshot.containsKey(dbAttrPath)) {
 
-            Object curValue = property.readPropertyDirectly(object);
-            Object oldValue = diff != null ? diff.getSnapshotValue(property.getName()) : null;
+            Object curValue = attribute.readPropertyDirectly(object);
+            Object oldValue = diff != null ? diff.getSnapshotValue(attribute.name()) : null;
 
             // if value not modified, update it from snapshot, otherwise leave it alone
-            if (property.equals(curValue, oldValue) && !property.equals(newValue, curValue)) {
-                property.writePropertyDirectly(object, oldValue, newValue);
+            if (attribute.equals(curValue, oldValue) && !attribute.equals(newValue, curValue)) {
+                attribute.writePropertyDirectly(object, oldValue, newValue);
             }
         }
     }
 
     private static void mergeToOne(
             DataContext context,
-            ToOneProperty property,
+            CompiledToOneRelationship toOne,
             Persistent object,
             Map<String, Object> snapshot,
             ObjectDiff diff) {
 
-        ObjRelationship relationship = property.getRelationship();
-        DbRelationship dbRelationship = relationship.getDbRelationships().getFirst();
+        CompiledJoin join = toOne.joins().getFirst();
 
         // the inverse side of a one-to-one is left alone: the snapshot says nothing about it
-        if (!dbRelationship.isToPrimaryKey()) {
+        if (!join.isToPrimaryKey()) {
             return;
         }
 
         // if value not modified, update it from snapshot, otherwise leave it alone
-        if (isToOneTargetModified(property, object, diff)) {
+        if (isToOneTargetModified(toOne, object, diff)) {
             return;
         }
 
         // must check before creating ObjectId because of partial snapshots
-        if (!hasFK(dbRelationship, snapshot)) {
+        if (!hasFK(join, snapshot)) {
             return;
         }
 
         // the first hop FK doesn't determine the target of a flattened to-one, so it is turned into a fault
-        if (relationship.isFlattened()) {
-            property.invalidate(object);
+        if (toOne.isFlattened()) {
+            toOne.invalidate(object);
             return;
         }
 
-        ObjectId id = ObjectSnapshots.targetId(relationship, snapshot);
+        ObjectId id = ObjectSnapshots.targetId(toOne, snapshot);
 
         if (diff == null
-                || !diff.containsArcSnapshot(relationship.getName())
-                || !property.equals(id, diff.getArcSnapshotValue(relationship.getName()))) {
+                || !diff.containsArcSnapshot(toOne.name())
+                || !Objects.equals(id, diff.getArcSnapshotValue(toOne.name()))) {
 
             if (id == null) {
-                property.writeProperty(object, null, null);
-            } else if (!isTargetDeterminedByFK(relationship, context.getEntityResolver())) {
+                toOne.writeProperty(object, null, null);
+            } else if (!isTargetDeterminedByFK(toOne)) {
                 // we can't use 'localObject' if relationship is optional or inheritance is involved
                 // .. must turn to fault instead
-                property.invalidate(object);
+                toOne.invalidate(object);
             } else {
-                property.writeProperty(object, null, context.findOrCreateObject(id));
+                toOne.writeProperty(object, null, context.findOrCreateObject(id));
             }
         }
     }
 
-    static boolean hasFK(DbRelationship relationship, Map<String, Object> snapshot) {
-        for (final DbJoin join : relationship.getJoins()) {
-            if (snapshot.get(join.getSourceName()) == null) {
+    static boolean hasFK(CompiledJoin relationship, Map<String, Object> snapshot) {
+        for (final CompiledColumnPair join : relationship.columnPairs()) {
+            if (snapshot.get(join.source().name()) == null) {
                 return false;
             }
         }
@@ -298,10 +297,10 @@ class DataRowUtils {
      * Returns true if a non-null FK on the source fully determines the target of a relationship: the target row is
      * guaranteed to exist by referential integrity, and its entity is known. Such a target can be materialized as a
      * HOLLOW object from the FK alone, without a query. This requires the FK to be on the source side (see
-     * {@link ObjRelationship#isForeignKey()}) and referencing the target PK, no qualifier on the target entity or its
-     * super entities that could filter out an existing row, and no subclasses of the target entity.
+     * {@link CompiledRelationship#isForeignKey()}) and referencing the target PK, no qualifier on the target entity
+     * or its super entities that could filter out an existing row, and no subclasses of the target entity.
      */
-    static boolean isTargetDeterminedByFK(ObjRelationship relationship, EntityResolver entityResolver) {
+    static boolean isTargetDeterminedByFK(CompiledRelationship relationship) {
         if (!relationship.isForeignKey()) {
             return false;
         }
@@ -311,18 +310,17 @@ class DataRowUtils {
             return false;
         }
 
-        if (isQualifiedEntity(relationship.getTargetEntity())) {
+        if (isQualifiedEntity(relationship.target())) {
             return false;
         }
 
-        EntityInheritanceTree inheritanceTree = entityResolver.getInheritanceTree(relationship.getTargetEntityName());
-        return inheritanceTree == null || inheritanceTree.getChildren().isEmpty();
+        return !relationship.target().hasSubEntities();
     }
 
     // true if the entity or any of its super entities has a limiting qualifier
-    private static boolean isQualifiedEntity(ObjEntity entity) {
-        for (ObjEntity e = entity; e != null; e = e.getSuperEntity()) {
-            if (e.getDeclaredQualifier() != null) {
+    private static boolean isQualifiedEntity(CompiledEntity entity) {
+        for (CompiledEntity e = entity; e != null; e = e.superEntity()) {
+            if (e.declaredQualifier() != null) {
                 return true;
             }
         }
@@ -333,7 +331,7 @@ class DataRowUtils {
      * Checks if an object has its to-one relationship target modified in memory.
      */
     static boolean isToOneTargetModified(
-            ArcProperty property,
+            CompiledRelationship relationship,
             Persistent object,
             ObjectDiff diff) {
 
@@ -341,8 +339,8 @@ class DataRowUtils {
             return false;
         }
 
-        Object value = property.readPropertyDirectly(object);
-        if (property.isFaultValue(value)) {
+        Object value = relationship.readPropertyDirectly(object);
+        if (relationship.isFaultValue(value)) {
             return false;
         }
 
@@ -355,12 +353,13 @@ class DataRowUtils {
             return true;
         }
 
-        if (!diff.containsArcSnapshot(property.getName())) {
+        if (!diff.containsArcSnapshot(relationship.name())) {
             return false;
         }
 
-        ObjectId targetId = diff.getArcSnapshotValue(property.getName());
-        return !property.equals(currentId, targetId);
+        ObjectId targetId = diff.getArcSnapshotValue(relationship.name());
+        return !Objects.equals(currentId, targetId);
+
     }
 
     // not for instantiation

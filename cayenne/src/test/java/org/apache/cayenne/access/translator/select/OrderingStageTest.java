@@ -20,6 +20,7 @@
 package org.apache.cayenne.access.translator.select;
 
 import java.util.Collections;
+import java.util.List;
 
 import org.apache.cayenne.access.sqlbuilder.sqltree.ColumnNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.EmptyNode;
@@ -31,6 +32,8 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.compiled.CompiledMapping;
+import org.apache.cayenne.map.compiled.TestMappings;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.resolved.ResolvedSelect;
 import org.junit.jupiter.api.BeforeEach;
@@ -59,19 +62,18 @@ public class OrderingStageTest {
         objAttribute.setDbAttributePath("path");
         objEntity.addAttribute(objAttribute);
 
-        DataMap dataMap = new DataMap();
+        DataMap dataMap = new DataMap("mock");
         dataMap.addObjEntity(objEntity);
         dataMap.addDbEntity(dbEntity);
+        CompiledMapping mapping = TestMappings.compile(dataMap);
 
         Ordering ordering = new Ordering("path");
         ordering.setDescending();
 
         ResolvedSelect query = new MockResolvedSelectBuilder()
                 .withOrderings(Collections.singleton(ordering))
-                
-                        .withDbEntity(dbEntity)
-                        .withObjEntity(objEntity)
-                        
+                .withDbEntity(mapping.schema().table("mock"))
+                .withObjEntity(mapping.entity("mock"))
                 .withDistinct( true )
                 .build();
         context = new MockSelectTranslatorContext(query);

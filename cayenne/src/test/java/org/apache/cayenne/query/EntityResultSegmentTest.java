@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
-import org.apache.cayenne.reflect.PersistentDescriptor;
+import org.apache.cayenne.map.compiled.CompiledEntity;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
 
 public class EntityResultSegmentTest {
     private final List<String> expectedColumnPath = List.of("key1", "key2");
@@ -36,7 +37,7 @@ public class EntityResultSegmentTest {
             new ConcurrentHashMap<>(Map.of("key1", "value1", "key2", "value2"));
 
     private final EntityResultSegment resultSegment =
-            new EntityResultSegment(new PersistentDescriptor(), fields, fields.size());
+            new EntityResultSegment(mock(CompiledEntity.class), fields, fields.size());
 
     @Test
     public void columnPath() {

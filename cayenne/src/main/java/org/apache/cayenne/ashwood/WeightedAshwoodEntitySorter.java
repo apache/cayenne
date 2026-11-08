@@ -18,83 +18,121 @@
  ****************************************************************/
 package org.apache.cayenne.ashwood;
 
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.compiled.CompiledTable;
+import org.apache.cayenne.map.compiled.CompiledMapping;
+import org.apache.cayenne.map.compiled.CompiledEntity;
 
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
- * EntitySorter that takes into account entity "weights", and otherwise delegating to
- * another (topological) sorter.
- * 
+ * A sorter of tables and entities that takes into account entity "weights" (see {@link SortWeight}), and otherwise
+ * follows the {@link CompiledTable#dependencyIndex() dependency order} of the tables. As the compiled mapping
+ * is immutable, a sorter is built for a mapping and indexes the weights once.
+ *
  * @since 3.1, since 4.0 moved to cayenne-server from cayenne-lifecycle
  */
-public class WeightedAshwoodEntitySorter extends AshwoodEntitySorter {
+public class WeightedAshwoodEntitySorter {
 
-    private final Comparator<DbEntity> weightedDbEntityComparator;
-    private final Comparator<ObjEntity> weightedObjEntityComparator;
+    protected final CompiledMapping mapping;
+    protected final Comparator<CompiledTable> dbEntityComparator;
+    protected final Map<CompiledTable, Integer> entityWeights;
 
-    protected volatile Map<DbEntity, Integer> entityWeights;
+    private final Comparator<CompiledTable> weightedDbEntityComparator;
+    private final Comparator<CompiledEntity> weightedObjEntityComparator;
 
-    public WeightedAshwoodEntitySorter(EntityResolver entityResolver) {
-        super(entityResolver);
+    /**
+     * @since 6.0
+     */
+    public WeightedAshwoodEntitySorter(CompiledMapping mapping) {
+        this.mapping = Objects.requireNonNull(mapping);
+        this.dbEntityComparator = Comparator.comparingInt(CompiledTable::dependencyIndex);
+        this.entityWeights = new HashMap<>();
 
-        // the comparators are stateless, reading the sorter fields only when actually comparing, so creating them
-        // after super() (i.e. after the initial indexing) is safe
+        for (CompiledEntity entity : mapping.entities()) {
+            addWeightForEntity(entity);
+        }
+
         this.weightedDbEntityComparator = new WeightedDbEntityComparator();
         this.weightedObjEntityComparator = new WeightedObjEntityComparator();
     }
 
-    @Override
-    public synchronized void reindex() {
-        super.reindex();
-
-        entityWeights = new HashMap<>();
-
-        for (ObjEntity entity : entityResolver.getObjEntities()) {
-            addWeightForEntity(entity);
+    protected void addWeightForEntity(CompiledEntity entity) {
+        // an unbound mapping has no classes, and hence no annotations
+        Class<?> type = entity.objectClass();
+        if (type == null) {
+            return;
         }
-    }
 
-    protected void addWeightForEntity(ObjEntity entity) {
-        Class<?> type = entityResolver
-                .getClassDescriptor(entity.getName())
-                .getObjectClass();
         SortWeight weight = type.getAnnotation(SortWeight.class);
         if (weight != null) {
-            entityWeights.put(entity.getDbEntity(), weight.value());
+            entityWeights.put(entity.table(), weight.value());
         }
     }
 
-    @Override
-    protected Comparator<DbEntity> getDbEntityComparator(boolean dependantFirst) {
-        Comparator<DbEntity> c = weightedDbEntityComparator;
+    /**
+     * Sorts the tables in place, in the order of insertion, or, if "deleteOrder" is true, in the order of deletion.
+     *
+     * @since 6.0
+     */
+    public void sortDbEntities(List<CompiledTable> tables, boolean deleteOrder) {
+        tables.sort(getDbEntityComparator(deleteOrder));
+    }
+
+    /**
+     * Sorts the entities in place, in the order of insertion, or, if "deleteOrder" is true, in the order of deletion.
+     *
+     * @since 6.0
+     */
+    public void sortObjEntities(List<CompiledEntity> entities, boolean deleteOrder) {
+        entities.sort(getObjEntityComparator(deleteOrder));
+    }
+
+    /**
+     * Returns a comparator ordering the tables in the order of insertion.
+     *
+     * @since 6.0
+     */
+    public Comparator<CompiledTable> getDbEntityComparator() {
+        return weightedDbEntityComparator;
+    }
+
+    /**
+     * Returns a comparator ordering the entities in the order of insertion.
+     *
+     * @since 6.0
+     */
+    public Comparator<CompiledEntity> getObjEntityComparator() {
+        return weightedObjEntityComparator;
+    }
+
+    protected Comparator<CompiledTable> getDbEntityComparator(boolean dependantFirst) {
+        Comparator<CompiledTable> c = weightedDbEntityComparator;
         if (dependantFirst) {
             c = c.reversed();
         }
         return c;
     }
 
-    @Override
-    protected Comparator<ObjEntity> getObjEntityComparator(boolean dependantFirst) {
-        Comparator<ObjEntity> c = weightedObjEntityComparator;
+    protected Comparator<CompiledEntity> getObjEntityComparator(boolean dependantFirst) {
+        Comparator<CompiledEntity> c = weightedObjEntityComparator;
         if (dependantFirst) {
             c = c.reversed();
         }
         return c;
     }
 
-    private int getWeight(DbEntity e) {
+    private int getWeight(CompiledTable e) {
         Integer w = entityWeights.get(e);
         return w != null ? w : 1;
     }
 
-    private final class WeightedDbEntityComparator implements Comparator<DbEntity> {
+    private final class WeightedDbEntityComparator implements Comparator<CompiledTable> {
 
-        public int compare(DbEntity t1, DbEntity t2) {
+        public int compare(CompiledTable t1, CompiledTable t2) {
             if (t1 == t2) {
                 return 0;
             }
@@ -104,15 +142,15 @@ public class WeightedAshwoodEntitySorter extends AshwoodEntitySorter {
         }
     }
 
-    private final class WeightedObjEntityComparator implements Comparator<ObjEntity> {
+    private final class WeightedObjEntityComparator implements Comparator<CompiledEntity> {
 
-        public int compare(ObjEntity o1, ObjEntity o2) {
+        public int compare(CompiledEntity o1, CompiledEntity o2) {
             if (o1 == o2) {
                 return 0;
             }
 
-            DbEntity t1 = o1.getDbEntity();
-            DbEntity t2 = o2.getDbEntity();
+            CompiledTable t1 = o1.table();
+            CompiledTable t2 = o2.table();
 
             return weightedDbEntityComparator.compare(t1, t2);
         }

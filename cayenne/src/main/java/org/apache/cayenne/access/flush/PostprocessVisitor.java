@@ -38,9 +38,9 @@ import org.apache.cayenne.access.flush.operation.DeleteDbRowOp;
 import org.apache.cayenne.access.flush.operation.InsertDbRowOp;
 import org.apache.cayenne.access.flush.operation.UpdateDbRowOp;
 import org.apache.cayenne.exp.DbPathExp;
-import org.apache.cayenne.reflect.ArcProperty;
-import org.apache.cayenne.reflect.ClassDescriptor;
-import org.apache.cayenne.reflect.ToManyMapProperty;
+import org.apache.cayenne.map.compiled.CompiledEntity;
+import org.apache.cayenne.map.compiled.CompiledRelationship;
+import org.apache.cayenne.map.compiled.CompiledToManyRelationship;
 
 /**
  * @since 4.2
@@ -91,9 +91,9 @@ class PostprocessVisitor implements DbRowOpVisitor<Void> {
         updatedSnapshots.put(dbRow.getObject().getObjectId(), dataRow);
 
         // update Map reverse relationships
-        ClassDescriptor descriptor = context.getEntityResolver().getClassDescriptor(dbRow.getChangeId().getEntityName());
-        for (ArcProperty arc : descriptor.getMapArcProperties()) {
-            ToManyMapProperty reverseArc = (ToManyMapProperty) arc.getComplementaryReverseArc();
+        CompiledEntity entity = context.getMapping().entity(dbRow.getChangeId().getEntityName());
+        for (CompiledRelationship arc : entity.mapRelationships()) {
+            CompiledToManyRelationship reverseArc = (CompiledToManyRelationship) arc.reverse();
 
             // must resolve faults... hopefully for to-one this will not cause extra fetches...
             Object source = arc.readProperty(dbRow.getObject());
@@ -126,10 +126,10 @@ class PostprocessVisitor implements DbRowOpVisitor<Void> {
         return updatedSnapshots == null ? Collections.emptyMap() : updatedSnapshots;
     }
 
-    private void remapTarget(ToManyMapProperty property, Object resolvedMap, Object target) {
+    private void remapTarget(CompiledToManyRelationship toMany, Object resolvedMap, Object target) {
         @SuppressWarnings("unchecked")
         Map<Object, Object> map = (Map<Object, Object>) resolvedMap;
-        Object newKey = property.getMapKey(target);
+        Object newKey = toMany.mapKey(target);
         Object currentValue = map.get(newKey);
 
         if (currentValue == target) {

@@ -25,10 +25,9 @@ import java.util.List;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.EntitySorter;
-import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.compiled.CompiledTable;
+import org.apache.cayenne.map.compiled.CompiledMapping;
+import org.apache.cayenne.map.compiled.CompiledEntity;
 
 /**
  * @since 4.2
@@ -36,61 +35,63 @@ import org.apache.cayenne.map.ObjEntity;
 public class DefaultDbRowOpSorter implements DbRowOpSorter {
 
     protected final Provider<DataDomain> dataDomainProvider;
-    protected volatile Comparator<DbRowOp> comparator;
+    protected final ReflexiveObjectSorter reflexiveSorter;
+
+    // the comparator of the mapping it was created for; rebuilt when the domain mapping is replaced
+    protected volatile DbRowComparator comparator;
 
     public DefaultDbRowOpSorter(@Inject Provider<DataDomain> dataDomainProvider) {
         this.dataDomainProvider = dataDomainProvider;
+        this.reflexiveSorter = new ReflexiveObjectSorter();
     }
 
     @Override
     public List<DbRowOp> sort(List<DbRowOp> dbRows) {
+        CompiledMapping mapping = dataDomainProvider.get().getMapping();
+
         // sort by id, operation type and entity relations
-        dbRows.sort(getComparator());
+        dbRows.sort(getComparator(mapping));
         // sort reflexively dependent objects
-        sortReflexive(dbRows);
+        sortReflexive(mapping, dbRows);
 
         return dbRows;
     }
 
-    protected void sortReflexive(List<DbRowOp> sortedDbRows) {
-        DataDomain dataDomain = dataDomainProvider.get();
-        EntitySorter sorter = dataDomain.getEntitySorter();
-        EntityResolver resolver = dataDomain.getEntityResolver();
-
-        DbEntity lastEntity = null;
+    protected void sortReflexive(CompiledMapping mapping, List<DbRowOp> sortedDbRows) {
+        CompiledTable lastTable = null;
         int start = 0;
         int idx = 0;
         DbRowOp lastRow = null;
         for (int i = 0; i < sortedDbRows.size(); i++) {
             DbRowOp row = sortedDbRows.get(i);
-            if (row.getEntity() != lastEntity) {
+            if (row.getEntity() != lastTable) {
                 // we do not sort update operations
-                if(lastEntity != null && !(lastRow instanceof UpdateDbRowOp) && sorter.isReflexive(lastEntity)) {
-                    ObjEntity objEntity = resolver.getObjEntity(lastRow.getObject().getObjectId().getEntityName());
+                if(lastTable != null && !(lastRow instanceof UpdateDbRowOp) && lastTable.isReflexive()) {
+                    CompiledEntity entity = mapping.entity(lastRow.getObject().getObjectId().getEntityName());
                     List<DbRowOp> reflexiveSublist = sortedDbRows.subList(start, idx);
-                    sorter.sortObjectsForEntity(objEntity, reflexiveSublist, lastRow instanceof DeleteDbRowOp);
+                    reflexiveSorter.sortObjectsForEntity(entity, reflexiveSublist, lastRow instanceof DeleteDbRowOp);
                 }
                 start = idx;
-                lastEntity = row.getEntity();
+                lastTable = row.getEntity();
             }
             lastRow = row;
             idx++;
         }
         // sort last chunk
-        if(lastEntity != null && !(lastRow instanceof UpdateDbRowOp) && sorter.isReflexive(lastEntity)) {
-            ObjEntity objEntity = resolver.getObjEntity(lastRow.getObject().getObjectId().getEntityName());
+        if(lastTable != null && !(lastRow instanceof UpdateDbRowOp) && lastTable.isReflexive()) {
+            CompiledEntity entity = mapping.entity(lastRow.getObject().getObjectId().getEntityName());
             List<DbRowOp> reflexiveSublist = sortedDbRows.subList(start, idx);
-            sorter.sortObjectsForEntity(objEntity, reflexiveSublist, lastRow instanceof DeleteDbRowOp);
+            reflexiveSorter.sortObjectsForEntity(entity, reflexiveSublist, lastRow instanceof DeleteDbRowOp);
         }
     }
 
-    protected Comparator<DbRowOp> getComparator() {
-        Comparator<DbRowOp> local = comparator;
-        if(local == null) {
+    protected Comparator<DbRowOp> getComparator(CompiledMapping mapping) {
+        DbRowComparator local = comparator;
+        if(local == null || local.mapping != mapping) {
             synchronized (this) {
                 local = comparator;
-                if(local == null) {
-                    local = new DbRowComparator(dataDomainProvider.get().getEntitySorter());
+                if(local == null || local.mapping != mapping) {
+                    local = new DbRowComparator(mapping);
                     comparator = local;
                 }
             }
@@ -100,10 +101,12 @@ public class DefaultDbRowOpSorter implements DbRowOpSorter {
 
     protected static class DbRowComparator implements Comparator<DbRowOp> {
 
-        private final EntitySorter entitySorter;
+        private final CompiledMapping mapping;
+        private final Comparator<CompiledTable> entityComparator;
 
-        protected DbRowComparator(EntitySorter entitySorter) {
-            this.entitySorter = entitySorter;
+        protected DbRowComparator(CompiledMapping mapping) {
+            this.mapping = mapping;
+            this.entityComparator = Comparator.comparingInt(CompiledTable::dependencyIndex);
         }
 
         @Override
@@ -118,7 +121,7 @@ public class DefaultDbRowOpSorter implements DbRowOpSorter {
             }
 
             // 2. sort by entity relations, we don't really need this for updates, but do it for the stable result
-            result = entitySorter.getDbEntityComparator().compare(left.getEntity(), right.getEntity());
+            result = entityComparator.compare(left.getEntity(), right.getEntity());
             if(result != 0) {
                 // invert result for delete
                 return leftType == DbRowOpType.DELETE ? -result : result;

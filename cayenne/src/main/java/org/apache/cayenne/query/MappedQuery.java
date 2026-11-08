@@ -22,14 +22,11 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.ExpressionException;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.NamedProcedureQuery;
-import org.apache.cayenne.map.NamedQuery;
-import org.apache.cayenne.map.NamedSQLQuery;
-import org.apache.cayenne.map.NamedSelectQuery;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.Procedure;
+import org.apache.cayenne.map.compiled.CompiledMapping;
+import org.apache.cayenne.map.compiled.CompiledProcedureQuery;
+import org.apache.cayenne.map.compiled.CompiledQuery;
+import org.apache.cayenne.map.compiled.CompiledSQLQuery;
+import org.apache.cayenne.map.compiled.CompiledSelectQuery;
 import org.apache.cayenne.ql.ParsedObjectSelect;
 import org.apache.cayenne.query.resolved.ResolvedQuery;
 
@@ -197,25 +194,25 @@ public class MappedQuery<T> implements Query<T> {
     }
 
     @Override
-    public ResolvedQuery resolve(EntityResolver resolver) {
-        NamedQuery namedQuery = resolver.getNamedQuery(queryName);
+    public ResolvedQuery resolve(CompiledMapping mapping) {
+        CompiledQuery namedQuery = mapping.query(queryName);
         if (namedQuery == null) {
             throw new CayenneRuntimeException("Unknown query name: %s", queryName);
         }
 
-        return resolveNamedQuery(namedQuery).resolve(resolver);
+        return resolveNamedQuery(namedQuery).resolve(mapping);
     }
 
     /**
      * Assembles the runtime query of a named query, binding the parameters of this query to it and applying the
      * settings of this query over the ones of the named query.
      */
-    Query<?> resolveNamedQuery(NamedQuery namedQuery) {
+    Query<?> resolveNamedQuery(CompiledQuery namedQuery) {
         Map<String, ?> parameters = normalizedParameters();
         return switch (namedQuery) {
-            case NamedSelectQuery select -> resolveNamedSelect(select, parameters);
-            case NamedSQLQuery sql -> resolveNamedSQL(sql, parameters);
-            case NamedProcedureQuery procedure -> resolveNamedProcedure(procedure, parameters);
+            case CompiledSelectQuery select -> resolveNamedSelect(select, parameters);
+            case CompiledSQLQuery sql -> resolveNamedSQL(sql, parameters);
+            case CompiledProcedureQuery procedure -> resolveNamedProcedure(procedure, parameters);
         };
     }
 
@@ -224,22 +221,22 @@ public class MappedQuery<T> implements Query<T> {
      * that contains a parameter missing from the map is pruned. The String is parsed anew for every query, as the
      * query is modified here and by the caller.
      */
-    private ObjectSelect<?> resolveNamedSelect(NamedSelectQuery namedQuery, Map<String, ?> parameters) {
-        String ql = namedQuery.getQl();
+    private ObjectSelect<?> resolveNamedSelect(CompiledSelectQuery namedQuery, Map<String, ?> parameters) {
+        String ql = namedQuery.ql();
         if (ql == null || ql.isBlank()) {
-            throw new CayenneRuntimeException("Query '%s' is empty", namedQuery.getName());
+            throw new CayenneRuntimeException("Query '%s' is empty", namedQuery.name());
         }
 
         ParsedObjectSelect query;
         try {
             query = ParsedObjectSelect.parse(ql, parameters);
         } catch (ExpressionException e) {
-            throw new CayenneRuntimeException("Query '%s' can't be parsed: %s", e, namedQuery.getName(),
+            throw new CayenneRuntimeException("Query '%s' can't be parsed: %s", e, namedQuery.name(),
                     e.getUnlabeledMessage());
         }
 
         // a query rooted in a DbEntity fetches DataRows anyway, and a column query can't fetch them
-        if (namedQuery.isFetchingDataRows() && !query.isColumnQuery()) {
+        if (namedQuery.fetchingDataRows() && !query.isColumnQuery()) {
             query.fetchDataRows();
         }
 
@@ -256,37 +253,28 @@ public class MappedQuery<T> implements Query<T> {
 
         return query.pageSize(pageSize(namedQuery))
                 .statementFetchSize(statementFetchSize(namedQuery))
-                .cacheStrategy(cacheStrategy(namedQuery), namedQuery.getCacheGroup());
+                .cacheStrategy(cacheStrategy(namedQuery), namedQuery.cacheGroup());
     }
 
-    private SQLQuery<?> resolveNamedSQL(NamedSQLQuery namedQuery, Map<String, ?> parameters) {
-        String sql = namedQuery.getSql();
-        SQLQuery<?> query = switch (namedQuery.getRoot()) {
-            case null -> SQLQuery.query(sql);
-            case String entityName -> SQLQuery.entityQuery(entityName, sql);
-            case ObjEntity entity -> SQLQuery.entityQuery(entity.getName(), sql);
-            case DataMap map -> SQLQuery.query(sql).dataMap(map.getName());
-            default -> throw new CayenneRuntimeException("Unsupported SQL query root: %s", namedQuery.getRoot());
-        };
+    private SQLQuery<?> resolveNamedSQL(CompiledSQLQuery namedQuery, Map<String, ?> parameters) {
+        String sql = namedQuery.sql();
+        SQLQuery<?> query = namedQuery.rootEntity() != null
+                ? SQLQuery.entityQuery(namedQuery.rootEntity(), sql)
+                : SQLQuery.query(sql);
+        if (namedQuery.rootMap() != null) {
+            query = query.dataMap(namedQuery.rootMap());
+        }
 
-        if (namedQuery.isFetchingDataRows()) {
+        if (namedQuery.fetchingDataRows()) {
             query = query.fetchDataRows();
         }
 
-        Map<String, Integer> prefetches = namedQuery.getPrefetchesMap();
-        if (prefetches != null) {
-            for (Map.Entry<String, Integer> entry : prefetches.entrySet()) {
-                query.addPrefetch(entry.getKey(), entry.getValue());
-            }
+        for (Map.Entry<String, Integer> entry : namedQuery.prefetches().entrySet()) {
+            query.addPrefetch(entry.getKey(), entry.getValue());
         }
 
-        Map<String, String> adapterSql = namedQuery.getAdapterSql();
-        if (adapterSql != null) {
-            for (Map.Entry<String, String> entry : adapterSql.entrySet()) {
-                if (entry.getKey() != null && entry.getValue() != null) {
-                    query.dialect(entry.getKey(), entry.getValue());
-                }
-            }
+        for (Map.Entry<String, String> entry : namedQuery.adapterSql().entrySet()) {
+            query.dialect(entry.getKey(), entry.getValue());
         }
 
         if (!parameters.isEmpty()) {
@@ -304,25 +292,23 @@ public class MappedQuery<T> implements Query<T> {
 
         return query.pageSize(pageSize(namedQuery))
                 .statementFetchSize(statementFetchSize(namedQuery))
-                .cacheStrategy(cacheStrategy(namedQuery), namedQuery.getCacheGroup())
-                .columnNameCaps(namedQuery.getColumnNamesCapitalization());
+                .cacheStrategy(cacheStrategy(namedQuery), namedQuery.cacheGroup())
+                .columnNameCaps(namedQuery.columnNameCaps());
     }
 
-    private ProcedureQuery<?> resolveNamedProcedure(NamedProcedureQuery namedQuery, Map<String, ?> parameters) {
-        String procedureName = switch (namedQuery.getRoot()) {
-            case String name -> name;
-            case Procedure procedure -> procedure.getName();
-            case null, default -> throw new CayenneRuntimeException("ProcedureQuery '%s' has no procedure",
-                    namedQuery.getName());
-        };
+    private ProcedureQuery<?> resolveNamedProcedure(CompiledProcedureQuery namedQuery, Map<String, ?> parameters) {
+        String procedureName = namedQuery.procedure();
+        if (procedureName == null) {
+            throw new CayenneRuntimeException("ProcedureQuery '%s' has no procedure", namedQuery.name());
+        }
 
-        String resultEntityName = namedQuery.getResultEntityName();
+        String resultEntityName = namedQuery.resultEntity();
         ProcedureQuery<?> query = resultEntityName != null
                 ? ProcedureQuery.entityQuery(procedureName, resultEntityName)
                 : ProcedureQuery.query(procedureName);
 
         // without a result entity the rows are DataRows regardless of the flag
-        if (namedQuery.isFetchingDataRows() && resultEntityName != null) {
+        if (namedQuery.fetchingDataRows() && resultEntityName != null) {
             query = query.fetchDataRows();
         }
 
@@ -333,24 +319,24 @@ public class MappedQuery<T> implements Query<T> {
             query.queryTimeout(queryTimeout);
         }
 
-        return query.limit(fetchLimit != null ? fetchLimit : namedQuery.getFetchLimit())
-                .offset(fetchOffset != null ? fetchOffset : namedQuery.getFetchOffset())
+        return query.limit(fetchLimit != null ? fetchLimit : namedQuery.fetchLimit())
+                .offset(fetchOffset != null ? fetchOffset : namedQuery.fetchOffset())
                 .pageSize(pageSize(namedQuery))
                 .statementFetchSize(statementFetchSize(namedQuery))
-                .cacheStrategy(cacheStrategy(namedQuery), namedQuery.getCacheGroup())
-                .capsStrategy(namedQuery.getColumnNamesCapitalization());
+                .cacheStrategy(cacheStrategy(namedQuery), namedQuery.cacheGroup())
+                .capsStrategy(namedQuery.columnNameCaps());
     }
 
-    private int pageSize(NamedQuery namedQuery) {
-        return pageSize != null ? pageSize : namedQuery.getPageSize();
+    private int pageSize(CompiledQuery namedQuery) {
+        return pageSize != null ? pageSize : namedQuery.pageSize();
     }
 
-    private int statementFetchSize(NamedQuery namedQuery) {
-        return statementFetchSize != null ? statementFetchSize : namedQuery.getStatementFetchSize();
+    private int statementFetchSize(CompiledQuery namedQuery) {
+        return statementFetchSize != null ? statementFetchSize : namedQuery.statementFetchSize();
     }
 
-    private QueryCacheStrategy cacheStrategy(NamedQuery namedQuery) {
-        QueryCacheStrategy strategy = namedQuery.getCacheStrategy();
+    private QueryCacheStrategy cacheStrategy(CompiledQuery namedQuery) {
+        QueryCacheStrategy strategy = namedQuery.cacheStrategy();
         if (!forceNoCache) {
             return strategy;
         }

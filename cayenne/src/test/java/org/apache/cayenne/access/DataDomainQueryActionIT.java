@@ -68,7 +68,7 @@ public class DataDomainQueryActionIT {
                 .pageSize(5);
 
 
-        QueryContext context = new QueryContext(env.context(), query, query.resolve(domain.getEntityResolver()),
+        QueryContext context = new QueryContext(env.context(), query, query.resolve(domain.getMapping()),
                 false);
         new DataDomainQueryAction(domain, context).execute();
     }

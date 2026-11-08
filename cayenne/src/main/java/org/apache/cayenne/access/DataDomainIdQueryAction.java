@@ -26,7 +26,7 @@ import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.reflect.ClassDescriptor;
+import org.apache.cayenne.map.compiled.CompiledEntity;
 import org.apache.cayenne.access.lifecycle.LifecycleEventManager;
 
 import java.util.List;
@@ -73,10 +73,10 @@ class DataDomainIdQueryAction {
      */
     private Persistent objectFromCachedRow(DataRow row) {
 
-        // the descriptor is that of the requested entity. The snapshot may belong to one of its subentities, and the
+        // the entity is the requested entity. The snapshot may belong to one of its subentities, and the
         // resolver picks the right one from the snapshot
-        ClassDescriptor descriptor = domain.getEntityResolver().getClassDescriptor(id.getEntityName());
-        List<Persistent> objects = new ObjectResolver(context, descriptor, false)
+        CompiledEntity entity = domain.getMapping().entity(id.getEntityName());
+        List<Persistent> objects = new ObjectResolver(context, entity, false)
                 .objectsFromDataRows(List.of(row));
 
         LifecycleEventManager postLoad = domain.getLifecycleEventsManager().postLoad();
@@ -93,7 +93,7 @@ class DataDomainIdQueryAction {
                 .query(Persistent.class, id.getEntityName())
                 .where(ExpressionFactory.matchAllDbExp(id.getIdSnapshot()));
 
-        QueryContext execContext = new QueryContext(context, query, query.resolve(domain.getEntityResolver()),
+        QueryContext execContext = new QueryContext(context, query, query.resolve(domain.getMapping()),
                 false);
         List<?> objects = QueryResults.firstList(domain.onQuery(execContext));
         return switch (objects.size()) {

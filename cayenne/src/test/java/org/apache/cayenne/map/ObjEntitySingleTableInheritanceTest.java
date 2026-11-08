@@ -148,7 +148,7 @@ public class ObjEntitySingleTableInheritanceTest {
     }
 
     @Test
-    public void relationshipForDbRelationship() throws Exception {
+    public void relationshipForJoin() throws Exception {
         entity1.setSuperEntityName("e2");
         entity2.setDbEntityName(dbEntity.getName());
 

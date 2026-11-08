@@ -28,15 +28,14 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.DbPathExp;
 import org.apache.cayenne.exp.path.CayennePathSegment;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.compiled.CompiledColumn;
+import org.apache.cayenne.map.compiled.CompiledTable;
+import org.apache.cayenne.map.compiled.CompiledJoin;
 import org.apache.cayenne.map.JoinType;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.map.compiled.CompiledEntity;
+import org.apache.cayenne.map.compiled.CompiledRelationship;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.resolved.ResolvedSelect;
-import org.apache.cayenne.reflect.ClassDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,7 +63,7 @@ class PrefetchNodeStage implements TranslationStage {
         // Note: all prefetch nodes will point to query root, it is not a problem until select query can't
         // perform some sort of union or sub-queries.
         for(PrefetchTreeNode prefetch : context.getSelect().prefetchTree().getChildren()) {
-            prefetch.setEntityName(context.getSelect().objEntity().getName());
+            prefetch.setEntityName(context.getSelect().entity().name());
         }
     }
 
@@ -81,37 +80,36 @@ class PrefetchNodeStage implements TranslationStage {
             return;
         }
 
-        ObjEntity objEntity = select.objEntity();
+        CompiledEntity entity = select.entity();
         boolean warnPrefetchWithLimit = false;
 
         for(PrefetchTreeNode node : prefetch.adjacentJointNodes()) {
             Expression prefetchExp = ExpressionFactory.pathExp(node.getPath());
-            ObjRelationship targetRel = (ObjRelationship) prefetchExp.evaluate(objEntity);
-            DbPathExp dbPrefetch = (DbPathExp) objEntity.translateToDbPath(prefetchExp);
+            CompiledRelationship targetRel = (CompiledRelationship) prefetchExp.evaluate(entity);
+            DbPathExp dbPrefetch = (DbPathExp) entity.translateToDbPath(prefetchExp);
             CayennePath dbPath = dbPrefetch.getPath();
-            DbEntity dbEntity = objEntity.getDbEntity();
-            Expression targetQualifier = context.getResolver().getClassDescriptor(targetRel.getTargetEntityName()).getEntityInheritanceTree().qualifierForEntityAndSubclasses();
+            CompiledTable table = entity.table();
+            Expression targetQualifier = targetRel.target().qualifier();
 
             CayennePath fullPath = CayennePath.EMPTY_PATH.withMarker(CayennePath.PREFETCH_MARKER);
 
             for(CayennePathSegment c : dbPath) {
-                DbRelationship rel = dbEntity.getRelationship(c.value());
-                if(rel == null) {
-                    throw new CayenneRuntimeException("Unable to resolve path %s for entity %s", dbPath, objEntity.getName());
+                CompiledJoin join = table.join(c.value());
+                if(join == null) {
+                    throw new CayenneRuntimeException("Unable to resolve path %s for entity %s", dbPath, entity.name());
                 }
 
                 fullPath = fullPath.dot(c);
                 if(targetQualifier != null && c == dbPath.last()) {
-                    targetQualifier = translateToPrefetchQualifier(targetRel.getTargetEntity(), targetQualifier);
-                    context.getTableTree().addJoinTable(fullPath.withMarker(CayennePath.PREFETCH_MARKER), rel, JoinType.LEFT_OUTER, targetQualifier);
+                    targetQualifier = translateToPrefetchQualifier(targetRel.target(), targetQualifier);
+                    context.getTableTree().addJoinTable(fullPath.withMarker(CayennePath.PREFETCH_MARKER), join, JoinType.LEFT_OUTER, targetQualifier);
                 } else {
-                    context.getTableTree().addJoinTable(fullPath.withMarker(CayennePath.PREFETCH_MARKER), rel, JoinType.LEFT_OUTER);
+                    context.getTableTree().addJoinTable(fullPath.withMarker(CayennePath.PREFETCH_MARKER), join, JoinType.LEFT_OUTER);
                 }
-                dbEntity = rel.getTargetEntity();
+                table = join.target();
             }
 
-            ClassDescriptor prefetchClassDescriptor = context.getResolver().getClassDescriptor(targetRel.getTargetEntityName());
-            DescriptorColumnExtractor columnExtractor = new DescriptorColumnExtractor(context, prefetchClassDescriptor);
+            DescriptorColumnExtractor columnExtractor = new DescriptorColumnExtractor(context, targetRel.target());
             columnExtractor.extract(dbPath.withMarker(CayennePath.PREFETCH_MARKER));
 
             if(!warnPrefetchWithLimit && targetRel.isToMany()
@@ -127,7 +125,7 @@ class PrefetchNodeStage implements TranslationStage {
         }
     }
 
-    Expression translateToPrefetchQualifier(ObjEntity entity, Expression targetQualifier) {
+    Expression translateToPrefetchQualifier(CompiledEntity entity, Expression targetQualifier) {
         Expression expression = entity.translateToDbPath(targetQualifier);
         return expression.transform(o -> o instanceof DbPathExp
                 ? ExpressionFactory.dbPathExp(((DbPathExp) o).getPath().withMarker(CayennePath.PREFETCH_MARKER))
@@ -142,17 +140,17 @@ class PrefetchNodeStage implements TranslationStage {
 
         PathTranslator pathTranslator = context.getPathTranslator();
         for(PathExp prefetchPath: select.resultPaths()) {
-            DbPathExp pathExp = (DbPathExp) select.classDescriptor().getEntity().translateToDbPath(prefetchPath);
+            DbPathExp pathExp = (DbPathExp) select.entity().translateToDbPath(prefetchPath);
             CayennePath path = pathExp.getPath();
 
-            PathTranslationResult result = pathTranslator.translatePath(select.dbEntity(), path);
+            PathTranslationResult result = pathTranslator.translatePath(select.table(), path);
             CayennePath resultPath = result.getFinalPath();
             result.getDbRelationship().ifPresent(r -> {
-                DbEntity targetEntity = r.getTargetEntity();
+                CompiledTable targetTable = r.target();
                 context.getTableTree().addJoinTable(resultPath, r, JoinType.INNER);
-                for (DbAttribute pk : targetEntity.getPrimaryKeys()) {
+                for (CompiledColumn pk : targetTable.primaryKey()) {
                     // note that we may select a source attribute, but label it as target for simplified snapshot processing
-                    CayennePath finalPath = resultPath.dot(pk.getName());
+                    CayennePath finalPath = resultPath.dot(pk.name());
                     String alias = context.getTableTree().aliasForPath(resultPath);
                     Node columnNode = table(alias).column(pk).build();
                     context.addResultNode(columnNode, finalPath).setDbAttribute(pk);

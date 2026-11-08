@@ -88,7 +88,7 @@ public class SQLQueryIT {
 		createPaintingsDataSet();
 
 		SQLQuery<DataRow> q1 = SQLQuery.query("SELECT * FROM PAINTING").dataMap("testmap");
-		assertTrue(q1.resolve(env.resolver()).fetchingDataRows());
+		assertTrue(q1.resolve(env.mapping()).fetchingDataRows());
 
 		List<DataRow> result = context.select(q1);
 		assertEquals(20, result.size());
@@ -100,7 +100,7 @@ public class SQLQueryIT {
 		createPaintingsDataSet();
 
 		SQLQuery<DataRow> q1 = SQLQuery.query("SELECT * FROM PAINTING");
-		assertTrue(q1.resolve(env.resolver()).fetchingDataRows());
+		assertTrue(q1.resolve(env.mapping()).fetchingDataRows());
 
 		List<DataRow> result = context.select(q1);
 		assertEquals(20, result.size());
@@ -161,7 +161,7 @@ public class SQLQueryIT {
 
 		SQLQuery<Painting> q1 = SQLQuery.query(Painting.class, "SELECT * FROM PAINTING").columnNameCaps(
 				CapsStrategy.UPPER);
-		assertFalse(q1.resolve(env.resolver()).fetchingDataRows());
+		assertFalse(q1.resolve(env.mapping()).fetchingDataRows());
 		List<Painting> result = context.select(q1);
 		assertEquals(20, result.size());
 		assertTrue(result.get(0) instanceof Painting);
@@ -331,7 +331,7 @@ public class SQLQueryIT {
 				"SELECT * FROM PAINTING WHERE PAINTING_TITLE = #bind($a)");
 		q1.param("a", "painting3").columnNameCaps(CapsStrategy.UPPER);
 
-		assertFalse(q1.resolve(env.resolver()).fetchingDataRows());
+		assertFalse(q1.resolve(env.mapping()).fetchingDataRows());
 		Painting a = context.selectOne(q1);
 		assertEquals("painting3", a.getPaintingTitle());
 	}
@@ -354,10 +354,10 @@ public class SQLQueryIT {
 		SQLQuery<DataRow> q1 = SQLQuery.query("SELECT * FROM PAINTING WHERE PAINTING_TITLE = 'painting2'");
 		q1.upperColumnNames();
 
-				assertEquals(CapsStrategy.UPPER, q1.resolve(context.getEntityResolver()).columnNameCaps());
+				assertEquals(CapsStrategy.UPPER, q1.resolve(context.getMapping()).columnNameCaps());
 
 		q1.lowerColumnNames();
-				assertEquals(CapsStrategy.LOWER, q1.resolve(context.getEntityResolver()).columnNameCaps());
+				assertEquals(CapsStrategy.LOWER, q1.resolve(context.getMapping()).columnNameCaps());
 	}
 
 	@Test

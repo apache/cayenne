@@ -18,10 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.exp;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
-import org.apache.cayenne.map.ObjAttribute;
-import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.compiled.CompiledAttribute;
+import org.apache.cayenne.map.compiled.CompiledEntity;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
@@ -37,20 +37,20 @@ public class ObjPathExpIT {
 	public void evaluate_ObjEntity() {
 		ObjPathExp node = new ObjPathExp("paintings.paintingTitle");
 
-		ObjEntity ae = env.context().getEntityResolver().getObjEntity(Artist.class);
+		CompiledEntity ae = env.mapping().entity(Artist.class);
 
 		Object target = node.evaluate(ae);
-		assertTrue(target instanceof ObjAttribute);
+		assertInstanceOf(CompiledAttribute.class, target);
 	}
 
 	@Test
 	public void evaluate_ObjEntity_Outer() {
 		ObjPathExp node = new ObjPathExp("paintings+.paintingTitle");
 
-		ObjEntity ae = env.context().getEntityResolver().getObjEntity(Artist.class);
+		CompiledEntity ae = env.mapping().entity(Artist.class);
 
 		Object target = node.evaluate(ae);
-		assertTrue(target instanceof ObjAttribute);
+		assertInstanceOf(CompiledAttribute.class, target);
 	}
 
 }

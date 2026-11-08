@@ -21,7 +21,7 @@ package org.apache.cayenne.access.sqlbuilder;
 
 import org.apache.cayenne.access.sqlbuilder.sqltree.DeleteNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
-import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.compiled.CompiledTable;
 import org.junit.jupiter.api.Test;
 
 import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.*;
@@ -51,9 +51,8 @@ public class DeleteBuilderTest extends BaseSqlBuilderTest {
 
     @Test
     public void deleteDbEntityCatalog() {
-        DbEntity entity = new DbEntity("test");
-        entity.setCatalog("catalog");
-        DeleteBuilder builder = new DeleteBuilder(entity);
+        CompiledTable table = compiledTable("test", "catalog", null);
+        DeleteBuilder builder = new DeleteBuilder(table);
         Node node = builder.build();
         assertInstanceOf(DeleteNode.class, node);
         assertSQL("DELETE FROM catalog.test", node);
@@ -62,10 +61,8 @@ public class DeleteBuilderTest extends BaseSqlBuilderTest {
 
     @Test
     public void deleteDbEntityCatalogAndSchema() {
-        DbEntity entity = new DbEntity("test");
-        entity.setSchema("schema");
-        entity.setCatalog("catalog");
-        DeleteBuilder builder = new DeleteBuilder(entity);
+        CompiledTable table = compiledTable("test", "catalog", "schema");
+        DeleteBuilder builder = new DeleteBuilder(table);
         Node node = builder.build();
         assertInstanceOf(DeleteNode.class, node);
         assertSQL("DELETE FROM catalog.schema.test", node);

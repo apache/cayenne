@@ -31,7 +31,7 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.log.NoopSQLLogger;
 import org.apache.cayenne.log.SQLLogger;
-import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.compiled.CompiledMapping;
 import org.apache.cayenne.query.resolved.DeleteBatch;
 import org.apache.cayenne.query.resolved.ResolvedProcedure;
 import org.apache.cayenne.query.resolved.ResolvedQuery;
@@ -229,7 +229,7 @@ public class DataNode {
                 statementContext.setLogger(logger);
                 try {
                     TranslatedStatement translated = translate(statementContext.getResolvedQuery(), adapter,
-                            statementContext.getResolver());
+                            statementContext.getMapping());
                     statementContext.setTranslatedStatement(translated);
                     execute(adapter, translated, connection, statementContext);
                     statementContext.logComplete();
@@ -277,9 +277,9 @@ public class DataNode {
      *
      * @since 6.0
      */
-    protected TranslatedStatement translate(ResolvedQuery query, DbAdapter adapter, EntityResolver resolver) {
+    protected TranslatedStatement translate(ResolvedQuery query, DbAdapter adapter, CompiledMapping mapping) {
         return switch (query) {
-            case ResolvedSelect select -> selectTranslator.translate(select, adapter, resolver);
+            case ResolvedSelect select -> selectTranslator.translate(select, adapter, mapping);
             case ResolvedSQL sql -> sqlTemplateTranslator.translate(sql, adapter);
             case ResolvedProcedure procedure -> procedureTranslator.translate(procedure, adapter);
             case InsertBatch insert -> insertBatchTranslator.translate(insert, adapter);

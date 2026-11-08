@@ -45,7 +45,7 @@ public class SetAllowNullToDb extends AbstractToDbToken.EntityAndColumn {
         DbAdapter adapter = node.getAdapter();
 
         StringBuilder sqlBuffer = new StringBuilder();
-        QuotingStrategy quotes = adapter.getQuotingStrategy(getEntity());
+        QuotingStrategy quotes = adapter.getQuotingStrategy(CompiledModel.table(getEntity()));
         sqlBuffer.append("ALTER TABLE ");
         quotes.appendFQN(sqlBuffer, getEntity().getCatalog(), getEntity().getSchema(), getEntity().getName());
         sqlBuffer.append(" ALTER COLUMN ");

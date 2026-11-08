@@ -20,10 +20,10 @@
 package org.apache.cayenne.access.translator.select;
 
 import org.apache.cayenne.exp.path.CayennePath;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.ObjAttribute;
-import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.compiled.CompiledColumn;
+import org.apache.cayenne.map.compiled.CompiledTable;
+import org.apache.cayenne.map.compiled.CompiledAttribute;
+import org.apache.cayenne.map.compiled.CompiledEntity;
 import org.apache.cayenne.query.EntityResult;
 
 /**
@@ -31,36 +31,36 @@ import org.apache.cayenne.query.EntityResult;
  */
 class IdColumnExtractor extends BaseColumnExtractor {
 
-    private final DbEntity dbEntity;
-    private ObjEntity objEntity;
+    private final CompiledTable table;
+    private CompiledEntity entity;
     private EntityResult result;
 
-    IdColumnExtractor(SelectTranslatorContext context, DbEntity dbEntity) {
+    IdColumnExtractor(SelectTranslatorContext context, CompiledTable table) {
         super(context);
-        this.dbEntity = dbEntity;
-        this.objEntity = null;
+        this.table = table;
+        this.entity = null;
     }
 
-    IdColumnExtractor(SelectTranslatorContext context, ObjEntity objEntity) {
-        this(context, objEntity.getDbEntity());
-        this.objEntity = objEntity;
+    IdColumnExtractor(SelectTranslatorContext context, CompiledEntity entity) {
+        this(context, entity.table());
+        this.entity = entity;
         if(context.needsResultSetMapping()) {
-            this.result = new EntityResult(objEntity.getName());
+            this.result = new EntityResult(entity.name());
         }
     }
 
     @Override
     public void extract(CayennePath prefix) {
-        for (DbAttribute dba : dbEntity.getPrimaryKeys()) {
-            ResultNodeDescriptor resultNodeDescriptor = addDbAttribute(prefix, prefix, dba);
+        for (CompiledColumn column : table.primaryKey()) {
+            ResultNodeDescriptor resultNodeDescriptor = addDbAttribute(prefix, prefix, column);
             if(result != null) {
-                result.addDbField(dba.getName(), prefix + dba.getName());
+                result.addDbField(column.name(), prefix + column.name());
             }
-            if(objEntity != null) {
-                // redefine PK type if there's a corresponding ObjAttribute for it
-                ObjAttribute meaningfulPK = objEntity.getAttributeForDbAttribute(dba);
+            if(entity != null) {
+                // redefine PK type if there's a corresponding CompiledAttribute for it
+                CompiledAttribute meaningfulPK = entity.attributeForColumn(column);
                 if(meaningfulPK != null) {
-                    resultNodeDescriptor.setJavaType(meaningfulPK.getType());
+                    resultNodeDescriptor.setJavaType(meaningfulPK.valueClassName());
                 }
             }
         }

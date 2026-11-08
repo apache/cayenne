@@ -37,6 +37,7 @@ import java.sql.Types;
 import java.util.List;
 import java.util.Set;
 
+import static org.apache.cayenne.dba.AdhocTables.compile;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -79,7 +80,7 @@ public class JdbcAdapterIT {
         c.setType(Types.VARCHAR);   // no max length -> default char length
         e.addAttribute(c);
 
-        assertEquals("CREATE TABLE Test (c VARCHAR(255) NULL)", adapter.createTable(e));
+        assertEquals("CREATE TABLE Test (c VARCHAR(255) NULL)", adapter.createTable(compile(e)));
     }
 
     @Test
@@ -97,13 +98,13 @@ public class JdbcAdapterIT {
             DbKeyGenerator id = new DbKeyGenerator();
             entity.setPrimaryKeyGenerator(id);
 
+            entity.setName("name table");
             DataMap dm = new DataMap();
             dm.setQuotingSQLIdentifiers(true);
-            entity.setDataMap(dm);
-            entity.setName("name table");
+            dm.addDbEntity(entity);
 
             String str = "CREATE TABLE `name table` (`name column` CHAR(10) NULL) ENGINE=InnoDB";
-            assertEquals(str, mySQLAdapter.createTable(entity));
+            assertEquals(str, mySQLAdapter.createTable(compile(entity)));
         }
     }
 
@@ -113,13 +114,14 @@ public class JdbcAdapterIT {
         adapter.setSupportsBatchUpdates(true);
 
         DbEntity entity = new DbEntity("T");
-        TranslatedBatch insert = new TranslatedBatch(new InsertBatch(entity, List.of()), "INSERT",
+        TranslatedBatch insert = new TranslatedBatch(new InsertBatch(compile(entity), List.of()), "INSERT",
                 new PSBatchParameter[0]);
         assertTrue(adapter.runsAsBatch(insert));
 
         // optimistic locking needs the per-row update counts, so it never runs as a JDBC batch
         TranslatedBatch lockingDelete = new TranslatedBatch(
-                new DeleteBatch(entity, List.of(), Set.of(), true, List.of()), "DELETE", new PSBatchParameter[0]);
+                new DeleteBatch(compile(entity), List.of(), Set.of(), true, List.of()), "DELETE",
+                new PSBatchParameter[0]);
         assertFalse(adapter.runsAsBatch(lockingDelete));
 
         adapter.setSupportsBatchUpdates(false);

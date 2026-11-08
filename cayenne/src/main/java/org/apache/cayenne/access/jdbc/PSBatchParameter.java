@@ -20,7 +20,7 @@
 package org.apache.cayenne.access.jdbc;
 
 import org.apache.cayenne.access.DeferredValue;
-import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.compiled.CompiledColumn;
 
 /**
  * An immutable batch parameter corresponding to a single PreparedStatement placeholder, carrying the values of all
@@ -33,7 +33,12 @@ import org.apache.cayenne.map.DbAttribute;
  *
  * @since 5.0
  */
-public record PSBatchParameter(Object[] values, int psPosition, int psType, int psScale, DbAttribute attribute) {
+public record PSBatchParameter(
+        Object[] values,
+        int psPosition,
+        int psType,
+        int psScale,
+        CompiledColumn attribute) {
 
     public Object getValue(int row) {
         Object value = DeferredValue.resolve(values[row]);

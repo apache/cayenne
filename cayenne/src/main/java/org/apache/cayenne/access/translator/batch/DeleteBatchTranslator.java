@@ -23,7 +23,7 @@ import java.util.Arrays;
 
 import org.apache.cayenne.access.sqlbuilder.DeleteBuilder;
 import org.apache.cayenne.access.sqlbuilder.SQLBuilder;
-import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.compiled.CompiledColumn;
 import org.apache.cayenne.query.resolved.DeleteBatch;
 
 /**
@@ -40,8 +40,8 @@ public class DeleteBatchTranslator extends BaseBatchTranslator<DeleteBatch> {
     }
 
     @Override
-    protected boolean isNullAttribute(BatchTranslatorContext<DeleteBatch> context, DbAttribute attribute) {
-        return context.getQuery().isNull(attribute);
+    protected boolean isNullAttribute(BatchTranslatorContext<DeleteBatch> context, CompiledColumn column) {
+        return context.getQuery().isNull(column);
     }
 
     @Override
@@ -52,8 +52,8 @@ public class DeleteBatchTranslator extends BaseBatchTranslator<DeleteBatch> {
         int i = 0;
         int j = 0;
         // attributes with null values render as "IS NULL" and have no placeholder
-        for (DbAttribute attribute : deleteBatch.dbAttributes()) {
-            if (!deleteBatch.isNull(attribute)) {
+        for (CompiledColumn column : deleteBatch.dbAttributes()) {
+            if (!deleteBatch.isNull(column)) {
                 indexes[j++] = i;
             }
             i++;

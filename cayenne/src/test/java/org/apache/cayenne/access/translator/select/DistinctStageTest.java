@@ -20,10 +20,15 @@
 package org.apache.cayenne.access.translator.select;
 
 import java.sql.Types;
+import java.util.List;
 
 import org.apache.cayenne.access.sqlbuilder.sqltree.ColumnNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.compiled.CompiledColumn;
+import org.apache.cayenne.map.compiled.SchemaCompiler;
 import org.apache.cayenne.query.resolved.ResolvedSelect;
 import org.junit.jupiter.api.Test;
 
@@ -86,9 +91,8 @@ public class DistinctStageTest {
                 .build();
         SelectTranslatorContext context = new MockSelectTranslatorContext(query);
 
-        DbAttribute attribute = new DbAttribute();
-        attribute.setType(Types.LONGVARBINARY);
-        Node node = new ColumnNode("t0", "attr", null, attribute);
+        CompiledColumn column = compiledColumn("attr", Types.LONGVARBINARY);
+        Node node = new ColumnNode("t0", "attr", null, column);
         context.addResultNode(node);
 
         assertFalse(context.isDistinctSuppression());
@@ -97,5 +101,15 @@ public class DistinctStageTest {
         stage.perform(context);
 
         assertTrue(context.isDistinctSuppression());
+    }
+
+    private static CompiledColumn compiledColumn(String name, int type) {
+        DbAttribute attribute = new DbAttribute(name);
+        attribute.setType(type);
+        DbEntity table = new DbEntity("t0");
+        table.addAttribute(attribute);
+        DataMap dataMap = new DataMap("mock");
+        dataMap.addDbEntity(table);
+        return SchemaCompiler.compile(List.of(dataMap)).table("t0").column(name);
     }
 }

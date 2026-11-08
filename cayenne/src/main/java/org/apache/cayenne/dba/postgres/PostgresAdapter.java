@@ -39,7 +39,8 @@ import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.compiled.CompiledColumn;
+import org.apache.cayenne.map.compiled.CompiledTable;
 import org.apache.cayenne.access.translator.TranslatedSelect;
 import org.apache.cayenne.access.translator.TranslatedProcedure;
 import org.apache.cayenne.access.translator.TranslatedBatch;
@@ -209,16 +210,16 @@ public class PostgresAdapter extends JdbcAdapter {
      * @since 1.0.2
      */
     @Override
-    public String createTable(DbEntity ent) {
+    public String createTable(CompiledTable table) {
 
-        QuotingStrategy quotes = getQuotingStrategy(ent);
+        QuotingStrategy quotes = getQuotingStrategy(table);
         StringBuilder buf = new StringBuilder();
         buf.append("CREATE TABLE ");
-        quotes.appendFQN(buf, ent.getCatalog(), ent.getSchema(), ent.getName());
+        quotes.appendFQN(buf, table.catalog(), table.schema(), table.name());
         buf.append(" (");
 
         // columns
-        Iterator<DbAttribute> it = ent.getAttributes().iterator();
+        Iterator<CompiledColumn> it = table.columns().iterator();
         boolean first = true;
         while (it.hasNext()) {
             if (first) {
@@ -227,11 +228,11 @@ public class PostgresAdapter extends JdbcAdapter {
                 buf.append(", ");
             }
 
-            createAttribute(ent, quotes, buf, it.next());
+            createAttribute(table, quotes, buf, it.next());
         }
 
         // primary key clause
-        Iterator<DbAttribute> pkit = ent.getPrimaryKeys().iterator();
+        Iterator<CompiledColumn> pkit = table.primaryKey().iterator();
         if (pkit.hasNext()) {
             if (first) {
                 first = false;
@@ -248,9 +249,9 @@ public class PostgresAdapter extends JdbcAdapter {
                     buf.append(", ");
                 }
 
-                DbAttribute at = pkit.next();
+                CompiledColumn column = pkit.next();
                 quotes.appendStart(buf);
-                buf.append(at.getName());
+                buf.append(column.name());
                 quotes.appendEnd(buf);
             }
             buf.append(')');
@@ -259,16 +260,16 @@ public class PostgresAdapter extends JdbcAdapter {
         return buf.toString();
     }
 
-    private void createAttribute(DbEntity ent, QuotingStrategy quotes, StringBuilder buf, DbAttribute column) {
+    private void createAttribute(CompiledTable table, QuotingStrategy quotes, StringBuilder buf, CompiledColumn column) {
         // attribute may not be fully valid, do a simple check
-        if (column.getType() == TypesMapping.NOT_DEFINED) {
+        if (column.jdbcType() == TypesMapping.NOT_DEFINED) {
             throw new CayenneRuntimeException("Undefined type for attribute '%s.%s'"
-                    , ent.getFullyQualifiedName(), column.getName());
+                    , table.fullyQualifiedName(), column.name());
         }
 
         // getType / sizeAndPrecision pick the right variant (auto-increment serial, unconstrained "text", ...)
         quotes.appendStart(buf);
-        buf.append(column.getName());
+        buf.append(column.name());
         quotes.appendEnd(buf);
         buf.append(' ')
                 .append(preferredNativeColumnType(column).nativeType())
@@ -299,10 +300,10 @@ public class PostgresAdapter extends JdbcAdapter {
      * Adds the CASCADE option to the DROP TABLE clause.
      */
     @Override
-    public Collection<String> dropTableStatements(DbEntity table) {
+    public Collection<String> dropTableStatements(CompiledTable table) {
         QuotingStrategy quotes = getQuotingStrategy(table);
         StringBuilder buf = new StringBuilder("DROP TABLE ");
-        quotes.appendFQN(buf, table.getCatalog(), table.getSchema(), table.getName());
+        quotes.appendFQN(buf, table.catalog(), table.schema(), table.name());
         buf.append(" CASCADE");
         return Collections.singleton(buf.toString());
     }

@@ -22,35 +22,22 @@ package org.apache.cayenne.access.translator.select;
 import java.sql.Types;
 
 import org.apache.cayenne.access.sqlbuilder.sqltree.ColumnNode;
-import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
-import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
-import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.reflect.generic.DefaultValueComparisonStrategyFactory;
+import org.apache.cayenne.map.compiled.CompiledMapping;
 import org.apache.cayenne.query.resolved.ResolvedSelect;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
 
 public class DescriptorColumnExtractorTest extends BaseColumnExtractorTest {
 
     @Test
     public void extractNoPrefix() {
         DbEntity mockDbEntity = createMockDbEntity("mock");
-        ResolvedSelect query = new MockResolvedSelectBuilder()
-                
-                        .withDbEntity(mockDbEntity)
-                        
-                .build();
-
-        SelectTranslatorContext context = new MockSelectTranslatorContext(query);
-
-        DataMap dataMap = new DataMap();
+        DataMap dataMap = new DataMap("mock");
         dataMap.addDbEntity(mockDbEntity);
 
         ObjEntity entity = new ObjEntity();
@@ -66,12 +53,13 @@ public class DescriptorColumnExtractorTest extends BaseColumnExtractorTest {
 
         dataMap.addObjEntity(entity);
 
-        EntityResolver resolver = new EntityResolver();
-        resolver.addDataMap(dataMap);
-        resolver.setValueComparisonStrategyFactory(new DefaultValueComparisonStrategyFactory(mock(ValueObjectTypeRegistry.class)));
-        resolver.setObjectFactory(new DefaultAdhocObjectFactory(null, new DefaultClassLoaderManager()));
+        CompiledMapping mapping = compile(dataMap);
+        ResolvedSelect query = new MockResolvedSelectBuilder()
+                .withDbEntity(mapping.schema().table("mock"))
+                .build();
+        SelectTranslatorContext context = new MockSelectTranslatorContext(query, mapping);
 
-        DescriptorColumnExtractor extractor = new DescriptorColumnExtractor(context, resolver.getClassDescriptor("mock"));
+        DescriptorColumnExtractor extractor = new DescriptorColumnExtractor(context, mapping.entity("mock"));
         extractor.extract();
 
         assertEquals(2, context.getResultNodeList().size());

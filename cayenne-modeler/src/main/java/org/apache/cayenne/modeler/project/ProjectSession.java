@@ -261,7 +261,7 @@ public class ProjectSession {
     }
 
     public DbRelationship[] getSelectedDbRelationships() {
-        return state.dbRelationships;
+        return state.joins;
     }
 
     public NamedQuery getSelectedQuery() {
@@ -910,7 +910,7 @@ public class ProjectSession {
     }
 
     public void displayDbRelationship(DbRelationshipDisplayEvent e) {
-        boolean changed = !Arrays.equals(e.getRelationships(), state.dbRelationships);
+        boolean changed = !Arrays.equals(e.getRelationships(), state.joins);
 
         if (changed) {
             if (e.getEntity() != state.dbEntity) {
@@ -919,8 +919,8 @@ public class ProjectSession {
                 state.dataMap = e.getDataMap();
                 state.dbEntity = e.getEntity();
             }
-            state.dbRelationships = new DbRelationship[e.getRelationships().length];
-            System.arraycopy(e.getRelationships(), 0, state.dbRelationships, 0, state.dbRelationships.length);
+            state.joins = new DbRelationship[e.getRelationships().length];
+            System.arraycopy(e.getRelationships(), 0, state.joins, 0, state.joins.length);
 
             for (DbRelationshipDisplayListener listener : listeners.getListeners(DbRelationshipDisplayListener.class)) {
                 listener.dbRelationshipSelected(e);
@@ -1072,7 +1072,7 @@ public class ProjectSession {
         ObjAttribute[] objAttributes;
         DbAttribute[] dbAttributes;
         ObjRelationship[] objRelationships;
-        DbRelationship[] dbRelationships;
+        DbRelationship[] joins;
 
         Procedure procedure;
         ProcedureParameter[] procedureParameters;
@@ -1084,7 +1084,7 @@ public class ProjectSession {
             // life is much easier if these guys are never null
             embeddableAttributes = new EmbeddableAttribute[0];
             dbAttributes = new DbAttribute[0];
-            dbRelationships = new DbRelationship[0];
+            joins = new DbRelationship[0];
             procedureParameters = new ProcedureParameter[0];
             objAttributes = new ObjAttribute[0];
             objRelationships = new ObjRelationship[0];

@@ -150,8 +150,8 @@ public class JointPrefetchIT {
             assertEquals(3, rows.size());
 
             // row should contain columns from both entities minus those duplicated in a join...
-            int rowWidth = context.getEntityResolver().getDbEntity("ARTIST").getAttributes().size()
-                    + context.getEntityResolver().getDbEntity("PAINTING").getAttributes().size();
+            int rowWidth = context.getMapping().schema().table("ARTIST").columns().size()
+                    + context.getMapping().schema().table("PAINTING").columns().size();
             for (DataRow row : rows) {
                 assertEquals(rowWidth, row.size(), "" + row);
 
@@ -252,10 +252,12 @@ public class JointPrefetchIT {
         context.execute(paintingSQL);
 
         // test
-        ObjEntity artistE = context.getEntityResolver().getObjEntity("Artist");
+        ObjEntity artistE = env.project().objEntity(context.getMapping().entity("Artist"));
+
         ObjAttribute dateOfBirth = artistE.getAttribute("dateOfBirth");
         assertEquals("java.util.Date", dateOfBirth.getType());
         dateOfBirth.setType("java.sql.Date");
+        env.recompile();
         try {
              List<Painting> objects = ObjectSelect.query(Painting.class)
                     .prefetch(Painting.ARTIST.joint())
@@ -272,7 +274,9 @@ public class JointPrefetchIT {
             });
         } finally {
             dateOfBirth.setType("java.util.Date");
+            env.recompile();
         }
+
     }
 
     @Test

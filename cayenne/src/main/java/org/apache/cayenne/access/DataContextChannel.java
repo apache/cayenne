@@ -30,7 +30,7 @@ import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.graph.ChildDiffLoader;
 import org.apache.cayenne.graph.CompoundDiff;
 import org.apache.cayenne.graph.GraphDiff;
-import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.compiled.CompiledMapping;
 import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.cayenne.query.resolved.ResolvedQuery;
 import org.apache.cayenne.query.ResultSegment;
@@ -60,8 +60,8 @@ public record DataContextChannel(DataContext context) implements DataChannel {
     }
 
     @Override
-    public EntityResolver getEntityResolver() {
-        return context.getEntityResolver();
+    public CompiledMapping getMapping() {
+        return context.getMapping();
     }
 
     @Override

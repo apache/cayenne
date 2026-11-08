@@ -25,8 +25,8 @@ import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.compiled.CompiledColumn;
+import org.apache.cayenne.map.compiled.CompiledEntity;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -220,12 +220,12 @@ public class IdPropertyIT {
     @Test
     public void evaluateEntity() {
         Expression exp = Painting.ARTIST.dot(Artist.ARTIST_ID_PK_PROPERTY).getExpression();
-        ObjEntity painting = context.getEntityResolver().getObjEntity(Painting.class);
+        CompiledEntity painting = context.getMapping().entity(Painting.class);
         Object result = exp.evaluate(painting);
         assertNotNull(result);
-        assertInstanceOf(DbAttribute.class, result);
-        DbAttribute pk = (DbAttribute)result;
-        assertEquals("ARTIST_ID", pk.getName());
+        assertInstanceOf(CompiledColumn.class, result);
+        CompiledColumn pk = (CompiledColumn) result;
+        assertEquals("ARTIST_ID", pk.name());
         assertTrue(pk.isPrimaryKey());
     }
 }

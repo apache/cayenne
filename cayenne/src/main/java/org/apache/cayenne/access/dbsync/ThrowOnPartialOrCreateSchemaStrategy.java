@@ -21,12 +21,14 @@ package org.apache.cayenne.access.dbsync;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DbGenerator;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.log.SQLLogger;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.compiled.CompiledSchema;
+import org.apache.cayenne.map.compiled.CompiledTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import javax.sql.DataSource;
 import java.util.Collection;
 
@@ -37,26 +39,32 @@ public class ThrowOnPartialOrCreateSchemaStrategy extends ThrowOnPartialSchemaSt
 
     private final static Logger LOGGER = LoggerFactory.getLogger(ThrowOnPartialOrCreateSchemaStrategy.class);
 
-    @Override
-    public void updateSchema(DbAdapter adapter, DataSource dataSource, Collection<DataMap> dataMaps, SQLLogger logger) {
+    protected final SQLLogger sqlLogger;
 
-        Collection<DbEntity> entities = dbEntities(dataMaps);
-        SchemaAnalyzer analyzer = analyze(dataSource, entities);
+    public ThrowOnPartialOrCreateSchemaStrategy(@Inject SQLLogger sqlLogger) {
+        this.sqlLogger = sqlLogger;
+    }
+
+    @Override
+    public void updateSchema(DbAdapter adapter, DataSource dataSource, CompiledSchema schema, String... dataMaps) {
+
+        Collection<CompiledTable> tables = tablesOf(schema, dataMaps);
+        SchemaAnalyzer analyzer = analyze(dataSource, tables);
 
         if (analyzer.getTableNoInDB().isEmpty() && analyzer.getErrorMessage() == null) {
             LOGGER.info("Full schema is present");
-        } else if (analyzer.getTableNoInDB().size() == entities.size()) {
+        } else if (analyzer.getTableNoInDB().size() == tables.size()) {
             LOGGER.info("No schema detected, will create mapped tables");
-            generate(adapter, dataSource, dataMaps, logger);
+            generate(adapter, dataSource, schema, dataMaps);
         } else {
             LOGGER.info("Error - partial schema detected");
-            throw new CayenneRuntimeException(mismatchMessage(analyzer, entities.size()));
+            throw new CayenneRuntimeException(mismatchMessage(analyzer, tables.size()));
         }
     }
 
-    private void generate(DbAdapter adapter, DataSource dataSource, Collection<DataMap> dataMaps, SQLLogger logger) {
-        for (DataMap map : dataMaps) {
-            DbGenerator gen = new DbGenerator(adapter, map, logger);
+    private void generate(DbAdapter adapter, DataSource dataSource, CompiledSchema schema, String... dataMaps) {
+        for (String map : dataMaps) {
+            DbGenerator gen = new DbGenerator(adapter, schema, map, List.of(), List.of(dataMaps), sqlLogger);
             gen.setShouldCreateTables(true);
             gen.setShouldDropTables(false);
             gen.setShouldCreateFKConstraints(false);

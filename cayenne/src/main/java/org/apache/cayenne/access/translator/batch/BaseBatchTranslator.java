@@ -30,7 +30,7 @@ import org.apache.cayenne.access.jdbc.PSParameter;
 import org.apache.cayenne.access.translator.BatchTranslator;
 import org.apache.cayenne.access.translator.TranslatedBatch;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.compiled.CompiledColumn;
 import org.apache.cayenne.query.resolved.BatchRow;
 import org.apache.cayenne.query.resolved.ResolvedBatch;
 
@@ -89,15 +89,15 @@ public abstract class BaseBatchTranslator<T extends ResolvedBatch> implements Ba
         return visitor.getSQLString();
     }
 
-    protected abstract boolean isNullAttribute(BatchTranslatorContext<T> context, DbAttribute attribute);
+    protected abstract boolean isNullAttribute(BatchTranslatorContext<T> context, CompiledColumn column);
 
-    protected ExpressionNodeBuilder buildQualifier(BatchTranslatorContext<T> context, List<DbAttribute> attributeList) {
+    protected ExpressionNodeBuilder buildQualifier(BatchTranslatorContext<T> context, List<CompiledColumn> columnList) {
         ExpressionNodeBuilder eq = null;
-        for (DbAttribute attr : attributeList) {
-            Integer value = isNullAttribute(context, attr) ? null : 1;
+        for (CompiledColumn column : columnList) {
+            Integer value = isNullAttribute(context, column) ? null : 1;
             ExpressionNodeBuilder next = SQLBuilder
-                    .column(attr.getName()).attribute(attr)
-                    .eq(SQLBuilder.value(value).attribute(attr));
+                    .column(column.name()).attribute(column)
+                    .eq(SQLBuilder.value(value).attribute(column));
             if (eq == null) {
                 eq = next;
             } else {

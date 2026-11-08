@@ -31,9 +31,8 @@ import org.apache.cayenne.access.flush.operation.InsertDbRowOp;
 import org.apache.cayenne.access.flush.operation.UpdateDbRowOp;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.graph.GraphChangeHandler;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.reflect.AdditionalDbEntityDescriptor;
-import org.apache.cayenne.reflect.ClassDescriptor;
+import org.apache.cayenne.map.compiled.CompiledFlattenedTable;
+import org.apache.cayenne.map.compiled.CompiledEntity;
 
 /**
  * Visitor that runs all required actions based on operation type.
@@ -69,32 +68,31 @@ class RootRowOpProcessor implements DbRowOpVisitor<Void> {
     @Override
     public Void visitUpdate(UpdateDbRowOp dbRow) {
         diff.apply(updateHandler);
-        if (dbRowOpFactory.getDescriptor().getEntity().getDeclaredLockType() == ObjEntity.LOCK_TYPE_OPTIMISTIC) {
-            new OptimisticLockQualifierBuilder(dbRow, diff).build(dbRowOpFactory.getDescriptor());
+        if (dbRowOpFactory.getEntity().declaredLockType() == CompiledEntity.LOCK_TYPE_OPTIMISTIC) {
+            new OptimisticLockQualifierBuilder(dbRow, diff).build(dbRowOpFactory.getEntity());
         }
         return null;
     }
 
     @Override
     public Void visitDelete(DeleteDbRowOp dbRow) {
-        ObjEntity entity = dbRowOpFactory.getDescriptor().getEntity();
+        CompiledEntity entity = dbRowOpFactory.getEntity();
         if (entity.isReadOnly()) {
             throw new CayenneRuntimeException("Attempt to modify object(s) mapped to a read-only entity: '%s'. " +
-                    "Can't commit changes.", entity.getName());
+                    "Can't commit changes.", entity.name());
         }
         diff.apply(deleteHandler);
 
-        ClassDescriptor descriptor = dbRowOpFactory.getDescriptor();
         Map<CayennePath,ObjectId> flattenedPathIdMap = dbRowOpFactory.getStore().getFlattenedPathIdMap(dbRow.getChangeId());
         flattenedPathIdMap.forEach((path, id) -> {
-            AdditionalDbEntityDescriptor addEntity = descriptor.getAdditionalDbEntities().get(path);
-            if (!addEntity.noDelete()) {// See PersistentDescriptorFactory.indexAdditionalDbEntities
-                dbRowOpFactory.getOrCreate(addEntity.getDbEntity(), id, DbRowOpType.DELETE);
+            CompiledFlattenedTable flattenedTable = entity.flattenedTables().get(path);
+            if (!flattenedTable.noDelete()) {// See PersistentDescriptorFactory.indexAdditionalDbEntities
+                dbRowOpFactory.getOrCreate(flattenedTable.table(), id, DbRowOpType.DELETE);
             }
         });
 
-        if (entity.getDeclaredLockType() == ObjEntity.LOCK_TYPE_OPTIMISTIC) {
-            new OptimisticLockQualifierBuilder(dbRow, diff).build(descriptor);
+        if (entity.declaredLockType() == CompiledEntity.LOCK_TYPE_OPTIMISTIC) {
+            new OptimisticLockQualifierBuilder(dbRow, diff).build(entity);
         }
         return null;
     }

@@ -21,9 +21,9 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.DataRowLayout;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.map.DbJoin;
-import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.map.compiled.CompiledColumnPair;
+import org.apache.cayenne.map.compiled.CompiledJoin;
+import org.apache.cayenne.map.compiled.CompiledRelationship;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,7 +36,7 @@ import java.util.Map;
 class ResultScanParentAttachmentStrategy implements ParentAttachmentStrategy {
 
     private final PrefetchProcessorNode parentNode;
-    private final DbJoin[] joins;
+    private final CompiledColumnPair[] joins;
     private final PrefetchProcessorNode node;
 
     // the join columns in the child rows and in the parent rows
@@ -58,21 +58,21 @@ class ResultScanParentAttachmentStrategy implements ParentAttachmentStrategy {
         this.node = node;
         parentNode = (PrefetchProcessorNode) node.getParent();
 
-        ObjRelationship relationship = node.getIncoming().getRelationship();
+        CompiledRelationship relationship = node.getIncoming();
 
-        List<DbRelationship> dbRelationships = relationship.getDbRelationships();
-        if (dbRelationships.size() > 1) {
+        List<CompiledJoin> joinPath = relationship.joins();
+        if (joinPath.size() > 1) {
             throw new IllegalArgumentException(
                     "ResultScanParentAttachmentStrategy does not work for flattened relationships");
         }
 
-        joins = dbRelationships.get(0).getJoins().toArray(new DbJoin[0]);
+        joins = joinPath.get(0).columnPairs().toArray(new CompiledColumnPair[0]);
 
         String[] targetNames = new String[joins.length];
         String[] sourceNames = new String[joins.length];
         for (int i = 0; i < joins.length; i++) {
-            targetNames[i] = joins[i].getTargetName();
-            sourceNames[i] = joins[i].getSourceName();
+            targetNames[i] = joins[i].target().name();
+            sourceNames[i] = joins[i].source().name();
         }
         targetReader = DataRowLayout.of(targetNames).reader();
         sourceReader = DataRowLayout.of(sourceNames).reader();

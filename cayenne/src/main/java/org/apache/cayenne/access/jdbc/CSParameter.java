@@ -19,11 +19,11 @@
 package org.apache.cayenne.access.jdbc;
 
 import org.apache.cayenne.access.types.ExtendedType;
-import org.apache.cayenne.map.ProcedureParameter;
+import org.apache.cayenne.map.compiled.CompiledProcedureParameter;
 
 /**
  * Describes a single immutable CallableStatement parameter binding, pairing a bound value with the
- * {@link ProcedureParameter} that describes it.
+ * {@link CompiledProcedureParameter} that describes it.
  *
  * @since 5.0
  */
@@ -33,6 +33,6 @@ public record CSParameter<T>(
         int psType,
         int psScale,
         ExtendedType<T> binder,
-        ProcedureParameter param
+        CompiledProcedureParameter param
 ) {
 }

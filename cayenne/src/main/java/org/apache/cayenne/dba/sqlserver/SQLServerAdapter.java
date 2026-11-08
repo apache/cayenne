@@ -40,8 +40,8 @@ import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.compiled.CompiledColumn;
+import org.apache.cayenne.map.compiled.CompiledTable;
 import org.apache.cayenne.access.translator.TranslatedSelect;
 import org.apache.cayenne.access.translator.TranslatedProcedure;
 import org.apache.cayenne.access.translator.TranslatedBatch;
@@ -157,7 +157,7 @@ public class SQLServerAdapter extends JdbcAdapter {
      * Overrides super implementation to correctly set up identity columns.
      */
     @Override
-    public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
+    public void createTableAppendColumn(StringBuffer sqlBuffer, CompiledColumn column) {
 
         super.createTableAppendColumn(sqlBuffer, column);
 
@@ -281,7 +281,7 @@ public class SQLServerAdapter extends JdbcAdapter {
      * @since 4.2.1
      */
     @Override
-    public String createUniqueConstraint(DbEntity source, Collection<DbAttribute> columns) {
+    public String createUniqueConstraint(CompiledTable source, Collection<CompiledColumn> columns) {
         if (columns == null || columns.isEmpty()) {
             throw new CayenneRuntimeException("Can't create UNIQUE constraint - no columns specified.");
         }
@@ -289,21 +289,21 @@ public class SQLServerAdapter extends JdbcAdapter {
         QuotingStrategy quotes = getQuotingStrategy(source);
 
         return "CREATE UNIQUE NONCLUSTERED INDEX " + uniqueIndexName(source, columns) + " ON " +
-                quotes.quotedFQN(source.getCatalog(), source.getSchema(), source.getName()) +
+                quotes.quotedFQN(source.catalog(), source.schema(), source.name()) +
                 "(" +
-                columns.stream().map(c -> quotes.quoted(c.getName())).collect(Collectors.joining(", ")) +
+                columns.stream().map(c -> quotes.quoted(c.name())).collect(Collectors.joining(", ")) +
                 ") WHERE " +
-                columns.stream().map(c -> quotes.quoted(c.getName()))
+                columns.stream().map(c -> quotes.quoted(c.name()))
                         .map(n -> n + " IS NOT NULL")
                         .collect(Collectors.joining(" AND "));
     }
 
-    private String uniqueIndexName(DbEntity source, Collection<DbAttribute> columns) {
+    private String uniqueIndexName(CompiledTable source, Collection<CompiledColumn> columns) {
         return "_idx_unique_"
-                + source.getName().replace(' ', '_').toLowerCase()
+                + source.name().replace(' ', '_').toLowerCase()
                 + "_"
                 + columns.stream()
-                .map(DbAttribute::getName)
+                .map(CompiledColumn::name)
                 .map(String::toLowerCase)
                 .map(n -> n.replace(' ', '_'))
                 .collect(Collectors.joining("_"));

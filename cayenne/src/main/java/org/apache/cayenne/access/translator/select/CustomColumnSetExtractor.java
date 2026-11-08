@@ -31,16 +31,15 @@ import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.ObjPathExp;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.exp.property.Property;
-import org.apache.cayenne.map.EmbeddedAttribute;
+import org.apache.cayenne.map.compiled.CompiledEmbeddedAttribute;
 import org.apache.cayenne.map.JoinType;
-import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.compiled.CompiledEntity;
 import org.apache.cayenne.query.EmbeddableResultSegment;
 import org.apache.cayenne.query.EmbeddedResult;
 import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.cayenne.query.ResultSegment;
 import org.apache.cayenne.query.ResultSegments;
 import org.apache.cayenne.query.ScalarResultSegment;
-import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**
  * Extracts SQL columns for a query with an explicit column list. Each column is classified by the result segment
@@ -71,7 +70,7 @@ class CustomColumnSetExtractor implements ColumnExtractor {
         Iterator<ResultSegment> segmentIterator = segments.iterator();
         for (Property<?> property : columns) {
             switch (segmentIterator.next()) {
-                case EntityResultSegment segment -> extractFullObject(prefix, property, segment.classDescriptor());
+                case EntityResultSegment segment -> extractFullObject(prefix, property, segment.entity());
                 case EmbeddableResultSegment ignored -> extractEmbeddedObject(property);
                 case ScalarResultSegment segment -> extractSimpleProperty(property, segment);
             }
@@ -90,31 +89,29 @@ class CustomColumnSetExtractor implements ColumnExtractor {
     }
 
     private void extractEmbeddedObject(Property<?> property) {
-        Object o = property.getExpression().evaluate(context.getSelect().objEntity());
-        if(!(o instanceof EmbeddedAttribute attribute)) {
+        Object o = property.getExpression().evaluate(context.getSelect().entity());
+        if(!(o instanceof CompiledEmbeddedAttribute attribute)) {
             throw new CayenneRuntimeException("EmbeddedAttribute expected, %s found", o);
         }
-        EmbeddedResult result = new EmbeddedResult(attribute.getEmbeddable(), attribute.getAttributes().size());
-        attribute.getAttributes().forEach(attr -> {
+        EmbeddedResult result = new EmbeddedResult(attribute.embeddable(), attribute.attributes().size());
+        attribute.attributes().forEach(attr -> {
             Node sqlNode = context.getQualifierTranslator()
-                    .translate(ExpressionFactory.dbPathExp(attr.getDbAttributePath()));
+                    .translate(ExpressionFactory.dbPathExp(attr.dbPath()));
             context.addResultNode(sqlNode, true, null, null);
             result.addAttribute(attr);
         });
         context.getSqlResult().addEmbeddedResult(result);
     }
 
-    private void extractFullObject(CayennePath prefix, Property<?> property, ClassDescriptor descriptor) {
+    private void extractFullObject(CayennePath prefix, Property<?> property, CompiledEntity entity) {
         prefix = calculatePrefix(prefix, property);
         ensureJoin(prefix);
-
-        ObjEntity entity = descriptor.getEntity();
 
         ColumnExtractor extractor;
         if(context.getSelect().pageSize() > 0) {
             extractor = new IdColumnExtractor(context, entity);
         } else {
-            extractor = new DescriptorColumnExtractor(context, descriptor);
+            extractor = new DescriptorColumnExtractor(context, entity);
         }
 
         int index = context.getResultNodeList().size();
@@ -140,7 +137,7 @@ class CustomColumnSetExtractor implements ColumnExtractor {
     private CayennePath dbPathOrDefault(Expression pathExp, CayennePath defaultPrefix) {
         // normalize to db path first
         if(pathExp instanceof ObjPathExp) {
-            pathExp = context.getSelect().objEntity().translateToDbPath(pathExp);
+            pathExp = context.getSelect().entity().translateToDbPath(pathExp);
         }
 
         if(!(pathExp instanceof DbPathExp dbPath)) {
@@ -160,7 +157,7 @@ class CustomColumnSetExtractor implements ColumnExtractor {
             int nodeCount = tableTree.getNodeCount();
 
             PathTranslationResult result = context.getPathTranslator()
-                    .translatePath(context.getSelect().dbEntity(), prefix);
+                    .translatePath(context.getSelect().table(), prefix);
             result.getDbRelationship().ifPresent(relationship
                     -> tableTree.addJoinTable(result.getFinalPath(), relationship, JoinType.LEFT_OUTER));
 

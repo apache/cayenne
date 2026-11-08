@@ -140,7 +140,7 @@ public#if("true" == "${object.isAbstract()}") abstract#end class ${subClassName}
         beforePropertyRead("${attr.Name}");
 #if ($attr.Lazy)
         if(this.$name instanceof Fault) {
-            this.$name = ((Fault) this.$name).resolveFault(this, "$attr.Name");
+            this.$name = ((Fault) this.$name).resolveFault(this);
         }
 #end
 #if ($importUtils.isPrimitive($type) && !$attr.isMandatory())

@@ -92,7 +92,7 @@ public class SimpleIdIncrementalFaultListIT {
                 .orderBy(Artist.ARTIST_ID_PK_PROPERTY.asc())
                 .select(context);
 
-        return new SimpleIdIncrementalFaultList<>(context, query.resolve(context.getEntityResolver()), 10000, ids);
+        return new SimpleIdIncrementalFaultList<>(context, query.resolve(context.getMapping()), 10000, ids);
     }
 
     @Test
@@ -102,7 +102,7 @@ public class SimpleIdIncrementalFaultListIT {
         ObjectSelect<Artist> query = Artist.SELF.query().pageSize(10);
         SimpleIdIncrementalFaultList<Artist> list = new SimpleIdIncrementalFaultList<>(
                 context,
-                query.resolve(context.getEntityResolver()),
+                query.resolve(context.getMapping()),
                 10000,
                 Artist.SELF.columnQuery(Artist.ARTIST_ID_PK_PROPERTY).select(context));
 
@@ -173,7 +173,7 @@ public class SimpleIdIncrementalFaultListIT {
 
         SimpleIdIncrementalFaultList<Artist> list = new SimpleIdIncrementalFaultList<>(
                 context,
-                q.resolve(context.getEntityResolver()),
+                q.resolve(context.getMapping()),
                 10000,
                 Artist.SELF.columnQuery(Artist.ARTIST_ID_PK_PROPERTY)
                         .orderBy(Artist.ARTIST_NAME.asc())

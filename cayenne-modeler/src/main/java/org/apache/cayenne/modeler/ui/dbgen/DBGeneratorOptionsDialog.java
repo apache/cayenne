@@ -27,6 +27,10 @@ import org.apache.cayenne.access.DbGenerator;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.log.NoopSQLLogger;
 import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.compiled.CompiledDataMap;
+import org.apache.cayenne.map.compiled.CompiledSchema;
+import org.apache.cayenne.map.compiled.SchemaCompiler;
 import org.apache.cayenne.modeler.pref.dbconnector.DBConnector;
 import org.apache.cayenne.modeler.dbconnector.DBConnectorFactory;
 import org.apache.cayenne.modeler.pref.adapters.DBGeneratorPrefs;
@@ -39,6 +43,7 @@ import org.apache.cayenne.modeler.ui.validation.ValidationDialog;
 import org.apache.cayenne.modeler.dbadapter.DbAdapters;
 import org.apache.cayenne.validation.ValidationResult;
 
+import java.util.List;
 import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
@@ -262,12 +267,17 @@ public class DBGeneratorOptionsDialog extends ProjectDialog {
         try {
             DbAdapter adapter = new DBConnectorFactory(app.getClassLoader()).makeAdapter(connector, app.getDbAdapterFactory(), true);
             generators = new ArrayList<>();
+            // the maps are compiled together, so that the constraints between their tables are generated
+            CompiledSchema schema = SchemaCompiler.compile(dataMaps);
+            List<String> excludedTables = tables.getExcludedTables().stream().map(DbEntity::getName).toList();
+            List<String> databaseMaps = schema.maps().stream().map(CompiledDataMap::name).toList();
             for (DataMap dataMap : dataMaps) {
                 generators.add(new DbGenerator(
                         adapter,
-                        dataMap,
-                        tables.getExcludedTables(),
-                        null,
+                        schema,
+                        dataMap.getName(),
+                        excludedTables,
+                        databaseMaps,
                         NoopSQLLogger.getInstance()));
             }
         } catch (Exception ex) {

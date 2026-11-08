@@ -19,8 +19,8 @@
 
 package org.apache.cayenne.query.resolved;
 
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.compiled.CompiledDataMap;
+import org.apache.cayenne.map.compiled.CompiledColumn;
 import org.apache.cayenne.query.Query;
 
 import java.util.List;
@@ -42,14 +42,14 @@ public sealed interface ResolvedBatch extends ResolvedQuery permits InsertBatch,
     }
 
     @Override
-    default DataMap dataMap() {
-        return dbEntity().getDataMap();
+    default CompiledDataMap dataMap() {
+        return table().map();
     }
 
     /**
      * Returns the attributes bound by the batch statement, in the order of the statement parameters.
      */
-    List<DbAttribute> dbAttributes();
+    List<CompiledColumn> dbAttributes();
 
     List<BatchRow> rows();
 

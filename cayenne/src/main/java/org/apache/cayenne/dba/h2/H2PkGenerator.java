@@ -21,7 +21,7 @@ package org.apache.cayenne.dba.h2;
 
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.SequencePkGenerator;
-import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.compiled.CompiledTable;
 
 /**
  * Default PK generator for H2 that uses sequences for PK generation.
@@ -34,9 +34,9 @@ public class H2PkGenerator extends SequencePkGenerator {
     }
 
     @Override
-    protected String createSequenceString(DbAdapter adapter, DbEntity ent) {
-        return "CREATE SEQUENCE " + adapter.getQuotingStrategy(ent).quotedFQN(ent.getCatalog(), ent.getSchema(),
-                sequenceName(ent)) + " START WITH " + pkStartValue + " INCREMENT BY " + pkCacheSize(ent) + " CACHE 1";
+    protected String createSequenceString(DbAdapter adapter, CompiledTable table) {
+        return "CREATE SEQUENCE " + adapter.getQuotingStrategy(table).quotedFQN(table.catalog(), table.schema(),
+                sequenceName(table)) + " START WITH " + pkStartValue + " INCREMENT BY " + pkCacheSize(table) + " CACHE 1";
     }
 
     @Override

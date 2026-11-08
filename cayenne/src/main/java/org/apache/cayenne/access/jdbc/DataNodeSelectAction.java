@@ -198,6 +198,6 @@ public class DataNodeSelectAction {
             });
         }
 
-        return new DistinctResultIterator<>(iterator, query.dbEntity(), compareFullRows[0]);
+        return new DistinctResultIterator<>(iterator, query.table(), compareFullRows[0]);
     }
 }

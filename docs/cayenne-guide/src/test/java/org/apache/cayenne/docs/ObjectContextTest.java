@@ -30,7 +30,7 @@ import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.SelectResult;
 import org.apache.cayenne.UpdateResult;
 import org.apache.cayenne.docs.persistent.Artist;
-import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.compiled.CompiledMapping;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLQuery;
@@ -182,10 +182,10 @@ public class ObjectContextTest extends BaseTest {
     @Test
     public void entityResolver() {
         // tag::entityResolver[]
-        EntityResolver resolver = context.getEntityResolver();
+        CompiledMapping mapping = context.getMapping();
         // end::entityResolver[]
 
-        assertNotNull(resolver.getObjEntity("Artist"));
+        assertNotNull(mapping.entity("Artist"));
     }
 
     @Test

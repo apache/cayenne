@@ -55,7 +55,7 @@ public class DropRelationshipToDb extends AbstractToDbToken.Entity {
             return Collections.emptyList();
         }
 
-        QuotingStrategy quotes = adapter.getQuotingStrategy(getEntity());
+        QuotingStrategy quotes = adapter.getQuotingStrategy(CompiledModel.table(getEntity()));
         StringBuilder sql = new StringBuilder("ALTER TABLE ");
         quotes.appendFQN(sql, getEntity().getCatalog(), getEntity().getSchema(), getEntity().getName());
         sql.append(" DROP CONSTRAINT ").append(getFkName());

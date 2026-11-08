@@ -38,7 +38,8 @@ import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.compiled.CompiledColumn;
+import org.apache.cayenne.map.compiled.CompiledTable;
 import org.apache.cayenne.access.translator.TranslatedSQL;
 import org.apache.cayenne.access.translator.TranslatedProcedure;
 
@@ -225,10 +226,10 @@ public class OracleAdapter extends JdbcAdapter {
      * @since 3.0
      */
     @Override
-    public Collection<String> dropTableStatements(DbEntity table) {
+    public Collection<String> dropTableStatements(CompiledTable table) {
         QuotingStrategy quotes = getQuotingStrategy(table);
         StringBuilder buf = new StringBuilder("DROP TABLE ");
-        quotes.appendFQN(buf, table.getCatalog(), table.getSchema(), table.getName());
+        quotes.appendFQN(buf, table.catalog(), table.schema(), table.name());
         buf.append(" CASCADE CONSTRAINTS");
         return Collections.singleton(buf.toString());
     }

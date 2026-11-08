@@ -22,14 +22,13 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.Procedure;
+import org.apache.cayenne.map.compiled.CompiledDataMap;
+import org.apache.cayenne.map.compiled.CompiledTable;
+import org.apache.cayenne.map.compiled.CompiledMapping;
+import org.apache.cayenne.map.compiled.CompiledEntity;
+import org.apache.cayenne.map.compiled.CompiledProcedure;
 import org.apache.cayenne.query.resolved.ResolvedProcedure;
 import org.apache.cayenne.query.resolved.ResolvedQuery;
-import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.util.ToStringBuilder;
 
 import java.util.ArrayList;
@@ -237,27 +236,25 @@ public class ProcedureQuery<T> implements Query<T> {
     }
 
     @Override
-    public ResolvedProcedure resolve(EntityResolver resolver) {
-        Procedure procedure = resolver.getProcedure(procedureName);
+    public ResolvedProcedure resolve(CompiledMapping mapping) {
+        CompiledProcedure procedure = mapping.schema().procedure(procedureName);
         if (procedure == null) {
             throw new CayenneRuntimeException("Unknown procedure: %s", procedureName);
         }
 
-        ObjEntity entity = null;
+        CompiledEntity entity = null;
         if (resultClass != null) {
-            entity = resolver.getObjEntity(resultClass);
+            entity = mapping.entity(resultClass);
         } else if (resultEntityName != null) {
-            entity = resolver.getObjEntity(resultEntityName);
+            entity = mapping.entity(resultEntityName);
         }
 
-        DbEntity dbEntity = null;
-        ClassDescriptor descriptor = null;
+        CompiledTable table = null;
         // theoretically procedure can be in one DataMap, while the Java Class - in another.
-        DataMap dataMap = procedure.getDataMap();
+        CompiledDataMap dataMap = procedure.map();
         if (entity != null) {
-            dbEntity = entity.getDbEntity();
-            dataMap = entity.getDataMap();
-            descriptor = resolver.getClassDescriptor(entity.getName());
+            table = entity.table();
+            dataMap = entity.map();
         }
 
         Map<String, Object> params = this.params != null ? this.params : Collections.emptyMap();
@@ -267,7 +264,7 @@ public class ProcedureQuery<T> implements Query<T> {
         CapsStrategy capsStrategy = this.capsStrategy != null ? this.capsStrategy : CapsStrategy.DEFAULT;
         String cacheKey = cacheStrategy != QueryCacheStrategy.NO_CACHE ? cacheKey(procedure, params) : null;
 
-        return new ResolvedProcedure(this, procedure, entity, dbEntity, dataMap, descriptor, params,
+        return new ResolvedProcedure(this, procedure, entity, table, dataMap, params,
                 resultDescriptors, capsStrategy, fetchingDataRows, fetchLimit, fetchOffset, pageSize,
                 statementFetchSize, queryTimeout, cacheStrategy, cacheKey, cacheGroup);
     }
@@ -275,8 +272,8 @@ public class ProcedureQuery<T> implements Query<T> {
     /**
      * Creates a unique key based on procedure and parameters.
      */
-    private String cacheKey(Procedure procedure, Map<String, Object> parameters) {
-        StringBuilder key = new StringBuilder("proc:").append(procedure.getName());
+    private String cacheKey(CompiledProcedure procedure, Map<String, Object> parameters) {
+        StringBuilder key = new StringBuilder("proc:").append(procedure.name());
         if (!parameters.isEmpty()) {
             List<String> keys = new ArrayList<>(parameters.keySet());
             Collections.sort(keys);

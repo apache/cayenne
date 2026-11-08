@@ -19,9 +19,10 @@
 package org.apache.cayenne.crypto.transformer.value;
 
 import org.apache.cayenne.crypto.key.KeySource;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.CayenneRuntime;
+import org.apache.cayenne.map.compiled.CompiledColumn;
+import org.apache.cayenne.map.compiled.CompiledTable;
+import org.apache.cayenne.map.compiled.CompiledMapping;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,6 +32,7 @@ import java.math.BigInteger;
 import java.sql.Types;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -42,10 +44,10 @@ import static org.mockito.Mockito.when;
 
 public class DefaultValueTransformerFactoryIT {
 
-    private static DbEntity t1;
-    private static DbEntity t2;
-    private static DbEntity t3;
-    private static DbEntity t5;
+    private static CompiledTable t1;
+    private static CompiledTable t2;
+    private static CompiledTable t3;
+    private static CompiledTable t5;
 
     private static Map<String, BytesConverter<?>> dbToBytes, objectToBytes;
 
@@ -54,10 +56,11 @@ public class DefaultValueTransformerFactoryIT {
     @BeforeAll
     public static void beforeClass() throws Exception {
         CayenneRuntime runtime = CayenneRuntime.of().addConfig("cayenne-crypto.xml").build();
-        t1 = runtime.getDataDomain().getEntityResolver().getDbEntity("TABLE1");
-        t2 = runtime.getDataDomain().getEntityResolver().getDbEntity("TABLE2");
-        t3 = runtime.getDataDomain().getEntityResolver().getDbEntity("TABLE3");
-        t5 = runtime.getDataDomain().getEntityResolver().getDbEntity("TABLE5");
+        CompiledMapping mapping = runtime.getDataDomain().getMapping();
+        t1 = mapping.schema().table("TABLE1");
+        t2 = mapping.schema().table("TABLE2");
+        t3 = mapping.schema().table("TABLE3");
+        t5 = mapping.schema().table("TABLE5");
 
         dbToBytes = getDefaultDbConverters();
         objectToBytes = getDefaultObjectConverters();
@@ -71,26 +74,28 @@ public class DefaultValueTransformerFactoryIT {
     @Test
     public void getJavaType() {
 
-        DbAttribute t1_ct = t1.getAttribute("CRYPTO_STRING");
+        CompiledColumn t1_ct = t1.column("CRYPTO_STRING");
         assertEquals("java.lang.String", f.getJavaType(t1_ct));
 
-        DbAttribute t2_cb = t2.getAttribute("CRYPTO_BYTES");
+        CompiledColumn t2_cb = t2.column("CRYPTO_BYTES");
         assertEquals("byte[]", f.getJavaType(t2_cb));
 
-        DbEntity fakeEntity = mock(DbEntity.class);
-        when(fakeEntity.getDataMap()).thenReturn(t1.getDataMap());
+        // a column with no ObjAttributes mapped to it
+        CompiledTable fakeTable = mock(CompiledTable.class);
+        when(fakeTable.name()).thenReturn("FAKE");
+        when(fakeTable.entities()).thenReturn(List.of());
 
-        DbAttribute fakeA1 = mock(DbAttribute.class);
-        when(fakeA1.getName()).thenReturn("fake1");
-        when(fakeA1.getEntity()).thenReturn(fakeEntity);
-        when(fakeA1.getType()).thenReturn(Types.VARBINARY);
+        CompiledColumn fakeA1 = mock(CompiledColumn.class);
+        when(fakeA1.name()).thenReturn("fake1");
+        when(fakeA1.table()).thenReturn(fakeTable);
+        when(fakeA1.jdbcType()).thenReturn(Types.VARBINARY);
 
         assertEquals("byte[]", f.getJavaType(fakeA1));
 
-        DbAttribute fakeA2 = mock(DbAttribute.class);
-        when(fakeA2.getName()).thenReturn("fake2");
-        when(fakeA2.getEntity()).thenReturn(fakeEntity);
-        when(fakeA2.getType()).thenReturn(Types.VARCHAR);
+        CompiledColumn fakeA2 = mock(CompiledColumn.class);
+        when(fakeA2.name()).thenReturn("fake2");
+        when(fakeA2.table()).thenReturn(fakeTable);
+        when(fakeA2.jdbcType()).thenReturn(Types.VARCHAR);
 
         assertEquals("java.lang.String", f.getJavaType(fakeA2));
     }
@@ -98,26 +103,26 @@ public class DefaultValueTransformerFactoryIT {
     @Test
     public void getAmbiguousJavaType() {
         // this one have two bound ObjAttributes, warn should be in log
-        DbAttribute a1 = t5.getAttribute("CRYPTO_INT1");
+        CompiledColumn a1 = t5.column("CRYPTO_INT1");
         assertEquals("java.lang.String", f.getJavaType(a1));
 
         // this one doesn't have any bindings, warn should be in log
-        DbAttribute a2 = t5.getAttribute("CRYPTO_INT2");
+        CompiledColumn a2 = t5.column("CRYPTO_INT2");
         assertEquals("byte[]", f.getJavaType(a2));
 
         // this one have one binding
-        DbAttribute a3 = t5.getAttribute("CRYPTO_INT3");
+        CompiledColumn a3 = t5.column("CRYPTO_INT3");
         assertEquals("int", f.getJavaType(a3));
 
         // this one have two bindings but with the same int type
-        DbAttribute a4 = t5.getAttribute("CRYPTO_INT4");
+        CompiledColumn a4 = t5.column("CRYPTO_INT4");
         assertEquals("int", f.getJavaType(a4));
     }
 
     @Test
     public void createEncryptor() {
 
-        DbAttribute t1_ct = t1.getAttribute("CRYPTO_STRING");
+        CompiledColumn t1_ct = t1.column("CRYPTO_STRING");
 
         ValueEncryptor t1 = f.createEncryptor(t1_ct);
         assertNotNull(t1);
@@ -125,7 +130,7 @@ public class DefaultValueTransformerFactoryIT {
         assertSame(Utf8StringConverter.INSTANCE, ((DefaultValueEncryptor) t1).getPreConverter());
         assertSame(Base64StringConverter.INSTANCE, ((DefaultValueEncryptor) t1).getPostConverter());
 
-        DbAttribute t2_cb = t2.getAttribute("CRYPTO_BYTES");
+        CompiledColumn t2_cb = t2.column("CRYPTO_BYTES");
 
         ValueEncryptor t2 = f.createEncryptor(t2_cb);
         assertNotNull(t2);
@@ -137,7 +142,7 @@ public class DefaultValueTransformerFactoryIT {
     @Test
     public void createDecryptor() {
 
-        DbAttribute t1_ct = t1.getAttribute("CRYPTO_STRING");
+        CompiledColumn t1_ct = t1.column("CRYPTO_STRING");
 
         ValueDecryptor t1 = f.createDecryptor(t1_ct);
         assertNotNull(t1);
@@ -145,7 +150,7 @@ public class DefaultValueTransformerFactoryIT {
         assertSame(Base64StringConverter.INSTANCE, ((DefaultValueDecryptor) t1).getPreConverter());
         assertSame(Utf8StringConverter.INSTANCE, ((DefaultValueDecryptor) t1).getPostConverter());
 
-        DbAttribute t2_cb = t2.getAttribute("CRYPTO_BYTES");
+        CompiledColumn t2_cb = t2.column("CRYPTO_BYTES");
 
         ValueDecryptor t2 = f.createDecryptor(t2_cb);
         assertNotNull(t2);
@@ -153,7 +158,7 @@ public class DefaultValueTransformerFactoryIT {
         assertSame(BytesToBytesConverter.INSTANCE, ((DefaultValueDecryptor) t2).getPreConverter());
         assertSame(BytesToBytesConverter.INSTANCE, ((DefaultValueDecryptor) t2).getPostConverter());
 
-        DbAttribute t3_cb = t3.getAttribute("CRYPTO_BYTES");
+        CompiledColumn t3_cb = t3.column("CRYPTO_BYTES");
 
         ValueDecryptor t3 = f.createDecryptor(t3_cb);
         assertNotNull(t3);
@@ -165,14 +170,14 @@ public class DefaultValueTransformerFactoryIT {
     @Test
     public void encryptor() {
 
-        DbAttribute t1_ct = t1.getAttribute("CRYPTO_STRING");
+        CompiledColumn t1_ct = t1.column("CRYPTO_STRING");
 
         ValueEncryptor t1 = f.encryptor(t1_ct);
         assertNotNull(t1);
         assertSame(t1, f.encryptor(t1_ct));
         assertSame(t1, f.encryptor(t1_ct));
 
-        DbAttribute t2_cb = t2.getAttribute("CRYPTO_BYTES");
+        CompiledColumn t2_cb = t2.column("CRYPTO_BYTES");
 
         ValueEncryptor t2 = f.encryptor(t2_cb);
         assertNotNull(t2);
@@ -183,14 +188,14 @@ public class DefaultValueTransformerFactoryIT {
     @Test
     public void decryptor() {
 
-        DbAttribute t1_ct = t1.getAttribute("CRYPTO_STRING");
+        CompiledColumn t1_ct = t1.column("CRYPTO_STRING");
 
         ValueDecryptor t1 = f.decryptor(t1_ct);
         assertNotNull(t1);
         assertSame(t1, f.decryptor(t1_ct));
         assertSame(t1, f.decryptor(t1_ct));
 
-        DbAttribute t2_cb = t2.getAttribute("CRYPTO_BYTES");
+        CompiledColumn t2_cb = t2.column("CRYPTO_BYTES");
 
         ValueDecryptor t2 = f.decryptor(t2_cb);
         assertNotNull(t2);

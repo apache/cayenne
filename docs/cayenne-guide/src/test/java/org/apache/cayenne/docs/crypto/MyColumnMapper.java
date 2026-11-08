@@ -19,12 +19,11 @@
 package org.apache.cayenne.docs.crypto;
 
 import org.apache.cayenne.crypto.map.ColumnMapper;
-import org.apache.cayenne.map.DbAttribute;
 
 public class MyColumnMapper implements ColumnMapper {
 
     @Override
-    public boolean isEncrypted(DbAttribute column) {
-        return column.getName().startsWith("SECRET_");
+    public boolean isEncrypted(String tableName, String columnName) {
+        return columnName.startsWith("SECRET_");
     }
 }

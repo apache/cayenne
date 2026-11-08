@@ -22,6 +22,7 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
+import org.apache.cayenne.dbsync.merge.token.db.CompiledModel;
 import org.apache.cayenne.dbsync.merge.token.db.AddRelationshipToDb;
 import org.apache.cayenne.dbsync.merge.token.db.DropColumnToDb;
 import org.apache.cayenne.dbsync.merge.token.db.DropRelationshipToDb;
@@ -67,7 +68,7 @@ public class IngresMergerTokenFactory extends DefaultMergerTokenFactory {
                 DbAdapter adapter = node.getAdapter();
 
                 StringBuilder buf = new StringBuilder();
-                QuotingStrategy quotes = adapter.getQuotingStrategy(getEntity());
+                QuotingStrategy quotes = adapter.getQuotingStrategy(CompiledModel.table(getEntity()));
                 buf.append("ALTER TABLE ");
                 quotes.appendFQN(buf, getEntity().getCatalog(), getEntity().getSchema(), getEntity().getName());
                 buf.append(" DROP COLUMN ");
@@ -92,7 +93,7 @@ public class IngresMergerTokenFactory extends DefaultMergerTokenFactory {
                 if (rel.isForeignKey()) {
 
                     DbEntity source = (DbEntity) rel.getSourceEntity();
-                    QuotingStrategy quotes = adapter.getQuotingStrategy(source);
+                    QuotingStrategy quotes = adapter.getQuotingStrategy(CompiledModel.table(source));
                     StringBuilder buf = new StringBuilder();
                     StringBuilder refBuf = new StringBuilder();
 
@@ -160,7 +161,7 @@ public class IngresMergerTokenFactory extends DefaultMergerTokenFactory {
 
                 StringBuilder sqlBuffer = new StringBuilder();
 
-                QuotingStrategy quotes = adapter.getQuotingStrategy(getEntity());
+                QuotingStrategy quotes = adapter.getQuotingStrategy(CompiledModel.table(getEntity()));
 
                 sqlBuffer.append("ALTER TABLE ");
                 sqlBuffer.append(getEntity().getFullyQualifiedName());
@@ -194,7 +195,7 @@ public class IngresMergerTokenFactory extends DefaultMergerTokenFactory {
                 DbAdapter adapter = node.getAdapter();
 
                 StringBuilder sqlBuffer = new StringBuilder();
-                QuotingStrategy quotes = adapter.getQuotingStrategy(getEntity());
+                QuotingStrategy quotes = adapter.getQuotingStrategy(CompiledModel.table(getEntity()));
                 sqlBuffer.append("ALTER TABLE ");
                 quotes.appendFQN(sqlBuffer, getEntity().getCatalog(), getEntity().getSchema(), getEntity().getName());
                 sqlBuffer.append(" ALTER COLUMN ");
@@ -233,7 +234,7 @@ public class IngresMergerTokenFactory extends DefaultMergerTokenFactory {
                     return Collections.emptyList();
                 }
                 
-                QuotingStrategy quotes = adapter.getQuotingStrategy(getEntity());
+                QuotingStrategy quotes = adapter.getQuotingStrategy(CompiledModel.table(getEntity()));
                 StringBuilder buf = new StringBuilder();
                 buf.append("ALTER TABLE ");
                 quotes.appendFQN(buf, getEntity().getCatalog(), getEntity().getSchema(), getEntity().getName());

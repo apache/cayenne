@@ -38,16 +38,14 @@ import org.apache.cayenne.graph.ArcId;
 import org.apache.cayenne.graph.CompoundDiff;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.graph.GraphEvent;
-import org.apache.cayenne.map.EntityInheritanceTree;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.compiled.CompiledEmbeddedAttribute;
+import org.apache.cayenne.map.compiled.CompiledMapping;
+import org.apache.cayenne.map.compiled.CompiledEntity;
+import org.apache.cayenne.map.compiled.CompiledProperty;
+import org.apache.cayenne.map.compiled.CompiledRelationship;
+import org.apache.cayenne.map.compiled.CompiledToManyRelationship;
+import org.apache.cayenne.map.compiled.CompiledToOneRelationship;
 import org.apache.cayenne.query.Query;
-import org.apache.cayenne.reflect.ArcProperty;
-import org.apache.cayenne.reflect.AttributeProperty;
-import org.apache.cayenne.reflect.ClassDescriptor;
-import org.apache.cayenne.reflect.PropertyDescriptor;
-import org.apache.cayenne.reflect.ToManyProperty;
-import org.apache.cayenne.reflect.ToOneProperty;
 import org.apache.cayenne.util.Util;
 
 import java.util.ArrayList;
@@ -68,7 +66,6 @@ public class DataContext implements ObjectContext {
     protected final DataChannel channel;
     protected final DataContextObjectStore objectStore;
     protected final QueryCache queryCache;
-    protected final EntityResolver entityResolver;
     protected final boolean validatingObjectsOnCommit;
     protected final boolean usingSharedSnapshotCache;
 
@@ -109,7 +106,6 @@ public class DataContext implements ObjectContext {
             QueryCache queryCache) {
 
         this.channel = Objects.requireNonNull(channel);
-        this.entityResolver = channel.getEntityResolver();
         this.usingSharedSnapshotCache = usingSharedSnapshotCache;
         this.validatingObjectsOnCommit = validatingObjectsOnCommit;
         this.queryCache = queryCache;
@@ -131,9 +127,13 @@ public class DataContext implements ObjectContext {
         return channel;
     }
 
+    /**
+     * Returns the mapping of the parent channel. It is not cached here, as a DataDomain replaces its mapping when
+     * DataMaps are added or removed.
+     */
     @Override
-    public EntityResolver getEntityResolver() {
-        return entityResolver;
+    public CompiledMapping getMapping() {
+        return channel.getMapping();
     }
 
     /**
@@ -256,12 +256,12 @@ public class DataContext implements ObjectContext {
         // a resolved object registered in the context needs no lookup down the channel stack. A HOLLOW object does,
         // as its row may no longer exist. Objects are registered under the ids of their concrete entities, so check
         // the ids of the subentities too
-        EntityInheritanceTree inheritanceTree = getEntityResolver().getInheritanceTree(id.getEntityName());
-        if (inheritanceTree == null) {
+        CompiledEntity entity = getMapping().entity(id.getEntityName());
+        if (entity == null) {
             throw new CayenneRuntimeException("Non-existent ObjEntity: %s", id.getEntityName());
         }
 
-        for (ObjectId candidateId : inheritanceTree.polymorphicIds(id)) {
+        for (ObjectId candidateId : entity.polymorphicIds(id)) {
             Persistent object = objectStore.getObject(candidateId);
             if (object != null && object.getPersistenceState() != PersistenceState.HOLLOW) {
                 return object;
@@ -323,17 +323,16 @@ public class DataContext implements ObjectContext {
 
         // resolve relationship fault
         if (lazyFaulting && property != null) {
-            ClassDescriptor classDescriptor = getEntityResolver().getClassDescriptor(
-                    object.getObjectId().getEntityName());
-            PropertyDescriptor propertyDescriptor = classDescriptor.getProperty(property);
+            CompiledEntity entity = getMapping().entity(object.getObjectId().getEntityName());
+            CompiledProperty compiledProperty = entity.property(property);
 
-            // If we don't have a property descriptor, there's not much we can do.
+            // If we don't have a property, there's not much we can do.
             // Let the caller know that the specified property could not be found and list
             // all the properties that could be so the caller knows what can be used.
-            if (propertyDescriptor == null) {
-                List<String> properties = classDescriptor.getProperties().stream()
-                        .map(PropertyDescriptor::getName)
-                        .toList();
+            if (compiledProperty == null) {
+                List<String> properties = new ArrayList<>();
+                entity.attributes().forEach(a -> properties.add(a.name()));
+                entity.relationships().forEach(r -> properties.add(r.name()));
                 String errorMessage = String.format("Property '%s' is not declared for entity '%s'.",
                         property, object.getObjectId().getEntityName()) +
                         " Declared properties are: '" + String.join("', '", properties) + "'.";
@@ -341,7 +340,7 @@ public class DataContext implements ObjectContext {
             }
 
             // this should trigger fault resolving
-            propertyDescriptor.readProperty(object);
+            compiledProperty.readProperty(object);
         }
     }
 
@@ -351,7 +350,7 @@ public class DataContext implements ObjectContext {
      *
      * @since 3.0
      */
-    public List objectsFromDataRows(ClassDescriptor descriptor, List<? extends DataRow> dataRows) {
+    public List objectsFromDataRows(CompiledEntity entity, List<? extends DataRow> dataRows) {
 
         // a child context has no snapshot cache, so it can't resolve rows on its own. Resolve them in the parent
         // context and transfer the resulting objects here
@@ -361,7 +360,7 @@ public class DataContext implements ObjectContext {
                         "DataContext has no snapshot cache and no parent DataContext to resolve DataRows");
             }
 
-            List<?> parentObjects = context.objectsFromDataRows(descriptor, dataRows);
+            List<?> parentObjects = context.objectsFromDataRows(entity, dataRows);
             ShallowMergeOperation merger = new ShallowMergeOperation(this);
             List<Persistent> objects = new ArrayList<>(parentObjects.size());
             for (Object parentObject : parentObjects) {
@@ -370,7 +369,7 @@ public class DataContext implements ObjectContext {
             return objects;
         }
 
-        return new ObjectResolver(this, descriptor, true).objectsFromDataRows(dataRows);
+        return new ObjectResolver(this, entity, true).objectsFromDataRows(dataRows);
     }
 
     /**
@@ -380,14 +379,13 @@ public class DataContext implements ObjectContext {
      * @since 3.1
      */
     public <T extends Persistent> T objectFromDataRow(Class<T> objectClass, DataRow dataRow) {
-        ObjEntity entity = this.getEntityResolver().getObjEntity(objectClass);
+        CompiledEntity entity = getMapping().entity(objectClass);
 
         if (entity == null) {
             throw new CayenneRuntimeException("Unmapped Java class: %s", objectClass);
         }
 
-        ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(entity.getName());
-        List<T> list = objectsFromDataRows(descriptor, Collections.singletonList(dataRow));
+        List<T> list = objectsFromDataRows(entity, Collections.singletonList(dataRow));
         return list.getFirst();
     }
 
@@ -400,28 +398,28 @@ public class DataContext implements ObjectContext {
      * @since 5.0 returns {@link Persistent} instead of the deprecated DataObject
      */
     public Persistent objectFromDataRow(String entityName, DataRow dataRow) {
-        ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(entityName);
-        List<?> list = objectsFromDataRows(descriptor, Collections.singletonList(dataRow));
+        CompiledEntity entity = getMapping().entity(entityName);
+        List<?> list = objectsFromDataRows(entity, Collections.singletonList(dataRow));
 
         return (Persistent) list.getFirst();
     }
 
     @Override
     public Persistent newObject(String entityName) {
-        ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(entityName);
-        if (descriptor == null) {
+        CompiledEntity entity = getMapping().entity(entityName);
+        if (entity == null) {
             throw new IllegalArgumentException("Invalid entity name: " + entityName);
         }
 
         Persistent object;
         try {
-            object = (Persistent) descriptor.createObject();
+            object = (Persistent) entity.createObject();
         } catch (Exception ex) {
             throw new CayenneRuntimeException("Error instantiating object.", ex);
         }
 
         // this will initialize to-many lists
-        descriptor.injectValueHolders(object);
+        entity.injectValueHolders(object);
         object.setObjectId(ObjectId.of(entityName));
 
         doRegisterObject(object);
@@ -442,7 +440,7 @@ public class DataContext implements ObjectContext {
             throw new NullPointerException("Can't register null object.");
         }
 
-        ObjEntity entity = getEntityResolver().getObjEntity(object);
+        CompiledEntity entity = getMapping().entity(object);
         if (entity == null) {
             throw new IllegalArgumentException("Can't find ObjEntity for Persistent class: "
                     + object.getClass().getName() + ", class is likely not mapped.");
@@ -458,12 +456,7 @@ public class DataContext implements ObjectContext {
                         + "Try using 'localObjects()' instead.");
             }
         } else {
-            object.setObjectId(ObjectId.of(entity.getName()));
-        }
-
-        ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(entity.getName());
-        if (descriptor == null) {
-            throw new IllegalArgumentException("Invalid entity name: " + entity.getName());
+            object.setObjectId(ObjectId.of(entity.name()));
         }
 
         doRegisterObject(object);
@@ -471,10 +464,13 @@ public class DataContext implements ObjectContext {
         // now we need to find all arc changes, inject missing value holders and embeddables, and pull in all
         // transient connected objects
 
-        for (PropertyDescriptor property : descriptor.getProperties()) {
-            switch (property) {
-                case AttributeProperty attribute -> attribute.injectValueHolder(object);
-                case ToManyProperty toMany -> {
+        for (CompiledEmbeddedAttribute embedded : entity.embeddedAttributes()) {
+            embedded.injectValueHolder(object);
+        }
+
+        for (CompiledRelationship relationship : entity.relationships()) {
+            switch (relationship) {
+                case CompiledToManyRelationship toMany -> {
                     toMany.injectValueHolder(object);
 
                     Object value = toMany.readProperty(object);
@@ -488,15 +484,13 @@ public class DataContext implements ObjectContext {
                         }
                     }
                 }
-                case ToOneProperty toOne -> {
+                case CompiledToOneRelationship toOne -> {
                     if (toOne.readPropertyDirectly(object) instanceof Persistent targetDO) {
                         // make sure it is registered
                         registerNewObject(targetDO);
                         objectStore.changeRecorder()
                                 .arcCreated(object.getObjectId(), targetDO.getObjectId(), new ArcId(toOne));
                     }
-                }
-                default -> {
                 }
             }
         }
@@ -512,7 +506,7 @@ public class DataContext implements ObjectContext {
         objectStore.registerObject(object.getObjectId(), object);
         objectStore.changeRecorder().nodeCreated(object.getObjectId());
 
-        entityResolver.getClassDescriptor(object.getObjectId().getEntityName()).injectDiscriminatorValues(object);
+        getMapping().entity(object.getObjectId().getEntityName()).injectDiscriminatorValues(object);
         channel.getLifecycleEventsManager().postAdd().onEvent(List.of(object));
     }
 
@@ -580,12 +574,12 @@ public class DataContext implements ObjectContext {
             return null;
         }
 
-        ClassDescriptor descriptor = getEntityResolver().getClassDescriptor(sourceId.getEntityName());
-        if (descriptor.isFault(source)) {
+        CompiledEntity entity = getMapping().entity(sourceId.getEntityName());
+        if (entity.isFault(source)) {
             return null;
         }
 
-        ArcProperty arc = (ArcProperty) descriptor.getProperty(relationshipName);
+        CompiledRelationship arc = entity.relationship(relationshipName);
         if (arc == null) {
             throw new CayenneRuntimeException("No relationship named %s found in entity %s; object id: %s",
                     relationshipName, sourceId.getEntityName(), sourceId);
@@ -601,7 +595,7 @@ public class DataContext implements ObjectContext {
                 return new ArrayList<>(1);
             }
 
-            if (!resolveToMany || !(arc instanceof ToManyProperty)) {
+            if (!resolveToMany || !(arc instanceof CompiledToManyRelationship)) {
                 return null;
             }
 
@@ -852,7 +846,8 @@ public class DataContext implements ObjectContext {
             throw new CayenneRuntimeException("Can't run query - parent DataChannel is not set.");
         }
 
-        QueryContext queryContext = new QueryContext(this, query, query.resolve(getEntityResolver()), iteratedResult);
+        QueryContext queryContext = new QueryContext(this, query, query.resolve(getMapping()), iteratedResult);
+
         return onQuery(queryContext, false);
     }
 

@@ -21,7 +21,7 @@ package org.apache.cayenne.access.sqlbuilder;
 
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.access.sqlbuilder.sqltree.ValueNode;
-import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.compiled.CompiledColumn;
 
 /**
  * @since 4.2
@@ -30,7 +30,7 @@ public class ValueNodeBuilder implements NodeBuilder, ExpressionTrait {
 
     private Object value;
 
-    private DbAttribute attribute;
+    private CompiledColumn column;
 
     private boolean isArray;
 
@@ -40,8 +40,8 @@ public class ValueNodeBuilder implements NodeBuilder, ExpressionTrait {
         this.value = value;
     }
 
-    public ValueNodeBuilder attribute(DbAttribute attribute) {
-        this.attribute = attribute;
+    public ValueNodeBuilder attribute(CompiledColumn column) {
+        this.column = column;
         return this;
     }
 
@@ -52,7 +52,7 @@ public class ValueNodeBuilder implements NodeBuilder, ExpressionTrait {
 
     @Override
     public Node build() {
-        return new ValueNode(value, isArray, attribute, needBinding);
+        return new ValueNode(value, isArray, column, needBinding);
     }
 
     public ValueNodeBuilder needBinding(boolean needBinding) {

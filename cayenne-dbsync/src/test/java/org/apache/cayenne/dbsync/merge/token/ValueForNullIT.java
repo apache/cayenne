@@ -27,7 +27,6 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.testmap.Painting;
@@ -67,11 +66,6 @@ public class ValueForNullIT extends MergeCase {
         assertEquals(column, dbEntity.getAttribute(column.getName()));
         assertTokensAndExecute(1, 0);
 
-        // need obj attr to be able to query
-        ObjAttribute objAttr = new ObjAttribute("newcol2");
-        objAttr.setDbAttributePath(column.getName());
-        objEntity.addAttribute(objAttr);
-
         // check that is was merged
         assertTokensAndExecute(0, 0);
 
@@ -85,7 +79,8 @@ public class ValueForNullIT extends MergeCase {
         assertTokensAndExecute(0, 0);
 
         // check values for null
-        Expression qual = ExpressionFactory.matchExp(objAttr.getName(), DEFAULT_VALUE_STRING);
+        // the Painting class has no property for the new column, so the query matches it by its DB path
+        Expression qual = ExpressionFactory.matchDbExp(column.getName(), DEFAULT_VALUE_STRING);
         ObjectSelect<Painting> query = ObjectSelect.query(Painting.class).where(qual);
         List<Painting> rows = query.select(env.context());
         assertEquals(nrows, rows.size());

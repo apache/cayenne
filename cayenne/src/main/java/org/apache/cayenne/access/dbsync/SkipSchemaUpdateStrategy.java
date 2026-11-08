@@ -19,11 +19,9 @@
 package org.apache.cayenne.access.dbsync;
 
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.log.SQLLogger;
-import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.compiled.CompiledSchema;
 
 import javax.sql.DataSource;
-import java.util.Collection;
 
 /**
  * A SchemaUpdateStrategy that does nothing. This is usually the default strategy, as in
@@ -34,7 +32,7 @@ import java.util.Collection;
 public class SkipSchemaUpdateStrategy implements SchemaUpdateStrategy {
 
     @Override
-    public void updateSchema(DbAdapter adapter, DataSource dataSource, Collection<DataMap> dataMaps, SQLLogger logger) {
+    public void updateSchema(DbAdapter adapter, DataSource dataSource, CompiledSchema schema, String... dataMaps) {
         // does nothing
     }
 }

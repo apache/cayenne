@@ -31,8 +31,8 @@ import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
 import org.apache.cayenne.access.translator.TranslatedBatch;
 import org.apache.cayenne.access.translator.batch.InsertBatchTranslator;
 import org.apache.cayenne.dba.JdbcAdapter;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.compiled.CompiledTable;
+import org.apache.cayenne.map.compiled.CompiledMapping;
 import org.apache.cayenne.query.resolved.BatchRow;
 import org.apache.cayenne.query.resolved.InsertBatch;
 import org.apache.cayenne.testdo.generated.GeneratedColumnTestEntity;
@@ -60,8 +60,8 @@ public class DataNodeBatchActionGeneratedIT {
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.GENERATED_PROJECT);
 
     private DataNodeBatchAction emptyInsertAction(JdbcAdapter adapter) {
-        EntityResolver resolver = env.runtime().getDataDomain().getEntityResolver();
-        InsertBatch batch = new InsertBatch(resolver.getObjEntity(GeneratedColumnTestEntity.class).getDbEntity(),
+        CompiledMapping mapping = env.runtime().getDataDomain().getMapping();
+        InsertBatch batch = new InsertBatch(mapping.entity(GeneratedColumnTestEntity.class).table(),
                 List.of());
         TranslatedBatch translated = new InsertBatchTranslator().translate(batch, adapter);
         DataNode node = DataNodes.withAdapter(adapter, mock(RowReaderFactory.class));
@@ -93,14 +93,14 @@ public class DataNodeBatchActionGeneratedIT {
         DataNode node = env.dataNode();
         Assumptions.assumeTrue(node.getAdapter().supportsGeneratedKeys(), "generated keys unsupported");
 
-        DbEntity entity = env.resolver().getObjEntity(GeneratedColumnTestEntity.class).getDbEntity();
+        CompiledTable table = env.mapping().entity(GeneratedColumnTestEntity.class).table();
         ObjectId id1 = ObjectId.of("GeneratedColumnTestEntity");
         ObjectId id2 = ObjectId.of("GeneratedColumnTestEntity");
-        InsertBatch batch = new InsertBatch(entity, List.of(
+        InsertBatch batch = new InsertBatch(table, List.of(
                 new BatchRow(id1, null, new HashMap<>(Map.of("NAME", "g1"))),
                 new BatchRow(id2, null, new HashMap<>(Map.of("NAME", "g2")))));
 
-        StatementContext statementContext = StatementContexts.run(node, env.resolver(), batch);
+        StatementContext statementContext = StatementContexts.run(node, env.mapping(), batch);
 
         // whether the rows ran as a batch or one by one, the statement reports update counts and the keys as DataRows
         List<DataRow> keys = new ArrayList<>();

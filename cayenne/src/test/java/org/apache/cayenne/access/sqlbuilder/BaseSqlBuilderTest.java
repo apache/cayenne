@@ -19,10 +19,28 @@
 package org.apache.cayenne.access.sqlbuilder;
 
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.compiled.CompiledTable;
+import org.apache.cayenne.map.compiled.SchemaCompiler;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class BaseSqlBuilderTest {
+
+    /**
+     * Compiles a standalone authored table into a CompiledTable, the type the builders take.
+     */
+    protected static CompiledTable compiledTable(String name, String catalog, String schema) {
+        DbEntity entity = new DbEntity(name);
+        entity.setCatalog(catalog);
+        entity.setSchema(schema);
+        DataMap dataMap = new DataMap("test");
+        dataMap.addDbEntity(entity);
+        return SchemaCompiler.compile(List.of(dataMap)).table(name);
+    }
 
     protected void assertSQL(String expected, Node node) {
         assertSQL(expected, node, new DefaultSQLAppendable(null));

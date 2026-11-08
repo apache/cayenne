@@ -33,7 +33,7 @@ import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.access.jdbc.DataNodeProcedureAction;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.access.types.ExtendedType;
-import org.apache.cayenne.map.ProcedureParameter;
+import org.apache.cayenne.map.compiled.CompiledProcedureParameter;
 import org.apache.cayenne.access.translator.TranslatedProcedure;
 
 /**
@@ -55,16 +55,16 @@ class OracleProcedureAction extends DataNodeProcedureAction {
 			throws SQLException, Exception {
 
 		Map<String, Object> result = null;
-		List<ProcedureParameter> parameters = query.procedure().getCallParameters();
+		List<CompiledProcedureParameter> parameters = query.procedure().parameters();
 		for (int i = 0; i < parameters.size(); i++) {
-			ProcedureParameter parameter = parameters.get(i);
+			CompiledProcedureParameter parameter = parameters.get(i);
 
-			if (!parameter.isOutParam()) {
+			if (!parameter.isOutParameter()) {
 				continue;
 			}
 
 			// ==== start Oracle-specific part
-			if (parameter.getType() == OracleAdapter.getOracleCursorType()) {
+			if (parameter.jdbcType() == OracleAdapter.getOracleCursorType()) {
 
 				try (ResultSet rs = (ResultSet) statement.getObject(i + 1);) {
 					RSColumn[] rsColumns = describeResultSet(rs, processedResultSets++);
@@ -78,10 +78,10 @@ class OracleProcedureAction extends DataNodeProcedureAction {
 				}
 
 				ExtendedType type = dataNode.getAdapter().getExtendedTypes()
-						.getRegisteredType(TypesMapping.getJavaBySqlType(parameter.getType()));
-				Object val = type.materializeObject(statement, i + 1, parameter.getType());
+						.getRegisteredType(TypesMapping.getJavaBySqlType(parameter.jdbcType()));
+				Object val = type.materializeObject(statement, i + 1, parameter.jdbcType());
 
-				result.put(parameter.getName(), val);
+				result.put(parameter.name(), val);
 			}
 		}
 

@@ -95,7 +95,7 @@ public class ResultDirectiveIT {
 		SQLQuery<Artist> template = SQLQuery.query(Artist.class, sql);
 		template.columnNameCaps(CapsStrategy.UPPER);
 		StatementContext statementContext = StatementContexts.run(runtime.getDataDomain().getDefaultNode(),
-				runtime.getDataDomain().getEntityResolver(), template);
+				runtime.getDataDomain().getMapping(), template);
 
 		@SuppressWarnings("unchecked")
 		List<Map<String, Object>> data = StatementContexts.rows(statementContext);

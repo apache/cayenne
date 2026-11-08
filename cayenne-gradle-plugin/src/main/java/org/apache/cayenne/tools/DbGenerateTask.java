@@ -21,6 +21,8 @@ package org.apache.cayenne.tools;
 
 import groovy.lang.Closure;
 import org.apache.cayenne.access.DbGenerator;
+import org.apache.cayenne.map.compiled.CompiledSchema;
+import org.apache.cayenne.map.compiled.SchemaCompiler;
 import org.apache.cayenne.project.DataMapLoader;
 import org.apache.cayenne.dbsync.reverse.configuration.DbAdapterFactory;
 import org.apache.cayenne.datasource.CayenneDataSource;
@@ -43,6 +45,7 @@ import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.TaskAction;
 
 import java.io.File;
+import java.util.List;
 import javax.sql.DataSource;
 
 /**
@@ -142,7 +145,8 @@ public class DbGenerateTask extends BaseCayenneTask {
     DbGenerator createGenerator(DataMap dataMap, Injector injector, DataSource realDataSource) throws Exception {
         DbAdapter dbAdapter = createDbAdapter(injector, realDataSource);
 
-        DbGenerator generator = new DbGenerator(dbAdapter, dataMap, NoopSQLLogger.getInstance());
+        CompiledSchema schema = SchemaCompiler.compile(List.of(dataMap));
+        DbGenerator generator = new DbGenerator(dbAdapter, schema, dataMap.getName(), NoopSQLLogger.getInstance());
         generator.setShouldCreateFKConstraints(createFK);
         generator.setShouldCreatePKSupport(createPK);
         generator.setShouldCreateTables(createTables);

@@ -23,9 +23,11 @@ import org.apache.cayenne.access.sqlbuilder.sqltree.ColumnNode;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.JoinType;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.compiled.CompiledMapping;
 import org.apache.cayenne.query.resolved.ResolvedSelect;
 import org.junit.jupiter.api.Test;
 
@@ -38,21 +40,20 @@ public class IdColumnExtractorTest extends BaseColumnExtractorTest {
     @Test
     public void extractNoPrefix() {
         DbEntity mockDbEntity = createMockDbEntity("mock");
+        DataMap dataMap = new DataMap("mock");
+        dataMap.addDbEntity(mockDbEntity);
+
+        ObjEntity entity = new ObjEntity("Mock");
+        entity.setDbEntity(mockDbEntity);
+        dataMap.addObjEntity(entity);
+
+        CompiledMapping mapping = compile(dataMap);
         ResolvedSelect query = new MockResolvedSelectBuilder()
-                
-                        .withDbEntity(mockDbEntity)
-                        
+                .withDbEntity(mapping.schema().table("mock"))
                 .build();
         SelectTranslatorContext context = new MockSelectTranslatorContext(query);
 
-        DataMap dataMap = new DataMap();
-        dataMap.addDbEntity(mockDbEntity);
-
-        ObjEntity entity = new ObjEntity();
-        entity.setDataMap(dataMap);
-        entity.setDbEntity(mockDbEntity);
-
-        IdColumnExtractor extractor = new IdColumnExtractor(context, entity);
+        IdColumnExtractor extractor = new IdColumnExtractor(context, mapping.entity("Mock"));
         extractor.extract();
 
         assertEquals(1, context.getResultNodeList().size());
@@ -73,30 +74,30 @@ public class IdColumnExtractorTest extends BaseColumnExtractorTest {
     public void extractWithPrefix() {
         DbEntity mockDbEntity = createMockDbEntity("mock1");
         DbEntity mock2DbEntity = createMockDbEntity("mock2");
+        DataMap dataMap = new DataMap("mock");
+        dataMap.addDbEntity(mockDbEntity);
+        dataMap.addDbEntity(mock2DbEntity);
 
+        ObjEntity entity = new ObjEntity("Mock");
+        entity.setDbEntity(mockDbEntity);
+        dataMap.addObjEntity(entity);
+
+        DbRelationship relationship = new DbRelationship("prefix");
+        relationship.setSourceEntity(mockDbEntity);
+        relationship.setTargetEntityName("mock2");
+        relationship.addJoin(new DbJoin(relationship, "id", "id"));
+        mockDbEntity.addRelationship(relationship);
+
+        CompiledMapping mapping = compile(dataMap);
         ResolvedSelect query = new MockResolvedSelectBuilder()
-                
-                        .withDbEntity(mockDbEntity)
-                        
+                .withDbEntity(mapping.schema().table("mock1"))
                 .build();
         SelectTranslatorContext context = new MockSelectTranslatorContext(query);
 
-        ObjEntity entity = new ObjEntity();
-        entity.setDbEntity(mockDbEntity);
-
-        DataMap dataMap = new DataMap();
-        dataMap.addDbEntity(mockDbEntity);
-        dataMap.addDbEntity(mock2DbEntity);
-        mockDbEntity.setDataMap(dataMap);
-        entity.setDataMap(dataMap);
-
-        DbRelationship relationship = new DbRelationship();
-        relationship.setSourceEntity(mockDbEntity);
-        relationship.setTargetEntityName("mock1");
         CayennePath prefix = CayennePath.of("prefix");
-        context.getTableTree().addJoinTable(prefix, relationship, JoinType.INNER);
+        context.getTableTree().addJoinTable(prefix, mapping.schema().table("mock1").join("prefix"), JoinType.INNER);
 
-        IdColumnExtractor extractor = new IdColumnExtractor(context, entity);
+        IdColumnExtractor extractor = new IdColumnExtractor(context, mapping.entity("Mock"));
         extractor.extract(prefix);
 
         assertEquals(1, context.getResultNodeList().size());

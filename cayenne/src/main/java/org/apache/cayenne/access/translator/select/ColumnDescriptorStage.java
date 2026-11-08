@@ -21,7 +21,7 @@ package org.apache.cayenne.access.translator.select;
 
 import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.access.types.ExtendedType;
-import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.compiled.CompiledColumn;
 
 /**
  * @since 4.2
@@ -39,9 +39,9 @@ class ColumnDescriptorStage implements TranslationStage {
             }
 
             String name;
-            DbAttribute attribute = resultNode.getDbAttribute();
-            if(attribute != null) {
-                name = attribute.getName();
+            CompiledColumn column = resultNode.getDbAttribute();
+            if(column != null) {
+                name = column.name();
             } else {
                 // generated name
                 name = "__c" + i++;
@@ -49,7 +49,7 @@ class ColumnDescriptorStage implements TranslationStage {
 
             ExtendedType type = context.getAdapter().getExtendedTypes().getRegisteredType(resultNode.getJavaType());
             RSColumn descriptor = new RSColumn(
-                    name, resultNode.getJdbcType(), resultNode.getDataRowKey(), type, attribute);
+                    name, resultNode.getJdbcType(), resultNode.getDataRowKey(), type, column);
 
             context.getColumnDescriptors().add(descriptor);
         }

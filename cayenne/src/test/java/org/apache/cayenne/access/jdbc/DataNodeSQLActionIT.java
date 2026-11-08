@@ -52,7 +52,7 @@ public class DataNodeSQLActionIT {
 
     private static TranslatedSQL translated(DataNode node, SQLQuery<?> query) {
         SQLTemplateTranslator translator = env.runtime().getInjector().getInstance(SQLTemplateTranslator.class);
-        return translator.translate(query.resolve(env.resolver()), node.getAdapter());
+        return translator.translate(query.resolve(env.mapping()), node.getAdapter());
     }
 
     @RegisterExtension
@@ -104,7 +104,7 @@ public class DataNodeSQLActionIT {
 
         DataNodeSQLAction plan = new DataNodeSQLAction(translated(node, template), node);
 
-        StatementContext statementContext = StatementContexts.newRun(node, env.resolver(), template);
+        StatementContext statementContext = StatementContexts.newRun(node, env.mapping(), template);
 
         try (Connection c = CayenneTestsEnv.COMMON_SCHEMA.dataSource().getConnection();) {
             plan.execute(c, statementContext);
@@ -161,7 +161,7 @@ public class DataNodeSQLActionIT {
 
         DataNodeSQLAction plan = new DataNodeSQLAction(translated(node, template), node);
 
-        StatementContext statementContext = StatementContexts.newRun(node, env.resolver(), template);
+        StatementContext statementContext = StatementContexts.newRun(node, env.mapping(), template);
 
         try (Connection c = CayenneTestsEnv.COMMON_SCHEMA.dataSource().getConnection();) {
             plan.execute(c, statementContext);
@@ -191,7 +191,7 @@ public class DataNodeSQLActionIT {
 
         DataNodeSQLAction plan = new DataNodeSQLAction(translated(node, template), node);
 
-        StatementContext statementContext = StatementContexts.newRun(node, env.resolver(), template);
+        StatementContext statementContext = StatementContexts.newRun(node, env.mapping(), template);
 
         try (Connection c = CayenneTestsEnv.COMMON_SCHEMA.dataSource().getConnection();) {
             plan.execute(c, statementContext);
@@ -221,7 +221,7 @@ public class DataNodeSQLActionIT {
 
         DataNodeSQLAction plan = new DataNodeSQLAction(translated(node, template), node);
 
-        StatementContext statementContext = StatementContexts.newRun(node, env.resolver(), template);
+        StatementContext statementContext = StatementContexts.newRun(node, env.mapping(), template);
 
         try (Connection c = CayenneTestsEnv.COMMON_SCHEMA.dataSource().getConnection();) {
             plan.execute(c, statementContext);
@@ -252,7 +252,7 @@ public class DataNodeSQLActionIT {
         DataNodeSQLAction action = new DataNodeSQLAction(translated(node, template), node);
 
         try (Connection c = CayenneTestsEnv.COMMON_SCHEMA.dataSource().getConnection();) {
-            StatementContext statementContext = StatementContexts.newRun(node, env.resolver(), template);
+            StatementContext statementContext = StatementContexts.newRun(node, env.mapping(), template);
             action.execute(c, statementContext);
 
             int[] batches = StatementContexts.counts(statementContext);
@@ -274,7 +274,7 @@ public class DataNodeSQLActionIT {
         DataNodeSQLAction action = new DataNodeSQLAction(translated(node, template), node);
 
         try (Connection c = CayenneTestsEnv.COMMON_SCHEMA.dataSource().getConnection();) {
-            StatementContext statementContext = StatementContexts.newRun(node, env.resolver(), template);
+            StatementContext statementContext = StatementContexts.newRun(node, env.mapping(), template);
             action.execute(c, statementContext);
 
             int[] batches = StatementContexts.counts(statementContext);
@@ -301,7 +301,7 @@ public class DataNodeSQLActionIT {
         assertSame(node, action.dataNode);
 
         try (Connection c = CayenneTestsEnv.COMMON_SCHEMA.dataSource().getConnection();) {
-            StatementContext statementContext = StatementContexts.newRun(node, env.resolver(), template);
+            StatementContext statementContext = StatementContexts.newRun(node, env.mapping(), template);
             action.execute(c, statementContext);
 
             int[] counts = StatementContexts.counts(statementContext);
@@ -312,7 +312,7 @@ public class DataNodeSQLActionIT {
 
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
                 .orderBy("db:ARTIST_ID", SortOrder.ASCENDING);
-        StatementContext statementContext = StatementContexts.run(node, env.resolver(), query);
+        StatementContext statementContext = StatementContexts.run(node, env.mapping(), query);
 
         List<DataRow> data = StatementContexts.rows(statementContext);
         assertEquals(1, data.size());

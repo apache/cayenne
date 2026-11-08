@@ -23,11 +23,11 @@ import java.util.List;
 
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.DataRowLayout;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.compiled.CompiledMapping;
+import org.apache.cayenne.map.compiled.CompiledEntity;
+import org.apache.cayenne.map.compiled.CompiledRelationship;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.reflect.ArcProperty;
-import org.apache.cayenne.reflect.ClassDescriptor;
+
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Gallery;
@@ -76,19 +76,19 @@ public class DataRowUtilsIT {
 
     @Test
     public void isTargetDeterminedByFK() {
-        EntityResolver resolver = context.getEntityResolver();
-        ObjEntity painting = resolver.getObjEntity("Painting");
-        ObjEntity artist = resolver.getObjEntity("Artist");
-        ObjEntity paintingInfo = resolver.getObjEntity("PaintingInfo");
+        CompiledMapping mapping = context.getMapping();
+        CompiledEntity painting = mapping.entity("Painting");
+        CompiledEntity artist = mapping.entity("Artist");
+        CompiledEntity paintingInfo = mapping.entity("PaintingInfo");
 
         // referential integrity guarantees the target of an FK on the source
-        assertTrue(DataRowUtils.isTargetDeterminedByFK(painting.getRelationship("artist"), resolver));
-        assertTrue(DataRowUtils.isTargetDeterminedByFK(paintingInfo.getRelationship("painting"), resolver));
+        assertTrue(DataRowUtils.isTargetDeterminedByFK(painting.relationship("artist")));
+        assertTrue(DataRowUtils.isTargetDeterminedByFK(paintingInfo.relationship("painting")));
 
         // a dependent row, to-many targets and flattened targets may be missing
-        assertFalse(DataRowUtils.isTargetDeterminedByFK(painting.getRelationship("paintingInfo"), resolver));
-        assertFalse(DataRowUtils.isTargetDeterminedByFK(artist.getRelationship("paintings"), resolver));
-        assertFalse(DataRowUtils.isTargetDeterminedByFK(artist.getRelationship("groups"), resolver));
+        assertFalse(DataRowUtils.isTargetDeterminedByFK(painting.relationship("paintingInfo")));
+        assertFalse(DataRowUtils.isTargetDeterminedByFK(artist.relationship("paintings")));
+        assertFalse(DataRowUtils.isTargetDeterminedByFK(artist.relationship("groups")));
     }
 
     @Test
@@ -106,7 +106,7 @@ public class DataRowUtilsIT {
         DataRow s2 = DataRow.of("Artist", DataRowLayout.of("ARTIST_NAME", "DATE_OF_BIRTH"),
                 new Object[]{n2, new java.util.Date()}, SnapshotVersion.next());
 
-        ClassDescriptor d = context.getEntityResolver().getClassDescriptor("Artist");
+        CompiledEntity d = context.getMapping().entity("Artist");
         DataRowUtils.mergeObjectWithSnapshot(context, a1, s2, MergePlan.of(d));
 
         // name was modified, so it should not change during merge
@@ -120,8 +120,8 @@ public class DataRowUtilsIT {
     public void isToOneTargetModified() throws Exception {
         createOneArtist();
 
-        ClassDescriptor d = context.getEntityResolver().getClassDescriptor("Painting");
-        ArcProperty artist = (ArcProperty) d.getProperty("artist");
+        CompiledEntity d = context.getMapping().entity("Painting");
+        CompiledRelationship artist = d.relationship("artist");
 
         Artist artist2 = ObjectSelect.query(Artist.class).selectFirst(context);
         Painting painting = context.newObject(Painting.class);
@@ -155,8 +155,8 @@ public class DataRowUtilsIT {
         assertEquals(1, paintings.size());
         Painting p1 = paintings.get(0);
 
-        ClassDescriptor d = context.getEntityResolver().getClassDescriptor("Painting");
-        ArcProperty gallery = (ArcProperty) d.getProperty("gallery");
+        CompiledEntity d = context.getMapping().entity("Painting");
+        CompiledRelationship gallery = d.relationship("gallery");
 
         ObjectDiff diff = context.getObjectStore().registerDiff(p1.getObjectId(), null);
         assertFalse(DataRowUtils.isToOneTargetModified(gallery, p1, diff));

@@ -23,8 +23,8 @@ import java.util.Objects;
 
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.access.sqlbuilder.sqltree.TableNode;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.compiled.CompiledColumn;
+import org.apache.cayenne.map.compiled.CompiledTable;
 
 /**
  * @since 4.2
@@ -32,18 +32,18 @@ import org.apache.cayenne.map.DbEntity;
 public class TableNodeBuilder implements NodeBuilder {
 
     private final String tableName;
-    private final DbEntity dbEntity;
+    private final CompiledTable table;
 
     private String alias;
 
     TableNodeBuilder(String tableName) {
         this.tableName = Objects.requireNonNull(tableName);
-        this.dbEntity = null;
+        this.table = null;
     }
 
-    TableNodeBuilder(DbEntity dbEntity) {
-        this.dbEntity = Objects.requireNonNull(dbEntity);
-        this.tableName = dbEntity.getName();
+    TableNodeBuilder(CompiledTable table) {
+        this.table = Objects.requireNonNull(table);
+        this.tableName = table.name();
     }
 
     public TableNodeBuilder as(String alias) {
@@ -55,8 +55,8 @@ public class TableNodeBuilder implements NodeBuilder {
         return new ColumnNodeBuilder(tableName, column);
     }
 
-    public ColumnNodeBuilder column(DbAttribute attribute) {
-        return new ColumnNodeBuilder(tableName, attribute);
+    public ColumnNodeBuilder column(CompiledColumn column) {
+        return new ColumnNodeBuilder(tableName, column);
     }
 
     public String getAlias() {
@@ -69,8 +69,8 @@ public class TableNodeBuilder implements NodeBuilder {
 
     @Override
     public Node build() {
-        if(dbEntity != null) {
-            return new TableNode(dbEntity, alias);
+        if(table != null) {
+            return new TableNode(table, alias);
         }
         return new TableNode(tableName, alias);
     }

@@ -19,8 +19,8 @@
 
 package org.apache.cayenne.query;
 
-import org.apache.cayenne.map.Embeddable;
-import org.apache.cayenne.map.ObjAttribute;
+import org.apache.cayenne.map.compiled.CompiledEmbeddable;
+import org.apache.cayenne.map.compiled.CompiledAttribute;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,19 +35,19 @@ import java.util.Map;
 public class EmbeddedResult {
 
     private final Map<String, String> fields;
-    private final Embeddable embeddable;
+    private final CompiledEmbeddable embeddable;
 
-    public EmbeddedResult(Embeddable embeddable, int size) {
+    public EmbeddedResult(CompiledEmbeddable embeddable, int size) {
         this.embeddable = embeddable;
         this.fields = HashMap.newHashMap(size);
     }
 
-    public void addAttribute(ObjAttribute attr) {
-        fields.put(attr.getDbAttributePath().value(), getAttributeName(attr));
+    public void addAttribute(CompiledAttribute attribute) {
+        fields.put(attribute.dbPath().value(), getAttributeName(attribute));
     }
 
-    private static String getAttributeName(ObjAttribute attr) {
-        String name = attr.getName();
+    private static String getAttributeName(CompiledAttribute attribute) {
+        String name = attribute.name();
         return name.substring(name.lastIndexOf('.') + 1);
     }
 
@@ -55,7 +55,7 @@ public class EmbeddedResult {
         return fields;
     }
 
-    public Embeddable getEmbeddable() {
+    public CompiledEmbeddable getEmbeddable() {
         return embeddable;
     }
 }

@@ -25,11 +25,10 @@ import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.graph.ArcId;
 import org.apache.cayenne.map.DeleteRule;
-import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.reflect.ArcProperty;
-import org.apache.cayenne.reflect.ClassDescriptor;
-import org.apache.cayenne.reflect.ToManyProperty;
-import org.apache.cayenne.reflect.ToOneProperty;
+import org.apache.cayenne.map.compiled.CompiledEntity;
+import org.apache.cayenne.map.compiled.CompiledRelationship;
+import org.apache.cayenne.map.compiled.CompiledToManyRelationship;
+import org.apache.cayenne.map.compiled.CompiledToOneRelationship;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -122,23 +121,21 @@ class DataContextDeleteAction {
     private void processDeleteRules(final Persistent object, int oldState)
             throws DeleteDenyException {
 
-        ClassDescriptor descriptor = context.getEntityResolver().getClassDescriptor(
-                object.getObjectId().getEntityName());
+        CompiledEntity entity = context.getMapping().entity(object.getObjectId().getEntityName());
 
-        for (final ObjRelationship relationship : descriptor.getEntity().getRelationships()) {
+        for (final CompiledRelationship relationship : entity.relationships()) {
 
             // a flattened relationship through a join table whose PK includes the PK of the source: the join rows
             // must go with the object even if they are not in the object graph
             boolean processFlattened = relationship.isFlattened()
-                    && relationship.getDbRelationships().getFirst().getReverseRelationship().isIdentifying();
+                    && relationship.joins().getFirst().reverse().isIdentifying();
 
             // first check for no action... bail out if no flattened processing is needed
-            if (relationship.getDeleteRule() == null && !processFlattened) {
+            if (relationship.deleteRule() == null && !processFlattened) {
                 continue;
             }
 
-            ArcProperty property = (ArcProperty) descriptor.getProperty(relationship.getName());
-            final Collection<Persistent> relatedObjects = toCollection(property.readProperty(object));
+            Collection<Persistent> relatedObjects = toCollection(relationship.readProperty(object));
 
             // no related object, bail out
             if (relatedObjects.isEmpty()) {
@@ -146,20 +143,20 @@ class DataContextDeleteAction {
             }
 
             // process DENY rule first...
-            if (relationship.getDeleteRule() == DeleteRule.DENY) {
+            if (relationship.deleteRule() == DeleteRule.DENY) {
                 object.setPersistenceState(oldState);
 
                 String message = relatedObjects.size() == 1
                         ? "1 related object"
                         : relatedObjects.size() + " related objects";
-                throw new DeleteDenyException(object, relationship.getName(), message);
+                throw new DeleteDenyException(object, relationship.name(), message);
             }
 
             // process flattened with dependent join tables...
             // joins must be removed even if they are non-existent or ignored in the
             // object graph
             if (processFlattened) {
-                ArcId arcId = new ArcId(property);
+                ArcId arcId = new ArcId(relationship);
                 for (Persistent relatedObject : relatedObjects) {
                     context.getObjectStore().changeRecorder()
                             .arcDeleted(object.getObjectId(), relatedObject.getObjectId(), arcId);
@@ -167,9 +164,9 @@ class DataContextDeleteAction {
             }
 
             // process remaining rules
-            switch (relationship.getDeleteRule()) {
+            switch (relationship.deleteRule()) {
                 case null -> { /* nothing to do */ }
-                case NULLIFY -> nullifyRelationship(object, property, relatedObjects);
+                case NULLIFY -> nullifyRelationship(object, relationship, relatedObjects);
                 case CASCADE -> {
                     for (Persistent relatedObject : relatedObjects) {
                         performDelete(relatedObject);
@@ -177,22 +174,23 @@ class DataContextDeleteAction {
                 }
                 default -> {
                     object.setPersistenceState(oldState);
-                    throw new CayenneRuntimeException("Invalid delete rule %s", relationship.getDeleteRule());
+                    throw new CayenneRuntimeException("Invalid delete rule %s", relationship.deleteRule());
                 }
             }
         }
     }
 
-    private void nullifyRelationship(Persistent object, ArcProperty property, Collection<Persistent> relatedObjects) {
+    private void nullifyRelationship(Persistent object, CompiledRelationship relationship,
+                                     Collection<Persistent> relatedObjects) {
 
-        ArcProperty reverseArc = property.getComplementaryReverseArc();
+        CompiledRelationship reverseArc = relationship.reverse();
         if (reverseArc != null) {
             unsetReverseArc(reverseArc, object, relatedObjects);
             return;
         }
 
         // no reverse on the declared target, and no sub-entity that could declare one - nothing to unset
-        if (!property.getTargetDescriptor().hasSubclasses()) {
+        if (!relationship.target().hasSubEntities()) {
             return;
         }
 
@@ -204,28 +202,27 @@ class DataContextDeleteAction {
                         Collectors.toList()));
 
         byEntity.forEach((entityName, sameEntityObjects) -> {
-            ClassDescriptor descriptor = context.getEntityResolver().getClassDescriptor(entityName);
-            ObjRelationship reverse = property.getRelationship().getReverseRelationship(descriptor.getEntity());
+            CompiledEntity targetEntity = context.getMapping().entity(entityName);
+            CompiledRelationship reverse = relationship.reverse(targetEntity);
             if (reverse != null) {
-                unsetReverseArc((ArcProperty) descriptor.getProperty(reverse.getName()), object, sameEntityObjects);
+                unsetReverseArc(reverse, object, sameEntityObjects);
             }
         });
     }
 
-    private void unsetReverseArc(ArcProperty reverseArc, Persistent object, Collection<Persistent> relatedObjects) {
+    private void unsetReverseArc(CompiledRelationship reverseArc, Persistent object,
+                                 Collection<Persistent> relatedObjects) {
         switch (reverseArc) {
-            case ToManyProperty toMany -> {
+            case CompiledToManyRelationship toMany -> {
                 for (Persistent relatedObject : relatedObjects) {
                     toMany.removeTarget(relatedObject, object, true);
                 }
             }
-            case ToOneProperty toOne -> {
+            case CompiledToOneRelationship toOne -> {
                 // Inverse is to-one - find all related objects and nullify the reverse relationship
                 for (Persistent relatedObject : relatedObjects) {
                     toOne.setTarget(relatedObject, null, true);
                 }
-            }
-            default -> {
             }
         }
     }

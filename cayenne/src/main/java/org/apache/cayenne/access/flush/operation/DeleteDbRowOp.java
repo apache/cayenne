@@ -21,7 +21,7 @@ package org.apache.cayenne.access.flush.operation;
 
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.compiled.CompiledTable;
 
 /**
  * @since 4.2
@@ -30,8 +30,8 @@ public class DeleteDbRowOp extends BaseDbRowOp implements DbRowOpWithQualifier {
 
     protected final Qualifier qualifier;
 
-    public DeleteDbRowOp(Persistent object, DbEntity entity, ObjectId id) {
-        super(object, entity, id);
+    public DeleteDbRowOp(Persistent object, CompiledTable table, ObjectId id) {
+        super(object, table, id);
         qualifier = new Qualifier(this);
     }
 

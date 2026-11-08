@@ -21,10 +21,15 @@ package org.apache.cayenne.access.translator.select;
 
 import org.apache.cayenne.access.sqlbuilder.sqltree.LimitOffsetNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.compiled.CompiledMapping;
+import org.apache.cayenne.map.compiled.TestMappings;
 import org.apache.cayenne.query.resolved.ResolvedSelect;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -36,12 +41,13 @@ public class LimitOffsetStageTest {
     public void prepareContext() {
         DbEntity entity = new DbEntity();
         entity.setName("mock");
+        DataMap dataMap = new DataMap("mock");
+        dataMap.addDbEntity(entity);
+        CompiledMapping mapping = TestMappings.compile(dataMap);
 
         ResolvedSelect query = new MockResolvedSelectBuilder()
-                
-                        .withDbEntity(entity)
-                        .withLimitOffset(123, 321)
-                        
+                .withDbEntity(mapping.schema().table("mock"))
+                .withLimitOffset(123, 321)
                 .build();
         context = new MockSelectTranslatorContext(query);
     }

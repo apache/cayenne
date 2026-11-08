@@ -20,8 +20,8 @@ package org.apache.cayenne.access.jdbc;
 
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ResultIterator;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.compiled.CompiledColumn;
+import org.apache.cayenne.map.compiled.CompiledTable;
 import org.apache.cayenne.util.ResultIteratorIterator;
 
 import java.util.ArrayList;
@@ -45,7 +45,7 @@ public class DistinctResultIterator<T> implements ResultIterator<T> {
 
     private final ResultIterator<T> delegate;
     private final Set<Object> fetchedIds;
-    private final DbEntity defaultEntity;
+    private final CompiledTable defaultTable;
     private final boolean compareFullRows;
 
     private T nextDataRow;
@@ -54,19 +54,19 @@ public class DistinctResultIterator<T> implements ResultIterator<T> {
      * Creates new DistinctResultIterator wrapping another ResultIterator.
      *
      * @param delegate      actual result iterator, that will be decorated by this DistinctResultIterator
-     * @param defaultEntity an entity needed to build ObjectIds for distinct comparison.
+     * @param defaultTable the table whose primary key builds the ObjectIds compared for distinctness.
      */
-    public DistinctResultIterator(ResultIterator<T> delegate, DbEntity defaultEntity, boolean compareFullRows) {
+    public DistinctResultIterator(ResultIterator<T> delegate, CompiledTable defaultTable, boolean compareFullRows) {
         if (delegate == null) {
             throw new NullPointerException("Null wrapped iterator.");
         }
 
-        if (defaultEntity == null) {
+        if (defaultTable == null) {
             throw new NullPointerException("Null defaultEntity.");
         }
 
         this.delegate = delegate;
-        this.defaultEntity = defaultEntity;
+        this.defaultTable = defaultTable;
         this.fetchedIds = new HashSet<>();
         this.compareFullRows = compareFullRows;
 
@@ -160,8 +160,8 @@ public class DistinctResultIterator<T> implements ResultIterator<T> {
             // to avoid iterating over default entity attributes...
 
             Map<String, Object> id = new HashMap<>();
-            for (final DbAttribute pk : defaultEntity.getPrimaryKeys()) {
-                id.put(pk.getName(), ((DataRow) next).get(pk.getName()));
+            for (final CompiledColumn pk : defaultTable.primaryKey()) {
+                id.put(pk.name(), ((DataRow) next).get(pk.name()));
             }
 
             if (fetchedIds.add(id)) {

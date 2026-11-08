@@ -35,7 +35,7 @@ import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.dba.NativeColumnType;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.compiled.CompiledColumn;
 
 import java.sql.PreparedStatement;
 import java.sql.Types;
@@ -141,13 +141,13 @@ public class DerbyAdapter extends JdbcAdapter {
      * @since 1.2
      */
     @Override
-    public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
+    public void createTableAppendColumn(StringBuffer sqlBuffer, CompiledColumn column) {
         String type = preferredNativeColumnType(column).nativeType();
         String length = sizeAndScale(this, column);
 
-        QuotingStrategy quotes = getQuotingStrategy(column.getEntity());
+        QuotingStrategy quotes = getQuotingStrategy(column.table());
         quotes.appendStart(sqlBuffer);
-        sqlBuffer.append(column.getName());
+        sqlBuffer.append(column.name());
         quotes.appendEnd(sqlBuffer);
         sqlBuffer.append(' ');
 

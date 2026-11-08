@@ -21,9 +21,9 @@ package org.apache.cayenne.access.translator.select;
 import java.util.Set;
 
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.compiled.CompiledMapping;
+import org.apache.cayenne.map.compiled.CompiledEntity;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.testdo.inheritance_vertical.IvRoot;
 import org.apache.cayenne.testdo.inheritance_vertical.IvSub3;
 import org.apache.cayenne.unit.CayenneProjects;
@@ -47,22 +47,22 @@ public class DescriptorColumnExtractorVerticalInheritanceIT {
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.INHERITANCE_VERTICAL_PROJECT);
 
     private SelectTranslatorContext extract(ObjectSelect<?> query, String entityName) {
-        EntityResolver resolver = env.context().getEntityResolver();
-        ClassDescriptor classDescriptor = resolver.getClassDescriptor(entityName);
+        CompiledMapping mapping = env.mapping();
+        CompiledEntity entity = mapping.entity(entityName);
 
         SelectTranslatorContext translatorContext =
-                new SelectTranslatorContext(query.resolve(resolver), Mockito.mock(DbAdapter.class), resolver, null);
+                new SelectTranslatorContext(query.resolve(mapping), Mockito.mock(DbAdapter.class), mapping, null);
 
-        new DescriptorColumnExtractor(translatorContext, classDescriptor).extract();
+        new DescriptorColumnExtractor(translatorContext, entity).extract();
         return translatorContext;
     }
 
     private void assertFieldCountMatchesColumnCount(ObjectSelect<?> query, String entityName) {
         SelectTranslatorContext context = extract(query, entityName);
-        EntityResolver resolver = env.context().getEntityResolver();
+        CompiledMapping mapping = env.mapping();
 
         assertEquals(context.getResultNodeList().size(),
-                context.getRootEntityResult().getDbFields(resolver).size(),
+                context.getRootEntityResult().getDbFields(mapping).size(),
                 "entity result field count must match the number of emitted columns");
     }
 
@@ -79,9 +79,9 @@ public class DescriptorColumnExtractorVerticalInheritanceIT {
     @Test
     public void flattenedToOneFieldsArePathQualified() {
         SelectTranslatorContext context = extract(ObjectSelect.query(IvSub3.class).column(IvSub3.SELF), "IvSub3");
-        EntityResolver resolver = env.context().getEntityResolver();
+        CompiledMapping mapping = env.mapping();
 
-        Set<String> keys = context.getRootEntityResult().getDbFields(resolver).keySet();
+        Set<String> keys = context.getRootEntityResult().getDbFields(mapping).keySet();
 
         assertTrue(keys.contains("sub3.ID"), () -> "expected path-qualified 'sub3.ID' in " + keys);
         assertTrue(keys.contains("sub3.IV_ROOT_ID"), () -> "expected path-qualified 'sub3.IV_ROOT_ID' in " + keys);

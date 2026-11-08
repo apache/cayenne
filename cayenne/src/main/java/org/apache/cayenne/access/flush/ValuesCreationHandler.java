@@ -23,10 +23,10 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.access.flush.operation.DbRowOpType;
 import org.apache.cayenne.access.flush.operation.DbRowOpWithValues;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.ObjAttribute;
-import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.compiled.CompiledColumn;
+import org.apache.cayenne.map.compiled.CompiledTable;
+import org.apache.cayenne.map.compiled.CompiledAttribute;
+import org.apache.cayenne.map.compiled.CompiledEntity;
 
 /**
  * Extension of {@link ArcValuesCreationHandler} that also tracks property changes.
@@ -41,18 +41,18 @@ class ValuesCreationHandler extends ArcValuesCreationHandler {
 
     @Override
     public void nodePropertyChanged(ObjectId id, String property, Object oldValue, Object newValue) {
-        ObjEntity entity = factory.getDescriptor().getEntity();
+        CompiledEntity entity = factory.getEntity();
         if(entity.isReadOnly()) {
             throw new CayenneRuntimeException("Attempt to modify object(s) mapped to a read-only entity: '%s'. " +
-                    "Can't commit changes.", entity.getName());
+                    "Can't commit changes.", entity.name());
         }
-        ObjAttribute attribute = entity.getAttribute(property);
-        DbEntity dbEntity = entity.getDbEntity();
+        CompiledAttribute attribute = entity.attribute(property);
+        CompiledTable table = entity.table();
 
         if(attribute.isFlattened()) {
             // get target row ID
             FlattenedPathProcessingResult result
-                    = processFlattenedPath(id, null, dbEntity, attribute.getDbAttributePath(), newValue != null);
+                    = processFlattenedPath(id, null, table, attribute.dbPath(), newValue != null);
             if(result.isProcessed()) {
                 id = result.getId();
             }
@@ -64,16 +64,16 @@ class ValuesCreationHandler extends ArcValuesCreationHandler {
                     , id, property);
         }
 
-        DbAttribute dbAttribute = attribute.getDbAttribute();
-        if(dbAttribute.isPrimaryKey()) {
+        CompiledColumn column = attribute.column();
+        if(column.isPrimaryKey()) {
             if(!(newValue instanceof Number number) || number.longValue() != 0) {
-                id.getReplacementIdMap().put(dbAttribute.getName(), newValue);
+                id.getReplacementIdMap().put(column.name(), newValue);
             }
         }
 
         DbRowOpWithValues dbRow = factory.get(id);
         if(dbRow != null) {
-            dbRow.getValues().addValue(dbAttribute, newValue, false);
+            dbRow.getValues().addValue(column, newValue, false);
         }
     }
 

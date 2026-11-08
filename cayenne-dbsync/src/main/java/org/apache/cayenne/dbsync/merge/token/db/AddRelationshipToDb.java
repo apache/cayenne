@@ -26,6 +26,7 @@ import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.compiled.CompiledTable;
 
 import java.util.Collections;
 import java.util.List;
@@ -40,7 +41,7 @@ public class AddRelationshipToDb extends AbstractToDbToken.Entity {
     }
 
     /**
-     * @see DbGenerator#createConstraintsQueries(org.apache.cayenne.map.DbEntity)
+     * @see DbGenerator#createConstraintsQueries(CompiledTable)
      */
     @Override
     public List<String> createSql(DataNode node) {
@@ -48,7 +49,7 @@ public class AddRelationshipToDb extends AbstractToDbToken.Entity {
 
         // TODO: skip FK to a different DB
         if (!this.isEmpty()) {
-            String fksql = adapter.createFkConstraint(relationship);
+            String fksql = adapter.createFkConstraint(CompiledModel.relationship(relationship));
             if (fksql != null) {
                 return Collections.singletonList(fksql);
             }

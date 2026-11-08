@@ -23,7 +23,7 @@ package org.apache.cayenne.access.translator.select;
  * Get result columns based on query, options are: <ol>
  *    <li> for column queries - defined set of columns
  *    <li> for paginated or nested queries - root pk columns
- *    <li> for queries with defined class descriptor - full column set including flattened
+ *    <li> for queries with a root ObjEntity - full column set including flattened
  *    <li> for everything else - all columns of the root db entity
  * </ol>
  *
@@ -38,13 +38,13 @@ class ColumnExtractorStage implements TranslationStage {
         if(!context.getSelect().columns().isEmpty()) {
             extractor = new CustomColumnSetExtractor(context, context.getSelect().columns());
         } else if (context.getParentContext() != null || context.getSelect().pageSize() > 0) {
-            if(context.getSelect().objEntity() != null) {
-                extractor = new IdColumnExtractor(context, context.getSelect().objEntity());
+            if(context.getSelect().entity() != null) {
+                extractor = new IdColumnExtractor(context, context.getSelect().entity());
             } else {
-                extractor = new IdColumnExtractor(context, context.getSelect().dbEntity());
+                extractor = new IdColumnExtractor(context, context.getSelect().table());
             }
-        } else if (context.getSelect().classDescriptor() != null) {
-            extractor = new DescriptorColumnExtractor(context, context.getSelect().classDescriptor());
+        } else if (context.getSelect().entity() != null) {
+            extractor = new DescriptorColumnExtractor(context, context.getSelect().entity());
         } else {
             extractor = new DbEntityColumnExtractor(context);
         }

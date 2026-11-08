@@ -63,8 +63,8 @@ public class DbAttribute extends Attribute<DbEntity, DbAttribute, DbRelationship
     /**
      * @since 3.0
      */
-    // must call it 'attributePrecision' as 'precision' in 1.2 really meant 'scale'
-    protected int attributePrecision = -1;
+    // must call it 'precision' as 'precision' in 1.2 really meant 'scale'
+    protected int precision = -1;
 
     public DbAttribute() {
         super();
@@ -124,7 +124,7 @@ public class DbAttribute extends Attribute<DbEntity, DbAttribute, DbRelationship
         }
 
         if (getAttributePrecision() > 0) {
-            encoder.attribute("attributePrecision", getAttributePrecision());
+            encoder.attribute("precision", getAttributePrecision());
         }
 
         delegate.visitDbAttribute(this);
@@ -224,14 +224,14 @@ public class DbAttribute extends Attribute<DbEntity, DbAttribute, DbRelationship
      * @since 3.0
      */
     public int getAttributePrecision() {
-        return attributePrecision;
+        return precision;
     }
 
     /**
      * @since 3.0
      */
-    public void setAttributePrecision(int attributePrecision) {
-        this.attributePrecision = attributePrecision;
+    public void setAttributePrecision(int precision) {
+        this.precision = precision;
     }
 
     /**
@@ -267,8 +267,8 @@ public class DbAttribute extends Attribute<DbEntity, DbAttribute, DbRelationship
         res += type != null ? type : "type(" + getType() + ")";
         res += " " + name;
 
-        if (scale > -1 || attributePrecision > -1) {
-            res += "[" + scale + ", " + attributePrecision + "]";
+        if (scale > -1 || precision > -1) {
+            res += "[" + scale + ", " + precision + "]";
         }
 
         if (maxLength > -1) {

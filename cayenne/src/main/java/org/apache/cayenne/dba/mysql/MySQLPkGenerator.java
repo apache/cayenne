@@ -24,7 +24,7 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcPkGenerator;
 import org.apache.cayenne.log.SQLLogger;
-import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.compiled.CompiledTable;
 import org.apache.cayenne.tx.BaseTransaction;
 import org.apache.cayenne.tx.Transaction;
 import org.slf4j.Logger;
@@ -49,7 +49,7 @@ public class MySQLPkGenerator extends JdbcPkGenerator {
      * @since 3.0
      */
     @Override
-    protected long longPkFromDatabase(DataNode node, DbEntity entity) {
+    protected long longPkFromDatabase(DataNode node, CompiledTable table) {
 
         // must work directly with JDBC connection, since we
         // must unlock the AUTO_PK_SUPPORT table in case of
@@ -76,7 +76,7 @@ public class MySQLPkGenerator extends JdbcPkGenerator {
 
             try (Statement st = con.createStatement()) {
                 try {
-                    pk = getLongPrimaryKey(node.getSqlLogger(), st, entity.getName());
+                    pk = getLongPrimaryKey(node.getSqlLogger(), st, table.name());
                     con.commit();
                 } catch (SQLException pkEx) {
                     try {
@@ -105,7 +105,7 @@ public class MySQLPkGenerator extends JdbcPkGenerator {
 
         // check errors
         if (exception != null) {
-            throw new CayenneRuntimeException("Error generating pk for DbEntity %s", exception, entity.getName());
+            throw new CayenneRuntimeException("Error generating pk for DbEntity %s", exception, table.name());
         }
 
         return pk;

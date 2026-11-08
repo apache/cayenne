@@ -19,8 +19,11 @@
 
 package org.apache.cayenne.query.resolved;
 
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.compiled.CompiledTable;
+import org.apache.cayenne.map.compiled.CompiledEntity;
+import org.apache.cayenne.map.compiled.SchemaCompiler;
 import org.apache.cayenne.query.QueryCacheStrategy;
 
 import java.util.List;
@@ -44,8 +47,8 @@ public final class ResolvedQueries {
     /**
      * Returns a select rooted in the given entities (either may be null) with default settings.
      */
-    public static ResolvedSelect select(ObjEntity objEntity, DbEntity dbEntity) {
-        return select(objEntity, dbEntity, ResolvedQuery.STATEMENT_FETCH_SIZE_DEFAULT);
+    public static ResolvedSelect select(CompiledEntity entity, CompiledTable table) {
+        return select(entity, table, ResolvedQuery.STATEMENT_FETCH_SIZE_DEFAULT);
     }
 
     /**
@@ -55,11 +58,12 @@ public final class ResolvedQueries {
         return select(null, null, statementFetchSize);
     }
 
-    private static ResolvedSelect select(ObjEntity objEntity, DbEntity dbEntity, int statementFetchSize) {
-        return new ResolvedSelect(null, objEntity, dbEntity, dbEntity != null ? dbEntity.getDataMap() : null, null,
+    private static ResolvedSelect select(CompiledEntity entity, CompiledTable table,
+                                         int statementFetchSize) {
+        return new ResolvedSelect(null, entity, table, table != null ? table.map() : null, null,
                 null, null, List.of(), List.of(), false, false, false, ResolvedQuery.FETCH_LIMIT_DEFAULT,
                 ResolvedQuery.FETCH_OFFSET_DEFAULT, ResolvedQuery.PAGE_SIZE_DEFAULT, statementFetchSize,
-                ResolvedQuery.QUERY_TIMEOUT_DEFAULT, QueryCacheStrategy.NO_CACHE, null, null, null, Map.of(), null,
+                ResolvedQuery.QUERY_TIMEOUT_DEFAULT, QueryCacheStrategy.NO_CACHE, null, null, Map.of(), null,
                 null, List.of(), List.of());
     }
 
@@ -74,7 +78,7 @@ public final class ResolvedQueries {
      * Returns a procedure call with no procedure and default settings.
      */
     public static ResolvedProcedure procedure() {
-        return new ResolvedProcedure(null, null, null, null, null, null, Map.of(), List.of(), null, true,
+        return new ResolvedProcedure(null, null, null, null, null, Map.of(), List.of(), null, true,
                 ResolvedQuery.FETCH_LIMIT_DEFAULT, ResolvedQuery.FETCH_OFFSET_DEFAULT, ResolvedQuery.PAGE_SIZE_DEFAULT,
                 ResolvedQuery.STATEMENT_FETCH_SIZE_DEFAULT, ResolvedQuery.QUERY_TIMEOUT_DEFAULT,
                 QueryCacheStrategy.NO_CACHE, null, null);
@@ -84,6 +88,8 @@ public final class ResolvedQueries {
      * Returns an empty insert batch of a throwaway entity.
      */
     public static InsertBatch batch() {
-        return new InsertBatch(new DbEntity("T"), List.of());
+        DataMap map = new DataMap("m");
+        map.addDbEntity(new DbEntity("T"));
+        return new InsertBatch(SchemaCompiler.compile(List.of(map)).table("T"), List.of());
     }
 }

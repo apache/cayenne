@@ -28,7 +28,7 @@ public class SchemaUpdateStrategyIT extends SchemaUpdateStrategyBase {
 
 	@Test
 	public void createIfNoSchema() throws Exception {
-		CreateIfNoSchemaStrategy strategy = new CreateIfNoSchemaStrategy();
+		CreateIfNoSchemaStrategy strategy = new CreateIfNoSchemaStrategy(node.getSqlLogger());
 
 		updateSchema(strategy);
 		assertTrue(tablesMap().get("SUS1"));
@@ -43,7 +43,7 @@ public class SchemaUpdateStrategyIT extends SchemaUpdateStrategyBase {
 	public void createIfNoSchema_PartialSchemaLeftAlone() throws Exception {
 		createOneTable("SUS1");
 
-		updateSchema(new CreateIfNoSchemaStrategy());
+		updateSchema(new CreateIfNoSchemaStrategy(node.getSqlLogger()));
 		assertEquals(1, existingTables().size());
 	}
 }

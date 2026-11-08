@@ -21,9 +21,9 @@ package org.apache.cayenne.reflect;
 /**
  * An accessor of a field of an embeddable object held by a persistent object: the composition of the accessor of
  * the embedded object on the owner and the accessor of the field on the embeddable. The accessor does not create
- * the embeddable; {@link EmbeddedAttributeProperty#injectValueHolder(Object)} does, when the framework prepares
- * an object for access. Reading a field of a missing embeddable yields null, writing one is an error. Only one
- * level of embedding is supported.
+ * the embeddable; the embedded attribute of the compiled entity does, when the framework prepares an object for
+ * access. Reading a field of a missing embeddable yields null, writing one is an error. Only one level of
+ * embedding is supported.
  *
  * @since 3.0
  */

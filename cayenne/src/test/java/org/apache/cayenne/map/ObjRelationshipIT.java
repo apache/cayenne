@@ -55,10 +55,15 @@ public class ObjRelationshipIT {
     private DbEntity paintingDbEntity;
     private DbEntity galleryDBEntity;
 
+    // the authored model of the test runtime, as this test checks the authored map classes
+    private static EntityResolver authored() {
+        return new EntityResolver(env.project().dataMaps());
+    }
+
     @BeforeEach
     public void setUp() throws Exception {
         runtime = env.runtime();
-        EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
+        EntityResolver resolver = authored();
 
         artistDBEntity = resolver.getDbEntity("ARTIST");
         artistExhibitDBEntity = resolver.getDbEntity("ARTIST_EXHIBIT");
@@ -104,8 +109,8 @@ public class ObjRelationshipIT {
 
     @Test
     public void getReverseDbRelationshipPath() {
-        ObjEntity artistObjEnt = runtime.getDataDomain().getEntityResolver().getObjEntity("Artist");
-        ObjEntity paintingObjEnt = runtime.getDataDomain().getEntityResolver().getObjEntity("Painting");
+        ObjEntity artistObjEnt = authored().getObjEntity("Artist");
+        ObjEntity paintingObjEnt = authored().getObjEntity("Painting");
 
         // start with "to many"
         ObjRelationship r1 = artistObjEnt.getRelationship("paintings");
@@ -119,7 +124,7 @@ public class ObjRelationshipIT {
 
     @Test
     public void setDbRelationshipPath() {
-        ObjEntity artistObjEnt = runtime.getDataDomain().getEntityResolver().getObjEntity("Artist");
+        ObjEntity artistObjEnt = authored().getObjEntity("Artist");
 
         ObjRelationship r = new ObjRelationship("r");
         r.setSourceEntity(artistObjEnt);
@@ -199,7 +204,7 @@ public class ObjRelationshipIT {
         // DbRelationships
         // add DbRelationships directly to avoid events to test
         // "calculateToMany"
-        relationship.dbRelationships.add(dummyR);
+        relationship.joins.add(dummyR);
         assertFalse(relationship.isToMany());
 
         dummyR.setToMany(true);
@@ -211,7 +216,7 @@ public class ObjRelationshipIT {
         assertFalse(relationship.isToMany());
 
         // test chain
-        relationship.dbRelationships.add(pathR);
+        relationship.joins.add(pathR);
         assertFalse(relationship.isToMany());
 
         pathR.setToMany(true);
@@ -295,8 +300,8 @@ public class ObjRelationshipIT {
     @Test
     public void getReverseRel1() {
 
-        ObjEntity artistObjEnt = runtime.getDataDomain().getEntityResolver().getObjEntity("Artist");
-        ObjEntity paintingObjEnt = runtime.getDataDomain().getEntityResolver().getObjEntity("Painting");
+        ObjEntity artistObjEnt = authored().getObjEntity("Artist");
+        ObjEntity paintingObjEnt = authored().getObjEntity("Painting");
 
         // start with "to many"
         ObjRelationship r1 = artistObjEnt.getRelationship("paintings");
@@ -308,8 +313,8 @@ public class ObjRelationshipIT {
 
     @Test
     public void getReverseRel2() {
-        ObjEntity artistEnt = runtime.getDataDomain().getEntityResolver().getObjEntity("Artist");
-        ObjEntity paintingEnt = runtime.getDataDomain().getEntityResolver().getObjEntity("Painting");
+        ObjEntity artistEnt = authored().getObjEntity("Artist");
+        ObjEntity paintingEnt = authored().getObjEntity("Painting");
 
         // start with "to one"
         ObjRelationship r1 = paintingEnt.getRelationship("artist");
@@ -321,7 +326,7 @@ public class ObjRelationshipIT {
 
     @Test
     public void isForeignKey() {
-        EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
+        EntityResolver resolver = authored();
         ObjEntity painting = resolver.getObjEntity("Painting");
         ObjEntity artist = resolver.getObjEntity("Artist");
 
@@ -450,7 +455,7 @@ public class ObjRelationshipIT {
     // flattened
     @Test
     public void knownFlattenedRelationship() {
-        ObjEntity artistEnt = runtime.getDataDomain().getEntityResolver().getObjEntity("Artist");
+        ObjEntity artistEnt = authored().getObjEntity("Artist");
         ObjRelationship theRel = artistEnt.getRelationship("groups");
         assertNotNull(theRel);
         assertTrue(theRel.isFlattened());

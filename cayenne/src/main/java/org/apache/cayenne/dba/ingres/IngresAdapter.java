@@ -32,7 +32,7 @@ import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.compiled.CompiledColumn;
 
 import java.sql.PreparedStatement;
 import java.sql.Types;
@@ -128,18 +128,18 @@ public class IngresAdapter extends JdbcAdapter {
     }
 
     @Override
-    public void createTableAppendColumn(StringBuffer buf, DbAttribute column) {
+    public void createTableAppendColumn(StringBuffer buf, CompiledColumn column) {
         String type = preferredNativeColumnType(column).nativeType();
-        QuotingStrategy quotes = getQuotingStrategy(column.getEntity());
+        QuotingStrategy quotes = getQuotingStrategy(column.table());
         quotes.appendStart(buf);
-        buf.append(column.getName());
+        buf.append(column.name());
         quotes.appendEnd(buf);
         buf.append(' ').append(type);
 
         // append size and precision (if applicable)
-        if (typeSupportsLength(column.getType())) {
-            int len = column.getMaxLength();
-            int scale = TypesMapping.isDecimal(column.getType()) ? column.getScale() : -1;
+        if (typeSupportsLength(column.jdbcType())) {
+            int len = column.maxLength();
+            int scale = TypesMapping.isDecimal(column.jdbcType()) ? column.scale() : -1;
 
             // sanity check
             if (scale > len) {

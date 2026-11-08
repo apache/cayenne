@@ -23,8 +23,8 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.dba.TypesMapping;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.compiled.CompiledColumn;
+import org.apache.cayenne.map.compiled.CompiledTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +50,7 @@ public record RSColumn(
         int rsType,
         String dataRowName,
         ExtendedType<?> reader,
-        DbAttribute attribute) {
+        CompiledColumn attribute) {
 
     public RSColumn {
         if (dataRowName == null) {
@@ -105,7 +105,7 @@ public record RSColumn(
         private Map<String, String> typeOverrides;
         private boolean mergeColumnsWithRsMetadata;
         private boolean validateDuplicateColumnNames;
-        private DbEntity dbEntity;
+        private CompiledTable table;
 
         /**
          * Returns the array of {@link RSColumn}s describing the result row, with an {@link ExtendedType}
@@ -272,18 +272,18 @@ public record RSColumn(
         }
 
         private RSColumn[] resolveDbAttributes(RSColumn[] columnArray) {
-            if (dbEntity == null) {
+            if (table == null) {
                 return columnArray;
             }
 
             RSColumn[] result = null;
-            Map<String, DbAttribute> ciAttributeIndex = null;
+            Map<String, CompiledColumn> ciAttributeIndex = null;
             for (int i = 0; i < columnArray.length; i++) {
                 RSColumn column = columnArray[i];
                 if (column.attribute() != null) {
                     continue;
                 }
-                DbAttribute attribute = dbEntity.getAttribute(column.rsName());
+                CompiledColumn attribute = table.column(column.rsName());
                 if (attribute == null) {
 
                     // Similar to the comment above, we are reverting to the case-insensitive attribute lookup
@@ -292,8 +292,8 @@ public record RSColumn(
                     // TODO: move CI attribute retrieval to DbEntity with checks for CI-induced conflicts
                     if (ciAttributeIndex == null) {
                         ciAttributeIndex = new HashMap<>();
-                        for (DbAttribute a : dbEntity.getAttributes()) {
-                            ciAttributeIndex.putIfAbsent(a.getName().toLowerCase(), a);
+                        for (CompiledColumn a : table.columns()) {
+                            ciAttributeIndex.putIfAbsent(a.name().toLowerCase(), a);
                         }
                     }
 
@@ -361,11 +361,11 @@ public record RSColumn(
         }
 
         /**
-         * Sets the root DbEntity used to resolve each column's {@link DbAttribute} by name. Optional - when not set,
-         * column attributes are left as provided.
+         * Sets the root DbEntity used to resolve each column's {@link CompiledColumn} by name. Optional - when
+         * not set, column attributes are left as provided.
          */
-        public RowBuilder dbEntity(DbEntity dbEntity) {
-            this.dbEntity = dbEntity;
+        public RowBuilder dbEntity(CompiledTable table) {
+            this.table = table;
             return this;
         }
     }

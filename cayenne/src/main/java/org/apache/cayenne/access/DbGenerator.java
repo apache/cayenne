@@ -19,18 +19,17 @@
 
 package org.apache.cayenne.access;
 
-import org.apache.cayenne.ashwood.AshwoodEntitySorter;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.log.SQLLogger;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DbJoin;
-import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.EntitySorter;
+import org.apache.cayenne.map.compiled.CompiledColumnPair;
+import org.apache.cayenne.map.compiled.CompiledDataMap;
+import org.apache.cayenne.map.compiled.CompiledColumn;
+import org.apache.cayenne.map.compiled.CompiledTable;
+import org.apache.cayenne.map.compiled.CompiledJoin;
+import org.apache.cayenne.map.compiled.CompiledSchema;
 import org.apache.cayenne.validation.SimpleValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
 import org.slf4j.Logger;
@@ -42,12 +41,14 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Utility class that generates database schema based on Cayenne mapping. It is
@@ -58,11 +59,17 @@ public class DbGenerator {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DbGenerator.class);
 
 	protected DbAdapter adapter;
-	protected DataMap map;
 
-	// optional DataDomain needed for correct FK generation in cross-db
-	// situations
-	protected DataDomain domain;
+	/**
+	 * The compiled schema the DDL is generated from, and the map whose tables are generated.
+	 *
+	 * @since 6.0
+	 */
+	protected CompiledSchema schema;
+	protected CompiledDataMap map;
+
+	// the names of the maps on the same database: a foreign key to a table outside of them is not a constraint
+	protected Set<String> databaseMaps;
 
 	protected SQLLogger sqlLogger;
 
@@ -77,8 +84,8 @@ public class DbGenerator {
 	 * Contains all DbEntities ordered considering their interdependencies.
 	 * DerivedDbEntities are filtered out of this list.
 	 */
-	protected List<DbEntity> dbEntitiesInInsertOrder;
-	protected List<DbEntity> dbEntitiesRequiringAutoPK;
+	protected List<CompiledTable> tablesInInsertOrder;
+	protected List<CompiledTable> tablesRequiringAutoPK;
 
 	protected boolean shouldDropTables;
 	protected boolean shouldCreateTables;
@@ -89,50 +96,53 @@ public class DbGenerator {
 	protected ValidationResult failures;
 
 	/**
-	 * @since 3.1
+	 * Creates a generator of the tables of a map within its compiled schema.
+	 *
+	 * @since 6.0
 	 */
-	public DbGenerator(DbAdapter adapter, DataMap map, SQLLogger logger) {
-		this(adapter, map, logger, Collections.emptyList());
+	public DbGenerator(DbAdapter adapter, CompiledSchema schema, String mapName, SQLLogger logger) {
+		this(adapter, schema, mapName, List.of(), schema.maps().stream().map(CompiledDataMap::name).toList(), logger);
 	}
 
 	/**
-	 * @since 3.1
+	 * Creates a generator of the tables of a map within its compiled schema.
+	 *
+	 * @param adapter        DbAdapter corresponding to the database
+	 * @param schema         the compiled schema the map belongs to, which resolves the relationships to the tables
+	 *                       of the other maps compiled with it
+	 * @param mapName        the name of the map in the schema whose tables are generated
+	 * @param excludedTables the names of the tables that should be ignored during schema generation
+	 * @param databaseMaps   the names of the maps on the same database as the generated one; a foreign key to a
+	 *                       table of another map is not generated as a constraint
+	 * @since 6.0
 	 */
-	public DbGenerator(DbAdapter adapter, DataMap map, SQLLogger logger, Collection<DbEntity> excludedEntities) {
-		this(adapter, map, excludedEntities, null, logger);
-	}
-
-	/**
-	 * Creates and initializes new DbGenerator instance.
-	 * 
-	 * @param adapter
-	 *            DbAdapter corresponding to the database
-	 * @param map
-	 *            DataMap whose entities will be used in schema generation
-	 * @param excludedEntities
-	 *            entities that should be ignored during schema generation
-	 * @param domain
-	 *            optional DataDomain used to detect cross-database
-	 *            relationships.
-	 * @since 3.1
-	 */
-	public DbGenerator(DbAdapter adapter, DataMap map, Collection<DbEntity> excludedEntities, DataDomain domain,
+	public DbGenerator(
+			DbAdapter adapter,
+			CompiledSchema schema,
+			String mapName,
+			Collection<String> excludedTables,
+			Collection<String> databaseMaps,
 			SQLLogger logger) {
-		// sanity check
+
 		if (adapter == null) {
 			throw new IllegalArgumentException("Adapter must not be null.");
 		}
-
-		if (map == null) {
-			throw new IllegalArgumentException("DataMap must not be null.");
+		if (schema == null) {
+			throw new IllegalArgumentException("Schema must not be null.");
 		}
 
-		this.domain = domain;
+		CompiledDataMap map = schema.map(mapName);
+		if (map == null) {
+			throw new IllegalArgumentException("DataMap '" + mapName + "' is not in the schema " + schema);
+		}
+
+		this.databaseMaps = new HashSet<>(databaseMaps);
+		this.schema = schema;
 		this.map = map;
 		this.adapter = adapter;
 		this.sqlLogger = logger;
 
-		prepareDbEntities(excludedEntities);
+		prepareDbEntities(excludedTables);
 		resetToDefaults();
 		buildStatements();
 	}
@@ -156,23 +166,23 @@ public class DbGenerator {
 		createConstraints = new HashMap<>();
 
 		DbAdapter adapter = getAdapter();
-		for (DbEntity dbe : this.dbEntitiesInInsertOrder) {
+		for (CompiledTable table : this.tablesInInsertOrder) {
 
-			String name = dbe.getName();
+			String name = table.name();
 
 			// build "DROP TABLE"
-			dropTables.put(name, adapter.dropTableStatements(dbe));
+			dropTables.put(name, adapter.dropTableStatements(table));
 
 			// build "CREATE TABLE"
-			createTables.put(name, adapter.createTable(dbe));
+			createTables.put(name, adapter.createTable(table));
 
 			// build constraints
-			createConstraints.put(name, createConstraintsQueries(dbe));
+			createConstraints.put(name, createConstraintsQueries(table));
 		}
 
 		PkGenerator pkGenerator = adapter.createPkGenerator();
-		dropPK = pkGenerator.dropAutoPkStatements(adapter, dbEntitiesRequiringAutoPK);
-		createPK = pkGenerator.createAutoPkStatements(adapter, dbEntitiesRequiringAutoPK);
+		dropPK = pkGenerator.dropAutoPkStatements(adapter, tablesRequiringAutoPK);
+		createPK = pkGenerator.createAutoPkStatements(adapter, tablesRequiringAutoPK);
 	}
 
 	/**
@@ -182,7 +192,7 @@ public class DbGenerator {
 	 * is done, assuming that all possible generated objects.
 	 */
 	public boolean isEmpty(boolean respectConfiguredSettings) {
-		if (dbEntitiesInInsertOrder.isEmpty() && dbEntitiesRequiringAutoPK.isEmpty()) {
+		if (tablesInInsertOrder.isEmpty() && tablesRequiringAutoPK.isEmpty()) {
 			return true;
 		}
 
@@ -206,22 +216,22 @@ public class DbGenerator {
 		List<String> list = new ArrayList<>();
 
 		if (shouldDropTables) {
-			ListIterator<DbEntity> it = dbEntitiesInInsertOrder.listIterator(dbEntitiesInInsertOrder.size());
+			ListIterator<CompiledTable> it = tablesInInsertOrder.listIterator(tablesInInsertOrder.size());
 			while (it.hasPrevious()) {
-				DbEntity ent = it.previous();
-				list.addAll(dropTables.get(ent.getName()));
+				CompiledTable table = it.previous();
+				list.addAll(dropTables.get(table.name()));
 			}
 		}
 
 		if (shouldCreateTables) {
-			for (DbEntity ent : dbEntitiesInInsertOrder) {
-				list.add(createTables.get(ent.getName()));
+			for (CompiledTable table : tablesInInsertOrder) {
+				list.add(createTables.get(table.name()));
 			}
 		}
 
 		if (shouldCreateFKConstraints) {
-			for (DbEntity ent : dbEntitiesInInsertOrder) {
-				List<String> fks = createConstraints.get(ent.getName());
+			for (CompiledTable table : tablesInInsertOrder) {
+				List<String> fks = createConstraints.get(table.name());
 				list.addAll(fks);
 			}
 		}
@@ -252,10 +262,10 @@ public class DbGenerator {
 			try {
 				// drop tables
 				if (shouldDropTables) {
-					ListIterator<DbEntity> it = dbEntitiesInInsertOrder.listIterator(dbEntitiesInInsertOrder.size());
+					ListIterator<CompiledTable> it = tablesInInsertOrder.listIterator(tablesInInsertOrder.size());
 					while (it.hasPrevious()) {
-						DbEntity ent = it.previous();
-						for (String statement : dropTables.get(ent.getName())) {
+						CompiledTable table = it.previous();
+						for (String statement : dropTables.get(table.name())) {
 							safeExecute(connection, statement);
 						}
 					}
@@ -264,21 +274,21 @@ public class DbGenerator {
 				// create tables
 				List<String> createdTables = new ArrayList<>();
 				if (shouldCreateTables) {
-					for (DbEntity ent : dbEntitiesInInsertOrder) {
+					for (CompiledTable table : tablesInInsertOrder) {
 
 						// only create missing tables
 
-						safeExecute(connection, createTables.get(ent.getName()));
-						createdTables.add(ent.getName());
+						safeExecute(connection, createTables.get(table.name()));
+						createdTables.add(table.name());
 					}
 				}
 
 				// create FK
 				if (shouldCreateTables && shouldCreateFKConstraints) {
-					for (DbEntity ent : dbEntitiesInInsertOrder) {
+					for (CompiledTable table : tablesInInsertOrder) {
 
-						if (createdTables.contains(ent.getName())) {
-							List<String> fks = createConstraints.get(ent.getName());
+						if (createdTables.contains(table.name())) {
+							List<String> fks = createConstraints.get(table.name());
 							for (String fk : fks) {
 								safeExecute(connection, fk);
 							}
@@ -336,43 +346,36 @@ public class DbGenerator {
 	 * 
 	 * @since 3.0
 	 */
-	public List<String> createConstraintsQueries(DbEntity table) {
+	public List<String> createConstraintsQueries(CompiledTable table) {
 		List<String> list = new ArrayList<>();
-		for (DbRelationship rel : table.getRelationships()) {
+		for (CompiledJoin join : table.joins()) {
 
 			// an FK constraint exists only where the source row holds the FK; a master-to-dependent
-			// relationship is constrained from the dependent side
-			if (!rel.isForeignKey()) {
+			// relationship is constrained from the dependent side. An FK side the compiler had to infer is not
+			// a constraint the model declares
+			if (!join.isDeclaredForeignKey()) {
 				continue;
 			}
 
 			// skip FK to a different DB
-			if (domain != null) {
-				DataMap srcMap = rel.getSourceEntity().getDataMap();
-				DataMap targetMap = rel.getTargetEntity().getDataMap();
-
-				if (srcMap != null && targetMap != null && srcMap != targetMap) {
-					if (domain.lookupDataNode(srcMap) != domain.lookupDataNode(targetMap)) {
-						continue;
-					}
-				}
+			if (!databaseMaps.contains(join.target().map().name())) {
+				continue;
 			}
 
 			// create UNIQUE CONSTRAINT on FK if reverse relationship is to-one
 			if (getAdapter().supportsUniqueConstraints()) {
 
-				DbRelationship reverse = rel.getReverseRelationship();
+				CompiledJoin reverse = join.reverse();
 				if (reverse != null && !reverse.isToMany() && !reverse.isToPrimaryKey()) {
 
-					String unique = getAdapter().createUniqueConstraint(rel.getSourceEntity(),
-							rel.getSourceAttributes());
+					String unique = getAdapter().createUniqueConstraint(join.source(), join.sourceColumns());
 					if (unique != null) {
 						list.add(unique);
 					}
 				}
 			}
 
-			String fk = getAdapter().createFkConstraint(rel);
+			String fk = getAdapter().createFkConstraint(join);
 			if (fk != null) {
 				list.add(fk);
 			}
@@ -442,48 +445,45 @@ public class DbGenerator {
 	}
 
 	/**
-	 * Returns a DataDomain used by the DbGenerator to detect cross-database
-	 * relationships. By default DataDomain is null.
-	 * 
-	 * @since 1.2
+	 * Collects the tables of the map ordered to satisfy referential constraints. The tables that can't be generated
+	 * (no columns, undefined column types) and the excluded tables are filtered out.
 	 */
-	public DataDomain getDomain() {
-		return domain;
-	}
+	private void prepareDbEntities(Collection<String> excludedTables) {
+		Set<String> excludedNames = new HashSet<>(excludedTables != null ? excludedTables : List.of());
 
-	/**
-	 * Helper method that orders DbEntities to satisfy referential constraints
-	 * and returns an ordered list. It also filters out DerivedDbEntities.
-	 */
-	private void prepareDbEntities(Collection<DbEntity> excludedEntities) {
-		if (excludedEntities == null) {
-			excludedEntities = Collections.emptyList();
+		List<CompiledTable> tables = new ArrayList<>();
+		List<CompiledTable> tablesWithAutoPk = new ArrayList<>();
+
+		// the dependency order of the tables is the insert order; the name makes it deterministic within a level
+		List<CompiledTable> inDependencyOrder = new ArrayList<>();
+		for (CompiledTable table : schema.tables()) {
+			if (map.equals(table.map())) {
+				inDependencyOrder.add(table);
+			}
 		}
-
-		List<DbEntity> tables = new ArrayList<>();
-		List<DbEntity> tablesWithAutoPk = new ArrayList<>();
-
-		for (DbEntity nextEntity : map.getDbEntities()) {
+		inDependencyOrder.sort(Comparator.comparingInt(CompiledTable::dependencyIndex)
+				.thenComparing(CompiledTable::name));
+		for (CompiledTable nextTable : inDependencyOrder) {
 
 			// do sanity checks...
 
 			// tables with no columns are not included
-			if (nextEntity.getAttributes().size() == 0) {
-				LOGGER.info("Skipping entity with no attributes: {}", nextEntity.getName());
+			if (nextTable.columns().isEmpty()) {
+				LOGGER.info("Skipping entity with no attributes: {}", nextTable.name());
 				continue;
 			}
 
 			// check if this entity is explicitly excluded
-			if (excludedEntities.contains(nextEntity)) {
+			if (excludedNames.contains(nextTable.name())) {
 				continue;
 			}
 
 			// tables with invalid DbAttributes are not included
 			boolean invalidAttributes = false;
-			for (DbAttribute attr : nextEntity.getAttributes()) {
-				if (attr.getType() == TypesMapping.NOT_DEFINED) {
-					LOGGER.info("Skipping entity, attribute type is undefined: {}.{}", nextEntity.getName(),
-							attr.getName());
+			for (CompiledColumn column : nextTable.columns()) {
+				if (column.jdbcType() == TypesMapping.NOT_DEFINED) {
+					LOGGER.info("Skipping entity, attribute type is undefined: {}.{}", nextTable.name(),
+							column.name());
 					invalidAttributes = true;
 					break;
 				}
@@ -492,41 +492,35 @@ public class DbGenerator {
 				continue;
 			}
 
-			tables.add(nextEntity);
+			tables.add(nextTable);
 
 			// check if an automatic PK generation can be potentially supported in this entity. For now simply check
 			// that the key is not propagated: FK columns get their values from the master row
-			Iterator<DbRelationship> relationships = nextEntity.getRelationships().iterator();
+			Iterator<CompiledJoin> joins = nextTable.joins().iterator();
 
 			// create a copy of the original PK list,
 			// since the list will be modified locally
-			List<DbAttribute> pkAttributes = new ArrayList<>(nextEntity.getPrimaryKeys());
-			while (pkAttributes.size() > 0 && relationships.hasNext()) {
-				DbRelationship nextRelationship = relationships.next();
-				if (!nextRelationship.isForeignKey()) {
+			List<CompiledColumn> pkColumns = new ArrayList<>(nextTable.primaryKey());
+			while (pkColumns.size() > 0 && joins.hasNext()) {
+				CompiledJoin nextJoin = joins.next();
+				if (!nextJoin.isDeclaredForeignKey()) {
 					continue;
 				}
 
-				for (DbJoin join : nextRelationship.getJoins()) {
-					pkAttributes.remove(join.getSource());
+				for (CompiledColumnPair join : nextJoin.columnPairs()) {
+					pkColumns.remove(join.source());
 				}
 			}
 
 			// primary key is needed only if at least one of the primary key
 			// attributes
 			// is not propagated via relationship
-			if (pkAttributes.size() > 0) {
-				tablesWithAutoPk.add(nextEntity);
+			if (pkColumns.size() > 0) {
+				tablesWithAutoPk.add(nextTable);
 			}
 		}
 
-		// sort table list
-		if (tables.size() > 1) {
-			EntitySorter sorter = new AshwoodEntitySorter(new EntityResolver(Collections.singleton(map)));
-			sorter.sortDbEntities(tables, false);
-		}
-
-		this.dbEntitiesInInsertOrder = tables;
-		this.dbEntitiesRequiringAutoPK = tablesWithAutoPk;
+		this.tablesInInsertOrder = tables;
+		this.tablesRequiringAutoPK = tablesWithAutoPk;
 	}
 }

@@ -20,15 +20,15 @@
 package org.apache.cayenne.query.resolved;
 
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.compiled.CompiledDataMap;
+import org.apache.cayenne.map.compiled.CompiledTable;
+import org.apache.cayenne.map.compiled.CompiledEntity;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.ResultSegments;
-import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.util.Util;
 
 import java.util.List;
@@ -44,10 +44,9 @@ import java.util.Map;
  */
 public record ResolvedSQL(
         Query<?> source,
-        ObjEntity objEntity,
-        DbEntity dbEntity,
-        DataMap dataMap,
-        ClassDescriptor classDescriptor,
+        CompiledEntity entity,
+        CompiledTable table,
+        CompiledDataMap dataMap,
         String dataNodeName,
         String defaultTemplate,
         Map<String, String> templates,
@@ -69,12 +68,18 @@ public record ResolvedSQL(
         PrefetchTreeNode prefetchTree,
         ResultSegments resultSegments) implements ResolvedQuery {
 
+    // the key has no value object types to render, so it is computed by the query
+    @Override
+    public String cacheKey(ValueObjectTypeRegistry valueObjectTypes) {
+        return cacheKey;
+    }
+
     /**
      * Creates a rootless statement with no parameters and default settings, for SQL the framework runs outside a
      * query, e.g. PK generation, so that it is logged like any other statement.
      */
     public static ResolvedSQL raw(String sql) {
-        return new ResolvedSQL(null, null, null, null, null, null, sql, Map.of(), Map.of(), List.of(),
+        return new ResolvedSQL(null, null, null, null, null, sql, Map.of(), Map.of(), List.of(),
                 CapsStrategy.DEFAULT, false, List.of(), false, true, FETCH_LIMIT_DEFAULT, FETCH_OFFSET_DEFAULT,
                 PAGE_SIZE_DEFAULT, STATEMENT_FETCH_SIZE_DEFAULT, QUERY_TIMEOUT_DEFAULT,
                 QueryCacheStrategy.getDefaultStrategy(), null, null, null, null);

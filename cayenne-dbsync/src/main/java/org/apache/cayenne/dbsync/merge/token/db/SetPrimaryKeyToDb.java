@@ -60,7 +60,7 @@ public class SetPrimaryKeyToDb extends AbstractToDbToken.Entity {
     }
 
     protected QuotingStrategy resolveQuotes(DbAdapter adapter) {
-        return adapter.getQuotingStrategy(getEntity());
+        return adapter.getQuotingStrategy(CompiledModel.table(getEntity()));
     }
 
     protected void appendDropOriginalPrimaryKeySQL(DbAdapter adapter, List<String> sqls) {

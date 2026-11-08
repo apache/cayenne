@@ -19,8 +19,8 @@
 
 package org.apache.cayenne;
 
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.compiled.CompiledMapping;
+import org.apache.cayenne.map.compiled.CompiledEntity;
 import org.apache.cayenne.query.Query;
 
 import java.util.Collection;
@@ -42,10 +42,9 @@ public interface ObjectContext {
     DataChannel getChannel();
 
     /**
-     * Returns EntityResolver that stores all mapping information accessible by
-     * this ObjectContext.
+     * Returns the compiled mapping with all the mapping information accessible by this ObjectContext.
      */
-    EntityResolver getEntityResolver();
+    CompiledMapping getMapping();
 
     /**
      * Returns a collection of objects that are registered with this
@@ -115,7 +114,7 @@ public interface ObjectContext {
      */
     @SuppressWarnings("unchecked")
     default <T extends Persistent> T objectForPK(Class<T> type, Map<String, ?> pk) {
-        return (T) objectForPK(ObjectId.of(entityForClass(type).getName(), pk));
+        return (T) objectForPK(ObjectId.of(entityForClass(type).name(), pk));
     }
 
     /**
@@ -130,7 +129,7 @@ public interface ObjectContext {
     default Persistent objectForPK(String entityName, Object pk) {
         Objects.requireNonNull(entityName, "Null entity name");
 
-        ObjEntity entity = getEntityResolver().getObjEntity(entityName);
+        CompiledEntity entity = getMapping().entity(entityName);
         if (entity == null) {
             throw new CayenneRuntimeException("Non-existent ObjEntity: %s", entityName);
         }
@@ -163,26 +162,26 @@ public interface ObjectContext {
      */
     Persistent objectForPK(ObjectId id);
 
-    private ObjEntity entityForClass(Class<?> persistentClass) {
+    private CompiledEntity entityForClass(Class<?> persistentClass) {
         Objects.requireNonNull(persistentClass, "Null persistent class");
 
-        ObjEntity entity = getEntityResolver().getObjEntity(persistentClass);
+        CompiledEntity entity = getMapping().entity(persistentClass);
         if (entity == null) {
             throw new CayenneRuntimeException("Unmapped persistent class: %s", persistentClass.getName());
         }
         return entity;
     }
 
-    private static ObjectId singleColumnId(ObjEntity entity, Object pk) {
+    private static ObjectId singleColumnId(CompiledEntity entity, Object pk) {
         Objects.requireNonNull(pk, "Null PK");
 
-        Collection<String> pkAttributes = entity.getPrimaryKeyNames();
+        List<String> pkAttributes = entity.primaryKeyNames();
         if (pkAttributes.size() != 1) {
             throw new CayenneRuntimeException("PK of %s contains %d columns, expected 1.",
-                    entity.getName(), pkAttributes.size());
+                    entity.name(), pkAttributes.size());
         }
 
-        return ObjectId.of(entity.getName(), pkAttributes.iterator().next(), pk);
+        return ObjectId.of(entity.name(), pkAttributes.getFirst(), pk);
     }
 
     /**
@@ -191,7 +190,7 @@ public interface ObjectContext {
      */
     @SuppressWarnings("unchecked")
     default <T extends Persistent> T newObject(Class<T> persistentClass) {
-        return (T) newObject(entityForClass(persistentClass).getName());
+        return (T) newObject(entityForClass(persistentClass).name());
     }
 
     /**

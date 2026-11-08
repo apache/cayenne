@@ -26,9 +26,9 @@ import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.access.translator.TranslatedSQL;
 import org.apache.cayenne.query.resolved.ResolvedSQL;
 import org.apache.cayenne.log.SQLLogger;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DbKeyGenerator;
+import org.apache.cayenne.map.compiled.CompiledColumn;
+import org.apache.cayenne.map.compiled.CompiledTable;
+import org.apache.cayenne.map.compiled.CompiledKeySequence;
 import org.apache.cayenne.util.IDUtil;
 
 import java.sql.Connection;
@@ -63,7 +63,7 @@ public class JdbcPkGenerator implements PkGenerator {
     }
 
     @Override
-    public void createAutoPk(DataNode node, List<DbEntity> dbEntities) {
+    public void createAutoPk(DataNode node, List<CompiledTable> tables) {
         DbAdapter adapter = node.getAdapter();
         // check if a table exists
 
@@ -73,25 +73,25 @@ public class JdbcPkGenerator implements PkGenerator {
         }
 
         // delete any existing pk entries
-        if (!dbEntities.isEmpty()) {
-            runUpdate(node, pkDeleteString(dbEntities));
+        if (!tables.isEmpty()) {
+            runUpdate(node, pkDeleteString(tables));
         }
 
         // insert all needed entries
-        for (DbEntity ent : dbEntities) {
-            runUpdate(node, pkCreateString(ent.getName()));
+        for (CompiledTable table : tables) {
+            runUpdate(node, pkCreateString(table.name()));
         }
     }
 
     @Override
-    public List<String> createAutoPkStatements(DbAdapter adapter, List<DbEntity> dbEntities) {
-        List<String> list = new ArrayList<>(dbEntities.size() + 2);
+    public List<String> createAutoPkStatements(DbAdapter adapter, List<CompiledTable> tables) {
+        List<String> list = new ArrayList<>(tables.size() + 2);
 
         list.add(pkTableCreateString(adapter));
-        list.add(pkDeleteString(dbEntities));
+        list.add(pkDeleteString(tables));
 
-        for (DbEntity ent : dbEntities) {
-            list.add(pkCreateString(ent.getName()));
+        for (CompiledTable table : tables) {
+            list.add(pkCreateString(table.name()));
         }
 
         return list;
@@ -101,7 +101,7 @@ public class JdbcPkGenerator implements PkGenerator {
      * Drops table named "AUTO_PK_SUPPORT" if it exists in the database.
      */
     @Override
-    public void dropAutoPk(DataNode node, List<DbEntity> dbEntities) {
+    public void dropAutoPk(DataNode node, List<CompiledTable> tables) {
         DbAdapter adapter = node.getAdapter();
         if (autoPkTableExists(node)) {
             runUpdate(node, dropAutoPkString(adapter));
@@ -109,7 +109,7 @@ public class JdbcPkGenerator implements PkGenerator {
     }
 
     @Override
-    public List<String> dropAutoPkStatements(DbAdapter adapter, List<DbEntity> dbEntities) {
+    public List<String> dropAutoPkStatements(DbAdapter adapter, List<CompiledTable> tables) {
         List<String> list = new ArrayList<>(1);
         list.add(dropAutoPkString(adapter));
         return list;
@@ -119,16 +119,16 @@ public class JdbcPkGenerator implements PkGenerator {
         return "CREATE TABLE AUTO_PK_SUPPORT (TABLE_NAME CHAR(100) NOT NULL, NEXT_ID BIGINT NOT NULL, PRIMARY KEY(TABLE_NAME))";
     }
 
-    protected String pkDeleteString(List<DbEntity> dbEntities) {
+    protected String pkDeleteString(List<CompiledTable> tables) {
         StringBuilder buf = new StringBuilder();
         buf.append("DELETE FROM AUTO_PK_SUPPORT WHERE TABLE_NAME IN (");
-        int len = dbEntities.size();
+        int len = tables.size();
         for (int i = 0; i < len; i++) {
             if (i > 0) {
                 buf.append(", ");
             }
-            DbEntity ent = dbEntities.get(i);
-            buf.append('\'').append(ent.getName()).append('\'');
+            CompiledTable table = tables.get(i);
+            buf.append('\'').append(table.name()).append('\'');
         }
         buf.append(')');
         return buf.toString();
@@ -231,20 +231,20 @@ public class JdbcPkGenerator implements PkGenerator {
     }
 
     @Override
-    public Object generatePk(DataNode node, DbAttribute pk) {
+    public Object generatePk(DataNode node, CompiledColumn pk) {
 
-        DbEntity entity = pk.getEntity();
+        CompiledTable table = pk.table();
 
-        switch (pk.getType()) {
+        switch (pk.jdbcType()) {
             case Types.BINARY:
             case Types.VARBINARY:
-                return IDUtil.pseudoUniqueSecureByteSequence(pk.getMaxLength());
+                return IDUtil.pseudoUniqueSecureByteSequence(pk.maxLength());
         }
 
-        DbKeyGenerator pkGenerator = entity.getPrimaryKeyGenerator();
+        CompiledKeySequence keySequence = table.keySequence();
         long cacheSize;
-        if (pkGenerator != null && pkGenerator.getKeyCacheSize() != null) {
-            cacheSize = pkGenerator.getKeyCacheSize();
+        if (keySequence != null && keySequence.cacheSize() != null) {
+            cacheSize = keySequence.cacheSize();
         } else {
             cacheSize = getPkCacheSize();
         }
@@ -253,14 +253,14 @@ public class JdbcPkGenerator implements PkGenerator {
 
         // if no caching, always generate fresh
         if (cacheSize <= 1) {
-            value = longPkFromDatabase(node, entity);
+            value = longPkFromDatabase(node, table);
         } else {
-            Queue<Long> pks = pkCache.get(entity.getName());
+            Queue<Long> pks = pkCache.get(table.name());
 
             if (pks == null) {
                 // created exhausted LongPkRange
                 pks = new ConcurrentLinkedQueue<>();
-                Queue<Long> previousPks = pkCache.putIfAbsent(entity.getName(), pks);
+                Queue<Long> previousPks = pkCache.putIfAbsent(table.name(), pks);
                 if (previousPks != null) {
                     pks = previousPks;
                 }
@@ -268,14 +268,14 @@ public class JdbcPkGenerator implements PkGenerator {
 
             value = pks.poll();
             if (value == null) {
-                value = longPkFromDatabase(node, entity);
+                value = longPkFromDatabase(node, table);
                 for (long i = value + 1; i < value + cacheSize; i++) {
                     pks.add(i);
                 }
             }
         }
 
-        if (pk.getType() == Types.BIGINT) {
+        if (pk.jdbcType() == Types.BIGINT) {
             return value;
         } else {
             // leaving it up to the user to ensure that PK does not exceed max int...
@@ -295,22 +295,22 @@ public class JdbcPkGenerator implements PkGenerator {
      *
      * @since 3.0
      */
-    protected long longPkFromDatabase(DataNode node, DbEntity entity) {
-        String select = "SELECT NEXT_ID FROM AUTO_PK_SUPPORT WHERE TABLE_NAME = '" + entity.getName() + '\'';
-        String update = pkUpdateString(entity.getName());
+    protected long longPkFromDatabase(DataNode node, CompiledTable table) {
+        String select = "SELECT NEXT_ID FROM AUTO_PK_SUPPORT WHERE TABLE_NAME = '" + table.name() + '\'';
+        String update = pkUpdateString(table.name());
 
         // plain JDBC on a single connection, so that the select and the update share the transaction, if any
         SQLLogger logger = node.getSqlLogger();
         try (Connection con = node.getDataSource().getConnection()) {
             Long id = selectLong(con, select, logger);
             if (id == null) {
-                throw new CayenneRuntimeException("Error generating PK : entity not supported: %s", entity.getName());
+                throw new CayenneRuntimeException("Error generating PK : entity not supported: %s", table.name());
             }
 
             executeUpdate(con, update, logger);
             return id;
         } catch (SQLException e) {
-            throw new CayenneRuntimeException("Error generating PK for entity '%s'.", e, entity.getName());
+            throw new CayenneRuntimeException("Error generating PK for entity '%s'.", e, table.name());
         }
     }
 

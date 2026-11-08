@@ -71,7 +71,7 @@ public class SetGeneratedFlagToDb extends AbstractToDbToken.EntityAndColumn {
     }
 
     private QuotingStrategy resolveQuotes(DbAdapter adapter) {
-        return adapter.getQuotingStrategy(getEntity());
+        return adapter.getQuotingStrategy(CompiledModel.table(getEntity()));
     }
 
     @SuppressWarnings("unchecked")

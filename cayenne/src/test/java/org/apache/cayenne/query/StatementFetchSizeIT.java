@@ -39,7 +39,7 @@ public class StatementFetchSizeIT {
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class).statementFetchSize(10);
 
         assertEquals(10, query
-                .resolve(env.context().getEntityResolver())
+                .resolve(env.mapping())
                 .statementFetchSize());
         env.context().select(query);
     }
@@ -67,7 +67,7 @@ public class StatementFetchSizeIT {
         template.statementFetchSize(10);
 
         assertEquals(10, template
-                .resolve(env.context().getEntityResolver())
+                .resolve(env.mapping())
                 .statementFetchSize());
         env.context().select(template);
     }

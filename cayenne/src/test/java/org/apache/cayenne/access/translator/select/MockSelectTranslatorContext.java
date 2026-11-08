@@ -21,7 +21,7 @@ package org.apache.cayenne.access.translator.select;
 
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.compiled.CompiledMapping;
 import org.apache.cayenne.query.resolved.ResolvedSelect;
 
 import static org.mockito.Mockito.mock;
@@ -32,8 +32,8 @@ public class MockSelectTranslatorContext extends SelectTranslatorContext {
         super(select, mockAdapter(), null, null);
     }
 
-    MockSelectTranslatorContext(ResolvedSelect select, EntityResolver resolver) {
-        super(select, mockAdapter(), resolver, null);
+    MockSelectTranslatorContext(ResolvedSelect select, CompiledMapping mapping) {
+        super(select, mockAdapter(), mapping, null);
     }
 
     private static DbAdapter mockAdapter() {

@@ -25,8 +25,8 @@ import org.apache.cayenne.access.translator.TranslatedStatement;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.log.SQLLogger;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.compiled.CompiledDataMap;
+import org.apache.cayenne.map.compiled.CompiledMapping;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.resolved.ResolvedQuery;
 
@@ -39,7 +39,7 @@ public class MockDataNode extends DataNode {
 
     protected DataDomain domain;
     protected DataNode node;
-    protected List<DataMap> dataMaps;
+    protected List<String> mapNames;
     protected boolean wasDefaultNode;
 
     // mockup the actual results
@@ -51,10 +51,13 @@ public class MockDataNode extends DataNode {
         MockDataNode mockNode = new MockDataNode(node);
         mockNode.domain = domain;
         mockNode.wasDefaultNode = domain.getDefaultNode() == node;
-        mockNode.dataMaps = domain.getDataMaps().stream().filter(m -> domain.lookupDataNode(m) == node).toList();
+        mockNode.mapNames = domain.getMapping().schema().maps().stream()
+                .map(CompiledDataMap::name)
+                .filter(m -> domain.lookupDataNode(m) == node)
+                .toList();
 
         domain.removeDataNode(node.getName());
-        domain.addNode(mockNode, mockNode.dataMaps);
+        domain.addNode(mockNode, mockNode.mapNames);
 
         // queries for DataMaps not linked to a node are routed via the default node, so it must be intercepted as well
         if (mockNode.wasDefaultNode) {
@@ -76,7 +79,7 @@ public class MockDataNode extends DataNode {
         }
 
         domain.removeDataNode(getName());
-        domain.addNode(node, dataMaps);
+        domain.addNode(node, mapNames);
 
         if (wasDefaultNode) {
             domain.setDefaultNode(node);
@@ -143,8 +146,8 @@ public class MockDataNode extends DataNode {
     }
 
     @Override
-    protected TranslatedStatement translate(ResolvedQuery query, DbAdapter adapter, EntityResolver resolver) {
-        return node.translate(query, adapter, resolver);
+    protected TranslatedStatement translate(ResolvedQuery query, DbAdapter adapter, CompiledMapping mapping) {
+        return node.translate(query, adapter, mapping);
     }
 
 

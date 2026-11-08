@@ -190,9 +190,14 @@ public class DbEntityIT {
         assertEquals(0, rel.getJoins().size());
     }
 
+    // the authored model of the test runtime, as these tests check the authored map classes
+    private static EntityResolver authored() {
+        return new EntityResolver(env.project().dataMaps());
+    }
+
     @Test
     public void translateToRelatedEntityIndependentPath() {
-        DbEntity artistE = env.runtime().getDataDomain().getEntityResolver().getDbEntity("ARTIST");
+        DbEntity artistE = authored().getDbEntity("ARTIST");
 
         Expression e1 = ExpressionFactory.exp("db:paintings");
         Expression translated = artistE.translateToRelatedEntity(e1, "artistExhibits");
@@ -201,7 +206,7 @@ public class DbEntityIT {
 
     @Test
     public void translateToRelatedEntityTrimmedPath() {
-        DbEntity artistE = env.runtime().getDataDomain().getEntityResolver().getDbEntity("ARTIST");
+        DbEntity artistE = authored().getDbEntity("ARTIST");
 
         Expression e1 = ExpressionFactory.exp("db:artistExhibits.exhibit");
         Expression translated = artistE.translateToRelatedEntity(e1, "artistExhibits");
@@ -211,7 +216,7 @@ public class DbEntityIT {
 
     @Test
     public void translateToRelatedEntitySplitHalfWay() {
-        DbEntity artistE = env.runtime().getDataDomain().getEntityResolver().getDbEntity("ARTIST");
+        DbEntity artistE = authored().getDbEntity("ARTIST");
 
         Expression e1 = ExpressionFactory.exp("db:paintings.paintingInfo.TEXT_REVIEW");
         Expression translated = artistE.translateToRelatedEntity(e1, "paintings.gallery");
@@ -222,7 +227,7 @@ public class DbEntityIT {
 
     @Test
     public void translateToRelatedEntityMatchingPath() {
-        DbEntity artistE = env.runtime().getDataDomain().getEntityResolver().getDbEntity("ARTIST");
+        DbEntity artistE = authored().getDbEntity("ARTIST");
 
         Expression e1 = ExpressionFactory.exp("db:artistExhibits.exhibit");
         Expression translated = artistE.translateToRelatedEntity(e1, "artistExhibits.exhibit");
@@ -234,7 +239,7 @@ public class DbEntityIT {
 
     @Test
     public void translateToRelatedEntityToOne() {
-        DbEntity paintingE = env.runtime().getDataDomain().getEntityResolver().getDbEntity("PAINTING");
+        DbEntity paintingE = authored().getDbEntity("PAINTING");
 
         Expression e1 = ExpressionFactory.exp("db:artist.ARTIST_NAME = 'aa'");
         Expression translated = paintingE.translateToRelatedEntity(e1, "artist");

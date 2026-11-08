@@ -22,19 +22,17 @@ package org.apache.cayenne.access.flush;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.access.ObjectDiff;
 import org.apache.cayenne.access.flush.operation.DbRowOpWithQualifier;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbJoin;
-import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.ObjAttribute;
-import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.reflect.AttributeProperty;
-import org.apache.cayenne.reflect.ClassDescriptor;
-import org.apache.cayenne.reflect.PropertyDescriptor;
-import org.apache.cayenne.reflect.ToOneProperty;
+import org.apache.cayenne.map.compiled.CompiledColumnPair;
+import org.apache.cayenne.map.compiled.CompiledColumn;
+import org.apache.cayenne.map.compiled.CompiledJoin;
+import org.apache.cayenne.map.compiled.CompiledAttribute;
+import org.apache.cayenne.map.compiled.CompiledEntity;
+import org.apache.cayenne.map.compiled.CompiledRelationship;
+import org.apache.cayenne.map.compiled.CompiledToOneRelationship;
 
 /**
- * Builds optimistic lock qualifier for given db change out of the locking attributes and to-one relationships of a
- * descriptor.
+ * Builds optimistic lock qualifier for given db change out of the locking attributes and to-one relationships of an
+ * entity.
  *
  * @since 4.2
  */
@@ -47,23 +45,22 @@ class OptimisticLockQualifierBuilder {
         this.diff = diff;
     }
 
-    void build(ClassDescriptor descriptor) {
-        for (PropertyDescriptor property : descriptor.getAllProperties()) {
-            switch (property) {
-                case AttributeProperty attribute -> addAttribute(attribute);
-                case ToOneProperty toOne -> addToOne(toOne);
-                default -> {
-                }
+    void build(CompiledEntity entity) {
+        for (CompiledAttribute attribute : entity.allAttributes()) {
+            addAttribute(attribute);
+        }
+        for (CompiledRelationship relationship : entity.allRelationships()) {
+            if (relationship instanceof CompiledToOneRelationship toOne) {
+                addToOne(toOne);
             }
         }
     }
 
-    private void addAttribute(AttributeProperty property) {
-        ObjAttribute attribute = property.getAttribute();
-        DbAttribute dbAttribute = attribute.getDbAttribute();
-        if (attribute.isUsedForLocking() && dbAttribute.getEntity() == dbRow.getEntity()) {
+    private void addAttribute(CompiledAttribute attribute) {
+        CompiledColumn column = attribute.column();
+        if (attribute.isUsedForLocking() && column.table() == dbRow.getEntity()) {
             dbRow.getQualifier()
-                    .addAdditionalQualifier(dbAttribute, diff.getSnapshotValue(property.getName()), true);
+                    .addAdditionalQualifier(column, diff.getSnapshotValue(attribute.name()), true);
 
         } else {
             // unimplemented case, see CAY-2560 for details.
@@ -71,16 +68,15 @@ class OptimisticLockQualifierBuilder {
         }
     }
 
-    private void addToOne(ToOneProperty property) {
-        ObjRelationship relationship = property.getRelationship();
-        if(relationship.isUsedForLocking()) {
-            ObjectId value = diff.getArcSnapshotValue(property.getName());
-            DbRelationship dbRelationship = relationship.getDbRelationships().get(0);
-            for(DbJoin join : dbRelationship.getJoins()) {
-                DbAttribute source = join.getSource();
+    private void addToOne(CompiledToOneRelationship toOne) {
+        if(toOne.isUsedForLocking()) {
+            ObjectId value = diff.getArcSnapshotValue(toOne.name());
+            CompiledJoin dbRelationship = toOne.joins().get(0);
+            for(CompiledColumnPair join : dbRelationship.columnPairs()) {
+                CompiledColumn source = join.source();
                 if(!source.isPrimaryKey()) {
                     Object valueObjectId = value != null 
-                        ? ObjectIdValueSupplier.getFor(value, join.getTargetName()) 
+                        ? ObjectIdValueSupplier.getFor(value, join.target().name()) 
                         : null;
                     dbRow.getQualifier()
                             .addAdditionalQualifier(source, valueObjectId, true);

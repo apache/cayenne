@@ -261,6 +261,15 @@ public class ObjectSelect_ColumnsIT {
         assertEquals(5L, result[1]);
     }
 
+    /**
+     * Switches the identifier quoting of the authored "testmap" DataMap and recompiles the runtime mapping so that
+     * the change is in effect for the queries that follow.
+     */
+    private void setQuotingSQLIdentifiers(boolean quoting) {
+        env.project().dataMap("testmap").setQuotingSQLIdentifiers(quoting);
+        env.recompile();
+    }
+
     @Test
     public void selectWithQuoting() {
         if(testDbAdapter instanceof PostgresTestDbAdapter) {
@@ -269,7 +278,7 @@ public class ObjectSelect_ColumnsIT {
         }
 
         NumericProperty<Long> paintingCount = Artist.PAINTINGS.count();
-        context.getEntityResolver().getDataMap("testmap").setQuotingSQLIdentifiers(true);
+        setQuotingSQLIdentifiers(true);
 
         Object[] result = null;
         try {
@@ -283,7 +292,7 @@ public class ObjectSelect_ColumnsIT {
                 return;
             }
         } finally {
-            context.getEntityResolver().getDataMap("testmap").setQuotingSQLIdentifiers(false);
+            setQuotingSQLIdentifiers(false);
         }
         assertEquals("artist2", result[0]);
         assertEquals(5L, result[2]);
@@ -296,7 +305,7 @@ public class ObjectSelect_ColumnsIT {
             return;
         }
 
-        context.getEntityResolver().getDataMap("testmap").setQuotingSQLIdentifiers(true);
+        setQuotingSQLIdentifiers(true);
         try {
             Object[] result = Artist.SELF.columnQuery(Artist.DATE_OF_BIRTH, PropertyFactory.COUNT)
                     .orderBy(Artist.DATE_OF_BIRTH.asc())
@@ -305,7 +314,7 @@ public class ObjectSelect_ColumnsIT {
             assertEquals(dateFormat.parse("1/1/17"), result[0]);
             assertEquals(4L, result[1]);
         } finally {
-            context.getEntityResolver().getDataMap("testmap").setQuotingSQLIdentifiers(false);
+            setQuotingSQLIdentifiers(false);
         }
     }
 

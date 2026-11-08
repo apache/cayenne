@@ -82,9 +82,14 @@ public class ObjEntityIT {
         assertSame(subEntity, a3.getEntity());
     }
 
+    // the authored model of the test runtime, as these tests check the authored map classes
+    private static EntityResolver authored() {
+        return new EntityResolver(env.project().dataMaps());
+    }
+
     @Test
     public void getPrimaryKeys() {
-        ObjEntity artistE = env.runtime().getDataDomain().getEntityResolver().getObjEntity("Artist");
+        ObjEntity artistE = authored().getObjEntity("Artist");
         Collection<ObjAttribute> pks = artistE.getPrimaryKeys();
         assertEquals(1, pks.size());
 
@@ -95,7 +100,7 @@ public class ObjEntityIT {
         assertNull(pk.getEntity());
         assertFalse(artistE.getAttributes().contains(pk));
 
-        ObjEntity meaningfulPKE = env.runtime().getDataDomain().getEntityResolver().getObjEntity("MeaningfulGeneratedColumnTestEntity");
+        ObjEntity meaningfulPKE = authored().getObjEntity("MeaningfulGeneratedColumnTestEntity");
         Collection<ObjAttribute> mpks = meaningfulPKE.getPrimaryKeys();
         assertEquals(1, mpks.size());
 
@@ -105,7 +110,7 @@ public class ObjEntityIT {
 
     @Test
     public void attributes() {
-        ObjEntity artistE = env.runtime().getDataDomain().getEntityResolver().getObjEntity("Artist");
+        ObjEntity artistE = authored().getObjEntity("Artist");
         ObjAttribute attr = artistE.getAttribute("artistName");
 
         assertEquals(attr.getMaxLength(), attr.getDbAttribute().getMaxLength());
@@ -114,7 +119,7 @@ public class ObjEntityIT {
 
     @Test
     public void resolvePathLast() {
-        ObjEntity artistE = env.runtime().getDataDomain().getEntityResolver().getObjEntity("Artist");
+        ObjEntity artistE = authored().getObjEntity("Artist");
 
         Map<String, String> aliases = new HashMap<>();
         aliases.put("a", "paintings.gallery");
@@ -259,7 +264,7 @@ public class ObjEntityIT {
 
     @Test
     public void attributeForDbAttribute() throws Exception {
-        ObjEntity ae = env.runtime().getDataDomain().getEntityResolver().getObjEntity("Artist");
+        ObjEntity ae = authored().getObjEntity("Artist");
         DbEntity dae = ae.getDbEntity();
 
         assertNull(ae.getAttributeForDbAttribute(dae.getAttribute("ARTIST_ID")));
@@ -267,8 +272,8 @@ public class ObjEntityIT {
     }
 
     @Test
-    public void relationshipForDbRelationship() throws Exception {
-        ObjEntity ae = env.runtime().getDataDomain().getEntityResolver().getObjEntity("Artist");
+    public void relationshipForJoin() throws Exception {
+        ObjEntity ae = authored().getObjEntity("Artist");
         DbEntity dae = ae.getDbEntity();
 
         assertNull(ae.getRelationshipForDbRelationship(new DbRelationship()));
@@ -285,7 +290,7 @@ public class ObjEntityIT {
 
     @Test
     public void translateToRelatedEntityIndependentPath() throws Exception {
-        ObjEntity artistE = env.runtime().getDataDomain().getEntityResolver().getObjEntity(Artist.class);
+        ObjEntity artistE = authored().getObjEntity(Artist.class);
 
         Expression e1 = ExpressionFactory.exp("paintings");
         Expression translated = artistE.translateToRelatedEntity(e1, "artistExhibits");
@@ -294,7 +299,7 @@ public class ObjEntityIT {
 
     @Test
     public void translateToRelatedEntityTrimmedPath() throws Exception {
-        ObjEntity artistE = env.runtime().getDataDomain().getEntityResolver().getObjEntity(Artist.class);
+        ObjEntity artistE = authored().getObjEntity(Artist.class);
 
         Expression e1 = ExpressionFactory.exp("artistExhibits.exhibit");
         Expression translated = artistE.translateToRelatedEntity(e1, "artistExhibits");
@@ -304,7 +309,7 @@ public class ObjEntityIT {
 
     @Test
     public void translateToRelatedEntitySplitHalfWay() throws Exception {
-        ObjEntity artistE = env.runtime().getDataDomain().getEntityResolver().getObjEntity(Artist.class);
+        ObjEntity artistE = authored().getObjEntity(Artist.class);
 
         Expression e1 = ExpressionFactory.exp("paintings.paintingInfo.textReview");
         Expression translated = artistE.translateToRelatedEntity(e1, "paintings.gallery");
@@ -315,7 +320,7 @@ public class ObjEntityIT {
 
     @Test
     public void translateToRelatedEntityMatchingPath() throws Exception {
-        ObjEntity artistE = env.runtime().getDataDomain().getEntityResolver().getObjEntity(Artist.class);
+        ObjEntity artistE = authored().getObjEntity(Artist.class);
         Expression e1 = ExpressionFactory.exp("artistExhibits.exhibit");
         Expression translated = artistE.translateToRelatedEntity(e1, "artistExhibits.exhibit");
         assertEquals(
@@ -325,7 +330,7 @@ public class ObjEntityIT {
 
     @Test
     public void translateToRelatedEntityMultiplePaths() throws Exception {
-        ObjEntity artistE = env.runtime().getDataDomain().getEntityResolver().getObjEntity(Artist.class);
+        ObjEntity artistE = authored().getObjEntity(Artist.class);
 
         Expression e1 = ExpressionFactory.exp("paintings = $p and artistExhibits.exhibit.closingDate = $d");
         Expression translated = artistE.translateToRelatedEntity(e1, "artistExhibits");
@@ -336,7 +341,7 @@ public class ObjEntityIT {
 
     @Test
     public void translateToRelatedEntityOuterJoin_Flattened() throws Exception {
-        ObjEntity artistE = env.runtime().getDataDomain().getEntityResolver().getObjEntity(Artist.class);
+        ObjEntity artistE = authored().getObjEntity(Artist.class);
 
         Expression e1 = ExpressionFactory.exp("groups+.name");
         Expression translated = artistE.translateToRelatedEntity(e1, "artistExhibits");
@@ -346,7 +351,7 @@ public class ObjEntityIT {
 
     @Test
     public void translateNullArg() {
-        ObjEntity entity = env.context().getEntityResolver().getObjEntity("Artist");
+        ObjEntity entity = authored().getObjEntity("Artist");
 
         Expression exp = ExpressionFactory.noMatchExp("dateOfBirth", null);
         Expression translated = entity.translateToDbPath(exp);

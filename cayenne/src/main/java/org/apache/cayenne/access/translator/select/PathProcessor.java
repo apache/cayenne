@@ -21,9 +21,8 @@ package org.apache.cayenne.access.translator.select;
 
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.exp.path.CayennePathSegment;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.Entity;
+import org.apache.cayenne.map.compiled.CompiledColumn;
+import org.apache.cayenne.map.compiled.CompiledJoin;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +33,7 @@ import java.util.Optional;
 /**
  * @since 4.2
  */
-abstract class PathProcessor<T extends Entity<?,?,?>> implements PathTranslationResult {
+abstract class PathProcessor<T> implements PathTranslationResult {
 
     public static final char SPLIT_PATH_INDICATOR = '#';
     public static final String DB_PATH_ALIAS_INDICATOR = "db:";
@@ -42,13 +41,13 @@ abstract class PathProcessor<T extends Entity<?,?,?>> implements PathTranslation
     protected final Map<String, String> pathSplitAliases;
     protected final SelectTranslatorContext context;
     protected final List<CayennePath> attributePaths;
-    protected final List<DbAttribute> attributes;
+    protected final List<CompiledColumn> columns;
 
     protected CayennePath currentDbPath;
     protected boolean lastComponent;
     private boolean isOuterJoin;
     protected T entity;
-    protected DbRelationship relationship;
+    protected CompiledJoin join;
     protected String currentAlias;
 
     public PathProcessor(SelectTranslatorContext context, T entity) {
@@ -56,7 +55,7 @@ abstract class PathProcessor<T extends Entity<?,?,?>> implements PathTranslation
         this.entity = Objects.requireNonNull(entity);
         this.pathSplitAliases = context.getSelect().pathSplitAliases();
         this.currentDbPath = CayennePath.EMPTY_PATH;
-        this.attributes = new ArrayList<>(1);
+        this.columns = new ArrayList<>(1);
         this.attributePaths = new ArrayList<>(1);
     }
 
@@ -85,9 +84,9 @@ abstract class PathProcessor<T extends Entity<?,?,?>> implements PathTranslation
         return this;
     }
 
-    protected void addAttribute(CayennePath path, DbAttribute attribute) {
+    protected void addAttribute(CayennePath path, CompiledColumn column) {
         attributePaths.add(path);
-        attributes.add(attribute);
+        columns.add(column);
     }
 
     abstract protected void processAliasedAttribute(String next, String alias);
@@ -95,8 +94,8 @@ abstract class PathProcessor<T extends Entity<?,?,?>> implements PathTranslation
     abstract protected void processNormalAttribute(String next);
 
     @Override
-    public List<DbAttribute> getDbAttributes() {
-        return attributes;
+    public List<CompiledColumn> getDbAttributes() {
+        return columns;
     }
 
     @Override
@@ -105,11 +104,11 @@ abstract class PathProcessor<T extends Entity<?,?,?>> implements PathTranslation
     }
 
     @Override
-    public Optional<DbRelationship> getDbRelationship() {
-        if (relationship == null) {
+    public Optional<CompiledJoin> getDbRelationship() {
+        if (join == null) {
             return Optional.empty();
         }
-        return Optional.of(relationship);
+        return Optional.of(join);
     }
 
     @Override

@@ -28,16 +28,13 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.PathExp;
 import org.apache.cayenne.exp.path.CayennePath;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbJoin;
-import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.ObjAttribute;
-import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.compiled.CompiledColumnPair;
+import org.apache.cayenne.map.compiled.CompiledColumn;
+import org.apache.cayenne.map.compiled.CompiledJoin;
+import org.apache.cayenne.map.compiled.CompiledAttribute;
+import org.apache.cayenne.map.compiled.CompiledEntity;
+import org.apache.cayenne.map.compiled.CompiledRelationship;
 import org.apache.cayenne.query.PrefetchTreeNode;
-import org.apache.cayenne.reflect.ArcProperty;
-import org.apache.cayenne.reflect.AttributeProperty;
-import org.apache.cayenne.reflect.ClassDescriptor;
-import org.apache.cayenne.reflect.PropertyDescriptor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -151,12 +148,11 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
             values[i] = flatReader.get(flatRow, i);
         }
 
-        DataRow row = DataRow.of(resolver.getEntity().getName(), rowLayout, values, flatRow.getVersion());
+        DataRow row = DataRow.of(resolver.getEntity().name(), rowLayout, values, flatRow.getVersion());
 
         // since JDBC row reader won't inject JOINED entity name, we have to detect it here...
-        ClassDescriptor descriptor = resolver.getDescriptor();
-        ObjEntity entity = descriptor.getEntityInheritanceTree().entityMatchingRow(row);
-        String entityName = entity == null ? null : entity.getName();
+        CompiledEntity entity = resolver.getEntity().entityMatchingRow(row);
+        String entityName = entity == null ? null : entity.name();
         return Objects.equals(entityName, row.getEntityName()) ? row : row.withEntityName(entityName);
     }
 
@@ -193,56 +189,50 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
         if (getParent() != null
                 && !getParent().isPhantom()
                 && getIncoming() != null
-                && !getIncoming().getRelationship().isFlattened()) {
+                && !getIncoming().isFlattened()) {
 
-            DbRelationship r = getIncoming()
-                    .getRelationship()
-                    .getDbRelationships()
+            CompiledJoin r = getIncoming()
+                    .joins()
                     .get(0);
-            for (final DbJoin join : r.getJoins()) {
-                appendColumn(targetSource, join.getTargetName(), prefix
-                        + join.getTargetName());
+            for (final CompiledColumnPair join : r.columnPairs()) {
+                appendColumn(targetSource, join.target().name(), prefix
+                        + join.target().name());
             }
         }
 
-        ClassDescriptor descriptor = resolver.getDescriptor();
+        CompiledEntity entity = resolver.getEntity();
 
-        for (PropertyDescriptor property : descriptor.getAllProperties()) {
-            switch (property) {
-                case AttributeProperty attribute -> {
-                    CayennePath target = attribute.getAttribute().getDbAttributePath();
-                    if (!attribute.getAttribute().isLazy()) {
-                        appendColumn(targetSource, target.value(), prefix + target);
-                    }
-                }
-                case ArcProperty arc -> {
-                    DbRelationship dbRel = arc.getRelationship().getDbRelationships().get(0);
-                    for (DbAttribute dbAttribute : dbRel.getSourceAttributes()) {
-                        String target = dbAttribute.getName();
-                        appendColumn(targetSource, target, prefix + target);
-                    }
-                }
-                default -> {
-                }
+        for (CompiledAttribute attribute : entity.allAttributes()) {
+            CayennePath target = attribute.dbPath();
+            if (!attribute.isLazy()) {
+                appendColumn(targetSource, target.value(), prefix + target);
+            }
+        }
+
+        for (CompiledRelationship arc : entity.allRelationships()) {
+            CompiledJoin join = arc.joins().get(0);
+            for (CompiledColumn column : join.sourceColumns()) {
+                String target = column.name();
+                appendColumn(targetSource, target, prefix + target);
             }
         }
 
         // append id columns ... (some may have been appended already via relationships)
-        for (String pkName : descriptor.getEntity().getPrimaryKeyNames()) {
+        for (String pkName : entity.primaryKeyNames()) {
             appendColumn(targetSource, pkName, prefix + pkName);
         }
 
         // append id columns of additional entities...
-        descriptor.getAdditionalDbEntities().forEach((additionalPath, additionalDescriptor) -> {
-            for (DbAttribute pk : additionalDescriptor.getDbEntity().getPrimaryKeys()) {
-                String name = additionalPath.dot(pk.getName()).value();
+        entity.flattenedTables().forEach((additionalPath, additionalEntity) -> {
+            for (CompiledColumn pk : additionalEntity.table().primaryKey()) {
+                String name = additionalPath.dot(pk.name()).value();
                 appendColumn(targetSource, name, prefix + name);
             }
         });
 
         // append inheritance discriminator columns...
-        for (ObjAttribute column : descriptor.getDiscriminatorColumns()) {
-            CayennePath target = column.getDbAttributePath();
+        for (CompiledAttribute column : entity.discriminatorAttributes()) {
+            CayennePath target = column.dbPath();
             appendColumn(targetSource, target.value(), prefix + target);
         }
 
@@ -279,21 +269,21 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
      */
     private void buildPKIndex() {
         // index PK
-        Collection<DbAttribute> pks = getResolver()
+        Collection<CompiledColumn> pks = getResolver()
                 .getEntity()
-                .getDbEntity()
-                .getPrimaryKeys();
+                .table()
+                .primaryKey();
         this.idIndices = new int[pks.size()];
 
         // this is needed for checking that a valid index is made
         Arrays.fill(idIndices, -1);
 
-        Iterator<DbAttribute> it = pks.iterator();
+        Iterator<CompiledColumn> it = pks.iterator();
         for (int i = 0; i < idIndices.length; i++) {
-            DbAttribute pk = it.next();
+            CompiledColumn pk = it.next();
 
             for (int j = 0; j < columns.length; j++) {
-                if (pk.getName().equals(columns[j].rsName())) {
+                if (pk.name().equals(columns[j].rsName())) {
                     idIndices[i] = j;
                     break;
                 }
@@ -301,7 +291,7 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
 
             // sanity check
             if (idIndices[i] == -1) {
-                throw new CayenneRuntimeException("PK column is not part of result row: %s", pk.getName());
+                throw new CayenneRuntimeException("PK column is not part of result row: %s", pk.name());
             }
         }
     }

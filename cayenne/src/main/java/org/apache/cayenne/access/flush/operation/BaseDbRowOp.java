@@ -23,7 +23,7 @@ import java.util.Objects;
 
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.compiled.CompiledTable;
 
 /**
  * @since 4.2
@@ -31,21 +31,21 @@ import org.apache.cayenne.map.DbEntity;
 public abstract class BaseDbRowOp implements DbRowOp {
 
     protected final Persistent object;
-    protected final DbEntity entity;
+    protected final CompiledTable table;
     // Can be ObjEntity id or a DB row id for flattened rows
     protected ObjectId changeId;
     protected int hashCode;
 
-    protected BaseDbRowOp(Persistent object, DbEntity entity, ObjectId id) {
+    protected BaseDbRowOp(Persistent object, CompiledTable table, ObjectId id) {
         this.object = Objects.requireNonNull(object);
-        this.entity = Objects.requireNonNull(entity);
+        this.table = Objects.requireNonNull(table);
         this.changeId = Objects.requireNonNull(id);
         this.hashCode = changeId.hashCode();
     }
 
     @Override
-    public DbEntity getEntity() {
-        return entity;
+    public CompiledTable getEntity() {
+        return table;
     }
 
     @Override
@@ -74,7 +74,7 @@ public abstract class BaseDbRowOp implements DbRowOp {
 
     @Override
     public String toString() {
-        return entity.getName() + " " + changeId;
+        return table.name() + " " + changeId;
     }
 
     /**
@@ -83,7 +83,7 @@ public abstract class BaseDbRowOp implements DbRowOp {
      * @return true if another op has the same entity name and datamap
      */
     protected boolean entitiesHaveSameNameAndDataMap(DbRowOp rowOp) {
-        return getEntity().getName().equals(rowOp.getEntity().getName())
-                && getEntity().getDataMap().getName().equals(rowOp.getEntity().getDataMap().getName());
+        return getEntity().name().equals(rowOp.getEntity().name())
+                && getEntity().map().name().equals(rowOp.getEntity().map().name());
     }
 }

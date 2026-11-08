@@ -18,8 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.access.dbsync;
 
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.compiled.CompiledColumn;
+import org.apache.cayenne.map.compiled.CompiledTable;
 
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -40,7 +40,7 @@ class SchemaAnalyzer {
 	private List<String> tableNoInDB;
 	private Map<String, Collection<String>> nameSchemaMap;
 	private Map<String, Collection<String>> schemaNameMap;
-	private Map<Map<String, String>, Collection<DbAttribute>> entityTables;
+	private Map<Map<String, String>, Collection<CompiledColumn>> entityTables;
 	private String errorMessage;
 
 	SchemaAnalyzer() {
@@ -66,28 +66,28 @@ class SchemaAnalyzer {
 			try (ResultSet rs = md.getColumns(null, schema, name, null);) {
 				Map<String, String> schemaName = new HashMap<>();
 				schemaName.put(name, schema);
-				Collection<DbAttribute> atribute = entityTables.get(schemaName);
-				if (atribute == null) {
+				Collection<CompiledColumn> column = entityTables.get(schemaName);
+				if (column == null) {
 					schemaName.remove(name);
 					schemaName.put(name, null);
-					atribute = entityTables.get(schemaName);
+					column = entityTables.get(schemaName);
 				}
-				if (atribute != null && rs.getFetchSize() != 0) {
+				if (column != null && rs.getFetchSize() != 0) {
 					int countColumn = 0;
 					int isInEntity = 0;
 					while (rs.next()) {
 						countColumn++;
 						String columnName = rs.getString("COLUMN_NAME");
-						for (DbAttribute attr : atribute) {
+						for (CompiledColumn attr : column) {
 
-							if (attr.getName().equalsIgnoreCase(columnName)) {
+							if (attr.name().equalsIgnoreCase(columnName)) {
 								isInEntity++;
 								continue;
 							}
 						}
 					}
 
-					if (countColumn != atribute.size()) {
+					if (countColumn != column.size()) {
 						errorMessage = "different number of columns in table " + name;
 						continue;
 					}
@@ -101,14 +101,14 @@ class SchemaAnalyzer {
 
 	}
 
-	public boolean compareTables(DatabaseMetaData md, Collection<DbEntity> entities) {
+	public boolean compareTables(DatabaseMetaData md, Collection<CompiledTable> tables) {
 
 		boolean isIncluded = true;
-		for (DbEntity ent : entities) {
+		for (CompiledTable table : tables) {
 
-			String name = ent.getName();
-			String schema = ent.getSchema();
-			Collection<DbAttribute> atributes = ent.getAttributes();
+			String name = table.name();
+			String schema = table.schema();
+			Collection<CompiledColumn> columns = table.columns();
 
 			if (schema != null) {
 				if (schemaNameMap.get(schema) != null) {
@@ -125,7 +125,7 @@ class SchemaAnalyzer {
 				}
 			} else {
 				if (nameSchemaMap.get(name) != null
-						|| !ent.getDataMap().isQuotingSQLIdentifiers()
+						|| !table.map().quotingSQLIdentifiers()
 						&& (nameSchemaMap.get(name.toLowerCase()) != null || nameSchemaMap.get(name.toUpperCase()) != null)) {
 					Collection<String> sc = nameSchemaMap.get(name);
 					if (sc == null) {
@@ -153,7 +153,7 @@ class SchemaAnalyzer {
 			}
 			Map<String, String> schemaName = new HashMap<>();
 			schemaName.put(name, schema);
-			entityTables.put(schemaName, atributes);
+			entityTables.put(schemaName, columns);
 		}
 		return isIncluded;
 	}

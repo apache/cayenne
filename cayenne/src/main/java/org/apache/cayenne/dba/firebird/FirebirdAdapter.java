@@ -32,7 +32,7 @@ import org.apache.cayenne.RuntimeProperties;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.compiled.CompiledColumn;
 
 import java.sql.Types;
 import java.util.List;
@@ -106,13 +106,13 @@ public class FirebirdAdapter extends JdbcAdapter {
         
     }
 
-    public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
+    public void createTableAppendColumn(StringBuffer sqlBuffer, CompiledColumn column) {
         String type = preferredNativeColumnType(column).nativeType();
         String length = sizeAndScale(this, column);
 
-        QuotingStrategy quotes = getQuotingStrategy(column.getEntity());
+        QuotingStrategy quotes = getQuotingStrategy(column.table());
         quotes.appendStart(sqlBuffer);
-        sqlBuffer.append(column.getName());
+        sqlBuffer.append(column.name());
         quotes.appendEnd(sqlBuffer);
         sqlBuffer.append(' ');
 

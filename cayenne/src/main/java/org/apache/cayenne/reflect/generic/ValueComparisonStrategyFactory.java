@@ -19,13 +19,16 @@
 
 package org.apache.cayenne.reflect.generic;
 
-import org.apache.cayenne.map.ObjAttribute;
-
 /**
  * @since 4.2
  */
 public interface ValueComparisonStrategyFactory {
 
-    ValueComparisonStrategy<Object> getStrategy(ObjAttribute attribute);
+    /**
+     * Returns the strategy of comparing the values of the given type.
+     *
+     * @since 6.0 takes the value type instead of an ObjAttribute
+     */
+    ValueComparisonStrategy<Object> getStrategy(Class<?> valueType);
 
 }

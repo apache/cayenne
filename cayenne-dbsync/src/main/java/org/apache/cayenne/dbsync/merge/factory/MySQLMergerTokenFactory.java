@@ -22,6 +22,7 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
+import org.apache.cayenne.dbsync.merge.token.db.CompiledModel;
 import org.apache.cayenne.dbsync.merge.token.db.DropRelationshipToDb;
 import org.apache.cayenne.dbsync.merge.token.db.SetAllowNullToDb;
 import org.apache.cayenne.dbsync.merge.token.db.SetColumnTypeToDb;
@@ -51,7 +52,7 @@ public class MySQLMergerTokenFactory extends DefaultMergerTokenFactory {
 
                 StringBuffer sqlBuffer = new StringBuffer();
 
-                QuotingStrategy quotes = adapter.getQuotingStrategy(getEntity());
+                QuotingStrategy quotes = adapter.getQuotingStrategy(CompiledModel.table(getEntity()));
 
                 sqlBuffer.append("ALTER TABLE ");
                 quotes.appendFQN(sqlBuffer, getEntity().getCatalog(), getEntity().getSchema(), getEntity().getName());
@@ -60,7 +61,7 @@ public class MySQLMergerTokenFactory extends DefaultMergerTokenFactory {
                 sqlBuffer.append(getColumn().getName());
                 quotes.appendEnd(sqlBuffer);
                 sqlBuffer.append(" ");
-                adapter.createTableAppendColumn(sqlBuffer, column);
+                adapter.createTableAppendColumn(sqlBuffer, CompiledModel.column(column));
 
                 return Collections.singletonList(sqlBuffer.toString());
             }
@@ -80,7 +81,7 @@ public class MySQLMergerTokenFactory extends DefaultMergerTokenFactory {
 
                 StringBuffer sqlBuffer = new StringBuffer();
 
-                QuotingStrategy quotes = adapter.getQuotingStrategy(getEntity());
+                QuotingStrategy quotes = adapter.getQuotingStrategy(CompiledModel.table(getEntity()));
 
                 sqlBuffer.append("ALTER TABLE ");
                 quotes.appendFQN(sqlBuffer, getEntity().getCatalog(), getEntity().getSchema(), getEntity().getName());
@@ -89,7 +90,7 @@ public class MySQLMergerTokenFactory extends DefaultMergerTokenFactory {
                 sqlBuffer.append(getColumn().getName());
                 quotes.appendEnd(sqlBuffer);
                 sqlBuffer.append(" ");
-                adapter.createTableAppendColumn(sqlBuffer, column);
+                adapter.createTableAppendColumn(sqlBuffer, CompiledModel.column(column));
 
                 return Collections.singletonList(sqlBuffer.toString());
             }
@@ -136,7 +137,7 @@ public class MySQLMergerTokenFactory extends DefaultMergerTokenFactory {
                 if (fkName == null) {
                     return Collections.emptyList();
                 }
-                QuotingStrategy quotes = adapter.getQuotingStrategy(entity);
+                QuotingStrategy quotes = adapter.getQuotingStrategy(CompiledModel.table(entity));
 
                 // http://dev.mysql.com/tech-resources/articles/mysql-cluster-50.html
                 StringBuilder sql = new StringBuilder("ALTER TABLE ");
@@ -182,7 +183,7 @@ public class MySQLMergerTokenFactory extends DefaultMergerTokenFactory {
 
             @Override
             protected void appendAutoIncrement(DbAdapter adapter, StringBuffer builder) {
-                adapter.createTableAppendColumn(builder, this.getColumn());
+                adapter.createTableAppendColumn(builder, CompiledModel.column(this.getColumn()));
             }
 
             /**
@@ -190,7 +191,7 @@ public class MySQLMergerTokenFactory extends DefaultMergerTokenFactory {
              */
             @Override
             protected void appendDropAutoIncrement(DbAdapter adapter, StringBuffer builder) {
-                adapter.createTableAppendColumn(builder, this.getColumn());
+                adapter.createTableAppendColumn(builder, CompiledModel.column(this.getColumn()));
             }
 
             @Override

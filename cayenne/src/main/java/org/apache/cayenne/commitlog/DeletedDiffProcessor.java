@@ -28,8 +28,10 @@ import org.apache.cayenne.commitlog.model.MutableChangeMap;
 import org.apache.cayenne.commitlog.model.MutableObjectChange;
 import org.apache.cayenne.commitlog.model.ObjectChangeType;
 import org.apache.cayenne.graph.GraphChangeHandler;
-import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.reflect.*;
+import org.apache.cayenne.map.compiled.CompiledAttribute;
+import org.apache.cayenne.map.compiled.CompiledEntity;
+import org.apache.cayenne.map.compiled.CompiledRelationship;
+import org.apache.cayenne.map.compiled.CompiledToOneRelationship;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,40 +63,38 @@ class DeletedDiffProcessor implements GraphChangeHandler {
 			return;
 		}
 
-		ClassDescriptor descriptor = context.getEntityResolver().getClassDescriptor(id.getEntityName());
+		CompiledEntity objEntity = context.getMapping().entity(id.getEntityName());
 		final CommitLogEntity entity = entityFactory.getEntity(id);
 
-		for (PropertyDescriptor property : descriptor.getProperties()) {
-			if (!entity.isIncluded(property.getName())) {
+		for (CompiledAttribute attribute : objEntity.attributes()) {
+			if (!entity.isIncluded(attribute.name())) {
 				continue;
 			}
 
-			switch (property) {
-				case AttributeProperty attribute -> {
-					Object value;
-					if (entity.isConfidential(attribute.getName())) {
-						value = Confidential.getInstance();
-					} else {
-						String key = attribute.getAttribute().getDbAttributeName();
-						value = row.get(key);
-					}
+			Object value;
+			if (entity.isConfidential(attribute.name())) {
+				value = Confidential.getInstance();
+			} else {
+				String key = attribute.columnName();
+				value = row.get(key);
+			}
 
-					if (value != null) {
-						objectChangeSet.attributeChanged(attribute.getName(), value, null);
-					}
-				}
-				case ToOneProperty toOne -> {
-					// TODO: is there such a thing as "confidential" relationship that we need to hide?
-					// a flattened to-one or an FK to a non-PK column can't be resolved to a target id from the row
-					ObjRelationship relationship = toOne.getRelationship();
-					if (relationship.isToPrimaryKey()) {
-						ObjectId value = ObjectSnapshots.targetId(relationship, row);
-						if (value != null) {
-							objectChangeSet.toOneRelationshipDisconnected(toOne.getName(), value);
-						}
-					}
-				}
-				default -> {
+			if (value != null) {
+				objectChangeSet.attributeChanged(attribute.name(), value, null);
+			}
+		}
+
+		for (CompiledRelationship relationship : objEntity.relationships()) {
+			if (!(relationship instanceof CompiledToOneRelationship toOne) || !entity.isIncluded(toOne.name())) {
+				continue;
+			}
+
+			// TODO: is there such a thing as "confidential" relationship that we need to hide?
+			// a flattened to-one or an FK to a non-PK column can't be resolved to a target id from the row
+			if (toOne.isToPrimaryKey()) {
+				ObjectId value = ObjectSnapshots.targetId(toOne, row);
+				if (value != null) {
+					objectChangeSet.toOneRelationshipDisconnected(toOne.name(), value);
 				}
 			}
 		}

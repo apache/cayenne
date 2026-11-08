@@ -21,8 +21,8 @@ package org.apache.cayenne.access.flush.operation;
 
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.compiled.CompiledColumn;
+import org.apache.cayenne.map.compiled.CompiledTable;
 
 import java.sql.Types;
 import java.util.Objects;
@@ -44,10 +44,10 @@ public class ConditionalSoftDeleteDbRowOpFactory implements DeleteDbRowOpFactory
     }
 
     @Override
-    public DeleteDbRowOp createOp(Persistent object, DbEntity entity, ObjectId id) {
-        DbAttribute attr = entity.getAttribute(columnName);
-        return attr != null && attr.getType() == Types.BOOLEAN
-                ? new SoftDeleteDbRowOp(object, entity, id, attr)
-                : new DeleteDbRowOp(object, entity, id);
+    public DeleteDbRowOp createOp(Persistent object, CompiledTable table, ObjectId id) {
+        CompiledColumn column = table.column(columnName);
+        return column != null && column.jdbcType() == Types.BOOLEAN
+                ? new SoftDeleteDbRowOp(object, table, id, column)
+                : new DeleteDbRowOp(object, table, id);
     }
 }

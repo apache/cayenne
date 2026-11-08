@@ -337,9 +337,10 @@ public class DataContextPrefetchIT {
     public void prefetch_ToManyNoReverse() throws Exception {
         createTwoArtistsAndTwoPaintingsDataSet();
 
-        ObjEntity paintingEntity = context.getEntityResolver().getObjEntity(Painting.class);
+        ObjEntity paintingEntity = env.project().objEntity(context.getMapping().entity(Painting.class));
         ObjRelationship relationship = paintingEntity.getRelationship("artist");
         paintingEntity.removeRelationship("artist");
+        env.recompile();
 
         try {
 
@@ -356,16 +357,19 @@ public class DataContextPrefetchIT {
             });
         } finally {
             paintingEntity.addRelationship(relationship);
+            env.recompile();
         }
+
     }
 
     @Test
     public void prefetch_ToManyNoReverseWithQualifier() throws Exception {
         createTwoArtistsAndTwoPaintingsDataSet();
 
-        ObjEntity paintingEntity = context.getEntityResolver().getObjEntity(Painting.class);
+        ObjEntity paintingEntity = env.project().objEntity(context.getMapping().entity(Painting.class));
         ObjRelationship relationship = paintingEntity.getRelationship("artist");
         paintingEntity.removeRelationship("artist");
+        env.recompile();
 
         try {
 
@@ -384,7 +388,9 @@ public class DataContextPrefetchIT {
 
         } finally {
             paintingEntity.addRelationship(relationship);
+            env.recompile();
         }
+
     }
 
     @Test

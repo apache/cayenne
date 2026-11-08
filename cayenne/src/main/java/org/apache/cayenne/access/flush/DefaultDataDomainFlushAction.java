@@ -39,7 +39,7 @@ import org.apache.cayenne.access.flush.operation.OpIdFactory;
 import org.apache.cayenne.access.flush.operation.UpdateDbRowOp;
 import org.apache.cayenne.graph.CompoundDiff;
 import org.apache.cayenne.graph.GraphDiff;
-import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.compiled.CompiledMapping;
 import org.apache.cayenne.query.resolved.ResolvedBatch;
 
 import java.util.ArrayList;
@@ -104,13 +104,13 @@ public class DefaultDataDomainFlushAction implements DataDomainFlushAction {
      * @return collection of {@link DbRowOp}
      */
     protected List<DbRowOp> createDbRowOps(DataContextObjectStore objectStore, ObjectStoreGraphDiff changes) {
-        EntityResolver resolver = dataDomain.getEntityResolver();
+        CompiledMapping mapping = dataDomain.getMapping();
 
         Map<ObjectId, ObjectDiff> changesByObjectId = changes.getChangesByObjectId();
         List<DbRowOp> ops = new ArrayList<>(changesByObjectId.size());
         Set<ArcTarget> processedArcs = new HashSet<>();
 
-        DbRowOpFactory factory = new DbRowOpFactory(resolver, objectStore, processedArcs, deleteDbRowOpFactory);
+        DbRowOpFactory factory = new DbRowOpFactory(mapping, objectStore, processedArcs, deleteDbRowOpFactory);
         // ops.addAll() method is slower in this case as it will allocate new array for all values
         //noinspection UseBulkOperation
         changesByObjectId.forEach((obj, diff) -> factory.createRows(diff).forEach(ops::add));
@@ -190,11 +190,11 @@ public class DefaultDataDomainFlushAction implements DataDomainFlushAction {
      * @param queries to execute
      */
     protected void executeQueries(List<ResolvedBatch> batches) {
-        EntityResolver entityResolver = dataDomain.getEntityResolver();
+        CompiledMapping mapping = dataDomain.getMapping();
         Map<DataNode, List<StatementContext>> statementsByNode = new LinkedHashMap<>();
         for (ResolvedBatch batch : batches) {
             statementsByNode.computeIfAbsent(dataDomain.lookupDataNode(batch), n -> new ArrayList<>())
-                    .add(new StatementContext(batch, entityResolver));
+                    .add(new StatementContext(batch, mapping));
         }
 
         statementsByNode.forEach(DataNode::execute);
@@ -208,7 +208,7 @@ public class DefaultDataDomainFlushAction implements DataDomainFlushAction {
      * @param dbRowOps collection of {@link DbRowOp}
      */
     protected void createReplacementIds(DataContextObjectStore store, CompoundDiff afterCommitDiff, List<DbRowOp> dbRowOps) {
-        ReplacementIdVisitor visitor = new ReplacementIdVisitor(store, dataDomain.getEntityResolver(), afterCommitDiff);
+        ReplacementIdVisitor visitor = new ReplacementIdVisitor(store, dataDomain.getMapping(), afterCommitDiff);
         dbRowOps.forEach(row -> row.accept(visitor));
     }
 
@@ -226,7 +226,7 @@ public class DefaultDataDomainFlushAction implements DataDomainFlushAction {
         PostprocessVisitor postprocessor = new PostprocessVisitor(context);
         dbRowOps.forEach(row -> row.accept(postprocessor));
 
-        DataDomainIndirectDiffBuilder indirectDiffBuilder = new DataDomainIndirectDiffBuilder(context.getEntityResolver());
+        DataDomainIndirectDiffBuilder indirectDiffBuilder = new DataDomainIndirectDiffBuilder(context.getMapping());
         indirectDiffBuilder.processChanges(changes);
 
         objectStore.getDataRowCache()

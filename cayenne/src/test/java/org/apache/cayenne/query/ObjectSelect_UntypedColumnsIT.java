@@ -228,14 +228,14 @@ public class ObjectSelect_UntypedColumnsIT {
                 PropertyFactory.createBase(FunctionExpressionFactory.countExp(), null),
                 PropertyFactory.createBase(FunctionExpressionFactory.currentTimestamp(), null));
 
-        List<ResultSegment> segments = query.resolve(context.getEntityResolver()).resultSegments().segments();
+        List<ResultSegment> segments = query.resolve(context.getMapping()).resultSegments().segments();
         assertEquals(5, segments.size());
 
         ScalarResultSegment title = assertInstanceOf(ScalarResultSegment.class, segments.get(0));
         assertEquals(String.class, title.type());
 
         EntityResultSegment artist = assertInstanceOf(EntityResultSegment.class, segments.get(1));
-        assertEquals("Artist", artist.classDescriptor().getEntity().getName());
+        assertEquals("Artist", artist.entity().name());
 
         ScalarResultSegment price = assertInstanceOf(ScalarResultSegment.class, segments.get(2));
         assertEquals(BigDecimal.class, price.type());

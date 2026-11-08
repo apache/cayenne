@@ -24,9 +24,9 @@ import org.apache.cayenne.graph.GraphChangeHandler;
 import org.apache.cayenne.commitlog.model.MutableChangeMap;
 import org.apache.cayenne.commitlog.model.MutableObjectChange;
 import org.apache.cayenne.commitlog.model.ObjectChangeType;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.map.compiled.CompiledMapping;
+import org.apache.cayenne.map.compiled.CompiledEntity;
+import org.apache.cayenne.map.compiled.CompiledRelationship;
 
 /**
  * Records changes in a given transaction to a {@link MutableChangeMap} object.
@@ -35,12 +35,12 @@ import org.apache.cayenne.map.ObjRelationship;
  */
 class DiffProcessor implements GraphChangeHandler {
 
-	private EntityResolver entityResolver;
+	private CompiledMapping mapping;
 	private MutableChangeMap changeSet;
 
-	DiffProcessor(MutableChangeMap changeSet, EntityResolver entityResolver) {
+	DiffProcessor(MutableChangeMap changeSet, CompiledMapping mapping) {
 		this.changeSet = changeSet;
-		this.entityResolver = entityResolver;
+		this.mapping = mapping;
 	}
 
 	@Override
@@ -68,8 +68,8 @@ class DiffProcessor implements GraphChangeHandler {
 	public void arcDeleted(ObjectId id, ObjectId targetId, ArcId arcId) {
 		String relationshipName = arcId.toString();
 
-		ObjEntity entity = entityResolver.getObjEntity(id.getEntityName());
-		ObjRelationship relationship = entity.getRelationship(relationshipName);
+		CompiledEntity entity = mapping.entity(id.getEntityName());
+		CompiledRelationship relationship = entity.relationship(relationshipName);
 
 		MutableObjectChange c = changeSet.getOrCreate(id, ObjectChangeType.UPDATE);
 
@@ -85,8 +85,8 @@ class DiffProcessor implements GraphChangeHandler {
 
 		String relationshipName = arcId.toString();
 
-		ObjEntity entity = entityResolver.getObjEntity(id.getEntityName());
-		ObjRelationship relationship = entity.getRelationship(relationshipName);
+		CompiledEntity entity = mapping.entity(id.getEntityName());
+		CompiledRelationship relationship = entity.relationship(relationshipName);
 
 		MutableObjectChange c = changeSet.getOrCreate(id, ObjectChangeType.UPDATE);
 

@@ -33,7 +33,8 @@ import org.apache.cayenne.access.jdbc.PSParameter;
 import org.apache.cayenne.access.translator.TranslatedSQL;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.compiled.CompiledMapping;
+import org.apache.cayenne.map.compiled.TestMappings;
 import org.apache.cayenne.query.SQLQuery;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -239,11 +240,15 @@ public class DefaultSQLTemplateTranslatorTest {
     }
 
     private TranslatedSQL translate(String template, Map<String, ?> params) {
-        return processor.translate(SQLQuery.query(template).params(params).resolve(new EntityResolver()), adapter);
+        return processor.translate(SQLQuery.query(template).params(params).resolve(emptyMapping()), adapter);
     }
 
     private TranslatedSQL translate(String template, List<Object> params) {
-        return processor.translate(SQLQuery.query(template).paramsList(params).resolve(new EntityResolver()), adapter);
+        return processor.translate(SQLQuery.query(template).paramsList(params).resolve(emptyMapping()), adapter);
+    }
+
+    private static CompiledMapping emptyMapping() {
+        return TestMappings.compile();
     }
 
     private void assertBindingValue(Object expectedValue, Object binding) {

@@ -24,9 +24,8 @@ import org.apache.cayenne.access.lifecycle.LifecycleEventsManager;
 import org.apache.cayenne.lifecycle.PostAddAware;
 import org.apache.cayenne.lifecycle.PostLoadAware;
 import org.apache.cayenne.lifecycle.PrePersistAware;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.reflect.ClassDescriptor;
+import org.apache.cayenne.map.compiled.CompiledMapping;
+import org.apache.cayenne.map.compiled.CompiledEntity;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -35,8 +34,9 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+
 import static org.mockito.Mockito.when;
 
 /**
@@ -105,24 +105,23 @@ public class DataDomainProvider_EntityCallbacksTest {
     }
 
     /**
-     * Creates a manager over an EntityResolver mock with entities mapped to the given classes.
+     * Creates a manager over a CompiledMapping mock with entities bound to the given classes.
      */
     private static LifecycleEventsManager createManager(Class<?>... entityClasses) {
-        List<ObjEntity> entities = new ArrayList<>();
+        List<CompiledEntity> entities = new ArrayList<>();
         for (Class<?> entityClass : entityClasses) {
-            // the class name doubles as the entity name, to look up the class in the descriptor mock
-            entities.add(new ObjEntity(entityClass.getName()));
+            CompiledEntity entity = mock(CompiledEntity.class);
+            when(entity.name()).thenReturn(entityClass.getSimpleName());
+            doReturn(entityClass).when(entity).objectClass();
+            entities.add(entity);
         }
 
-        EntityResolver resolver = mock(EntityResolver.class);
-        when(resolver.getObjEntities()).thenReturn(entities);
-        when(resolver.getClassDescriptor(anyString())).thenAnswer(i -> {
-            ClassDescriptor descriptor = mock(ClassDescriptor.class);
-            when(descriptor.getObjectClass()).thenAnswer(a -> Class.forName(i.getArgument(0)));
-            return descriptor;
-        });
+        CompiledMapping mapping = mock(CompiledMapping.class);
+        when(mapping.entities()).thenReturn(entities);
 
-        return new DataDomainProvider().createLifecycleEventsManager(resolver);
+        LifecycleEventsManager manager = new LifecycleEventsManager();
+        new DataDomainProvider().registerEntityCallbacks(manager, mapping);
+        return manager;
     }
 
     public static class E1 extends PersistentObject implements PostAddAware {

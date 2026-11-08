@@ -33,9 +33,9 @@ import org.apache.cayenne.access.flush.operation.UpdateDbRowOp;
 import org.apache.cayenne.exp.DbPathExp;
 import org.apache.cayenne.graph.CompoundDiff;
 import org.apache.cayenne.graph.NodeIdChangeOperation;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.reflect.AttributeProperty;
-import org.apache.cayenne.reflect.ClassDescriptor;
+import org.apache.cayenne.map.compiled.CompiledMapping;
+import org.apache.cayenne.map.compiled.CompiledAttribute;
+import org.apache.cayenne.map.compiled.CompiledEntity;
 
 /**
  * @since 4.2
@@ -43,12 +43,12 @@ import org.apache.cayenne.reflect.ClassDescriptor;
 class ReplacementIdVisitor implements DbRowOpVisitor<Void> {
 
     private final DataContextObjectStore store;
-    private final EntityResolver resolver;
+    private final CompiledMapping mapping;
     private final CompoundDiff result;
 
-    ReplacementIdVisitor(DataContextObjectStore store, EntityResolver resolver, CompoundDiff result) {
+    ReplacementIdVisitor(DataContextObjectStore store, CompiledMapping mapping, CompoundDiff result) {
         this.store = store;
-        this.resolver = resolver;
+        this.mapping = mapping;
         this.result = result;
     }
 
@@ -101,12 +101,12 @@ class ReplacementIdVisitor implements DbRowOpVisitor<Void> {
             store.withObjectLock(id, () -> {
                 object.setObjectId(replacementId);
                 // update meaningful PKs
-                ClassDescriptor descriptor = resolver.getClassDescriptor(replacementId.getEntityName());
-                for (AttributeProperty property : descriptor.getIdProperties()) {
-                    if (property.getAttribute() != null) {
-                        Object value = replacement.get(property.getAttribute().getDbAttributeName());
+                CompiledEntity entity = mapping.entity(replacementId.getEntityName());
+                for (CompiledAttribute attribute : entity.idAttributes()) {
+                    if (!attribute.isSynthetic()) {
+                        Object value = replacement.get(attribute.columnName());
                         if (value != null) {
-                            property.writePropertyDirectly(object, null, value);
+                            attribute.writePropertyDirectly(object, null, value);
                         }
                     }
                 }

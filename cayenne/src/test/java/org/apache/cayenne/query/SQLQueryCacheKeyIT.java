@@ -40,13 +40,13 @@ public class SQLQueryCacheKeyIT {
 
         SQLQuery<Artist> query = SQLQuery.query(Artist.class, "SELECT ME");
 
-        ResolvedQuery md1 = query.resolve(env.entityResolver());
+        ResolvedQuery md1 = query.resolve(env.mapping());
         assertEquals(QueryCacheStrategy.NO_CACHE, md1.cacheStrategy());
-        assertNull(md1.cacheKey());
+        assertNull(cacheKey(md1));
 
-        ResolvedQuery md2 = query.resolve(env.entityResolver());
+        ResolvedQuery md2 = query.resolve(env.mapping());
         assertEquals(QueryCacheStrategy.NO_CACHE, md2.cacheStrategy());
-        assertNull(md2.cacheKey());
+        assertNull(cacheKey(md2));
     }
 
     @Test
@@ -56,9 +56,9 @@ public class SQLQueryCacheKeyIT {
 
         query.cacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
 
-        ResolvedQuery md1 = query.resolve(env.entityResolver());
+        ResolvedQuery md1 = query.resolve(env.mapping());
         assertEquals(QueryCacheStrategy.LOCAL_CACHE, md1.cacheStrategy());
-        assertNotNull(md1.cacheKey());
+        assertNotNull(cacheKey(md1));
     }
 
     @Test
@@ -68,9 +68,9 @@ public class SQLQueryCacheKeyIT {
 
         query.cacheStrategy(QueryCacheStrategy.SHARED_CACHE);
 
-        ResolvedQuery md1 = query.resolve(env.entityResolver());
+        ResolvedQuery md1 = query.resolve(env.mapping());
         assertEquals(QueryCacheStrategy.SHARED_CACHE, md1.cacheStrategy());
-        assertNotNull(md1.cacheKey());
+        assertNotNull(cacheKey(md1));
     }
 
     @Test
@@ -80,9 +80,9 @@ public class SQLQueryCacheKeyIT {
 
         query.cacheStrategy(QueryCacheStrategy.SHARED_CACHE);
 
-        ResolvedQuery md1 = query.resolve(env.entityResolver());
+        ResolvedQuery md1 = query.resolve(env.mapping());
         assertEquals(QueryCacheStrategy.SHARED_CACHE, md1.cacheStrategy());
-        assertFalse("XYZ".equals(md1.cacheKey()));
+        assertFalse("XYZ".equals(cacheKey(md1)));
     }
 
     @Test
@@ -97,8 +97,10 @@ public class SQLQueryCacheKeyIT {
         q2.limit(10);
         q2.cacheStrategy(QueryCacheStrategy.SHARED_CACHE);
 
-        assertEquals(q1.resolve(env.entityResolver()).cacheKey(), q2
-                .resolve(env.entityResolver())
-                .cacheKey());
+        assertEquals(cacheKey(q1.resolve(env.mapping())), cacheKey(q2.resolve(env.mapping())));
+    }
+
+    private static String cacheKey(ResolvedQuery resolved) {
+        return resolved.cacheKey(env.valueObjectTypes());
     }
 }

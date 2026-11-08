@@ -26,7 +26,6 @@ import org.apache.cayenne.access.translator.select.DbAdapterDelegatedSelectTrans
 import org.apache.cayenne.access.translator.TranslatedSelect;
 import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.reflect.PersistentDescriptor;
 import org.apache.cayenne.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -204,7 +203,7 @@ public class DataContextFlattenedAttributesIT {
 
         DataNode dataNode = context.getChannel().getDataDomain().getDataNodes().iterator().next();
         TranslatedSelect translator =
-                new DbAdapterDelegatedSelectTranslator().translate(originalQuery.resolve(context.getEntityResolver()), dataNode.getAdapter(), context.getEntityResolver());
+                new DbAdapterDelegatedSelectTranslator().translate(originalQuery.resolve(context.getMapping()), dataNode.getAdapter(), context.getMapping());
 
         EntityResultSegment segment = (EntityResultSegment) translator.resultSetMapping().segments().get(0);
 

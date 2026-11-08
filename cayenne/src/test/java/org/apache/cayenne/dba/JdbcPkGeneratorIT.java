@@ -20,8 +20,8 @@ package org.apache.cayenne.dba;
 
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dba.derby.DerbyPkGenerator;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.compiled.CompiledColumn;
+import org.apache.cayenne.map.compiled.CompiledTable;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
@@ -62,8 +62,8 @@ public class JdbcPkGeneratorIT {
 
         DataNode node = env.dataNode();
 
-        DbEntity artistEntity = env.resolver().getObjEntity(Artist.class).getDbEntity();
-        DbAttribute pkAttribute = artistEntity.getAttribute(Artist.ARTIST_ID_PK_COLUMN);
+        CompiledTable artistTable = env.mapping().entity(Artist.class).table();
+        CompiledColumn pkColumn = artistTable.column(Artist.ARTIST_ID_PK_COLUMN);
 
         JdbcPkGenerator pkGenerator = (JdbcPkGenerator) node.getPkGenerator();
 
@@ -71,12 +71,12 @@ public class JdbcPkGeneratorIT {
         if (!JdbcPkGenerator.class.equals(node.getPkGenerator().getClass()) &&
                 // AUTO_PK_SUPPORT doesn't allow dropping PK support for a single entity
                 !DerbyPkGenerator.class.equals(node.getPkGenerator().getClass())) {
-            pkGenerator.dropAutoPk(node, Collections.singletonList(artistEntity));
+            pkGenerator.dropAutoPk(node, Collections.singletonList(artistTable));
         }
-        pkGenerator.createAutoPk(node, Collections.singletonList(artistEntity));
+        pkGenerator.createAutoPk(node, Collections.singletonList(artistTable));
         pkGenerator.reset();
 
-        Object pk = pkGenerator.generatePk(node, pkAttribute);
+        Object pk = pkGenerator.generatePk(node, pkColumn);
         assertInstanceOf(Long.class, pk);
         assertTrue((Long) pk > Integer.MAX_VALUE, "PK is too small: " + pk);
     }

@@ -95,10 +95,11 @@ public class DataContextQueryCachingIT {
             assertEquals(1, engine.getRunCount());
             assertEquals(rows1, resultRows);
 
-            ResolvedQuery resolved = select.resolve(context.getEntityResolver());
-            assertNull(context.getChannel().getDataDomain().getQueryCache().get(resolved.cacheKey(), resolved.cacheGroup()));
+            ResolvedQuery resolved = select.resolve(context.getMapping());
+            assertNull(context.getChannel().getDataDomain().getQueryCache()
+                    .get(cacheKey(resolved), resolved.cacheGroup()));
 
-            assertEquals(rows1, context.getQueryCache().get(resolved.cacheKey(), resolved.cacheGroup()));
+            assertEquals(rows1, context.getQueryCache().get(cacheKey(resolved), resolved.cacheGroup()));
 
             // second run, must refresh the cache
             List<?> rows2 = mockupDataRows(4);
@@ -108,8 +109,9 @@ public class DataContextQueryCachingIT {
             List<?> freshResultRows = context.select(select);
             assertEquals(1, engine.getRunCount());
             assertEquals(rows2, freshResultRows);
-            assertNull(context.getChannel().getDataDomain().getQueryCache().get(resolved.cacheKey(), resolved.cacheGroup()));
-            assertEquals(rows2, context.getQueryCache().get(resolved.cacheKey(), resolved.cacheGroup()));
+            assertNull(context.getChannel().getDataDomain().getQueryCache()
+                    .get(cacheKey(resolved), resolved.cacheGroup()));
+            assertEquals(rows2, context.getQueryCache().get(cacheKey(resolved), resolved.cacheGroup()));
         } finally {
             engine.stopInterceptNode();
         }
@@ -131,11 +133,12 @@ public class DataContextQueryCachingIT {
             assertEquals(1, engine.getRunCount());
             assertEquals(rows1, resultRows);
 
-            ResolvedQuery resolved = select.resolve(context.getEntityResolver());
+            ResolvedQuery resolved = select.resolve(context.getMapping());
 
-            assertEquals(rows1, context.getChannel().getDataDomain().getQueryCache().get(resolved.cacheKey(), resolved.cacheGroup()));
+            assertEquals(rows1, context.getChannel().getDataDomain().getQueryCache()
+                    .get(cacheKey(resolved), resolved.cacheGroup()));
 
-            assertNull(context.getQueryCache().get(resolved.cacheKey(), resolved.cacheGroup()));
+            assertNull(context.getQueryCache().get(cacheKey(resolved), resolved.cacheGroup()));
 
             // second run, must refresh the cache
             List<?> rows2 = mockupDataRows(5);
@@ -145,8 +148,9 @@ public class DataContextQueryCachingIT {
             List<?> freshResultRows = context.select(select);
             assertEquals(1, engine.getRunCount());
             assertEquals(rows2, freshResultRows);
-            assertEquals(rows2, context.getChannel().getDataDomain().getQueryCache().get(resolved.cacheKey(), resolved.cacheGroup()));
-            assertNull(context.getQueryCache().get(resolved.cacheKey(), resolved.cacheGroup()));
+            assertEquals(rows2, context.getChannel().getDataDomain().getQueryCache()
+                    .get(cacheKey(resolved), resolved.cacheGroup()));
+            assertNull(context.getQueryCache().get(cacheKey(resolved), resolved.cacheGroup()));
         } finally {
             engine.stopInterceptNode();
         }
@@ -168,10 +172,11 @@ public class DataContextQueryCachingIT {
             assertEquals(1, engine.getRunCount());
             assertEquals(2, resultRows.size());
             assertTrue(resultRows.get(0) instanceof Persistent);
-            ResolvedQuery resolved = select.resolve(context.getEntityResolver());
-            assertNull(context.getChannel().getDataDomain().getQueryCache().get(resolved.cacheKey(), resolved.cacheGroup()));
+            ResolvedQuery resolved = select.resolve(context.getMapping());
+            assertNull(context.getChannel().getDataDomain().getQueryCache()
+                    .get(cacheKey(resolved), resolved.cacheGroup()));
 
-            assertEquals(resultRows, context.getQueryCache().get(resolved.cacheKey(), resolved.cacheGroup()));
+            assertEquals(resultRows, context.getQueryCache().get(cacheKey(resolved), resolved.cacheGroup()));
 
             // second run, must refresh the cache
             List<?> rows2 = mockupDataRows(4);
@@ -183,8 +188,9 @@ public class DataContextQueryCachingIT {
             assertEquals(1, engine.getRunCount());
             assertEquals(4, freshResultRows.size());
             assertTrue(resultRows.get(0) instanceof Persistent);
-            assertNull(context.getChannel().getDataDomain().getQueryCache().get(resolved.cacheKey(), resolved.cacheGroup()));
-            assertEquals(freshResultRows, context.getQueryCache().get(resolved.cacheKey(), resolved.cacheGroup()));
+            assertNull(context.getChannel().getDataDomain().getQueryCache()
+                    .get(cacheKey(resolved), resolved.cacheGroup()));
+            assertEquals(freshResultRows, context.getQueryCache().get(cacheKey(resolved), resolved.cacheGroup()));
         } finally {
             engine.stopInterceptNode();
         }
@@ -225,5 +231,9 @@ public class DataContextQueryCachingIT {
         }
 
         return rows;
+    }
+
+    private static String cacheKey(ResolvedQuery resolved) {
+        return resolved.cacheKey(env.valueObjectTypes());
     }
 }

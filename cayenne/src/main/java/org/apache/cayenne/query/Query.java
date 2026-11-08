@@ -26,7 +26,7 @@ import org.apache.cayenne.ResultBatchIterator;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.ResultIteratorCallback;
 import org.apache.cayenne.UpdateResult;
-import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.compiled.CompiledMapping;
 import org.apache.cayenne.query.resolved.ResolvedQuery;
 
 import java.util.List;
@@ -47,11 +47,11 @@ public interface Query<T> {
      * Resolves this query against the mapping into an immutable description of the statements to run. This is the
      * single step the runtime needs from a query: it routes, translates and executes the resolved query on its own.
      * A query is resolved every time it runs, so a query object may be modified and run again. A custom query
-     * delegates to a standard one, e.g. {@code ObjectSelect.query(..).resolve(resolver)}.
+     * delegates to a standard one, e.g. {@code ObjectSelect.query(..).resolve(mapping)}.
      *
      * @since 6.0
      */
-    ResolvedQuery resolve(EntityResolver resolver);
+    ResolvedQuery resolve(CompiledMapping mapping);
 
     /**
      * Executes the query, returning all of its result sets, update counts, iterators and OUT parameters in the order

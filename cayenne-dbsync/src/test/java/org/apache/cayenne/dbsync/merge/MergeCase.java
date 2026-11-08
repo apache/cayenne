@@ -41,7 +41,6 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.CayenneRuntime;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
@@ -73,7 +72,6 @@ public abstract class MergeCase {
             .withExtraModules(new DbSyncModule())
             .withoutAutoClean();
 
-    protected EntityResolver resolver;
     protected DataNode node;
     protected DataMap map;
     private CayenneRuntime runtime;
@@ -81,7 +79,6 @@ public abstract class MergeCase {
 
     @BeforeEach
     public void setUp() throws Exception {
-        resolver = env.entityResolver();
         node = env.dataNode();
         runtime = env.runtime();
         accessStackAdapter = env.testDbAdapter();
@@ -91,7 +88,7 @@ public abstract class MergeCase {
         env.dbCleaner().clean();
 
         // this map can't be safely modified in this test, as it is reset by DI container on every test
-        map = runtime.getDataDomain().getDataMap("testmap");
+        map = env.project().dataMap("testmap");
 
         filterDataMap();
 
@@ -236,11 +233,14 @@ public abstract class MergeCase {
         for (MergerToken tok : tokens) {
             tok.execute(mergerContext);
         }
+        // the "to model" tokens change the authored model, which the runtime sees on recompile
+        env.recompile();
     }
 
     protected void execute(MergerToken token) throws Exception {
         MergerContext mergerContext = MergerContext.builder(map).dataNode(node).build();
         token.execute(mergerContext);
+        env.recompile();
     }
 
     private void executeSql(String sql) throws Exception {

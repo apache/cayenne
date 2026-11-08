@@ -39,7 +39,7 @@ import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.compiled.CompiledColumn;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -176,7 +176,7 @@ public class SybaseAdapter extends JdbcAdapter {
      * @since 4.1 moved from SQLServerAdapter to SybaseAdapter as it supports this too
      */
     @Override
-    public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
+    public void createTableAppendColumn(StringBuffer sqlBuffer, CompiledColumn column) {
 
         super.createTableAppendColumn(sqlBuffer, column);
 

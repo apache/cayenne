@@ -20,7 +20,7 @@
 package org.apache.cayenne.access.translator.select;
 
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.compiled.CompiledMapping;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.inheritance_vertical.IvBase;
 import org.apache.cayenne.testdo.inheritance_vertical.IvOther;
@@ -64,7 +64,7 @@ public class VerticalInheritanceJoinOrderIT {
 
     private String translateToSql(ObjectSelect<?> query) {
         DbAdapter adapter = env.dataNode().getAdapter();
-        EntityResolver resolver = env.resolver();
-        return new DbAdapterDelegatedSelectTranslator().translate(query.resolve(resolver), adapter, resolver).sql();
+        CompiledMapping mapping = env.mapping();
+        return new DbAdapterDelegatedSelectTranslator().translate(query.resolve(mapping), adapter, mapping).sql();
     }
 }

@@ -20,7 +20,7 @@
 package org.apache.cayenne.access.translator.select;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.exp.path.CayennePath;
-import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.compiled.CompiledEntity;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
@@ -42,12 +42,12 @@ public class ObjPathProcessorIT {
     @BeforeEach
     public void prepareTranslationContext() {
         SelectTranslatorContext translatorContext = new SelectTranslatorContext(
-                ObjectSelect.query(Persistent.class, "IvSub3").resolve(env.context().getEntityResolver()),
+                ObjectSelect.query(Persistent.class, "IvSub3").resolve(env.mapping()),
                 Mockito.mock(DbAdapter.class),
-                env.context().getEntityResolver(),
+                env.mapping(),
                 null
         );
-        ObjEntity entity = env.context().getEntityResolver().getObjEntity("IvSub3");
+        CompiledEntity entity = env.mapping().entity("IvSub3");
         pathProcessor = new ObjPathProcessor(translatorContext, entity, null);
     }
 
@@ -58,7 +58,7 @@ public class ObjPathProcessorIT {
         assertEquals(1, result.getAttributePaths().size());
 
         assertEquals("", result.getLastAttributePath().value());
-        assertEquals("NAME", result.getLastAttribute().getName());
+        assertEquals("NAME", result.getLastAttribute().name());
     }
 
     @Test
@@ -68,10 +68,10 @@ public class ObjPathProcessorIT {
         assertEquals(2, result.getAttributePaths().size());
 
         assertEquals("sub3", result.getAttributePaths().get(0).value());
-        assertEquals("ID", result.getDbAttributes().get(0).getName());
+        assertEquals("ID", result.getDbAttributes().get(0).name());
 
         assertEquals("sub3", result.getAttributePaths().get(1).value());
-        assertEquals("IV_ROOT_ID", result.getDbAttributes().get(1).getName());
+        assertEquals("IV_ROOT_ID", result.getDbAttributes().get(1).name());
     }
 
     @Test
@@ -81,7 +81,7 @@ public class ObjPathProcessorIT {
         assertEquals(1, result.getAttributePaths().size());
 
         assertEquals("sub3.ivRoot1", result.getAttributePaths().get(0).value());
-        assertEquals("DISCRIMINATOR", result.getDbAttributes().get(0).getName());
+        assertEquals("DISCRIMINATOR", result.getDbAttributes().get(0).name());
     }
 
 }

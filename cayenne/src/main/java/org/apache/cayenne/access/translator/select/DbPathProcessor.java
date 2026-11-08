@@ -20,21 +20,21 @@
 package org.apache.cayenne.access.translator.select;
 
 import org.apache.cayenne.exp.path.CayennePath;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DbJoin;
-import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.compiled.CompiledColumn;
+import org.apache.cayenne.map.compiled.CompiledTable;
+import org.apache.cayenne.map.compiled.CompiledColumnPair;
+import org.apache.cayenne.map.compiled.CompiledJoin;
 import org.apache.cayenne.map.JoinType;
 
 /**
  * @since 4.2
  */
-class DbPathProcessor extends PathProcessor<DbEntity> {
+class DbPathProcessor extends PathProcessor<CompiledTable> {
 
     private final boolean flattenedPath;
 
-    DbPathProcessor(SelectTranslatorContext context, DbEntity entity, CayennePath parentPath, boolean flattenedPath) {
-        super(context, entity);
+    DbPathProcessor(SelectTranslatorContext context, CompiledTable table, CayennePath parentPath, boolean flattenedPath) {
+        super(context, table);
         this.flattenedPath = flattenedPath;
         if (parentPath != null) {
             currentDbPath = currentDbPath.withMarker(parentPath.marker()).dot(parentPath);
@@ -48,16 +48,16 @@ class DbPathProcessor extends PathProcessor<DbEntity> {
 
     @Override
     protected void processNormalAttribute(String next) {
-        DbAttribute dbAttribute = entity.getAttribute(next);
-        if (dbAttribute != null) {
-            processAttribute(dbAttribute);
+        CompiledColumn column = entity.column(next);
+        if (column != null) {
+            processAttribute(column);
             return;
         }
 
-        DbRelationship relationship = entity.getRelationship(next);
-        if (relationship != null) {
-            entity = relationship.getTargetEntity();
-            processRelationship(relationship);
+        CompiledJoin join = entity.join(next);
+        if (join != null) {
+            entity = join.target();
+            processRelationship(join);
             return;
         }
 
@@ -78,43 +78,43 @@ class DbPathProcessor extends PathProcessor<DbEntity> {
         String trueAlias = isCompositeAlias ? alias.substring(0, dotPosition) : alias;
         String ending = isCompositeAlias ? alias.substring(dotPosition + 1) : "";
 
-        DbRelationship relationship = entity.getRelationship(trueAlias);
-        if (relationship == null) {
+        CompiledJoin join = entity.join(trueAlias);
+        if (join == null) {
             throw new IllegalStateException("Non-relationship aliased path part: " + trueAlias);
         }
 
-        entity = relationship.getTargetEntity();
-        processRelationship(relationship);
+        entity = join.target();
+        processRelationship(join);
         if (ending.isEmpty()) {
             return;
         }
         processNormalAttribute(ending);
     }
 
-    private void processAttribute(DbAttribute attribute) {
-        addAttribute(currentDbPath, attribute);
-        appendCurrentPath(attribute.getName());
+    private void processAttribute(CompiledColumn column) {
+        addAttribute(currentDbPath, column);
+        appendCurrentPath(column.name());
     }
 
-    private void processRelationship(DbRelationship relationship) {
+    private void processRelationship(CompiledJoin join) {
         if (lastComponent) {
             // if this is a last relationship in the path, it needs special handling
-            processRelTermination(relationship);
+            processRelTermination(join);
         } else {
-            appendCurrentPath(relationship.getName());
-            context.getTableTree().addJoinTable(currentDbPath, relationship, isOuterJoin()
+            appendCurrentPath(join.name());
+            context.getTableTree().addJoinTable(currentDbPath, join, isOuterJoin()
                                                                                         ? JoinType.LEFT_OUTER
                                                                                         : JoinType.INNER);
-            if (!relationship.isToMany()) {
-                for (DbAttribute attribute : relationship.getTargetEntity().getPrimaryKeys()) {
-                    addAttribute(currentDbPath, attribute);
+            if (!join.isToMany()) {
+                for (CompiledColumn column : join.target().primaryKey()) {
+                    addAttribute(currentDbPath, column);
                 }
             }
         }
     }
 
-    protected void processRelTermination(DbRelationship relationship) {
-        this.relationship = relationship;
+    protected void processRelTermination(CompiledJoin join) {
+        this.join = join;
 
         // Back to obj alias to keep joins optimised.
         if (currentAlias != null && currentAlias.startsWith(DB_PATH_ALIAS_INDICATOR)) {
@@ -124,24 +124,24 @@ class DbPathProcessor extends PathProcessor<DbEntity> {
         // check if we can match on the source table columns instead of joining the target: the source join
         // columns carry the target PK value both for an FK on the source and for a master-to-dependent
         // relationship, whose source PK is also the dependent PK (if the dependent row exists)
-        if (!relationship.isToPrimaryKey()) {
+        if (!join.isToPrimaryKey()) {
             // must use target table
             // add relationship first
-            appendCurrentPath(relationship.getName());
+            appendCurrentPath(join.name());
             // match on target PK
-            context.getTableTree().addJoinTable(currentDbPath, relationship, isOuterJoin()
+            context.getTableTree().addJoinTable(currentDbPath, join, isOuterJoin()
                                                                                         ? JoinType.LEFT_OUTER
                                                                                         : JoinType.INNER);
-            for (DbAttribute attribute : relationship.getTargetEntity().getPrimaryKeys()) {
-                addAttribute(currentDbPath, attribute);
+            for (CompiledColumn column : join.target().primaryKey()) {
+                addAttribute(currentDbPath, column);
             }
         } else {
             // can use own values
-            for (DbJoin join : relationship.getJoins()) {
-                addAttribute(currentDbPath, join.getSource());
+            for (CompiledColumnPair pair : join.columnPairs()) {
+                addAttribute(currentDbPath, pair.source());
             }
             // add relationship last
-            appendCurrentPath(relationship.getName());
+            appendCurrentPath(join.name());
         }
     }
 }

@@ -18,11 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
-import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.compiled.CompiledMapping;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.apache.cayenne.query.resolved.ResolvedProcedure;
+import org.apache.cayenne.query.resolved.ResolvedQuery;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -38,58 +39,58 @@ public class ProcedureQueryCacheKeyIT {
     @Test
     public void noCache() {
 
-        EntityResolver resolver = env.runtime().getDataDomain().getEntityResolver();
+        CompiledMapping mapping = env.mapping();
 
         ProcedureQuery<Artist> query = ProcedureQuery.query("cayenne_tst_select_proc", Artist.class);
 
-        ResolvedProcedure md1 = query.resolve(resolver);
+        ResolvedProcedure md1 = query.resolve(mapping);
         assertEquals(QueryCacheStrategy.NO_CACHE, md1.cacheStrategy());
-        assertNull(md1.cacheKey());
+        assertNull(cacheKey(md1));
 
-        ResolvedProcedure md2 = query.resolve(resolver);
+        ResolvedProcedure md2 = query.resolve(mapping);
         assertEquals(QueryCacheStrategy.NO_CACHE, md2.cacheStrategy());
-        assertNull(md2.cacheKey());
+        assertNull(cacheKey(md2));
     }
 
     @Test
     public void localCache() {
 
-        EntityResolver resolver = env.runtime().getDataDomain().getEntityResolver();
+        CompiledMapping mapping = env.mapping();
 
         ProcedureQuery<Artist> query = ProcedureQuery.query("cayenne_tst_select_proc", Artist.class).cacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
 
-        ResolvedProcedure md1 = query.resolve(resolver);
+        ResolvedProcedure md1 = query.resolve(mapping);
         assertEquals(QueryCacheStrategy.LOCAL_CACHE, md1.cacheStrategy());
-        assertNotNull(md1.cacheKey());
+        assertNotNull(cacheKey(md1));
     }
 
     @Test
     public void sharedCache() {
 
-        EntityResolver resolver = env.runtime().getDataDomain().getEntityResolver();
+        CompiledMapping mapping = env.mapping();
 
         ProcedureQuery<Artist> query = ProcedureQuery.query("cayenne_tst_select_proc", Artist.class).cacheStrategy(QueryCacheStrategy.SHARED_CACHE);
 
-        ResolvedProcedure md1 = query.resolve(resolver);
+        ResolvedProcedure md1 = query.resolve(mapping);
         assertEquals(QueryCacheStrategy.SHARED_CACHE, md1.cacheStrategy());
-        assertNotNull(md1.cacheKey());
+        assertNotNull(cacheKey(md1));
     }
 
     @Test
     public void namedQuery() {
 
-        EntityResolver resolver = env.runtime().getDataDomain().getEntityResolver();
+        CompiledMapping mapping = env.mapping();
 
         ProcedureQuery<Artist> query = ProcedureQuery.query("cayenne_tst_select_proc", Artist.class).cacheStrategy(QueryCacheStrategy.SHARED_CACHE);
 
-        ResolvedProcedure md1 = query.resolve(resolver);
+        ResolvedProcedure md1 = query.resolve(mapping);
         assertEquals(QueryCacheStrategy.SHARED_CACHE, md1.cacheStrategy());
-        assertEquals("proc:cayenne_tst_select_proc", md1.cacheKey());
+        assertEquals("proc:cayenne_tst_select_proc", cacheKey(md1));
     }
 
     @Test
     public void cacheFetchOffsetAndLimit() {
-        EntityResolver resolver = env.runtime().getDataDomain().getEntityResolver();
+        CompiledMapping mapping = env.mapping();
         
         ProcedureQuery<Artist> q1 = ProcedureQuery.query("cayenne_tst_select_proc", Artist.class).cacheStrategy(QueryCacheStrategy.SHARED_CACHE);
         q1.offset(5).limit(3);
@@ -97,6 +98,10 @@ public class ProcedureQueryCacheKeyIT {
         ProcedureQuery<Artist> q2 = ProcedureQuery.query("cayenne_tst_select_proc", Artist.class).cacheStrategy(QueryCacheStrategy.SHARED_CACHE);
         q2.offset(5).limit(3);
         
-        assertEquals(q1.resolve(resolver).cacheKey(), q2.resolve(resolver).cacheKey());
+        assertEquals(cacheKey(q1.resolve(mapping)), cacheKey(q2.resolve(mapping)));
+    }
+
+    private static String cacheKey(ResolvedQuery resolved) {
+        return resolved.cacheKey(env.valueObjectTypes());
     }
 }

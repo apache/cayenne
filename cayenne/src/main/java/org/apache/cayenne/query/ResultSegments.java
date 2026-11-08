@@ -26,7 +26,7 @@ import java.util.List;
  *
  * @param segments result set segments in the order of their columns
  * @param array    whether a result row is an Object[]. If false, there must be exactly one segment
- * @see QueryMetadata#getResultSegments()
+ * @see org.apache.cayenne.query.resolved.ResolvedQuery#resultSegments()
  * @since 5.0
  */
 public record ResultSegments(List<ResultSegment> segments, boolean array) {

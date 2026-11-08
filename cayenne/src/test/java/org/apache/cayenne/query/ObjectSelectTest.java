@@ -26,25 +26,26 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.compiled.TestMappings;
 import org.apache.cayenne.query.resolved.ResolvedSelect;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class ObjectSelectTest {
 
 	// the execution settings of a query are not readable from the query itself, only from the resolved query
 	private static ResolvedSelect resolve(ObjectSelect<?> query) {
-		EntityResolver resolver = mock(EntityResolver.class);
-		when(resolver.getObjEntity(Artist.class)).thenReturn(new ObjEntity("Artist"));
-		when(resolver.getObjEntity("Painting")).thenReturn(new ObjEntity("Painting"));
-		when(resolver.getDbEntity("PAINTING")).thenReturn(new DbEntity("PAINTING"));
-		return query.resolve(resolver);
+		DataMap map = new DataMap("map");
+		ObjEntity artist = new ObjEntity("Artist");
+		artist.setClassName(Artist.class.getName());
+		map.addObjEntity(artist);
+		map.addObjEntity(new ObjEntity("Painting"));
+		map.addDbEntity(new DbEntity("PAINTING"));
+		return query.resolve(TestMappings.compile(map));
 	}
 
 	@Test

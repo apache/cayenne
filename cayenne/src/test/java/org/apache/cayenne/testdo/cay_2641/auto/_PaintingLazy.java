@@ -38,7 +38,7 @@ public abstract class _PaintingLazy extends PersistentObject {
     public String getName() {
         beforePropertyRead("name");
         if(this.name instanceof Fault) {
-            this.name = ((Fault) this.name).resolveFault(this, "name");
+            this.name = ((Fault) this.name).resolveFault(this);
         }
         return (String)this.name;
     }

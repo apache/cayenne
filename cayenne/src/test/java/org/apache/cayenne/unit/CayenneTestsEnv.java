@@ -18,10 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.unit;
 
+import java.util.Collection;
 import org.apache.cayenne.RuntimeProperties;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.map.compiled.CompiledDataMap;
 import org.apache.cayenne.project.DataSourceDescriptor;
 import org.apache.cayenne.CoreModule;
 import org.apache.cayenne.access.DataNodeFactory;
@@ -31,8 +33,9 @@ import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
+import org.apache.cayenne.map.compiled.CompiledMapping;
+import org.apache.cayenne.map.compiled.CompiledTable;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.CayenneRuntime;
 import org.apache.cayenne.test.jdbc.DbHelper;
@@ -125,15 +128,15 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
         TestDbAdapter testDbAdapter = TestDbAdapter.of(firstAdapter);
         tweakProcedures(runtime, testDbAdapter);
 
-        DbEntity firstDbEntity = context.getEntityResolver().getDbEntities().iterator().next();
-        QuotingStrategy quotingStrategy = firstAdapter.getQuotingStrategy(firstDbEntity);
+        CompiledTable firstTable = context.getMapping().schema().tables().iterator().next();
+        QuotingStrategy quotingStrategy = firstAdapter.getQuotingStrategy(firstTable);
 
         DbHelper dbHelper = new FlavorAwareDbHelper(COMMON_SCHEMA.dataSource(), quotingStrategy);
 
         DbCleaner dbCleaner = new DbCleaner(
                 COMMON_SCHEMA,
                 dbHelper,
-                context.getEntityResolver().getDataMaps().stream().map(DataMap::getName).collect(Collectors.toSet()));
+                context.getMapping().schema().maps().stream().map(CompiledDataMap::name).collect(Collectors.toSet()));
 
         this.scope = new TestScope(runtime, context, testDbAdapter, dbHelper, dbCleaner);
 
@@ -156,6 +159,7 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
         modules.add(b -> CoreModule.extend(b)
                 .setProperty(RuntimeProperties.OBJECT_RETAIN_STRATEGY_PROPERTY, retainStrategy));
         modules.add(b -> b.bind(DataNodeFactory.class).to(TelemetricDataNodeFactory.class));
+        modules.add(TestProject.module());
         Collections.addAll(modules, extraModules);
 
         return CayenneRuntime.of()
@@ -165,11 +169,18 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
                 .build();
     }
 
+    // the tweaks change the authored procedures, so the mapping is recompiled for the runtime to see them
     private static void tweakProcedures(CayenneRuntime runtime, TestDbAdapter adapter) {
-        for (DataMap dataMap : runtime.getDataDomain().getDataMaps()) {
+        Collection<DataMap> dataMaps = TestProject.of(runtime).dataMaps();
+        boolean tweaked = false;
+        for (DataMap dataMap : dataMaps) {
             for (Procedure proc : dataMap.getProcedures()) {
                 adapter.tweakProcedure(proc);
+                tweaked = true;
             }
+        }
+        if (tweaked) {
+            runtime.getDataDomain().recompile(dataMaps);
         }
     }
 
@@ -189,8 +200,34 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
         return scope.testDbAdapter();
     }
 
-    public EntityResolver entityResolver() {
-        return scope.runtime().getDataDomain().getEntityResolver();
+    /**
+     * Returns the compiled mapping of the test runtime. The mapping is replaced on {@link #recompile()}, so do not
+     * cache it across such changes.
+     */
+    public CompiledMapping mapping() {
+        return scope.runtime().getDataDomain().getMapping();
+    }
+
+    /**
+     * Returns the authored project of the test runtime, for the tests that change the model: change it, then call
+     * {@link #recompile()} for the runtime to see the change.
+     */
+    public TestProject project() {
+        return TestProject.of(scope.runtime());
+    }
+
+    /**
+     * Recompiles the authored project into the mapping of the test runtime.
+     */
+    public void recompile() {
+        scope.runtime().getDataDomain().recompile(project().dataMaps());
+    }
+
+    /**
+     * Returns the value object types of the test runtime, needed to compute the cache key of a resolved query.
+     */
+    public ValueObjectTypeRegistry valueObjectTypes() {
+        return scope.runtime().getDataDomain().getValueObjectTypeRegistry();
     }
 
     public DataNode dataNode() {
@@ -198,9 +235,6 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
         return channel.getDefaultNode();
     }
 
-    public EntityResolver resolver() {
-        return scope.runtime().getDataDomain().getEntityResolver();
-    }
 
     public void runWithQueriesBlocked(Runnable task) {
         TestTelemetry.runWithQueriesBlocked(scope.runtime(), task);

@@ -30,12 +30,11 @@ import org.apache.cayenne.access.types.ValueObjectType;
 import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.exp.DbPathExp;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.ObjAttribute;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.reflect.ClassDescriptor;
+import org.apache.cayenne.map.compiled.CompiledColumn;
+import org.apache.cayenne.map.compiled.CompiledTable;
+import org.apache.cayenne.map.compiled.CompiledMapping;
+import org.apache.cayenne.map.compiled.CompiledAttribute;
+import org.apache.cayenne.map.compiled.CompiledEntity;
 
 import java.util.Map;
 
@@ -47,17 +46,16 @@ import java.util.Map;
 class PermanentObjectIdVisitor implements DbRowOpVisitor<Void> {
 
     private final DataDomain dataDomain;
-    private final EntityResolver resolver;
+    private final CompiledMapping mapping;
 
-    private ClassDescriptor lastDescriptor;
-    private ObjEntity lastObjEntity;
-    private DbEntity lastDbEntity;
+    private CompiledEntity lastEntity;
+    private CompiledTable lastTable;
     private DataNode lastNode;
     private String lastEntityName;
 
     PermanentObjectIdVisitor(DataDomain dataDomain) {
         this.dataDomain = dataDomain;
-        this.resolver = dataDomain.getEntityResolver();
+        this.mapping = dataDomain.getMapping();
     }
 
     @Override
@@ -67,18 +65,16 @@ class PermanentObjectIdVisitor implements DbRowOpVisitor<Void> {
             return null;
         }
 
-        if ((lastObjEntity == null && lastDbEntity == null) || !id.getEntityName().equals(lastEntityName)) {
+        if ((lastEntity == null && lastTable == null) || !id.getEntityName().equals(lastEntityName)) {
             lastEntityName = id.getEntityName();
             if (lastEntityName.startsWith(DbPathExp.DB_PREFIX)) {
-                lastDbEntity = resolver.getDbEntity(lastEntityName.substring(DbPathExp.DB_PREFIX.length()));
-                lastObjEntity = null;
-                lastDescriptor = null;
-                lastNode = dataDomain.lookupDataNode(lastDbEntity.getDataMap());
+                lastTable = mapping.schema().table(lastEntityName.substring(DbPathExp.DB_PREFIX.length()));
+                lastEntity = null;
+                lastNode = dataDomain.lookupDataNode(lastTable.map());
             } else {
-                lastObjEntity = resolver.getObjEntity(id.getEntityName());
-                lastDbEntity = lastObjEntity.getDbEntity();
-                lastDescriptor = resolver.getClassDescriptor(lastObjEntity.getName());
-                lastNode = dataDomain.lookupDataNode(lastObjEntity.getDataMap());
+                lastEntity = mapping.entity(id.getEntityName());
+                lastTable = lastEntity.table();
+                lastNode = dataDomain.lookupDataNode(lastEntity.map());
             }
         }
 
@@ -105,21 +101,21 @@ class PermanentObjectIdVisitor implements DbRowOpVisitor<Void> {
 
         boolean autoPkDone = false;
 
-        for (DbAttribute dbAttr : lastDbEntity.getPrimaryKeys()) {
-            String dbAttrName = dbAttr.getName();
+        for (CompiledColumn column : lastTable.primaryKey()) {
+            String dbAttrName = column.name();
 
             if (idMap.containsKey(dbAttrName)) {
                 continue;
             }
 
-            ObjAttribute objAttr = lastObjEntity != null ? lastObjEntity.getAttributeForDbAttribute(dbAttr) : null;
+            CompiledAttribute attribute = lastEntity != null ? lastEntity.attributeForColumn(column) : null;
 
             // handle meaningful PK
-            if (objAttr != null) {
-                Object value = lastDescriptor.getProperty(objAttr.getName()).readPropertyDirectly(dbRow.getObject());
+            if (attribute != null) {
+                Object value = attribute.readPropertyDirectly(dbRow.getObject());
                 if (value != null) {
                     // primitive 0 has to be treated as NULL, or otherwise we can't generate PK for POJO's
-                    Class<?> javaClass = objAttr.getJavaClass();
+                    Class<?> javaClass = attribute.valueClass();
                     if (!javaClass.isPrimitive() || !(value instanceof Number number) || number.intValue() != 0) {
                         idMap.put(dbAttrName, value);
                         continue;
@@ -128,7 +124,7 @@ class PermanentObjectIdVisitor implements DbRowOpVisitor<Void> {
             }
 
             // skip db-generated
-            if (supportsGeneratedKeys && dbAttr.isGenerated()) {
+            if (supportsGeneratedKeys && column.isGenerated()) {
                 // mark that this attribute should be generated at insert time
                 idMap.put(dbAttrName, IdGenerationMarker.marker());
                 continue;
@@ -141,8 +137,8 @@ class PermanentObjectIdVisitor implements DbRowOpVisitor<Void> {
 
             // finally, use database generation mechanism
             try {
-                Object pkValue = pkGenerator.generatePk(lastNode, dbAttr);
-                idMap.put(dbAttrName, objAttr != null ? toAttributeType(pkValue, objAttr.getJavaClass()) : pkValue);
+                Object pkValue = pkGenerator.generatePk(lastNode, column);
+                idMap.put(dbAttrName, attribute != null ? toAttributeType(pkValue, attribute.valueClass()) : pkValue);
                 autoPkDone = true;
             } catch (Exception ex) {
                 throw new CayenneRuntimeException("Error generating PK: %s", ex, ex.getMessage());
@@ -157,7 +153,7 @@ class PermanentObjectIdVisitor implements DbRowOpVisitor<Void> {
      */
     @SuppressWarnings("unchecked")
     private Object toAttributeType(Object pkValue, Class<?> javaType) {
-        ValueObjectTypeRegistry registry = resolver.getValueObjectTypeRegistry();
+        ValueObjectTypeRegistry registry = dataDomain.getValueObjectTypeRegistry();
         if (registry == null) {
             return pkValue;
         }

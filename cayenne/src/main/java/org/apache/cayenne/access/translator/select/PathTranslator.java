@@ -24,11 +24,11 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.exp.path.CayennePath;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.compiled.CompiledColumn;
+import org.apache.cayenne.map.compiled.CompiledTable;
+import org.apache.cayenne.map.compiled.CompiledJoin;
 import org.apache.cayenne.map.JoinType;
-import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.compiled.CompiledEntity;
 
 /**
  * @since 4.2
@@ -44,35 +44,35 @@ class PathTranslator {
         this.context = context;
     }
 
-    PathTranslationResult translatePath(ObjEntity entity, CayennePath path, CayennePath parentPath) {
+    PathTranslationResult translatePath(CompiledEntity entity, CayennePath path, CayennePath parentPath) {
         CayennePath key = parentPath == null
-                ? path.dot(entity.getName())
-                : parentPath.dot(path).dot(entity.getName());
+                ? path.dot(entity.name())
+                : parentPath.dot(path).dot(entity.name());
         return objResultCache.computeIfAbsent(key,
                 (k) -> new ObjPathProcessor(context, entity, parentPath).process(path));
     }
 
-    PathTranslationResult translatePath(ObjEntity entity, CayennePath path) {
+    PathTranslationResult translatePath(CompiledEntity entity, CayennePath path) {
         return translatePath(entity, path, null);
     }
 
-    PathTranslationResult translatePath(DbEntity entity, CayennePath path, CayennePath parentPath, boolean flattenedPath) {
+    PathTranslationResult translatePath(CompiledTable table, CayennePath path, CayennePath parentPath, boolean flattenedPath) {
         CayennePath key = parentPath == null
-                ? path.dot(entity.getName())
-                : parentPath.dot(path).dot(entity.getName());
+                ? path.dot(table.name())
+                : parentPath.dot(path).dot(table.name());
         return dbResultCache.computeIfAbsent(key,
-                (k) -> new DbPathProcessor(context, entity, parentPath, flattenedPath).process(path));
+                (k) -> new DbPathProcessor(context, table, parentPath, flattenedPath).process(path));
     }
 
-    PathTranslationResult translatePath(DbEntity entity, CayennePath path, CayennePath parentPath) {
-        return translatePath(entity, path, parentPath, false);
+    PathTranslationResult translatePath(CompiledTable table, CayennePath path, CayennePath parentPath) {
+        return translatePath(table, path, parentPath, false);
     }
 
-    PathTranslationResult translatePath(DbEntity entity, CayennePath path) {
-        return translatePath(entity, path, null);
+    PathTranslationResult translatePath(CompiledTable table, CayennePath path) {
+        return translatePath(table, path, null);
     }
 
-    PathTranslationResult translateIdPath(ObjEntity entity, CayennePath path) {
+    PathTranslationResult translateIdPath(CompiledEntity entity, CayennePath path) {
         CayennePath objPathPart = path.parent();
         String pkName = path.last().value();
         if(objPathPart.isEmpty()) {
@@ -80,7 +80,7 @@ class PathTranslator {
             if(pkName.isEmpty()) {
                 throw new CayenneRuntimeException("Can't translate empty dbid path");
             }
-            DbAttribute pk = entity.getDbEntity().getAttribute(pkName);
+            CompiledColumn pk = entity.table().column(pkName);
             if(pk == null) {
                 throw new CayenneRuntimeException("Can't translate dbid path '%s', no such pk", path);
             }
@@ -88,14 +88,14 @@ class PathTranslator {
         } else {
             // resolve object path part and get PK from the target entity
             PathTranslationResult dbIdResult = translatePath(entity, objPathPart);
-            DbRelationship relationship = dbIdResult.getDbRelationship()
+            CompiledJoin join = dbIdResult.getDbRelationship()
                     .orElseThrow(() -> new CayenneRuntimeException("Can't translate dbid path '%s', can't resolve relationship %s", path, objPathPart));
 
             // manually join last segment as obj path translation would skip it
             JoinType joinType = objPathPart.last().isOuterJoin() ? JoinType.LEFT_OUTER : JoinType.INNER;
-            context.getTableTree().addJoinTable(dbIdResult.getFinalPath(), relationship, joinType);
+            context.getTableTree().addJoinTable(dbIdResult.getFinalPath(), join, joinType);
 
-            DbAttribute pk = relationship.getTargetEntity().getAttribute(pkName);
+            CompiledColumn pk = join.target().column(pkName);
             if(pk == null) {
                 throw new CayenneRuntimeException("Can't translate dbid path '%s', no such pk", path);
             }

@@ -24,7 +24,7 @@ import org.apache.cayenne.access.QueryContext;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.event.EventSubject;
 import org.apache.cayenne.graph.GraphDiff;
-import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.compiled.CompiledMapping;
 import org.apache.cayenne.access.lifecycle.LifecycleEventsManager;
 
 import java.util.Collection;
@@ -78,9 +78,9 @@ public interface DataChannel {
     EventManager getEventManager();
 
     /**
-     * Returns an EntityResolver instance that contains runtime mapping information.
+     * Returns the compiled mapping of the channel: the runtime view of the mapping information.
      */
-    EntityResolver getEntityResolver();
+    CompiledMapping getMapping();
 
     /**
      * Returns the manager of lifecycle callbacks and listeners invoked for the objects passing through this channel.

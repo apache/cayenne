@@ -21,8 +21,8 @@ package org.apache.cayenne.access.translator.select;
 
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.property.Property;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.compiled.CompiledTable;
+import org.apache.cayenne.map.compiled.CompiledEntity;
 import org.apache.cayenne.query.Ordering;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.ResultSegments;
@@ -39,8 +39,8 @@ import java.util.Map;
  */
 class MockResolvedSelectBuilder {
 
-    private ObjEntity objEntity;
-    private DbEntity dbEntity;
+    private CompiledEntity entity;
+    private CompiledTable table;
     private int limit;
     private int offset;
     private boolean suppressDistinct;
@@ -51,13 +51,13 @@ class MockResolvedSelectBuilder {
     private Collection<Ordering> orderings;
     private Collection<Property<?>> columns;
 
-    MockResolvedSelectBuilder withDbEntity(DbEntity entity) {
-        this.dbEntity = entity;
+    MockResolvedSelectBuilder withDbEntity(CompiledTable table) {
+        this.table = table;
         return this;
     }
 
-    MockResolvedSelectBuilder withObjEntity(ObjEntity entity) {
-        this.objEntity = entity;
+    MockResolvedSelectBuilder withObjEntity(CompiledEntity entity) {
+        this.entity = entity;
         return this;
     }
 
@@ -103,11 +103,11 @@ class MockResolvedSelectBuilder {
     }
 
     ResolvedSelect build() {
-        return new ResolvedSelect(null, objEntity, dbEntity, dbEntity != null ? dbEntity.getDataMap() : null, null,
+        return new ResolvedSelect(null, entity, table, table != null ? table.map() : null, null,
                 where, having, orderings != null ? new ArrayList<>(orderings) : List.of(),
                 columns != null ? new ArrayList<>(columns) : List.of(), distinct, suppressDistinct, false, limit,
                 offset, ResolvedQuery.PAGE_SIZE_DEFAULT, ResolvedQuery.STATEMENT_FETCH_SIZE_DEFAULT,
-                ResolvedQuery.QUERY_TIMEOUT_DEFAULT, QueryCacheStrategy.NO_CACHE, null, null, null, Map.of(),
+                ResolvedQuery.QUERY_TIMEOUT_DEFAULT, QueryCacheStrategy.NO_CACHE, null, null, Map.of(),
                 resultSetMapping, null, List.of(), List.of());
     }
 }

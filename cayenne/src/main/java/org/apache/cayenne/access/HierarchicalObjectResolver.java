@@ -27,15 +27,15 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.PathExp;
 import org.apache.cayenne.exp.path.CayennePath;
-import org.apache.cayenne.map.DbJoin;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.map.compiled.CompiledColumnPair;
+import org.apache.cayenne.map.compiled.CompiledJoin;
+import org.apache.cayenne.map.compiled.CompiledMapping;
+import org.apache.cayenne.map.compiled.CompiledEntity;
+import org.apache.cayenne.map.compiled.CompiledRelationship;
 import org.apache.cayenne.query.PrefetchProcessor;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.resolved.ResolvedSelect;
-import org.apache.cayenne.reflect.ClassDescriptor;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -54,20 +54,20 @@ class HierarchicalObjectResolver {
     final DataContext context;
     // the user query the rows belong to; the source of the selects run for disjoint-by-id prefetches
     final Query<?> source;
-    final ClassDescriptor descriptor;
+    final CompiledEntity entity;
     final boolean refreshing;
     final DataRowStore cache;
     final boolean needToSaveDuplicates;
 
-    HierarchicalObjectResolver(DataContext context, Query<?> source, ClassDescriptor descriptor, boolean refreshing) {
-        this(context, source, descriptor, refreshing, false);
+    HierarchicalObjectResolver(DataContext context, Query<?> source, CompiledEntity entity, boolean refreshing) {
+        this(context, source, entity, refreshing, false);
     }
 
-    HierarchicalObjectResolver(DataContext context, Query<?> source, ClassDescriptor descriptor, boolean refreshing,
+    HierarchicalObjectResolver(DataContext context, Query<?> source, CompiledEntity entity, boolean refreshing,
                                boolean needToSaveDuplicates) {
         this.context = context;
         this.source = source;
-        this.descriptor = descriptor;
+        this.entity = entity;
         this.refreshing = refreshing;
         this.cache = context.getObjectStore().getDataRowCache();
         this.needToSaveDuplicates = needToSaveDuplicates;
@@ -133,14 +133,14 @@ class HierarchicalObjectResolver {
         private boolean processDisjointByIdNode(PrefetchTreeNode node) {
             PrefetchProcessorNode processorNode = (PrefetchProcessorNode) node;
             PrefetchProcessorNode parentProcessorNode = (PrefetchProcessorNode) processorNode.getParent();
-            ObjRelationship relationship = processorNode.getIncoming().getRelationship();
+            CompiledRelationship relationship = processorNode.getIncoming();
 
-            List<DbRelationship> dbRelationships = relationship.getDbRelationships();
+            List<CompiledJoin> joinPath = relationship.joins();
             CayennePath pathPrefix = CayennePath.EMPTY_PATH;
-            if (dbRelationships.size() > 1) {
+            if (joinPath.size() > 1) {
                 // we need path prefix for flattened relationships
-                for (int i = dbRelationships.size() - 1; i >= 1; i--) {
-                    pathPrefix = pathPrefix.dot(dbRelationships.get(i).getReverseRelationship().getName());
+                for (int i = joinPath.size() - 1; i >= 1; i--) {
+                    pathPrefix = pathPrefix.dot(joinPath.get(i).reverse().name());
                 }
             }
 
@@ -161,8 +161,11 @@ class HierarchicalObjectResolver {
             }
 
             int maxIdQualifierSize = context.getChannel().getDataDomain().getMaxIdQualifierSize();
-            List<DbJoin> joins = getDbJoins(relationship);
-            DataRowLayout.Reader keyReader = DataRowLayout.of(dataRowKeys(joins, pathPrefix)).reader();
+            CompiledJoin fkJoin = getFkRelationship(relationship);
+            List<CompiledColumnPair> joins = fkJoin.columnPairs();
+            DataRowLayout.Reader keyReader = DataRowLayout
+                    .of(dataRowKeys(fkJoin, pathPrefix))
+                    .reader();
 
             // the parent keys, in chunks that fit the qualifier size limit; each chunk is fetched by a select of
             // its own, as DataRows, with the joint subtree of the node to make its joint prefetches work
@@ -194,19 +197,19 @@ class HierarchicalObjectResolver {
             // extra result columns to be able to relate result rows to the parent result objects
             List<PathExp> resultPaths = relationship.isForeignKey()
                     ? List.of()
-                    : List.of((PathExp) ExpressionFactory.dbPathExp(relationship.getReverseDbRelationshipPath()));
+                    : List.of((PathExp) ExpressionFactory.dbPathExp(relationship.reverseDbPath()));
 
-            EntityResolver resolver = context.getEntityResolver();
+            CompiledMapping mapping = context.getMapping();
             List<DataRow> dataRows = new ArrayList<>();
             for (Set<List<Object>> chunk : chunks) {
                 ResolvedSelect select = ResolvedSelect.builder()
                         .source(source)
-                        .entityName(relationship.getTargetEntityName())
+                        .entityName(relationship.target().name())
                         .fetchingDataRows(true)
                         .where(disjointByIdQualifier(pathPrefix, joins, chunk))
                         .prefetchTree(jointSubtree.hasChildren() ? jointSubtree : null)
                         .prefetch(node.getPath(), resultPaths)
-                        .build(resolver);
+                        .build(mapping);
 
                 @SuppressWarnings("unchecked")
                 List<DataRow> chunkRows = (List<DataRow>) QueryResults.firstList(
@@ -218,41 +221,42 @@ class HierarchicalObjectResolver {
             return true;
         }
 
-        private List<DbJoin> getDbJoins(ObjRelationship relationship) {
+        private CompiledJoin getFkRelationship(CompiledRelationship relationship) {
             // we get the part of the relationship path that contains FK
-            List<DbRelationship> dbRelationships = relationship.getDbRelationships();
-            if (!dbRelationships.getFirst().isToPrimaryKey()) {
-                return dbRelationships.getFirst().getJoins();
+            List<CompiledJoin> joins = relationship.joins();
+            if (!joins.getFirst().isToPrimaryKey()) {
+                return joins.getFirst();
             } else {
-                return dbRelationships.getLast().getJoins();
+                return joins.getLast();
             }
         }
 
         /**
          * Returns the DataRow key of each join, in join order.
          *
-         * @param joins to get key from
+         * @param fkJoin the join whose column pairs give the keys
          * @param pathPrefix for the flattened path
          */
-        private String[] dataRowKeys(List<DbJoin> joins, CayennePath pathPrefix) {
+        private String[] dataRowKeys(CompiledJoin fkJoin, CayennePath pathPrefix) {
+            List<CompiledColumnPair> joins = fkJoin.columnPairs();
             String[] keys = new String[joins.size()];
             for (int i = 0; i < keys.length; i++) {
-                DbJoin join = joins.get(i);
-                keys[i] = !join.getRelationship().isToPrimaryKey()
-                        ? join.getSourceName()
-                        : pathPrefix.dot(join.getSourceName()).value();
+                CompiledColumnPair join = joins.get(i);
+                keys[i] = !fkJoin.isToPrimaryKey()
+                        ? join.source().name()
+                        : pathPrefix.dot(join.source().name()).value();
             }
             return keys;
         }
 
-        private Expression disjointByIdQualifier(CayennePath pathPrefix, List<DbJoin> joins,
+        private Expression disjointByIdQualifier(CayennePath pathPrefix, List<CompiledColumnPair> joins,
                                                  Set<List<Object>> values) {
             // Use an IN clause for the list of prefetch IDs, when the
             // join ON clause only has one predicate with many values.
             // Results in SQL:  ... targetField IN ( ?, ?, ?, .... )
             if (joins.size() == 1 && values.size() > 1) {
                 return ExpressionFactory.inDbExp(
-                        pathPrefix.dot(joins.get(0).getTargetName()).value(),
+                        pathPrefix.dot(joins.get(0).target().name()).value(),
                         values.stream().flatMap(List::stream).collect(Collectors.toSet()));
             }
 
@@ -264,7 +268,7 @@ class HierarchicalObjectResolver {
                 Expression allJoinsQualifier = null;
                 for (int j = 0; j < joins.size(); j++) {
                     Expression joinQualifier = ExpressionFactory
-                            .matchDbExp(pathPrefix.dot(joins.get(j).getTargetName()).value(), joinValues.get(j));
+                            .matchDbExp(pathPrefix.dot(joins.get(j).target().name()).value(), joinValues.get(j));
                     allJoinsQualifier = allJoinsQualifier == null
                             ? joinQualifier
                             : allJoinsQualifier.andExp(joinQualifier);

@@ -27,10 +27,15 @@ import org.apache.cayenne.access.sqlbuilder.sqltree.ValueNode;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.compiled.CompiledMapping;
+import org.apache.cayenne.map.compiled.TestMappings;
 import org.apache.cayenne.query.resolved.ResolvedSelect;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -49,12 +54,13 @@ public class HavingTranslationStageTest {
         DbAttribute dbAttribute = new DbAttribute();
         dbAttribute.setName("path");
         dbEntity.addAttribute(dbAttribute);
+        DataMap dataMap = new DataMap("mock");
+        dataMap.addDbEntity(dbEntity);
+        CompiledMapping mapping = TestMappings.compile(dataMap);
 
         ResolvedSelect query = new MockResolvedSelectBuilder()
                 .withHaving(having)
-                
-                        .withDbEntity(dbEntity)
-                        
+                .withDbEntity(mapping.schema().table("mock"))
                 .build();
         return new MockSelectTranslatorContext(query);
     }

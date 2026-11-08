@@ -91,8 +91,8 @@ class ObjRelationshipValidator extends ProjectNodeValidator<ObjRelationship> {
     }
 
     private void checkForPK(ObjRelationship relationship, ValidationResult validationResult) {
-        List<DbRelationship> dbRelationships = relationship.getDbRelationships();
-        if (dbRelationships.isEmpty() || joinsToPK(dbRelationships.getFirst())) {
+        List<DbRelationship> joins = relationship.getDbRelationships();
+        if (joins.isEmpty() || joinsToPK(joins.getFirst())) {
             return;
         }
         ObjRelationship reverseRelationship = relationship.getReverseRelationship();

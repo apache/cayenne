@@ -16,31 +16,18 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
 package org.apache.cayenne.map;
 
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
-import org.apache.cayenne.di.AdhocObjectFactory;
-import org.apache.cayenne.reflect.ClassDescriptor;
-import org.apache.cayenne.reflect.ClassDescriptorMap;
-import org.apache.cayenne.reflect.FaultFactory;
-import org.apache.cayenne.reflect.SingletonFaultFactory;
-import org.apache.cayenne.reflect.generic.PersistentObjectDescriptorFactory;
-import org.apache.cayenne.reflect.generic.ValueComparisonStrategyFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * Represents a virtual shared namespace for zero or more DataMaps. Unlike
- * DataMap, EntityResolver is intended to work as a runtime container of
- * mapping. DataMaps can be added or removed dynamically at runtime.
+ * Represents a virtual shared namespace for zero or more DataMaps, resolving the cross-references of the authored
+ * mapping: an entity of one map may refer to a table or an entity of another. The runtime does not use it: it works
+ * with the {@link org.apache.cayenne.map.compiled.CompiledMapping} compiled from the DataMaps.
  * <p>
  * EntityResolver is thread-safe.
  * </p>
@@ -49,22 +36,8 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public class EntityResolver implements MappingNamespace {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(EntityResolver.class);
-    protected static AtomicLong incrementer = new AtomicLong();
-
     protected Collection<DataMap> maps;
     protected MappingNamespace mappingCache;
-
-    protected volatile ClassDescriptorMap classDescriptorMap;
-
-    protected ValueObjectTypeRegistry valueObjectTypeRegistry;
-    protected ValueComparisonStrategyFactory valueComparisonStrategyFactory;
-
-    /**
-     * @since 5.0
-     */
-    protected AdhocObjectFactory objectFactory;
-
 
     /**
      * Creates new empty EntityResolver.
@@ -79,52 +52,6 @@ public class EntityResolver implements MappingNamespace {
     public EntityResolver(Collection<DataMap> dataMaps) {
         this.maps = new ArrayList<>(dataMaps);
         refreshMappingCache();
-    }
-
-    /**
-     * Updates missing mapping artifacts that can be guessed from other mapping
-     * information. This implementation creates missing reverse relationships,
-     * marking newly created relationships as "runtime".
-     *
-     * @since 3.0
-     */
-    public void applyDBLayerDefaults() {
-
-        // connect DB layer
-        for (DataMap map : getDataMaps()) {
-
-            for (DbEntity entity : map.getDbEntities()) {
-
-                // iterate by copy to avoid concurrency modification errors on reflexive relationships
-                DbRelationship[] relationships = entity.getRelationships().toArray(new DbRelationship[0]);
-
-                for (DbRelationship relationship : relationships) {
-                    if (relationship.getReverseRelationship() == null) {
-                        DbRelationship reverse = relationship.createReverseRelationship();
-
-                        DbEntity targetEntity = reverse.getSourceEntity();
-                        reverse.setName(getUniqueRelationshipName(targetEntity));
-                        reverse.setRuntime(true);
-                        targetEntity.addRelationship(reverse);
-
-                        LOGGER.info("added complementary runtime DbRelationship from {} to {}",
-                                targetEntity.getName(),
-                                reverse.getTargetEntityName());
-                    }
-                }
-            }
-        }
-
-    }
-
-    private String getUniqueRelationshipName(DbEntity entity) {
-        String name;
-
-        do {
-            name = "runtimeRelationship" + incrementer.getAndIncrement();
-        } while (entity.getRelationship(name) != null);
-
-        return name;
     }
 
     /**
@@ -160,7 +87,6 @@ public class EntityResolver implements MappingNamespace {
 
     public DbEntity getDbEntity(String name) {
         checkMappingCache();
-
         DbEntity result = mappingCache.getDbEntity(name);
         if (result == null) {
             // reconstruct cache just in case some of the datamaps
@@ -168,13 +94,11 @@ public class EntityResolver implements MappingNamespace {
             refreshMappingCache();
             result = mappingCache.getDbEntity(name);
         }
-
         return result;
     }
 
     public ObjEntity getObjEntity(String name) {
         checkMappingCache();
-
         ObjEntity result = mappingCache.getObjEntity(name);
         if (result == null) {
             // reconstruct cache just in case some of the datamaps
@@ -182,13 +106,11 @@ public class EntityResolver implements MappingNamespace {
             refreshMappingCache();
             result = mappingCache.getObjEntity(name);
         }
-
         return result;
     }
 
     public Procedure getProcedure(String procedureName) {
         checkMappingCache();
-
         Procedure result = mappingCache.getProcedure(procedureName);
         if (result == null) {
             // reconstruct cache just in case some of the datamaps
@@ -196,7 +118,6 @@ public class EntityResolver implements MappingNamespace {
             refreshMappingCache();
             result = mappingCache.getProcedure(procedureName);
         }
-
         return result;
     }
 
@@ -205,7 +126,6 @@ public class EntityResolver implements MappingNamespace {
      */
     public NamedQuery getNamedQuery(String name) {
         checkMappingCache();
-
         NamedQuery result = mappingCache.getNamedQuery(name);
         if (result == null) {
             // reconstruct cache just in case some of the datamaps
@@ -221,7 +141,6 @@ public class EntityResolver implements MappingNamespace {
      */
     public Embeddable getEmbeddable(String className) {
         checkMappingCache();
-
         Embeddable result = mappingCache.getEmbeddable(className);
         if (result == null) {
             // reconstruct cache just in case some of the datamaps
@@ -229,22 +148,7 @@ public class EntityResolver implements MappingNamespace {
             refreshMappingCache();
             result = mappingCache.getEmbeddable(className);
         }
-
         return result;
-    }
-
-    /**
-     * Returns ClassDescriptor for the ObjEntity matching the name. Returns null
-     * if no matching entity exists.
-     *
-     * @since 1.2
-     */
-    public ClassDescriptor getClassDescriptor(String entityName) {
-        if (entityName == null) {
-            throw new IllegalArgumentException("Null entityName");
-        }
-
-        return getClassDescriptorMap().getDescriptor(entityName);
     }
 
     public synchronized void addDataMap(DataMap map) {
@@ -312,20 +216,16 @@ public class EntityResolver implements MappingNamespace {
      */
     public EntityInheritanceTree getInheritanceTree(String entityName) {
         checkMappingCache();
-
         EntityInheritanceTree tree = mappingCache.getInheritanceTree(entityName);
         if (tree == null) {
             // since we keep inheritance trees for all entities, null means
             // unknown entity...
-
             // rebuild cache just in case some of the datamaps
             // have changed and now contain the required information
             refreshMappingCache();
             tree = mappingCache.getInheritanceTree(entityName);
         }
-
         return tree;
-
     }
 
     /**
@@ -338,7 +238,6 @@ public class EntityResolver implements MappingNamespace {
      */
     public ObjEntity getObjEntity(Class<?> entityClass) {
         checkMappingCache();
-
         ObjEntity result = mappingCache.getObjEntity(entityClass);
         if (result == null) {
             // reconstruct cache just in case some of the datamaps
@@ -346,7 +245,6 @@ public class EntityResolver implements MappingNamespace {
             refreshMappingCache();
             result = mappingCache.getObjEntity(entityClass);
         }
-
         return result;
     }
 
@@ -359,67 +257,5 @@ public class EntityResolver implements MappingNamespace {
         if (maps.remove(map)) {
             refreshMappingCache();
         }
-    }
-
-    /**
-     * Returns an object that compiles and stores {@link ClassDescriptor}
-     * instances for all entities.
-     *
-     * @since 3.0
-     */
-    public ClassDescriptorMap getClassDescriptorMap() {
-        if (classDescriptorMap == null) {
-
-            synchronized (this) {
-
-                if (classDescriptorMap == null) {
-
-                    ClassDescriptorMap classDescriptorMap = new ClassDescriptorMap(this);
-                    FaultFactory faultFactory = new SingletonFaultFactory();
-
-                    classDescriptorMap.addFactory(new PersistentObjectDescriptorFactory(classDescriptorMap, faultFactory, valueComparisonStrategyFactory));
-
-                    // since ClassDescriptorMap is not synchronized, we need to prefill it with entity proxies here.
-                    for (DataMap map : maps) {
-                        for (String entityName : map.getObjEntityMap().keySet()) {
-                            classDescriptorMap.getDescriptor(entityName);
-                        }
-                    }
-
-                    this.classDescriptorMap = classDescriptorMap;
-                }
-            }
-        }
-
-        return classDescriptorMap;
-    }
-
-    public ValueObjectTypeRegistry getValueObjectTypeRegistry() {
-        return valueObjectTypeRegistry;
-    }
-
-    public void setValueObjectTypeRegistry(ValueObjectTypeRegistry valueObjectTypeRegistry) {
-        this.valueObjectTypeRegistry = valueObjectTypeRegistry;
-    }
-
-    /**
-     * @since 4.2
-     */
-    public void setValueComparisonStrategyFactory(ValueComparisonStrategyFactory valueComparisonStrategyFactory) {
-        this.valueComparisonStrategyFactory = valueComparisonStrategyFactory;
-    }
-
-    /**
-     * @since 5.0
-     */
-    public void setObjectFactory(AdhocObjectFactory objectFactory) {
-        this.objectFactory = objectFactory;
-    }
-
-    /**
-     * @since 5.0
-     */
-    public AdhocObjectFactory getObjectFactory() {
-        return objectFactory;
     }
 }

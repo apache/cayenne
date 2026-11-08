@@ -30,12 +30,12 @@ import org.apache.cayenne.access.flush.operation.DbRowOpType;
 import org.apache.cayenne.access.flush.operation.DbRowOpVisitor;
 import org.apache.cayenne.access.flush.operation.InsertDbRowOp;
 import org.apache.cayenne.access.flush.operation.Values;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbJoin;
-import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.reflect.ClassDescriptor;
+import org.apache.cayenne.map.compiled.CompiledColumnPair;
+import org.apache.cayenne.map.compiled.CompiledColumn;
+import org.apache.cayenne.map.compiled.CompiledJoin;
+import org.apache.cayenne.map.compiled.CompiledEntity;
+import org.apache.cayenne.map.compiled.CompiledRelationship;
+import org.apache.cayenne.map.compiled.CompiledToOneRelationship;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -59,20 +59,18 @@ public class ArcValuesCreationHandlerTest {
         values = new Values(dbRowOp, false);
 
         ObjectDiff diff = mock(ObjectDiff.class);
-        ClassDescriptor descriptor = mock(ClassDescriptor.class);
-        ObjEntity entity = mock(ObjEntity.class);
-        ObjRelationship relationship = mock(ObjRelationship.class);
-        DbRelationship dbRelationship = mock(DbRelationship.class);
+        CompiledEntity entity = mock(CompiledEntity.class);
+        CompiledRelationship relationship = mock(CompiledToOneRelationship.class);
+        CompiledJoin join = mock(CompiledJoin.class);
         DataContextObjectStore store = mock(DataContextObjectStore.class);
         Persistent object = mock(Persistent.class);
 
-        when(relationship.getDbRelationships()).thenReturn(Collections.singletonList(dbRelationship));
-        when(entity.getRelationship(anyString())).thenReturn(relationship);
-        when(descriptor.getEntity()).thenReturn(entity);
+        when(relationship.joins()).thenReturn(Collections.singletonList(join));
+        when(entity.relationship(anyString())).thenReturn(relationship);
         when(dbRowOp.accept(any(DbRowOpVisitor.class))).thenCallRealMethod();
         when(dbRowOp.getValues()).thenReturn(values);
         when(factory.getDiff()).thenReturn(diff);
-        when(factory.getDescriptor()).thenReturn(descriptor);
+        when(factory.getEntity()).thenReturn(entity);
         when(factory.getStore()).thenReturn(store);
         when(factory.getObject()).thenReturn(object);
         when(factory.getOrCreate(isNull(), any(ObjectId.class), any(DbRowOpType.class))).thenReturn(dbRowOp);
@@ -83,10 +81,10 @@ public class ArcValuesCreationHandlerTest {
         ObjectId srcId = ObjectId.of("test1", "id1", 1);
         ObjectId targetId = ObjectId.of("test2", "id2", 2);
 
-        DbRelationship relationship = DbRelBuilder.of("id1", "id2")
+        CompiledJoin join = DbRelBuilder.of("id1", "id2")
                 .withDstPk().withSrcPk().build();
 
-        handler.processRelationship(relationship, srcId, targetId, true);
+        handler.processRelationship(join, srcId, targetId, true);
 
         assertNotNull(handler);
         verify(factory).getOrCreate(isNull(), eq(targetId), eq(DbRowOpType.UPDATE));
@@ -101,10 +99,10 @@ public class ArcValuesCreationHandlerTest {
         ObjectId srcId = ObjectId.of("test1", "id1", 1);
         ObjectId targetId = ObjectId.of("test2", "id2", 2);
 
-        DbRelationship relationship = DbRelBuilder.of("id1", "id2")
+        CompiledJoin join = DbRelBuilder.of("id1", "id2")
                 .withForeignKey().withDstPk().withSrcPk().build();
 
-        handler.processRelationship(relationship, srcId, targetId, true);
+        handler.processRelationship(join, srcId, targetId, true);
 
         assertNotNull(handler);
         verify(factory).getOrCreate(isNull(), eq(srcId), eq(DbRowOpType.INSERT));
@@ -119,10 +117,10 @@ public class ArcValuesCreationHandlerTest {
         ObjectId srcId = ObjectId.of("test1", "pk", 1);
         ObjectId targetId = ObjectId.of("test2", "id2", 2);
 
-        DbRelationship relationship = DbRelBuilder.of("pk", "fk")
+        CompiledJoin join = DbRelBuilder.of("pk", "fk")
                 .withSrcPk().build();
 
-        handler.processRelationship(relationship, srcId, targetId, true);
+        handler.processRelationship(join, srcId, targetId, true);
 
         assertNotNull(handler);
         verify(factory).getOrCreate(isNull(), eq(targetId), eq(DbRowOpType.UPDATE));
@@ -140,10 +138,10 @@ public class ArcValuesCreationHandlerTest {
         ObjectId srcId = ObjectId.of("test1", "id1", 1);
         ObjectId targetId = ObjectId.of("test2", "pk", 2);
 
-        DbRelationship relationship = DbRelBuilder.of("fk", "pk")
+        CompiledJoin join = DbRelBuilder.of("fk", "pk")
                 .withDstPk().build();
 
-        handler.processRelationship(relationship, srcId, targetId, true);
+        handler.processRelationship(join, srcId, targetId, true);
 
         assertNotNull(handler);
         verify(factory).getOrCreate(isNull(), eq(srcId), eq(DbRowOpType.INSERT));
@@ -185,23 +183,20 @@ public class ArcValuesCreationHandlerTest {
             return this;
         }
 
-        DbRelationship build() {
-            DbRelationship relationship = mock(DbRelationship.class);
-            when(relationship.isForeignKey()).thenReturn(foreignKey);
-            DbJoin join = mock(DbJoin.class);
-            DbAttribute src = new DbAttribute(srcName);
-            src.setPrimaryKey(srcPk);
-            DbAttribute target = new DbAttribute(dstName);
-            target.setPrimaryKey(dstPk);
-            when(join.getSource()).thenReturn(src);
-            when(join.getSourceName()).thenReturn(src.getName());
-            when(join.getTarget()).thenReturn(target);
-            when(join.getTargetName()).thenReturn(target.getName());
-            when(relationship.getJoins()).thenReturn(Collections.singletonList(join));
+        CompiledJoin build() {
+            CompiledJoin join = mock(CompiledJoin.class);
+            when(join.isForeignKey()).thenReturn(foreignKey);
+            CompiledColumn src = mock(CompiledColumn.class);
+            when(src.name()).thenReturn(srcName);
+            when(src.isPrimaryKey()).thenReturn(srcPk);
+            CompiledColumn target = mock(CompiledColumn.class);
+            when(target.name()).thenReturn(dstName);
+            when(target.isPrimaryKey()).thenReturn(dstPk);
+            when(join.columnPairs()).thenReturn(Collections.singletonList(new CompiledColumnPair(src, target)));
 
-            DbRelationship mockRel = mock(DbRelationship.class);
-            when(relationship.getReverseRelationship()).thenReturn(mockRel);
-            return relationship;
+            CompiledJoin mockJoin = mock(CompiledJoin.class);
+            when(join.reverse()).thenReturn(mockJoin);
+            return join;
         }
     }
 }

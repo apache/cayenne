@@ -29,17 +29,14 @@ import org.apache.cayenne.graph.ArcId;
 import org.apache.cayenne.graph.GraphChangeHandler;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.graph.NodeDiff;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.reflect.ArcProperty;
-import org.apache.cayenne.reflect.AttributeProperty;
-import org.apache.cayenne.reflect.ClassDescriptor;
-import org.apache.cayenne.reflect.PropertyDescriptor;
-import org.apache.cayenne.reflect.ToManyProperty;
-import org.apache.cayenne.reflect.ToOneProperty;
+import org.apache.cayenne.map.compiled.CompiledTable;
+import org.apache.cayenne.map.compiled.CompiledJoin;
+import org.apache.cayenne.map.compiled.CompiledMapping;
+import org.apache.cayenne.map.compiled.CompiledAttribute;
+import org.apache.cayenne.map.compiled.CompiledEntity;
+import org.apache.cayenne.map.compiled.CompiledRelationship;
+import org.apache.cayenne.map.compiled.CompiledToManyRelationship;
+import org.apache.cayenne.map.compiled.CompiledToOneRelationship;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -55,7 +52,7 @@ public class ObjectDiff extends NodeDiff {
 
     private final String entityName;
 
-    private final ClassDescriptor classDescriptor;
+    private final CompiledEntity entity;
 
     private Collection<NodeDiff> otherDiffs;
 
@@ -76,10 +73,10 @@ public class ObjectDiff extends NodeDiff {
         // objects and we can't allow it to deallocate dirty objects.
         this.object = object;
 
-        EntityResolver entityResolver = object.getObjectContext().getEntityResolver();
+        CompiledMapping mapping = object.getObjectContext().getMapping();
 
         this.entityName = object.getObjectId().getEntityName();
-        this.classDescriptor = entityResolver.getClassDescriptor(entityName);
+        this.entity = mapping.entity(entityName);
 
         int state = object.getPersistenceState();
 
@@ -89,32 +86,30 @@ public class ObjectDiff extends NodeDiff {
         if (state == PersistenceState.COMMITTED || state == PersistenceState.DELETED
                 || state == PersistenceState.MODIFIED) {
 
-            ObjEntity entity = entityResolver.getObjEntity(entityName);
-            boolean lock = entity.getLockType() == ObjEntity.LOCK_TYPE_OPTIMISTIC;
+            boolean lock = entity.lockType() == CompiledEntity.LOCK_TYPE_OPTIMISTIC;
 
             this.snapshot = new HashMap<>();
             this.arcSnapshot = new HashMap<>();
 
-            for (PropertyDescriptor property : classDescriptor.getProperties()) {
-                switch (property) {
-                    case AttributeProperty attribute -> snapshot.put(attribute.getName(), attribute.readProperty(object));
-                    case ToOneProperty toOne -> {
-                        boolean isUsedForLocking = entity.getRelationship(toOne.getName()).isUsedForLocking();
+            for (CompiledAttribute attribute : entity.attributes()) {
+                snapshot.put(attribute.name(), attribute.readProperty(object));
+            }
 
-                        // eagerly resolve optimistically locked relationships
-                        Object target = (lock && isUsedForLocking)
-                                ? toOne.readProperty(object)
-                                : toOne.readPropertyDirectly(object);
+            for (CompiledRelationship relationship : entity.relationships()) {
+                if (relationship instanceof CompiledToOneRelationship toOne) {
+                    boolean isUsedForLocking = toOne.isUsedForLocking();
 
-                        if (target instanceof Persistent persistentTarget) {
-                            target = persistentTarget.getObjectId();
-                        }
-                        // else - null || Fault
+                    // eagerly resolve optimistically locked relationships
+                    Object target = (lock && isUsedForLocking)
+                            ? toOne.readProperty(object)
+                            : toOne.readPropertyDirectly(object);
 
-                        arcSnapshot.put(toOne.getName(), target);
+                    if (target instanceof Persistent persistentTarget) {
+                        target = persistentTarget.getObjectId();
                     }
-                    default -> {
-                    }
+                    // else - null || Fault
+
+                    arcSnapshot.put(toOne.name(), target);
                 }
             }
         }
@@ -124,8 +119,8 @@ public class ObjectDiff extends NodeDiff {
         return object;
     }
 
-    ClassDescriptor getClassDescriptor() {
-        return classDescriptor;
+    CompiledEntity getEntity() {
+        return entity;
     }
 
     public Object getSnapshotValue(String propertyName) {
@@ -136,7 +131,7 @@ public class ObjectDiff extends NodeDiff {
         Object value = arcSnapshot != null ? arcSnapshot.get(propertyName) : null;
 
         if (value instanceof Fault fault) {
-            Persistent target = (Persistent) fault.resolveFault(object, propertyName);
+            Persistent target = (Persistent) fault.resolveFault(object);
 
             value = target != null ? target.getObjectId() : null;
             arcSnapshot.put(propertyName, value);
@@ -151,7 +146,7 @@ public class ObjectDiff extends NodeDiff {
     public ObjectId getCurrentArcSnapshotValue(String propertyName) {
         Object value = currentArcSnapshot != null ? currentArcSnapshot.get(propertyName) : null;
         if (value instanceof Fault fault) {
-            Persistent target = (Persistent) fault.resolveFault(object, propertyName);
+            Persistent target = (Persistent) fault.resolveFault(object);
 
             value = target != null ? target.getObjectId() : null;
             currentArcSnapshot.put(propertyName, value);
@@ -194,7 +189,7 @@ public class ObjectDiff extends NodeDiff {
             ObjectId targetId = arcDiff.getTargetNodeId();
             ArcId arcId = arcDiff.getArcId();
 
-            ArcProperty property = (ArcProperty) getClassDescriptor().getProperty(arcId.getForwardArc());
+            CompiledRelationship property = getEntity().relationship(arcId.getForwardArc());
 
             // note that some collection properties implement
             // 'SingleObjectArcProperty',
@@ -204,11 +199,11 @@ public class ObjectDiff extends NodeDiff {
             if (property == null && arcId.getForwardArc().startsWith(DbPathExp.DB_PREFIX)) {
                 addPhantomFkDiff(arcDiff);
                 addDiff = false;
-            } else if (property instanceof ToManyProperty) {
+            } else if (property instanceof CompiledToManyRelationship) {
 
                 // record flattened op changes
 
-                ObjRelationship relationship = property.getRelationship();
+                CompiledRelationship relationship = property;
                 if (relationship.isFlattened()) {
 
                     if (flatIds == null) {
@@ -226,16 +221,16 @@ public class ObjectDiff extends NodeDiff {
                             otherDiffs.remove(oldOp);
                         }
                     }
-                } else if (property.getComplementaryReverseArc() == null) {
+                } else if (property.reverse() == null) {
 
                     // register complementary arc diff
                     ArcId arc = arcId.getReverseId();
-                    //new ArcId(DbPathExp.DB_PREFIX + property.getComplementaryReverseDbRelationshipPath(), property.getName());
+                    //new ArcId(DbPathExp.DB_PREFIX + property.reverseDbPath(), property.name());
                     ArcOperation complementaryOp = new ArcOperation(targetId, arcDiff.getNodeId(), arc, arcDiff.isDelete());
                     parent.registerDiff(targetId, complementaryOp);
                 }
 
-            } else if (property instanceof ToOneProperty) {
+            } else if (property instanceof CompiledToOneRelationship) {
 
                 if (currentArcSnapshot == null) {
                     currentArcSnapshot = new HashMap<>();
@@ -261,10 +256,10 @@ public class ObjectDiff extends NodeDiff {
     private void addPhantomFkDiff(ArcOperation arcDiff) {
         String arcId = arcDiff.getArcId().toString();
 
-        DbEntity dbEntity = classDescriptor.getEntity().getDbEntity();
-        DbRelationship dbRelationship = dbEntity.getRelationship(arcId.substring(DbPathExp.DB_PREFIX.length()));
+        CompiledTable table = entity.table();
+        CompiledJoin join = table.join(arcId.substring(DbPathExp.DB_PREFIX.length()));
 
-        if (dbRelationship.isToMany()) {
+        if (join.isToMany()) {
             return;
         }
 
@@ -316,14 +311,14 @@ public class ObjectDiff extends NodeDiff {
         }
 
         // check phantom mods. To-many changes are tracked as flattened diffs
-        for (PropertyDescriptor property : getClassDescriptor().getProperties()) {
-            boolean modified = switch (property) {
-                case AttributeProperty attribute -> isModified(attribute);
-                case ToOneProperty toOne -> isModified(toOne);
-                default -> false;
-            };
+        for (CompiledAttribute attribute : getEntity().attributes()) {
+            if (isModified(attribute)) {
+                return false;
+            }
+        }
 
-            if (modified) {
+        for (CompiledRelationship relationship : getEntity().relationships()) {
+            if (relationship instanceof CompiledToOneRelationship toOne && isModified(toOne)) {
                 return false;
             }
         }
@@ -331,24 +326,24 @@ public class ObjectDiff extends NodeDiff {
         return true;
     }
 
-    private boolean isModified(AttributeProperty property) {
-        Object oldValue = snapshot.get(property.getName());
-        Object newValue = property.readProperty(object);
-        return !property.equals(oldValue, newValue);
+    private boolean isModified(CompiledAttribute attribute) {
+        Object oldValue = snapshot.get(attribute.name());
+        Object newValue = attribute.readProperty(object);
+        return !attribute.equals(oldValue, newValue);
     }
 
-    private boolean isModified(ToOneProperty property) {
+    private boolean isModified(CompiledToOneRelationship toOne) {
         if (arcSnapshot == null) {
             return false;
         }
 
-        Object newValue = property.readPropertyDirectly(object);
+        Object newValue = toOne.readPropertyDirectly(object);
         if (newValue instanceof Fault) {
             return false;
         }
 
-        Object oldValue = arcSnapshot.get(property.getName());
-        return !property.equals(oldValue, newValue != null ? ((Persistent) newValue).getObjectId() : null);
+        Object oldValue = arcSnapshot.get(toOne.name());
+        return !Objects.equals(oldValue, newValue != null ? ((Persistent) newValue).getObjectId() : null);
     }
 
     @Override
@@ -377,26 +372,23 @@ public class ObjectDiff extends NodeDiff {
 
     private void applySimplePropertyChanges(GraphChangeHandler handler) {
 
-        for (PropertyDescriptor property : getClassDescriptor().getProperties()) {
-            if (!(property instanceof AttributeProperty attribute)) {
-                continue;
-            }
-
+        for (CompiledAttribute attribute : getEntity().attributes()) {
             Object newValue = attribute.readProperty(object);
 
             // no baseline to compare
             if (snapshot == null) {
 
                 if (newValue != null) {
-                    handler.nodePropertyChanged(id, attribute.getName(), null, newValue);
+                    handler.nodePropertyChanged(id, attribute.name(), null, newValue);
                 }
             }
             // have baseline to compare
             else {
-                Object oldValue = snapshot.get(attribute.getName());
+                Object oldValue = snapshot.get(attribute.name());
 
                 if (!attribute.equals(oldValue, newValue)) {
-                    handler.nodePropertyChanged(id, attribute.getName(), oldValue, newValue);
+                    handler.nodePropertyChanged(id, attribute.name(), oldValue, newValue);
+
                 }
             }
         }

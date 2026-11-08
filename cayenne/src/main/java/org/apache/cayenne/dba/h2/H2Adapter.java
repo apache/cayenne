@@ -32,6 +32,7 @@ import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.compiled.CompiledColumn;
 
 import java.sql.Types;
 import java.util.List;
@@ -91,7 +92,7 @@ public class H2Adapter extends JdbcAdapter {
     }
 
     @Override
-    public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
+    public void createTableAppendColumn(StringBuffer sqlBuffer, CompiledColumn column) {
         super.createTableAppendColumn(sqlBuffer, column);
 
         if (column.isGenerated()) {

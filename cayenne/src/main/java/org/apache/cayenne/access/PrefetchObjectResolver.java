@@ -23,7 +23,7 @@ import java.util.Map;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.reflect.ClassDescriptor;
+import org.apache.cayenne.map.compiled.CompiledEntity;
 
 /**
  * @since 4.0
@@ -32,21 +32,21 @@ class PrefetchObjectResolver extends ObjectResolver {
 
     private Map<ObjectId, Persistent> seen;
 
-    PrefetchObjectResolver(DataContext context, ClassDescriptor descriptor, boolean refresh,
+    PrefetchObjectResolver(DataContext context, CompiledEntity entity, boolean refresh,
             Map<ObjectId, Persistent> seen) {
-        super(context, descriptor, refresh);
+        super(context, entity, refresh);
         this.seen = seen;
     }
 
     @Override
-    Persistent objectFromDataRow(DataRow row, ObjectId anId, ClassDescriptor classDescriptor, MergePlan plan) {
+    Persistent objectFromDataRow(DataRow row, ObjectId anId, CompiledEntity rowEntity, MergePlan plan) {
         // skip processing of objects that were already processed in this
         // transaction, either by this node or by some other node...
         // added per CAY-1695 ..
 
         Persistent object = seen.get(anId);
         if (object == null) {
-            object = super.objectFromDataRow(row, anId, classDescriptor, plan);
+            object = super.objectFromDataRow(row, anId, rowEntity, plan);
             seen.put(anId, object);
         }
 

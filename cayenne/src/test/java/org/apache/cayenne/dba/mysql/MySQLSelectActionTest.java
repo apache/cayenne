@@ -26,7 +26,7 @@ import org.apache.cayenne.access.jdbc.reader.RowReader;
 import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
 import org.apache.cayenne.access.translator.TranslatedSelect;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.compiled.CompiledMapping;
 import org.apache.cayenne.query.resolved.ResolvedQueries;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -85,7 +85,7 @@ public class MySQLSelectActionTest {
 
     private StatementContext context(boolean iterated, boolean exclusiveConnection) {
         StatementContext context = mock(StatementContext.class);
-        when(context.getResolver()).thenReturn(mock(EntityResolver.class));
+        when(context.getMapping()).thenReturn(mock(CompiledMapping.class));
         when(context.isIteratedResult()).thenReturn(iterated);
         when(context.isExclusiveConnection()).thenReturn(exclusiveConnection);
         return context;

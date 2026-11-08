@@ -22,7 +22,7 @@ package org.apache.cayenne.access.translator.batch;
 import org.apache.cayenne.access.jdbc.PSParameter;
 import org.apache.cayenne.access.sqlbuilder.SQLGenerationContext;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.compiled.CompiledTable;
 import org.apache.cayenne.query.resolved.ResolvedBatch;
 
 import java.util.ArrayList;
@@ -55,8 +55,8 @@ class BatchTranslatorContext<T extends ResolvedBatch> implements SQLGenerationCo
     }
 
     @Override
-    public DbEntity getRootDbEntity() {
-        return query.dbEntity();
+    public CompiledTable getRootDbEntity() {
+        return query.table();
     }
 
     public T getQuery() {

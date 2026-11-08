@@ -39,7 +39,7 @@ public class SQLResultStage implements TranslationStage {
             return;
         }
 
-        List<ResultSegment> segments = context.getSqlResult().getResolvedComponents(context.getResolver());
+        List<ResultSegment> segments = context.getSqlResult().getResolvedComponents(context.getMapping());
         boolean array = context.getSelect().resultSegments().array();
         context.setResultSetMapping(new ResultSegments(segments, array));
     }

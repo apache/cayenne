@@ -18,19 +18,20 @@
  ****************************************************************/
 package org.apache.cayenne.access.translator.batch;
 
+import org.apache.cayenne.CayenneRuntime;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.di.AdhocObjectFactory;
-import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.compiled.CompiledColumn;
+import org.apache.cayenne.map.compiled.CompiledTable;
 import org.apache.cayenne.query.resolved.InsertBatch;
-import org.apache.cayenne.CayenneRuntime;
 import org.apache.cayenne.testdo.locking.SimpleLockingTestEntity;
-import org.apache.cayenne.unit.dba.TestDbAdapter;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
-import org.junit.jupiter.api.extension.RegisterExtension;
-import org.junit.jupiter.api.Test;
+import org.apache.cayenne.unit.dba.TestDbAdapter;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.List;
 
@@ -47,7 +48,6 @@ public class InsertBatchTranslatorIT {
     private TestDbAdapter unitAdapter;
     private AdhocObjectFactory objectFactory;
 
-
     @BeforeEach
     public void setUp() {
         runtime = env.runtime();
@@ -56,42 +56,54 @@ public class InsertBatchTranslatorIT {
         objectFactory = env.adhocObjectFactory();
     }
 
+    /**
+     * Returns the compiled table of the test entity. The mapping is replaced by {@link #quoteIdentifiers(boolean)},
+     * so the table must be looked up after it.
+     */
+    private CompiledTable lockingTable() {
+        return runtime.getDataDomain().getMapping().entity(SimpleLockingTestEntity.class).table();
+    }
+
+    /**
+     * Switches identifier quoting on the authored map and recompiles the mapping for the runtime to see the change.
+     */
+    private void quoteIdentifiers(boolean quote) {
+        env.project().dataMap("locking").setQuotingSQLIdentifiers(quote);
+        env.recompile();
+    }
+
     @Test
     public void createSqlString() {
-        DbEntity entity = runtime.getDataDomain().getEntityResolver()
-                .getObjEntity(SimpleLockingTestEntity.class)
-                .getDbEntity();
+        CompiledTable table = lockingTable();
 
         DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
-        InsertBatch insertQuery = new InsertBatch(entity, List.of());
+        InsertBatch insertQuery = new InsertBatch(table, List.of());
         String generatedSql = new InsertBatchTranslator().translate(insertQuery, adapter).sql();
         assertNotNull(generatedSql);
-        assertEquals("INSERT INTO " + entity.getName() + "(DESCRIPTION, INT_COLUMN_NOTNULL, INT_COLUMN_NULL, LOCKING_TEST_ID, NAME) " +
-                        "VALUES(?, ?, ?, ?, ?)",
+        assertEquals("INSERT INTO " + table.name()
+                + "(DESCRIPTION, INT_COLUMN_NOTNULL, INT_COLUMN_NULL, LOCKING_TEST_ID, NAME) VALUES(?, ?, ?, ?, ?)",
                 generatedSql);
     }
 
     @Test
     public void createSqlStringWithIdentifiersQuote() {
-        DbEntity entity = runtime.getDataDomain().getEntityResolver().getObjEntity(SimpleLockingTestEntity.class)
-                .getDbEntity();
+        quoteIdentifiers(true);
         try {
+            CompiledTable table = lockingTable();
 
-            entity.getDataMap().setQuotingSQLIdentifiers(true);
-
-            InsertBatch insertQuery = new InsertBatch(entity, List.of());
+            InsertBatch insertQuery = new InsertBatch(table, List.of());
             String generatedSql = new InsertBatchTranslator().translate(insertQuery, adapter).sql();
             String charStart = unitAdapter.getIdentifiersStartQuote();
             String charEnd = unitAdapter.getIdentifiersEndQuote();
             assertNotNull(generatedSql);
-            assertEquals("INSERT INTO " + charStart + entity.getName() + charEnd
+            assertEquals("INSERT INTO " + charStart + table.name() + charEnd
                     + "(" + charStart + "DESCRIPTION" + charEnd + ", "
                     + charStart + "INT_COLUMN_NOTNULL" + charEnd + ", "
                     + charStart + "INT_COLUMN_NULL" + charEnd + ", "
                     + charStart + "LOCKING_TEST_ID" + charEnd + ", "
                     + charStart + "NAME" + charEnd + ") VALUES(?, ?, ?, ?, ?)", generatedSql);
         } finally {
-            entity.getDataMap().setQuotingSQLIdentifiers(false);
+            quoteIdentifiers(false);
         }
     }
 }

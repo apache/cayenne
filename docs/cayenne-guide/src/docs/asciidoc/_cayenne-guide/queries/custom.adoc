@@ -18,7 +18,7 @@ The only requirement is to implement `org.apache.cayenne.query.Query` interface.
 the rows the query selects, so that the query can be run with `ObjectContext.select(..)` and the other selecting
 methods, as well as with `execute(..)`.
 
-`Query` has a single abstract method, `resolve(EntityResolver)`, that turns the query into a `ResolvedQuery` - an
+`Query` has a single abstract method, `resolve(CompiledMapping)`, that turns the query into a `ResolvedQuery` - an
 immutable description of the statements to run, from which Cayenne picks the DataNode, generates the SQL and reads the
 results. A custom query builds its resolved form by delegating to a standard Cayenne query, e.g. an `ObjectSelect`
 assembled from the custom query's own state:

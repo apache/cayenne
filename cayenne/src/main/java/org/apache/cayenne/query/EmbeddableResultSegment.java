@@ -20,16 +20,16 @@ package org.apache.cayenne.query;
 
 import java.util.Map;
 
-import org.apache.cayenne.map.Embeddable;
+import org.apache.cayenne.map.compiled.CompiledEmbeddable;
 
 /**
- * A result set segment mapped to an {@link Embeddable}.
+ * A result set segment mapped to an {@link CompiledEmbeddable embeddable}.
  *
  * @param embeddable   the embeddable mapped by this segment
  * @param fields       a map of ResultSet labels keyed by embeddable attribute names
  * @param columnOffset a zero-based column index of the first column of this segment in the ResultSet
  * @since 4.2
  */
-public record EmbeddableResultSegment(Embeddable embeddable, Map<String, String> fields, int columnOffset)
+public record EmbeddableResultSegment(CompiledEmbeddable embeddable, Map<String, String> fields, int columnOffset)
         implements ResultSegment {
 }

@@ -19,7 +19,7 @@
 
 package org.apache.cayenne;
 
-import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.compiled.CompiledTable;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Exhibit;
 import org.apache.cayenne.testdo.testmap.Gallery;
@@ -98,8 +98,9 @@ public class CayennePersistentObjectValidationIT {
 
         Artist artist = env.context().newObject(Artist.class);
 
-        DbEntity entity = env.context().getEntityResolver().getObjEntity(artist).getDbEntity();
-        int len = entity.getAttribute("ARTIST_NAME").getMaxLength();
+        CompiledTable table = env.context().getMapping().entity(artist).table();
+        int len = table.column("ARTIST_NAME").maxLength();
+
         StringBuffer buf = new StringBuffer(len);
         for (int i = 0; i < len + 1; i++) {
             buf.append("c");

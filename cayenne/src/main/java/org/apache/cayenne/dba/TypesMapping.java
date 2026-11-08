@@ -539,12 +539,26 @@ public class TypesMapping {
      * @since 4.2
      */
     public static String getJavaBySqlType(DbAttribute attribute) {
-        if (attribute.getType() == DECIMAL) {
-            if (attribute.getScale() == 0) {
+        return getJavaBySqlType(attribute.getType(), attribute.getMaxLength(), attribute.getScale());
+    }
+
+    /**
+     * Returns the Java type for a column of the given JDBC type, length and scale: a DECIMAL with no scale folds
+     * into the smallest integer type that fits its digits.
+     *
+     * @param type      as defined in {@link java.sql.Types}
+     * @param maxLength the column length, or the max number of digits of a decimal
+     * @param scale     the digits after the period of a decimal
+     * @return Fully qualified Java type name or null if not found.
+     * @since 6.0
+     */
+    public static String getJavaBySqlType(int type, int maxLength, int scale) {
+        if (type == DECIMAL) {
+            if (scale == 0) {
                 // integer value, could fold into a smaller type
-                if (attribute.getMaxLength() < 10) {
+                if (maxLength < 10) {
                     return JAVA_INTEGER;
-                } else if (attribute.getMaxLength() < 19) {
+                } else if (maxLength < 19) {
                     return JAVA_LONG;
                 } else {
                     return JAVA_BIGINTEGER;
@@ -555,7 +569,7 @@ public class TypesMapping {
             }
         }
 
-        return SQL_ENUM_JAVA.get(attribute.getType());
+        return SQL_ENUM_JAVA.get(type);
     }
 
     Map<Integer, List<TypeInfo>> databaseTypes = new HashMap<>();

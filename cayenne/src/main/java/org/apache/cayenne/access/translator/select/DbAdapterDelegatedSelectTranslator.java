@@ -22,7 +22,7 @@ package org.apache.cayenne.access.translator.select;
 import org.apache.cayenne.access.translator.SelectTranslator;
 import org.apache.cayenne.access.translator.TranslatedSelect;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.compiled.CompiledMapping;
 import org.apache.cayenne.query.resolved.ResolvedSelect;
 
 /**
@@ -33,7 +33,7 @@ import org.apache.cayenne.query.resolved.ResolvedSelect;
 public class DbAdapterDelegatedSelectTranslator implements SelectTranslator {
 
     @Override
-    public TranslatedSelect translate(ResolvedSelect select, DbAdapter adapter, EntityResolver resolver) {
-        return adapter.getSelectTranslator(select, resolver).translate(select, adapter, resolver);
+    public TranslatedSelect translate(ResolvedSelect select, DbAdapter adapter, CompiledMapping mapping) {
+        return adapter.getSelectTranslator(select, mapping).translate(select, adapter, mapping);
     }
 }

@@ -29,6 +29,11 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.Procedure;
+import org.apache.cayenne.map.compiled.CompiledDataMap;
+import org.apache.cayenne.map.compiled.CompiledColumn;
+import org.apache.cayenne.map.compiled.CompiledTable;
+import org.apache.cayenne.map.compiled.CompiledJoin;
+import org.apache.cayenne.map.compiled.CompiledMapping;
 import org.apache.cayenne.CayenneRuntime;
 import org.apache.cayenne.unit.dba.TestDbAdapter;
 import org.slf4j.Logger;
@@ -67,21 +72,24 @@ public class DbSchemaManager {
     private final DataSource dataSource;
     private final TestDbAdapter testDbAdapter;
     private final DataDomain domain;
+    private final TestProject project;
     private final List<DataMap> dataMapsInSchemaSetupOrder;
 
     public DbSchemaManager(String project, DataSourceDescriptor dataSourceDescriptor, DataSource dataSource) {
 
         this.dataSourceDescriptor = dataSourceDescriptor;
         this.dataSource = dataSource;
-        this.domain = CayenneRuntime.of()
+        CayenneRuntime runtime = CayenneRuntime.of()
                 .addConfig(project)
+                .addModule(TestProject.module())
                 .defaultDataNode(dataSource)
-                .build()
-                .getDataDomain();
+                .build();
+        this.domain = runtime.getDataDomain();
+        this.project = TestProject.of(runtime);
 
         this.testDbAdapter = TestDbAdapter.of(domain.getDefaultNode().getAdapter());
 
-        for (DataMap map : domain.getDataMaps()) {
+        for (DataMap map : this.project.dataMaps()) {
             // tweak mapping with a delegate
             for (Procedure proc : map.getProcedures()) {
                 testDbAdapter.tweakProcedure(proc);
@@ -90,8 +98,8 @@ public class DbSchemaManager {
             filterDataMap(map);
         }
 
-        // "filterDataMap" above mutated the maps, so the sorter index is stale
-        domain.getEntitySorter().reindex();
+        // "filterDataMap" above mutated the maps, so the compiled mapping is stale
+        recompile();
 
         this.dataMapsInSchemaSetupOrder = sortDataMapsInSchemaSetupOrder();
     }
@@ -144,6 +152,26 @@ public class DbSchemaManager {
         return false;
     }
 
+    // the same check over a compiled table
+    private static boolean hasBinaryKey(CompiledTable table) {
+        for (CompiledColumn pk : table.primaryKey()) {
+            if (BINARY_TYPES.contains(pk.jdbcType())) {
+                return true;
+            }
+        }
+        for (CompiledJoin join : table.joins()) {
+            if (!join.isForeignKey()) {
+                continue;
+            }
+            for (CompiledColumn target : join.targetColumns()) {
+                if (BINARY_TYPES.contains(target.jdbcType())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     private void filterDataMap(DataMap map) {
         boolean supportsBinaryPK = testDbAdapter.supportsBinaryPK();
 
@@ -171,7 +199,7 @@ public class DbSchemaManager {
         ListIterator<DataMap> it = dataMapsInSchemaSetupOrder.listIterator(dataMapsInSchemaSetupOrder.size());
         while (it.hasPrevious()) {
             DataMap map = it.previous();
-            dropSchema(domain.lookupDataNode(map), map);
+            dropSchema(domain.lookupDataNode(map.getName()), map);
         }
     }
 
@@ -180,13 +208,13 @@ public class DbSchemaManager {
      */
     private void createSchema() throws Exception {
         for (DataMap map : dataMapsInSchemaSetupOrder) {
-            createSchema(domain.lookupDataNode(map), map);
+            createSchema(domain.lookupDataNode(map.getName()), map);
         }
     }
 
     public void dropPKSupport() throws Exception {
         for (DataMap map : dataMapsInSchemaSetupOrder) {
-            dropPKSupport(domain.lookupDataNode(map), map);
+            dropPKSupport(domain.lookupDataNode(map.getName()), map);
         }
     }
 
@@ -197,13 +225,13 @@ public class DbSchemaManager {
      */
     public void createPKSupport() throws Exception {
         for (DataMap map : dataMapsInSchemaSetupOrder) {
-            createPKSupport(domain.lookupDataNode(map), map);
+            createPKSupport(domain.lookupDataNode(map.getName()), map);
         }
     }
 
     // TODO: this is only needed for "map-db1" and "map-db2". Looks wasteful
     private List<DataMap> sortDataMapsInSchemaSetupOrder() {
-        List<DataMap> maps = new ArrayList<>(domain.getDataMaps());
+        List<DataMap> maps = new ArrayList<>(project.dataMaps());
         Map<DataMap, List<DataMap>> dependencies = new IdentityHashMap<>();
 
         for (DataMap map : maps) {
@@ -253,7 +281,7 @@ public class DbSchemaManager {
             return null;
         }
 
-        if (domain.lookupDataNode(sourceMap) != domain.lookupDataNode(targetMap)) {
+        if (domain.lookupDataNode(sourceMap.getName()) != domain.lookupDataNode(targetMap.getName())) {
             return null;
         }
 
@@ -284,38 +312,46 @@ public class DbSchemaManager {
         sorted.add(map);
     }
 
-    public List<DbEntity> dbEntitiesInInsertOrder(String mapName) {
+    public List<CompiledTable> dbEntitiesInInsertOrder(String mapName) {
         return sortedDbEntities(mapName, false);
     }
 
-    public List<DbEntity> dbEntitiesInDeleteOrder(String mapName) {
+    public List<CompiledTable> dbEntitiesInDeleteOrder(String mapName) {
         return sortedDbEntities(mapName, true);
     }
 
-    private List<DbEntity> sortedDbEntities(String mapName, boolean deleteOrder) {
+    private List<CompiledTable> sortedDbEntities(String mapName, boolean deleteOrder) {
 
         // intentionally taking "mapName", not a "map", as we need to resolve the corresponding map in our private
         // namespace defined by "domain"
 
-        DataMap localMap = dataMap(mapName);
-        List<DbEntity> entities = new ArrayList<>(localMap.getDbEntities());
-        entities.removeAll(excludeEntities(entities));
+        CompiledMapping mapping = domain.getMapping();
+        CompiledDataMap localMap = compiledDataMap(dataMap(mapName));
+        List<CompiledTable> localTables = new ArrayList<>();
+        for (CompiledTable table : mapping.schema().tables()) {
+            if (table.map() == localMap) {
+                localTables.add(table);
+            }
+        }
+        Set<CompiledTable> excluded = Set.copyOf(excludeEntities(localTables));
 
-        // Deterministic tiebreaker for entities AshwoodEntitySorter cannot distinguish
-        // (members of a strongly connected component compare as equal).
-        // List.sort is stable, so this name order survives sortDbEntities
-        // for any pair the comparator returns 0 for.
-        // TODO:
-        //  1. this should really be fixed in AshwoodEntitySorter that should have a deterministic tiebreaker
-        //  2. Also, alpha order of entities only works by incident. It may likely break on different combinations
-        //  of circular relationships
-        entities.sort(Comparator.comparing(DbEntity::getName));
+        // the dependency index is computed across all the maps of the domain and is the insert order; the name
+        // makes the order deterministic within a dependency level
+        List<CompiledTable> tables = new ArrayList<>(localTables.size());
+        for (CompiledTable table : localTables) {
+            if (!excluded.contains(table)) {
+                tables.add(table);
+            }
+        }
+        tables.sort(Comparator.comparingInt(CompiledTable::dependencyIndex).thenComparing(CompiledTable::name));
 
-        domain.getEntitySorter().sortDbEntities(entities, deleteOrder);
-        return entities;
+        if (deleteOrder) {
+            Collections.reverse(tables);
+        }
+        return tables;
     }
 
-    private List<DbEntity> excludeEntities(Collection<DbEntity> entities) {
+    private List<CompiledTable> excludeEntities(Collection<CompiledTable> tables) {
         // exclude various unsupported tests...
 
         boolean excludeLOB = !testDbAdapter.supportsLobs();
@@ -325,43 +361,43 @@ public class DbSchemaManager {
             return Collections.emptyList();
         }
 
-        List<DbEntity> excludedEntities = new ArrayList<>();
-        for (DbEntity entity : entities) {
+        List<CompiledTable> excludedTables = new ArrayList<>();
+        for (CompiledTable table : tables) {
 
             // check for LOB attributes
             if (excludeLOB) {
-                if (EXTRA_EXCLUDED_FOR_NO_LOB.contains(entity.getName())) {
-                    excludedEntities.add(entity);
+                if (EXTRA_EXCLUDED_FOR_NO_LOB.contains(table.name())) {
+                    excludedTables.add(table);
                     continue;
                 }
                 Set<Integer> lobTypes = Set.of(Types.BLOB, Types.CLOB, Types.NCLOB);
-                boolean hasLob = entity.getAttributes().stream()
-                        .map(DbAttribute::getType)
+                boolean hasLob = table.columns().stream()
+                        .map(CompiledColumn::jdbcType)
                         .anyMatch(lobTypes::contains);
                 if (hasLob) {
-                    excludedEntities.add(entity);
+                    excludedTables.add(table);
                     continue;
                 }
             }
 
             // check for native json type
             if (excludeNativeJson) {
-                if (EXTRA_EXCLUDED_FOR_NO_NATIVE_JSON.contains(entity.getName())) {
-                    excludedEntities.add(entity);
+                if (EXTRA_EXCLUDED_FOR_NO_NATIVE_JSON.contains(table.name())) {
+                    excludedTables.add(table);
                     continue;
                 }
             }
 
-            if (excludeBinaryPK && hasBinaryKey(entity)) {
-                excludedEntities.add(entity);
+            if (excludeBinaryPK && hasBinaryKey(table)) {
+                excludedTables.add(table);
             }
         }
-        return excludedEntities;
+        return excludedTables;
     }
 
     private void dropSchema(DataNode node, DataMap map) throws Exception {
 
-        List<DbEntity> list = dbEntitiesInInsertOrder(map.getName());
+        List<CompiledTable> list = dbEntitiesInInsertOrder(map.getName());
 
         try (Connection conn = dataSource.getConnection()) {
 
@@ -379,24 +415,24 @@ public class DbSchemaManager {
                 }
             }
 
-            testDbAdapter.willDropTables(conn, map, allTables);
+            testDbAdapter.willDropTables(conn, domain.getMapping(), compiledDataMap(map), allTables);
 
             // drop all tables in the map
             try (Statement stmt = conn.createStatement()) {
 
-                ListIterator<DbEntity> it = list.listIterator(list.size());
+                ListIterator<CompiledTable> it = list.listIterator(list.size());
                 while (it.hasPrevious()) {
-                    DbEntity ent = it.previous();
-                    if (!allTables.contains(ent.getName().toUpperCase())) {
+                    CompiledTable table = it.previous();
+                    if (!allTables.contains(table.name().toUpperCase())) {
                         continue;
                     }
 
-                    for (String dropSql : node.getAdapter().dropTableStatements(ent)) {
+                    for (String dropSql : node.getAdapter().dropTableStatements(table)) {
                         try {
                             LOGGER.info(dropSql);
                             stmt.execute(dropSql);
                         } catch (SQLException sqe) {
-                            LOGGER.warn("Can't drop table {}, ignoring...", ent.getName(), sqe);
+                            LOGGER.warn("Can't drop table {}, ignoring...", table.name(), sqe);
                         }
                     }
                 }
@@ -405,19 +441,22 @@ public class DbSchemaManager {
     }
 
     private void dropPKSupport(DataNode node, DataMap map) throws Exception {
-        List<DbEntity> filteredEntities = dbEntitiesInInsertOrder(map.getName());
-        node.getPkGenerator().dropAutoPk(node, filteredEntities);
+        List<CompiledTable> filteredTables = dbEntitiesInInsertOrder(map.getName());
+        node.getPkGenerator().dropAutoPk(node, filteredTables);
     }
 
     private void createPKSupport(DataNode node, DataMap map) throws Exception {
-        List<DbEntity> filteredEntities = dbEntitiesInInsertOrder(map.getName());
-        node.getPkGenerator().createAutoPk(node, filteredEntities);
+        List<CompiledTable> filteredTables = dbEntitiesInInsertOrder(map.getName());
+        node.getPkGenerator().createAutoPk(node, filteredTables);
     }
 
     private void createSchema(DataNode node, DataMap map) throws Exception {
 
         try (Connection conn = dataSource.getConnection()) {
+            // the adapter may tweak the authored map for the target DB, so the DDL is generated from a fresh compile
             testDbAdapter.willCreateTables(conn, map);
+            recompile();
+
             try (Statement stmt = conn.createStatement()) {
 
                 for (String query : tableCreateQueries(node, map)) {
@@ -435,60 +474,58 @@ public class DbSchemaManager {
     private Collection<String> tableCreateQueries(DataNode node, DataMap map) {
         DbAdapter adapter = node.getAdapter();
 
-        List<DbEntity> orderedEntities = dbEntitiesInInsertOrder(map.getName());
+        List<CompiledTable> orderedTables = dbEntitiesInInsertOrder(map.getName());
         List<String> queries = new ArrayList<>();
 
         // table definitions
-        for (DbEntity ent : orderedEntities) {
-            queries.add(adapter.createTable(ent));
+        for (CompiledTable table : orderedTables) {
+            queries.add(adapter.createTable(table));
         }
 
         // FK constraints
-        for (DbEntity ent : orderedEntities) {
-            if (!testDbAdapter.supportsFKConstraints(ent)) {
+        for (CompiledTable table : orderedTables) {
+            if (!testDbAdapter.supportsFKConstraints(table)) {
                 continue;
             }
 
-            queries.addAll(createConstraintsQueries(adapter, ent));
+            queries.addAll(createConstraintsQueries(adapter, table));
         }
 
         return queries;
     }
 
-    private List<String> createConstraintsQueries(DbAdapter adapter, DbEntity table) {
+    private List<String> createConstraintsQueries(DbAdapter adapter, CompiledTable table) {
         List<String> queries = new ArrayList<>();
 
-        for (DbRelationship rel : table.getRelationships()) {
+        for (CompiledJoin join : table.joins()) {
 
-            if (rel.isRuntime() || !rel.isForeignKey()) {
+            // only the FK side of a constraint declared as such in the authored model, and only within a map: the
+            // reverse directions, the complementary relationships added by the compiler and the keys inferred by
+            // the compiler for pairs flagged on both sides or neither are skipped
+            if (!join.isDeclaredForeignKey()) {
                 continue;
             }
 
-            DataMap srcMap = rel.getSourceEntity().getDataMap();
-            DataMap targetMap = rel.getTargetEntity().getDataMap();
-
-            if (srcMap != null && targetMap != null && srcMap != targetMap) {
+            if (join.source().map() != join.target().map()) {
                 continue;
             }
 
-            boolean hasUnresolvedJoin = rel.getJoins().stream()
-                    .anyMatch(join -> join.getSource() == null || join.getTarget() == null);
-
-            if (hasUnresolvedJoin) {
+            // the compiler drops the joins referencing unknown columns, so a constraint may be left without columns
+            if (join.columnPairs().isEmpty()) {
                 continue;
             }
 
             if (adapter.supportsUniqueConstraints()) {
-                DbRelationship reverse = rel.getReverseRelationship();
-                if (reverse != null && !reverse.isToMany() && !reverse.isToPrimaryKey()) {
-                    String unique = adapter.createUniqueConstraint(rel.getSourceEntity(), rel.getSourceAttributes());
+                // a one-to-one FK that is not a part of the source PK needs a unique index on the FK columns
+                if (!join.reverse().isToMany() && !join.isIdentifying()) {
+                    String unique = adapter.createUniqueConstraint(join.source(), join.sourceColumns());
                     if (unique != null) {
                         queries.add(unique);
                     }
                 }
             }
 
-            String fk = adapter.createFkConstraint(rel);
+            String fk = adapter.createFkConstraint(join);
             if (fk != null) {
                 queries.add(fk);
             }
@@ -497,13 +534,29 @@ public class DbSchemaManager {
         return queries;
     }
 
+    /**
+     * Returns the compiled map of the current domain mapping for an authored map.
+     */
+    private CompiledDataMap compiledDataMap(DataMap map) {
+        CompiledMapping mapping = domain.getMapping();
+        CompiledDataMap compiled = mapping.schema().map(map.getName());
+        if (compiled == null) {
+            throw new IllegalStateException("DataMap is not compiled: " + map.getName());
+        }
+        return compiled;
+    }
+
+    private void recompile() {
+        domain.recompile(project.dataMaps());
+    }
+
     private DataMap dataMap(String name) {
-        DataMap dataMap = domain.getDataMap(name);
+        DataMap dataMap = project.project().getDataMap(name);
         if (dataMap != null) {
             return dataMap;
         }
 
-        for (DataMap candidate : domain.getDataMaps()) {
+        for (DataMap candidate : project.dataMaps()) {
             if (candidate.getName().endsWith('/' + name)) {
                 return candidate;
             }

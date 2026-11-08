@@ -27,7 +27,7 @@ import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.UpdateResult;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.compiled.CompiledMapping;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLQuery;
@@ -344,10 +344,10 @@ public class DataContextIT {
 	@Test
 	public void performQuery_Routing() {
 		Query<?> query = mock(Query.class);
-		when(query.resolve(any(EntityResolver.class)))
-				.thenReturn(ObjectSelect.query(Artist.class).resolve(context.getEntityResolver()));
+		when(query.resolve(any(CompiledMapping.class)))
+				.thenReturn(ObjectSelect.query(Artist.class).resolve(context.getMapping()));
 		context.execute(query);
-		verify(query).resolve(eq(context.getEntityResolver()));
+		verify(query).resolve(eq(context.getMapping()));
 	}
 
 	@Test

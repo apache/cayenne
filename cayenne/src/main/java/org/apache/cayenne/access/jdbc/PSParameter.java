@@ -19,7 +19,7 @@
 package org.apache.cayenne.access.jdbc;
 
 import org.apache.cayenne.access.types.ExtendedType;
-import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.compiled.CompiledColumn;
 
 /**
  * Describes a single immutable PreparedStatement parameter binding.
@@ -32,6 +32,6 @@ public record PSParameter<T>(
         int psType,
         int psScale,
         ExtendedType<T> binder,
-        DbAttribute attribute
+        CompiledColumn attribute
 ) {
 }

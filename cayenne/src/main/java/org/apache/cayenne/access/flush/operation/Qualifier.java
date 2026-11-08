@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.compiled.CompiledColumn;
 
 /**
  * Qualifier of DB row. It uses PK and optimistic lock qualifier if any.
@@ -39,7 +39,7 @@ public class Qualifier {
 
     protected final DbRowOp row;
     // additional qualifier for optimistic lock
-    protected Map<DbAttribute, Object> additionalQualifier;
+    protected Map<CompiledColumn, Object> additionalQualifier;
     protected List<String> nullNames;
     protected boolean optimisticLock;
 
@@ -65,34 +65,34 @@ public class Qualifier {
 
         if(!hasPK.get() || optimisticLock) {
             additionalQualifier.forEach((attr, value) ->
-                    qualifier.put(attr.getName(), value)
+                    qualifier.put(attr.name(), value)
             );
         }
 
         return qualifier;
     }
 
-    public List<DbAttribute> getQualifierAttributes() {
-        List<DbAttribute> primaryKeys = row.getEntity().getPrimaryKeys();
+    public List<CompiledColumn> getQualifierAttributes() {
+        List<CompiledColumn> primaryKeys = row.getEntity().primaryKey();
         if(additionalQualifier == null || additionalQualifier.isEmpty()) {
             return primaryKeys;
         }
 
-        List<DbAttribute> attributes = new ArrayList<>();
+        List<CompiledColumn> columns = new ArrayList<>();
         Map<String, Object> idSnapshot = row.getChangeId().getIdSnapshot();
         AtomicBoolean hasPK = new AtomicBoolean(!idSnapshot.isEmpty());
         primaryKeys.forEach(pk -> {
-            if(idSnapshot.get(pk.getName()) != null) {
-                attributes.add(pk);
+            if(idSnapshot.get(pk.name()) != null) {
+                columns.add(pk);
             } else {
                 hasPK.set(false);
             }
         });
 
         if(!hasPK.get() || optimisticLock) {
-            attributes.addAll(additionalQualifier.keySet());
+            columns.addAll(additionalQualifier.keySet());
         }
-        return attributes;
+        return columns;
     }
 
     public Collection<String> getNullQualifierNames() {
@@ -102,21 +102,21 @@ public class Qualifier {
         return nullNames;
     }
 
-    public void addAdditionalQualifier(DbAttribute dbAttribute, Object value) {
-        addAdditionalQualifier(dbAttribute, value, false);
+    public void addAdditionalQualifier(CompiledColumn column, Object value) {
+        addAdditionalQualifier(column, value, false);
     }
 
-    public void addAdditionalQualifier(DbAttribute dbAttribute, Object value, boolean optimisticLock) {
+    public void addAdditionalQualifier(CompiledColumn column, Object value, boolean optimisticLock) {
         if(additionalQualifier == null) {
             additionalQualifier = new HashMap<>();
         }
 
-        additionalQualifier.put(dbAttribute, value);
+        additionalQualifier.put(column, value);
         if(value == null) {
             if(nullNames == null) {
                 nullNames = new ArrayList<>();
             }
-            nullNames.add(dbAttribute.getName());
+            nullNames.add(column.name());
         }
 
         if(optimisticLock) {

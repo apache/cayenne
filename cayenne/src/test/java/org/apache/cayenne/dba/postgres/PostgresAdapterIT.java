@@ -28,6 +28,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.sql.Types;
 
+import static org.apache.cayenne.dba.AdhocTables.compile;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -49,7 +50,7 @@ public class PostgresAdapterIT {
         dblPrec.setScale(12);
         e.addAttribute(dblPrec);
         
-        String sql = adapter.createTable(e);
+        String sql = adapter.createTable(compile(e));
 
         // CAY-1363.
         // Postgress don't support notations float(a, b) 
@@ -70,7 +71,7 @@ public class PostgresAdapterIT {
         id.setMandatory(true);
         e.addAttribute(id);
 
-        String sql = adapter.createTable(e);
+        String sql = adapter.createTable(compile(e));
 
         // the auto-increment variant is selected for generated columns
         assertTrue(sql.contains("id serial"), sql);
@@ -112,7 +113,7 @@ public class PostgresAdapterIT {
         c.setType(Types.VARCHAR);   // no max length -> unconstrained
         e.addAttribute(c);
 
-        assertEquals("CREATE TABLE Test (c text NULL)", adapter.createTable(e));
+        assertEquals("CREATE TABLE Test (c text NULL)", adapter.createTable(compile(e)));
     }
 
 }

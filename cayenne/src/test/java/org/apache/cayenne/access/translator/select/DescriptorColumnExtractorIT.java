@@ -19,9 +19,9 @@
 package org.apache.cayenne.access.translator.select;
 
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.compiled.CompiledMapping;
+import org.apache.cayenne.map.compiled.CompiledEntity;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.testdo.testmap.CompoundPaintingLongNames;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
@@ -50,21 +50,21 @@ public class DescriptorColumnExtractorIT {
     @Test
     public void entityResultAddDbFieldsForFlattenedAttributes() {
 
-        EntityResolver resolver = env.context().getEntityResolver();
-        ClassDescriptor classDescriptor = resolver.getClassDescriptor("CompoundPaintingLongNames");
+        CompiledMapping mapping = env.mapping();
+        CompiledEntity entity = mapping.entity("CompoundPaintingLongNames");
 
         SelectTranslatorContext translatorContext = new SelectTranslatorContext(
                 ObjectSelect.query(CompoundPaintingLongNames.class)
-                        .column(CompoundPaintingLongNames.SELF).resolve(resolver),
+                        .column(CompoundPaintingLongNames.SELF).resolve(mapping),
                 Mockito.mock(DbAdapter.class),
-                resolver,
+                mapping,
                 null);
 
-        DescriptorColumnExtractor descriptor = new DescriptorColumnExtractor(translatorContext, classDescriptor);
+        DescriptorColumnExtractor descriptor = new DescriptorColumnExtractor(translatorContext, entity);
         descriptor.extract();
 
         List<String> actualFlattenedDbFields = translatorContext.getRootEntityResult()
-                .getDbFields(resolver)
+                .getDbFields(mapping)
                 .keySet()
                 .stream()
                 .filter(key -> key.contains("."))

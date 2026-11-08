@@ -24,8 +24,8 @@ import org.apache.cayenne.access.translator.ProcedureTranslator;
 import org.apache.cayenne.access.translator.TranslatedProcedure;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.map.Procedure;
-import org.apache.cayenne.map.ProcedureParameter;
+import org.apache.cayenne.map.compiled.CompiledProcedure;
+import org.apache.cayenne.map.compiled.CompiledProcedureParameter;
 import org.apache.cayenne.query.resolved.ResolvedProcedure;
 
 import java.util.Map;
@@ -60,8 +60,8 @@ public class DefaultProcedureTranslator implements ProcedureTranslator {
     @Override
     public TranslatedProcedure translate(ResolvedProcedure query, DbAdapter adapter) {
 
-        Procedure procedure = query.procedure();
-        ProcedureParameter[] callParams = procedure.getCallParameters().toArray(new ProcedureParameter[0]);
+        CompiledProcedure procedure = query.procedure();
+        CompiledProcedureParameter[] callParams = procedure.parameters().toArray(new CompiledProcedureParameter[0]);
         Map<String, ?> queryValues = query.params();
 
         CSParameter<?>[] params = new CSParameter[callParams.length];
@@ -77,42 +77,42 @@ public class DefaultProcedureTranslator implements ProcedureTranslator {
      * Builds a {@link CSParameter} for a single call parameter. IN (and INOUT) parameters carry the actual value
      * and its {@link ExtendedType}; pure OUT parameters carry an "[OUT]" marker value so that logging renders nicely.
      */
-    protected CSParameter<?> createBinding(DbAdapter adapter, ProcedureParameter param,
+    protected CSParameter<?> createBinding(DbAdapter adapter, CompiledProcedureParameter param,
                                         Map<String, ?> queryValues, int position) {
 
         // match values with parameters in the correct order, assuming a missing value is NULL
-        if (param.getDirection() == ProcedureParameter.OUT_PARAMETER) {
-            return new CSParameter<>(OUT_PARAM, position, param.getType(), param.getPrecision(), null, param);
+        if (param.direction() == CompiledProcedureParameter.OUT_PARAMETER) {
+            return new CSParameter<>(OUT_PARAM, position, param.jdbcType(), param.precision(), null, param);
         }
 
-        Object value = queryValues.get(param.getName());
+        Object value = queryValues.get(param.name());
         ExtendedType extendedType = value != null
                 ? adapter.getExtendedTypes().getRegisteredType(value.getClass())
                 : adapter.getExtendedTypes().getDefaultType();
 
         return new CSParameter<>(
-                value, position, adapter.preferredBindingType(param.getType()), param.getPrecision(), extendedType,
+                value, position, adapter.preferredBindingType(param.jdbcType()), param.precision(), extendedType,
                 param);
     }
 
     /**
      * Creates an SQL String for the stored procedure call.
      */
-    protected String createSqlString(Procedure procedure, int callParamsSize) {
+    protected String createSqlString(CompiledProcedure procedure, int callParamsSize) {
 
         StringBuilder buf = new StringBuilder();
 
         int totalParams = callParamsSize;
 
         // check if procedure returns values
-        if (procedure.isReturningValue()) {
+        if (procedure.returningValue()) {
             totalParams--;
             buf.append("{? = call ");
         } else {
             buf.append("{call ");
         }
 
-        buf.append(procedure.getFullyQualifiedName());
+        buf.append(procedure.fullyQualifiedName());
 
         if (totalParams > 0) {
             // unroll the loop

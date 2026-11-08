@@ -32,7 +32,7 @@ import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.TypesMapping;
-import org.apache.cayenne.map.ProcedureParameter;
+import org.apache.cayenne.map.compiled.CompiledProcedureParameter;
 import org.apache.cayenne.query.ProcedureColumn;
 import org.apache.cayenne.query.resolved.ResolvedProcedure;
 import org.apache.cayenne.query.resolved.ResolvedQuery;
@@ -121,14 +121,14 @@ public class DataNodeProcedureAction {
 		CSParameter<?>[] params = translated.params();
 		for (int i = 0; i < params.length; i++) {
 			CSParameter<?> binding = params[i];
-			ProcedureParameter param = binding.param();
+			CompiledProcedureParameter param = binding.param();
 
-			if (param.isOutParam()) {
-				int precision = param.getPrecision();
+			if (param.isOutParameter()) {
+				int precision = param.precision();
 				if (precision >= 0) {
-					statement.registerOutParameter(i + 1, param.getType(), precision);
+					statement.registerOutParameter(i + 1, param.jdbcType(), precision);
 				} else {
-					statement.registerOutParameter(i + 1, param.getType());
+					statement.registerOutParameter(i + 1, param.jdbcType());
 				}
 			}
 
@@ -192,11 +192,11 @@ public class DataNodeProcedureAction {
 	protected void readProcedureOutParameters(CallableStatement statement, StatementContext context) throws Exception {
 
 		Map<String, Object> result = null;
-		List<ProcedureParameter> parameters = query.procedure().getCallParameters();
+		List<CompiledProcedureParameter> parameters = query.procedure().parameters();
 		for (int i = 0; i < parameters.size(); i++) {
-			ProcedureParameter parameter = parameters.get(i);
+			CompiledProcedureParameter parameter = parameters.get(i);
 
-			if (!parameter.isOutParam()) {
+			if (!parameter.isOutParameter()) {
 				continue;
 			}
 
@@ -206,9 +206,9 @@ public class DataNodeProcedureAction {
 
 			ExtendedType<?> type = dataNode.getAdapter()
 					.getExtendedTypes()
-					.getRegisteredType(TypesMapping.getJavaBySqlType(parameter.getType()));
-			Object val = type.materializeObject(statement, i + 1, parameter.getType());
-			result.put(parameter.getName(), val);
+					.getRegisteredType(TypesMapping.getJavaBySqlType(parameter.jdbcType()));
+			Object val = type.materializeObject(statement, i + 1, parameter.jdbcType());
+			result.put(parameter.name(), val);
 		}
 
 		if (result != null) {

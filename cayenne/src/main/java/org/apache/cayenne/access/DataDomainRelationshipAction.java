@@ -26,10 +26,9 @@ import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.map.compiled.CompiledEntity;
+import org.apache.cayenne.map.compiled.CompiledRelationship;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.reflect.ArcProperty;
-import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.access.lifecycle.LifecycleEventManager;
 
 import java.util.ArrayList;
@@ -69,8 +68,8 @@ class DataDomainRelationshipAction {
                     relationshipName, sourceId);
         }
 
-        ClassDescriptor sourceDescriptor = domain.getEntityResolver().getClassDescriptor(sourceId.getEntityName());
-        ArcProperty arc = (ArcProperty) sourceDescriptor.getProperty(relationshipName);
+        CompiledEntity sourceEntity = domain.getMapping().entity(sourceId.getEntityName());
+        CompiledRelationship arc = sourceEntity.relationship(relationshipName);
         if (arc == null) {
             throw new CayenneRuntimeException("No relationship named %s found in entity %s; object id: %s",
                     relationshipName, sourceId.getEntityName(), sourceId);
@@ -84,9 +83,9 @@ class DataDomainRelationshipAction {
      * Attempts to resolve a to-one relationship from the snapshot cache, deriving the target id from the source
      * object FK. Returns null if the relationship or the cache state don't allow that.
      */
-    private List<Persistent> resolveFromCache(ArcProperty arc) {
+    private List<Persistent> resolveFromCache(CompiledRelationship arc) {
 
-        ObjRelationship relationship = arc.getRelationship();
+        CompiledRelationship relationship = arc;
 
         // only a to-one relationship holding the FK on the source allows to derive the target id from it
         if (!relationship.isForeignKey()) {
@@ -117,7 +116,7 @@ class DataDomainRelationshipAction {
 
         // check whether a non-null FK is enough to assume non-null target, and if so, create a hollow object without
         // going to the database. Never pass a partial snapshot to ObjectResolver (CAY-724).
-        if (DataRowUtils.isTargetDeterminedByFK(relationship, domain.getEntityResolver())) {
+        if (DataRowUtils.isTargetDeterminedByFK(relationship)) {
             List<Persistent> result = new ArrayList<>(1);
             result.add(context.findOrCreateObject(targetId));
             return result;
@@ -126,18 +125,18 @@ class DataDomainRelationshipAction {
         return null;
     }
 
-    private List<Persistent> resolveFromDB(ArcProperty arc) {
+    private List<Persistent> resolveFromDB(CompiledRelationship arc) {
 
-        ObjRelationship relationship = arc.getRelationship();
+        CompiledRelationship relationship = arc;
         Expression qualifier = ExpressionFactory.matchExp(
-                ExpressionFactory.dbPathExp(relationship.getReverseDbRelationshipPath()),
+                ExpressionFactory.dbPathExp(relationship.reverseDbPath()),
                 sourceId);
 
         ObjectSelect<Persistent> query = ObjectSelect
-                .query(Persistent.class, relationship.getTargetEntityName())
+                .query(Persistent.class, relationship.target().name())
                 .where(qualifier);
 
-        QueryContext execContext = new QueryContext(context, query, query.resolve(domain.getEntityResolver()),
+        QueryContext execContext = new QueryContext(context, query, query.resolve(domain.getMapping()),
                 false);
         @SuppressWarnings("unchecked")
         List<Persistent> related = (List<Persistent>) QueryResults.firstList(domain.onQuery(execContext));
@@ -148,9 +147,9 @@ class DataDomainRelationshipAction {
      * Converts cached snapshots to objects without refreshing the objects that are already registered in the
      * context, as the cache has no newer state than the objects themselves.
      */
-    private List<Persistent> objectsFromCachedRows(ArcProperty arc, List<DataRow> rows) {
+    private List<Persistent> objectsFromCachedRows(CompiledRelationship arc, List<DataRow> rows) {
 
-        List<Persistent> objects = new ObjectResolver(context, arc.getTargetDescriptor(), false)
+        List<Persistent> objects = new ObjectResolver(context, arc.target(), false)
                 .objectsFromDataRows(rows);
 
         LifecycleEventManager postLoad = domain.getLifecycleEventsManager().postLoad();

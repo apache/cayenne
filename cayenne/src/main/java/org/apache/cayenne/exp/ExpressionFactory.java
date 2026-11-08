@@ -22,7 +22,6 @@ package org.apache.cayenne.exp;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.ql.QLParser;
 import org.apache.cayenne.exp.path.CayennePath;
-import org.apache.cayenne.map.Entity;
 import org.apache.cayenne.query.ObjectSelect;
 
 import java.util.ArrayList;
@@ -173,7 +172,7 @@ public class ExpressionFactory {
 
 		if (split >= 0 && split < path.length() - 1) {
 
-			int splitEnd = path.indexOf(Entity.PATH_SEPARATOR, split + 1);
+			int splitEnd = path.indexOf('.', split + 1);
 
 			String beforeSplit = split > 0 ? path.substring(0, split) : "";
 			String afterSplit = splitEnd > 0 ? "." + path.substring(splitEnd + 1) : "";

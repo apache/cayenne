@@ -32,10 +32,10 @@ import org.apache.cayenne.access.translator.TranslatedBatch;
 import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.ObjAttribute;
-import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.compiled.CompiledColumn;
+import org.apache.cayenne.map.compiled.CompiledJoin;
+import org.apache.cayenne.map.compiled.CompiledAttribute;
+import org.apache.cayenne.map.compiled.CompiledEntity;
 import org.apache.cayenne.query.resolved.BatchRow;
 import org.apache.cayenne.query.resolved.InsertBatch;
 import org.apache.cayenne.query.resolved.ResolvedBatch;
@@ -94,7 +94,7 @@ public class DataNodeBatchAction {
         if (hasGeneratedKeys()) {
             // turn off batch mode if we generate keys but can't do so in a batch
             return supportsGeneratedKeys(true)
-                    && query.dbEntity().getRelationships().stream().noneMatch(DbRelationship::isReflexive);
+                    && query.table().joins().stream().noneMatch(CompiledJoin::isReflexive);
         }
 
         return true;
@@ -147,7 +147,7 @@ public class DataNodeBatchAction {
 
                 int updated = statement.executeUpdate();
                 if (useOptimisticLock && updated != 1) {
-                    throw new OptimisticLockException(row.objectId(), query.dbEntity(), row.qualifier(), translated);
+                    throw new OptimisticLockException(row.objectId(), query.table(), row.qualifier(), translated);
                 }
 
                 context.addResult(new UpdateResult(new int[]{updated}));
@@ -175,11 +175,11 @@ public class DataNodeBatchAction {
     @SuppressWarnings("unchecked")
     private static <T> PSParameter<T> bind(PSBatchParameter parameter, int row, ExtendedTypeMap extendedTypes) {
         Object value = parameter.getValue(row);
-        DbAttribute attribute = parameter.attribute();
+        CompiledColumn column = parameter.attribute();
 
-        if (value == null && attribute.isPrimaryKey()) {
-            String entity = attribute.getEntity() != null ? attribute.getEntity().getName() : "<null>";
-            throw new CayenneRuntimeException("Failed to generate PK: %s.%s", entity, attribute.getName());
+        if (value == null && column.isPrimaryKey()) {
+            String entity = column.table() != null ? column.table().name() : "<null>";
+            throw new CayenneRuntimeException("Failed to generate PK: %s.%s", entity, column.name());
         }
 
         ExtendedType<T> extendedType = value != null
@@ -211,8 +211,8 @@ public class DataNodeBatchAction {
         // see if the query needs them
         if (query instanceof InsertBatch) {
             // see if any of the generated attributes is PK
-            for (final DbAttribute attr : query.dbEntity().getGeneratedAttributes()) {
-                if (attr.isPrimaryKey()) {
+            for (CompiledColumn column : query.table().generatedColumns()) {
+                if (column.isPrimaryKey()) {
                     return true;
                 }
             }
@@ -248,9 +248,9 @@ public class DataNodeBatchAction {
         if (this.keyColumns == null) {
 
             // attempt to figure out the right descriptor from the mapping...
-            Collection<DbAttribute> generated = query.dbEntity().getGeneratedAttributes();
+            Collection<CompiledColumn> generated = query.table().generatedColumns();
             if (generated.size() == 1 && keysRS.getMetaData().getColumnCount() == 1) {
-                DbAttribute key = generated.iterator().next();
+                CompiledColumn key = generated.iterator().next();
 
                 // use column name from result set, but type and Java class from DB attribute
                 ResultSetMetaData md = keysRS.getMetaData();
@@ -264,7 +264,7 @@ public class DataNodeBatchAction {
 
                 ExtendedType type = dataNode.getAdapter().getExtendedTypes()
                         .getRegisteredType(typeForGeneratedPK(context, key));
-                rowBuilder.columns(new RSColumn(columnName, key.getType(), columnName, type, null));
+                rowBuilder.columns(new RSColumn(columnName, key.jdbcType(), columnName, type, null));
             } else {
                 rowBuilder.resultSet(keysRS);
             }
@@ -307,12 +307,12 @@ public class DataNodeBatchAction {
                 return;
             }
 
-            for (DbAttribute attribute : query.dbEntity().getGeneratedAttributes()) {
+            for (CompiledColumn column : query.table().generatedColumns()) {
                 // batch can have generated attributes that are not PKs, e.g. columns with DB DEFAULT values. Ignore
                 // those.
-                if (attribute.isPrimaryKey()) {
+                if (column.isPrimaryKey()) {
 
-                    Object value = key.get(attribute.getName());
+                    Object value = key.get(column.name());
 
                     // As of now (01/2005) many tested drivers don't provide decent descriptors of identity result
                     // sets, so a data row may contain garbage labels.
@@ -322,22 +322,22 @@ public class DataNodeBatchAction {
 
                     // I guess we should override any existing value, as generated key is the latest thing that
                     // exists in the DB.
-                    idToUpdate.getReplacementIdMap().put(attribute.getName(), value);
+                    idToUpdate.getReplacementIdMap().put(column.name(), value);
                     break;
                 }
             }
         }
     }
 
-    private String typeForGeneratedPK(StatementContext context, DbAttribute key) {
+    private String typeForGeneratedPK(StatementContext context, CompiledColumn key) {
         String entityName = query.rows().getFirst().objectId().getEntityName();
-        ObjEntity objEntity = context.getResolver().getObjEntity(entityName);
-        if (objEntity != null) {
-            ObjAttribute attributeForDbAttribute = objEntity.getAttributeForDbAttribute(key);
+        CompiledEntity entity = context.getMapping().entity(entityName);
+        if (entity != null) {
+            CompiledAttribute attributeForDbAttribute = entity.attributeForColumn(key);
             if (attributeForDbAttribute != null) {
-                return attributeForDbAttribute.getType();
+                return attributeForDbAttribute.valueClassName();
             }
         }
-        return key.getJavaClassName();
+        return key.valueClassName();
     }
 }

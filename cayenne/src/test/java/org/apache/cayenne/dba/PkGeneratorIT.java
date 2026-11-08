@@ -20,7 +20,7 @@
 package org.apache.cayenne.dba;
 
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.compiled.CompiledTable;
 import org.apache.cayenne.unit.dba.TestDbAdapter;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
@@ -44,17 +44,17 @@ public class PkGeneratorIT {
     private DataNode node;
 
     private PkGenerator pkGenerator;
-    private DbEntity paintingEntity;
+    private CompiledTable paintingTable;
 
     @BeforeEach
     public void setUp() throws Exception {
         accessStackAdapter = env.testDbAdapter();
         node = env.dataNode();
         pkGenerator = node.getPkGenerator();
-        paintingEntity = env.resolver().getDbEntity("PAINTING");
+        paintingTable = env.mapping().schema().table("PAINTING");
 
-        List<DbEntity> list = new ArrayList<DbEntity>();
-        list.add(paintingEntity);
+        List<CompiledTable> list = new ArrayList<>();
+        list.add(paintingTable);
         pkGenerator.createAutoPk(node, list);
         pkGenerator.reset();
     }
@@ -73,7 +73,7 @@ public class PkGeneratorIT {
         for (int i = 0; i < testSize; i++) {
             Object pk = pkGenerator.generatePk(
                     node,
-                    paintingEntity.getPrimaryKeys().iterator().next());
+                    paintingTable.primaryKey().getFirst());
             assertNotNull(pk);
             assertTrue(pk instanceof Number);
 

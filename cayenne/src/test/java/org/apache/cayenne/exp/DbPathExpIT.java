@@ -19,13 +19,13 @@
 package org.apache.cayenne.exp;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.apache.cayenne.Cayenne;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.compiled.CompiledColumn;
+import org.apache.cayenne.map.compiled.CompiledTable;
+import org.apache.cayenne.map.compiled.CompiledEntity;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.CayenneProjects;
@@ -56,14 +56,14 @@ public class DbPathExpIT {
 	public void evaluate_DbEntity() {
 		Expression e = ExpressionFactory.exp("db:paintings.PAINTING_TITLE");
 
-		ObjEntity ae = env.context().getEntityResolver().getObjEntity(Artist.class);
-		DbEntity ade = ae.getDbEntity();
+		CompiledEntity ae = env.mapping().entity(Artist.class);
+		CompiledTable ade = ae.table();
 
 		Object objTarget = e.evaluate(ae);
-		assertTrue(objTarget instanceof DbAttribute);
+		assertInstanceOf(CompiledColumn.class, objTarget);
 
 		Object dbTarget = e.evaluate(ade);
-		assertTrue(dbTarget instanceof DbAttribute);
+		assertInstanceOf(CompiledColumn.class, dbTarget);
 	}
 
 	@Test

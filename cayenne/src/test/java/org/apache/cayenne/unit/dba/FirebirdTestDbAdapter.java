@@ -18,8 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.unit.dba;
 
+import org.apache.cayenne.map.compiled.CompiledTable;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.map.DbEntity;
 
 public class FirebirdTestDbAdapter extends TestDbAdapter {
 
@@ -38,8 +38,8 @@ public class FirebirdTestDbAdapter extends TestDbAdapter {
     }
 
     @Override
-    public boolean supportsFKConstraints(DbEntity entity) {
-        return !entity.getName().contains("CLOB");
+    public boolean supportsFKConstraints(CompiledTable table) {
+        return !table.name().contains("CLOB");
     }
 
     @Override

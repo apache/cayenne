@@ -20,9 +20,14 @@
 package org.apache.cayenne.access.translator.select;
 
 import java.sql.Types;
+import java.util.List;
 
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.compiled.CompiledTable;
+import org.apache.cayenne.map.compiled.CompiledMapping;
+import org.apache.cayenne.map.compiled.TestMappings;
 
 public class BaseColumnExtractorTest {
 
@@ -36,5 +41,21 @@ public class BaseColumnExtractorTest {
         entity.addAttribute(id);
         entity.addAttribute(name);
         return entity;
+    }
+
+    /**
+     * Compiles an authored map without binding persistent classes, the way the translator sees it at runtime.
+     */
+    CompiledMapping compile(DataMap dataMap) {
+        return TestMappings.compile(dataMap);
+    }
+
+    /**
+     * Creates a mock table in a map of its own and compiles it.
+     */
+    CompiledTable compileMockDbEntity(String entityName) {
+        DataMap dataMap = new DataMap("mock");
+        dataMap.addDbEntity(createMockDbEntity(entityName));
+        return compile(dataMap).schema().table(entityName);
     }
 }

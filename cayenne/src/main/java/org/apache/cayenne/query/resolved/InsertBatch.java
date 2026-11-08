@@ -19,8 +19,8 @@
 
 package org.apache.cayenne.query.resolved;
 
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.compiled.CompiledColumn;
+import org.apache.cayenne.map.compiled.CompiledTable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,11 +30,11 @@ import java.util.List;
  *
  * @since 6.0
  */
-public record InsertBatch(DbEntity dbEntity, List<DbAttribute> dbAttributes, List<BatchRow> rows)
+public record InsertBatch(CompiledTable table, List<CompiledColumn> dbAttributes, List<BatchRow> rows)
         implements ResolvedBatch {
 
-    public InsertBatch(DbEntity dbEntity, List<BatchRow> rows) {
-        this(dbEntity, new ArrayList<>(dbEntity.getAttributes()), rows);
+    public InsertBatch(CompiledTable table, List<BatchRow> rows) {
+        this(table, new ArrayList<>(table.columns()), rows);
     }
 
     @Override
@@ -44,6 +44,6 @@ public record InsertBatch(DbEntity dbEntity, List<DbAttribute> dbAttributes, Lis
 
     @Override
     public Object value(BatchRow row, int attributeIndex) {
-        return row.values().get(dbAttributes.get(attributeIndex).getName());
+        return row.values().get(dbAttributes.get(attributeIndex).name());
     }
 }

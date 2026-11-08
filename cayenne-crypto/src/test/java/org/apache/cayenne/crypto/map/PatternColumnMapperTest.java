@@ -21,8 +21,13 @@ package org.apache.cayenne.crypto.map;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.compiled.CompiledTable;
+import org.apache.cayenne.map.compiled.DefaultMappingCompiler;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
 
 public class PatternColumnMapperTest {
 
@@ -30,10 +35,10 @@ public class PatternColumnMapperTest {
     public void isEncrypted() {
         PatternColumnMapper mapper = new PatternColumnMapper("^bla_");
 
-        assertTrue(mapper.isEncrypted(new DbAttribute("bla_")));
-        assertTrue(mapper.isEncrypted(new DbAttribute("bla_x")));
-        assertFalse(mapper.isEncrypted(new DbAttribute("_bla_x")));
-        assertFalse(mapper.isEncrypted(new DbAttribute("nnn")));
+        assertTrue(mapper.isEncrypted("T", "bla_"));
+        assertTrue(mapper.isEncrypted("T", "bla_x"));
+        assertFalse(mapper.isEncrypted("T", "_bla_x"));
+        assertFalse(mapper.isEncrypted("T", "nnn"));
     }
 
 }

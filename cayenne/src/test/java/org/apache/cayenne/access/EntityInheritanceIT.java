@@ -68,9 +68,9 @@ public class EntityInheritanceIT {
     public void cAY1009() {
         // We should have only one relationship. DirectToSubEntity -> SubEntity.
         assertEquals(1, env.context()
-                .getEntityResolver()
-                .getObjEntity("DirectToSubEntity")
-                .getRelationships()
+                .getMapping()
+                .entity("DirectToSubEntity")
+                .relationships()
                 .size());
 
         DirectToSubEntity direct = env.context().newObject(DirectToSubEntity.class);

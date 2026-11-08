@@ -21,7 +21,7 @@ package org.apache.cayenne.access.sqlbuilder.sqltree;
 
 import org.apache.cayenne.access.sqlbuilder.SQLAppendable;
 import org.apache.cayenne.access.sqlbuilder.SQLGenerationContext;
-import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.compiled.CompiledColumn;
 
 import java.util.Objects;
 
@@ -32,10 +32,10 @@ public class ColumnNode extends Node {
 
     protected final String table;
     protected final String column;
-    protected final DbAttribute attribute;
+    protected final CompiledColumn attribute;
     protected String alias;
 
-    public ColumnNode(String table, String column, String alias, DbAttribute attribute) {
+    public ColumnNode(String table, String column, String alias, CompiledColumn attribute) {
         super(NodeType.COLUMN);
         this.table = table;
         this.column = column;
@@ -73,7 +73,7 @@ public class ColumnNode extends Node {
         this.alias = alias;
     }
 
-    public DbAttribute getAttribute() {
+    public CompiledColumn getAttribute() {
         return attribute;
     }
 

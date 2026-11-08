@@ -21,32 +21,32 @@ package org.apache.cayenne.access.translator.select;
 
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.exp.path.CayennePathSegment;
-import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.Embeddable;
-import org.apache.cayenne.map.EmbeddedAttribute;
+import org.apache.cayenne.map.compiled.CompiledJoin;
+import org.apache.cayenne.map.compiled.CompiledEmbeddable;
+import org.apache.cayenne.map.compiled.CompiledEmbeddedAttribute;
 import org.apache.cayenne.map.JoinType;
-import org.apache.cayenne.map.ObjAttribute;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.map.compiled.CompiledAttribute;
+import org.apache.cayenne.map.compiled.CompiledEntity;
+import org.apache.cayenne.map.compiled.CompiledRelationship;
 
 import java.util.Optional;
 
 /**
  * @since 4.2
  */
-class ObjPathProcessor extends PathProcessor<ObjEntity> {
+class ObjPathProcessor extends PathProcessor<CompiledEntity> {
 
-    private ObjAttribute attribute;
-    private EmbeddedAttribute embeddedAttribute;
+    private CompiledAttribute attribute;
+    private CompiledEmbeddedAttribute embeddedAttribute;
 
-    ObjPathProcessor(SelectTranslatorContext context, ObjEntity entity, CayennePath parentPath) {
+    ObjPathProcessor(SelectTranslatorContext context, CompiledEntity entity, CayennePath parentPath) {
         super(context, entity);
         if (parentPath != null) {
             currentDbPath = currentDbPath.withMarker(parentPath.marker()).dot(parentPath);
         }
     }
 
-    ObjAttribute getAttribute() {
+    CompiledAttribute getAttribute() {
         return attribute;
     }
 
@@ -58,7 +58,13 @@ class ObjPathProcessor extends PathProcessor<ObjEntity> {
             return;
         }
 
-        ObjRelationship relationship = entity.getRelationship(next);
+        CompiledEmbeddedAttribute embedded = entity.embeddedAttribute(next);
+        if (embedded != null) {
+            processEmbeddedAttribute(embedded);
+            return;
+        }
+
+        CompiledRelationship relationship = entity.relationship(next);
         if (relationship != null) {
             processRelationship(relationship);
             return;
@@ -70,91 +76,91 @@ class ObjPathProcessor extends PathProcessor<ObjEntity> {
 
     @Override
     protected void processAliasedAttribute(String next, String alias) {
-        ObjRelationship relationship = entity.getRelationship(alias);
+        CompiledRelationship relationship = entity.relationship(alias);
         if (relationship == null) {
             throw new IllegalStateException("Non-relationship aliased path part: " + alias);
         }
 
-        pathSplitAliases.put(DB_PATH_ALIAS_INDICATOR + next, relationship.getDbRelationshipPath().value());
+        pathSplitAliases.put(DB_PATH_ALIAS_INDICATOR + next, relationship.dbPath().value());
         processRelationship(relationship);
     }
 
-    protected ObjAttribute fetchAttribute(String name) {
+    protected CompiledAttribute fetchAttribute(String name) {
         if (embeddedAttribute != null) {
-            ObjAttribute attribute = embeddedAttribute.getAttribute(name);
+            // an attribute of the embeddable follows the embedded attribute, and is named after both
+            CompiledAttribute attribute = entity.attribute(embeddedAttribute.name() + "." + name);
             embeddedAttribute = null;
             return attribute;
         } else {
-            return entity.getAttribute(name);
+            return entity.attribute(name);
         }
     }
 
-    protected void processAttribute(ObjAttribute attribute) {
-        if (attribute instanceof EmbeddedAttribute) {
-            embeddedAttribute = (EmbeddedAttribute) attribute;
-            if (lastComponent) {
-                embeddedAttribute.getAttributes().forEach(a -> {
-                    processAttribute(a);
-                    currentDbPath = currentDbPath.parent();
-                });
-            }
-            return;
+    protected void processEmbeddedAttribute(CompiledEmbeddedAttribute embedded) {
+        embeddedAttribute = embedded;
+        if (lastComponent) {
+            embeddedAttribute.attributes().forEach(a -> {
+                processAttribute(a);
+                currentDbPath = currentDbPath.parent();
+            });
         }
+    }
 
-        PathTranslationResult result = context.getPathTranslator().translatePath(entity.getDbEntity()
-                , attribute.getDbAttributePath()
+    protected void processAttribute(CompiledAttribute attribute) {
+        PathTranslationResult result = context.getPathTranslator().translatePath(entity.table()
+                , attribute.dbPath()
                 , currentDbPath
                 , attribute.isFlattened());
-        attributes.addAll(result.getDbAttributes());
+        columns.addAll(result.getDbAttributes());
         attributePaths.addAll(result.getAttributePaths());
-        relationship = result.getDbRelationship().orElse(relationship);
+        join = result.getDbRelationship().orElse(join);
 
         currentDbPath = result.getFinalPath();
     }
 
-    protected void processRelationship(ObjRelationship relationship) {
+    protected void processRelationship(CompiledRelationship relationship) {
         if (lastComponent) {
             // if this is a last relationship in the path, it needs special handling
             processRelTermination(relationship);
         } else {
-            entity = relationship.getTargetEntity();
+            entity = relationship.target();
             // find and add joins ....
-            int count = relationship.getDbRelationships().size();
+            int count = relationship.joins().size();
             for (int i = 0; i < count; i++) {
-                DbRelationship dbRel = relationship.getDbRelationships().get(i);
-                appendCurrentPath(dbRel.getName());
+                CompiledJoin join = relationship.joins().get(i);
+                appendCurrentPath(join.name());
                 boolean leftJoin = isOuterJoin() || count > 1;
-                context.getTableTree().addJoinTable(currentDbPath, dbRel,
+                context.getTableTree().addJoinTable(currentDbPath, join,
                         leftJoin ? JoinType.LEFT_OUTER : JoinType.INNER);
             }
         }
     }
 
-    protected void processRelTermination(ObjRelationship relationship) {
+    protected void processRelTermination(CompiledRelationship relationship) {
         CayennePath path = currentAlias != null
                 ? CayennePath.EMPTY_PATH
-                : relationship.getDbRelationshipPath().parent();
+                : relationship.dbPath().parent();
         CayennePathSegment lastSegment = currentAlias != null
                 ? CayennePath.segmentOf(DB_PATH_ALIAS_INDICATOR + currentAlias)
-                : relationship.getDbRelationshipPath().last();
+                : relationship.dbPath().last();
         if (isOuterJoin()) {
             lastSegment = lastSegment.outer();
         }
         path = path.dot(lastSegment);
 
         PathTranslationResult result = context.getPathTranslator()
-                .translatePath(entity.getDbEntity(), path, currentDbPath, relationship.isFlattened());
-        attributes.addAll(result.getDbAttributes());
+                .translatePath(entity.table(), path, currentDbPath, relationship.isFlattened());
+        columns.addAll(result.getDbAttributes());
         attributePaths.addAll(result.getAttributePaths());
-        this.relationship = result.getDbRelationship().orElse(this.relationship);
+        this.join = result.getDbRelationship().orElse(this.join);
 
         currentDbPath = result.getFinalPath();
     }
 
     @Override
-    public Optional<Embeddable> getEmbeddable() {
+    public Optional<CompiledEmbeddable> getEmbeddable() {
         if (embeddedAttribute != null) {
-            return Optional.of(embeddedAttribute.getEmbeddable());
+            return Optional.of(embeddedAttribute.embeddable());
         }
         return Optional.empty();
     }

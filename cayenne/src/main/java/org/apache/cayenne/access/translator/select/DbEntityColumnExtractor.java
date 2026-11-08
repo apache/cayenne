@@ -22,25 +22,25 @@ package org.apache.cayenne.access.translator.select;
 import java.util.Objects;
 
 import org.apache.cayenne.exp.path.CayennePath;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.compiled.CompiledColumn;
+import org.apache.cayenne.map.compiled.CompiledTable;
 
 /**
  * @since 4.2
  */
 class DbEntityColumnExtractor extends BaseColumnExtractor {
 
-    private final DbEntity dbEntity;
+    private final CompiledTable table;
 
     DbEntityColumnExtractor(SelectTranslatorContext context) {
         super(context);
-        this.dbEntity = Objects.requireNonNull(context.getSelect().dbEntity(), "No root entity");
+        this.table = Objects.requireNonNull(context.getSelect().table(), "No root entity");
     }
 
     @Override
     public void extract(CayennePath prefix) {
-        for(DbAttribute attribute : dbEntity.getAttributes()) {
-            addDbAttribute(prefix, prefix, attribute);
+        for(CompiledColumn column : table.columns()) {
+            addDbAttribute(prefix, prefix, column);
         }
     }
 }

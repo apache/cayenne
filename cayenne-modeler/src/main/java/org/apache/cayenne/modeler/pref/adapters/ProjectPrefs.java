@@ -86,7 +86,7 @@ public final class ProjectPrefs extends PrefsAdapter {
         domain, dataMap,
         objEntity, dbEntity,
         objAttributes, dbAttributes,
-        objRelationships, dbRelationships,
+        objRelationships, joins,
         embeddable, embeddableAttributes,
         procedure, procedureParameters,
         query, multipleObjects
@@ -123,7 +123,7 @@ public final class ProjectPrefs extends PrefsAdapter {
                 restoreAttributes(session, project);
                 break;
             case objRelationships:
-            case dbRelationships:
+            case joins:
                 restoreRelationships(session, project);
                 break;
             case embeddable:
@@ -186,7 +186,7 @@ public final class ProjectPrefs extends PrefsAdapter {
                 saveEntityPath(session);
                 prefs.put(OBJ_RELS_KEY, joinNames(session.getSelectedObjRelationships()));
                 break;
-            case dbRelationships:
+            case joins:
                 saveEntityPath(session);
                 prefs.put(DB_RELS_KEY, joinNames(session.getSelectedDbRelationships()));
                 break;
@@ -224,7 +224,7 @@ public final class ProjectPrefs extends PrefsAdapter {
             return Kind.objRelationships;
         }
         if (c.getSelectedDbRelationships() != null && c.getSelectedDbRelationships().length > 0) {
-            return Kind.dbRelationships;
+            return Kind.joins;
         }
         if (c.getSelectedEmbeddableAttributes() != null && c.getSelectedEmbeddableAttributes().length > 0) {
             return Kind.embeddableAttributes;

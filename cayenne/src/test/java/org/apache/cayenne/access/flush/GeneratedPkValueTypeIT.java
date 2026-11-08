@@ -123,13 +123,13 @@ public class GeneratedPkValueTypeIT {
         map.addObjEntity(objEntity);
 
         DataDomain domain = runtime.getDataDomain();
-        domain.addDataMap(map);
+        domain.recompile(List.of(map));
 
         try (Connection c = dataSource.getConnection(); Statement s = c.createStatement()) {
             s.execute("CREATE TABLE VO_PK (ID INTEGER NOT NULL PRIMARY KEY)");
         }
         DataNode node = domain.getDefaultNode();
-        node.getPkGenerator().createAutoPk(node, List.of(dbEntity));
+        node.getPkGenerator().createAutoPk(node, List.of(domain.getMapping().schema().table("VO_PK")));
 
         ObjectContext context = runtime.newContext();
         Persistent object = context.newObject("VoPk");

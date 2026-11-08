@@ -20,20 +20,18 @@
 package org.apache.cayenne;
 
 /**
- * Represents a placeholder for an unresolved relationship from a source object. Fault is
- * resolved via {@link #resolveFault(Persistent, String)}. Depending on the type of fault
- * it is resolved differently. Each type of fault is a singleton that can be obtained via
- * corresponding static method.
- * 
+ * A placeholder for the unresolved value of a property of a persistent object, resolved with
+ * {@link #resolveFault(Persistent)}. A fault stands for one compiled property, a relationship or a lazy attribute,
+ * and is created with it when the mapping is compiled.
+ *
  * @since 1.1
  */
-public abstract class Fault {
-
-    protected Fault() {
-    }
+public interface Fault {
 
     /**
-     * Returns an object for a given source object and relationship.
+     * Returns the value of the property this fault stands for, read for the given object.
+     *
+     * @since 6.0 takes the object alone; the fault knows its property
      */
-    public abstract Object resolveFault(Persistent sourceObject, String relationshipName);
+    Object resolveFault(Persistent sourceObject);
 }

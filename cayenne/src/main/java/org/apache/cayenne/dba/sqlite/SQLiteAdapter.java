@@ -30,9 +30,9 @@ import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.RuntimeProperties;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.compiled.CompiledColumn;
+import org.apache.cayenne.map.compiled.CompiledTable;
+import org.apache.cayenne.map.compiled.CompiledJoin;
 import org.apache.cayenne.access.translator.TranslatedSQL;
 
 import java.sql.Connection;
@@ -127,12 +127,12 @@ public class SQLiteAdapter extends JdbcAdapter {
     }
 
     @Override
-    public String createFkConstraint(DbRelationship rel) {
+    public String createFkConstraint(CompiledJoin join) {
         return null;
     }
 
     @Override
-    public String createUniqueConstraint(DbEntity source, Collection<DbAttribute> columns) {
+    public String createUniqueConstraint(CompiledTable source, Collection<CompiledColumn> columns) {
         // TODO: andrus 10/9/2007 - only ALTER TABLE ADD CONSTRAINT is not supported,
         // presumably there's some other syntax (a part of CREATE TABLE?) that would
         // create a unique constraint.
@@ -150,27 +150,27 @@ public class SQLiteAdapter extends JdbcAdapter {
      * Appends AUTOINCREMENT clause to the column definition for generated columns.
      */
     @Override
-    public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
+    public void createTableAppendColumn(StringBuffer sqlBuffer, CompiledColumn column) {
         super.createTableAppendColumn(sqlBuffer, column);
-        DbEntity entity = column.getEntity();
+        CompiledTable table = column.table();
         if (column.isGenerated()
                 && column.isPrimaryKey()
-                && entity.getPrimaryKeys().size() == 1) {
+                && table.primaryKey().size() == 1) {
             sqlBuffer.append(" PRIMARY KEY AUTOINCREMENT");
         }
     }
 
     @Override
-    protected void createTableAppendPKClause(StringBuffer sqlBuffer, DbEntity entity) {
+    protected void createTableAppendPKClause(StringBuffer sqlBuffer, CompiledTable table) {
 
         // do not append " PRIMARY KEY () " for single column generated primary key
-        if (entity.getPrimaryKeys().size() == 1) {
-            DbAttribute column = entity.getPrimaryKeys().getFirst();
+        if (table.primaryKey().size() == 1) {
+            CompiledColumn column = table.primaryKey().getFirst();
             if (column.isGenerated()) {
                 return;
             }
         }
 
-        super.createTableAppendPKClause(sqlBuffer, entity);
+        super.createTableAppendPKClause(sqlBuffer, table);
     }
 }

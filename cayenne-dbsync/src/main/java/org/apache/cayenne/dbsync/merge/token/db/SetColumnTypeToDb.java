@@ -28,6 +28,7 @@ import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactory;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.compiled.CompiledColumn;
 
 import java.util.Collections;
 import java.util.List;
@@ -65,11 +66,12 @@ public class SetColumnTypeToDb extends AbstractToDbToken.Entity {
         DbAdapter adapter = node.getAdapter();
 
         StringBuffer sqlBuffer = new StringBuffer();
-        QuotingStrategy quotes = adapter.getQuotingStrategy(getEntity());
+        QuotingStrategy quotes = adapter.getQuotingStrategy(CompiledModel.table(getEntity()));
         appendPrefix(sqlBuffer, quotes);
   
-        sqlBuffer.append(adapter.preferredNativeColumnType(columnNew).nativeType());
-        sqlBuffer.append(JdbcAdapter.sizeAndScale(adapter, columnNew));
+        CompiledColumn column = CompiledModel.column(columnNew);
+        sqlBuffer.append(adapter.preferredNativeColumnType(column).nativeType());
+        sqlBuffer.append(JdbcAdapter.sizeAndScale(adapter, column));
 
         return Collections.singletonList(sqlBuffer.toString());
     }

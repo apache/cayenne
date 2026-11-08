@@ -22,12 +22,15 @@ import org.apache.cayenne.Fault;
 import org.apache.cayenne.Persistent;
 
 /**
+ * The fault of a to-many relationship, resolved to a set of the related objects.
+ *
+ * @param relationshipName the name of the relationship this fault stands for
  * @since 3.0
  */
-public class ToManySetFault extends Fault {
+public record ToManySetFault(String relationshipName) implements Fault {
 
     @Override
-    public Object resolveFault(Persistent sourceObject, String relationshipName) {
+    public Object resolveFault(Persistent sourceObject) {
         return new ToManySet<>(sourceObject, relationshipName);
     }
 

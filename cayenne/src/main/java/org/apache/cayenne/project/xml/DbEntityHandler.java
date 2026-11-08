@@ -103,7 +103,7 @@ public class DbEntityHandler extends NamespaceAwareNestedTagHandler {
             lastAttribute.setMaxLength(Integer.parseInt(length));
         }
 
-        String precision = attributes.getValue("attributePrecision");
+        String precision = attributes.getValue("precision");
         if (precision != null) {
             lastAttribute.setAttributePrecision(Integer.parseInt(precision));
         }

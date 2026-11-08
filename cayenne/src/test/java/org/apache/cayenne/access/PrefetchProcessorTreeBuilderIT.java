@@ -22,12 +22,10 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.DataRowLayout;
 import org.apache.cayenne.exp.path.CayennePath;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.compiled.CompiledMapping;
+import org.apache.cayenne.map.compiled.CompiledEntity;
+
 import org.apache.cayenne.query.PrefetchTreeNode;
-import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
@@ -54,26 +52,26 @@ public class PrefetchProcessorTreeBuilderIT {
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
     private DataContext context;
-    private EntityResolver resolver;
+    private CompiledMapping resolver;
 
     @BeforeEach
     public void setUp() {
         context = env.context();
-        resolver = env.entityResolver();
+        resolver = env.mapping();
     }
 
 
     @Test
     public void buildTreeNoPrefetches() {
 
-        final ClassDescriptor descriptor = resolver.getClassDescriptor("Artist");
+        final CompiledEntity entity = resolver.entity("Artist");
         List<DataRow> dataRows = new ArrayList<>();
         dataRows.add(DataRow.of("Artist", DataRowLayout.of(), new Object[0], SnapshotVersion.next()));
         dataRows.add(DataRow.of("Artist", DataRowLayout.of(), new Object[0], SnapshotVersion.next()));
 
 
         PrefetchTreeNode tree = new PrefetchTreeNode();
-        HierarchicalObjectResolver resolver = new HierarchicalObjectResolver(context, null, descriptor, true);
+        HierarchicalObjectResolver resolver = new HierarchicalObjectResolver(context, null, entity, true);
         PrefetchProcessorTreeBuilder builder = new PrefetchProcessorTreeBuilder(
                 resolver,
                 dataRows,
@@ -86,18 +84,18 @@ public class PrefetchProcessorTreeBuilderIT {
         assertFalse(processingTree.isPartitionedByParent());
         assertTrue(processingTree.isDisjointPrefetch());
         assertSame(dataRows, processingTree.getDataRows());
-        assertSame(descriptor.getEntity(), processingTree.getResolver().getEntity());
+        assertSame(entity, processingTree.getResolver().getEntity());
         assertNull(processingTree.getIncoming());
     }
 
     @Test
     public void buildTreeWithPrefetches() {
 
-        final ClassDescriptor descriptor = resolver.getClassDescriptor("Artist");
-        ObjEntity e2 = resolver.getObjEntity("Painting");
-        ObjEntity e3 = resolver.getObjEntity("Gallery");
-        ObjEntity e4 = resolver.getObjEntity("Exhibit");
-        ObjEntity e5 = resolver.getObjEntity("ArtistExhibit");
+        final CompiledEntity entity = resolver.entity("Artist");
+        CompiledEntity e2 = resolver.entity("Painting");
+        CompiledEntity e3 = resolver.entity("Gallery");
+        CompiledEntity e4 = resolver.entity("Exhibit");
+        CompiledEntity e5 = resolver.entity("ArtistExhibit");
 
         List<DataRow> mainRows = new ArrayList<>();
         Map<CayennePath, List<?>> extraRows = new HashMap<>();
@@ -108,7 +106,7 @@ public class PrefetchProcessorTreeBuilderIT {
         tree.addPath(Artist.ARTIST_EXHIBITS.getName()).setPhantom(false);
 
 
-        HierarchicalObjectResolver resolver = new HierarchicalObjectResolver(context, null, descriptor, true);
+        HierarchicalObjectResolver resolver = new HierarchicalObjectResolver(context, null, entity, true);
         PrefetchProcessorTreeBuilder builder = new PrefetchProcessorTreeBuilder(
                 resolver,
                 mainRows,
@@ -117,7 +115,7 @@ public class PrefetchProcessorTreeBuilderIT {
         PrefetchProcessorNode n1 = builder.buildTree(tree);
 
         assertSame(mainRows, n1.getDataRows());
-        assertSame(descriptor.getEntity(), n1.getResolver().getEntity());
+        assertSame(entity, n1.getResolver().getEntity());
 
         PrefetchProcessorNode n2 = (PrefetchProcessorNode) n1.getNode("paintings");
         assertNotNull(n2);

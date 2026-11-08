@@ -16,30 +16,29 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-
 package org.apache.cayenne.access.translator.batch;
 
+import org.apache.cayenne.CayenneRuntime;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.di.AdhocObjectFactory;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.compiled.CompiledColumn;
+import org.apache.cayenne.map.compiled.CompiledTable;
 import org.apache.cayenne.query.resolved.UpdateBatch;
-import org.apache.cayenne.CayenneRuntime;
 import org.apache.cayenne.testdo.locking.SimpleLockingTestEntity;
-import org.apache.cayenne.unit.dba.TestDbAdapter;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
+import org.apache.cayenne.unit.dba.TestDbAdapter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class UpdateBatchTranslatorIT {
 
@@ -51,7 +50,6 @@ public class UpdateBatchTranslatorIT {
     private TestDbAdapter unitAdapter;
     private AdhocObjectFactory objectFactory;
 
-
     @BeforeEach
     public void setUp() {
         runtime = env.runtime();
@@ -60,54 +58,68 @@ public class UpdateBatchTranslatorIT {
         objectFactory = env.adhocObjectFactory();
     }
 
+    /**
+     * Returns the compiled table of the test entity. The mapping is replaced by {@link #quoteIdentifiers(boolean)},
+     * so the table must be looked up after it.
+     */
+    private CompiledTable lockingTable() {
+        return runtime.getDataDomain().getMapping().entity(SimpleLockingTestEntity.class).table();
+    }
+
+    /**
+     * Switches identifier quoting on the authored map and recompiles the mapping for the runtime to see the change.
+     */
+    private void quoteIdentifiers(boolean quote) {
+        env.project().dataMap("locking").setQuotingSQLIdentifiers(quote);
+        env.recompile();
+    }
+
     @Test
     public void createSqlString() {
-        DbEntity entity = runtime.getDataDomain().getEntityResolver().getObjEntity(SimpleLockingTestEntity.class)
-                .getDbEntity();
+        CompiledTable table = lockingTable();
 
-        List<DbAttribute> idAttributes = Collections.singletonList(entity.getAttribute("LOCKING_TEST_ID"));
-        List<DbAttribute> updatedAttributes = Collections.singletonList(entity.getAttribute("DESCRIPTION"));
+        List<CompiledColumn> idColumns = List.of(table.column("LOCKING_TEST_ID"));
+        List<CompiledColumn> updatedColumns = List.of(table.column("DESCRIPTION"));
 
-        UpdateBatch updateQuery = new UpdateBatch(entity, idAttributes, updatedAttributes, Collections.emptySet(), false, List.of());
+        UpdateBatch updateQuery = new UpdateBatch(table, idColumns, updatedColumns, Set.of(), false, List.of());
 
         DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
         String generatedSql = new UpdateBatchTranslator().translate(updateQuery, adapter).sql();
         assertNotNull(generatedSql);
-        assertEquals("UPDATE " + entity.getName() + " SET DESCRIPTION = ? WHERE LOCKING_TEST_ID = ?", generatedSql);
+        assertEquals("UPDATE " + table.name() + " SET DESCRIPTION = ? WHERE LOCKING_TEST_ID = ?", generatedSql);
     }
 
     @Test
     public void createSqlStringWithNulls() {
-        DbEntity entity = runtime.getDataDomain().getEntityResolver().getObjEntity(SimpleLockingTestEntity.class)
-                .getDbEntity();
+        CompiledTable table = lockingTable();
 
-        List<DbAttribute> idAttributes = Arrays.asList(entity.getAttribute("LOCKING_TEST_ID"), entity.getAttribute("NAME"));
+        List<CompiledColumn> idColumns = List.of(table.column("LOCKING_TEST_ID"), table.column("NAME"));
 
-        List<DbAttribute> updatedAttributes = Collections.singletonList(entity.getAttribute("DESCRIPTION"));
+        List<CompiledColumn> updatedColumns = List.of(table.column("DESCRIPTION"));
 
-        Collection<String> nullAttributes = Collections.singleton("NAME");
+        Collection<String> nullAttributes = Set.of("NAME");
 
-        UpdateBatch updateQuery = new UpdateBatch(entity, idAttributes, updatedAttributes, nullAttributes, false, List.of());
+        UpdateBatch updateQuery = new UpdateBatch(table, idColumns, updatedColumns, nullAttributes, false,
+                List.of());
 
         DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
         String generatedSql = new UpdateBatchTranslator().translate(updateQuery, adapter).sql();
         assertNotNull(generatedSql);
 
-        assertEquals("UPDATE " + entity.getName() + " SET DESCRIPTION = ? WHERE LOCKING_TEST_ID = ? AND NAME IS NULL",
+        assertEquals("UPDATE " + table.name() + " SET DESCRIPTION = ? WHERE LOCKING_TEST_ID = ? AND NAME IS NULL",
                 generatedSql);
     }
 
     @Test
     public void createSqlStringWithIdentifiersQuote() {
-        DbEntity entity = runtime.getDataDomain().getEntityResolver().getObjEntity(SimpleLockingTestEntity.class)
-                .getDbEntity();
+        quoteIdentifiers(true);
         try {
+            CompiledTable table = lockingTable();
+            List<CompiledColumn> idColumns = List.of(table.column("LOCKING_TEST_ID"));
+            List<CompiledColumn> updatedColumns = List.of(table.column("DESCRIPTION"));
 
-            entity.getDataMap().setQuotingSQLIdentifiers(true);
-            List<DbAttribute> idAttributes = Collections.singletonList(entity.getAttribute("LOCKING_TEST_ID"));
-            List<DbAttribute> updatedAttributes = Collections.singletonList(entity.getAttribute("DESCRIPTION"));
-
-            UpdateBatch updateQuery = new UpdateBatch(entity, idAttributes, updatedAttributes, Collections.emptySet(), false, List.of());
+            UpdateBatch updateQuery = new UpdateBatch(table, idColumns, updatedColumns, Set.of(), false,
+                    List.of());
 
             String generatedSql = new UpdateBatchTranslator().translate(updateQuery, adapter).sql();
 
@@ -115,41 +127,39 @@ public class UpdateBatchTranslatorIT {
             String charEnd = unitAdapter.getIdentifiersEndQuote();
 
             assertNotNull(generatedSql);
-            assertEquals("UPDATE " + charStart + entity.getName() + charEnd + " SET " + charStart + "DESCRIPTION"
+            assertEquals("UPDATE " + charStart + table.name() + charEnd + " SET " + charStart + "DESCRIPTION"
                     + charEnd + " = ? WHERE " + charStart + "LOCKING_TEST_ID" + charEnd + " = ?", generatedSql);
 
         } finally {
-            entity.getDataMap().setQuotingSQLIdentifiers(false);
+            quoteIdentifiers(false);
         }
     }
 
     @Test
     public void createSqlStringWithNullsWithIdentifiersQuote() {
-        DbEntity entity = runtime.getDataDomain().getEntityResolver().getObjEntity(SimpleLockingTestEntity.class)
-                .getDbEntity();
+        quoteIdentifiers(true);
         try {
+            CompiledTable table = lockingTable();
+            List<CompiledColumn> idColumns = List.of(table.column("LOCKING_TEST_ID"), table.column("NAME"));
 
-            entity.getDataMap().setQuotingSQLIdentifiers(true);
-            List<DbAttribute> idAttributes = Arrays.asList(entity.getAttribute("LOCKING_TEST_ID"), entity.getAttribute("NAME"));
+            List<CompiledColumn> updatedColumns = List.of(table.column("DESCRIPTION"));
 
-            List<DbAttribute> updatedAttributes = Collections.singletonList(entity.getAttribute("DESCRIPTION"));
+            Collection<String> nullAttributes = Set.of("NAME");
 
-            Collection<String> nullAttributes = Collections.singleton("NAME");
-
-            UpdateBatch updateQuery = new UpdateBatch(entity, idAttributes, updatedAttributes, nullAttributes, false, List.of());
+            UpdateBatch updateQuery = new UpdateBatch(table, idColumns, updatedColumns, nullAttributes, false,
+                    List.of());
 
             String generatedSql = new UpdateBatchTranslator().translate(updateQuery, adapter).sql();
             assertNotNull(generatedSql);
 
             String charStart = unitAdapter.getIdentifiersStartQuote();
             String charEnd = unitAdapter.getIdentifiersEndQuote();
-            assertEquals("UPDATE " + charStart + entity.getName() + charEnd + " SET " + charStart + "DESCRIPTION"
+            assertEquals("UPDATE " + charStart + table.name() + charEnd + " SET " + charStart + "DESCRIPTION"
                     + charEnd + " = ? WHERE " + charStart + "LOCKING_TEST_ID" + charEnd + " = ? AND " + charStart
                     + "NAME" + charEnd + " IS NULL", generatedSql);
 
         } finally {
-            entity.getDataMap().setQuotingSQLIdentifiers(false);
+            quoteIdentifiers(false);
         }
     }
-
 }

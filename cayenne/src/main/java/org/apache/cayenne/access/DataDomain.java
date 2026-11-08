@@ -32,6 +32,7 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.QueryResult;
 import org.apache.cayenne.access.flush.DataDomainFlushAction;
 import org.apache.cayenne.access.flush.DataDomainFlushActionFactory;
+import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.BeforeScopeEnd;
@@ -39,8 +40,9 @@ import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.graph.CompoundDiff;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.EntitySorter;
+import org.apache.cayenne.map.compiled.CompiledDataMap;
+import org.apache.cayenne.map.compiled.CompiledMapping;
+import org.apache.cayenne.map.compiled.MappingCompiler;
 import org.apache.cayenne.query.resolved.ResolvedQuery;
 import org.apache.cayenne.access.lifecycle.LifecycleEventsManager;
 import org.apache.cayenne.tx.BaseTransaction;
@@ -68,11 +70,12 @@ public class DataDomain implements DataChannel {
     protected final DataDomainFlushActionFactory flushActionFactory;
     protected final AdhocObjectFactory objectFactory;
     protected final EventManager eventManager;
-    protected final EntitySorter entitySorter;
     protected final QueryCache queryCache;
+    protected final ValueObjectTypeRegistry valueObjectTypeRegistry;
     protected final DataRowStore sharedSnapshotCache;
 
-    protected final EntityResolver entityResolver;
+    protected final MappingCompiler mappingCompiler;
+    protected volatile CompiledMapping mapping;
     protected final int maxIdQualifierSize;
     protected final boolean validatingObjectsOnCommit;
 
@@ -89,19 +92,17 @@ public class DataDomain implements DataChannel {
 
     public DataDomain(
             String name,
-
             TransactionManager transactionManager,
             TransactionFactory transactionFactory,
             DataDomainFlushActionFactory flushActionFactory,
             AdhocObjectFactory objectFactory,
             EventManager eventManager,
             QueryCache queryCache,
+            ValueObjectTypeRegistry valueObjectTypeRegistry,
             DataRowStore sharedSnapshotCache,
             int maxIdQualifierSize,
             boolean validatingObjectsOnCommit,
-
-            EntityResolver entityResolver,
-            EntitySorter entitySorter,
+            MappingCompiler mappingCompiler,
             LifecycleEventsManager lifecycleEventsManager
     ) {
 
@@ -111,11 +112,12 @@ public class DataDomain implements DataChannel {
         this.flushActionFactory = flushActionFactory;
         this.objectFactory = objectFactory;
         this.eventManager = eventManager;
-        this.entitySorter = entitySorter;
         this.lifecycleEventsManager = lifecycleEventsManager;
         this.queryCache = queryCache;
+        this.valueObjectTypeRegistry = valueObjectTypeRegistry;
         this.sharedSnapshotCache = sharedSnapshotCache;
-        this.entityResolver = entityResolver;
+        this.mappingCompiler = mappingCompiler;
+        this.mapping = mappingCompiler.compile(List.of());
         this.maxIdQualifierSize = maxIdQualifierSize;
         this.validatingObjectsOnCommit = validatingObjectsOnCommit;
 
@@ -137,12 +139,6 @@ public class DataDomain implements DataChannel {
         }
     }
 
-    /**
-     * @since 3.1
-     */
-    public EntitySorter getEntitySorter() {
-        return entitySorter;
-    }
 
     /**
      * Returns EventManager used by this DataDomain.
@@ -188,54 +184,29 @@ public class DataDomain implements DataChannel {
         return sharedSnapshotCache;
     }
 
-    public void addDataMap(DataMap dataMap) {
-        getEntityResolver().addDataMap(dataMap);
-        entitySorter.reindex();
-    }
-
     /**
-     * @since 3.1
-     */
-    public DataMap getDataMap(String mapName) {
-        return getEntityResolver().getDataMap(mapName);
-    }
-
-    /**
-     * Removes named DataMap from this DataDomain, unlinking it from its DataNode.
+     * Compiles the DataMaps into the mapping of the domain, replacing the current one. A new domain starts with an
+     * empty mapping. The domain does not keep the authored DataMaps, so the code that changes the
+     * authored model of a running domain, which the runtime does not notice otherwise, keeps its own maps and passes
+     * them here. Contexts and nodes see the new mapping on their next access to it. The maps that are no longer in
+     * the mapping are no longer routed to a node.
      *
-     * @since 3.1
+     * @since 6.0
      */
-    public void removeDataMap(String mapName) {
-        DataMap map = getDataMap(mapName);
-        if (map == null) {
-            return;
-        }
-
-        nodesByDataMapName.remove(mapName);
-
-        // remove from EntityResolver
-        getEntityResolver().removeDataMap(map);
-
-        entitySorter.reindex();
+    public void recompile(Collection<DataMap> dataMaps) {
+        CompiledMapping compiled = mappingCompiler.compile(dataMaps);
+        this.mapping = compiled;
+        nodesByDataMapName.keySet().removeIf(name -> compiled.schema().map(name) == null);
     }
 
     /**
-     * Removes a DataNode from DataDomain. Any maps previously associated with
-     * this node within domain will still be kept around, however they wan't be
-     * mapped to any node.
+     * Removes a DataNode from DataDomain. The maps previously routed to this node are not routed to any node.
      */
     public void removeDataNode(String nodeName) {
         DataNode removed = nodes.remove(nodeName);
         if (removed != null) {
             nodesByDataMapName.values().removeIf(dataNode -> dataNode == removed);
         }
-    }
-
-    /**
-     * Returns a collection of registered DataMaps.
-     */
-    public Collection<DataMap> getDataMaps() {
-        return getEntityResolver().getDataMaps();
     }
 
     /**
@@ -247,18 +218,16 @@ public class DataDomain implements DataChannel {
     }
 
     /**
-     * Adds a DataNode, routing the queries of the DataMaps to it. The maps are registered with the domain if they
-     * are not already.
+     * Adds a DataNode, routing the queries of the named DataMaps to it.
      *
      * @since 6.0
      */
-    public void addNode(DataNode node, Collection<DataMap> dataMaps) {
+    public void addNode(DataNode node, Collection<String> mapNames) {
 
         nodes.put(node.getName(), node);
 
-        for (DataMap map : dataMaps) {
-            addDataMap(map);
-            nodesByDataMapName.put(map.getName(), node);
+        for (String mapName : mapNames) {
+            nodesByDataMapName.put(mapName, node);
         }
     }
 
@@ -274,13 +243,13 @@ public class DataDomain implements DataChannel {
 
     /**
      * Returns the DataNode that should handle a resolved query: the node of its DataMap (see
-     * {@link #lookupDataNode(DataMap)}), or, for a raw SQL statement without a root, the node it names, or else the
-     * default node. Fails if the named node does not exist, or if there is no default node to fall back on.
+     * {@link #lookupDataNode(CompiledDataMap)}), or, for a raw SQL statement without a root, the node it names, or
+     * else the default node. Fails if the named node does not exist, or if there is no default node to fall back on.
      *
      * @since 6.0
      */
     public DataNode lookupDataNode(ResolvedQuery query) {
-        DataMap map = query.dataMap();
+        CompiledDataMap map = query.dataMap();
         if (map != null) {
             return lookupDataNode(map);
         }
@@ -307,19 +276,26 @@ public class DataDomain implements DataChannel {
      *
      * @since 1.1
      */
-    public DataNode lookupDataNode(DataMap map) {
+    public DataNode lookupDataNode(CompiledDataMap map) {
+        return lookupDataNode(map.name());
+    }
 
-        DataNode node = nodesByDataMapName.get(map.getName());
+    /**
+     * Returns a DataNode that should handle queries for all entities in the named DataMap.
+     *
+     * @since 6.0
+     */
+    public DataNode lookupDataNode(String mapName) {
+        DataNode node = nodesByDataMapName.get(mapName);
         if (node == null) {
             if (defaultNode != null) {
-                nodesByDataMapName.put(map.getName(), defaultNode);
+                nodesByDataMapName.put(mapName, defaultNode);
                 node = defaultNode;
             } else {
                 throw new CayenneRuntimeException("No DataNode configured for DataMap '%s'"
-                        + " and no default DataNode set", map.getName());
+                        + " and no default DataNode set", mapName);
             }
         }
-
         return node;
     }
 
@@ -418,11 +394,11 @@ public class DataDomain implements DataChannel {
     }
 
     /**
-     * Returns an EntityResolver that stores mapping information for this domain.
+     * Returns the compiled mapping of this domain. The mapping is replaced as a whole by {@link #recompile}.
      */
     @Override
-    public EntityResolver getEntityResolver() {
-        return entityResolver;
+    public CompiledMapping getMapping() {
+        return mapping;
     }
 
     /**
@@ -490,6 +466,16 @@ public class DataDomain implements DataChannel {
      */
     public QueryCache getQueryCache() {
         return queryCache;
+    }
+
+    /**
+     * Returns the registry of the value object types of this runtime, used to render the values of such types in
+     * query cache keys and to convert generated keys to the Java types of the attributes mapped to them.
+     *
+     * @since 6.0
+     */
+    public ValueObjectTypeRegistry getValueObjectTypeRegistry() {
+        return valueObjectTypeRegistry;
     }
 
     /**

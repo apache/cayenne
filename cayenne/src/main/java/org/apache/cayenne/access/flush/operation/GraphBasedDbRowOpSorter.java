@@ -34,11 +34,11 @@ import org.apache.cayenne.access.flush.EffectiveOpId;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.exp.DbPathExp;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DbJoin;
-import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.compiled.CompiledColumn;
+import org.apache.cayenne.map.compiled.CompiledTable;
+import org.apache.cayenne.map.compiled.CompiledColumnPair;
+import org.apache.cayenne.map.compiled.CompiledJoin;
+import org.apache.cayenne.map.compiled.CompiledMapping;
 import org.apache.cayenne.util.SingleEntryMap;
 
 /**
@@ -55,49 +55,52 @@ public class GraphBasedDbRowOpSorter implements DbRowOpSorter {
     private final DbRowOpTypeVisitor rowOpTypeVisitor = new DbRowOpTypeVisitor();
     private final Provider<DataDomain> dataDomainProvider;
 
-    private volatile Map<DbEntity, List<DbRelationship>> relationships;
+    // the FK-holding relationships by table of the mapping they were indexed for;
+    // rebuilt when the domain mapping is replaced
+    private volatile RelationshipIndex relationships;
 
     public GraphBasedDbRowOpSorter(@Inject Provider<DataDomain> dataDomainProvider) {
         this.dataDomainProvider = dataDomainProvider;
     }
 
-    private void initDataSync() {
-        Map<DbEntity, List<DbRelationship>> localRelationships = relationships;
-        if(localRelationships == null) {
+    private Map<CompiledTable, List<CompiledJoin>> initDataSync() {
+        CompiledMapping mapping = dataDomainProvider.get().getMapping();
+        RelationshipIndex localRelationships = relationships;
+        if(localRelationships == null || localRelationships.mapping != mapping) {
             synchronized (this) {
                 localRelationships = relationships;
-                if(localRelationships == null) {
-                    initDataNoSync();
+                if(localRelationships == null || localRelationships.mapping != mapping) {
+                    localRelationships = initDataNoSync(mapping);
+                    relationships = localRelationships;
                 }
             }
         }
+        return localRelationships.byEntity;
     }
 
     /**
      * Init all the data we need for faster processing actual rows.
      */
-    private void initDataNoSync() {
-        relationships = new HashMap<>();
-        EntityResolver resolver = dataDomainProvider.get().getEntityResolver();
-
-        resolver.getDbEntities().forEach(entity ->
-            entity.getRelationships().forEach(dbRelationship -> {
+    private RelationshipIndex initDataNoSync(CompiledMapping mapping) {
+        Map<CompiledTable, List<CompiledJoin>> byEntity = new HashMap<>();
+        mapping.schema().tables().forEach(entity ->
+            entity.joins().forEach(dbRelationship -> {
                 if(!dbRelationship.isForeignKey()) {
                     // TODO: can we ignore all of these relationships?
                     return;
                 }
-
-                relationships
+                byEntity
                         .computeIfAbsent(entity, e -> new ArrayList<>())
                         .add(dbRelationship);
             })
         );
+        return new RelationshipIndex(mapping, byEntity);
     }
 
     @Override
     public List<DbRowOp> sort(List<DbRowOp> dbRows) {
         // lazy init Cayenne model data
-        initDataSync();
+        Map<CompiledTable, List<CompiledJoin>> relationships = initDataSync();
 
         // build index op by ID
         Map<EffectiveOpId, List<DbRowOp>> indexById = HashMap.newHashMap(dbRows.size());
@@ -110,7 +113,7 @@ public class GraphBasedDbRowOpSorter implements DbRowOpSorter {
         // build ops dependency graph
         DbRowOpGraph graph = new DbRowOpGraph();
         dbRows.forEach(op -> {
-            processRelationships(indexById, graph, op);
+            processRelationships(relationships, indexById, graph, op);
             if(hasMeaningfulIds) {
                 processMeaningfulIds(indexById, graph, op);
             }
@@ -121,7 +124,11 @@ public class GraphBasedDbRowOpSorter implements DbRowOpSorter {
         return graph.topSort();
     }
 
-    private void processRelationships(Map<EffectiveOpId, List<DbRowOp>> indexByDbId, DbRowOpGraph graph, DbRowOp op) {
+    private void processRelationships(
+            Map<CompiledTable, List<CompiledJoin>> relationships,
+            Map<EffectiveOpId, List<DbRowOp>> indexByDbId,
+            DbRowOpGraph graph,
+            DbRowOp op) {
         // get graph edges for reflexive relationships
         DbRowOpType opType = op.accept(rowOpTypeVisitor);
         relationships.getOrDefault(op.getEntity(), Collections.emptyList()).forEach(relationship ->
@@ -185,10 +192,10 @@ public class GraphBasedDbRowOpSorter implements DbRowOpSorter {
         });
     }
 
-    private Map<EffectiveOpId, Map<String, Object>> getParentsOpId(DbRowOp op, DbRelationship relationship) {
-        List<Map<String, Object>> parentIdSnapshots = op.accept(new DbRowOpSnapshotVisitor(relationship));
+    private Map<EffectiveOpId, Map<String, Object>> getParentsOpId(DbRowOp op, CompiledJoin join) {
+        List<Map<String, Object>> parentIdSnapshots = op.accept(new DbRowOpSnapshotVisitor(join));
         if(parentIdSnapshots.size() == 1) {
-            EffectiveOpId id = effectiveIdFor(relationship, parentIdSnapshots.get(0));
+            EffectiveOpId id = effectiveIdFor(join, parentIdSnapshots.get(0));
             if(id != null) {
                 return Collections.singletonMap(id, parentIdSnapshots.get(0));
             } else {
@@ -197,7 +204,7 @@ public class GraphBasedDbRowOpSorter implements DbRowOpSorter {
         } else {
             Map<EffectiveOpId, Map<String, Object>> effectiveOpIds = HashMap.newHashMap(parentIdSnapshots.size());
             parentIdSnapshots.forEach(snapshot -> {
-                EffectiveOpId id = this.effectiveIdFor(relationship, snapshot);
+                EffectiveOpId id = this.effectiveIdFor(join, snapshot);
                 if(id != null) {
                     effectiveOpIds.put(id, snapshot);
                 }
@@ -207,33 +214,38 @@ public class GraphBasedDbRowOpSorter implements DbRowOpSorter {
     }
 
     private EffectiveOpId effectiveIdFor(DbRowOp op) {
-        return new EffectiveOpId(op.getEntity().getName(), op.getChangeId());
+        return new EffectiveOpId(op.getEntity().name(), op.getChangeId());
     }
 
-    private EffectiveOpId effectiveIdFor(DbRelationship relationship, Map<String, Object> opSnapshot) {
-        int len = relationship.getJoins().size();
+    private EffectiveOpId effectiveIdFor(CompiledJoin relationship, Map<String, Object> opSnapshot) {
+        int len = relationship.columnPairs().size();
         Map<String, Object> idMap = len == 1
-                ? new SingleEntryMap<>(relationship.getJoins().get(0).getTargetName())
+                ? new SingleEntryMap<>(relationship.columnPairs().get(0).target().name())
                 : HashMap.newHashMap(len);
-        relationship.getJoins().forEach(join -> {
-            Object value = opSnapshot.get(join.getSourceName());
+        relationship.columnPairs().forEach(join -> {
+            Object value = opSnapshot.get(join.source().name());
             if(value == null) {
                 return;
             }
-            idMap.put(join.getTargetName(), value);
+            idMap.put(join.target().name(), value);
         });
         if(idMap.size() != len) {
             return null;
         }
-        return new EffectiveOpId(relationship.getTargetEntityName(), idMap);
+        return new EffectiveOpId(relationship.target().name(), idMap);
+    }
+
+    private record RelationshipIndex(
+            CompiledMapping mapping,
+            Map<CompiledTable, List<CompiledJoin>> byEntity) {
     }
 
     private static class DbRowOpSnapshotVisitor implements DbRowOpVisitor<List<Map<String, Object>>> {
 
-        private final DbRelationship relationship;
+        private final CompiledJoin join;
 
-        private DbRowOpSnapshotVisitor(DbRelationship relationship) {
-            this.relationship = relationship;
+        private DbRowOpSnapshotVisitor(CompiledJoin join) {
+            this.join = join;
         }
 
         @Override
@@ -279,14 +291,14 @@ public class GraphBasedDbRowOpSorter implements DbRowOpSorter {
             }
 
             // copy snapshot as we can modify it later
-            int joinSize = relationship.getJoins().size();
+            int joinSize = join.columnPairs().size();
             Map<String, Object> snapshot = joinSize == 1
-                    ? new SingleEntryMap<>(relationship.getJoins().get(0).getSourceName())
+                    ? new SingleEntryMap<>(join.columnPairs().get(0).source().name())
                     : HashMap.newHashMap(joinSize);
-            relationship.getJoins().forEach(join -> {
-                Object value = dataRow.get(join.getSourceName());
+            join.columnPairs().forEach(join -> {
+                Object value = dataRow.get(join.source().name());
                 if(value != null) {
-                    snapshot.put(join.getSourceName(), value);
+                    snapshot.put(join.source().name(), value);
                 }
             });
 
@@ -294,10 +306,10 @@ public class GraphBasedDbRowOpSorter implements DbRowOpSorter {
             store.getFlattenedIds(object.getObjectId()).forEach(flattenedId -> {
                 // map values of flattened ids from target to source
                 Map<String, Object> idSnapshot = flattenedId.getIdSnapshot();
-                relationship.getJoins().forEach(join -> {
-                    Object value = idSnapshot.get(join.getTargetName());
+                join.columnPairs().forEach(join -> {
+                    Object value = idSnapshot.get(join.target().name());
                     if(value != null) {
-                        snapshot.put(join.getSourceName(), value);
+                        snapshot.put(join.source().name(), value);
                     }
                 });
             });
@@ -324,17 +336,17 @@ public class GraphBasedDbRowOpSorter implements DbRowOpSorter {
     }
 
     private static class FkUpdateChecker implements DbRowOpVisitor<Boolean> {
-        private final DbRelationship relationship;
+        private final CompiledJoin join;
 
-        public FkUpdateChecker(DbRelationship relationship) {
-            this.relationship = relationship;
+        public FkUpdateChecker(CompiledJoin join) {
+            this.join = join;
         }
 
         @Override
         public Boolean visitUpdate(UpdateDbRowOp dbRow) {
-            for(DbJoin join : relationship.getJoins()) {
-                for (DbAttribute attribute : dbRow.getValues().getUpdatedAttributes()) {
-                    if (attribute.getName().equals(join.getTargetName())) {
+            for(CompiledColumnPair join : join.columnPairs()) {
+                for (CompiledColumn column : dbRow.getValues().getUpdatedAttributes()) {
+                    if (column.name().equals(join.target().name())) {
                         return true;
                     }
                 }

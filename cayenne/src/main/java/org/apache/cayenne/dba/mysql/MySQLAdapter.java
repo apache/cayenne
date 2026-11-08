@@ -44,7 +44,8 @@ import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.compiled.CompiledColumn;
+import org.apache.cayenne.map.compiled.CompiledTable;
 import org.apache.cayenne.access.translator.TranslatedSelect;
 import org.apache.cayenne.access.translator.TranslatedProcedure;
 import org.apache.cayenne.query.resolved.ResolvedProcedure;
@@ -169,13 +170,13 @@ public class MySQLAdapter extends JdbcAdapter {
      * @since 3.0
      */
     @Override
-    public Collection<String> dropTableStatements(DbEntity table) {
+    public Collection<String> dropTableStatements(CompiledTable table) {
         // note that CASCADE is a noop as of MySQL 5.0, so we have to use FK
         // checks
         // statement
         StringBuilder buf = new StringBuilder();
         QuotingStrategy quotes = getQuotingStrategy(table);
-        quotes.appendFQN(buf, table.getCatalog(), table.getSchema(), table.getName());
+        quotes.appendFQN(buf, table.catalog(), table.schema(), table.name());
 
         return List.of("SET FOREIGN_KEY_CHECKS=0", "DROP TABLE IF EXISTS " + buf + " CASCADE",
                 "SET FOREIGN_KEY_CHECKS=1");
@@ -288,8 +289,8 @@ public class MySQLAdapter extends JdbcAdapter {
      * if FK constraints are supported by this adapter.
      */
     @Override
-    public String createTable(DbEntity entity) {
-        String ddlSQL = super.createTable(entity);
+    public String createTable(CompiledTable table) {
+        String ddlSQL = super.createTable(table);
 
         if (storageEngine != null) {
             ddlSQL += " ENGINE=" + storageEngine;
@@ -307,15 +308,15 @@ public class MySQLAdapter extends JdbcAdapter {
      */
     // See CAY-358 for details of the InnoDB problem
     @Override
-    protected void createTableAppendPKClause(StringBuffer sqlBuffer, DbEntity entity) {
+    protected void createTableAppendPKClause(StringBuffer sqlBuffer, CompiledTable table) {
 
         // must move generated to the front...
-        List<DbAttribute> pkList = new ArrayList<>(entity.getPrimaryKeys());
+        List<CompiledColumn> pkList = new ArrayList<>(table.primaryKey());
         pkList.sort(PKComparator.INSTANCE);
 
-        QuotingStrategy quotes = getQuotingStrategy(entity);
+        QuotingStrategy quotes = getQuotingStrategy(table);
 
-        Iterator<DbAttribute> pkit = pkList.iterator();
+        Iterator<CompiledColumn> pkit = pkList.iterator();
         if (pkit.hasNext()) {
 
             sqlBuffer.append(", PRIMARY KEY (");
@@ -327,9 +328,9 @@ public class MySQLAdapter extends JdbcAdapter {
                     sqlBuffer.append(", ");
                 }
 
-                DbAttribute at = pkit.next();
+                CompiledColumn column = pkit.next();
                 quotes.appendStart(sqlBuffer);
-                sqlBuffer.append(at.getName());
+                sqlBuffer.append(column.name());
                 quotes.appendEnd(sqlBuffer);
             }
             sqlBuffer.append(')');
@@ -341,13 +342,13 @@ public class MySQLAdapter extends JdbcAdapter {
      * columns.
      */
     @Override
-    public void createTableAppendColumn(StringBuffer sqlBuffer, DbAttribute column) {
+    public void createTableAppendColumn(StringBuffer sqlBuffer, CompiledColumn column) {
 
         String type = preferredNativeColumnType(column).nativeType();
 
-        QuotingStrategy quotes = getQuotingStrategy(column.getEntity());
+        QuotingStrategy quotes = getQuotingStrategy(column.table());
         quotes.appendStart(sqlBuffer);
-        sqlBuffer.append(column.getName());
+        sqlBuffer.append(column.name());
         quotes.appendEnd(sqlBuffer);
         sqlBuffer.append(' ').append(type);
 
@@ -361,16 +362,16 @@ public class MySQLAdapter extends JdbcAdapter {
         }
     }
 
-    private void appendLengthAndScale(StringBuffer sqlBuffer, DbAttribute column) {
-        if (column.getType() == Types.TIME || column.getType() == Types.TIMESTAMP) {
-            int scale = column.getScale();
+    private void appendLengthAndScale(StringBuffer sqlBuffer, CompiledColumn column) {
+        if (column.jdbcType() == Types.TIME || column.jdbcType() == Types.TIMESTAMP) {
+            int scale = column.scale();
             if (scale >= 0) {
                 sqlBuffer.append('(').append(scale).append(')');
             }
-        } else if (typeSupportsLength(column.getType())) {
-            int len = column.getMaxLength();
+        } else if (typeSupportsLength(column.jdbcType())) {
+            int len = column.maxLength();
 
-            int scale = TypesMapping.isDecimal(column.getType()) ? column.getScale() : -1;
+            int scale = TypesMapping.isDecimal(column.jdbcType()) ? column.scale() : -1;
 
             // sanity check
             if (scale > len) {
@@ -420,15 +421,15 @@ public class MySQLAdapter extends JdbcAdapter {
         this.storageEngine = engine;
     }
 
-    static final class PKComparator implements Comparator<DbAttribute> {
+    static final class PKComparator implements Comparator<CompiledColumn> {
 
         static final PKComparator INSTANCE = new PKComparator();
 
-        public int compare(DbAttribute a1, DbAttribute a2) {
+        public int compare(CompiledColumn a1, CompiledColumn a2) {
             if (a1.isGenerated() != a2.isGenerated()) {
                 return a1.isGenerated() ? -1 : 1;
             } else {
-                return a1.getName().compareTo(a2.getName());
+                return a1.name().compareTo(a2.name());
             }
         }
     }

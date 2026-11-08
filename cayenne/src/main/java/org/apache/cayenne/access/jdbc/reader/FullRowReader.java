@@ -23,10 +23,8 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.DataRowLayout;
 import org.apache.cayenne.access.jdbc.RSColumn;
-import org.apache.cayenne.map.EntityInheritanceTree;
-import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.compiled.CompiledEntity;
 import org.apache.cayenne.query.resolved.ResolvedQuery;
-import org.apache.cayenne.reflect.ClassDescriptor;
 
 import java.sql.ResultSet;
 import java.util.Objects;
@@ -43,13 +41,11 @@ class FullRowReader implements RowReader<DataRow> {
 
     static RowReader<DataRow> of(RSColumn[] columns, ResolvedQuery query, long version) {
 
-        ObjEntity objEntity = query.objEntity();
-        String entityName = objEntity != null ? objEntity.getName() : null;
+        CompiledEntity entity = query.entity();
+        String entityName = entity != null ? entity.name() : null;
 
-        ClassDescriptor classDescriptor = query.classDescriptor();
-        if (classDescriptor != null && classDescriptor.hasSubclasses()) {
-            return new InheritanceAwareRowReader(columns, entityName, classDescriptor.getEntityInheritanceTree(),
-                    version);
+        if (entity != null && entity.hasSubEntities()) {
+            return new InheritanceAwareRowReader(columns, entityName, entity, version);
         }
 
         return new FullRowReader(columns, entityName, version);
@@ -105,27 +101,27 @@ class FullRowReader implements RowReader<DataRow> {
 
     private static class InheritanceAwareRowReader extends FullRowReader {
 
-        private final EntityInheritanceTree entityInheritanceTree;
+        private final CompiledEntity rootEntity;
 
-        private InheritanceAwareRowReader(RSColumn[] columns, String entityName,
-                                          EntityInheritanceTree entityInheritanceTree, long version) {
+        private InheritanceAwareRowReader(RSColumn[] columns, String entityName, CompiledEntity rootEntity,
+                                          long version) {
             super(columns, entityName, version);
-            this.entityInheritanceTree = entityInheritanceTree;
+            this.rootEntity = rootEntity;
         }
 
         @Override
         protected DataRow row(DataRow row) {
-            return withMatchingEntity(row, entityInheritanceTree, entityName);
+            return withMatchingEntity(row, rootEntity, entityName);
         }
     }
 
     /**
-     * Returns the row with the name of the entity of the inheritance tree that the row matches, which is the given
-     * row when that is its entity already or no entity matches.
+     * Returns the row with the name of the entity of the inheritance hierarchy of the root entity that the row
+     * matches, which is the given row when that is its entity already or no entity matches.
      */
-    static DataRow withMatchingEntity(DataRow row, EntityInheritanceTree tree, String defaultEntityName) {
-        ObjEntity entity = tree.entityMatchingRow(row);
-        String entityName = entity != null ? entity.getName() : defaultEntityName;
+    static DataRow withMatchingEntity(DataRow row, CompiledEntity rootEntity, String defaultEntityName) {
+        CompiledEntity entity = rootEntity.entityMatchingRow(row);
+        String entityName = entity != null ? entity.name() : defaultEntityName;
         return Objects.equals(entityName, row.getEntityName()) ? row : row.withEntityName(entityName);
     }
 }

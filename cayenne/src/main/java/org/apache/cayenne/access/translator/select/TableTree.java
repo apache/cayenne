@@ -30,8 +30,8 @@ import java.util.stream.Collectors;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.path.CayennePath;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.compiled.CompiledTable;
+import org.apache.cayenne.map.compiled.CompiledJoin;
 import org.apache.cayenne.map.JoinType;
 
 /**
@@ -61,7 +61,7 @@ class TableTree {
     private final Set<String> usedAliases;
     private final Map<String, Integer> nextAliasSuffix;
 
-    TableTree(DbEntity root, TableTree parentTree) {
+    TableTree(CompiledTable root, TableTree parentTree) {
         this.parentTree = parentTree;
         this.usedAliases = new HashSet<>();
         this.nextAliasSuffix = new HashMap<>();
@@ -69,18 +69,18 @@ class TableTree {
         this.rootNode = new TableTreeNode(root, nextTableAlias(root));
     }
 
-    void addJoinTable(CayennePath path, DbRelationship relationship, JoinType joinType) {
-        addJoinTable(path, relationship, joinType, null);
+    void addJoinTable(CayennePath path, CompiledJoin join, JoinType joinType) {
+        addJoinTable(path, join, joinType, null);
     }
 
-    void addJoinTable(CayennePath path, DbRelationship relationship, JoinType joinType, Expression additionalQualifier) {
+    void addJoinTable(CayennePath path, CompiledJoin join, JoinType joinType, Expression additionalQualifier) {
         TableTreeNode treeNode = tableNodes.get(path);
         if (treeNode != null) {
             return;
         }
 
-        String alias = nextTableAlias(relationship.getTargetEntity());
-        TableTreeNode node = new TableTreeNode(path, relationship, alias, joinType, additionalQualifier);
+        String alias = nextTableAlias(join.target());
+        TableTreeNode node = new TableTreeNode(path, join, alias, joinType, additionalQualifier);
         tableNodes.put(path, node);
     }
 
@@ -99,16 +99,16 @@ class TableTree {
         return node.getTableAlias();
     }
 
-    String nextTableAlias(DbEntity entity) {
+    String nextTableAlias(CompiledTable table) {
         // delegate actual generation to parent if any, so that aliases stay unique across the
         // whole statement (including correlated subqueries)
         if(parentTree != null) {
-            return parentTree.nextTableAlias(entity);
+            return parentTree.nextTableAlias(table);
         }
 
-        // the base is already guaranteed to be non-reserved (see DbEntity.getTableAliasBase), and a
+        // the base is already guaranteed to be non-reserved (see CompiledTable.getTableAliasBase), and a
         // numeric suffix can never produce a reserved word, so we only need to resolve collisions
-        String base = entity == null ? "t" : entity.getTableAliasBase();
+        String base = table == null ? "t" : table.tableAliasBase();
         int suffix = nextAliasSuffix.getOrDefault(base, 0);
         String candidate = suffix == 0 ? base : base + suffix;
         while (!usedAliases.add(candidate)) {

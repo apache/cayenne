@@ -21,7 +21,7 @@ package org.apache.cayenne.access.flush.operation;
 
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.compiled.CompiledTable;
 
 /**
  * Object that represents some change on DB level.
@@ -33,7 +33,7 @@ public interface DbRowOp {
 
     <T> T accept(DbRowOpVisitor<T> visitor);
 
-    DbEntity getEntity();
+    CompiledTable getEntity();
 
     ObjectId getChangeId();
 

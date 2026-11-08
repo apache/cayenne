@@ -22,6 +22,7 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
+import org.apache.cayenne.dbsync.merge.token.db.CompiledModel;
 import org.apache.cayenne.dbsync.merge.token.db.AddColumnToDb;
 import org.apache.cayenne.dbsync.merge.token.db.SetAllowNullToDb;
 import org.apache.cayenne.dbsync.merge.token.db.SetColumnTypeToDb;
@@ -85,12 +86,12 @@ public class SQLServerMergerTokenFactory extends DefaultMergerTokenFactory {
 
                 StringBuffer sqlBuffer = new StringBuffer();
 
-                QuotingStrategy quotes = adapter.getQuotingStrategy(getEntity());
+                QuotingStrategy quotes = adapter.getQuotingStrategy(CompiledModel.table(getEntity()));
                 sqlBuffer.append("ALTER TABLE ");
                 quotes.appendFQN(sqlBuffer, getEntity().getCatalog(), getEntity().getSchema(), getEntity().getName());
                 sqlBuffer.append(" ALTER COLUMN ");
 
-                adapter.createTableAppendColumn(sqlBuffer, column);
+                adapter.createTableAppendColumn(sqlBuffer, CompiledModel.column(column));
 
                 return Collections.singletonList(sqlBuffer.toString());
             }
@@ -109,12 +110,12 @@ public class SQLServerMergerTokenFactory extends DefaultMergerTokenFactory {
 
                 StringBuffer sqlBuffer = new StringBuffer();
 
-                QuotingStrategy quotes = adapter.getQuotingStrategy(getEntity());
+                QuotingStrategy quotes = adapter.getQuotingStrategy(CompiledModel.table(getEntity()));
                 sqlBuffer.append("ALTER TABLE ");
                 quotes.appendFQN(sqlBuffer, getEntity().getCatalog(), getEntity().getSchema(), getEntity().getName());
                 sqlBuffer.append(" ALTER COLUMN ");
 
-                adapter.createTableAppendColumn(sqlBuffer, column);
+                adapter.createTableAppendColumn(sqlBuffer, CompiledModel.column(column));
 
                 return Collections.singletonList(sqlBuffer.toString());
             }

@@ -26,7 +26,7 @@ import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.apache.cayenne.access.translator.TranslatedStatement;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.compiled.CompiledMapping;
 import org.apache.cayenne.query.resolved.ResolvedQuery;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
@@ -44,7 +44,7 @@ public class DataNodeQueryExceptionsIT {
     public void queryException() {
         DataNode failingNode = new MockDataNode(env.dataNode()) {
             @Override
-            protected TranslatedStatement translate(ResolvedQuery query, DbAdapter adapter, EntityResolver resolver) {
+            protected TranslatedStatement translate(ResolvedQuery query, DbAdapter adapter, CompiledMapping mapping) {
                 assertEquals(1, activeConnections());
                 throw new CayenneRuntimeException("Emulated exception");
             }
@@ -52,7 +52,7 @@ public class DataNodeQueryExceptionsIT {
 
         assertEquals(0, activeConnections());
         assertThrows(CayenneRuntimeException.class,
-                () -> StatementContexts.run(failingNode, env.resolver(), SQLQuery.query("SELECT 1")));
+                () -> StatementContexts.run(failingNode, env.mapping(), SQLQuery.query("SELECT 1")));
 
         assertEquals(0, activeConnections());
     }
@@ -61,7 +61,7 @@ public class DataNodeQueryExceptionsIT {
     public void queryError() {
         DataNode failingNode = new MockDataNode(env.dataNode()) {
             @Override
-            protected TranslatedStatement translate(ResolvedQuery query, DbAdapter adapter, EntityResolver resolver) {
+            protected TranslatedStatement translate(ResolvedQuery query, DbAdapter adapter, CompiledMapping mapping) {
                 assertEquals(1, activeConnections());
                 throw new Error("Emulated error");
             }
@@ -69,7 +69,7 @@ public class DataNodeQueryExceptionsIT {
 
         assertEquals(0, activeConnections());
         assertThrows(Error.class,
-                () -> StatementContexts.run(failingNode, env.resolver(), SQLQuery.query("SELECT 1")));
+                () -> StatementContexts.run(failingNode, env.mapping(), SQLQuery.query("SELECT 1")));
 
         assertEquals(0, activeConnections());
     }

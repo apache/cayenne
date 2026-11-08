@@ -33,13 +33,13 @@ public class ThrowOnPartialOrCreateSchemaStrategyIT extends SchemaUpdateStrategy
 		createOneTable("SUS1");
 		createOneTable("SUS2");
 
-		updateSchema(new ThrowOnPartialOrCreateSchemaStrategy());
+		updateSchema(new ThrowOnPartialOrCreateSchemaStrategy(node.getSqlLogger()));
 		assertEquals(2, existingTables().size());
 	}
 
 	@Test
 	public void noTables() throws Exception {
-		ThrowOnPartialOrCreateSchemaStrategy strategy = new ThrowOnPartialOrCreateSchemaStrategy();
+		ThrowOnPartialOrCreateSchemaStrategy strategy = new ThrowOnPartialOrCreateSchemaStrategy(node.getSqlLogger());
 
 		updateSchema(strategy);
 		assertTrue(tablesMap().get("SUS1"));
@@ -55,6 +55,6 @@ public class ThrowOnPartialOrCreateSchemaStrategyIT extends SchemaUpdateStrategy
 		createOneTable("SUS1");
 
 		assertThrows(CayenneRuntimeException.class,
-				() -> updateSchema(new ThrowOnPartialOrCreateSchemaStrategy()));
+				() -> updateSchema(new ThrowOnPartialOrCreateSchemaStrategy(node.getSqlLogger())));
 	}
 }

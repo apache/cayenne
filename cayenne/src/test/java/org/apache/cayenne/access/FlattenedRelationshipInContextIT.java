@@ -24,8 +24,9 @@ import java.util.List;
 import org.apache.cayenne.Fault;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.reflect.ArcProperty;
-import org.apache.cayenne.reflect.ClassDescriptor;
+import org.apache.cayenne.map.compiled.CompiledEntity;
+import org.apache.cayenne.map.compiled.CompiledRelationship;
+
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.relationships_flattened.FlattenedTest3;
 import org.apache.cayenne.unit.CayenneProjects;
@@ -85,9 +86,8 @@ public class FlattenedRelationshipInContextIT {
         // test that checking for modifications does not trigger a fault, and generally
         // works well
 
-        ClassDescriptor d = context.getEntityResolver().getClassDescriptor(
-                "FlattenedTest3");
-        ArcProperty flattenedRel = (ArcProperty) d.getProperty("ft1");
+        CompiledEntity d = context.getMapping().entity("FlattenedTest3");
+        CompiledRelationship flattenedRel = d.relationship("ft1");
 
         ObjectDiff diff = context.getObjectStore().registerDiff(ft3.getObjectId(), null);
         assertFalse(DataRowUtils.isToOneTargetModified(flattenedRel, ft3, diff));

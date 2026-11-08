@@ -20,7 +20,7 @@
 package org.apache.cayenne.query;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.compiled.CompiledMapping;
 import org.apache.cayenne.query.resolved.ResolvedQuery;
 import org.apache.cayenne.testdo.testmap.Artist;
 
@@ -37,11 +37,11 @@ public class MockQuery implements Query<Object> {
     }
 
     @Override
-    public ResolvedQuery resolve(EntityResolver resolver) {
+    public ResolvedQuery resolve(CompiledMapping mapping) {
         resolved = true;
-        if (resolver == null) {
-            throw new CayenneRuntimeException("Null resolver");
+        if (mapping == null) {
+            throw new CayenneRuntimeException("Null mapping");
         }
-        return ObjectSelect.query(Artist.class).resolve(resolver);
+        return ObjectSelect.query(Artist.class).resolve(mapping);
     }
 }

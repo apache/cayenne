@@ -27,16 +27,13 @@ import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.path.CayennePath;
-import org.apache.cayenne.map.DbJoin;
-import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.ObjAttribute;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.reflect.AttributeProperty;
-import org.apache.cayenne.reflect.ClassDescriptor;
-import org.apache.cayenne.reflect.PropertyDescriptor;
-import org.apache.cayenne.reflect.ToOneProperty;
+import org.apache.cayenne.map.compiled.CompiledColumnPair;
+import org.apache.cayenne.map.compiled.CompiledJoin;
+import org.apache.cayenne.map.compiled.CompiledMapping;
+import org.apache.cayenne.map.compiled.CompiledAttribute;
+import org.apache.cayenne.map.compiled.CompiledEntity;
+import org.apache.cayenne.map.compiled.CompiledRelationship;
+import org.apache.cayenne.map.compiled.CompiledToOneRelationship;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -67,46 +64,46 @@ public final class ObjectSnapshots {
      * @param version the snapshot version of the returned row
      */
     public static DataRow snapshot(DataContext context, Persistent object, long version) {
-        return new Builder(context.getEntityResolver(), context.getObjectStore(), object, version).build();
+        return new Builder(context.getMapping(), context.getObjectStore(), object, version).build();
     }
 
     /**
      * Returns the id of the target of a to-one relationship, derived from the join columns in a snapshot of the
      * source. Returns null if the FK is null. Throws if the relationship is not
-     * {@link ObjRelationship#isToPrimaryKey() to the target PK}, as then the snapshot doesn't determine the target,
-     * or if the snapshot has only some of the columns of a multi-column FK.
+     * {@link CompiledRelationship#isToPrimaryKey() to the target PK}, as then the snapshot doesn't determine the
+     * target, or if the snapshot has only some of the columns of a multi-column FK.
      *
-     * @param relationship a relationship satisfying {@link ObjRelationship#isToPrimaryKey()}
+     * @param relationship a relationship satisfying {@link CompiledRelationship#isToPrimaryKey()}
      * @param sourceRow    a snapshot of a source object, keyed by DB column names
      */
-    public static ObjectId targetId(ObjRelationship relationship, Map<String, Object> sourceRow) {
+    public static ObjectId targetId(CompiledRelationship relationship, Map<String, Object> sourceRow) {
 
         if (!relationship.isToPrimaryKey()) {
             throw new CayenneRuntimeException("Source row doesn't determine the target id, relationship: %s",
                     relationship);
         }
 
-        DbRelationship dbRelationship = relationship.getDbRelationships().getFirst();
-        List<DbJoin> joins = dbRelationship.getJoins();
+        CompiledJoin dbRelationship = relationship.joins().getFirst();
+        List<CompiledColumnPair> joins = dbRelationship.columnPairs();
         Map<String, Object> targetPk;
 
         // optimize for the most common single column FK
         if (joins.size() == 1) {
-            DbJoin join = joins.getFirst();
-            Object fk = sourceRow.get(join.getSourceName());
+            CompiledColumnPair join = joins.getFirst();
+            Object fk = sourceRow.get(join.source().name());
             if (fk == null) {
                 return null;
             }
-            targetPk = Collections.singletonMap(join.getTargetName(), fk);
+            targetPk = Collections.singletonMap(join.target().name(), fk);
         } else {
             targetPk = HashMap.newHashMap(joins.size());
             int nullFks = 0;
 
-            for (DbJoin join : joins) {
-                Object fk = sourceRow.get(join.getSourceName());
+            for (CompiledColumnPair join : joins) {
+                Object fk = sourceRow.get(join.source().name());
                 if (fk != null) {
-                    targetPk.put(join.getTargetName(), fk);
-                } else if (!join.getSource().isMandatory()) {
+                    targetPk.put(join.target().name(), fk);
+                } else if (!join.source().isMandatory()) {
                     // a null in a nullable column of a multi-column FK that partially overlaps the PK (CAY-284)
                     return null;
                 } else {
@@ -122,12 +119,12 @@ public final class ObjectSnapshots {
             }
         }
 
-        return ObjectId.of(relationship.getTargetEntityName(), targetPk);
+        return ObjectId.of(relationship.target().name(), targetPk);
     }
 
     private static final class Builder {
 
-        private final EntityResolver resolver;
+        private final CompiledMapping mapping;
         private final DataContextObjectStore objectStore;
         private final Persistent object;
         private final long version;
@@ -140,8 +137,8 @@ public final class ObjectSnapshots {
         // the FK columns of the to-ones that are null, filled last
         private List<String> nullFks;
 
-        Builder(EntityResolver resolver, DataContextObjectStore objectStore, Persistent object, long version) {
-            this.resolver = resolver;
+        Builder(CompiledMapping mapping, DataContextObjectStore objectStore, Persistent object, long version) {
+            this.mapping = mapping;
             this.objectStore = objectStore;
             this.object = object;
             this.version = version;
@@ -153,20 +150,20 @@ public final class ObjectSnapshots {
                 return objectStore.getSnapshot(object.getObjectId());
             }
 
-            ObjEntity entity = resolver.getObjEntity(object);
-            ClassDescriptor descriptor = resolver.getClassDescriptor(entity.getName());
+            CompiledEntity entity = mapping.entity(object);
 
-            this.layout = descriptor.getSnapshotLayout();
+            this.layout = entity.snapshotLayout();
             this.values = new Object[layout.size()];
             this.present = new boolean[layout.size()];
 
+            for (CompiledAttribute attribute : entity.attributes()) {
+                addAttribute(attribute);
+            }
+
             // to-many relationships contribute nothing to the snapshot
-            for (PropertyDescriptor property : descriptor.getProperties()) {
-                switch (property) {
-                    case AttributeProperty attribute -> addAttribute(attribute);
-                    case ToOneProperty toOne -> addToOne(toOne);
-                    default -> {
-                    }
+            for (CompiledRelationship relationship : entity.relationships()) {
+                if (relationship instanceof CompiledToOneRelationship toOne) {
+                    addToOne(toOne);
                 }
             }
 
@@ -182,7 +179,7 @@ public final class ObjectSnapshots {
             }
 
             // Ensure primary keys of additional entities are also included in the snapshot
-            for (CayennePath path : descriptor.getAdditionalDbEntities().keySet()) {
+            for (CayennePath path : entity.flattenedTables().keySet()) {
                 ObjectId flattenedId = objectStore.getFlattenedId(object.getObjectId(), path);
                 if (flattenedId != null) {
                     for (Map.Entry<String, Object> idEntry : flattenedId.getIdSnapshot().entrySet()) {
@@ -199,8 +196,8 @@ public final class ObjectSnapshots {
             }
 
             return presentCount == values.length
-                    ? DataRow.of(entity.getName(), layout, values, version)
-                    : partialRow(entity.getName());
+                    ? DataRow.of(entity.name(), layout, values, version)
+                    : partialRow(entity.name());
         }
 
         /**
@@ -246,27 +243,24 @@ public final class ObjectSnapshots {
             return i;
         }
 
-        private void addAttribute(AttributeProperty property) {
-            ObjAttribute objAttr = property.getAttribute();
+        private void addAttribute(CompiledAttribute attribute) {
             // processing compound attributes correctly
-            set(objAttr.getDbAttributePath().value(), property.readPropertyDirectly(object));
+            set(attribute.dbPath().value(), attribute.readPropertyDirectly(object));
         }
 
-        private void addToOne(ToOneProperty property) {
-            ObjRelationship rel = property.getRelationship();
-
+        private void addToOne(CompiledToOneRelationship toOne) {
             // only a relationship holding the FK on the source contributes columns to the snapshot
-            if (!rel.isForeignKey()) {
+            if (!toOne.isForeignKey()) {
                 return;
             }
 
-            Object targetObject = property.readPropertyDirectly(object);
+            Object targetObject = toOne.readPropertyDirectly(object);
             if (targetObject == null) {
                 if (nullFks == null) {
                     nullFks = new ArrayList<>();
                 }
-                for (DbJoin join : rel.getDbRelationships().getFirst().getJoins()) {
-                    nullFks.add(join.getSourceName());
+                for (CompiledColumnPair join : toOne.joins().getFirst().columnPairs()) {
+                    nullFks.add(join.source().name());
                 }
                 return;
             }
@@ -279,9 +273,9 @@ public final class ObjectSnapshots {
                             + ". Object may have been deleted externally.", object.getObjectId());
                 }
 
-                DbRelationship dbRel = rel.getDbRelationships().getFirst();
-                for (DbJoin join : dbRel.getJoins()) {
-                    String key = join.getSourceName();
+                CompiledJoin dbRel = toOne.joins().getFirst();
+                for (CompiledColumnPair join : dbRel.columnPairs()) {
+                    String key = join.source().name();
                     set(key, storedSnapshot.get(key));
                 }
 
@@ -297,10 +291,11 @@ public final class ObjectSnapshots {
                 return;
             }
 
-            DbRelationship dbRel = rel.getDbRelationships().getFirst();
-            for (DbJoin join : dbRel.getJoins()) {
-                set(join.getSourceName(), idParts.get(join.getTargetName()));
+            CompiledJoin dbRel = toOne.joins().getFirst();
+            for (CompiledColumnPair join : dbRel.columnPairs()) {
+                set(join.source().name(), idParts.get(join.target().name()));
             }
+
         }
     }
 }

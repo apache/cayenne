@@ -23,7 +23,7 @@ import org.apache.cayenne.access.sqlbuilder.SQLAppendable;
 import org.apache.cayenne.access.sqlbuilder.SQLGenerationContext;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.access.sqlbuilder.sqltree.ValueNode;
-import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.compiled.CompiledColumn;
 
 import java.sql.Types;
 
@@ -32,13 +32,13 @@ import java.sql.Types;
  */
 public class DerbyValueNode extends ValueNode {
 
-    public DerbyValueNode(Object value, boolean isArray, DbAttribute attribute, boolean needBinding) {
-        super(value, isArray, attribute, needBinding);
+    public DerbyValueNode(Object value, boolean isArray, CompiledColumn column, boolean needBinding) {
+        super(value, isArray, column, needBinding);
     }
 
     @Override
     protected void appendStringValue(SQLAppendable buffer, SQLGenerationContext context, CharSequence value) {
-        if(getAttribute() == null || (getAttribute() != null && getAttribute().getType() == Types.CLOB)) {
+        if(getAttribute() == null || (getAttribute() != null && getAttribute().jdbcType() == Types.CLOB)) {
             buffer.append(" CAST(? AS VARCHAR(").append(Math.max(1,value.length())).append("))");
         } else {
             buffer.append(" ?");

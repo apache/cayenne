@@ -28,9 +28,9 @@ import org.apache.cayenne.access.flush.operation.DbRowOpType;
 import org.apache.cayenne.access.flush.operation.DeleteDbRowOpFactory;
 import org.apache.cayenne.access.flush.operation.InsertDbRowOp;
 import org.apache.cayenne.access.flush.operation.UpdateDbRowOp;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.reflect.ClassDescriptor;
+import org.apache.cayenne.map.compiled.CompiledTable;
+import org.apache.cayenne.map.compiled.CompiledMapping;
+import org.apache.cayenne.map.compiled.CompiledEntity;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -45,23 +45,23 @@ import java.util.Set;
  */
 class DbRowOpFactory {
 
-    private final EntityResolver resolver;
+    private final CompiledMapping mapping;
     private final DataContextObjectStore store;
     private final Set<ArcTarget> processedArcs;
     private final Map<ObjectId, DbRowOp> dbRows;
     private final RootRowOpProcessor rootRowOpProcessor;
     private final DeleteDbRowOpFactory deleteDbRowOpFactory;
 
-    private ClassDescriptor descriptor;
+    private CompiledEntity entity;
     private Persistent object;
     private ObjectDiff diff;
 
-    DbRowOpFactory(EntityResolver resolver,
+    DbRowOpFactory(CompiledMapping mapping,
                    DataContextObjectStore store,
                    Set<ArcTarget> processedArcs,
                    DeleteDbRowOpFactory deleteDbRowOpFactory) {
 
-        this.resolver = resolver;
+        this.mapping = mapping;
         this.store = store;
         this.dbRows = new HashMap<>(4);
         this.processedArcs = processedArcs;
@@ -72,15 +72,15 @@ class DbRowOpFactory {
     private void updateDiff(ObjectDiff diff) {
         ObjectId id = diff.getNodeId();
         this.diff = diff;
-        this.descriptor = resolver.getClassDescriptor(id.getEntityName());
+        this.entity = mapping.entity(id.getEntityName());
         this.object = store.getObject(id);
         this.dbRows.clear();
     }
 
     Collection<? extends DbRowOp> createRows(ObjectDiff diff) {
         updateDiff(diff);
-        DbEntity rootEntity = descriptor.getEntity().getDbEntity();
-        DbRowOp row = getOrCreate(rootEntity, object.getObjectId(), DbRowOpType.forObject(object));
+        CompiledTable rootTable = entity.table();
+        DbRowOp row = getOrCreate(rootTable, object.getObjectId(), DbRowOpType.forObject(object));
         rootRowOpProcessor.setDiff(diff);
         row.accept(rootRowOpProcessor);
         return dbRows.values();
@@ -92,24 +92,24 @@ class DbRowOpFactory {
     }
 
     @SuppressWarnings("unchecked")
-    <E extends DbRowOp> E getOrCreate(DbEntity entity, ObjectId id, DbRowOpType type) {
-        return (E) dbRows.computeIfAbsent(id, nextId -> createRow(entity, id, type));
+    <E extends DbRowOp> E getOrCreate(CompiledTable table, ObjectId id, DbRowOpType type) {
+        return (E) dbRows.computeIfAbsent(id, nextId -> createRow(table, id, type));
     }
 
-    private DbRowOp createRow(DbEntity entity, ObjectId id, DbRowOpType type) {
+    private DbRowOp createRow(CompiledTable table, ObjectId id, DbRowOpType type) {
         // skip phantom nodes, this could be a created and immediately deleted relationship
         if (store.getObject(id) == null && !id.getEntityName().startsWith("db:")) {
             return null;
         }
         return switch (type) {
-            case INSERT -> new InsertDbRowOp(object, entity, id);
-            case UPDATE -> new UpdateDbRowOp(object, entity, id);
-            case DELETE -> deleteDbRowOpFactory.createOp(object, entity, id);
+            case INSERT -> new InsertDbRowOp(object, table, id);
+            case UPDATE -> new UpdateDbRowOp(object, table, id);
+            case DELETE -> deleteDbRowOpFactory.createOp(object, table, id);
         };
     }
 
-    ClassDescriptor getDescriptor() {
-        return descriptor;
+    CompiledEntity getEntity() {
+        return entity;
     }
 
     Persistent getObject() {

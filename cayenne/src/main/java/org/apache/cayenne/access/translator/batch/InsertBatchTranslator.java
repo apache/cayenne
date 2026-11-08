@@ -23,7 +23,7 @@ import java.util.Arrays;
 
 import org.apache.cayenne.access.sqlbuilder.InsertBuilder;
 import org.apache.cayenne.access.sqlbuilder.SQLBuilder;
-import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.compiled.CompiledColumn;
 import org.apache.cayenne.query.resolved.InsertBatch;
 
 /**
@@ -36,16 +36,16 @@ public class InsertBatchTranslator extends BaseBatchTranslator<InsertBatch> {
         InsertBatch query = context.getQuery();
         InsertBuilder insertBuilder = SQLBuilder.insert(context.getRootDbEntity());
 
-        for (DbAttribute attribute : query.dbAttributes()) {
+        for (CompiledColumn column : query.dbAttributes()) {
             // skip generated attributes, if needed
-            if (excludeInBatch(context, attribute)) {
+            if (excludeInBatch(context, column)) {
                 continue;
             }
             insertBuilder
-                    .column(SQLBuilder.column(attribute.getName()).attribute(attribute))
+                    .column(SQLBuilder.column(column.name()).attribute(column))
                     // We can use here any non-null value, to create attribute binding,
                     // actual values and ExtendedTypes are resolved when binding each row.
-                    .value(SQLBuilder.value(1).attribute(attribute));
+                    .value(SQLBuilder.value(1).attribute(column));
         }
 
         return doTranslate(context, insertBuilder);
@@ -57,8 +57,8 @@ public class InsertBatchTranslator extends BaseBatchTranslator<InsertBatch> {
         int[] indexes = new int[query.dbAttributes().size()];
         int i = 0;
         int j = 0;
-        for (DbAttribute attribute : query.dbAttributes()) {
-            if (!excludeInBatch(context, attribute)) {
+        for (CompiledColumn column : query.dbAttributes()) {
+            if (!excludeInBatch(context, column)) {
                 indexes[j++] = i;
             }
             i++;
@@ -66,15 +66,15 @@ public class InsertBatchTranslator extends BaseBatchTranslator<InsertBatch> {
         return Arrays.copyOf(indexes, j);
     }
 
-    protected boolean excludeInBatch(BatchTranslatorContext<InsertBatch> context, DbAttribute attribute) {
+    protected boolean excludeInBatch(BatchTranslatorContext<InsertBatch> context, CompiledColumn column) {
         // attribute inclusion rule - one of the rules below must be true:
         //  (1) attribute not generated
         //  (2) attribute is generated and PK and adapter does not support generated keys
-        return attribute.isGenerated() && (!attribute.isPrimaryKey() || context.getAdapter().supportsGeneratedKeys());
+        return column.isGenerated() && (!column.isPrimaryKey() || context.getAdapter().supportsGeneratedKeys());
     }
 
     @Override
-    protected boolean isNullAttribute(BatchTranslatorContext<InsertBatch> context, DbAttribute attribute) {
+    protected boolean isNullAttribute(BatchTranslatorContext<InsertBatch> context, CompiledColumn column) {
         return false;
     }
 }

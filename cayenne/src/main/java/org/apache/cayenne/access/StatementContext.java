@@ -24,7 +24,7 @@ import org.apache.cayenne.QueryResult;
 import org.apache.cayenne.SelectResult;
 import org.apache.cayenne.access.translator.TranslatedStatement;
 import org.apache.cayenne.log.SQLLogger;
-import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.compiled.CompiledMapping;
 import org.apache.cayenne.query.resolved.ResolvedQuery;
 
 import java.util.ArrayList;
@@ -41,16 +41,16 @@ import java.util.Objects;
 public final class StatementContext {
 
     private final ResolvedQuery resolvedQuery;
-    private final EntityResolver resolver;
+    private final CompiledMapping mapping;
     private StatementLog log;
     private boolean iteratedResult;
     private boolean exclusiveConnection;
     private TranslatedStatement translatedStatement;
     private final List<QueryResult> results;
 
-    public StatementContext(ResolvedQuery resolvedQuery, EntityResolver resolver) {
+    public StatementContext(ResolvedQuery resolvedQuery, CompiledMapping mapping) {
         this.resolvedQuery = Objects.requireNonNull(resolvedQuery, "Null resolved query");
-        this.resolver = Objects.requireNonNull(resolver, "Null resolver");
+        this.mapping = Objects.requireNonNull(mapping, "Null mapping");
         this.results = new ArrayList<>(1);
     }
 
@@ -61,8 +61,8 @@ public final class StatementContext {
         return resolvedQuery;
     }
 
-    public EntityResolver getResolver() {
-        return resolver;
+    public CompiledMapping getMapping() {
+        return mapping;
     }
 
     public boolean isIteratedResult() {

@@ -28,8 +28,8 @@ import java.util.Map;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.map.ObjAttribute;
-import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.compiled.CompiledAttribute;
+import org.apache.cayenne.map.compiled.CompiledEntity;
 import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.resolved.ResolvedQuery;
@@ -43,8 +43,7 @@ import java.util.Objects;
  * Scalar values that were fetched by the column query are not processed in any way,
  * if there is no Persistent objects in the result Collection it will be iterated as is, without faulting anything.
  *
- * @see QueryMetadata#getPageSize()
- * @see org.apache.cayenne.query.QueryMetadata
+ * @see org.apache.cayenne.query.resolved.ResolvedQuery#pageSize()
  *
  * @since 4.0
  */
@@ -53,7 +52,7 @@ class MixedResultIncrementalFaultList<E> extends IncrementalFaultList<E> {
     /**
      * Cached positions for entity results in elements array
      */
-    private Map<Integer, ObjEntity> indexToEntity;
+    private Map<Integer, CompiledEntity> indexToEntity;
 
     /**
      * Whether result contains only scalars
@@ -80,7 +79,7 @@ class MixedResultIncrementalFaultList<E> extends IncrementalFaultList<E> {
         List<ResultSegment> segments = resolved.resultSegments().segments();
         for (int i = 0; i < segments.size(); i++) {
             if (segments.get(i) instanceof EntityResultSegment resultSegment) {
-                ObjEntity entity = resultSegment.classDescriptor().getEntity();
+                CompiledEntity entity = resultSegment.entity();
                 // a row is an Object[] with one element per segment, so the entity id sits at the segment position
                 indexToEntity.put(i, entity);
                 scalarResult = false;
@@ -116,7 +115,7 @@ class MixedResultIncrementalFaultList<E> extends IncrementalFaultList<E> {
                 toIndex = elements.size();
             }
 
-            for(Map.Entry<Integer, ObjEntity> entry : indexToEntity.entrySet()) {
+            for(Map.Entry<Integer, CompiledEntity> entry : indexToEntity.entrySet()) {
                 List<Expression> quals = new ArrayList<>(pageSize);
                 int dataIdx = entry.getKey();
                 for (int i = fromIndex; i < toIndex; i++) {
@@ -160,9 +159,9 @@ class MixedResultIncrementalFaultList<E> extends IncrementalFaultList<E> {
         }
     }
 
-    ObjectSelect<Persistent> createSelectQuery(ObjEntity entity, List<Expression> expressions) {
+    ObjectSelect<Persistent> createSelectQuery(CompiledEntity entity, List<Expression> expressions) {
         ObjectSelect<Persistent> query = ObjectSelect.query(Persistent.class)
-                .entityName(entity.getName())
+                .entityName(entity.name())
                 .where(ExpressionFactory.or(expressions));
         if (entity.equals(rootEntity) && resolved.prefetchTree() != null) {
             query.prefetch(resolved.prefetchTree());
@@ -179,8 +178,8 @@ class MixedResultIncrementalFaultList<E> extends IncrementalFaultList<E> {
         } else {
             map = new HashMap<>();
             int i = 0;
-            for (ObjAttribute attribute : indexToEntity.get(index).getPrimaryKeys()) {
-                map.put(attribute.getDbAttributeName(), data[index + i++]);
+            for (CompiledAttribute attribute : indexToEntity.get(index).primaryKeyAttributes()) {
+                map.put(attribute.columnName(), data[index + i++]);
             }
         }
         return ExpressionFactory.matchAllDbExp(map);

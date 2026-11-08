@@ -22,8 +22,8 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.compiled.CompiledColumn;
+import org.apache.cayenne.map.compiled.CompiledTable;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.generated.GeneratedColumnCompKey;
@@ -112,9 +112,10 @@ public class IdentityColumnsIT {
         // before saving objects, let's manually access PKGenerator to get a
         // base PK value
         // for comparison
-        DbEntity joinTableEntity = env.context().getEntityResolver().getDbEntity(joinTable.getTableName());
-        DbAttribute pkAttribute = joinTableEntity.getAttribute("ID");
-        Number pk = (Number) node.getPkGenerator().generatePk(node, pkAttribute);
+        CompiledTable joinTableEntity = env.context().getMapping().schema().table(joinTable.getTableName());
+        CompiledColumn pkColumn = joinTableEntity.column("ID");
+
+        Number pk = (Number) node.getPkGenerator().generatePk(node, pkColumn);
 
         GeneratedF1 f1 = env.context().newObject(GeneratedF1.class);
         GeneratedF2 f2 = env.context().newObject(GeneratedF2.class);

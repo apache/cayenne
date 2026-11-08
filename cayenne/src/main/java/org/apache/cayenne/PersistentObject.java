@@ -20,18 +20,15 @@
 package org.apache.cayenne;
 
 import org.apache.cayenne.exp.path.CayennePath;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbJoin;
-import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.EmbeddedAttribute;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.ObjAttribute;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.reflect.ClassDescriptor;
-import org.apache.cayenne.reflect.PropertyDescriptor;
+import org.apache.cayenne.map.compiled.CompiledColumnPair;
+import org.apache.cayenne.map.compiled.CompiledColumn;
+import org.apache.cayenne.map.compiled.CompiledJoin;
+import org.apache.cayenne.map.compiled.CompiledMapping;
+import org.apache.cayenne.map.compiled.CompiledAttribute;
+import org.apache.cayenne.map.compiled.CompiledEntity;
+import org.apache.cayenne.map.compiled.CompiledRelationship;
+import org.apache.cayenne.map.compiled.CompiledToManyRelationship;
 import org.apache.cayenne.reflect.PropertyUtils;
-import org.apache.cayenne.reflect.ToManyMapProperty;
 import org.apache.cayenne.lifecycle.Validating;
 import org.apache.cayenne.validation.BeanValidationFailure;
 import org.apache.cayenne.validation.ValidationFailure;
@@ -117,18 +114,17 @@ public abstract class PersistentObject implements Persistent, Validating {
      */
     protected Object getMapKey(String relationshipName, Object value) {
 
-        EntityResolver resolver = objectContext.getEntityResolver();
-        ClassDescriptor descriptor = resolver
-                .getClassDescriptor(objectId.getEntityName());
+        CompiledMapping mapping = objectContext.getMapping();
+        CompiledEntity entity = mapping.entity(objectId.getEntityName());
 
-        if (descriptor == null) {
+        if (entity == null) {
             throw new IllegalStateException("Persistent's entity is unmapped, objectId: "
                     + objectId);
         }
 
-        PropertyDescriptor property = descriptor.getProperty(relationshipName);
-        if (property instanceof ToManyMapProperty toManyMapProperty) {
-            return toManyMapProperty.getMapKey(value);
+        CompiledRelationship relationship = entity.relationship(relationshipName);
+        if (relationship instanceof CompiledToManyRelationship toMany && toMany.isMap()) {
+            return toMany.mapKey(value);
         }
 
         throw new IllegalArgumentException("Relationship '"
@@ -170,7 +166,7 @@ public abstract class PersistentObject implements Persistent, Validating {
         Object object = readPropertyDirectly(propertyName);
 
         if (object instanceof Fault fault) {
-            object = fault.resolveFault(this, propertyName);
+            object = fault.resolveFault(this);
             writePropertyDirectly(propertyName, object);
         }
 
@@ -471,18 +467,18 @@ public abstract class PersistentObject implements Persistent, Validating {
      * @param relName name of relationship from this object to <code>val</code>.
      */
     protected void setReverseRelationship(String relName, Persistent val) {
-        ObjRelationship rel = objectContext.getEntityResolver().getObjEntity(objectId.getEntityName())
-                .getRelationship(relName);
-        ObjRelationship revRel = rel.getReverseRelationship();
+        CompiledRelationship relationship = objectContext.getMapping().entity(objectId.getEntityName())
+                .relationship(relName);
+        CompiledRelationship revRel = relationship.reverse();
         if (revRel != null) {
-            Object oldTarget = val.readProperty(revRel.getName());
+            Object oldTarget = val.readProperty(revRel.name());
             if (oldTarget != this && oldTarget instanceof Persistent persistentOldTarget && val instanceof PersistentObject persistentObjectVal) {
-                persistentObjectVal.unsetReverseRelationship(revRel.getName(), persistentOldTarget);
+                persistentObjectVal.unsetReverseRelationship(revRel.name(), persistentOldTarget);
             }
             if (revRel.isToMany()) {
-                val.addToManyTarget(revRel.getName(), this, false);
+                val.addToManyTarget(revRel.name(), this, false);
             } else {
-                val.setToOneTarget(revRel.getName(), this, false);
+                val.setToOneTarget(revRel.name(), this, false);
             }
         }
     }
@@ -493,20 +489,20 @@ public abstract class PersistentObject implements Persistent, Validating {
      */
     protected void unsetReverseRelationship(String relName, Persistent val) {
 
-        EntityResolver resolver = objectContext.getEntityResolver();
-        ObjEntity entity = resolver.getObjEntity(objectId.getEntityName());
+        CompiledMapping mapping = objectContext.getMapping();
+        CompiledEntity entity = mapping.entity(objectId.getEntityName());
 
         if (entity == null) {
             throw new IllegalStateException("Persistent's entity is unmapped, objectId: " + objectId);
         }
 
-        ObjRelationship rel = entity.getRelationship(relName);
-        ObjRelationship revRel = rel.getReverseRelationship();
+        CompiledRelationship relationship = entity.relationship(relName);
+        CompiledRelationship revRel = relationship.reverse();
         if (revRel != null) {
             if (revRel.isToMany()) {
-                val.removeToManyTarget(revRel.getName(), this, false);
+                val.removeToManyTarget(revRel.name(), this, false);
             } else {
-                val.setToOneTarget(revRel.getName(), null, false);
+                val.setToOneTarget(revRel.name(), null, false);
             }
         }
     }
@@ -543,8 +539,8 @@ public abstract class PersistentObject implements Persistent, Validating {
      */
     protected void validateForSave(ValidationResult validationResult) {
 
-        ObjEntity objEntity = getObjectContext().getEntityResolver().getObjEntity(this);
-        if (objEntity == null) {
+        CompiledEntity entity = getObjectContext().getMapping().entity(this);
+        if (entity == null) {
             throw new CayenneRuntimeException("No ObjEntity mapping found for Persistent %s", getClass().getName());
         }
 
@@ -552,26 +548,26 @@ public abstract class PersistentObject implements Persistent, Validating {
 
         Map<String, ValidationFailure> failedDbAttributes = null;
 
-        for (ObjAttribute next : objEntity.getAttributes()) {
+        for (CompiledAttribute next : entity.attributes()) {
             // TODO: andrus, 2/20/2007 - handle embedded attribute
-            if (next instanceof EmbeddedAttribute) {
+            if (next.embedded() != null) {
                 continue;
             }
 
-            DbAttribute dbAttribute = next.getDbAttribute();
-            if (dbAttribute == null) {
+            CompiledColumn column = next.column();
+            if (column == null) {
                 throw new CayenneRuntimeException("ObjAttribute '%s"
-                        + "' does not have a corresponding DbAttribute", next.getName());
+                        + "' does not have a corresponding DbAttribute", next.name());
             }
 
             // pk may still be generated
-            if (dbAttribute.isPrimaryKey()) {
+            if (column.isPrimaryKey()) {
                 continue;
             }
 
-            Object value = this.readPropertyDirectly(next.getName());
-            if (dbAttribute.isMandatory()) {
-                ValidationFailure failure = BeanValidationFailure.validateNotNull(this, next.getName(), value);
+            Object value = this.readPropertyDirectly(next.name());
+            if (column.isMandatory()) {
+                ValidationFailure failure = BeanValidationFailure.validateNotNull(this, next.name(), value);
 
                 if (failure != null) {
 
@@ -579,36 +575,36 @@ public abstract class PersistentObject implements Persistent, Validating {
                         failedDbAttributes = new HashMap<>();
                     }
 
-                    failedDbAttributes.put(dbAttribute.getName(), failure);
+                    failedDbAttributes.put(column.name(), failure);
                     continue;
                 }
             }
 
             // validate length
-            if (value != null && dbAttribute.getMaxLength() > 0) {
+            if (value != null && column.maxLength() > 0) {
                 if (value.getClass().isArray()) {
                     int len = Array.getLength(value);
-                    if (len > dbAttribute.getMaxLength()) {
-                        String message = "\"" + next.getName() + "\" exceeds maximum allowed length ("
-                                + dbAttribute.getMaxLength() + " bytes): " + len;
-                        validationResult.addFailure(new BeanValidationFailure(this, next.getName(), message));
+                    if (len > column.maxLength()) {
+                        String message = "\"" + next.name() + "\" exceeds maximum allowed length ("
+                                + column.maxLength() + " bytes): " + len;
+                        validationResult.addFailure(new BeanValidationFailure(this, next.name(), message));
                     }
                 } else if (value instanceof CharSequence charSequence) {
                     int len = charSequence.length();
-                    if (len > dbAttribute.getMaxLength()) {
-                        String message = "\"" + next.getName() + "\" exceeds maximum allowed length ("
-                                + dbAttribute.getMaxLength() + " chars): " + len;
-                        validationResult.addFailure(new BeanValidationFailure(this, next.getName(), message));
+                    if (len > column.maxLength()) {
+                        String message = "\"" + next.name() + "\" exceeds maximum allowed length ("
+                                + column.maxLength() + " chars): " + len;
+                        validationResult.addFailure(new BeanValidationFailure(this, next.name(), message));
                     }
                 }
             }
         }
 
         // validate mandatory relationships
-        for (final ObjRelationship relationship : objEntity.getRelationships()) {
+        for (final CompiledRelationship relationship : entity.relationships()) {
 
-            List<DbRelationship> dbRels = relationship.getDbRelationships();
-            if (dbRels.isEmpty()) {
+            List<CompiledJoin> joins = relationship.joins();
+            if (joins.isEmpty()) {
                 continue;
             }
 
@@ -622,13 +618,13 @@ public abstract class PersistentObject implements Persistent, Validating {
             // relationship will be validated only if all db path has mandatory
             // db relationships
             boolean validate = true;
-            for (DbRelationship dbRelationship : dbRels) {
-                for (DbJoin join : dbRelationship.getJoins()) {
-                    DbAttribute source = join.getSource();
+            for (CompiledJoin dbRelationship : joins) {
+                for (CompiledColumnPair join : dbRelationship.columnPairs()) {
+                    CompiledColumn source = join.source();
                     if (source.isMandatory()) {
                         // clear attribute failures...
                         if (failedDbAttributes != null && !failedDbAttributes.isEmpty()) {
-                            failedDbAttributes.remove(source.getName());
+                            failedDbAttributes.remove(source.name());
                         }
                     } else {
                         // do not validate if the relation is based on
@@ -639,8 +635,9 @@ public abstract class PersistentObject implements Persistent, Validating {
             }
 
             if (validate) {
-                Object value = this.readPropertyDirectly(relationship.getName());
-                ValidationFailure failure = BeanValidationFailure.validateNotNull(this, relationship.getName(), value);
+                Object value = this.readPropertyDirectly(relationship.name());
+                ValidationFailure failure = BeanValidationFailure.validateNotNull(this, relationship.name(), value);
+
 
                 if (failure != null) {
                     validationResult.addFailure(failure);

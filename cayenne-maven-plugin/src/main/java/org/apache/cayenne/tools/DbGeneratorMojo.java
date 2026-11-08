@@ -20,6 +20,8 @@
 package org.apache.cayenne.tools;
 
 import org.apache.cayenne.access.DbGenerator;
+import org.apache.cayenne.map.compiled.CompiledSchema;
+import org.apache.cayenne.map.compiled.SchemaCompiler;
 import org.apache.cayenne.project.DataMapLoader;
 import org.apache.cayenne.datasource.CayenneDataSource;
 import org.apache.cayenne.dba.DbAdapter;
@@ -42,6 +44,7 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 import org.slf4j.Logger;
 
+import java.util.List;
 import javax.sql.DataSource;
 import java.io.File;
 
@@ -140,7 +143,8 @@ public class DbGeneratorMojo extends AbstractMojo {
 
             // Load the data map and run the db generator.
             DataMap dataMap = loadDataMap(injector);
-            DbGenerator generator = new DbGenerator(dbAdapter, dataMap, NoopSQLLogger.getInstance());
+            CompiledSchema schema = SchemaCompiler.compile(List.of(dataMap));
+            DbGenerator generator = new DbGenerator(dbAdapter, schema, dataMap.getName(), NoopSQLLogger.getInstance());
             generator.setShouldCreateFKConstraints(createFK);
             generator.setShouldCreatePKSupport(createPK);
             generator.setShouldCreateTables(createTables);

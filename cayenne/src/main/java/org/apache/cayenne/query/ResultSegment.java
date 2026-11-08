@@ -22,7 +22,7 @@ package org.apache.cayenne.query;
  * A single segment of a query result set mapping. A segment describes how one or more adjacent columns of a
  * result set row map to a result object
  *
- * @see QueryMetadata#getResultSegments()
+ * @see org.apache.cayenne.query.resolved.ResolvedQuery#resultSegments()
  * @since 5.0
  */
 public sealed interface ResultSegment permits EntityResultSegment, EmbeddableResultSegment, ScalarResultSegment {

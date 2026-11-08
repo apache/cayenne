@@ -25,7 +25,7 @@ import java.util.List;
 
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.graph.GraphDiff;
-import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.compiled.CompiledMapping;
 import org.apache.cayenne.access.QueryContext;
 import org.apache.cayenne.access.lifecycle.LifecycleEventsManager;
 
@@ -35,7 +35,7 @@ import org.apache.cayenne.access.lifecycle.LifecycleEventsManager;
  */
 public class MockDataChannel implements DataChannel {
 
-    protected EntityResolver resolver;
+    protected CompiledMapping mapping;
     protected LifecycleEventsManager lifecycleEventsManager;
     protected List requestObjects = new ArrayList();
     protected GraphDiff commitResponse;
@@ -53,13 +53,13 @@ public class MockDataChannel implements DataChannel {
         this.response = List.of(new SelectResult<>(selectResponse));
     }
 
-    public MockDataChannel(EntityResolver entityResolver, List selectResponse) {
+    public MockDataChannel(CompiledMapping mapping, List selectResponse) {
         this(selectResponse);
-        this.resolver = entityResolver;
+        this.mapping = mapping;
     }
 
-    public MockDataChannel(EntityResolver resolver) {
-        this.resolver = resolver;
+    public MockDataChannel(CompiledMapping mapping) {
+        this.mapping = mapping;
         this.response = new ArrayList<>();
     }
 
@@ -114,8 +114,8 @@ public class MockDataChannel implements DataChannel {
         return null;
     }
 
-    public EntityResolver getEntityResolver() {
-        return resolver;
+    public CompiledMapping getMapping() {
+        return mapping;
     }
 
     public LifecycleEventsManager getLifecycleEventsManager() {
@@ -125,7 +125,7 @@ public class MockDataChannel implements DataChannel {
         return lifecycleEventsManager;
     }
     
-    public void setEntityResolver(EntityResolver resolver) {
-        this.resolver = resolver;
+    public void setMapping(CompiledMapping mapping) {
+        this.mapping = mapping;
     }
 }

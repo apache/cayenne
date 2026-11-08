@@ -21,7 +21,7 @@ package org.apache.cayenne.access.sqlbuilder.sqltree;
 
 import org.apache.cayenne.access.sqlbuilder.SQLAppendable;
 import org.apache.cayenne.access.sqlbuilder.SQLGenerationContext;
-import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.compiled.CompiledTable;
 
 import java.util.Objects;
 
@@ -30,18 +30,18 @@ import java.util.Objects;
  */
 public class TableNode extends Node {
 
-    private final DbEntity dbEntity;
+    private final CompiledTable table;
     private final String tableName;
     private final String alias;
 
     public TableNode(String tableName, String alias) {
-        this.dbEntity = null;
+        this.table = null;
         this.tableName = Objects.requireNonNull(tableName);
         this.alias = alias;
     }
 
-    public TableNode(DbEntity dbEntity, String alias) {
-        this.dbEntity = Objects.requireNonNull(dbEntity);
+    public TableNode(CompiledTable table, String alias) {
+        this.table = Objects.requireNonNull(table);
         this.tableName = null;
         this.alias = alias;
     }
@@ -50,14 +50,14 @@ public class TableNode extends Node {
     public SQLAppendable append(SQLAppendable buffer, SQLGenerationContext context) {
         buffer.appendTokenSeparator();
 
-        if(dbEntity != null) {
-            if(dbEntity.getCatalog() != null) {
-                buffer.appendQuoted(dbEntity.getCatalog()).append('.');
+        if(table != null) {
+            if(table.catalog() != null) {
+                buffer.appendQuoted(table.catalog()).append('.');
             }
-            if(dbEntity.getSchema() != null) {
-                buffer.appendQuoted(dbEntity.getSchema()).append('.');
+            if(table.schema() != null) {
+                buffer.appendQuoted(table.schema()).append('.');
             }
-            buffer.appendQuoted(dbEntity.getName());
+            buffer.appendQuoted(table.name());
         } else {
             buffer.appendQuoted(tableName);
         }

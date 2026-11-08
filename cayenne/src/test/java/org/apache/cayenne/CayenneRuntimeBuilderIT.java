@@ -21,8 +21,8 @@ package org.apache.cayenne;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.datasource.CayenneDataSource;
+import org.apache.cayenne.map.compiled.CompiledDataMap;
 import org.apache.cayenne.project.DataSourceDescriptor;
-import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.query.SQLQuery;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.apache.cayenne.unit.CayenneProjects;
@@ -95,7 +95,7 @@ public class CayenneRuntimeBuilderIT {
                 .defaultDataNode(dataSourceFromDescriptor())
                 .build();
 
-        DataMap map = localRuntime.getDataDomain().getDataMap("testmap");
+        CompiledDataMap map = localRuntime.getDataDomain().getMapping().schema().map("testmap");
         assertNotNull(map);
 
         DataNode node = localRuntime.getDataDomain().getDefaultNode();
@@ -118,7 +118,7 @@ public class CayenneRuntimeBuilderIT {
         localRuntime = new CayenneRuntimeBuilder(null).addConfig(CayenneProjects.TESTMAP_PROJECT).defaultDataNode(dataSource)
                 .build();
 
-        DataMap map = localRuntime.getDataDomain().getDataMap("testmap");
+        CompiledDataMap map = localRuntime.getDataDomain().getMapping().schema().map("testmap");
         assertNotNull(map);
 
         DataNode node = localRuntime.getDataDomain().getDefaultNode();

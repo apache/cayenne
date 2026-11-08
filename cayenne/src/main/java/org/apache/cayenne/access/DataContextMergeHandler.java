@@ -32,9 +32,11 @@ import org.apache.cayenne.graph.ArcId;
 import org.apache.cayenne.graph.GraphChangeHandler;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.graph.GraphEvent;
-import org.apache.cayenne.reflect.ArcProperty;
-import org.apache.cayenne.reflect.ClassDescriptor;
-import org.apache.cayenne.reflect.PropertyDescriptor;
+import org.apache.cayenne.map.compiled.CompiledEntity;
+import org.apache.cayenne.map.compiled.CompiledProperty;
+import org.apache.cayenne.map.compiled.CompiledRelationship;
+
+
 
 /**
  * A listener of GraphEvents sent by the DataChannel that merges changes to the DataContext.
@@ -103,10 +105,8 @@ class DataContextMergeHandler implements GraphChangeHandler {
         // extra safegurad
     }
 
-    private PropertyDescriptor propertyForId(ObjectId id, String propertyName) {
-        ClassDescriptor descriptor = context.getEntityResolver().getClassDescriptor(
-                id.getEntityName());
-        return descriptor.getProperty(propertyName);
+    private CompiledEntity entityForId(ObjectId id) {
+        return context.getMapping().entity(id.getEntityName());
     }
 
     // *** DataChannel graph event handlers, registered in listen(..)
@@ -181,11 +181,15 @@ class DataContextMergeHandler implements GraphChangeHandler {
         Persistent object = store.getObject(id);
         if (object != null && object.getPersistenceState() != PersistenceState.HOLLOW) {
 
-            PropertyDescriptor p = propertyForId(id, property);
+            CompiledEntity entity = entityForId(id);
+            CompiledProperty compiledProperty = entity.property(property);
+            if (compiledProperty == null) {
+                return;
+            }
             store.withObjectLock(id, () -> {
                 // do not override local changes....
-                if (p.equals(p.readPropertyDirectly(object), oldValue)) {
-                    p.writePropertyDirectly(object, oldValue, newValue);
+                if (compiledProperty.equals(compiledProperty.readPropertyDirectly(object), oldValue)) {
+                    compiledProperty.writePropertyDirectly(object, oldValue, newValue);
                 }
                 return null;
             });
@@ -209,15 +213,16 @@ class DataContextMergeHandler implements GraphChangeHandler {
         final Persistent source = store.getObject(id);
         if (source != null && source.getPersistenceState() != PersistenceState.HOLLOW) {
 
-            PropertyDescriptor p = propertyForId(id, arcId.toString());
+            CompiledRelationship arc = entityForId(id).relationship(arcId.toString());
             store.withObjectLock(id, () -> {
                 // TODO: andrus, 11/25/2006 - handle replacement of clean properties
                 // of dirty objects. See DataRowUtils for details.
-                if (p instanceof ArcProperty arc && source.getPersistenceState() == PersistenceState.COMMITTED) {
+                if (arc != null && source.getPersistenceState() == PersistenceState.COMMITTED) {
                     arc.invalidate(source);
                 }
                 return null;
             });
+
         }
     }
 }

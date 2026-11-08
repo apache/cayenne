@@ -62,7 +62,7 @@ public class CryptoDataMapLoader implements DataMapLoader {
 				for (ObjAttribute attr : entity.getAttributes()) {
 					if (attr.isUsedForLocking() && 
 						attr.getDbAttribute() != null && 
-						columnMapper.isEncrypted(attr.getDbAttribute())) {
+						columnMapper.isEncrypted(attr.getDbAttribute().getEntity().getName(), attr.getDbAttribute().getName())) {
 						
 						String attrName = entity.getName() + "." + attr.getName();
 						sqlLogger.logMessage("WARN: Encrypted attributes like '" + attrName + "' cannot be used for " +

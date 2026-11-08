@@ -23,7 +23,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.compiled.CompiledEntity;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.resolved.ResolvedQuery;
 import java.util.Objects;
@@ -58,7 +58,7 @@ public class IncrementalFaultList<E> implements List<E> {
 	protected final int pageSize;
 	protected final List elements;
 	protected final DataContext dataContext;
-	protected final ObjEntity rootEntity;
+	protected final CompiledEntity rootEntity;
 	protected volatile int unfetchedObjects;
 
 	/**
@@ -102,13 +102,13 @@ public class IncrementalFaultList<E> implements List<E> {
 
 		this.dataContext = dataContext;
 		this.pageSize = resolved.pageSize();
-		this.rootEntity = resolved.objEntity();
+		this.rootEntity = resolved.entity();
 
 		if (rootEntity == null) {
 			throw new CayenneRuntimeException("Pagination is not supported for queries not rooted in an ObjEntity");
 		}
 
-		this.idWidth = resolved.dbEntity().getPrimaryKeys().size();
+		this.idWidth = resolved.table().primaryKey().size();
 		this.maxFetchSize = maxFetchSize;
 		// make a copy of data, as we need to modify content of this list later
 		this.elements = Collections.synchronizedList(new ArrayList<>(data));
@@ -247,7 +247,7 @@ public class IncrementalFaultList<E> implements List<E> {
 
 	ObjectSelect<Persistent> createSelectQuery(List<Expression> expressions) {
 		ObjectSelect<Persistent> query = ObjectSelect.query(Persistent.class)
-				.entityName(rootEntity.getName())
+				.entityName(rootEntity.name())
 				.where(ExpressionFactory.or(expressions));
 
 		if(resolved.fetchingDataRows()) {

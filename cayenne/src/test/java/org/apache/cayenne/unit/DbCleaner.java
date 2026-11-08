@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.unit;
 
-import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.compiled.CompiledTable;
 import org.apache.cayenne.test.jdbc.DbHelper;
 
 import java.sql.SQLException;
@@ -42,9 +42,9 @@ public class DbCleaner {
 
     public void clean() {
         for (String map : dataMaps) {
-            for (DbEntity entity : parentSchemaManager.dbEntitiesInDeleteOrder(map)) {
+            for (CompiledTable table : parentSchemaManager.dbEntitiesInDeleteOrder(map)) {
                 try {
-                    dbHelper.deleteAll(entity.getName());
+                    dbHelper.deleteAll(table.name());
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
                 }

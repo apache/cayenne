@@ -19,8 +19,8 @@
 
 package org.apache.cayenne.query.resolved;
 
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.compiled.CompiledColumn;
+import org.apache.cayenne.map.compiled.CompiledTable;
 
 import java.util.Collection;
 import java.util.List;
@@ -32,35 +32,35 @@ import java.util.Set;
  * @since 6.0
  */
 public record DeleteBatch(
-        DbEntity dbEntity,
-        List<DbAttribute> qualifierAttributes,
+        CompiledTable table,
+        List<CompiledColumn> qualifierAttributes,
         Set<String> nullQualifierNames,
         boolean usingOptimisticLocking,
         List<BatchRow> rows) implements ResolvedBatch {
 
     public DeleteBatch(
-            DbEntity dbEntity,
-            List<DbAttribute> qualifierAttributes,
+            CompiledTable table,
+            List<CompiledColumn> qualifierColumns,
             Collection<String> nullQualifierNames,
             boolean usingOptimisticLocking,
             List<BatchRow> rows) {
-        this(dbEntity, qualifierAttributes, Set.copyOf(nullQualifierNames), usingOptimisticLocking, rows);
+        this(table, qualifierColumns, Set.copyOf(nullQualifierNames), usingOptimisticLocking, rows);
     }
 
     @Override
-    public List<DbAttribute> dbAttributes() {
+    public List<CompiledColumn> dbAttributes() {
         return qualifierAttributes;
     }
 
     /**
      * Returns true if a given qualifier attribute is matched against NULL (with "IS NULL") instead of a bound value.
      */
-    public boolean isNull(DbAttribute attribute) {
-        return nullQualifierNames.contains(attribute.getName());
+    public boolean isNull(CompiledColumn column) {
+        return nullQualifierNames.contains(column.name());
     }
 
     @Override
     public Object value(BatchRow row, int attributeIndex) {
-        return row.qualifier().get(qualifierAttributes.get(attributeIndex).getName());
+        return row.qualifier().get(qualifierAttributes.get(attributeIndex).name());
     }
 }

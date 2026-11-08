@@ -18,10 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.jira;
 
-import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.CayenneRuntime;
+import org.apache.cayenne.unit.TestProject;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -32,14 +32,17 @@ public class CAY_743Test {
     @Test
     public void load2MapsWithCrossMapInheritance() throws Exception {
 
-        CayenneRuntime runtime = CayenneRuntime.of().addConfig("cay743/cayenne-domain.xml").build();
+        CayenneRuntime runtime = CayenneRuntime.of()
+                .addConfig("cay743/cayenne-domain.xml")
+                .addModule(TestProject.module())
+                .build();
 
         try {
-            DataDomain domain = runtime.getDataDomain();
-            assertEquals(2, domain.getDataMaps().size());
+            TestProject project = TestProject.of(runtime);
+            assertEquals(2, project.dataMaps().size());
 
-            DataMap m1 = domain.getDataMap("map1");
-            DataMap m2 = domain.getDataMap("map2");
+            DataMap m1 = project.dataMap("map1");
+            DataMap m2 = project.dataMap("map2");
 
             ObjEntity oe11 = m1.getObjEntity("Entity11");
             ObjEntity oe12 = m1.getObjEntity("Entity12");

@@ -23,7 +23,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcPkGenerator;
-import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.compiled.CompiledTable;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -48,24 +48,24 @@ public class FrontBasePkGenerator extends JdbcPkGenerator {
     }
 
     @Override
-    public void createAutoPk(DataNode node, List<DbEntity> dbEntities) {
+    public void createAutoPk(DataNode node, List<CompiledTable> tables) {
         // For each entity (re)set the unique counter
-        for (DbEntity entity : dbEntities) {
-            runUpdate(node, pkCreateString(entity.getName()));
+        for (CompiledTable table : tables) {
+            runUpdate(node, pkCreateString(table.name()));
         }
     }
 
     @Override
-    public List<String> createAutoPkStatements(DbAdapter adapter, List<DbEntity> dbEntities) {
+    public List<String> createAutoPkStatements(DbAdapter adapter, List<CompiledTable> tables) {
         List<String> list = new ArrayList<>();
-        for (DbEntity entity : dbEntities) {
-            list.add(pkCreateString(entity.getName()));
+        for (CompiledTable table : tables) {
+            list.add(pkCreateString(table.name()));
         }
         return list;
     }
 
     @Override
-    public void dropAutoPk(DataNode node, List<DbEntity> dbEntities) {
+    public void dropAutoPk(DataNode node, List<CompiledTable> tables) {
     }
 
     @Override
@@ -74,7 +74,7 @@ public class FrontBasePkGenerator extends JdbcPkGenerator {
     }
 
     @Override
-    protected String pkDeleteString(List<DbEntity> dbEntities) {
+    protected String pkDeleteString(List<CompiledTable> tables) {
         return "-- The 'Drop Primary Key Support' option is unavailable";
     }
 
@@ -102,9 +102,9 @@ public class FrontBasePkGenerator extends JdbcPkGenerator {
      * @since 3.0
      */
     @Override
-    protected long longPkFromDatabase(DataNode node, DbEntity entity) {
+    protected long longPkFromDatabase(DataNode node, CompiledTable table) {
 
-        String select = "SELECT UNIQUE FROM " + entity.getName();
+        String select = "SELECT UNIQUE FROM " + table.name();
 
         try (Connection con = node.getDataSource().getConnection()) {
             Long pk = selectLong(con, select, node.getSqlLogger());
@@ -113,7 +113,7 @@ public class FrontBasePkGenerator extends JdbcPkGenerator {
             }
             return pk;
         } catch (SQLException e) {
-            throw new CayenneRuntimeException("Error generating PK for entity '%s'.", e, entity.getName());
+            throw new CayenneRuntimeException("Error generating PK for entity '%s'.", e, table.name());
         }
     }
 }

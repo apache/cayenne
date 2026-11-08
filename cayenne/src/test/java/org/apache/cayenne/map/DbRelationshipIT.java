@@ -45,8 +45,10 @@ public class DbRelationshipIT {
     @BeforeEach
     public void setUp() throws Exception {
         runtime = env.runtime();
-        artistEnt = runtime.getDataDomain().getEntityResolver().getDbEntity("ARTIST");
-        paintingEnt = runtime.getDataDomain().getEntityResolver().getDbEntity("PAINTING");
+        // the authored model of the test runtime, as this test checks the authored map classes
+        EntityResolver resolver = new EntityResolver(env.project().dataMaps());
+        artistEnt = resolver.getDbEntity("ARTIST");
+        paintingEnt = resolver.getDbEntity("PAINTING");
     }
 
     @Test

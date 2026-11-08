@@ -22,9 +22,8 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.graph.ArcId;
-import org.apache.cayenne.reflect.ArcProperty;
-import org.apache.cayenne.reflect.ClassDescriptor;
-import org.apache.cayenne.reflect.PropertyDescriptor;
+import org.apache.cayenne.map.compiled.CompiledEntity;
+import org.apache.cayenne.map.compiled.CompiledRelationship;
 
 
 
@@ -38,7 +37,7 @@ class DataContextGraphAction {
 
     /**
      * Handles property change in a Persistent object, routing to either
-     * {@link #handleArcPropertyChange(Persistent, ArcProperty, Object, Object)} or
+     * {@link #handleArcPropertyChange(Persistent, CompiledRelationship, Object, Object)} or
      * {@link #handleSimplePropertyChange(Persistent, String, Object, Object)}.
      */
     public void handlePropertyChange(
@@ -50,12 +49,11 @@ class DataContextGraphAction {
         // translate ObjectContext generic property change callback to ObjectStore terms
         // (simple properties vs. relationships)
 
-        ClassDescriptor descriptor = context.getEntityResolver().getClassDescriptor(
-                object.getObjectId().getEntityName());
-        PropertyDescriptor property = descriptor.getProperty(propertyName);
+        CompiledEntity entity = context.getMapping().entity(object.getObjectId().getEntityName());
+        CompiledRelationship relationship = entity.relationship(propertyName);
 
-        if (property instanceof ArcProperty) {
-            handleArcPropertyChange(object, (ArcProperty) property, oldValue, newValue);
+        if (relationship != null) {
+            handleArcPropertyChange(object, relationship, oldValue, newValue);
         } else {
             handleSimplePropertyChange(object, propertyName, oldValue, newValue);
         }
@@ -63,9 +61,10 @@ class DataContextGraphAction {
 
     protected void handleArcPropertyChange(
             Persistent object,
-            ArcProperty property,
+            CompiledRelationship relationship,
             Object oldValue,
             Object newValue) {
+
         if (oldValue != newValue) {
             markAsDirty(object);
 
@@ -73,14 +72,14 @@ class DataContextGraphAction {
                 context.getObjectStore().changeRecorder().arcDeleted(
                         object.getObjectId(),
                         ((Persistent) oldValue).getObjectId(),
-                        new ArcId(property));
+                        new ArcId(relationship));
             }
 
             if (newValue instanceof Persistent) {
                 context.getObjectStore().changeRecorder().arcCreated(
                         object.getObjectId(),
                         ((Persistent) newValue).getObjectId(),
-                        new ArcId(property));
+                        new ArcId(relationship));
             }
         }
     }

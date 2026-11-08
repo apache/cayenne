@@ -27,7 +27,7 @@ import java.util.Map;
 
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.exp.path.CayennePath;
-import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.compiled.CompiledColumn;
 
 /**
  * Collection of values that should be inserted or updated in DB.
@@ -42,7 +42,7 @@ public class Values {
     protected Map<String, Object> attributeSnapshot;
     protected Map<String, Object> fkSnapshot;
 
-    protected List<DbAttribute> updatedAttributes;
+    protected List<CompiledColumn> updatedColumns;
     // generated flattened Ids for this insert
     protected Map<CayennePath, ObjectId> flattenedIds;
 
@@ -51,32 +51,32 @@ public class Values {
         this.includeId = includeId;
     }
 
-    public void addValue(DbAttribute attribute, Object value, boolean fk) {
+    public void addValue(CompiledColumn column, Object value, boolean fk) {
         if(fk) {
             if (fkSnapshot == null) {
                 fkSnapshot = new HashMap<>();
             }
-            fkSnapshot.put(attribute.getName(), value);
+            fkSnapshot.put(column.name(), value);
         } else {
             if (attributeSnapshot == null) {
                 attributeSnapshot = new HashMap<>();
             }
-            attributeSnapshot.put(attribute.getName(), value);
+            attributeSnapshot.put(column.name(), value);
         }
 
-        if(updatedAttributes == null) {
-            updatedAttributes = new ArrayList<>();
+        if(updatedColumns == null) {
+            updatedColumns = new ArrayList<>();
         }
-        if(!updatedAttributes.contains(attribute)) {
-            updatedAttributes.add(attribute);
+        if(!updatedColumns.contains(column)) {
+            updatedColumns.add(column);
         }
     }
 
     public void merge(Values other) {
-        if(this.updatedAttributes == null || updatedAttributes.isEmpty()) {
+        if(this.updatedColumns == null || updatedColumns.isEmpty()) {
             this.attributeSnapshot = other.attributeSnapshot;
             this.fkSnapshot = other.fkSnapshot;
-            this.updatedAttributes = other.updatedAttributes;
+            this.updatedColumns = other.updatedColumns;
         } else {
             if(other.attributeSnapshot != null) {
                 if(this.attributeSnapshot == null) {
@@ -90,10 +90,10 @@ public class Values {
                 }
                 other.fkSnapshot.forEach(fkSnapshot::putIfAbsent);
             }
-            if(other.updatedAttributes != null) {
-                other.updatedAttributes.forEach(attr -> {
-                    if (!updatedAttributes.contains(attr)) {
-                        updatedAttributes.add(attr);
+            if(other.updatedColumns != null) {
+                other.updatedColumns.forEach(attr -> {
+                    if (!updatedColumns.contains(attr)) {
+                        updatedColumns.add(attr);
                     }
                 });
             }
@@ -151,11 +151,11 @@ public class Values {
         return attributeSnapshot;
     }
 
-    public List<DbAttribute> getUpdatedAttributes() {
-        if(updatedAttributes == null) {
+    public List<CompiledColumn> getUpdatedAttributes() {
+        if(updatedColumns == null) {
             return Collections.emptyList();
         }
-        return updatedAttributes;
+        return updatedColumns;
     }
 
     public Map<CayennePath, ObjectId> getFlattenedIds() {
@@ -180,8 +180,8 @@ public class Values {
         if(fkSnapshot != null) {
             fkSnapshot.clear();
         }
-        if(updatedAttributes != null) {
-            updatedAttributes.clear();
+        if(updatedColumns != null) {
+            updatedColumns.clear();
         }
         if(flattenedIds != null) {
             flattenedIds.clear();
@@ -189,12 +189,12 @@ public class Values {
     }
 
     public boolean isSameBatch(Values other) {
-        if(updatedAttributes == null) {
-            return other.updatedAttributes == null;
+        if(updatedColumns == null) {
+            return other.updatedColumns == null;
         }
-        if(other.updatedAttributes == null) {
+        if(other.updatedColumns == null) {
             return false;
         }
-        return updatedAttributes.equals(other.updatedAttributes);
+        return updatedColumns.equals(other.updatedColumns);
     }
 }

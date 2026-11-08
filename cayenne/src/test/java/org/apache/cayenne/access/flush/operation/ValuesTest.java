@@ -24,8 +24,9 @@ import java.util.Collections;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.compiled.CompiledColumn;
+import org.apache.cayenne.map.compiled.CompiledTable;
+import org.apache.cayenne.unit.CompiledTables;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -69,10 +70,10 @@ public class ValuesTest {
         DbRowOp row = mockRow(persistent);
 
         Values values = new Values(row, false);
-        DbAttribute attr1 = new DbAttribute("attr1");
-        values.addValue(attr1, 32, false);
+        CompiledColumn column1 = CompiledTables.column("attr1");
+        values.addValue(column1, 32, false);
 
-        assertEquals(Collections.singletonList(attr1), values.getUpdatedAttributes());
+        assertEquals(Collections.singletonList(column1), values.getUpdatedAttributes());
         assertEquals(Collections.singletonMap("attr1", 32), values.getSnapshot());
         assertTrue(values.getFlattenedIds().isEmpty());
         assertFalse(values.isEmpty());
@@ -94,13 +95,7 @@ public class ValuesTest {
         return persistent;
     }
 
-    private DbEntity mockEntity() {
-        DbAttribute attribute1 = new DbAttribute("id");
-        attribute1.setPrimaryKey(true);
-        DbAttribute attribute2 = new DbAttribute("attr");
-        DbEntity testEntity = new DbEntity("TEST");
-        testEntity.addAttribute(attribute1);
-        testEntity.addAttribute(attribute2);
-        return testEntity;
+    private CompiledTable mockEntity() {
+        return CompiledTables.table("TEST");
     }
 }

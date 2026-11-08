@@ -31,10 +31,10 @@ import org.apache.cayenne.access.types.ExtendedType;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.exp.path.CayennePath;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.ObjAttribute;
-import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.compiled.CompiledColumn;
+import org.apache.cayenne.map.compiled.CompiledTable;
+import org.apache.cayenne.map.compiled.CompiledAttribute;
+import org.apache.cayenne.map.compiled.CompiledEntity;
 import org.apache.cayenne.query.ResultSegment;
 import org.apache.cayenne.query.ResultSegments;
 import org.apache.cayenne.query.ScalarResultSegment;
@@ -235,29 +235,29 @@ public class DataNodeSQLAction {
      */
     protected RSColumn.RowBuilder rowBuilder(ResultSet resultSet) throws SQLException {
 
-        DbEntity dbEntity = query.dbEntity();
+        CompiledTable table = query.table();
         RSColumn.RowBuilder builder = RSColumn.rowBuilder()
                 .resultSet(resultSet)
                 .columns(createColumnDescriptors())
                 .validateDuplicateColumnNames()
                 // resolve column DbAttributes so the row reader factory can tell e.g. PK columns apart, the same way
                 // it can for ObjectSelect; lets pagination read the PK regardless of column order
-                .dbEntity(dbEntity);
+                .dbEntity(table);
 
         boolean declaredTypes = !query.resultColumnsTypes().isEmpty();
         if (declaredTypes) {
             builder.mergeColumnsWithRsMetadata();
         }
 
-        ObjEntity entity = query.objEntity();
+        CompiledEntity entity = query.entity();
         if (entity != null && !declaredTypes) {
             // TODO: andrus 2008/03/28 support flattened attributes with aliases...
-            for (ObjAttribute attribute : entity.getAttributes()) {
-                CayennePath column = attribute.getDbAttributePath();
+            for (CompiledAttribute attribute : entity.attributes()) {
+                CayennePath column = attribute.dbPath();
                 if (column == null || column.length() > 1) {
                     continue;
                 }
-                builder.overrideColumnType(column.value(), attribute.getType());
+                builder.overrideColumnType(column.value(), attribute.valueClassName());
             }
         }
 
@@ -265,10 +265,11 @@ public class DataNodeSQLAction {
         // ResultSetMetadata is not very precise about NUMERIC distinctions...
         // (BigDecimal vs Long vs. Integer). These are fallbacks: the ObjAttribute overrides
         // registered above take precedence, as the builder keeps the first override per column.
-        if (dbEntity != null && !declaredTypes) {
-            for (DbAttribute attribute : dbEntity.getAttributes()) {
-                if (TypesMapping.isNumeric(attribute.getType())) {
-                    builder.overrideColumnType(attribute.getName(), TypesMapping.getJavaBySqlType(attribute));
+        if (table != null && !declaredTypes) {
+            for (CompiledColumn column : table.columns()) {
+                if (TypesMapping.isNumeric(column.jdbcType())) {
+                    builder.overrideColumnType(column.name(),
+                            TypesMapping.getJavaBySqlType(column.jdbcType(), column.maxLength(), column.scale()));
                 }
             }
         }

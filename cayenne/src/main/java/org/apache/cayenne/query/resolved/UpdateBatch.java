@@ -19,8 +19,8 @@
 
 package org.apache.cayenne.query.resolved;
 
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.compiled.CompiledColumn;
+import org.apache.cayenne.map.compiled.CompiledTable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,27 +34,28 @@ import java.util.Set;
  * @since 6.0
  */
 public record UpdateBatch(
-        DbEntity dbEntity,
-        List<DbAttribute> dbAttributes,
-        List<DbAttribute> qualifierAttributes,
-        List<DbAttribute> updatedAttributes,
+        CompiledTable table,
+        List<CompiledColumn> dbAttributes,
+        List<CompiledColumn> qualifierAttributes,
+        List<CompiledColumn> updatedAttributes,
         Set<String> nullQualifierNames,
         boolean usingOptimisticLocking,
         List<BatchRow> rows) implements ResolvedBatch {
 
     public UpdateBatch(
-            DbEntity dbEntity,
-            List<DbAttribute> qualifierAttributes,
-            List<DbAttribute> updatedAttributes,
+            CompiledTable table,
+            List<CompiledColumn> qualifierColumns,
+            List<CompiledColumn> updatedColumns,
             Collection<String> nullQualifierNames,
             boolean usingOptimisticLocking,
             List<BatchRow> rows) {
-        this(dbEntity, concat(updatedAttributes, qualifierAttributes), qualifierAttributes, updatedAttributes,
+        this(table, concat(updatedColumns, qualifierColumns), qualifierColumns, updatedColumns,
                 Set.copyOf(nullQualifierNames), usingOptimisticLocking, rows);
     }
 
-    private static List<DbAttribute> concat(List<DbAttribute> updated, List<DbAttribute> qualifier) {
-        List<DbAttribute> all = new ArrayList<>(updated.size() + qualifier.size());
+    private static List<CompiledColumn> concat(List<CompiledColumn> updated,
+                                                    List<CompiledColumn> qualifier) {
+        List<CompiledColumn> all = new ArrayList<>(updated.size() + qualifier.size());
         all.addAll(updated);
         all.addAll(qualifier);
         return all;
@@ -63,13 +64,13 @@ public record UpdateBatch(
     /**
      * Returns true if a given qualifier attribute is matched against NULL (with "IS NULL") instead of a bound value.
      */
-    public boolean isNull(DbAttribute attribute) {
-        return nullQualifierNames.contains(attribute.getName());
+    public boolean isNull(CompiledColumn column) {
+        return nullQualifierNames.contains(column.name());
     }
 
     @Override
     public Object value(BatchRow row, int attributeIndex) {
         return (attributeIndex < updatedAttributes.size() ? row.values() : row.qualifier())
-                .get(dbAttributes.get(attributeIndex).getName());
+                .get(dbAttributes.get(attributeIndex).name());
     }
 }

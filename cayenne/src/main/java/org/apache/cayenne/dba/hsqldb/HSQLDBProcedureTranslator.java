@@ -20,7 +20,7 @@
 package org.apache.cayenne.dba.hsqldb;
 
 import org.apache.cayenne.access.translator.procedure.DefaultProcedureTranslator;
-import org.apache.cayenne.map.Procedure;
+import org.apache.cayenne.map.compiled.CompiledProcedure;
 
 /**
  * Works around HSQLDB's pickiness about stored procedure syntax.
@@ -33,14 +33,14 @@ public class HSQLDBProcedureTranslator extends DefaultProcedureTranslator {
      * Creates HSQLDB-compliant SQL to execute a stored procedure.
      */
     @Override
-    protected String createSqlString(Procedure procedure, int callParamsSize) {
+    protected String createSqlString(CompiledProcedure procedure, int callParamsSize) {
 
         StringBuilder buf = new StringBuilder();
 
         int totalParams = callParamsSize;
 
         // check if procedure returns values
-        if (procedure.isReturningValue()) {
+        if (procedure.returningValue()) {
             totalParams--;
 
             // HSQL won't accept "? =". The parser only recognizes "?="
@@ -56,11 +56,11 @@ public class HSQLDBProcedureTranslator extends DefaultProcedureTranslator {
 
         // HSQLDB requires that procedures with periods (referring to Java packages)
         // be enclosed in quotes. It is not clear that quotes can always be used, though
-        if (procedure.getFullyQualifiedName().indexOf('.') > -1) {
-            buf.append("\"").append(procedure.getFullyQualifiedName()).append("\"");
+        if (procedure.fullyQualifiedName().indexOf('.') > -1) {
+            buf.append("\"").append(procedure.fullyQualifiedName()).append("\"");
         }
         else {
-            buf.append(procedure.getFullyQualifiedName());
+            buf.append(procedure.fullyQualifiedName());
         }
 
         if (totalParams > 0) {

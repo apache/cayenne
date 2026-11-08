@@ -20,7 +20,7 @@
 package org.apache.cayenne.docs.customquery;
 
 import org.apache.cayenne.docs.persistent.Artist;
-import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.compiled.CompiledMapping;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.resolved.ResolvedQuery;
@@ -35,12 +35,12 @@ public class MyQuery implements Query<Artist> {
     }
 
     @Override
-    public ResolvedQuery resolve(EntityResolver resolver) {
+    public ResolvedQuery resolve(CompiledMapping mapping) {
         // the type parameter of the delegate matches the one of this query, as both select Artists
         return ObjectSelect.query(Artist.class)
                 .where(Artist.NAME.startsWith(namePrefix))
                 .orderBy(Artist.NAME.asc())
-                .resolve(resolver);
+                .resolve(mapping);
     }
 }
 // end::content[]

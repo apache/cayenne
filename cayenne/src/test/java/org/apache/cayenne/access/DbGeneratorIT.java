@@ -23,12 +23,16 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.log.NoopSQLLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.compiled.CompiledTable;
 import org.apache.cayenne.CayenneRuntime;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
+
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -45,9 +49,7 @@ public class DbGeneratorIT {
     public void setUp() throws Exception {
         adapter = env.dataNode().getAdapter();
         runtime = env.runtime();
-        generator = new DbGenerator(adapter, runtime
-                .getDataDomain()
-                .getDataMap("testmap"), NoopSQLLogger.getInstance());
+        generator = new DbGenerator(adapter, env.mapping().schema(), "testmap", NoopSQLLogger.getInstance());
     }
 
     @Test
@@ -57,18 +59,21 @@ public class DbGeneratorIT {
 
     @Test
     public void pkFilteringLogic() {
-        DataMap map = runtime.getDataDomain().getDataMap("testmap");
+        DataMap map = env.project().dataMap("testmap");
         DbEntity artistExhibit = map.getDbEntity("ARTIST_EXHIBIT");
         DbEntity exhibit = map.getDbEntity("EXHIBIT");
 
         // sanity check
         assertNotNull(artistExhibit);
         assertNotNull(exhibit);
-        assertNotNull(generator.dbEntitiesRequiringAutoPK);
+        assertNotNull(generator.tablesRequiringAutoPK);
 
         // real test
-        assertTrue(generator.dbEntitiesRequiringAutoPK.contains(exhibit));
-        assertFalse(generator.dbEntitiesRequiringAutoPK.contains(artistExhibit));
+        Set<String> requiringAutoPK = generator.tablesRequiringAutoPK.stream()
+                .map(CompiledTable::name)
+                .collect(Collectors.toSet());
+        assertTrue(requiringAutoPK.contains(exhibit.getName()));
+        assertFalse(requiringAutoPK.contains(artistExhibit.getName()));
     }
 
     @Test

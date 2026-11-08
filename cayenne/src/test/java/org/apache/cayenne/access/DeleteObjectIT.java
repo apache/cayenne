@@ -25,7 +25,7 @@ import java.util.List;
 
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.map.DeleteRule;
-import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.map.compiled.CompiledRelationship;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -157,8 +157,8 @@ public class DeleteObjectIT {
         // as Painting -> Artist has Nullify rule, relationship list has to be
         // cleaned up,
         // and no exceptions thrown on concurrent modification...
-        ObjRelationship r = context.getEntityResolver().getObjEntity(Painting.class).getRelationship("artist");
-        assertEquals(DeleteRule.NULLIFY, r.getDeleteRule());
+        CompiledRelationship r = context.getMapping().entity(Painting.class).relationship("artist");
+        assertEquals(DeleteRule.NULLIFY, r.deleteRule());
         assertEquals(0, paintings.size());
 
         for (Painting object : paintingsClone) {

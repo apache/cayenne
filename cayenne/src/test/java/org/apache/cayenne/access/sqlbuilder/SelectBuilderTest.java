@@ -22,7 +22,7 @@ package org.apache.cayenne.access.sqlbuilder;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SelectNode;
-import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.compiled.CompiledTable;
 import org.junit.jupiter.api.Test;
 
 import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.*;
@@ -59,10 +59,8 @@ public class SelectBuilderTest extends BaseSqlBuilderTest  {
 
     @Test
     public void selectFromDbEntity() {
-        DbEntity entity = new DbEntity("b");
-        entity.setSchema("d");
-        entity.setCatalog("c");
-        SelectBuilder builder = new SelectBuilder(column("a")).from(table(entity));
+        CompiledTable table = compiledTable("b", "c", "d");
+        SelectBuilder builder = new SelectBuilder(column("a")).from(table(table));
         Node node = builder.build();
         assertInstanceOf(SelectNode.class, node);
         assertSQL("SELECT a FROM c.d.b", node);

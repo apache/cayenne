@@ -28,7 +28,7 @@ import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.SelectResult;
 import org.apache.cayenne.UpdateResult;
 import org.apache.cayenne.access.translator.TranslatedSQL;
-import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.compiled.CompiledMapping;
 import org.apache.cayenne.query.resolved.ResolvedSQL;
 import org.junit.jupiter.api.Test;
 
@@ -45,7 +45,7 @@ import static org.mockito.Mockito.mock;
 public class StatementContextTest {
 
     private static StatementContext context() {
-        return new StatementContext(ResolvedSQL.raw("SELECT 1"), mock(EntityResolver.class));
+        return new StatementContext(ResolvedSQL.raw("SELECT 1"), mock(CompiledMapping.class));
     }
 
     @Test

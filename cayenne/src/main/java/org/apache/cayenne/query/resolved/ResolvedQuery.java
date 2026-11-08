@@ -19,17 +19,17 @@
 
 package org.apache.cayenne.query.resolved;
 
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.compiled.CompiledDataMap;
+import org.apache.cayenne.map.compiled.CompiledTable;
+import org.apache.cayenne.map.compiled.CompiledEntity;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.Query;
+import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.ResultSegments;
-import org.apache.cayenne.reflect.ClassDescriptor;
 
 /**
- * An immutable, fully resolved description of a statement to run, produced by {@link Query#resolve(org.apache.cayenne.map.EntityResolver)}
+ * An immutable, fully resolved description of a statement to run, produced by {@link Query#resolve(org.apache.cayenne.map.compiled.CompiledMapping)}
  * for a user query, or by the flush for a batch. It carries everything the runtime needs to route, translate and
  * execute the statement, so that the query itself is not consulted again once resolved.
  * <p>
@@ -73,7 +73,7 @@ public sealed interface ResolvedQuery permits ResolvedSelect, ResolvedSQL, Resol
      * Returns the DataMap the statement is routed on, or null for a raw SQL statement without a root, that is routed
      * by its {@link #dataNodeName() DataNode name}.
      */
-    DataMap dataMap();
+    CompiledDataMap dataMap();
 
     /**
      * Returns the name of the DataNode the query is explicitly routed to, or null when it is routed by its DataMap or
@@ -86,16 +86,12 @@ public sealed interface ResolvedQuery permits ResolvedSelect, ResolvedSQL, Resol
     /**
      * Returns a DbEntity associated with the statement or null if no such entity exists.
      */
-    DbEntity dbEntity();
+    CompiledTable table();
 
     /**
      * Returns an ObjEntity associated with the statement or null if no such entity exists.
      */
-    default ObjEntity objEntity() {
-        return null;
-    }
-
-    default ClassDescriptor classDescriptor() {
+    default CompiledEntity entity() {
         return null;
     }
 
@@ -106,8 +102,11 @@ public sealed interface ResolvedQuery permits ResolvedSelect, ResolvedSQL, Resol
     /**
      * Returns a String that uniquely identifies this query for the purposes of result caching. If null is returned, no
      * caching is performed.
+     *
+     * @param valueObjectTypes the registry rendering the values of value object types found in the query into the
+     *                         key, or null to render them with their own String form
      */
-    default String cacheKey() {
+    default String cacheKey(ValueObjectTypeRegistry valueObjectTypes) {
         return null;
     }
 

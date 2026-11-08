@@ -43,7 +43,7 @@ public class SetNotNullToDb extends AbstractToDbToken.EntityAndColumn {
     public List<String> createSql(DataNode node) {
         DbAdapter adapter = node.getAdapter();
 
-        QuotingStrategy quotes = adapter.getQuotingStrategy(getEntity());
+        QuotingStrategy quotes = adapter.getQuotingStrategy(CompiledModel.table(getEntity()));
         StringBuilder sql = new StringBuilder("ALTER TABLE ");
         quotes.appendFQN(sql, getEntity().getCatalog(), getEntity().getSchema(), getEntity().getName());
         sql.append(" ALTER COLUMN ");

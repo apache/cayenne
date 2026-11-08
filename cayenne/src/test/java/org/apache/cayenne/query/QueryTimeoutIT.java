@@ -38,7 +38,7 @@ public class QueryTimeoutIT {
         ObjectSelect<Artist> objectSelect = ObjectSelect.query(Artist.class)
                 .queryTimeout(10);
         assertEquals(10, objectSelect
-                .resolve(env.context().getEntityResolver())
+                .resolve(env.mapping())
                 .queryTimeout());
         objectSelect.select(env.context());
     }
@@ -48,7 +48,7 @@ public class QueryTimeoutIT {
         SQLQuery<DataRow> sqlTemplate = SQLQuery.query("SELECT * FROM ARTIST");
         sqlTemplate.queryTimeout(10);
         assertEquals(10, sqlTemplate
-                .resolve(env.context().getEntityResolver())
+                .resolve(env.mapping())
                 .queryTimeout());
         env.context().select(sqlTemplate);
     }
@@ -59,7 +59,7 @@ public class QueryTimeoutIT {
                 .columnQuery(Artist.class, Artist.ARTIST_NAME)
                 .queryTimeout(10);
         assertEquals(10, columnSelect
-                .resolve(env.context().getEntityResolver())
+                .resolve(env.mapping())
                 .queryTimeout());
         env.context().select(columnSelect);
     }
@@ -70,7 +70,7 @@ public class QueryTimeoutIT {
                 .query(Artist.class, "SELECT * FROM ARTIST")
                 .queryTimeout(10);
         assertEquals(10, sqlSelect
-                .resolve(env.context().getEntityResolver())
+                .resolve(env.mapping())
                 .queryTimeout());
         env.context().select(sqlSelect);
     }
@@ -81,7 +81,7 @@ public class QueryTimeoutIT {
                 .query("SELECT * FROM ARTIST")
                 .queryTimeout(10);
         assertEquals(10, sqlExec
-                .resolve(env.context().getEntityResolver())
+                .resolve(env.mapping())
                 .queryTimeout());
         env.context().execute(sqlExec);
     }
@@ -92,7 +92,7 @@ public class QueryTimeoutIT {
                 .query("SelectTestUpper", Artist.class)
                 .queryTimeout(10);
         assertEquals(10, mappedSelect
-                .resolve(env.context().getEntityResolver())
+                .resolve(env.mapping())
                 .queryTimeout());
         env.context().execute(mappedSelect);
     }

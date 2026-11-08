@@ -21,6 +21,7 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.RuntimeProperties;
 import org.apache.cayenne.CoreModule;
+import org.apache.cayenne.map.compiled.CompiledSchema;
 import org.apache.cayenne.project.DataNodeDescriptor;
 import org.apache.cayenne.datasource.CayenneDataSource;
 import org.apache.cayenne.datasource.ManagedPoolingDataSource;
@@ -28,11 +29,11 @@ import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.di.Module;
-import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.CayenneRuntime;
 import org.apache.cayenne.CayenneRuntimeBuilder;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
+import org.apache.cayenne.unit.TestProject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -40,7 +41,6 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -67,9 +67,15 @@ public class DefaultDataNodeFactoryIT {
         }
     }
 
+    // the schema of the test project, as compiled by the runtime of the factory
+    private CompiledSchema schema() {
+        return runtime.getDataDomain().getMapping().schema();
+    }
+
     private DataNodeFactory factory(Module... extraModules) {
         CayenneRuntimeBuilder builder = CayenneRuntime.of()
                 .addConfig(CayenneProjects.TESTMAP_PROJECT)
+                .addModule(TestProject.module())
                 .defaultDataNode(CayenneTestsEnv.COMMON_SCHEMA.dataSource());
 
         Stream.of(extraModules).forEach(builder::addModule);
@@ -85,7 +91,7 @@ public class DefaultDataNodeFactoryIT {
                 .dataSource(CayenneTestsEnv.COMMON_SCHEMA.dataSource())
                 .build();
 
-        DataNode node = factory().createDataNode("channel", descriptor, List.of());
+        DataNode node = factory().createDataNode("channel", descriptor, schema());
         assertEquals("n1", node.getName());
     }
 
@@ -93,7 +99,7 @@ public class DefaultDataNodeFactoryIT {
     public void dataSourceFromDescriptor() throws Exception {
         DataSource dataSource = CayenneTestsEnv.COMMON_SCHEMA.dataSource();
         DataNode node = factory().createDataNode("channel",
-                DataNodeDescriptor.of("n1").dataSource(dataSource).build(), List.of());
+                DataNodeDescriptor.of("n1").dataSource(dataSource).build(), schema());
 
         assertNotNull(node.getDataSource());
         assertSame(dataSource, node.getDataSource().unwrap(DataSource.class));
@@ -112,7 +118,7 @@ public class DefaultDataNodeFactoryIT {
                 .setProperty(RuntimeProperties.JDBC_MAX_CONNECTIONS_PROPERTY + ".channel.n1", "2"));
 
         // a descriptor with no DataSource of its own
-        DataNode node = factory.createDataNode("channel", DataNodeDescriptor.of("n1").build(), List.of());
+        DataNode node = factory.createDataNode("channel", DataNodeDescriptor.of("n1").build(), schema());
 
         DataSource dataSource = node.getDataSource().unwrap(DataSource.class);
         assertNotSame(CayenneTestsEnv.COMMON_SCHEMA.dataSource(), dataSource);
@@ -136,13 +142,13 @@ public class DefaultDataNodeFactoryIT {
                 .setProperty(RuntimeProperties.JDBC_USERNAME_PROPERTY, "sa")
                 .setProperty(RuntimeProperties.JDBC_PASSWORD_PROPERTY, ""));
 
-        DataNode n1 = factory.createDataNode("channel", DataNodeDescriptor.of("n1").build(), List.of());
+        DataNode n1 = factory.createDataNode("channel", DataNodeDescriptor.of("n1").build(), schema());
         try (Connection c = n1.getDataSource().getConnection()) {
             assertEquals(PROPS_URL, c.getMetaData().getURL());
         }
 
         // a node with no properties of its own falls back to the shared URL
-        DataNode n2 = factory.createDataNode("channel", DataNodeDescriptor.of("n2").build(), List.of());
+        DataNode n2 = factory.createDataNode("channel", DataNodeDescriptor.of("n2").build(), schema());
         try (Connection c = n2.getDataSource().getConnection()) {
             assertEquals(SHARED_PROPS_URL, c.getMetaData().getURL());
         }
@@ -153,7 +159,7 @@ public class DefaultDataNodeFactoryIT {
         DataNode node = factory().createDataNode("channel", DataNodeDescriptor.of("n1")
                 .dataSource(CayenneTestsEnv.COMMON_SCHEMA.dataSource())
                 .adapter(JdbcAdapter.class)
-                .build(), List.of());
+                .build(), schema());
 
         assertInstanceOf(JdbcAdapter.class, node.getAdapter());
     }
@@ -162,7 +168,7 @@ public class DefaultDataNodeFactoryIT {
     public void detectedAdapterWhenNoAdapterInDescriptor() {
         DataNode node = factory().createDataNode("channel", DataNodeDescriptor.of("n1")
                 .dataSource(CayenneTestsEnv.COMMON_SCHEMA.dataSource())
-                .build(), List.of());
+                .build(), schema());
 
         DbAdapter adapter = node.getAdapter();
         assertNotNull(adapter);
@@ -181,7 +187,7 @@ public class DefaultDataNodeFactoryIT {
         // the stack must start when the DB is not available...
         DataNode node = factory().createDataNode("channel", DataNodeDescriptor.of("n1")
                 .dataSource(brokenDataSource)
-                .build(), List.of());
+                .build(), schema());
 
         // ... and fail only when the adapter is actually needed
         assertThrows(CayenneRuntimeException.class, node::getAdapter);
@@ -194,11 +200,10 @@ public class DefaultDataNodeFactoryIT {
         // a dedicated empty DB, to see the strategy creating the schema in it
         DataSource dataSource = CayenneDataSource.of(SCHEMA_URL).driverClass(PROPS_DRIVER).userName("sa").build();
         DataNodeFactory factory = factory();
-        DataMap map = runtime.getDataDomain().getDataMap("testmap");
         DataNode node = factory.createDataNode("channel", DataNodeDescriptor.of("n1")
                 .dataSource(dataSource)
                 .createSchemaIfNeeded()
-                .build(), List.of(map));
+                .build(), schema(), "testmap");
 
         // the schema is created on the first use of the node, not on creation
         assertFalse(tableExists(dataSource, "ARTIST"));
@@ -211,10 +216,9 @@ public class DefaultDataNodeFactoryIT {
 
         DataSource dataSource = CayenneDataSource.of(NO_SCHEMA_URL).driverClass(PROPS_DRIVER).userName("sa").build();
         DataNodeFactory factory = factory();
-        DataMap map = runtime.getDataDomain().getDataMap("testmap");
         DataNode node = factory.createDataNode("channel", DataNodeDescriptor.of("n1")
                 .dataSource(dataSource)
-                .build(), List.of(map));
+                .build(), schema(), "testmap");
 
         // no strategy in the descriptor means skipping the schema update
         node.getAdapter();
@@ -227,7 +231,7 @@ public class DefaultDataNodeFactoryIT {
         DataNode node = factory().createDataNode("channel", DataNodeDescriptor.of("n1")
                 .dataSource(CayenneTestsEnv.COMMON_SCHEMA.dataSource())
                 .pkGenerator(generator)
-                .build(), List.of());
+                .build(), schema());
 
         // the custom generator is used in place of the adapter default
         assertSame(generator, node.getPkGenerator());

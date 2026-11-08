@@ -44,13 +44,13 @@ public class ObjectSelect_CacheKeyIT {
 
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class);
 
-        ResolvedQuery md1 = query.resolve(env.entityResolver());
+        ResolvedQuery md1 = query.resolve(env.mapping());
         assertEquals(QueryCacheStrategy.NO_CACHE, md1.cacheStrategy());
-        assertNull(md1.cacheKey());
+        assertNull(cacheKey(md1));
 
-        ResolvedQuery md2 = query.resolve(env.entityResolver());
+        ResolvedQuery md2 = query.resolve(env.mapping());
         assertEquals(QueryCacheStrategy.NO_CACHE, md2.cacheStrategy());
-        assertNull(md2.cacheKey());
+        assertNull(cacheKey(md2));
     }
 
     @Test
@@ -59,9 +59,9 @@ public class ObjectSelect_CacheKeyIT {
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
                 .localCache();
 
-        ResolvedQuery md1 = query.resolve(env.entityResolver());
+        ResolvedQuery md1 = query.resolve(env.mapping());
         assertEquals(QueryCacheStrategy.LOCAL_CACHE, md1.cacheStrategy());
-        assertNotNull(md1.cacheKey());
+        assertNotNull(cacheKey(md1));
     }
 
     @Test
@@ -70,17 +70,17 @@ public class ObjectSelect_CacheKeyIT {
         ObjectSelect<Artist> q1 = ObjectSelect.query(Artist.class)
                 .localCache();
 
-        ResolvedQuery md1 = q1.resolve(env.entityResolver());
+        ResolvedQuery md1 = q1.resolve(env.mapping());
         assertEquals(QueryCacheStrategy.LOCAL_CACHE, md1.cacheStrategy());
-        assertNotNull(md1.cacheKey());
+        assertNotNull(cacheKey(md1));
         assertNull(md1.cacheGroup());
 
         ObjectSelect<Artist> q2 = ObjectSelect.query(Artist.class);
         q2.localCache("g1");
 
-        ResolvedQuery md2 = q2.resolve(env.entityResolver());
+        ResolvedQuery md2 = q2.resolve(env.mapping());
         assertEquals(QueryCacheStrategy.LOCAL_CACHE, md2.cacheStrategy());
-        assertNotNull(md2.cacheKey());
+        assertNotNull(cacheKey(md2));
         assertEquals("g1", md2.cacheGroup());
     }
 
@@ -90,9 +90,9 @@ public class ObjectSelect_CacheKeyIT {
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
                 .sharedCache();
 
-        ResolvedQuery md1 = query.resolve(env.entityResolver());
+        ResolvedQuery md1 = query.resolve(env.mapping());
         assertEquals(QueryCacheStrategy.SHARED_CACHE, md1.cacheStrategy());
-        assertNotNull(md1.cacheKey());
+        assertNotNull(cacheKey(md1));
     }
 
     @Test
@@ -101,17 +101,17 @@ public class ObjectSelect_CacheKeyIT {
         ObjectSelect<Artist> q1 = ObjectSelect.query(Artist.class)
                 .sharedCache();
 
-        ResolvedQuery md1 = q1.resolve(env.entityResolver());
+        ResolvedQuery md1 = q1.resolve(env.mapping());
         assertEquals(QueryCacheStrategy.SHARED_CACHE, md1.cacheStrategy());
-        assertNotNull(md1.cacheKey());
+        assertNotNull(cacheKey(md1));
         assertNull(md1.cacheGroup());
 
         ObjectSelect<Artist> q2 = ObjectSelect.query(Artist.class)
                 .sharedCache("g1");
 
-        ResolvedQuery md2 = q2.resolve(env.entityResolver());
+        ResolvedQuery md2 = q2.resolve(env.mapping());
         assertEquals(QueryCacheStrategy.SHARED_CACHE, md2.cacheStrategy());
-        assertNotNull(md2.cacheKey());
+        assertNotNull(cacheKey(md2));
         assertEquals("g1", md2.cacheGroup());
     }
 
@@ -121,9 +121,9 @@ public class ObjectSelect_CacheKeyIT {
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class)
                 .sharedCache();
 
-        ResolvedQuery md1 = query.resolve(env.entityResolver());
+        ResolvedQuery md1 = query.resolve(env.mapping());
         assertEquals(QueryCacheStrategy.SHARED_CACHE, md1.cacheStrategy());
-        assertNotEquals("XYZ", md1.cacheKey());
+        assertNotEquals("XYZ", cacheKey(md1));
     }
 
     @Test
@@ -138,10 +138,10 @@ public class ObjectSelect_CacheKeyIT {
         ObjectSelect<Painting> q3 = ObjectSelect.query(Painting.class)
                 .localCache();
 
-        assertNotNull(q1.resolve(env.entityResolver()).cacheKey());
-        assertEquals(q1.resolve(env.entityResolver()).cacheKey(), q2.resolve(env.entityResolver()).cacheKey());
+        assertNotNull(cacheKey(q1.resolve(env.mapping())));
+        assertEquals(cacheKey(q1.resolve(env.mapping())), cacheKey(q2.resolve(env.mapping())));
 
-        assertNotEquals(q1.resolve(env.entityResolver()).cacheKey(), q3.resolve(env.entityResolver()).cacheKey());
+        assertNotEquals(cacheKey(q1.resolve(env.mapping())), cacheKey(q3.resolve(env.mapping())));
     }
 
     @Test
@@ -159,10 +159,10 @@ public class ObjectSelect_CacheKeyIT {
                 .localCache()
                 .where(ExpressionFactory.matchExp("a", "c"));
 
-        assertNotNull(q1.resolve(env.entityResolver()).cacheKey());
-        assertEquals(q1.resolve(env.entityResolver()).cacheKey(), q2.resolve(env.entityResolver()).cacheKey());
+        assertNotNull(cacheKey(q1.resolve(env.mapping())));
+        assertEquals(cacheKey(q1.resolve(env.mapping())), cacheKey(q2.resolve(env.mapping())));
 
-        assertNotEquals(q1.resolve(env.entityResolver()).cacheKey(), q3.resolve(env.entityResolver()).cacheKey());
+        assertNotEquals(cacheKey(q1.resolve(env.mapping())), cacheKey(q3.resolve(env.mapping())));
     }
 
     @Test
@@ -183,11 +183,11 @@ public class ObjectSelect_CacheKeyIT {
         ObjectSelect<Artist> q4 = ObjectSelect.query(Artist.class)
                 .localCache();
 
-        assertNotNull(q1.resolve(env.entityResolver()).cacheKey());
-        assertEquals(q1.resolve(env.entityResolver()).cacheKey(), q2.resolve(env.entityResolver()).cacheKey());
+        assertNotNull(cacheKey(q1.resolve(env.mapping())));
+        assertEquals(cacheKey(q1.resolve(env.mapping())), cacheKey(q2.resolve(env.mapping())));
 
-        assertNotEquals(q1.resolve(env.entityResolver()).cacheKey(), q3.resolve(env.entityResolver()).cacheKey());
-        assertNotEquals(q1.resolve(env.entityResolver()).cacheKey(), q4.resolve(env.entityResolver()).cacheKey());
+        assertNotEquals(cacheKey(q1.resolve(env.mapping())), cacheKey(q3.resolve(env.mapping())));
+        assertNotEquals(cacheKey(q1.resolve(env.mapping())), cacheKey(q4.resolve(env.mapping())));
     }
 
     @Test
@@ -208,15 +208,15 @@ public class ObjectSelect_CacheKeyIT {
         ObjectSelect<Artist> q4 = ObjectSelect.query(Artist.class)
                 .localCache();
 
-        assertNotNull(q1.resolve(env.entityResolver()).cacheKey());
-        assertEquals(q1.resolve(env.entityResolver()).cacheKey(), q2.resolve(env.entityResolver()).cacheKey());
+        assertNotNull(cacheKey(q1.resolve(env.mapping())));
+        assertEquals(cacheKey(q1.resolve(env.mapping())), cacheKey(q2.resolve(env.mapping())));
 
-        assertNotEquals(q1.resolve(env.entityResolver()).cacheKey(), q3.resolve(env.entityResolver()).cacheKey());
-        assertNotEquals(q1.resolve(env.entityResolver()).cacheKey(), q4.resolve(env.entityResolver()).cacheKey());
+        assertNotEquals(cacheKey(q1.resolve(env.mapping())), cacheKey(q3.resolve(env.mapping())));
+        assertNotEquals(cacheKey(q1.resolve(env.mapping())), cacheKey(q4.resolve(env.mapping())));
     }
 
     private String cacheKey(ObjectSelect<?> query) {
-        return query.resolve(env.entityResolver()).cacheKey();
+        return cacheKey(query.resolve(env.mapping()));
     }
 
     private static ObjectSelect<Painting> paintingsOver(int price) {
@@ -367,14 +367,18 @@ public class ObjectSelect_CacheKeyIT {
     public void cacheKeyReflectsLaterChanges() {
         // a query is resolved on every run, so its cache key follows the changes made between the runs
         ObjectSelect<Artist> query = ObjectSelect.query(Artist.class).sharedCache();
-        String key1 = query.resolve(env.entityResolver()).cacheKey();
+        String key1 = cacheKey(query.resolve(env.mapping()));
 
         query.where(Artist.ARTIST_NAME.eq("abc"));
-        String key2 = query.resolve(env.entityResolver()).cacheKey();
+        String key2 = cacheKey(query.resolve(env.mapping()));
         assertNotEquals(key1, key2);
 
         query.orderBy(Artist.ARTIST_NAME.asc());
-        String key3 = query.resolve(env.entityResolver()).cacheKey();
+        String key3 = cacheKey(query.resolve(env.mapping()));
         assertNotEquals(key2, key3);
+    }
+
+    private static String cacheKey(ResolvedQuery resolved) {
+        return resolved.cacheKey(env.valueObjectTypes());
     }
 }

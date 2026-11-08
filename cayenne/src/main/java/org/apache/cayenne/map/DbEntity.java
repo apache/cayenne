@@ -52,7 +52,7 @@ public class DbEntity extends Entity<DbEntity, DbAttribute, DbRelationship> impl
      * @since 1.2
      */
     protected Collection<DbAttribute> generatedAttributes;
-    protected DbKeyGenerator primaryKeyGenerator;
+    protected DbKeyGenerator keySequence;
 
     /**
      * Qualifier, that will be applied to all select queries and joins with this
@@ -429,10 +429,10 @@ public class DbEntity extends Entity<DbEntity, DbAttribute, DbRelationship> impl
      * Set the primary key generator for this entity. If null is passed, nothing
      * is changed.
      */
-    public void setPrimaryKeyGenerator(DbKeyGenerator primaryKeyGenerator) {
-        this.primaryKeyGenerator = primaryKeyGenerator;
-        if (primaryKeyGenerator != null) {
-            primaryKeyGenerator.setDbEntity(this);
+    public void setPrimaryKeyGenerator(DbKeyGenerator keySequence) {
+        this.keySequence = keySequence;
+        if (keySequence != null) {
+            keySequence.setDbEntity(this);
         }
     }
 
@@ -440,7 +440,7 @@ public class DbEntity extends Entity<DbEntity, DbAttribute, DbRelationship> impl
      * Return the primary key generator for this entity.
      */
     public DbKeyGenerator getPrimaryKeyGenerator() {
-        return primaryKeyGenerator;
+        return keySequence;
     }
 
     /**

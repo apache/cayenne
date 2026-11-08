@@ -25,9 +25,12 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
 import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.map.compiled.CompiledMapping;
+import org.apache.cayenne.map.compiled.CompiledEntity;
+import org.apache.cayenne.map.compiled.TestMappings;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -42,10 +45,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 public class DataRowUtilsTest {
 
-    private EntityResolver resolver;
-    private ObjEntity item;
-    private ObjEntity detail;
-    private ObjEntity itemTagEntity;
+    private CompiledMapping mapping;
+    private CompiledEntity item;
+    private CompiledEntity detail;
+    private CompiledEntity itemTagEntity;
 
     @BeforeEach
     public void buildModel() {
@@ -95,16 +98,16 @@ public class DataRowUtilsTest {
         ObjEntity qualifiedCategory = addObjEntity(map, "QualifiedCategory", "CATEGORY");
         qualifiedCategory.setDeclaredQualifier(ExpressionFactory.matchDbExp("ID", 1));
 
-        detail = addObjEntity(map, "Detail", "DETAIL");
+        ObjEntity detail = addObjEntity(map, "Detail", "DETAIL");
         addObjRelationship(detail, "master", "Master", "master");
 
         ObjEntity twinEntity = addObjEntity(map, "Twin", "TWIN");
         addObjRelationship(twinEntity, "master", "Master", "master");
 
-        itemTagEntity = addObjEntity(map, "ItemTag", "ITEM_TAG");
+        ObjEntity itemTagEntity = addObjEntity(map, "ItemTag", "ITEM_TAG");
         addObjRelationship(itemTagEntity, "toItem", "Item", "toItem");
 
-        item = addObjEntity(map, "Item", "ITEM");
+        ObjEntity item = addObjEntity(map, "Item", "ITEM");
         addObjRelationship(item, "master", "Master", "master");
         addObjRelationship(item, "toCategory", "Category", "toCategory");
         addObjRelationship(item, "toCategoryByName", "Category", "toCategoryByName");
@@ -115,7 +118,11 @@ public class DataRowUtilsTest {
         addObjRelationship(masterEntity, "detail", "Detail", "detail");
         addObjRelationship(masterEntity, "twin", "Twin", "twin");
 
-        resolver = new EntityResolver(List.of(map));
+        // the structure alone matters here, so the entities need no classes
+        mapping = TestMappings.compile(map);
+        this.item = mapping.entity("Item");
+        this.detail = mapping.entity("Detail");
+        this.itemTagEntity = mapping.entity("ItemTag");
     }
 
     @Test
@@ -136,18 +143,20 @@ public class DataRowUtilsTest {
         assertFalse(determined(item, "toQualifiedCategory"));
 
         // no FK on the source
-        ObjEntity master = resolver.getObjEntity("Master");
+        CompiledEntity master = mapping.entity("Master");
         assertFalse(determined(master, "items"));
         assertFalse(determined(master, "detail"));
         assertFalse(determined(item, "detail"));
 
-        // a PK-to-PK pair with no FK flag has no side that guarantees the target
-        assertFalse(determined(master, "twin"));
-        assertFalse(determined(resolver.getObjEntity("Twin"), "master"));
+        // a PK-to-PK pair with no FK flag: the compiler assumes the side first in name order ("Master.twin") holds
+        // the FK, so only that side guarantees the target
+        assertTrue(determined(master, "twin"));
+        assertFalse(determined(mapping.entity("Twin"), "master"));
+
     }
 
-    private boolean determined(ObjEntity entity, String relationship) {
-        return DataRowUtils.isTargetDeterminedByFK(entity.getRelationship(relationship), resolver);
+    private boolean determined(CompiledEntity entity, String relationship) {
+        return DataRowUtils.isTargetDeterminedByFK(entity.relationship(relationship));
     }
 
     private static DbEntity addDbEntity(DataMap map, String name) {

@@ -22,7 +22,7 @@ package org.apache.cayenne.access.jdbc;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
 import org.apache.cayenne.dba.JdbcAdapter;
-import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.compiled.CompiledMapping;
 import org.apache.cayenne.query.resolved.InsertBatch;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.CayenneProjects;
@@ -44,28 +44,28 @@ public class DataNodeBatchActionIT {
 
     @Test
     public void hasGeneratedKeys1() throws Exception {
-        EntityResolver resolver = env.runtime().getDataDomain().getEntityResolver();
+        CompiledMapping mapping = env.runtime().getDataDomain().getMapping();
 
         // test with adapter that supports keys
         JdbcAdapter adapter = buildAdapter(true);
 
         DataNode node = DataNodes.withAdapter(adapter, mock(RowReaderFactory.class));
 
-        InsertBatch batch2 = new InsertBatch(resolver.getObjEntity(Artist.class).getDbEntity(), List.of());
+        InsertBatch batch2 = new InsertBatch(mapping.entity(Artist.class).table(), List.of());
         TranslatedBatch translated = new InsertBatchTranslator().translate(batch2, adapter);
         assertFalse(new DataNodeBatchAction(translated, node, false).hasGeneratedKeys());
     }
 
     @Test
     public void hasGeneratedKeys2() throws Exception {
-        EntityResolver resolver = env.runtime().getDataDomain().getEntityResolver();
+        CompiledMapping mapping = env.runtime().getDataDomain().getMapping();
 
         // test with adapter that does not support keys...
         JdbcAdapter adapter = buildAdapter(false);
 
         DataNode node = DataNodes.withAdapter(adapter, mock(RowReaderFactory.class));
 
-        InsertBatch batch2 = new InsertBatch(resolver.getObjEntity(Artist.class).getDbEntity(), List.of());
+        InsertBatch batch2 = new InsertBatch(mapping.entity(Artist.class).table(), List.of());
         TranslatedBatch translated = new InsertBatchTranslator().translate(batch2, adapter);
         assertFalse(new DataNodeBatchAction(translated, node, false).hasGeneratedKeys());
     }

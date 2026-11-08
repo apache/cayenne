@@ -109,23 +109,28 @@ public class EntityIT {
         });
     }
 
+    // the authored model of the test runtime, as these tests check the authored map classes
+    private static EntityResolver authored() {
+        return new EntityResolver(env.project().dataMaps());
+    }
+
     @Test
     public void resolveBadObjPath() {
-        ObjEntity galleryEnt = env.runtime().getDataDomain().getEntityResolver().getObjEntity("Gallery");
+        ObjEntity galleryEnt = authored().getObjEntity("Gallery");
         assertThrows(ExpressionException.class,
                 () -> galleryEnt.resolvePath(CayennePath.of("invalid.invalid")));
     }
 
     @Test
     public void resolveAttributeNotLast() {
-        ObjEntity galleryEnt = env.runtime().getDataDomain().getEntityResolver().getObjEntity("Gallery");
+        ObjEntity galleryEnt = authored().getObjEntity("Gallery");
         assertThrows(ExpressionException.class,
                 () -> galleryEnt.resolvePath(CayennePath.of("galleryName.paintings")));
     }
 
     @Test
     public void resolveObjPathExpandedAlias() {
-        ObjEntity artistEnt = env.runtime().getDataDomain().getEntityResolver().getObjEntity("Artist");
+        ObjEntity artistEnt = authored().getObjEntity("Artist");
         List<Object> components = artistEnt.resolvePath(
                 CayennePath.of("a.paintingTitle").expandAliases(Map.of("a", "paintings")));
 
@@ -136,7 +141,7 @@ public class EntityIT {
 
     @Test
     public void resolveObjPath1() {
-        ObjEntity galleryEnt = env.runtime().getDataDomain().getEntityResolver().getObjEntity("Gallery");
+        ObjEntity galleryEnt = authored().getObjEntity("Gallery");
         List<Object> components = galleryEnt.resolvePath(CayennePath.of("galleryName"));
 
         // must contain a single ObjAttribute

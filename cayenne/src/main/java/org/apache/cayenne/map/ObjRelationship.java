@@ -51,7 +51,7 @@ public class ObjRelationship extends Relationship<ObjEntity, ObjAttribute, ObjRe
     protected DeleteRule deleteRule;
     protected boolean usedForLocking;
 
-    protected List<DbRelationship> dbRelationships = new ArrayList<>(2);
+    protected List<DbRelationship> joins = new ArrayList<>(2);
 
     /**
      * Db-relationships path that is set but not yet parsed (turned into
@@ -233,7 +233,7 @@ public class ObjRelationship extends Relationship<ObjEntity, ObjAttribute, ObjRe
      */
     public List<DbRelationship> getDbRelationships() {
         refreshFromDeferredPath();
-        return Collections.unmodifiableList(dbRelationships);
+        return Collections.unmodifiableList(joins);
     }
 
     /**
@@ -248,9 +248,9 @@ public class ObjRelationship extends Relationship<ObjEntity, ObjAttribute, ObjRe
         // Adding a second is creating a flattened relationship.
         // Ensure that the new relationship properly continues
         // on the flattened path
-        int numDbRelationships = dbRelationships.size();
+        int numDbRelationships = joins.size();
         if (numDbRelationships > 0) {
-            DbRelationship lastRel = dbRelationships.get(numDbRelationships - 1);
+            DbRelationship lastRel = joins.get(numDbRelationships - 1);
             if (!lastRel.getTargetEntityName().equals(dbRel.getSourceEntity().getName())) {
                 throw new CayenneRuntimeException("Error adding db relationship %s to ObjRelationship %s"
                         + " because the source of the newly added relationship"
@@ -258,7 +258,7 @@ public class ObjRelationship extends Relationship<ObjEntity, ObjAttribute, ObjRe
             }
         }
 
-        dbRelationships.add(dbRel);
+        joins.add(dbRel);
 
         this.recalculateToManyValue();
     }
@@ -269,14 +269,14 @@ public class ObjRelationship extends Relationship<ObjEntity, ObjAttribute, ObjRe
      */
     public void removeDbRelationship(DbRelationship dbRel) {
         refreshFromDeferredPath();
-        if (dbRelationships.remove(dbRel)) {
+        if (joins.remove(dbRel)) {
             this.recalculateToManyValue();
         }
     }
 
     public void clearDbRelationships() {
         deferredPath = null;
-        this.dbRelationships.clear();
+        this.joins.clear();
         this.toMany = false;
     }
 
@@ -290,7 +290,7 @@ public class ObjRelationship extends Relationship<ObjEntity, ObjAttribute, ObjRe
         if (isToMany() || isFlattened()) {
             return false;
         }
-        return dbRelationships.getFirst().isForeignKey();
+        return joins.getFirst().isForeignKey();
     }
 
     /**
@@ -304,7 +304,7 @@ public class ObjRelationship extends Relationship<ObjEntity, ObjAttribute, ObjRe
         if (isFlattened()) {
             return false;
         }
-        return dbRelationships.getFirst().isToPrimaryKey();
+        return joins.getFirst().isToPrimaryKey();
     }
 
     /**
@@ -516,7 +516,7 @@ public class ObjRelationship extends Relationship<ObjEntity, ObjAttribute, ObjRe
      */
     final void refreshFromPath(CayennePath dbRelationshipPath, boolean stripInvalid) {
         // remove existing relationships
-        dbRelationships.clear();
+        joins.clear();
 
         if (dbRelationshipPath != null) {
 
@@ -534,7 +534,7 @@ public class ObjRelationship extends Relationship<ObjEntity, ObjAttribute, ObjRe
             } else {
                 // add new relationships from path
                 List<DbRelationship> resolved = resolveLeadingDbRelationships(dbEntity, dbRelationshipPath);
-                dbRelationships.addAll(resolved);
+                joins.addAll(resolved);
                 if (resolved.size() < dbRelationshipPath.length() && !stripInvalid) {
                     throw new ExpressionException("Can't resolve path component: [%s.%s].",
                             dbRelationshipPath.value(), null,
@@ -556,7 +556,7 @@ public class ObjRelationship extends Relationship<ObjEntity, ObjAttribute, ObjRe
         // rel is toMany. If all are toOne, then the rel is toOne.
         // Simple (non-flattened) relationships form the degenerate case
         // taking the value of the single underlying dbrel.
-        for (DbRelationship thisRel : this.dbRelationships) {
+        for (DbRelationship thisRel : this.joins) {
             if (thisRel.isToMany()) {
                 this.toMany = true;
                 return;

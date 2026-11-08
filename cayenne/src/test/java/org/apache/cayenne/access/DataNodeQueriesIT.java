@@ -20,7 +20,7 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.DataRow;
-import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.compiled.CompiledTable;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.SQLQuery;
@@ -65,15 +65,16 @@ public class DataNodeQueriesIT {
     @Test
     public void createPkSupportForMapEntities() throws Exception {
 
-        DbEntity artistEnt = env.resolver().getDbEntity("ARTIST");
+        CompiledTable artistTable = env.mapping().schema().table("ARTIST");
         assertNotNull(node.getPkGenerator().generatePk(
                 node,
-                artistEnt.getPrimaryKeys().iterator().next()));
+                artistTable.primaryKey().iterator().next()));
 
-        DbEntity exhibitEnt = env.resolver().getDbEntity("EXHIBIT");
+        CompiledTable exhibitTable = env.mapping().schema().table("EXHIBIT");
         assertNotNull(node.getPkGenerator().generatePk(
                 node,
-                exhibitEnt.getPrimaryKeys().iterator().next()));
+                exhibitTable.primaryKey().iterator().next()));
+
     }
 
     @Test
@@ -88,7 +89,7 @@ public class DataNodeQueriesIT {
         bindings.put("dob", new Date(System.currentTimeMillis()));
         query.params(bindings);
 
-        StatementContext statementContext = StatementContexts.run(node, env.resolver(), query);
+        StatementContext statementContext = StatementContexts.run(node, env.mapping(), query);
         assertNotNull(StatementContexts.counts(statementContext));
         assertEquals(1, StatementContexts.counts(statementContext)[0]);
 
@@ -106,7 +107,7 @@ public class DataNodeQueriesIT {
         String template = "SELECT #result('ARTIST_ID' 'int') FROM ARTIST ORDER BY ARTIST_ID";
         SQLQuery<DataRow> query = SQLQuery.query(template);
 
-        StatementContext statementContext = StatementContexts.run(node, env.resolver(), query);
+        StatementContext statementContext = StatementContexts.run(node, env.mapping(), query);
 
         List<DataRow> data = StatementContexts.rows(statementContext);
         assertEquals(4, data.size());
@@ -123,7 +124,7 @@ public class DataNodeQueriesIT {
         SQLQuery<DataRow> query = SQLQuery.query(template);
         query.columnNameCaps(CapsStrategy.UPPER);
 
-        StatementContext statementContext = StatementContexts.run(node, env.resolver(), query);
+        StatementContext statementContext = StatementContexts.run(node, env.mapping(), query);
 
         List<DataRow> data = StatementContexts.rows(statementContext);
         assertEquals(4, data.size());
@@ -142,7 +143,7 @@ public class DataNodeQueriesIT {
         String template = "SELECT #result('ARTIST_ID' 'int' 'A') FROM ARTIST ORDER BY ARTIST_ID";
         Query<?> query = SQLQuery.query(template);
 
-        StatementContext statementContext = StatementContexts.run(node, env.resolver(), query);
+        StatementContext statementContext = StatementContexts.run(node, env.mapping(), query);
 
         List<DataRow> data = StatementContexts.rows(statementContext);
         assertEquals(4, data.size());
@@ -157,7 +158,7 @@ public class DataNodeQueriesIT {
                 + "\n"
                 + "VALUES (1, 'A')";
         Query<?> template = SQLQuery.query(templateString);
-        StatementContexts.run(node, env.resolver(), template);
+        StatementContexts.run(node, env.mapping(), template);
     }
 
     @Test
@@ -166,7 +167,7 @@ public class DataNodeQueriesIT {
                 + "\r\n"
                 + "VALUES (1, 'A')";
         Query<?> template = SQLQuery.query(templateString);
-        StatementContexts.run(node, env.resolver(), template);
+        StatementContexts.run(node, env.mapping(), template);
     }
 
     @Test
@@ -175,6 +176,6 @@ public class DataNodeQueriesIT {
                 + "\r"
                 + "VALUES (1, 'A')";
         Query<?> template = SQLQuery.query(templateString);
-        StatementContexts.run(node, env.resolver(), template);
+        StatementContexts.run(node, env.mapping(), template);
     }
 }

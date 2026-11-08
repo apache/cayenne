@@ -33,7 +33,8 @@ import org.apache.cayenne.dba.JdbcPkGenerator;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Key;
 import org.apache.cayenne.dba.PkGenerator;
-import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.compiled.CompiledColumn;
+import org.apache.cayenne.map.compiled.CompiledDataMap;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.SQLQuery;
 import org.apache.cayenne.test.jdbc.TableHelper;
@@ -41,7 +42,6 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
-import org.apache.cayenne.map.DataMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -255,7 +255,7 @@ public class DataContextExtrasIT {
         PkGenerator newGenerator = new JdbcPkGenerator() {
 
             @Override
-            public Object generatePk(DataNode node, DbAttribute pk) {
+            public Object generatePk(DataNode node, CompiledColumn pk) {
                 throw new CayenneRuntimeException("Intentional");
             }
         };
@@ -263,7 +263,11 @@ public class DataContextExtrasIT {
         // a node is immutable, so to install the generator, replace the node with a copy that has it
         DataNode node = domain.getDefaultNode();
         Injector injector = env.runtime().getInjector();
-        List<DataMap> maps = domain.getDataMaps().stream().filter(m -> domain.lookupDataNode(m) == node).toList();
+        List<String> maps = domain.getMapping().schema().maps().stream()
+                .map(CompiledDataMap::name)
+                .filter(m -> domain.lookupDataNode(m) == node)
+                .toList();
+
         DataNode replacement = new DataNode(
                 node.getName(),
                 node.getDataSource(),
@@ -308,7 +312,7 @@ public class DataContextExtrasIT {
 
     @Test
     public void entityResolver() {
-        assertNotNull(context.getEntityResolver());
+        assertNotNull(context.getMapping());
     }
 
     @Test

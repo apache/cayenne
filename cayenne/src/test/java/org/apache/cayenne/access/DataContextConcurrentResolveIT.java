@@ -26,7 +26,7 @@ import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.reflect.ClassDescriptor;
+import org.apache.cayenne.map.compiled.CompiledEntity;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
@@ -221,20 +221,20 @@ public class DataContextConcurrentResolveIT {
         long version = p.getSnapshotVersion();
 
         DataRow dbRow = ObjectSelect.dataRowQuery(Painting.class).selectOne(context);
-        ClassDescriptor descriptor = context.getEntityResolver().getClassDescriptor("Painting");
+        CompiledEntity entity = context.getMapping().entity("Painting");
 
         // a snapshot of an earlier statement arriving late is ignored
-        context.objectsFromDataRows(descriptor, List.of(copy(dbRow, "stale", version - 1)));
+        context.objectsFromDataRows(entity, List.of(copy(dbRow, "stale", version - 1)));
         assertEquals(titleFor(1, 0), p.getPaintingTitle());
         assertEquals(version, p.getSnapshotVersion());
 
         // a snapshot of the same statement is a no-op too, while a newer one is merged
-        context.objectsFromDataRows(descriptor, List.of(copy(dbRow, "same", version)));
+        context.objectsFromDataRows(entity, List.of(copy(dbRow, "same", version)));
         assertEquals("same", p.getPaintingTitle());
         assertEquals(version, p.getSnapshotVersion());
 
         long newer = SnapshotVersion.next();
-        context.objectsFromDataRows(descriptor, List.of(copy(dbRow, "newer", newer)));
+        context.objectsFromDataRows(entity, List.of(copy(dbRow, "newer", newer)));
         assertEquals("newer", p.getPaintingTitle());
         assertEquals(newer, p.getSnapshotVersion());
     }

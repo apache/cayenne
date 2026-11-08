@@ -20,7 +20,7 @@
 package org.apache.cayenne.access.translator;
 
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.compiled.CompiledMapping;
 import org.apache.cayenne.query.resolved.ResolvedSelect;
 
 /**
@@ -33,5 +33,5 @@ public interface SelectTranslator {
     /**
      * @since 6.0 takes a {@link ResolvedSelect}
      */
-    TranslatedSelect translate(ResolvedSelect select, DbAdapter adapter, EntityResolver resolver);
+    TranslatedSelect translate(ResolvedSelect select, DbAdapter adapter, CompiledMapping mapping);
 }

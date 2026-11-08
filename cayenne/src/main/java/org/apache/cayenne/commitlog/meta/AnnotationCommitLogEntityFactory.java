@@ -26,9 +26,8 @@ import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.annotation.CommitLog;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.reflect.ClassDescriptor;
+import org.apache.cayenne.map.compiled.CompiledMapping;
+import org.apache.cayenne.map.compiled.CompiledEntity;
 
 /**
  * Compiles {@link CommitLogEntity}'s based on {@link CommitLog} annotation.
@@ -80,18 +79,16 @@ public class AnnotationCommitLogEntityFactory implements CommitLogEntityFactory 
 		return descriptor;
 	}
 
-	private EntityResolver getEntityResolver() {
-		return domainProvider.get().getEntityResolver();
+	private CompiledMapping getMapping() {
+		return domainProvider.get().getMapping();
 	}
 
 	private CommitLogEntity createDescriptor(String entityName) {
-		EntityResolver entityResolver = getEntityResolver();
-		ClassDescriptor classDescriptor = entityResolver.getClassDescriptor(entityName);
-		Class<?> objectClass = classDescriptor.getObjectClass();
+		CompiledEntity entity = getMapping().entity(entityName);
+		Class<?> objectClass = entity.objectClass();
 
 		CommitLog a = objectClass.getAnnotation(CommitLog.class);
 		if (a != null) {
-			ObjEntity entity = entityResolver.getObjEntity(entityName);
 			return new MutableCommitLogLogEntity(entity).setConfidential(a.confidential())
 					.setIgnoreProperties(a.ignoredProperties()).setIgnoreAttributes(a.ignoreAttributes())
 					.setIgnoreToOneRelationships(a.ignoreToOneRelationships())

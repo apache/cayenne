@@ -20,7 +20,7 @@ package org.apache.cayenne.crypto.transformer.value;
 
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
-import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.compiled.CompiledColumn;
 
 /**
  * A {@link ValueTransformerFactory} that  allows to defer its initialization and hence allows Cayenne stack
@@ -39,12 +39,12 @@ public class LazyValueTransformerFactory implements ValueTransformerFactory {
     }
 
     @Override
-    public ValueEncryptor encryptor(DbAttribute a) {
+    public ValueEncryptor encryptor(CompiledColumn a) {
         return ensureInit().encryptor(a);
     }
 
     @Override
-    public ValueDecryptor decryptor(DbAttribute a) {
+    public ValueDecryptor decryptor(CompiledColumn a) {
         return ensureInit().decryptor(a);
     }
 

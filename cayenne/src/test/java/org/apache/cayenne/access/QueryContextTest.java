@@ -22,7 +22,7 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.compiled.CompiledMapping;
 import org.apache.cayenne.query.SQLQuery;
 import org.apache.cayenne.unit.DataNodes;
 import org.apache.cayenne.query.resolved.ResolvedQuery;
@@ -45,13 +45,13 @@ public class QueryContextTest {
     }
 
     private static StatementContext newStatementContext(String sql) {
-        return new StatementContext(ResolvedSQL.raw(sql), mock(EntityResolver.class));
+        return new StatementContext(ResolvedSQL.raw(sql), mock(CompiledMapping.class));
     }
 
     @Test
     public void queryAndResolvedQuery() {
         SQLQuery<DataRow> query = SQLQuery.query("SELECT 1");
-        ResolvedQuery resolved = query.resolve(new EntityResolver());
+        ResolvedQuery resolved = query.resolve(mock(CompiledMapping.class));
         ObjectContext objectContext = mock(ObjectContext.class);
 
         QueryContext context = new QueryContext(objectContext, query, resolved, true);

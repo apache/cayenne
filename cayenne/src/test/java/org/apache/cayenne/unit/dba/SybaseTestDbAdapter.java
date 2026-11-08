@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.unit.dba;
 
+import org.apache.cayenne.map.compiled.CompiledDataMap;
+import org.apache.cayenne.map.compiled.CompiledMapping;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
@@ -102,18 +104,18 @@ public class SybaseTestDbAdapter extends TestDbAdapter {
 	}
 
 	@Override
-	public void willDropTables(Connection con, DataMap map, Collection tablesToDrop) throws Exception {
+	public void willDropTables(Connection con, CompiledMapping mapping, CompiledDataMap map, Collection<String> tablesToDrop)
+			throws Exception {
 
-        for (Object o : tablesToDrop) {
-            dropConstraints(con, (String) o);
+        for (String table : tablesToDrop) {
+            dropConstraints(con, table);
         }
 
-		dropProcedures(con, map);
+		dropProcedures(con, mapping, map);
 	}
 
-	protected void dropProcedures(Connection con, DataMap map) throws Exception {
-		Procedure proc = map.getProcedure("cayenne_tst_select_proc");
-		if (proc != null && proc.getDataMap() == map) {
+	protected void dropProcedures(Connection con, CompiledMapping mapping, CompiledDataMap map) throws Exception {
+		if (hasProcedure(mapping, map, "cayenne_tst_select_proc")) {
 			executeDDL(con, "sybase", "drop-select-sp.sql");
 			executeDDL(con, "sybase", "drop-update-sp.sql");
 			executeDDL(con, "sybase", "drop-update-sp2.sql");

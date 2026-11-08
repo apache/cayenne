@@ -34,10 +34,10 @@ import org.apache.cayenne.access.sqlbuilder.sqltree.PerAttributeChildProcessor;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SQLTreeProcessor;
 import org.apache.cayenne.access.sqlbuilder.sqltree.SimpleNodeTreeVisitor;
 import org.apache.cayenne.access.sqlbuilder.sqltree.ValueNode;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.ObjAttribute;
-import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.compiled.CompiledColumn;
+import org.apache.cayenne.map.compiled.CompiledTable;
+import org.apache.cayenne.map.compiled.CompiledAttribute;
+import org.apache.cayenne.map.compiled.CompiledEntity;
 
 /**
  * @since 4.2
@@ -90,38 +90,38 @@ public class TypeAwareSQLTreeProcessor extends SimpleNodeTreeVisitor implements 
         return true;
     }
 
-    protected DbAttribute getColumnAttribute(ColumnNode node) {
-        DbAttribute attribute = node.getAttribute();
-        if(attribute != null
-                && attribute.getType() == Types.OTHER
+    protected CompiledColumn getColumnAttribute(ColumnNode node) {
+        CompiledColumn column = node.getAttribute();
+        if(column != null
+                && column.jdbcType() == Types.OTHER
                 && node.getParent() != null
                 && node.getParent().getType() == NodeType.RESULT) {
-            return attribute;
+            return column;
         }
         return null;
     }
 
-    protected ChildProcessor<ColumnNode> getColumnProcessor(DbAttribute attr) {
-        String type = getObjAttributeFor(attr).map(ObjAttribute::getType).orElse(DEFAULT_TYPE_NAME);
+    protected ChildProcessor<ColumnNode> getColumnProcessor(CompiledColumn column) {
+        String type = getObjAttributeFor(column).map(CompiledAttribute::valueClassName).orElse(DEFAULT_TYPE_NAME);
         return byColumnTypeProcessors
                 .getOrDefault(type, this::defaultProcess);
     }
 
-    protected DbAttribute getValueAttribute(ValueNode node) {
-        DbAttribute attribute = node.getAttribute();
-        if(attribute == null) {
+    protected CompiledColumn getValueAttribute(ValueNode node) {
+        CompiledColumn column = node.getAttribute();
+        if(column == null) {
             return null;
         }
-        if(attribute.getType() == Types.OTHER
+        if(column.jdbcType() == Types.OTHER
                 && node.getParent() != null
                 && (node.getParent().getType() == NodeType.EQUALITY || node.getParent().getType() == NodeType.INSERT_VALUES)) {
-            return attribute;
+            return column;
         }
         return null;
     }
 
-    protected ChildProcessor<ValueNode> getValueProcessor(DbAttribute attr) {
-        String type = getObjAttributeFor(attr).map(ObjAttribute::getType).orElse(DEFAULT_TYPE_NAME);
+    protected ChildProcessor<ValueNode> getValueProcessor(CompiledColumn column) {
+        String type = getObjAttributeFor(column).map(CompiledAttribute::valueClassName).orElse(DEFAULT_TYPE_NAME);
         return byValueTypeProcessors
                 .getOrDefault(type, this::defaultProcess);
     }
@@ -140,15 +140,15 @@ public class TypeAwareSQLTreeProcessor extends SimpleNodeTreeVisitor implements 
         return functionNode;
     }
 
-    protected static Optional<ObjAttribute> getObjAttributeFor(DbAttribute dbAttribute) {
-        if(dbAttribute == null) {
+    protected static Optional<CompiledAttribute> getObjAttributeFor(CompiledColumn column) {
+        if(column == null) {
             return Optional.empty();
         }
-        DbEntity dbEntity = dbAttribute.getEntity();
-        for(ObjEntity objEntity: dbEntity.getDataMap().getObjEntities()) {
-            ObjAttribute objAttribute = objEntity.getAttributeForDbAttribute(dbAttribute);
-            if(objAttribute != null) {
-                return Optional.of(objAttribute);
+        // only an entity of the column's table maps the column directly
+        for (CompiledEntity entity : column.table().entities()) {
+            CompiledAttribute attribute = entity.attributeForColumn(column);
+            if(attribute != null) {
+                return Optional.of(attribute);
             }
         }
         return Optional.empty();

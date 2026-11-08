@@ -20,7 +20,7 @@
 package org.apache.cayenne.dba.postgres;
 
 import org.apache.cayenne.access.translator.procedure.DefaultProcedureTranslator;
-import org.apache.cayenne.map.Procedure;
+import org.apache.cayenne.map.compiled.CompiledProcedure;
 
 /**
  * A translator that adds parenthesis to no-param queries.
@@ -31,7 +31,7 @@ import org.apache.cayenne.map.Procedure;
 public class PostgresProcedureTranslator extends DefaultProcedureTranslator {
 
     @Override
-    protected String createSqlString(Procedure procedure, int callParamsSize) {
+    protected String createSqlString(CompiledProcedure procedure, int callParamsSize) {
 
         String sql = super.createSqlString(procedure, callParamsSize);
 

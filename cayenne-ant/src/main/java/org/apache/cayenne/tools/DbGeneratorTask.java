@@ -27,15 +27,16 @@ import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.log.NoopSQLLogger;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
+import org.apache.cayenne.map.compiled.CompiledSchema;
+import org.apache.cayenne.map.compiled.SchemaCompiler;
 import org.apache.cayenne.util.Util;
 import org.slf4j.Logger;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 
+import java.util.List;
 import javax.sql.DataSource;
-import java.util.Collections;
 
 /**
  * An Ant Task that is a frontend to Cayenne DbGenerator allowing schema
@@ -86,8 +87,8 @@ public class DbGeneratorTask extends CayenneTask {
 
 			DbAdapter adapter = getAdapter(injector, dataSource);
 
-			DbGenerator generator = new DbGenerator(adapter, dataMap, Collections.<DbEntity> emptyList(), null,
-					NoopSQLLogger.getInstance());
+			CompiledSchema schema = SchemaCompiler.compile(List.of(dataMap));
+			DbGenerator generator = new DbGenerator(adapter, schema, dataMap.getName(), NoopSQLLogger.getInstance());
 			generator.setShouldCreateFKConstraints(createFK);
 			generator.setShouldCreatePKSupport(createPK);
 			generator.setShouldCreateTables(createTables);

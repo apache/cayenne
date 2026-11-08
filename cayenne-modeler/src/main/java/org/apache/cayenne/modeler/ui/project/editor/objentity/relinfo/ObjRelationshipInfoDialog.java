@@ -92,7 +92,7 @@ public class ObjRelationshipInfoDialog extends ProjectDialog implements TreeSele
     private final JButton cancelButton;
 
     private ObjRelationship relationship;
-    private List<DbRelationship> dbRelationships;
+    private List<DbRelationship> joins;
     private List<DbRelationship> savedDbRelationships;
     private ObjEntity objectTarget;
     private List<ObjEntity> objectTargets;
@@ -240,8 +240,8 @@ public class ObjRelationshipInfoDialog extends ProjectDialog implements TreeSele
 
         setSemantics();
         // setup path
-        dbRelationships = new ArrayList<>(relationship.getDbRelationships());
-        this.savedDbRelationships = dbRelationships;
+        joins = new ArrayList<>(relationship.getDbRelationships());
+        this.savedDbRelationships = joins;
         initMapKeys();
         updateCollectionChoosers();
         // add dummy last relationship if we are not connected
@@ -255,7 +255,7 @@ public class ObjRelationshipInfoDialog extends ProjectDialog implements TreeSele
             setSelectionPath(savedDbRelationships);
         }
 
-        saveButton.setEnabled(!dbRelationships.isEmpty());
+        saveButton.setEnabled(!joins.isEmpty());
     }
 
     /**
@@ -303,12 +303,12 @@ public class ObjRelationshipInfoDialog extends ProjectDialog implements TreeSele
     }
 
     private void saveMapping() {
-        if (!dbRelationships.equals(savedDbRelationships)) {
+        if (!joins.equals(savedDbRelationships)) {
             if (savedDbRelationships.isEmpty() || JOptionPane.showConfirmDialog(
                     this,
                     "You have changed Db Relationship path. Do you want it to be saved?", "Save ObjRelationship",
                     JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-                this.savedDbRelationships = new ArrayList<>(dbRelationships);
+                this.savedDbRelationships = new ArrayList<>(joins);
             }
         }
         configureRelationship();
@@ -444,7 +444,7 @@ public class ObjRelationshipInfoDialog extends ProjectDialog implements TreeSele
     }
 
     private void setDbRelationships(List<DbRelationship> rels) {
-        dbRelationships = rels;
+        joins = rels;
         saveButton.setEnabled(true);
         updateTargetCombo(!rels.isEmpty() ? rels.get(rels.size() - 1).getTargetEntity() : null);
         updateCollectionChoosers();
@@ -453,7 +453,7 @@ public class ObjRelationshipInfoDialog extends ProjectDialog implements TreeSele
     private boolean isToMany() {
         // copied algorithm from ObjRelationship.calculateToMany(), only iterating
         // through the unsaved dbrels selection.
-        for (DbRelationship rel : dbRelationships) {
+        for (DbRelationship rel : joins) {
             if (rel != null && rel.isToMany()) {
                 return true;
             }
@@ -543,7 +543,7 @@ public class ObjRelationshipInfoDialog extends ProjectDialog implements TreeSele
 
     private void updatePath() {
         relationship.clearDbRelationships();
-        for (DbRelationship nextPathComponent : dbRelationships) {
+        for (DbRelationship nextPathComponent : joins) {
             if (nextPathComponent == null) {
                 break;
             }
@@ -558,9 +558,9 @@ public class ObjRelationshipInfoDialog extends ProjectDialog implements TreeSele
     private void connectEnds() {
         DbRelationship last = null;
 
-        int size = dbRelationships.size();
+        int size = joins.size();
         if (size > 0) {
-            last = dbRelationships.get(size - 1);
+            last = joins.get(size - 1);
         }
 
         DbEntity target = getEndEntity();
@@ -570,7 +570,7 @@ public class ObjRelationshipInfoDialog extends ProjectDialog implements TreeSele
             if (source != null) {
                 DbRelationship anyConnector = source.getAnyRelationship(target);
                 if (anyConnector != null) {
-                    dbRelationships.add(anyConnector);
+                    joins.add(anyConnector);
                 }
             }
         }

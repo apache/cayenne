@@ -27,7 +27,7 @@ import org.apache.cayenne.crypto.transformer.value.ValueDecryptor;
 import org.apache.cayenne.crypto.transformer.value.ValueEncryptor;
 import org.apache.cayenne.crypto.transformer.value.ValueTransformerFactory;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.compiled.CompiledColumn;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,8 +60,8 @@ public class DefaultTransformerFactory implements TransformerFactory {
 
         for (int i = 0; i < len; i++) {
 
-            DbAttribute a = columns[i].attribute();
-            if (a != null && columnMapper.isEncrypted(a)) {
+            CompiledColumn a = columns[i].attribute();
+            if (a != null && columnMapper.isEncrypted(a.table().name(), a.name())) {
                 if (cryptoColumns == null) {
                     cryptoColumns = new ArrayList<>(len - i);
                 }
@@ -96,8 +96,8 @@ public class DefaultTransformerFactory implements TransformerFactory {
 
         for (int i = 0; i < len; i++) {
 
-            DbAttribute a = bindings[i].attribute();
-            if (columnMapper.isEncrypted(a)) {
+            CompiledColumn a = bindings[i].attribute();
+            if (columnMapper.isEncrypted(a.table().name(), a.name())) {
 
                 if (cryptoColumns == null) {
                     cryptoColumns = new ArrayList<>(len - i);

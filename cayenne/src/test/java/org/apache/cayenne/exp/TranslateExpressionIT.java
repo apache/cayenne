@@ -22,7 +22,8 @@ package org.apache.cayenne.exp;
 import java.util.List;
 
 import org.apache.cayenne.access.DataContext;
-import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.exp.path.CayennePath;
+import org.apache.cayenne.map.compiled.CompiledEntity;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -92,10 +93,10 @@ public class TranslateExpressionIT {
 
     @Test
     public void translateExpression() {
-        ObjEntity entity = context.getEntityResolver().getObjEntity("Painting");
+        CompiledEntity entity = context.getMapping().entity("Painting");
         Expression expression = ExpressionFactory.pathExp("artist.paintings");
         Expression translatedExpression = entity
-                .translateToRelatedEntity(expression, "artist");
+                .translateToRelatedTable(expression, CayennePath.of("artist"));
         assertEquals(ExpressionFactory
                 .dbPathExp("paintings.artist.paintings"),
                 translatedExpression);
@@ -103,50 +104,50 @@ public class TranslateExpressionIT {
 
     @Test
     public void relationshipPathEqualsToInput() {
-        ObjEntity entity = context.getEntityResolver().getObjEntity("Painting");
+        CompiledEntity entity = context.getMapping().entity("Painting");
         Expression expression = ExpressionFactory.pathExp("artist");
         Expression translatedExpression = entity
-                .translateToRelatedEntity(expression, "artist");
+                .translateToRelatedTable(expression, CayennePath.of("artist"));
         assertEquals(ExpressionFactory.dbPathExp("paintings.artist"),
                 translatedExpression);
     }
 
     @Test
     public void relationshipNoneLeadingParts() {
-        ObjEntity entity = context.getEntityResolver().getObjEntity("Painting");
+        CompiledEntity entity = context.getMapping().entity("Painting");
         Expression expression = ExpressionFactory.pathExp("gallery");
         Expression translatedExpression = entity
-                .translateToRelatedEntity(expression, "artist");
+                .translateToRelatedTable(expression, CayennePath.of("artist"));
         assertEquals(ExpressionFactory.dbPathExp("paintings.gallery"),
                 translatedExpression);
     }
 
     @Test
     public void relationshipSomeLeadingParts() {
-        ObjEntity entity = context.getEntityResolver().getObjEntity("Painting");
+        CompiledEntity entity = context.getMapping().entity("Painting");
         Expression expression = ExpressionFactory.pathExp("gallery");
         Expression translatedExpression = entity
-                .translateToRelatedEntity(expression, "artist.paintings.gallery");
+                .translateToRelatedTable(expression, CayennePath.of("artist.paintings.gallery"));
         assertEquals(ExpressionFactory.dbPathExp("paintings.artist.paintings.gallery"),
                 translatedExpression);
     }
 
     @Test
     public void compQualifier() {
-        ObjEntity entity = context.getEntityResolver().getObjEntity("Painting");
+        CompiledEntity entity = context.getMapping().entity("Painting");
         Expression expression = ExpressionFactory.pathExp("artist.artistExhibits.exhibit");
         Expression translatedExpression = entity
-                .translateToRelatedEntity(expression, "gallery");
+                .translateToRelatedTable(expression, CayennePath.of("gallery"));
         assertEquals(ExpressionFactory.dbPathExp("paintings.artist.artistExhibits.exhibit"),
                 translatedExpression);
     }
 
     @Test
     public void compQualifierAndPref() {
-        ObjEntity entity = context.getEntityResolver().getObjEntity("Artist");
+        CompiledEntity entity = context.getMapping().entity("Artist");
         Expression expression = ExpressionFactory.pathExp("paintings.gallery");
         Expression translatedExpression = entity
-                .translateToRelatedEntity(expression, "artistExhibits.exhibit");
+                .translateToRelatedTable(expression, CayennePath.of("artistExhibits.exhibit"));
         assertEquals(ExpressionFactory.dbPathExp("artistExhibits.artist.paintings.gallery"),
                 translatedExpression);
     }

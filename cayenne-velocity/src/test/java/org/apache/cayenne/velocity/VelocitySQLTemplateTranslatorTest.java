@@ -40,7 +40,8 @@ import org.apache.cayenne.access.translator.TranslatedSQL;
 import org.apache.cayenne.access.jdbc.PSParameter;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.compiled.CompiledMapping;
+import org.apache.cayenne.map.compiled.TestMappings;
 import org.apache.cayenne.query.SQLQuery;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -255,10 +256,14 @@ public class VelocitySQLTemplateTranslatorTest {
 	private TranslatedSQL translate(String template, Map<?, ?> params) {
 		Map<String, Object> named = new HashMap<>();
 		params.forEach((k, v) -> named.put(String.valueOf(k), v));
-		return processor.translate(SQLQuery.query(template).params(named).resolve(new EntityResolver()), adapter);
+		return processor.translate(SQLQuery.query(template).params(named).resolve(emptyMapping()), adapter);
 	}
 
 	private TranslatedSQL translate(String template, List<Object> params) {
-		return processor.translate(SQLQuery.query(template).paramsList(params).resolve(new EntityResolver()), adapter);
+		return processor.translate(SQLQuery.query(template).paramsList(params).resolve(emptyMapping()), adapter);
+	}
+
+	private static CompiledMapping emptyMapping() {
+		return TestMappings.compile();
 	}
 }

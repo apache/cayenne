@@ -21,9 +21,10 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.QueryResult;
 import org.apache.cayenne.SelectResult;
+import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.cache.QueryCacheEntryFactory;
-import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.compiled.CompiledTable;
 import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.ResultSegments;
@@ -101,8 +102,8 @@ class DataContextQueryAction {
         if (isMixedResultsForPaginatedQuery()) {
             return new MixedResultIncrementalFaultList<>(context, resolved, maxIdQualifierSize, rawIds);
         } else {
-            DbEntity dbEntity = resolved.dbEntity();
-            if (dbEntity != null && dbEntity.getPrimaryKeys().size() == 1) {
+            CompiledTable table = resolved.table();
+            if (table != null && table.primaryKey().size() == 1) {
                 return new SimpleIdIncrementalFaultList<>(context, resolved, maxIdQualifierSize, rawIds);
             } else {
                 return new IncrementalFaultList<>(context, resolved, maxIdQualifierSize, rawIds);
@@ -127,7 +128,8 @@ class DataContextQueryAction {
             return !DONE;
         }
 
-        if (resolved.cacheKey() == null) {
+        String cacheKey = resolved.cacheKey(valueObjectTypes());
+        if (cacheKey == null) {
             return !DONE;
         }
 
@@ -144,7 +146,7 @@ class DataContextQueryAction {
 
         if (cache) {
             boolean wasResponseNull = (response == null);
-            List<?> cachedResults = queryCache.get(resolved.cacheKey(), resolved.cacheGroup(), factory);
+            List<?> cachedResults = queryCache.get(cacheKey, resolved.cacheGroup(), factory);
 
             // response may already be initialized by the factory above ... it is null if
             // there was a preexisting cache entry
@@ -154,10 +156,16 @@ class DataContextQueryAction {
             }
         } else {
             // on cache-refresh request, fetch without blocking and fill the cache
-            queryCache.put(resolved.cacheKey(), resolved.cacheGroup(), factory.createObject());
+            queryCache.put(cacheKey, resolved.cacheGroup(), factory.createObject());
         }
 
         return DONE;
+    }
+
+    // a context not rooted in a DataDomain (as in some tests) has no value object types to render into the key
+    private ValueObjectTypeRegistry valueObjectTypes() {
+        DataDomain domain = context.getChannel().getDataDomain();
+        return domain != null ? domain.getValueObjectTypeRegistry() : null;
     }
 
     protected QueryCache getQueryCache() {

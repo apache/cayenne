@@ -25,8 +25,8 @@ import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.access.translator.TranslatedStatement;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.compiled.CompiledColumn;
+import org.apache.cayenne.map.compiled.CompiledTable;
 import org.apache.cayenne.query.ObjectSelect;
 
 import java.util.Collections;
@@ -42,16 +42,16 @@ import java.util.Objects;
 public class OptimisticLockException extends CayenneRuntimeException {
 
     private final ObjectId failedObjectId;
-    private final DbEntity rootEntity;
+    private final CompiledTable rootTable;
     private final Map<String, ?> qualifierSnapshot;
     private final TranslatedStatement translatedStatement;
 
-    public OptimisticLockException(ObjectId id, DbEntity rootEntity, Map<String, ?> qualifierSnapshot,
+    public OptimisticLockException(ObjectId id, CompiledTable rootTable, Map<String, ?> qualifierSnapshot,
                                    TranslatedStatement translatedStatement) {
         super("Optimistic Lock Failure");
 
         this.failedObjectId = id;
-        this.rootEntity = rootEntity;
+        this.rootTable = rootTable;
         this.qualifierSnapshot = qualifierSnapshot != null ? qualifierSnapshot : Collections.emptyMap();
         this.translatedStatement = Objects.requireNonNull(translatedStatement);
     }
@@ -75,17 +75,17 @@ public class OptimisticLockException extends CayenneRuntimeException {
     public Map<?, ?> getFreshSnapshot(ObjectContext context) {
 
         Expression qualifier = null;
-        for (DbAttribute attribute : rootEntity.getPrimaryKeys()) {
+        for (CompiledColumn column : rootTable.primaryKey()) {
             Expression attributeQualifier = ExpressionFactory.matchDbExp(
-                    attribute.getName(),
-                    qualifierSnapshot.get(attribute.getName()));
+                    column.name(),
+                    qualifierSnapshot.get(column.name()));
 
             qualifier = (qualifier != null)
                     ? qualifier.andExp(attributeQualifier)
                     : attributeQualifier;
         }
 
-        return ObjectSelect.dbQuery(rootEntity.getName())
+        return ObjectSelect.dbQuery(rootTable.name())
                 .where(qualifier)
                 .selectFirst(context);
     }

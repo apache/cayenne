@@ -19,10 +19,11 @@
 
 package org.apache.cayenne.unit.dba;
 
+import org.apache.cayenne.map.compiled.CompiledDataMap;
+import org.apache.cayenne.map.compiled.CompiledTable;
+import org.apache.cayenne.map.compiled.CompiledMapping;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.Procedure;
 
 import java.sql.Connection;
 import java.util.Arrays;
@@ -95,11 +96,11 @@ public class MySQLTestDbAdapter extends TestDbAdapter {
     @Override
     public void willDropTables(
             Connection conn,
-            DataMap map,
+            CompiledMapping mapping,
+            CompiledDataMap map,
             Collection<String> tablesToDrop) throws Exception {
 
-        Procedure proc = map.getProcedure("cayenne_tst_select_proc");
-        if (proc != null && proc.getDataMap() == map) {
+        if (hasProcedure(mapping, map, "cayenne_tst_select_proc")) {
             executeDDL(conn, "mysql", "drop-select-sp.sql");
             executeDDL(conn, "mysql", "drop-update-sp.sql");
             executeDDL(conn, "mysql", "drop-update-sp2.sql");
@@ -108,10 +109,10 @@ public class MySQLTestDbAdapter extends TestDbAdapter {
     }
 
     @Override
-    public boolean supportsFKConstraints(DbEntity entity) {
+    public boolean supportsFKConstraints(CompiledTable table) {
         // MySQL supports that, but there are problems deleting objects from such
         // tables...
-        return !NO_CONSTRAINTS_TABLES.contains(entity.getName());
+        return !NO_CONSTRAINTS_TABLES.contains(table.name());
     }
 
     @Override

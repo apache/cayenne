@@ -27,9 +27,9 @@ import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.graph.ArcId;
 import org.apache.cayenne.graph.GraphChangeHandler;
+import org.apache.cayenne.map.compiled.CompiledRelationship;
+import org.apache.cayenne.map.compiled.CompiledToOneRelationship;
 import org.apache.cayenne.query.PrefetchTreeNode;
-import org.apache.cayenne.reflect.ArcProperty;
-import org.apache.cayenne.reflect.ToOneProperty;
 import org.apache.cayenne.util.ToStringBuilder;
 
 import java.util.ArrayList;
@@ -47,7 +47,7 @@ class PrefetchProcessorNode extends PrefetchTreeNode {
     List<DataRow> dataRows;
     List<Persistent> objects;
 
-    ArcProperty incoming;
+    CompiledRelationship incoming;
     ObjectResolver resolver;
 
     Map<Persistent, Partition> partitionByParent;
@@ -112,7 +112,7 @@ class PrefetchProcessorNode extends PrefetchTreeNode {
         if (parent != null && parent.getPersistenceState() != PersistenceState.HOLLOW) {
             // if a relationship is to-one (i.e. flattened to-one), can connect right away....
             // write directly to prevent changing persistence state.
-            if (incoming instanceof ToOneProperty) {
+            if (incoming instanceof CompiledToOneRelationship) {
                 store().withObjectLock(parent.getObjectId(), () -> {
                     if (parent.getPersistenceState() != PersistenceState.HOLLOW
                             && version >= parent.getSnapshotVersion()
@@ -140,7 +140,7 @@ class PrefetchProcessorNode extends PrefetchTreeNode {
         return resolver.context.getObjectStore();
     }
 
-    boolean relationshipNotModified(Persistent object, ArcProperty property) {
+    boolean relationshipNotModified(Persistent object, CompiledRelationship relationship) {
         if(object.getPersistenceState() != PersistenceState.MODIFIED) {
             return true;
         }
@@ -151,11 +151,11 @@ class PrefetchProcessorNode extends PrefetchTreeNode {
             return true;
         }
 
-        if(diff.containsArcSnapshot(property.getName())) {
+        if(diff.containsArcSnapshot(relationship.name())) {
             return false;
         }
 
-        PropertyDiffTester tester = new PropertyDiffTester(property);
+        PropertyDiffTester tester = new PropertyDiffTester(relationship);
         diff.apply(tester);
         return !tester.hasArcDiff();
     }
@@ -170,7 +170,7 @@ class PrefetchProcessorNode extends PrefetchTreeNode {
 
             PrefetchProcessorNode parent = (PrefetchProcessorNode) getParent();
             boolean parentObjectsExist = parent.getObjects() != null && !parent.getObjects().isEmpty();
-            if (incoming.getRelationship().isToMany()) {
+            if (incoming.isToMany()) {
                 if (parentObjectsExist) {
                     connectToNodeParents(parent.getObjects());
                 } else {
@@ -214,9 +214,9 @@ class PrefetchProcessorNode extends PrefetchTreeNode {
     }
 
     private void connect(Persistent object, Partition partition) {
-        if (!incoming.getRelationship().isToMany()) {
+        if (!incoming.isToMany()) {
             // this should've been handled elsewhere
-            throw new CayenneRuntimeException("To-one relationship wasn't handled properly: %s", incoming.getName());
+            throw new CayenneRuntimeException("To-one relationship wasn't handled properly: %s", incoming.name());
         }
 
         // an empty list is the result of this node's rows too, so it carries their version
@@ -252,11 +252,11 @@ class PrefetchProcessorNode extends PrefetchTreeNode {
         return resolver;
     }
 
-    ArcProperty getIncoming() {
+    CompiledRelationship getIncoming() {
         return incoming;
     }
 
-    void setIncoming(ArcProperty incoming) {
+    void setIncoming(CompiledRelationship incoming) {
         this.incoming = incoming;
     }
 
@@ -290,7 +290,7 @@ class PrefetchProcessorNode extends PrefetchTreeNode {
 
     @Override
     public String toString() {
-        String label = incoming != null ? incoming.getName() : "<root>";
+        String label = incoming != null ? incoming.name() : "<root>";
 
         return new ToStringBuilder(this).append("incoming", label).append(
                 "phantom",
@@ -306,11 +306,11 @@ class PrefetchProcessorNode extends PrefetchTreeNode {
     }
 
     private static class PropertyDiffTester implements GraphChangeHandler {
-        private final ArcProperty property;
+        private final CompiledRelationship relationship;
         private boolean hasArcDiff;
 
-        public PropertyDiffTester(ArcProperty property) {
-            this.property = property;
+        public PropertyDiffTester(CompiledRelationship relationship) {
+            this.relationship = relationship;
         }
 
         boolean hasArcDiff() {
@@ -319,14 +319,14 @@ class PrefetchProcessorNode extends PrefetchTreeNode {
 
         @Override
         public void arcCreated(ObjectId id, ObjectId targetId, ArcId arcId) {
-            if(arcId.getForwardArc().equals(property.getName())) {
+            if(arcId.getForwardArc().equals(relationship.name())) {
                 hasArcDiff = true;
             }
         }
 
         @Override
         public void arcDeleted(ObjectId id, ObjectId targetId, ArcId arcId) {
-            if(arcId.getForwardArc().equals(property.getName())) {
+            if(arcId.getForwardArc().equals(relationship.name())) {
                 hasArcDiff = true;
             }
         }

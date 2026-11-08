@@ -21,7 +21,7 @@ package org.apache.cayenne.access.flush.operation;
 
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.compiled.CompiledTable;
 
 /**
  * Default implementation of {@link DeleteDbRowOpFactory} producing plain {@link DeleteDbRowOp} that translate to SQL
@@ -32,7 +32,7 @@ import org.apache.cayenne.map.DbEntity;
 public class HardDeleteDbRowOpFactory implements DeleteDbRowOpFactory {
 
     @Override
-    public DeleteDbRowOp createOp(Persistent object, DbEntity entity, ObjectId id) {
-        return new DeleteDbRowOp(object, entity, id);
+    public DeleteDbRowOp createOp(Persistent object, CompiledTable table, ObjectId id) {
+        return new DeleteDbRowOp(object, table, id);
     }
 }

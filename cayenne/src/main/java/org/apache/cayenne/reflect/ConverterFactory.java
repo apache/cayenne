@@ -34,7 +34,7 @@ import java.util.Map;
  */
 public class ConverterFactory {
 
-    static final ConverterFactory factory = new ConverterFactory();
+    public static final ConverterFactory factory = new ConverterFactory();
 
     private final Map<Class<?>, Converter<?>> converters;
     private final EnumConverter<?> enumConverter = new EnumConverter<>();
@@ -255,7 +255,7 @@ public class ConverterFactory {
     }
 
     @SuppressWarnings("unchecked")
-    <T> Converter<T> getConverter(Class<T> type) {
+    public <T> Converter<T> getConverter(Class<T> type) {
         if (type == null) {
             throw new IllegalArgumentException("Null type");
         }

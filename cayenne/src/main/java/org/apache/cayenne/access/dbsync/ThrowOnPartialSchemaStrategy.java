@@ -20,12 +20,12 @@ package org.apache.cayenne.access.dbsync;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.log.SQLLogger;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.compiled.CompiledSchema;
+import org.apache.cayenne.map.compiled.CompiledTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Set;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -43,29 +43,35 @@ public class ThrowOnPartialSchemaStrategy implements SchemaUpdateStrategy {
     private final static Logger LOGGER = LoggerFactory.getLogger(ThrowOnPartialSchemaStrategy.class);
 
     @Override
-    public void updateSchema(DbAdapter adapter, DataSource dataSource, Collection<DataMap> dataMaps, SQLLogger logger)
+    public void updateSchema(DbAdapter adapter, DataSource dataSource, CompiledSchema schema, String... dataMaps)
             throws SQLException {
 
-        Collection<DbEntity> entities = dbEntities(dataMaps);
-        SchemaAnalyzer analyzer = analyze(dataSource, entities);
+        Collection<CompiledTable> tables = tablesOf(schema, dataMaps);
+        SchemaAnalyzer analyzer = analyze(dataSource, tables);
 
         if (analyzer.getTableNoInDB().isEmpty() && analyzer.getErrorMessage() == null) {
             LOGGER.info("Full schema is present");
         } else {
             LOGGER.info("Error - missing or partial schema detected");
-            throw new CayenneRuntimeException(mismatchMessage(analyzer, entities.size()));
+            throw new CayenneRuntimeException(mismatchMessage(analyzer, tables.size()));
         }
     }
 
-    static Collection<DbEntity> dbEntities(Collection<DataMap> dataMaps) {
-        Collection<DbEntity> entities = new ArrayList<>();
-        for (DataMap map : dataMaps) {
-            entities.addAll(map.getDbEntities());
+    /**
+     * Returns the tables of the named maps of the schema.
+     */
+    static Collection<CompiledTable> tablesOf(CompiledSchema schema, String... dataMaps) {
+        Set<String> names = Set.of(dataMaps);
+        List<CompiledTable> tables = new ArrayList<>();
+        for (CompiledTable table : schema.tables()) {
+            if (names.contains(table.map().name())) {
+                tables.add(table);
+            }
         }
-        return entities;
+        return tables;
     }
 
-    static SchemaAnalyzer analyze(DataSource dataSource, Collection<DbEntity> entities) {
+    static SchemaAnalyzer analyze(DataSource dataSource, Collection<CompiledTable> tables) {
 
         SchemaAnalyzer analyzer = new SchemaAnalyzer();
 
@@ -88,7 +94,7 @@ public class ThrowOnPartialSchemaStrategy implements SchemaUpdateStrategy {
             LOGGER.debug("Exception analyzing schema, ignoring", e);
         }
 
-        boolean isIncluded = analyzer.compareTables(md, entities);
+        boolean isIncluded = analyzer.compareTables(md, tables);
 
         if (isIncluded && analyzer.getErrorMessage() == null) {
             try {

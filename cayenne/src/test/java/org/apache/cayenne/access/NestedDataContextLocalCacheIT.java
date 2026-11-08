@@ -44,13 +44,17 @@ public class NestedDataContextLocalCacheIT {
                 .cacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
 
         ObjectContext child1 = env.runtime().newContext(env.context());
-        ResolvedQuery resolved = query.resolve(child1.getEntityResolver());
+        ResolvedQuery resolved = query.resolve(child1.getMapping());
 
-        assertNull(((DataContext) child1).getQueryCache().get(resolved.cacheKey(), resolved.cacheGroup()));
-        assertNull(env.context().getQueryCache().get(resolved.cacheKey(), resolved.cacheGroup()));
+        assertNull(((DataContext) child1).getQueryCache().get(cacheKey(resolved), resolved.cacheGroup()));
+        assertNull(env.context().getQueryCache().get(cacheKey(resolved), resolved.cacheGroup()));
 
         List<?> results = child1.select(query);
-        assertSame(results, ((DataContext) child1).getQueryCache().get(resolved.cacheKey(), resolved.cacheGroup()));
-        assertNull(env.context().getQueryCache().get(resolved.cacheKey(), resolved.cacheGroup()));
+        assertSame(results, ((DataContext) child1).getQueryCache().get(cacheKey(resolved), resolved.cacheGroup()));
+        assertNull(env.context().getQueryCache().get(cacheKey(resolved), resolved.cacheGroup()));
+    }
+
+    private static String cacheKey(ResolvedQuery resolved) {
+        return resolved.cacheKey(env.valueObjectTypes());
     }
 }

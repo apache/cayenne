@@ -23,18 +23,16 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.reflect.Accessor;
 
 /**
+ * The fault of a to-many relationship mapped as a Map, resolved to a map of the related objects by their key.
+ *
+ * @param relationshipName the name of the relationship this fault stands for
+ * @param mapKeyAccessor   the accessor of the map key on the related objects
  * @since 3.0
  */
-public class ToManyMapFault extends Fault {
-
-    protected Accessor mapKeyAccessor;
-
-    public ToManyMapFault(Accessor mapKeyAccessor) {
-        this.mapKeyAccessor = mapKeyAccessor;
-    }
+public record ToManyMapFault(String relationshipName, Accessor mapKeyAccessor) implements Fault {
 
     @Override
-    public Object resolveFault(Persistent sourceObject, String relationshipName) {
+    public Object resolveFault(Persistent sourceObject) {
         return new ToManyMap<>(sourceObject, relationshipName, mapKeyAccessor);
     }
 }

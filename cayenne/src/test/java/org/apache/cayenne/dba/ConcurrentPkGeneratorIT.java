@@ -22,8 +22,8 @@ package org.apache.cayenne.dba;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.compiled.CompiledMapping;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.CayenneRuntime;
 import org.apache.cayenne.testdo.qualified.Qualified1;
@@ -82,7 +82,7 @@ public class ConcurrentPkGeneratorIT {
     		return;
 		}
 
-		final DataMap dataMap = runtime.getDataDomain().getDataMap("qualified");
+		final DataMap dataMap = env.project().dataMap("qualified");
 		
 		// clear out the table
 		ObjectContext context = runtime.newContext();
@@ -98,10 +98,10 @@ public class ConcurrentPkGeneratorIT {
 		Runnable task = () -> {
             try {
                 ObjectContext context1 = runtime.newContext();
-				EntityResolver entityResolver = context1.getEntityResolver();
+				CompiledMapping mapping = context1.getMapping();
 				for (ObjEntity entity : dataMap.getObjEntities()) {
-                    Class<? extends Persistent> type = entityResolver.getObjectFactory()
-                            .getJavaClass(entity.getJavaClassName())
+                    Class<? extends Persistent> type = mapping.entity(entity.getName())
+                            .objectClass()
                             .asSubclass(Persistent.class);
                     context1.newObject(type);
                 }

@@ -23,8 +23,10 @@ import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.access.translator.TranslatedSelect;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.compiled.CompiledColumn;
+import org.apache.cayenne.map.compiled.CompiledTable;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.testdo.testmap.ArtGroup;
@@ -61,7 +63,7 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class).where(Artist.ARTIST_NAME.like("a%"))
 				.orderBy(Artist.DATE_OF_BIRTH.asc());
 
-		TranslatedSelect defaultSelectTranslator = new DbAdapterDelegatedSelectTranslator().translate(q.resolve(env.resolver()), env.dataNode().getAdapter(), env.resolver());
+		TranslatedSelect defaultSelectTranslator = new DbAdapterDelegatedSelectTranslator().translate(q.resolve(env.mapping()), env.dataNode().getAdapter(), env.mapping());
 		String generatedSql = defaultSelectTranslator.sql();
 
 		// do some simple assertions to make sure all parts are in
@@ -80,13 +82,14 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 	public void dbEntityQualifier() throws Exception {
 
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class);
-		final DbEntity entity = env.context().getEntityResolver().getDbEntity("ARTIST");
-		final DbEntity middleEntity = env.context().getEntityResolver().getDbEntity("ARTIST_GROUP");
+		final DbEntity entity = authoredTable("ARTIST");
+		final DbEntity middleEntity = authoredTable("ARTIST_GROUP");
 
 		entity.setQualifier(ExpressionFactory.exp("ARTIST_NAME = \"123\""));
 		middleEntity.setQualifier(ExpressionFactory.exp("GROUP_ID = 1987"));
+		recompile();
 
-		TranslatedSelect transl = new DbAdapterDelegatedSelectTranslator().translate(q.resolve(env.resolver()), env.dataNode().getAdapter(), env.resolver());
+		TranslatedSelect transl = new DbAdapterDelegatedSelectTranslator().translate(q.resolve(env.mapping()), env.dataNode().getAdapter(), env.mapping());
 
 		try {
 
@@ -106,6 +109,7 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 		} finally {
 			entity.setQualifier(null);
 			middleEntity.setQualifier(null);
+			recompile();
 		}
 	}
 
@@ -115,13 +119,14 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 		ObjectSelect<Painting> q = ObjectSelect.query(Painting.class)
 				.orderBy(Painting.ARTIST.outer().dot(Artist.ARTIST_NAME).asc());
 
-		final DbEntity entity = env.context().getEntityResolver().getDbEntity("ARTIST");
-		final DbEntity middleEntity = env.context().getEntityResolver().getDbEntity("ARTIST_GROUP");
+		final DbEntity entity = authoredTable("ARTIST");
+		final DbEntity middleEntity = authoredTable("ARTIST_GROUP");
 
 		entity.setQualifier(ExpressionFactory.exp("ARTIST_NAME = \"123\""));
 		middleEntity.setQualifier(ExpressionFactory.exp("GROUP_ID = 1987"));
+		recompile();
 
-		TranslatedSelect transl = new DbAdapterDelegatedSelectTranslator().translate(q.resolve(env.resolver()), env.dataNode().getAdapter(), env.resolver());
+		TranslatedSelect transl = new DbAdapterDelegatedSelectTranslator().translate(q.resolve(env.mapping()), env.dataNode().getAdapter(), env.mapping());
 
 		try {
 
@@ -146,6 +151,7 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 		} finally {
 			entity.setQualifier(null);
 			middleEntity.setQualifier(null);
+			recompile();
 		}
 	}
 
@@ -154,13 +160,14 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class).where(Artist.GROUPS.dot(ArtGroup.NAME).eq("bar"));
 
-		final DbEntity entity = env.context().getEntityResolver().getDbEntity("ARTIST");
-		final DbEntity middleEntity = env.context().getEntityResolver().getDbEntity("ARTIST_GROUP");
+		final DbEntity entity = authoredTable("ARTIST");
+		final DbEntity middleEntity = authoredTable("ARTIST_GROUP");
 
 		entity.setQualifier(ExpressionFactory.exp("ARTIST_NAME = \"123\""));
 		middleEntity.setQualifier(ExpressionFactory.exp("GROUP_ID = 1987"));
+		recompile();
 
-		TranslatedSelect transl = new DbAdapterDelegatedSelectTranslator().translate(q.resolve(env.resolver()), env.dataNode().getAdapter(), env.resolver());
+		TranslatedSelect transl = new DbAdapterDelegatedSelectTranslator().translate(q.resolve(env.mapping()), env.dataNode().getAdapter(), env.mapping());
 
 		try {
 
@@ -181,6 +188,7 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 		} finally {
 			entity.setQualifier(null);
 			middleEntity.setQualifier(null);
+			recompile();
 		}
 	}
 
@@ -190,13 +198,14 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 		ObjectSelect<Painting> q = ObjectSelect.query(Painting.class)
 				.where(Painting.ARTIST.dot(Artist.ARTIST_NAME).eq("foo"));
 
-		final DbEntity entity = env.context().getEntityResolver().getDbEntity("ARTIST");
-		final DbEntity middleEntity = env.context().getEntityResolver().getDbEntity("ARTIST_GROUP");
+		final DbEntity entity = authoredTable("ARTIST");
+		final DbEntity middleEntity = authoredTable("ARTIST_GROUP");
 
 		entity.setQualifier(ExpressionFactory.exp("ARTIST_NAME = \"123\""));
 		middleEntity.setQualifier(ExpressionFactory.exp("GROUP_ID = 1987"));
+		recompile();
 
-		TranslatedSelect transl = new DbAdapterDelegatedSelectTranslator().translate(q.resolve(env.resolver()), env.dataNode().getAdapter(), env.resolver());
+		TranslatedSelect transl = new DbAdapterDelegatedSelectTranslator().translate(q.resolve(env.mapping()), env.dataNode().getAdapter(), env.mapping());
 
 		try {
 
@@ -216,6 +225,7 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 		} finally {
 			entity.setQualifier(null);
 			middleEntity.setQualifier(null);
+			recompile();
 		}
 	}
 
@@ -228,7 +238,7 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class);
 		q.distinct();
 
-		String generatedSql = new DbAdapterDelegatedSelectTranslator().translate(q.resolve(env.resolver()), env.dataNode().getAdapter(), env.resolver()).sql();
+		String generatedSql = new DbAdapterDelegatedSelectTranslator().translate(q.resolve(env.mapping()), env.dataNode().getAdapter(), env.mapping()).sql();
 
 		// do some simple assertions to make sure all parts are in
 		assertNotNull(generatedSql);
@@ -251,7 +261,7 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 						.dot(Painting.ARTIST)
 						.dot(Artist.ARTIST_NAME).like("a%"));
 
-		String generatedSql = new DbAdapterDelegatedSelectTranslator().translate(q.resolve(env.resolver()), env.dataNode().getAdapter(), env.resolver()).sql();
+		String generatedSql = new DbAdapterDelegatedSelectTranslator().translate(q.resolve(env.mapping()), env.dataNode().getAdapter(), env.mapping()).sql();
 		// logObj.warn("Query: " + generatedSql);
 
 		// do some simple assertions to make sure all parts are in
@@ -277,7 +287,7 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 				.where(ArtistExhibit.ARTIST.dot(Artist.ARTIST_NAME).like("a%"))
 				.and(ArtistExhibit.ARTIST.dot(Artist.PAINTINGS).dot(Painting.PAINTING_TITLE).like("p%"));
 
-		String generatedSql = new DbAdapterDelegatedSelectTranslator().translate(q.resolve(env.resolver()), env.dataNode().getAdapter(), env.resolver())
+		String generatedSql = new DbAdapterDelegatedSelectTranslator().translate(q.resolve(env.mapping()), env.dataNode().getAdapter(), env.mapping())
 				.sql();
 
 		// do some simple assertions to make sure all parts are in
@@ -305,7 +315,7 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 				.where(Artist.DATE_OF_BIRTH.gt(new Date()))
 				.and(Artist.DATE_OF_BIRTH.lt(new Date()));
 
-		String generatedSql = new DbAdapterDelegatedSelectTranslator().translate(q.resolve(env.resolver()), env.dataNode().getAdapter(), env.resolver())
+		String generatedSql = new DbAdapterDelegatedSelectTranslator().translate(q.resolve(env.mapping()), env.dataNode().getAdapter(), env.mapping())
 				.sql();
 		// logObj.warn("Query: " + generatedSql);
 
@@ -338,7 +348,7 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 				.where(Painting.ARTIST.dot(Artist.DATE_OF_BIRTH).gt(new Date()))
 				.and(Painting.ARTIST.dot(Artist.DATE_OF_BIRTH).lt(new Date()));
 
-		String generatedSql = new DbAdapterDelegatedSelectTranslator().translate(q.resolve(env.resolver()), env.dataNode().getAdapter(), env.resolver()).sql();
+		String generatedSql = new DbAdapterDelegatedSelectTranslator().translate(q.resolve(env.mapping()), env.dataNode().getAdapter(), env.mapping()).sql();
 
 		// do some simple assertions to make sure all parts are in
 		assertNotNull(generatedSql);
@@ -363,7 +373,7 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 		ObjectSelect<CompoundPainting> q = ObjectSelect.query(CompoundPainting.class)
 				.where(CompoundPainting.ARTIST_NAME.like("a%"));
 
-		String sql = new DbAdapterDelegatedSelectTranslator().translate(q.resolve(env.resolver()), env.dataNode().getAdapter(), env.resolver()).sql();
+		String sql = new DbAdapterDelegatedSelectTranslator().translate(q.resolve(env.mapping()), env.dataNode().getAdapter(), env.mapping()).sql();
 
 		// do some simple assertions to make sure all parts are in
 		assertNotNull(sql);
@@ -415,7 +425,7 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 		// query with to-many joint prefetches
 		ObjectSelect<Artist> q = ObjectSelect.query(Artist.class).prefetch(Artist.PAINTINGS.joint());
 
-		TranslatedSelect transl = new DbAdapterDelegatedSelectTranslator().translate(q.resolve(env.resolver()), env.dataNode().getAdapter(), env.resolver());
+		TranslatedSelect transl = new DbAdapterDelegatedSelectTranslator().translate(q.resolve(env.mapping()), env.dataNode().getAdapter(), env.mapping());
 		String sql = transl.sql();
 		assertNotNull(sql);
 		assertTrue(sql.startsWith("SELECT "));
@@ -439,7 +449,7 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 				.where(Artist.PAINTINGS.dot(Painting.PAINTING_TITLE).eq("a"))
 				.prefetch(Artist.PAINTINGS.joint());
 
-		TranslatedSelect transl = new DbAdapterDelegatedSelectTranslator().translate(q.resolve(env.resolver()), env.dataNode().getAdapter(), env.resolver());
+		TranslatedSelect transl = new DbAdapterDelegatedSelectTranslator().translate(q.resolve(env.mapping()), env.dataNode().getAdapter(), env.mapping());
 
 		transl.sql();
 
@@ -452,7 +462,7 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 		// query with to-one joint prefetches
 		ObjectSelect<Painting> q = ObjectSelect.query(Painting.class).prefetch(Painting.ARTIST.joint());
 
-		TranslatedSelect transl = new DbAdapterDelegatedSelectTranslator().translate(q.resolve(env.resolver()), env.dataNode().getAdapter(), env.resolver());
+		TranslatedSelect transl = new DbAdapterDelegatedSelectTranslator().translate(q.resolve(env.mapping()), env.dataNode().getAdapter(), env.mapping());
 
 		String sql = transl.sql();
 		assertNotNull(sql);
@@ -476,7 +486,7 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 		ObjectSelect<Painting> q = ObjectSelect.query(Painting.class)
 				.prefetch("invalid.invalid", PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
 		try {
-			new DbAdapterDelegatedSelectTranslator().translate(q.resolve(env.resolver()), env.dataNode().getAdapter(), env.resolver()).sql();
+			new DbAdapterDelegatedSelectTranslator().translate(q.resolve(env.mapping()), env.dataNode().getAdapter(), env.mapping()).sql();
 			fail("Invalid jointPrefetch must have thrown...");
 		} catch (ExpressionException e) {
 			// expected
@@ -489,13 +499,12 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 		try {
 			ObjectSelect<Artist> q = ObjectSelect.query(Artist.class)
 					.orderBy(Artist.DATE_OF_BIRTH.asc());
-			DbEntity entity = env.context().getEntityResolver().getDbEntity("ARTIST");
-			entity.getDataMap().setQuotingSQLIdentifiers(true);
+			quoteIdentifiers(true);
 
 			String charStart = env.testDbAdapter().getIdentifiersStartQuote();
 			String charEnd = env.testDbAdapter().getIdentifiersEndQuote();
 
-			String s = new DbAdapterDelegatedSelectTranslator().translate(q.resolve(env.resolver()), env.dataNode().getAdapter(), env.resolver()).sql();
+			String s = new DbAdapterDelegatedSelectTranslator().translate(q.resolve(env.mapping()), env.dataNode().getAdapter(), env.mapping()).sql();
 			// single-table query: no table aliases are generated
 			assertTrue(s.startsWith("SELECT "));
 			int iFrom = s.indexOf(" FROM ");
@@ -514,8 +523,7 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 			assertTrue(dateOfBirth2 > iOrderBy);
 
 		} finally {
-			DbEntity entity = env.context().getEntityResolver().getDbEntity("ARTIST");
-			entity.getDataMap().setQuotingSQLIdentifiers(false);
+			quoteIdentifiers(false);
 		}
 
 	}
@@ -528,13 +536,12 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 					.where(Artist.DATE_OF_BIRTH.gt(new Date()))
 					.and(Artist.DATE_OF_BIRTH.lt(new Date()));
 
-			DbEntity entity = env.context().getEntityResolver().getDbEntity("ARTIST");
-			entity.getDataMap().setQuotingSQLIdentifiers(true);
+			quoteIdentifiers(true);
 
 			String charStart = env.testDbAdapter().getIdentifiersStartQuote();
 			String charEnd = env.testDbAdapter().getIdentifiersEndQuote();
 
-			String s = new DbAdapterDelegatedSelectTranslator().translate(q.resolve(env.resolver()), env.dataNode().getAdapter(), env.resolver()).sql();
+			String s = new DbAdapterDelegatedSelectTranslator().translate(q.resolve(env.mapping()), env.dataNode().getAdapter(), env.mapping()).sql();
 
 			// single-table query: no table aliases are generated
 			assertTrue(s.startsWith("SELECT "));
@@ -560,8 +567,7 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 			assertTrue(dateOfBirth3 > iAnd);
 
 		} finally {
-			DbEntity entity = env.context().getEntityResolver().getDbEntity("ARTIST");
-			entity.getDataMap().setQuotingSQLIdentifiers(false);
+			quoteIdentifiers(false);
 		}
 	}
 
@@ -575,13 +581,12 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 					.where(Artist.PAINTINGS.dot(Painting.PAINTING_TITLE).eq("a"))
 					.prefetch(Artist.PAINTINGS.joint());
 
-			DbEntity entity = env.context().getEntityResolver().getDbEntity("ARTIST");
-			entity.getDataMap().setQuotingSQLIdentifiers(true);
+			quoteIdentifiers(true);
 
 			String charStart = env.testDbAdapter().getIdentifiersStartQuote();
 			String charEnd = env.testDbAdapter().getIdentifiersEndQuote();
 
-			String s = new DbAdapterDelegatedSelectTranslator().translate(q.resolve(env.resolver()), env.dataNode().getAdapter(), env.resolver()).sql();
+			String s = new DbAdapterDelegatedSelectTranslator().translate(q.resolve(env.mapping()), env.dataNode().getAdapter(), env.mapping()).sql();
 
 			// root ARTIST -> "a", PAINTING (where join) -> "p", PAINTING (prefetch left join) -> "p1"
 			assertTrue(s.startsWith("SELECT DISTINCT "), s);
@@ -640,8 +645,7 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 			assertTrue(paintingTitle2 > iWhere, s);
 
 		} finally {
-			DbEntity entity = env.context().getEntityResolver().getDbEntity("ARTIST");
-			entity.getDataMap().setQuotingSQLIdentifiers(false);
+			quoteIdentifiers(false);
 		}
 	}
 
@@ -653,13 +657,12 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 		try {
 			ObjectSelect<Painting> q = ObjectSelect.query(Painting.class).prefetch(Painting.ARTIST.joint());
 
-			DbEntity entity = env.context().getEntityResolver().getDbEntity("PAINTING");
-			entity.getDataMap().setQuotingSQLIdentifiers(true);
+			quoteIdentifiers(true);
 
 			String charStart = env.testDbAdapter().getIdentifiersStartQuote();
 			String charEnd = env.testDbAdapter().getIdentifiersEndQuote();
 
-			String s = new DbAdapterDelegatedSelectTranslator().translate(q.resolve(env.resolver()), env.dataNode().getAdapter(), env.resolver()).sql();
+			String s = new DbAdapterDelegatedSelectTranslator().translate(q.resolve(env.mapping()), env.dataNode().getAdapter(), env.mapping()).sql();
 
 			// root PAINTING -> "p", ARTIST (prefetch left join) -> "a"
 			assertTrue(s.startsWith("SELECT "), s);
@@ -703,8 +706,7 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 			assertTrue(iArtistIdT1 > i || iArtistId > i, s);
 
 		} finally {
-			DbEntity entity = env.context().getEntityResolver().getDbEntity("PAINTING");
-			entity.getDataMap().setQuotingSQLIdentifiers(false);
+			quoteIdentifiers(false);
 		}
 	}
 
@@ -714,27 +716,27 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 	@Test
 	public void buildResultColumns1() throws Exception {
 		ObjectSelect<Painting> q = ObjectSelect.query(Painting.class);
-		TranslatedSelect tr = new DbAdapterDelegatedSelectTranslator().translate(q.resolve(env.resolver()), env.dataNode().getAdapter(), env.resolver());
+		TranslatedSelect tr = new DbAdapterDelegatedSelectTranslator().translate(q.resolve(env.mapping()), env.dataNode().getAdapter(), env.mapping());
 
 		tr.sql();
 
 		List<RSColumn> columns = Arrays.asList(tr.resultColumns());
 		columns.sort(Comparator.comparing(RSColumn::rsName));
 
-		DbEntity entity = env.context().getEntityResolver().getDbEntity("PAINTING");
-		List<DbAttribute> attributes = new ArrayList<>(entity.getAttributes());
-		attributes.sort(Comparator.comparing(DbAttribute::getName));
+		CompiledTable table = env.mapping().schema().table("PAINTING");
+		List<CompiledColumn> attributes = new ArrayList<>(table.columns());
+		attributes.sort(Comparator.comparing(CompiledColumn::name));
 
 		// all DbAttributes must be included
 		assertEquals(attributes.size(), columns.size());
 
 		for(int i=0; i<attributes.size(); i++) {
-			DbAttribute attribute = attributes.get(i);
+			CompiledColumn column = attributes.get(i);
 			RSColumn descriptor = columns.get(i);
-			assertEquals(attribute, descriptor.attribute());
-			assertEquals(attribute.getName(), descriptor.rsName());
-			assertEquals(attribute.getName(), descriptor.dataRowName());
-			assertEquals(attribute.getType(), descriptor.rsType());
+			assertEquals(column, descriptor.attribute());
+			assertEquals(column.name(), descriptor.rsName());
+			assertEquals(column.name(), descriptor.dataRowName());
+			assertEquals(column.jdbcType(), descriptor.rsType());
 		}
 	}
 
@@ -744,30 +746,30 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 	@Test
 	public void buildResultColumns2() throws Exception {
 		ObjectSelect<Painting> q = ObjectSelect.query(Painting.class).prefetch(Painting.ARTIST.joint());
-		TranslatedSelect tr = new DbAdapterDelegatedSelectTranslator().translate(q.resolve(env.resolver()), env.dataNode().getAdapter(), env.resolver());
+		TranslatedSelect tr = new DbAdapterDelegatedSelectTranslator().translate(q.resolve(env.mapping()), env.dataNode().getAdapter(), env.mapping());
 
 		tr.sql();
 
 		List<RSColumn> columns = Arrays.asList(tr.resultColumns());
 		columns.sort(Comparator.comparing(RSColumn::rsName));
 
-		DbEntity rootEntity = env.context().getEntityResolver().getDbEntity("PAINTING");
-		List<DbAttribute> attributes = new ArrayList<>(rootEntity.getAttributes());
-		DbEntity joinedEntity = env.context().getEntityResolver().getDbEntity("ARTIST");
-		attributes.addAll(joinedEntity.getAttributes());
-		attributes.sort(Comparator.comparing(DbAttribute::getName));
+		CompiledTable rootTable = env.mapping().schema().table("PAINTING");
+		List<CompiledColumn> attributes = new ArrayList<>(rootTable.columns());
+		CompiledTable joinedTable = env.mapping().schema().table("ARTIST");
+		attributes.addAll(joinedTable.columns());
+		attributes.sort(Comparator.comparing(CompiledColumn::name));
 
 		for(int i=0; i<attributes.size(); i++) {
-			DbAttribute attribute = attributes.get(i);
+			CompiledColumn column = attributes.get(i);
 			RSColumn descriptor = columns.get(i);
-			assertEquals(attribute, descriptor.attribute());
-			assertEquals(attribute.getName(), descriptor.rsName());
-			if("ARTIST".equals(attribute.getEntity().getName())) {
-				assertEquals("artist." + attribute.getName(), descriptor.dataRowName());
+			assertEquals(column, descriptor.attribute());
+			assertEquals(column.name(), descriptor.rsName());
+			if("ARTIST".equals(column.table().name())) {
+				assertEquals("artist." + column.name(), descriptor.dataRowName());
 			} else {
-				assertEquals(attribute.getName(), descriptor.dataRowName());
+				assertEquals(column.name(), descriptor.dataRowName());
 			}
-			assertEquals(attribute.getType(), descriptor.rsType());
+			assertEquals(column.jdbcType(), descriptor.rsType());
 		}
 	}
 
@@ -780,7 +782,7 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 				));
 		query.select(env.context());
 
-		SelectTranslatorContext context = new SelectTranslatorContext(query.resolve(env.context().getEntityResolver()), env.dataNode().getAdapter(), env.context().getEntityResolver(), null);
+		SelectTranslatorContext context = new SelectTranslatorContext(query.resolve(env.mapping()), env.dataNode().getAdapter(), env.mapping(), null);
 		context.translate();
 
 		int totalJoins = context.getTableCount() - 1;
@@ -796,7 +798,7 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 				));
 		query.select(env.context());
 
-		SelectTranslatorContext context = new SelectTranslatorContext(query.resolve(env.context().getEntityResolver()), env.dataNode().getAdapter(), env.context().getEntityResolver(), null);
+		SelectTranslatorContext context = new SelectTranslatorContext(query.resolve(env.mapping()), env.dataNode().getAdapter(), env.mapping(), null);
 		context.translate();
 
 		int totalJoins = context.getTableCount() - 1;
@@ -812,7 +814,7 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 				));
 		query.select(env.context());
 
-		SelectTranslatorContext context = new SelectTranslatorContext(query.resolve(env.context().getEntityResolver()), env.dataNode().getAdapter(), env.context().getEntityResolver(), null);
+		SelectTranslatorContext context = new SelectTranslatorContext(query.resolve(env.mapping()), env.dataNode().getAdapter(), env.mapping(), null);
 		context.translate();
 
 		int totalJoins = context.getTableCount() - 1;
@@ -827,7 +829,7 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 				));
 		query.select(env.context());
 
-		SelectTranslatorContext context = new SelectTranslatorContext(query.resolve(env.context().getEntityResolver()), env.dataNode().getAdapter(), env.context().getEntityResolver(), null);
+		SelectTranslatorContext context = new SelectTranslatorContext(query.resolve(env.mapping()), env.dataNode().getAdapter(), env.mapping(), null);
 		context.translate();
 
 		int totalJoins = context.getTableCount() - 1;
@@ -837,8 +839,9 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 	@Test
 	public void dbEntityQualifier_JoinQuery() throws Exception {
 
-		final DbEntity entity = env.context().getEntityResolver().getDbEntity("ARTIST");
+		final DbEntity entity = authoredTable("ARTIST");
 		entity.setQualifier(ExpressionFactory.exp("ARTIST_NAME = 'Should be on JOIN condition and not WHERE'"));
+		recompile();
 
 		ObjectSelect<Painting> q = ObjectSelect.query(Painting.class)
 				.where
@@ -849,7 +852,7 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 
 		// If the DbEntity qualifier is set on the WHERE condition then the OR expression will fail to find matches
 
-		TranslatedSelect transl = new DbAdapterDelegatedSelectTranslator().translate(q.resolve(env.resolver()), env.dataNode().getAdapter(), env.resolver());
+		TranslatedSelect transl = new DbAdapterDelegatedSelectTranslator().translate(q.resolve(env.mapping()), env.dataNode().getAdapter(), env.mapping());
 		try {
 			String generatedSql = transl.sql();
 			int whereNdx = generatedSql.indexOf(" WHERE ");
@@ -858,6 +861,28 @@ public class DbAdapterDelegatedSelectTranslatorIT {
 			assertTrue(generatedSql.indexOf("ARTIST_NAME", whereNdx) < 0); // Should not be part of WHERE
 		} finally {
 			entity.setQualifier(null);
+			recompile();
 		}
+	}
+
+	/**
+	 * Returns the authored table of the test map. A test that changes it must call {@link #recompile()} for the
+	 * runtime to see the change, and restore it afterwards.
+	 */
+	private static DbEntity authoredTable(String name) {
+		return authoredMap().getDbEntity(name);
+	}
+
+	private static DataMap authoredMap() {
+		return env.project().dataMap("testmap");
+	}
+
+	private static void recompile() {
+		env.recompile();
+	}
+
+	private static void quoteIdentifiers(boolean quote) {
+		authoredMap().setQuotingSQLIdentifiers(quote);
+		recompile();
 	}
 }

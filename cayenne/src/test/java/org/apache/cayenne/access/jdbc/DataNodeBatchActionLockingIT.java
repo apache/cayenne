@@ -28,9 +28,9 @@ import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
 import org.apache.cayenne.access.translator.TranslatedBatch;
 import org.apache.cayenne.access.translator.batch.DeleteBatchTranslator;
 import org.apache.cayenne.dba.JdbcAdapter;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.map.compiled.CompiledColumn;
+import org.apache.cayenne.map.compiled.CompiledTable;
+import org.apache.cayenne.map.compiled.CompiledMapping;
 import org.apache.cayenne.query.resolved.BatchRow;
 import org.apache.cayenne.query.resolved.DeleteBatch;
 import org.apache.cayenne.testdo.locking.SimpleLockingTestEntity;
@@ -56,26 +56,26 @@ public class DataNodeBatchActionLockingIT {
 	@RegisterExtension
 	static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.LOCKING_PROJECT);
 
-	private DeleteBatch lockingDelete(EntityResolver resolver) {
-		DbEntity dbEntity = resolver.getObjEntity(SimpleLockingTestEntity.class).getDbEntity();
-		List<DbAttribute> qualifierAttributes = Arrays.asList(dbEntity.getAttribute("LOCKING_TEST_ID"),
-				dbEntity.getAttribute("NAME"));
+	private DeleteBatch lockingDelete(CompiledMapping mapping) {
+		CompiledTable table = mapping.entity(SimpleLockingTestEntity.class).table();
+		List<CompiledColumn> qualifierColumns = Arrays.asList(table.column("LOCKING_TEST_ID"),
+				table.column("NAME"));
 		Collection<String> nullAttributeNames = Collections.singleton("NAME");
 
 		Map<String, Object> qualifierSnapshot = new HashMap<>();
 		qualifierSnapshot.put("LOCKING_TEST_ID", 1);
 
-		return new DeleteBatch(dbEntity, qualifierAttributes, nullAttributeNames, true,
+		return new DeleteBatch(table, qualifierColumns, nullAttributeNames, true,
 				List.of(new BatchRow(null, qualifierSnapshot, null)));
 	}
 
 	@Test
 	public void runAsIndividualQueriesSuccess() throws Exception {
-		EntityResolver resolver = env.runtime().getDataDomain().getEntityResolver();
+		CompiledMapping mapping = env.runtime().getDataDomain().getMapping();
 
 		// test with adapter that supports keys...
 		JdbcAdapter adapter = buildAdapter(true);
-		DeleteBatch batchQuery = lockingDelete(resolver);
+		DeleteBatch batchQuery = lockingDelete(mapping);
 		TranslatedBatch translated = new DeleteBatchTranslator().translate(batchQuery, adapter);
 
 		TestConnection mockConnection = new TestConnection();
@@ -85,7 +85,7 @@ public class DataNodeBatchActionLockingIT {
 
 		DataNode node = DataNodes.withAdapter(adapter, mock(RowReaderFactory.class));
 		DataNodeBatchAction action = new DataNodeBatchAction(translated, node, false);
-		StatementContext statementContext = StatementContexts.newRun(node, resolver, batchQuery);
+		StatementContext statementContext = StatementContexts.newRun(node, mapping, batchQuery);
 		statementContext.setTranslatedStatement(translated);
 		action.runAsIndividualQueries(mockConnection, statementContext, generatesKeys);
 
@@ -95,11 +95,11 @@ public class DataNodeBatchActionLockingIT {
 
 	@Test
 	public void runAsIndividualQueriesOptimisticLockingFailure() throws Exception {
-		EntityResolver resolver = env.runtime().getDataDomain().getEntityResolver();
+		CompiledMapping mapping = env.runtime().getDataDomain().getMapping();
 
 		// test with adapter that supports keys...
 		JdbcAdapter adapter = buildAdapter(true);
-		DeleteBatch batchQuery = lockingDelete(resolver);
+		DeleteBatch batchQuery = lockingDelete(mapping);
 		TranslatedBatch translated = new DeleteBatchTranslator().translate(batchQuery, adapter);
 
 		TestConnection mockConnection = new TestConnection();
@@ -109,7 +109,7 @@ public class DataNodeBatchActionLockingIT {
 
 		DataNode node = DataNodes.withAdapter(adapter, mock(RowReaderFactory.class));
 		DataNodeBatchAction action = new DataNodeBatchAction(translated, node, false);
-		StatementContext statementContext = StatementContexts.newRun(node, resolver, batchQuery);
+		StatementContext statementContext = StatementContexts.newRun(node, mapping, batchQuery);
 		statementContext.setTranslatedStatement(translated);
 
 		assertThrows(OptimisticLockException.class, () ->

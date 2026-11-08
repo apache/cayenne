@@ -21,7 +21,7 @@ package org.apache.cayenne.dba.postgres;
 
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.SequencePkGenerator;
-import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.compiled.CompiledTable;
 
 /**
  * Default PK generator for PostgreSQL that uses sequences for PK generation.
@@ -32,12 +32,12 @@ public class PostgresPkGenerator extends SequencePkGenerator {
     }
 
     @Override
-    protected String createSequenceString(DbAdapter adapter, DbEntity ent) {
+    protected String createSequenceString(DbAdapter adapter, CompiledTable table) {
         // note that PostgreSQL 7.4 and newer supports INCREMENT BY and START WITH
         // however 7.3 doesn't like BY and WITH, so using older more neutral
         // syntax that works with all tested versions.
-        return "CREATE SEQUENCE " + adapter.getQuotingStrategy(ent).quotedFQN(ent.getCatalog(), ent.getSchema(),
-                sequenceName(ent)) + " INCREMENT " + pkCacheSize(ent) + " START " + pkStartValue;
+        return "CREATE SEQUENCE " + adapter.getQuotingStrategy(table).quotedFQN(table.catalog(), table.schema(),
+                sequenceName(table)) + " INCREMENT " + pkCacheSize(table) + " START " + pkStartValue;
     }
 
     @Override

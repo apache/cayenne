@@ -35,8 +35,8 @@ import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.compiled.CompiledColumn;
+import org.apache.cayenne.map.compiled.CompiledTable;
 import org.apache.cayenne.access.translator.TranslatedSQL;
 
 import java.sql.Connection;
@@ -136,15 +136,15 @@ public class FrontBaseAdapter extends JdbcAdapter {
      * Customizes table creating procedure for FrontBase.
      */
     @Override
-    public String createTable(DbEntity ent) {
-        QuotingStrategy quotes = getQuotingStrategy(ent);
+    public String createTable(CompiledTable table) {
+        QuotingStrategy quotes = getQuotingStrategy(table);
         StringBuilder buf = new StringBuilder();
         buf.append("CREATE TABLE ");
-        quotes.appendFQN(buf, ent.getCatalog(), ent.getSchema(), ent.getName());
+        quotes.appendFQN(buf, table.catalog(), table.schema(), table.name());
         buf.append(" (");
 
         // columns
-        Iterator<DbAttribute> it = ent.getAttributes().iterator();
+        Iterator<CompiledColumn> it = table.columns().iterator();
         boolean first = true;
         while (it.hasNext()) {
             if (first) {
@@ -153,22 +153,22 @@ public class FrontBaseAdapter extends JdbcAdapter {
                 buf.append(", ");
             }
 
-            DbAttribute at = it.next();
+            CompiledColumn column = it.next();
 
             // attribute may not be fully valid, do a simple check
-            if (at.getType() == TypesMapping.NOT_DEFINED) {
+            if (column.jdbcType() == TypesMapping.NOT_DEFINED) {
                 throw new CayenneRuntimeException("Undefined type for attribute '%s.%s'."
-                        , ent.getFullyQualifiedName(), at.getName());
+                        , table.fullyQualifiedName(), column.name());
             }
 
-            NativeColumnType[] types = nativeColumnTypes(at.getType());
+            NativeColumnType[] types = nativeColumnTypes(column.jdbcType());
             if (types == null || types.length == 0) {
                 throw new CayenneRuntimeException("Undefined type for attribute '%s.%s': %s"
-                        , ent.getFullyQualifiedName(), at.getName(), at.getType());
+                        , table.fullyQualifiedName(), column.name(), column.jdbcType());
             }
 
             quotes.appendStart(buf);
-            buf.append(at.getName());
+            buf.append(column.name());
             quotes.appendEnd(buf);
             buf.append(' ').append(types[0].nativeType());
 
@@ -177,19 +177,19 @@ public class FrontBaseAdapter extends JdbcAdapter {
             // is definitely not what we want...so just use something very large
             // (1Gb seems
             // to be the limit for FB)
-            if (at.getType() == Types.LONGVARCHAR) {
+            if (column.jdbcType() == Types.LONGVARCHAR) {
 
-                int len = at.getMaxLength() > 0 ? at.getMaxLength() : 1073741824;
+                int len = column.maxLength() > 0 ? column.maxLength() : 1073741824;
                 buf.append("(").append(len).append(")");
-            } else if (at.getType() == Types.VARBINARY || at.getType() == Types.BINARY) {
+            } else if (column.jdbcType() == Types.VARBINARY || column.jdbcType() == Types.BINARY) {
 
                 // use a BIT column with size * 8
-                int len = at.getMaxLength() > 0 ? at.getMaxLength() : 1073741824;
+                int len = column.maxLength() > 0 ? column.maxLength() : 1073741824;
                 len *= 8;
                 buf.append("(").append(len).append(")");
-            } else if (typeSupportsLength(at.getType())) {
-                int len = at.getMaxLength();
-                int scale = TypesMapping.isDecimal(at.getType()) ? at.getScale() : -1;
+            } else if (typeSupportsLength(column.jdbcType())) {
+                int len = column.maxLength();
+                int scale = TypesMapping.isDecimal(column.jdbcType()) ? column.scale() : -1;
 
                 // sanity check
                 if (scale > len) {
@@ -207,14 +207,14 @@ public class FrontBaseAdapter extends JdbcAdapter {
                 }
             }
 
-            if (at.isMandatory()) {
+            if (column.isMandatory()) {
                 buf.append(" NOT NULL");
             }
             // else: don't appen NULL for FrontBase:
         }
 
         // primary key clause
-        Iterator<DbAttribute> pkit = ent.getPrimaryKeys().iterator();
+        Iterator<CompiledColumn> pkit = table.primaryKey().iterator();
         if (pkit.hasNext()) {
             if (first) {
                 first = false;
@@ -231,9 +231,9 @@ public class FrontBaseAdapter extends JdbcAdapter {
                     buf.append(", ");
                 }
 
-                DbAttribute at = pkit.next();
+                CompiledColumn column = pkit.next();
                 quotes.appendStart(buf);
-                buf.append(at.getName());
+                buf.append(column.name());
                 quotes.appendEnd(buf);
             }
             buf.append(')');
@@ -246,10 +246,10 @@ public class FrontBaseAdapter extends JdbcAdapter {
      * Adds the CASCADE option to the DROP TABLE clause.
      */
     @Override
-    public Collection<String> dropTableStatements(DbEntity table) {
+    public Collection<String> dropTableStatements(CompiledTable table) {
         QuotingStrategy quotes = getQuotingStrategy(table);
         StringBuilder buf = new StringBuilder("DROP TABLE ");
-        quotes.appendFQN(buf, table.getCatalog(), table.getSchema(), table.getName());
+        quotes.appendFQN(buf, table.catalog(), table.schema(), table.name());
         buf.append(" CASCADE");
         return Collections.singleton(buf.toString());
     }

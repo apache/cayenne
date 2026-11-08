@@ -21,8 +21,8 @@ package org.apache.cayenne.dba;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.DbKeyGenerator;
+import org.apache.cayenne.map.compiled.CompiledTable;
+import org.apache.cayenne.map.compiled.CompiledKeySequence;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -59,13 +59,13 @@ public abstract class SequencePkGenerator extends JdbcPkGenerator {
     }
 
     @Override
-    public void createAutoPk(DataNode node, List<DbEntity> dbEntities) {
+    public void createAutoPk(DataNode node, List<CompiledTable> tables) {
         DbAdapter adapter = node.getAdapter();
         List<String> sequences = getExistingSequences(node);
         // create needed sequences
-        for (DbEntity dbEntity : dbEntities) {
-            if (!sequences.contains(sequenceName(dbEntity))) {
-                runUpdate(node, createSequenceString(adapter, dbEntity));
+        for (CompiledTable table : tables) {
+            if (!sequences.contains(sequenceName(table))) {
+                runUpdate(node, createSequenceString(adapter, table));
             }
         }
     }
@@ -74,10 +74,10 @@ public abstract class SequencePkGenerator extends JdbcPkGenerator {
      * Creates a list of CREATE SEQUENCE statements for the list of DbEntities.
      */
     @Override
-    public List<String> createAutoPkStatements(DbAdapter adapter, List<DbEntity> dbEntities) {
-        List<String> list = new ArrayList<>(dbEntities.size());
-        for (DbEntity dbEntity : dbEntities) {
-            list.add(createSequenceString(adapter, dbEntity));
+    public List<String> createAutoPkStatements(DbAdapter adapter, List<CompiledTable> tables) {
+        List<String> list = new ArrayList<>(tables.size());
+        for (CompiledTable table : tables) {
+            list.add(createSequenceString(adapter, table));
         }
 
         return list;
@@ -87,14 +87,14 @@ public abstract class SequencePkGenerator extends JdbcPkGenerator {
      * Drops PK sequences for all specified DbEntities.
      */
     @Override
-    public void dropAutoPk(DataNode node, List<DbEntity> dbEntities) {
+    public void dropAutoPk(DataNode node, List<CompiledTable> tables) {
         DbAdapter adapter = node.getAdapter();
         List<String> sequences = getExistingSequences(node);
 
         // drop obsolete sequences
-        for (DbEntity dbEntity : dbEntities) {
-            if (sequences.contains(sequenceName(dbEntity))) {
-                runUpdate(node, dropSequenceString(adapter, dbEntity));
+        for (CompiledTable table : tables) {
+            if (sequences.contains(sequenceName(table))) {
+                runUpdate(node, dropSequenceString(adapter, table));
             }
         }
     }
@@ -103,26 +103,26 @@ public abstract class SequencePkGenerator extends JdbcPkGenerator {
      * Creates a list of DROP SEQUENCE statements for the list of DbEntities.
      */
     @Override
-    public List<String> dropAutoPkStatements(DbAdapter adapter, List<DbEntity> dbEntities) {
-        List<String> list = new ArrayList<>(dbEntities.size());
-        for (DbEntity dbEntity : dbEntities) {
-            list.add(dropSequenceString(adapter, dbEntity));
+    public List<String> dropAutoPkStatements(DbAdapter adapter, List<CompiledTable> tables) {
+        List<String> list = new ArrayList<>(tables.size());
+        for (CompiledTable table : tables) {
+            list.add(dropSequenceString(adapter, table));
         }
 
         return list;
     }
 
-    protected String createSequenceString(DbAdapter adapter, DbEntity ent) {
-        String seqFQN = adapter.getQuotingStrategy(ent).quotedFQN(ent.getCatalog(), ent.getSchema(), sequenceName(ent));
-        return "CREATE SEQUENCE " + seqFQN + " START WITH " + pkStartValue + " INCREMENT BY " + pkCacheSize(ent);
+    protected String createSequenceString(DbAdapter adapter, CompiledTable table) {
+        String seqFQN = adapter.getQuotingStrategy(table).quotedFQN(table.catalog(), table.schema(), sequenceName(table));
+        return "CREATE SEQUENCE " + seqFQN + " START WITH " + pkStartValue + " INCREMENT BY " + pkCacheSize(table);
     }
 
     /**
      * Returns a SQL string needed to drop any database objects associated with
      * automatic primary key generation process for a specific DbEntity.
      */
-    protected String dropSequenceString(DbAdapter adapter, DbEntity ent) {
-        String seqFQN = adapter.getQuotingStrategy(ent).quotedFQN(ent.getCatalog(), ent.getSchema(), sequenceName(ent));
+    protected String dropSequenceString(DbAdapter adapter, CompiledTable table) {
+        String seqFQN = adapter.getQuotingStrategy(table).quotedFQN(table.catalog(), table.schema(), sequenceName(table));
         return "DROP SEQUENCE " + seqFQN;
     }
 
@@ -145,16 +145,16 @@ public abstract class SequencePkGenerator extends JdbcPkGenerator {
      * @since 3.0
      */
     @Override
-    protected long longPkFromDatabase(DataNode node, DbEntity entity) {
+    protected long longPkFromDatabase(DataNode node, CompiledTable table) {
 
-        DbKeyGenerator pkGenerator = entity.getPrimaryKeyGenerator();
+        CompiledKeySequence keySequence = table.keySequence();
         String pkGeneratingSequenceName;
-        if (pkGenerator != null && DbKeyGenerator.ORACLE_TYPE.equals(pkGenerator.getGeneratorType())
-                && pkGenerator.getGeneratorName() != null) {
-            pkGeneratingSequenceName = pkGenerator.getGeneratorName();
+        if (keySequence != null && CompiledKeySequence.ORACLE_TYPE.equals(keySequence.type())
+                && keySequence.name() != null) {
+            pkGeneratingSequenceName = keySequence.name();
         } else {
-            pkGeneratingSequenceName = node.getAdapter().getQuotingStrategy(entity).quotedFQN(entity.getCatalog(),
-                    entity.getSchema(), sequenceName(entity));
+            pkGeneratingSequenceName = node.getAdapter().getQuotingStrategy(table).quotedFQN(table.catalog(),
+                    table.schema(), sequenceName(table));
         }
 
         try (Connection con = node.getDataSource().getConnection()) {
@@ -164,40 +164,40 @@ public abstract class SequencePkGenerator extends JdbcPkGenerator {
 
                 try (ResultSet rs = st.executeQuery(sql)) {
                     if (!rs.next()) {
-                        throw new CayenneRuntimeException("Error generating pk for DbEntity %s", entity.getName());
+                        throw new CayenneRuntimeException("Error generating pk for DbEntity %s", table.name());
                     }
                     return rs.getLong(1);
                 }
             }
         } catch (SQLException e) {
-            throw new CayenneRuntimeException("Error generating pk for DbEntity %s", e, entity.getName());
+            throw new CayenneRuntimeException("Error generating pk for DbEntity %s", e, table.name());
         }
     }
 
-    protected int pkCacheSize(DbEntity entity) {
+    protected int pkCacheSize(CompiledTable table) {
         // use custom generator if possible
-        DbKeyGenerator keyGenerator = entity.getPrimaryKeyGenerator();
-        if (keyGenerator != null && DbKeyGenerator.ORACLE_TYPE.equals(keyGenerator.getGeneratorType())
-                && keyGenerator.getGeneratorName() != null) {
+        CompiledKeySequence keySequence = table.keySequence();
+        if (keySequence != null && CompiledKeySequence.ORACLE_TYPE.equals(keySequence.type())
+                && keySequence.name() != null) {
 
-            Integer size = keyGenerator.getKeyCacheSize();
+            Integer size = keySequence.cacheSize();
             return (size != null && size >= 1) ? size : getPkCacheSize();
         } else {
             return getPkCacheSize();
         }
     }
 
-    protected String sequenceName(DbEntity entity) {
+    protected String sequenceName(CompiledTable table) {
 
         // use custom generator if possible
-        DbKeyGenerator keyGenerator = entity.getPrimaryKeyGenerator();
-        if (keyGenerator != null
-                && DbKeyGenerator.ORACLE_TYPE.equals(keyGenerator.getGeneratorType())
-                && keyGenerator.getGeneratorName() != null) {
+        CompiledKeySequence keySequence = table.keySequence();
+        if (keySequence != null
+                && CompiledKeySequence.ORACLE_TYPE.equals(keySequence.type())
+                && keySequence.name() != null) {
 
-            return keyGenerator.getGeneratorName().toLowerCase();
+            return keySequence.name().toLowerCase();
         } else {
-            return getSequencePrefix() + entity.getName().toLowerCase();
+            return getSequencePrefix() + table.name().toLowerCase();
         }
     }
 

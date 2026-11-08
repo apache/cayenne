@@ -21,6 +21,7 @@ package org.apache.cayenne;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.DbEntity;
+
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.qualified.Qualified1;
@@ -245,13 +246,14 @@ public class CDOQualifiedEntitiesIT {
     public void joinWithCustomDbQualifier() throws Exception {
         createJoinDataSet();
 
-        DbEntity entity1 = env.context().getEntityResolver().getDbEntity("TEST_QUALIFIED3");
-        DbEntity entity2 = env.context().getEntityResolver().getDbEntity("TEST_QUALIFIED4");
+        DbEntity entity1 = env.project().dbEntity(env.mapping().schema().table("TEST_QUALIFIED3"));
+        DbEntity entity2 = env.project().dbEntity(env.mapping().schema().table("TEST_QUALIFIED4"));
         Expression oldExpression1 = entity1.getQualifier();
         Expression oldExpression2 = entity2.getQualifier();
         try {
             entity1.setQualifier(ExpressionFactory.matchDbExp("DELETED", null));
             entity2.setQualifier(ExpressionFactory.matchDbExp("DELETED", null));
+            env.recompile();
 
             List<Qualified4> result = ObjectSelect.query(Qualified4.class)
                     .where(Qualified4.QUALIFIED3.dot(Qualified3.NAME).like("O%"))
@@ -262,6 +264,7 @@ public class CDOQualifiedEntitiesIT {
         } finally {
             entity1.setQualifier(oldExpression1);
             entity2.setQualifier(oldExpression2);
+            env.recompile();
         }
     }
 }

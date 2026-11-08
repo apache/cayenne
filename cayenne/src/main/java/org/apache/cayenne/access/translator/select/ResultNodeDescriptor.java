@@ -27,7 +27,7 @@ import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.exp.AggregateFunctionCallExp;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.exp.property.Property;
-import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.compiled.CompiledColumn;
 
 /**
  * @since 4.2
@@ -39,7 +39,7 @@ class ResultNodeDescriptor {
 
     private boolean isAggregate;
     private CayennePath dataRowKey;
-    private DbAttribute dbAttribute;
+    private CompiledColumn column;
     private String javaType;
 
     ResultNodeDescriptor(Node node, boolean inDataRow, Property<?> property, CayennePath dataRowKey) {
@@ -79,7 +79,7 @@ class ResultNodeDescriptor {
             return property.getAlias();
         }
         if (getDbAttribute() != null) {
-            return getDbAttribute().getName();
+            return getDbAttribute().name();
         }
         return null;
     }
@@ -93,8 +93,8 @@ class ResultNodeDescriptor {
         return this;
     }
 
-    public ResultNodeDescriptor setDbAttribute(DbAttribute dbAttribute) {
-        this.dbAttribute = dbAttribute;
+    public ResultNodeDescriptor setDbAttribute(CompiledColumn column) {
+        this.column = column;
         return this;
     }
 
@@ -106,14 +106,14 @@ class ResultNodeDescriptor {
             return property.getType().getCanonicalName();
         }
         if (getDbAttribute() != null) {
-            return getDbAttribute().getJavaClassName();
+            return getDbAttribute().valueClassName();
         }
         return null;
     }
 
     public int getJdbcType() {
         if (getDbAttribute() != null) {
-            return getDbAttribute().getType();
+            return getDbAttribute().jdbcType();
         }
 
         if (getProperty() != null) {
@@ -123,21 +123,21 @@ class ResultNodeDescriptor {
         return TypesMapping.NOT_DEFINED;
     }
 
-    public DbAttribute getDbAttribute() {
-        if (this.dbAttribute != null) {
-            return this.dbAttribute;
+    public CompiledColumn getDbAttribute() {
+        if (this.column != null) {
+            return this.column;
         }
-        DbAttribute[] dbAttribute = {null};
+        CompiledColumn[] column = {null};
         node.visit(new SimpleNodeTreeVisitor() {
             @Override
             public boolean onNodeStart(Node node) {
                 if (node.getType() == NodeType.COLUMN) {
-                    dbAttribute[0] = ((ColumnNode) node).getAttribute();
+                    column[0] = ((ColumnNode) node).getAttribute();
                     return false;
                 }
                 return true;
             }
         });
-        return this.dbAttribute = dbAttribute[0];
+        return this.column = column[0];
     }
 }

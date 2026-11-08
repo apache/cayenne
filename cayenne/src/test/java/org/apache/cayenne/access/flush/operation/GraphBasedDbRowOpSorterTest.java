@@ -23,41 +23,51 @@ import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.EntitySorter;
+import org.apache.cayenne.map.DbJoin;
+import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.map.compiled.CompiledTable;
+import org.apache.cayenne.map.compiled.CompiledMapping;
+import org.apache.cayenne.map.compiled.TestMappings;
+import org.apache.cayenne.unit.CompiledTables;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.when;
 
 public class GraphBasedDbRowOpSorterTest {
-    private EntitySorter entitySorter;
+    private CompiledMapping mapping;
     private DbRowOpSorter sorter;
 
     @BeforeEach
     public void createSorter() {
-        entitySorter = mock(EntitySorter.class);
-        EntityResolver entityResolver = mock(EntityResolver.class);
+        // unrelated tables, and a "reflexive" table referencing itself
+        DataMap map = new DataMap("M");
+        for (String name : List.of("test", "test1", "test2", "test3", "test4", "reflexive")) {
+            map.addDbEntity(CompiledTables.authoredTable(name));
+        }
+        DbEntity reflexive = map.getDbEntity("reflexive");
+        reflexive.addAttribute(new DbAttribute("parent_id"));
+        DbRelationship parent = new DbRelationship("parent");
+        reflexive.addRelationship(parent);
+        parent.setTargetEntityName("reflexive");
+        parent.setToMany(false);
+        parent.setForeignKey(true);
+        parent.addJoin(new DbJoin(parent, "parent_id", "id"));
 
-        when(entitySorter.getDbEntityComparator())
-                .thenReturn(Comparator.comparing(DbEntity::getName));
-        when(entitySorter.isReflexive(argThat(ent -> ent.getName().equals("reflexive"))))
-                .thenReturn(true);
+        mapping = TestMappings.compile(map);
 
         DataDomain dataDomain = mock(DataDomain.class);
-        when(dataDomain.getEntitySorter()).thenReturn(entitySorter);
-        when(dataDomain.getEntityResolver()).thenReturn(entityResolver);
+        when(dataDomain.getMapping()).thenReturn(mapping);
 
         sorter = new GraphBasedDbRowOpSorter(() -> dataDomain);
     }
@@ -95,7 +105,7 @@ public class GraphBasedDbRowOpSorterTest {
         ObjectId id3 = ObjectId.of("test", "id", 2);
         ObjectId id4 = ObjectId.of("test", "id", 3);
 
-        DbEntity test = mockEntity("test");
+        CompiledTable test = mockEntity("test");
         InsertDbRowOp op1 = new InsertDbRowOp(mockObject(id1), test, id1);
         InsertDbRowOp op2 = new InsertDbRowOp(mockObject(id2), test, id2);
         DeleteDbRowOp op3 = new DeleteDbRowOp(mockObject(id3), test, id3);
@@ -121,8 +131,8 @@ public class GraphBasedDbRowOpSorterTest {
         ObjectId id9  = ObjectId.of("test2", "id", 4);
         ObjectId id10 = ObjectId.of("test",  "id", 8);
 
-        DbEntity test = mockEntity("test");
-        DbEntity test2 = mockEntity("test2");
+        CompiledTable test = mockEntity("test");
+        CompiledTable test2 = mockEntity("test2");
         BaseDbRowOp[] op = new BaseDbRowOp[10];
         op[0] = new InsertDbRowOp(mockObject(id1),  test2, id1);
         op[1] = new InsertDbRowOp(mockObject(id2),  test,  id2);
@@ -148,7 +158,7 @@ public class GraphBasedDbRowOpSorterTest {
         ObjectId id3 = ObjectId.of("reflexive", "id", 3);
         ObjectId id4 = ObjectId.of("reflexive", "id", 4);
 
-        DbEntity reflexive = mockEntity("reflexive");
+        CompiledTable reflexive = mockEntity("reflexive");
         DbRowOp op1 = new InsertDbRowOp(mockObject(id1), reflexive, id1);
         DbRowOp op2 = new InsertDbRowOp(mockObject(id2), reflexive, id2);
         DbRowOp op3 = new InsertDbRowOp(mockObject(id3), reflexive, id3);
@@ -159,7 +169,6 @@ public class GraphBasedDbRowOpSorterTest {
 
         List<DbRowOp> sorted = sorter.sort(rows);
         assertEquals(expected, sorted); // no actual sorting is done
-        verifyNoInteractions(entitySorter);
     }
 
     private Persistent mockObject(ObjectId id) {
@@ -169,13 +178,7 @@ public class GraphBasedDbRowOpSorterTest {
         return persistent;
     }
 
-    private DbEntity mockEntity(String name) {
-        DbAttribute attribute1 = new DbAttribute("id");
-        attribute1.setPrimaryKey(true);
-        DbAttribute attribute2 = new DbAttribute("attr");
-        DbEntity testEntity = new DbEntity(name);
-        testEntity.addAttribute(attribute1);
-        testEntity.addAttribute(attribute2);
-        return testEntity;
+    private CompiledTable mockEntity(String name) {
+        return mapping.schema().table(name);
     }
 }

@@ -38,12 +38,12 @@ import org.apache.cayenne.graph.NodeCreateOperation;
 import org.apache.cayenne.graph.NodeDeleteOperation;
 import org.apache.cayenne.graph.NodeDiff;
 import org.apache.cayenne.graph.NodePropertyChangeOperation;
-import org.apache.cayenne.map.EntityInheritanceTree;
+import org.apache.cayenne.map.compiled.CompiledEntity;
+import org.apache.cayenne.map.compiled.CompiledRelationship;
+import org.apache.cayenne.map.compiled.CompiledToManyRelationship;
+import org.apache.cayenne.map.compiled.CompiledToOneRelationship;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.reflect.ClassDescriptor;
-import org.apache.cayenne.reflect.PropertyDescriptor;
-import org.apache.cayenne.reflect.ToManyProperty;
-import org.apache.cayenne.reflect.ToOneProperty;
+
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -226,10 +226,8 @@ public class DataContextObjectStore implements ObjectStore {
                         if (snapshot != null && snapshot.getVersion() > object.getSnapshotVersion()) {
                             DataContextDelegate delegate = context.nonNullDelegate();
                             if (delegate.shouldMergeChanges(object, snapshot)) {
-                                ClassDescriptor descriptor = context
-                                        .getEntityResolver()
-                                        .getClassDescriptor(id.getEntityName());
-                                DataRowUtils.forceMergeWithSnapshot(context, descriptor, object, snapshot);
+                                CompiledEntity entity = context.getMapping().entity(id.getEntityName());
+                                DataRowUtils.forceMergeWithSnapshot(context, entity, object, snapshot);
                                 object.setSnapshotVersion(snapshot.getVersion());
                                 delegate.finishedMergeChanges(object);
                             }
@@ -465,8 +463,8 @@ public class DataContextObjectStore implements ObjectStore {
             return parentContextSnapshot(oid, false);
         }
 
-        EntityInheritanceTree inheritanceTree = context.getEntityResolver().getInheritanceTree(oid.getEntityName());
-        for (ObjectId candidateId : inheritanceTree.polymorphicIds(oid)) {
+        CompiledEntity entity = context.getMapping().entity(oid.getEntityName());
+        for (ObjectId candidateId : entity.polymorphicIds(oid)) {
             DataRow row = dataRowCache.getCachedSnapshot(candidateId);
             if (row != null) {
                 return row;
@@ -504,7 +502,7 @@ public class DataContextObjectStore implements ObjectStore {
                 .where(ExpressionFactory.matchAllDbExp(oid.getIdSnapshot()))
                 .fetchDataRows();
 
-        QueryContext execContext = new QueryContext(context, query, query.resolve(context.getEntityResolver()),
+        QueryContext execContext = new QueryContext(context, query, query.resolve(context.getMapping()),
                 false);
         List<?> rows = QueryResults.firstList(context.getChannel().onQuery(execContext));
         return switch (rows.size()) {
@@ -527,8 +525,8 @@ public class DataContextObjectStore implements ObjectStore {
         }
 
         DataContextObjectStore parentStore = parent.getObjectStore();
-        EntityInheritanceTree inheritanceTree = parent.getEntityResolver().getInheritanceTree(oid.getEntityName());
-        for (ObjectId candidateId : inheritanceTree.polymorphicIds(oid)) {
+        CompiledEntity entity = parent.getMapping().entity(oid.getEntityName());
+        for (ObjectId candidateId : entity.polymorphicIds(oid)) {
             Persistent parentObject = parentStore.getObject(candidateId);
             if (parentObject != null) {
                 // the parent's current state is the child's snapshot, and it is as new as the parent object. Child
@@ -595,8 +593,8 @@ public class DataContextObjectStore implements ObjectStore {
 
         Map<ObjectId, Map<String, Object>> modifiedDiffs = event.getModifiedDiffs();
         if (modifiedDiffs != null && !modifiedDiffs.isEmpty()) {
-            // the merge plans of the refreshed objects, built once per descriptor per event
-            Map<ClassDescriptor, MergePlan> plans = new HashMap<>();
+            // the merge plans of the refreshed objects, built once per entity per event
+            Map<CompiledEntity, MergePlan> plans = new HashMap<>();
             for (Map.Entry<ObjectId, Map<String, Object>> entry : modifiedDiffs.entrySet()) {
                 processUpdatedSnapshot(entry.getKey(), entry.getValue(), event.getVersion(), plans);
             }
@@ -715,10 +713,8 @@ public class DataContextObjectStore implements ObjectStore {
                         DataRow snapshot = getSnapshot(oid);
                         DataContextDelegate delegate = context.nonNullDelegate();
                         if (snapshot != null && delegate.shouldMergeChanges(object, snapshot)) {
-                            ClassDescriptor descriptor = context
-                                    .getEntityResolver()
-                                    .getClassDescriptor(oid.getEntityName());
-                            mergeDirty(object, descriptor, snapshot, snapshot.getVersion());
+                            CompiledEntity entity = context.getMapping().entity(oid.getEntityName());
+                            mergeDirty(object, entity, snapshot, snapshot.getVersion());
                             delegate.finishedMergeChanges(object);
                         }
                     }
@@ -747,15 +743,13 @@ public class DataContextObjectStore implements ObjectStore {
 
             if (delegate.shouldMergeChanges(object, null)) {
 
-                ClassDescriptor descriptor = context
-                        .getEntityResolver()
-                        .getClassDescriptor(oid.getEntityName());
+                CompiledEntity entity = context.getMapping().entity(oid.getEntityName());
 
                 withObjectLock(oid, () -> {
-                    for (PropertyDescriptor property : descriptor.getProperties()) {
-                        switch (property) {
-                            case ToManyProperty toMany -> toMany.invalidate(object);
-                            case ToOneProperty toOne when !toOne.getRelationship().isForeignKey() ->
+                    for (CompiledRelationship relationship : entity.relationships()) {
+                        switch (relationship) {
+                            case CompiledToManyRelationship toMany -> toMany.invalidate(object);
+                            case CompiledToOneRelationship toOne when !toOne.isForeignKey() ->
                                     toOne.invalidate(object);
                             default -> {
                             }
@@ -772,12 +766,12 @@ public class DataContextObjectStore implements ObjectStore {
     /**
      * @param diff    the changed keys of the snapshot of the id, with their new values
      * @param version the version of the snapshot the diff is of
-     * @param plans   the merge plans built so far for this event, by descriptor. A COMMITTED object is refreshed with
-     *                the plan of its descriptor, which is built on the first object of that descriptor
+     * @param plans   the merge plans built so far for this event, by entity. A COMMITTED object is refreshed with
+     *                the plan of its entity, which is built on the first object of that entity
      * @since 1.1
      */
     void processUpdatedSnapshot(ObjectId id, Map<String, Object> diff, long version,
-                                Map<ClassDescriptor, MergePlan> plans) {
+                                Map<CompiledEntity, MergePlan> plans) {
 
         Persistent object = objectMap.get(id);
 
@@ -791,9 +785,7 @@ public class DataContextObjectStore implements ObjectStore {
                 // consult delegate if it exists
                 DataContextDelegate delegate = context.nonNullDelegate();
                 if (delegate.shouldMergeChanges(object, diff)) {
-                    ClassDescriptor descriptor = context
-                            .getEntityResolver()
-                            .getClassDescriptor(id.getEntityName());
+                    CompiledEntity entity = context.getMapping().entity(id.getEntityName());
 
                     // TODO: andrus, 5/26/2006 - call to 'getSnapshot' is expensive,
                     // however my attempts to merge the 'diff' instead of snapshot
@@ -805,7 +797,7 @@ public class DataContextObjectStore implements ObjectStore {
                     // the snapshot may need a fetch, so it is taken before the object lock
                     DataRow snapshot = getSnapshot(id);
                     if (snapshot != null) {
-                        MergePlan plan = plans.computeIfAbsent(descriptor, MergePlan::of);
+                        MergePlan plan = plans.computeIfAbsent(entity, MergePlan::of);
                         withObjectLock(id, () -> {
                             // the object may have been modified since the state check above. A MODIFIED object merges
                             // the cached snapshot when its first change is recorded, so there's nothing to do for it
@@ -825,10 +817,8 @@ public class DataContextObjectStore implements ObjectStore {
                 // consult delegate if it exists
                 DataContextDelegate delegate = context.nonNullDelegate();
                 if (delegate.shouldMergeChanges(object, diff)) {
-                    ClassDescriptor descriptor = context
-                            .getEntityResolver()
-                            .getClassDescriptor(id.getEntityName());
-                    mergeDirty(object, descriptor, diff, version);
+                    CompiledEntity entity = context.getMapping().entity(id.getEntityName());
+                    mergeDirty(object, entity, diff, version);
                     delegate.finishedMergeChanges(object);
                 }
             }
@@ -840,12 +830,12 @@ public class DataContextObjectStore implements ObjectStore {
      * record changes to the object, so it takes the changes lock before the object lock. The snapshot is only merged
      * if it is not older than the one the object already reflects.
      */
-    private void mergeDirty(Persistent object, ClassDescriptor descriptor, Map<String, Object> snapshot, long version) {
+    private void mergeDirty(Persistent object, CompiledEntity entity, Map<String, Object> snapshot, long version) {
         withChangesLock(() -> withObjectLock(object.getObjectId(), () -> {
             int state = object.getPersistenceState();
             if ((state == PersistenceState.MODIFIED || state == PersistenceState.DELETED)
                     && version >= object.getSnapshotVersion()) {
-                DataRowUtils.forceMergeWithSnapshot(context, descriptor, object, snapshot);
+                DataRowUtils.forceMergeWithSnapshot(context, entity, object, snapshot);
                 object.setSnapshotVersion(version);
             }
             return null;
@@ -877,8 +867,8 @@ public class DataContextObjectStore implements ObjectStore {
     }
 
     private Persistent createHollowObject(ObjectId id) {
-        ClassDescriptor descriptor = context.getEntityResolver().getClassDescriptor(id.getEntityName());
-        Persistent object = (Persistent) descriptor.createObject();
+        CompiledEntity entity = context.getMapping().entity(id.getEntityName());
+        Persistent object = (Persistent) entity.createObject();
 
         object.setObjectContext(context);
         object.setObjectId(id);

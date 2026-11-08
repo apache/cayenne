@@ -26,8 +26,8 @@ import java.util.Map;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.compiled.CompiledTable;
+import org.apache.cayenne.unit.CompiledTables;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -77,7 +77,7 @@ public class QualifierTest {
         DbRowOp row = mockRow(persistent);
 
         Qualifier qualifier = new Qualifier(row);
-        qualifier.addAdditionalQualifier(new DbAttribute("attr"), 42, true);
+        qualifier.addAdditionalQualifier(CompiledTables.column("attr"), 42, true);
 
         Map<String, Object> qualifierSnapshot = qualifier.getSnapshot();
 
@@ -99,7 +99,7 @@ public class QualifierTest {
         DbRowOp row = mockRow(persistent);
 
         Qualifier qualifier = new Qualifier(row);
-        qualifier.addAdditionalQualifier(new DbAttribute("attr"), 42, true);
+        qualifier.addAdditionalQualifier(CompiledTables.column("attr"), 42, true);
 
         Map<String, Object> qualifierSnapshot = qualifier.getSnapshot();
 
@@ -135,7 +135,7 @@ public class QualifierTest {
         DbRowOp row3 = mockRow(persistent3);
 
         Qualifier qualifier3 = new Qualifier(row3);
-        qualifier3.addAdditionalQualifier(new DbAttribute("attr"), 42);
+        qualifier3.addAdditionalQualifier(CompiledTables.column("attr"), 42);
 
         assertFalse(qualifier1.isSameBatch(qualifier3));
     }
@@ -156,13 +156,7 @@ public class QualifierTest {
         return persistent;
     }
 
-    private DbEntity mockEntity() {
-        DbAttribute attribute1 = new DbAttribute("id");
-        attribute1.setPrimaryKey(true);
-        DbAttribute attribute2 = new DbAttribute("attr");
-        DbEntity testEntity = new DbEntity("TEST");
-        testEntity.addAttribute(attribute1);
-        testEntity.addAttribute(attribute2);
-        return testEntity;
+    private CompiledTable mockEntity() {
+        return CompiledTables.table("TEST");
     }
 }

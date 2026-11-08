@@ -24,7 +24,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
-import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.compiled.CompiledColumn;
 
 /**
  * @since 4.2
@@ -32,24 +32,24 @@ import org.apache.cayenne.map.DbAttribute;
  */
 public class PerAttributeChildProcessor<T extends Node> implements ChildProcessor<T> {
 
-    private final Map<DbAttribute, ChildProcessor<T>> processorByAttribute = new ConcurrentHashMap<>();
-    private final Function<T, DbAttribute> attributeMapper;
-    private final Function<DbAttribute, ChildProcessor<T>> processorFactory;
+    private final Map<CompiledColumn, ChildProcessor<T>> processorByAttribute = new ConcurrentHashMap<>();
+    private final Function<T, CompiledColumn> attributeMapper;
+    private final Function<CompiledColumn, ChildProcessor<T>> processorFactory;
 
-    public PerAttributeChildProcessor(Function<T, DbAttribute> attributeMapper,
-                                      Function<DbAttribute, ChildProcessor<T>> processorFactory) {
+    public PerAttributeChildProcessor(Function<T, CompiledColumn> attributeMapper,
+                                      Function<CompiledColumn, ChildProcessor<T>> processorFactory) {
         this.processorFactory = processorFactory;
         this.attributeMapper = attributeMapper;
     }
 
     @Override
     public Optional<Node> process(Node parent, T child, int index) {
-        DbAttribute dbAttribute = attributeMapper.apply(child);
-        if(dbAttribute == null) {
+        CompiledColumn column = attributeMapper.apply(child);
+        if(column == null) {
             return processorFactory.apply(null).process(parent, child, index);
         }
         return processorByAttribute
-                .computeIfAbsent(dbAttribute, processorFactory)
+                .computeIfAbsent(column, processorFactory)
                 .process(parent, child, index);
     }
 }

@@ -27,6 +27,7 @@ import org.apache.cayenne.access.translator.BatchTranslator;
 import org.apache.cayenne.access.translator.ProcedureTranslator;
 import org.apache.cayenne.access.translator.SQLTemplateTranslator;
 import org.apache.cayenne.access.translator.SelectTranslator;
+import org.apache.cayenne.map.compiled.CompiledSchema;
 import org.apache.cayenne.project.DataNodeDescriptor;
 import org.apache.cayenne.RuntimeProperties;
 import org.apache.cayenne.datasource.CayenneDataSource;
@@ -36,7 +37,6 @@ import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.log.SQLLogger;
-import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.query.resolved.DeleteBatch;
 import org.apache.cayenne.query.resolved.InsertBatch;
 import org.apache.cayenne.query.resolved.UpdateBatch;
@@ -44,7 +44,6 @@ import org.apache.cayenne.query.resolved.UpdateBatch;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -86,7 +85,12 @@ public class DefaultDataNodeFactory implements DataNodeFactory {
     protected RuntimeProperties properties;
 
     @Override
-    public DataNode createDataNode(String channelName, DataNodeDescriptor descriptor, Collection<DataMap> dataMaps) {
+    public DataNode createDataNode(
+            String channelName,
+            DataNodeDescriptor descriptor,
+            CompiledSchema schema,
+            String... dataMaps) {
+
 
         DataSource dataSource = createDataSource(channelName, descriptor);
 
@@ -96,7 +100,7 @@ public class DefaultDataNodeFactory implements DataNodeFactory {
                 : null;
         SchemaUpdateStrategy schemaUpdateStrategy = createSchemaUpdateStrategy(descriptor.schemaUpdateStrategyType());
         DataNodeInitializer initializer =
-                () -> initDataNode(descriptor.name(), dataSource, adapter, schemaUpdateStrategy, dataMaps);
+                () -> initDataNode(descriptor.name(), dataSource, adapter, schemaUpdateStrategy, schema, dataMaps);
 
         return newDataNode(descriptor.name(), dataSource, initializer, descriptor.pkGenerator());
     }
@@ -128,19 +132,20 @@ public class DefaultDataNodeFactory implements DataNodeFactory {
 
     /**
      * The first-use initialization of a node: detects the adapter off the raw DataSource, unless an explicit adapter
-     * is given, and runs the schema update strategy against the DataMaps of the node.
+     * is given, and runs the schema update strategy against the maps of the node.
      */
     protected DbAdapter initDataNode(
             String nodeName,
             DataSource dataSource,
             DbAdapter adapter,
             SchemaUpdateStrategy schemaUpdateStrategy,
-            Collection<DataMap> dataMaps) {
+            CompiledSchema schema,
+            String... dataMaps) {
 
         DbAdapter resolved = adapter != null ? adapter : detectAdapter(nodeName, dataSource);
 
         try {
-            schemaUpdateStrategy.updateSchema(resolved, dataSource, dataMaps, sqlLogger);
+            schemaUpdateStrategy.updateSchema(resolved, dataSource, schema, dataMaps);
         } catch (SQLException e) {
             throw new CayenneRuntimeException("Error updating the schema of DataNode '%s': %s", e, nodeName,
                     e.getLocalizedMessage());

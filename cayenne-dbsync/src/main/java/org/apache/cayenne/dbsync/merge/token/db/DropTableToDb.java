@@ -41,7 +41,7 @@ public class DropTableToDb extends AbstractToDbToken.Entity {
         sqls.addAll(node.getPkGenerator().dropAutoPkStatements(
                 node.getAdapter(), Collections.singletonList(entity)));
          */
-        sqls.addAll(node.getAdapter().dropTableStatements(getEntity()));
+        sqls.addAll(node.getAdapter().dropTableStatements(CompiledModel.table(getEntity())));
         return sqls;
     }
 

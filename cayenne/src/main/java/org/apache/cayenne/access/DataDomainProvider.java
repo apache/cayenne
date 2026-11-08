@@ -26,9 +26,11 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.flush.DataDomainFlushActionFactory;
 import org.apache.cayenne.access.lifecycle.LifecycleEventManager;
 import org.apache.cayenne.access.lifecycle.LifecycleEventsManager;
-import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.cache.NestedQueryCache;
+import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.cache.QueryCache;
+import org.apache.cayenne.map.compiled.CompiledDataMap;
+import org.apache.cayenne.map.compiled.CompiledSchema;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.ProjectLoader;
 import org.apache.cayenne.project.ProjectMerger;
@@ -50,11 +52,9 @@ import org.apache.cayenne.lifecycle.PrePersistAware;
 import org.apache.cayenne.lifecycle.PreRemoveAware;
 import org.apache.cayenne.lifecycle.PreUpdateAware;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.EntitySorter;
-import org.apache.cayenne.map.EntitySorterFactory;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.reflect.generic.ValueComparisonStrategyFactory;
+import org.apache.cayenne.map.compiled.CompiledMapping;
+import org.apache.cayenne.map.compiled.CompiledEntity;
+import org.apache.cayenne.map.compiled.MappingCompiler;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.ResourceLocator;
 import org.apache.cayenne.tx.TransactionFactory;
@@ -117,6 +117,9 @@ public class DataDomainProvider implements Provider<DataDomain> {
     protected QueryCache queryCache;
 
     @Inject
+    protected ValueObjectTypeRegistry valueObjectTypeRegistry;
+
+    @Inject
     protected RuntimeProperties runtimeProperties;
 
     @Inject
@@ -138,7 +141,7 @@ public class DataDomainProvider implements Provider<DataDomain> {
     protected EventManager eventManager;
 
     @Inject
-    protected EntitySorterFactory entitySorterFactory;
+    protected MappingCompiler mappingCompiler;
 
     @Inject
     protected DataNodeDescriptors dataNodeDescriptors;
@@ -147,9 +150,7 @@ public class DataDomainProvider implements Provider<DataDomain> {
     public DataDomain get() {
 
         Project project = loadDescriptor();
-        EntityResolver entityResolver = createEntityResolver(project);
-        EntitySorter entitySorter = entitySorterFactory.createEntitySorter(entityResolver);
-        LifecycleEventsManager lifecycleEventsManager = createLifecycleEventsManager(entityResolver);
+        LifecycleEventsManager lifecycleEventsManager = new LifecycleEventsManager();
 
         DataDomain domain = new DataDomain(
                 project.getName(),
@@ -159,13 +160,15 @@ public class DataDomainProvider implements Provider<DataDomain> {
                 objectFactory,
                 eventManager,
                 new NestedQueryCache(queryCache),
+                valueObjectTypeRegistry,
                 createSharedSnapshotCache(project),
                 runtimeProperties.getInt(RuntimeProperties.MAX_ID_QUALIFIER_SIZE_PROPERTY, -1),
                 project.isValidatingObjectsOnCommit(),
-                entityResolver,
-                entitySorter,
+                mappingCompiler,
                 lifecycleEventsManager
         );
+        domain.recompile(project.getDataMaps());
+        registerEntityCallbacks(lifecycleEventsManager, domain.getMapping());
 
         dataNodeDescriptors.mapsByNode().forEach((n, maps) -> addDataNode(domain, n, maps));
 
@@ -191,19 +194,24 @@ public class DataDomainProvider implements Provider<DataDomain> {
         return domain;
     }
 
+    /**
+     * Adds a node for the maps it is linked to, which the node gets from the compiled schema of the domain for its
+     * schema update on first use.
+     */
     protected void addDataNode(DataDomain domain, DataNodeDescriptor descriptor, Set<String> mapNames) {
-        List<DataMap> dataMaps = new ArrayList<>();
+        CompiledSchema schema = domain.getMapping().schema();
+        List<String> maps = new ArrayList<>();
         for (String mn : mapNames) {
-            DataMap dataMap = domain.getDataMap(mn);
-            if (dataMap == null) {
+            if (schema.map(mn) == null) {
                 LOGGER.info("DataNode '{}' is linked to a non-existing DataMap '{}', ignoring", descriptor.name(), mn);
             } else {
-                dataMaps.add(dataMap);
+                maps.add(mn);
             }
         }
 
-        DataNode node = dataNodeFactory.createDataNode(domain.getName(), descriptor, dataMaps);
-        domain.addNode(node, dataMaps);
+        DataNode node = dataNodeFactory.createDataNode(domain.getName(), descriptor, schema,
+                maps.toArray(String[]::new));
+        domain.addNode(node, maps);
     }
 
     /**
@@ -212,12 +220,15 @@ public class DataDomainProvider implements Provider<DataDomain> {
     protected void addDefaultDataNode(DataDomain domain, DataNodeDescriptor descriptor, Set<String> linkedMapNames) {
         LOGGER.info("setting DataNode '{}' as default, used by all unlinked DataMaps", descriptor.name());
 
-        List<DataMap> dataMaps = domain.getDataMaps().stream()
-                .filter(m -> !linkedMapNames.contains(m.getName()))
+        CompiledSchema schema = domain.getMapping().schema();
+        List<String> maps = schema.maps().stream()
+                .map(CompiledDataMap::name)
+                .filter(name -> !linkedMapNames.contains(name))
                 .toList();
 
-        DataNode node = dataNodeFactory.createDataNode(domain.getName(), descriptor, dataMaps);
-        domain.addNode(node, dataMaps);
+        DataNode node = dataNodeFactory.createDataNode(domain.getName(), descriptor, schema,
+                maps.toArray(String[]::new));
+        domain.addNode(node, maps);
         domain.setDefaultNode(node);
     }
 
@@ -235,23 +246,24 @@ public class DataDomainProvider implements Provider<DataDomain> {
     }
 
     /**
-     * Creates the lifecycle event manager of the domain, registering the callbacks of the mapped entities, i.e. the
+     * Registers the callbacks of the mapped entities with the lifecycle event manager of the domain, i.e. the
      * {@code org.apache.cayenne.lifecycle} interfaces implemented by their classes. Listeners contributed via DI are
      * added by the caller, after the entity callbacks.
      *
      * @since 6.0
      */
-    protected LifecycleEventsManager createLifecycleEventsManager(EntityResolver entityResolver) {
-
-        LifecycleEventsManager eventManager = new LifecycleEventsManager();
-
+    protected void registerEntityCallbacks(LifecycleEventsManager eventManager, CompiledMapping mapping) {
         // listeners of a class are invoked for its subclasses too, so a callback is registered once per class
         // hierarchy, on the topmost class implementing the interface, which may be an unmapped superclass shared by
         // several entities. The set tracks the classes registered with each event manager
         Map<LifecycleEventManager, Set<Class<?>>> registered = new HashMap<>();
 
-        for (ObjEntity entity : entityResolver.getObjEntities()) {
-            Class<?> entityClass = entityResolver.getClassDescriptor(entity.getName()).getObjectClass();
+        for (CompiledEntity entity : mapping.entities()) {
+            Class<?> entityClass = entity.objectClass();
+            if (entityClass == null) {
+                // the class could not be loaded; the compiler has logged it
+                continue;
+            }
 
             addEntityCallback(eventManager.postAdd(), registered, entityClass, PostAddAware.class,
                     o -> ((PostAddAware) o).onPostAdd());
@@ -270,8 +282,6 @@ public class DataDomainProvider implements Provider<DataDomain> {
             addEntityCallback(eventManager.postLoad(), registered, entityClass, PostLoadAware.class,
                     o -> ((PostLoadAware) o).onPostLoad());
         }
-
-        return eventManager;
     }
 
     private static void addEntityCallback(
@@ -296,22 +306,6 @@ public class DataDomainProvider implements Provider<DataDomain> {
         }
     }
 
-    protected EntityResolver createEntityResolver(Project project) {
-
-        EntityResolver entityResolver = new EntityResolver();
-
-        // must go through "addDataMap" - unlike the Collection constructor, it sets the map namespace
-        for (DataMap dataMap : project.getDataMaps()) {
-            entityResolver.addDataMap(dataMap);
-        }
-
-        entityResolver.applyDBLayerDefaults();
-        entityResolver.setValueObjectTypeRegistry(injector.getInstance(ValueObjectTypeRegistry.class));
-        entityResolver.setValueComparisonStrategyFactory(injector.getInstance(ValueComparisonStrategyFactory.class));
-        entityResolver.setObjectFactory(objectFactory);
-
-        return entityResolver;
-    }
 
     /**
      * @since 4.0

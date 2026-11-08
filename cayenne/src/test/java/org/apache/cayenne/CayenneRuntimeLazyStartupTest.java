@@ -77,8 +77,9 @@ public class CayenneRuntimeLazyStartupTest {
 
         DataNode node = domain.getDataNodes().iterator().next();
         assertNotNull(node.getDataSource());
-        assertNotNull(domain.getEntityResolver().getObjEntity(Artist.class));
-        assertNotNull(domain.getEntityResolver().getClassDescriptor("Artist"));
+        assertNotNull(domain.getMapping().entity(Artist.class));
+        assertNotNull(domain.getMapping().entity("Artist"));
+
 
         dataSource.assertNotAccessed();
 

@@ -102,9 +102,9 @@ public class DataDomainProviderIT {
         DataDomain domain = env.runtime().getDataDomain();
 
         assertEquals("domain-provider", domain.getName());
-        assertEquals(2, domain.getDataMaps().size());
-        assertNotNull(domain.getDataMap("map-db1"));
-        assertNotNull(domain.getDataMap("map-db2"));
+        assertEquals(2, domain.getMapping().schema().maps().size());
+        assertNotNull(domain.getMapping().schema().map("map-db1"));
+        assertNotNull(domain.getMapping().schema().map("map-db2"));
     }
 
     @Test
@@ -119,15 +119,13 @@ public class DataDomainProviderIT {
         DataDomain domain = twoNodeRuntime().getDataDomain();
         assertEquals(2, domain.getDataNodes().size());
 
-        DataMap map1 = domain.getDataMap("map-db1");
         DataNode node1 = domain.getDataNode("node1");
         assertNotNull(node1);
-        assertSame(node1, domain.lookupDataNode(map1));
+        assertSame(node1, domain.lookupDataNode("map-db1"));
 
-        DataMap map2 = domain.getDataMap("map-db2");
         DataNode node2 = domain.getDataNode("node2");
         assertNotNull(node2);
-        assertSame(node2, domain.lookupDataNode(map2));
+        assertSame(node2, domain.lookupDataNode("map-db2"));
     }
 
     @Test
@@ -156,9 +154,6 @@ public class DataDomainProviderIT {
                 .build();
 
         DataDomain domain = twoNodeRuntime.getDataDomain();
-        DataMap linked = domain.getDataMap("map-db1");
-        DataMap unlinked = domain.getDataMap("map-db2");
-
         DataNode node1 = domain.getDataNode("node1");
         DataNode defaultNode = domain.getDefaultNode();
 
@@ -167,8 +162,8 @@ public class DataDomainProviderIT {
         assertSame(defaultNode, domain.getDataNode("default"));
 
         // "map-db1" stays with its own node, "map-db2" is taken over by the default node
-        assertSame(node1, domain.lookupDataNode(linked));
-        assertSame(defaultNode, domain.lookupDataNode(unlinked));
+        assertSame(node1, domain.lookupDataNode("map-db1"));
+        assertSame(defaultNode, domain.lookupDataNode("map-db2"));
     }
 
     @Test

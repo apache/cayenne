@@ -31,9 +31,9 @@ import org.apache.cayenne.exp.property.Property;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.compiled.CompiledMapping;
 import org.apache.cayenne.query.ResultSegments;
 import org.apache.cayenne.query.ScalarResultSegment;
 import org.apache.cayenne.query.resolved.ResolvedSelect;
@@ -49,18 +49,7 @@ public class CustomColumnSetExtractorTest extends BaseColumnExtractorTest {
         BaseProperty<?> property0 = PropertyFactory.createBase(ExpressionFactory.dbPathExp("name"), String.class);
         Collection<Property<?>> properties = Collections.singleton(property0);
 
-        // a query with an explicit column set carries one result segment per column in its metadata
-        ResolvedSelect query = new MockResolvedSelectBuilder()
-                .withColumns(properties)
-                
-                        .withDbEntity(mockDbEntity)
-                        .withResultSetMapping(new ResultSegments(
-                                List.of(new ScalarResultSegment("name", String.class, -1)), true))
-                        
-                .build();
-        SelectTranslatorContext context = new MockSelectTranslatorContext(query);
-
-        DataMap dataMap = new DataMap();
+        DataMap dataMap = new DataMap("mock");
         dataMap.addDbEntity(mockDbEntity);
 
         ObjEntity entity = new ObjEntity();
@@ -76,8 +65,16 @@ public class CustomColumnSetExtractorTest extends BaseColumnExtractorTest {
 
         dataMap.addObjEntity(entity);
 
-        EntityResolver resolver = new EntityResolver();
-        resolver.addDataMap(dataMap);
+        CompiledMapping mapping = compile(dataMap);
+
+        // a query with an explicit column set carries one result segment per column in its metadata
+        ResolvedSelect query = new MockResolvedSelectBuilder()
+                .withColumns(properties)
+                .withDbEntity(mapping.schema().table("mock"))
+                .withResultSetMapping(new ResultSegments(
+                        List.of(new ScalarResultSegment("name", String.class, -1)), true))
+                .build();
+        SelectTranslatorContext context = new MockSelectTranslatorContext(query, mapping);
 
         CustomColumnSetExtractor extractor = new CustomColumnSetExtractor(context, properties);
         extractor.extract();

@@ -34,7 +34,7 @@ public class EntityResolverInheritanceIT extends PeopleTestBase {
 
     @BeforeEach
     public void setUp() {
-        resolver = env.entityResolver();
+        resolver = new EntityResolver(env.project().dataMaps());
     }
 
     @Test

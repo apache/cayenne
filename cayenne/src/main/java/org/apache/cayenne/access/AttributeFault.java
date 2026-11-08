@@ -24,23 +24,22 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.property.PropertyFactory;
 import org.apache.cayenne.query.ObjectSelect;
-import org.apache.cayenne.reflect.AttributeProperty;
 
 /**
+ * The fault of a lazy attribute, resolved by reading the column of the object's row.
+ *
+ * @param attributeName the name of the attribute this fault stands for
+ * @param valueClass    the class of the attribute value
  * @since 4.2
  */
-public class AttributeFault extends Fault {
-
-    private final AttributeProperty property;
-
-    public AttributeFault(AttributeProperty property) {
-        this.property = property;
-    }
+public record AttributeFault(String attributeName, Class<?> valueClass) implements Fault {
 
     @Override
-    public Object resolveFault(Persistent sourceObject, String attributeName) {
+    public Object resolveFault(Persistent sourceObject) {
         return ObjectSelect
-                .columnQuery(sourceObject.getClass(), PropertyFactory.createBase(attributeName, property.getAttribute().getJavaClass()))
+                .columnQuery(sourceObject.getClass(),
+                        PropertyFactory.createBase(attributeName, valueClass))
+
                 .where(ExpressionFactory.matchAllDbExp(sourceObject.getObjectId().getIdSnapshot()))
                 .selectOne(sourceObject.getObjectContext());
     }

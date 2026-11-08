@@ -23,7 +23,7 @@ import org.apache.cayenne.access.sqlbuilder.sqltree.UpdateSetNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.TableNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.UpdateNode;
 import org.apache.cayenne.access.sqlbuilder.sqltree.WhereNode;
-import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.compiled.CompiledTable;
 
 /**
  * @since 4.2
@@ -39,7 +39,7 @@ public class UpdateBuilder extends BaseBuilder {
         node(TABLE_NODE, () -> new TableNode(table, null));
     }
 
-    public UpdateBuilder(DbEntity table) {
+    public UpdateBuilder(CompiledTable table) {
         super(new UpdateNode(), WHERE_NODE + 1);
         node(TABLE_NODE, () -> new TableNode(table, null));
     }

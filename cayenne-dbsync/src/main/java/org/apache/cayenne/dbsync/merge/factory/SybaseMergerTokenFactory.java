@@ -22,6 +22,7 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
+import org.apache.cayenne.dbsync.merge.token.db.CompiledModel;
 import org.apache.cayenne.dbsync.merge.token.db.AddColumnToDb;
 import org.apache.cayenne.dbsync.merge.token.db.DropColumnToDb;
 import org.apache.cayenne.dbsync.merge.token.db.SetAllowNullToDb;
@@ -50,13 +51,13 @@ public class SybaseMergerTokenFactory extends DefaultMergerTokenFactory {
                 DbAdapter adapter = node.getAdapter();
 
                 StringBuffer sqlBuffer = new StringBuffer();
-                QuotingStrategy quotes = adapter.getQuotingStrategy(getEntity());
+                QuotingStrategy quotes = adapter.getQuotingStrategy(CompiledModel.table(getEntity()));
                 sqlBuffer.append("ALTER TABLE ");
                 quotes.appendFQN(sqlBuffer, getEntity().getCatalog(), getEntity().getSchema(), getEntity().getName());
                 sqlBuffer.append(" ADD ");
                 boolean magnatory = column.isMandatory();
                 column.setMandatory(false);
-                adapter.createTableAppendColumn(sqlBuffer, column);
+                adapter.createTableAppendColumn(sqlBuffer, CompiledModel.column(column));
                 if(magnatory){
                     column.setMandatory(magnatory);
                 }
@@ -78,7 +79,7 @@ public class SybaseMergerTokenFactory extends DefaultMergerTokenFactory {
                 DbAdapter adapter = node.getAdapter();
 
                 StringBuilder sqlBuffer = new StringBuilder();
-                QuotingStrategy quotes = adapter.getQuotingStrategy(getEntity());
+                QuotingStrategy quotes = adapter.getQuotingStrategy(CompiledModel.table(getEntity()));
                 sqlBuffer.append("ALTER TABLE ");
                 quotes.appendFQN(sqlBuffer, getEntity().getCatalog(), getEntity().getSchema(), getEntity().getName());
                 sqlBuffer.append(" DROP ");
@@ -165,11 +166,11 @@ public class SybaseMergerTokenFactory extends DefaultMergerTokenFactory {
             DbEntity entity,
             DbAttribute column) {
         StringBuffer sqlBuffer = new StringBuffer();
-        QuotingStrategy quotes = adapter.getQuotingStrategy(entity);
+        QuotingStrategy quotes = adapter.getQuotingStrategy(CompiledModel.table(entity));
         sqlBuffer.append("ALTER TABLE ");
         quotes.appendFQN(sqlBuffer, entity.getCatalog(), entity.getSchema(), entity.getName());
         sqlBuffer.append(" MODIFY ");
-        adapter.createTableAppendColumn(sqlBuffer, column);
+        adapter.createTableAppendColumn(sqlBuffer, CompiledModel.column(column));
 
         return sqlBuffer;
     }

@@ -31,8 +31,8 @@ import org.apache.cayenne.exp.SubqueryExp;
 import org.apache.cayenne.exp.property.Property;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.compiled.TestMappings;
 import org.apache.cayenne.ql.ParseException;
 import org.apache.cayenne.query.resolved.ResolvedSelect;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -71,7 +71,7 @@ public class ObjectSelect_ParseTest {
         DataMap map = new DataMap("map");
         map.addObjEntity(new ObjEntity("Artist"));
         map.addDbEntity(new DbEntity("ARTIST"));
-        return query.resolve(new EntityResolver(List.of(map)));
+        return query.resolve(TestMappings.compile(map));
     }
 
     @Test

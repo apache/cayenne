@@ -21,7 +21,7 @@ package org.apache.cayenne.access.flush.operation;
 
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.compiled.CompiledTable;
 
 /**
  * @since 4.2
@@ -31,8 +31,8 @@ public class UpdateDbRowOp extends BaseDbRowOp implements DbRowOpWithValues, DbR
     protected final Values values;
     protected final Qualifier qualifier;
 
-    public UpdateDbRowOp(Persistent object, DbEntity entity, ObjectId id) {
-        super(object, entity, id);
+    public UpdateDbRowOp(Persistent object, CompiledTable table, ObjectId id) {
+        super(object, table, id);
         values = new Values(this, false);
         qualifier = new Qualifier(this);
     }

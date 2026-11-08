@@ -37,7 +37,7 @@ public abstract class _Lazyblob extends PersistentObject {
     public byte[] getLazyData() {
         beforePropertyRead("lazyData");
         if(this.lazyData instanceof Fault) {
-            this.lazyData = ((Fault) this.lazyData).resolveFault(this, "lazyData");
+            this.lazyData = ((Fault) this.lazyData).resolveFault(this);
         }
         return (byte[])this.lazyData;
     }

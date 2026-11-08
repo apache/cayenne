@@ -28,6 +28,7 @@ import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
+import static org.apache.cayenne.dba.AdhocTables.compile;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -52,7 +53,7 @@ public class MySQLAdapterIT {
         e.addAttribute(pk2);
 
         StringBuffer b1 = new StringBuffer();
-        adapter.createTableAppendPKClause(b1, e);
+        adapter.createTableAppendPKClause(b1, compile(e));
 
         assertTrue(b1.indexOf("PK1") > 0);
         assertTrue(b1.indexOf("PK2") > 0);
@@ -61,7 +62,7 @@ public class MySQLAdapterIT {
         pk2.setGenerated(true);
         
         StringBuffer b2 = new StringBuffer();
-        adapter.createTableAppendPKClause(b2, e);
+        adapter.createTableAppendPKClause(b2, compile(e));
 
         assertTrue(b2.indexOf("PK1") > 0);
         assertTrue(b2.indexOf("PK2") > 0);
@@ -85,7 +86,7 @@ public class MySQLAdapterIT {
         dblPrec2.setScale(6);
         e.addAttribute(dblPrec2);
 
-        String sql = adapter.createTable(e);
+        String sql = adapter.createTable(compile(e));
 
         // CAY-2694.
         assertTrue(sql.indexOf("TIME(6)") > 0);
@@ -108,7 +109,7 @@ public class MySQLAdapterIT {
         dblPrec2.setType(Types.TIME);
         e.addAttribute(dblPrec2);
 
-        String sql = adapter.createTable(e);
+        String sql = adapter.createTable(compile(e));
 
         // CAY-2694.
         assertTrue(sql.indexOf("TIME") > 0);
@@ -127,6 +128,6 @@ public class MySQLAdapterIT {
         c.setType(Types.VARCHAR);   // no max length -> unconstrained
         e.addAttribute(c);
 
-        assertEquals("CREATE TABLE Test (c longtext NULL) ENGINE=InnoDB", adapter.createTable(e));
+        assertEquals("CREATE TABLE Test (c longtext NULL) ENGINE=InnoDB", adapter.createTable(compile(e)));
     }
 }

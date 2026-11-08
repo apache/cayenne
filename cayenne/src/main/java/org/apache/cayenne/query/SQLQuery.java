@@ -24,13 +24,12 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.SelectResult;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.compiled.CompiledDataMap;
+import org.apache.cayenne.map.compiled.CompiledTable;
+import org.apache.cayenne.map.compiled.CompiledMapping;
+import org.apache.cayenne.map.compiled.CompiledEntity;
 import org.apache.cayenne.query.resolved.ResolvedQuery;
 import org.apache.cayenne.query.resolved.ResolvedSQL;
-import org.apache.cayenne.reflect.ClassDescriptor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -279,7 +278,7 @@ public class SQLQuery<T> implements Query<T> {
     }
 
     @Override
-    public ResolvedSQL resolve(EntityResolver resolver) {
+    public ResolvedSQL resolve(CompiledMapping mapping) {
         boolean typedColumns = resultColumnsTypes != null && !resultColumnsTypes.isEmpty();
         if (!useScalar && !isFetchingDataRows && typedColumns) {
             throw new CayenneRuntimeException(
@@ -291,28 +290,26 @@ public class SQLQuery<T> implements Query<T> {
 
         // the root: a persistent type or an entity name resolve to the query entity, a DataMap name to the DataMap
         // the query is routed to; without a root the query is routed by its DataNode name
-        ObjEntity entity = null;
-        DataMap dataMap = null;
+        CompiledEntity entity = null;
+        CompiledDataMap dataMap = null;
         if (persistentType != null) {
-            entity = resolver.getObjEntity(persistentType);
+            entity = mapping.entity(persistentType);
         } else if (entityName != null) {
-            entity = resolver.getObjEntity(entityName);
+            entity = mapping.entity(entityName);
         } else if (dataMapName != null) {
-            dataMap = resolver.getDataMap(dataMapName);
+            dataMap = mapping.schema().map(dataMapName);
             if (dataMap == null) {
                 throw new CayenneRuntimeException("Invalid dataMapName '%s'", dataMapName);
             }
         }
 
-        DbEntity dbEntity = null;
-        ClassDescriptor descriptor = null;
+        CompiledTable table = null;
         if (entity != null) {
-            dbEntity = entity.getDbEntity();
-            dataMap = entity.getDataMap();
-            descriptor = resolver.getClassDescriptor(entity.getName());
+            table = entity.table();
+            dataMap = entity.map();
         }
 
-        ResultSegments resultSegments = resolveResultSegments(resolver, typedColumns);
+        ResultSegments resultSegments = resolveResultSegments(mapping, typedColumns);
 
         String sql = !this.sql.isEmpty() ? this.sql.toString() : null;
         Map<String, Object> params = this.params != null ? this.params : Collections.emptyMap();
@@ -323,7 +320,7 @@ public class SQLQuery<T> implements Query<T> {
                 ? this.cacheStrategy
                 : QueryCacheStrategy.getDefaultStrategy();
         String cacheKey = cacheStrategy != QueryCacheStrategy.NO_CACHE
-                ? cacheKey(entity, dbEntity, sql, params, positionalParams)
+                ? cacheKey(entity, table, sql, params, positionalParams)
                 : null;
 
         Map<String, String> dialects = new HashMap<>();
@@ -331,7 +328,7 @@ public class SQLQuery<T> implements Query<T> {
             sqlDialects.forEach((adapter, dialect) -> dialects.put(adapter, dialect.toString()));
         }
 
-        return new ResolvedSQL(this, entity, dbEntity, dataMap, descriptor, dataNodeName, sql, dialects,
+        return new ResolvedSQL(this, entity, table, dataMap, dataNodeName, sql, dialects,
                 params, positionalParams, columnNameCaps, returnGeneratedKeys,
                 resultColumnsTypes != null ? resultColumnsTypes : Collections.emptyList(),
                 useScalar, isFetchingDataRows, limit, offset, pageSize, statementFetchSize, queryTimeout,
@@ -344,14 +341,14 @@ public class SQLQuery<T> implements Query<T> {
      * declared types (meaning "one scalar per ResultSet column", to be resolved at execution), or null for objects
      * and DataRows.
      */
-    private ResultSegments resolveResultSegments(EntityResolver resolver, boolean typedColumns) {
+    private ResultSegments resolveResultSegments(CompiledMapping mapping, boolean typedColumns) {
         List<ResultSegment> segments;
         if (typedColumns && useScalar) {
             SQLResult result = new SQLResult();
             for (int i = 0; i < resultColumnsTypes.size(); i++) {
                 result.addColumnResult(String.valueOf(i));
             }
-            segments = result.getResolvedComponents(resolver);
+            segments = result.getResolvedComponents(mapping);
         } else {
             segments = useScalar ? Collections.emptyList() : null;
         }
@@ -364,8 +361,8 @@ public class SQLQuery<T> implements Query<T> {
      * Creates a unique key based on entity, SQL, and parameters.
      */
     private String cacheKey(
-            ObjEntity entity,
-            DbEntity dbEntity,
+            CompiledEntity entity,
+            CompiledTable table,
             String sql,
             Map<String, Object> parameters,
             List<Object> positionalParameters) {
@@ -373,9 +370,9 @@ public class SQLQuery<T> implements Query<T> {
         StringBuilder key = new StringBuilder();
 
         if (entity != null) {
-            key.append(entity.getName());
-        } else if (dbEntity != null) {
-            key.append("db:").append(dbEntity.getName());
+            key.append(entity.name());
+        } else if (table != null) {
+            key.append("db:").append(table.name());
         }
 
         if (sql != null) {

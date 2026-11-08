@@ -21,17 +21,18 @@ package org.apache.cayenne.access.dbsync;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DbGenerator;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.log.SQLLogger;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.compiled.CompiledSchema;
+import org.apache.cayenne.map.compiled.CompiledTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -42,32 +43,36 @@ public class CreateIfNoSchemaStrategy implements SchemaUpdateStrategy {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(CreateIfNoSchemaStrategy.class);
 
+    protected final SQLLogger sqlLogger;
+
+    public CreateIfNoSchemaStrategy(@Inject SQLLogger sqlLogger) {
+        this.sqlLogger = sqlLogger;
+    }
+
     @Override
-    public void updateSchema(DbAdapter adapter, DataSource dataSource, Collection<DataMap> dataMaps, SQLLogger logger)
+    public void updateSchema(DbAdapter adapter, DataSource dataSource, CompiledSchema schema, String... dataMaps)
             throws SQLException {
 
         Set<String> tablesInDB = tablesInDB(adapter, dataSource);
         boolean generate = true;
-        for (DataMap map : dataMaps) {
-            for (DbEntity entity : map.getDbEntities()) {
-                if (isInDB(tablesInDB, entity)) {
-                    generate = false;
-                    break;
-                }
+        for (CompiledTable table : ThrowOnPartialSchemaStrategy.tablesOf(schema, dataMaps)) {
+            if (isInDB(tablesInDB, table)) {
+                generate = false;
+                break;
             }
         }
 
         if (generate) {
             LOGGER.info("No schema detected, will create mapped tables");
-            generate(adapter, dataSource, dataMaps, logger);
+            generate(adapter, dataSource, schema, dataMaps);
         } else {
             LOGGER.info("Full or partial schema detected, skipping tables creation");
         }
     }
 
-    private void generate(DbAdapter adapter, DataSource dataSource, Collection<DataMap> dataMaps, SQLLogger logger) {
-        for (DataMap map : dataMaps) {
-            DbGenerator gen = new DbGenerator(adapter, map, logger);
+    private void generate(DbAdapter adapter, DataSource dataSource, CompiledSchema schema, String... dataMaps) {
+        for (String map : dataMaps) {
+            DbGenerator gen = new DbGenerator(adapter, schema, map, List.of(), List.of(dataMaps), sqlLogger);
             gen.setShouldCreateTables(true);
             gen.setShouldDropTables(false);
             gen.setShouldCreateFKConstraints(true);
@@ -83,13 +88,13 @@ public class CreateIfNoSchemaStrategy implements SchemaUpdateStrategy {
 
     // same table matching rule as SchemaAnalyzer: unquoted identifiers may be folded by the DB to upper or lower case
     // (e.g. PostgreSQL folds to lower case), quoted identifiers are stored as is
-    private static boolean isInDB(Set<String> tablesInDB, DbEntity entity) {
-        String name = entity.getName();
+    private static boolean isInDB(Set<String> tablesInDB, CompiledTable table) {
+        String name = table.name();
         if (tablesInDB.contains(name)) {
             return true;
         }
 
-        return !entity.getDataMap().isQuotingSQLIdentifiers()
+        return !table.map().quotingSQLIdentifiers()
                 && (tablesInDB.contains(name.toLowerCase()) || tablesInDB.contains(name.toUpperCase()));
     }
 

@@ -18,15 +18,16 @@
  ****************************************************************/
 package org.apache.cayenne.crypto.map;
 
-import org.apache.cayenne.map.DbAttribute;
-
 /**
  * @since 4.0
  */
 public interface ColumnMapper {
 
     /**
-     * Returns true if a given DbAttribute is encrypted.
+     * Returns true if the given column of the given table holds encrypted values. The decision is made by names, as
+     * it is needed both when the DataMaps are loaded and at runtime, on the compiled mapping.
+     *
+     * @since 6.0
      */
-    boolean isEncrypted(DbAttribute column);
+    boolean isEncrypted(String tableName, String columnName);
 }

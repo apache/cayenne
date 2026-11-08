@@ -21,7 +21,7 @@ package org.apache.cayenne.dba.postgres;
 
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.jdbc.DataNodeBatchAction;
-import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.compiled.CompiledColumn;
 import org.apache.cayenne.access.translator.TranslatedBatch;
 
 import java.sql.Connection;
@@ -42,13 +42,13 @@ public class PostgresBatchAction extends DataNodeBatchAction {
     @Override
     protected PreparedStatement prepareStatement(Connection connection, boolean generatedKeys) throws SQLException {
         if (generatedKeys) {
-            Collection<DbAttribute> generatedAttributes = query.dbEntity().getGeneratedAttributes();
-            String[] generatedPKColumns = new String[generatedAttributes.size()];
+            Collection<CompiledColumn> generatedColumns = query.table().generatedColumns();
+            String[] generatedPKColumns = new String[generatedColumns.size()];
 
             int i = 0;
-            for (DbAttribute generatedAttribute : generatedAttributes) {
-                if (generatedAttribute.isPrimaryKey()) {
-                    generatedPKColumns[i++] = generatedAttribute.getName().toLowerCase();
+            for (CompiledColumn generatedColumn : generatedColumns) {
+                if (generatedColumn.isPrimaryKey()) {
+                    generatedPKColumns[i++] = generatedColumn.name().toLowerCase();
                 }
             }
 

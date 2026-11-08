@@ -23,6 +23,7 @@ import java.io.IOException;
 
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.map.Entity;
+import org.apache.cayenne.map.compiled.CompiledEntity;
 import org.apache.cayenne.reflect.PropertyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,11 +42,12 @@ public final class ObjPathExp extends PathExp {
 
 	@Override
 	protected Object evaluateNode(Object o) throws Exception {
-		return (o instanceof Persistent)
-				? ((Persistent) o).readNestedProperty(path)
-				: (o instanceof Entity)
-					? evaluateEntityNode((Entity<?,?,?>) o)
-					: PropertyUtils.getProperty(o, path);
+		return switch (o) {
+			case Persistent persistent -> persistent.readNestedProperty(path);
+			case CompiledEntity entity -> evaluateEntityNode(entity);
+			case Entity<?, ?, ?> entity -> evaluateEntityNode(entity);
+			default -> PropertyUtils.getProperty(o, path);
+		};
 	}
 
 	/**

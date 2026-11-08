@@ -37,7 +37,10 @@ import org.apache.cayenne.dba.sqlserver.SQLServerAdapter;
 import org.apache.cayenne.dba.sybase.SybaseAdapter;
 import org.apache.cayenne.exp.ExtractExp;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.compiled.CompiledDataMap;
+import org.apache.cayenne.map.compiled.CompiledTable;
+import org.apache.cayenne.map.compiled.CompiledMapping;
+import org.apache.cayenne.map.compiled.CompiledProcedure;
 import org.apache.cayenne.map.Procedure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -118,12 +121,14 @@ public abstract class TestDbAdapter {
     /**
      * Drops all table constraints.
      */
-    public void willDropTables(Connection conn, DataMap map, Collection<String> tablesToDrop) throws Exception {
-        dropConstraints(conn, map, tablesToDrop);
+    public void willDropTables(Connection conn, CompiledMapping mapping, CompiledDataMap map, Collection<String> tablesToDrop)
+            throws Exception {
+        dropConstraints(conn, mapping, map, tablesToDrop);
     }
 
-    protected void dropConstraints(Connection conn, DataMap map, Collection<String> tablesToDrop) throws Exception {
-        Map<String, Collection<String>> constraintsMap = getConstraints(conn, map, tablesToDrop);
+    protected void dropConstraints(Connection conn, CompiledMapping mapping, CompiledDataMap map, Collection<String> tablesToDrop)
+            throws Exception {
+        Map<String, Collection<String>> constraintsMap = getConstraints(conn, mapping, map, tablesToDrop);
 
         for (Map.Entry<String, Collection<String>> entry : constraintsMap.entrySet()) {
 
@@ -133,16 +138,16 @@ public abstract class TestDbAdapter {
             }
 
             Object tableName = entry.getKey();
-            DbEntity entity = map.getDbEntity(tableName.toString());
-            if (entity == null) {
+            CompiledTable table = table(mapping, map, tableName.toString());
+            if (table == null) {
                 continue;
             }
 
-            QuotingStrategy quotes = adapter.getQuotingStrategy(entity);
+            QuotingStrategy quotes = adapter.getQuotingStrategy(table);
 
             for (String constraint : constraints) {
                 String drop = "ALTER TABLE "
-                        + quotes.quotedFQN(entity.getCatalog(), entity.getSchema(), entity.getName()) +
+                        + quotes.quotedFQN(table.catalog(), table.schema(), table.name()) +
                         " DROP CONSTRAINT "
                         + getIdentifiersStartQuote() + constraint + getIdentifiersEndQuote();
                 executeDDL(conn, drop);
@@ -213,8 +218,8 @@ public abstract class TestDbAdapter {
         return supportsLobs();
     }
 
-    public boolean supportsFKConstraints(DbEntity entity) {
-        return !"FK_OF_DIFFERENT_TYPE".equals(entity.getName());
+    public boolean supportsFKConstraints(CompiledTable table) {
+        return !"FK_OF_DIFFERENT_TYPE".equals(table.name());
     }
 
     public boolean supportsFKConstraints() {
@@ -311,10 +316,10 @@ public abstract class TestDbAdapter {
     }
 
     /**
-     * Returns a map of database constraints with DbEntity names used as keys,
+     * Returns a map of database constraints with table names used as keys,
      * and Collections of constraint names as values.
      */
-    protected Map<String, Collection<String>> getConstraints(Connection conn, DataMap map,
+    protected Map<String, Collection<String>> getConstraints(Connection conn, CompiledMapping mapping, CompiledDataMap map,
                                                              Collection<String> includeTables) throws SQLException {
 
         Map<String, Collection<String>> constraintMap = new HashMap<>();
@@ -322,13 +327,13 @@ public abstract class TestDbAdapter {
         DatabaseMetaData metadata = conn.getMetaData();
 
         for (String name : includeTables) {
-            DbEntity entity = map.getDbEntity(name);
-            if (entity == null) {
+            CompiledTable table = table(mapping, map, name);
+            if (table == null) {
                 continue;
             }
 
             // Get all constraints for the table
-            try (ResultSet rs = metadata.getExportedKeys(entity.getCatalog(), entity.getSchema(), entity.getName())) {
+            try (ResultSet rs = metadata.getExportedKeys(table.catalog(), table.schema(), table.name())) {
                 while (rs.next()) {
                     String fk = rs.getString("FK_NAME");
                     String fkTable = rs.getString("FKTABLE_NAME");
@@ -344,6 +349,22 @@ public abstract class TestDbAdapter {
         }
 
         return constraintMap;
+    }
+
+    /**
+     * Returns a table of the map by name, or null if the map has no such table.
+     */
+    protected static CompiledTable table(CompiledMapping mapping, CompiledDataMap map, String name) {
+        CompiledTable table = mapping.schema().table(name);
+        return table != null && table.map() == map ? table : null;
+    }
+
+    /**
+     * Returns true if the map declares a procedure with the given name.
+     */
+    protected static boolean hasProcedure(CompiledMapping mapping, CompiledDataMap map, String name) {
+        CompiledProcedure procedure = mapping.schema().procedure(name);
+        return procedure != null && procedure.map() == map;
     }
 
     public boolean isLowerCaseNames() {

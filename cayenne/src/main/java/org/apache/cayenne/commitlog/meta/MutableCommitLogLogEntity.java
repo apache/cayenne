@@ -21,9 +21,9 @@ package org.apache.cayenne.commitlog.meta;
 import java.util.Collection;
 import java.util.HashSet;
 
-import org.apache.cayenne.map.ObjAttribute;
-import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.map.compiled.CompiledAttribute;
+import org.apache.cayenne.map.compiled.CompiledEntity;
+import org.apache.cayenne.map.compiled.CompiledRelationship;
 
 /**
  * @since 4.0
@@ -32,9 +32,9 @@ public class MutableCommitLogLogEntity implements CommitLogEntity {
 
 	private Collection<String> ignoredProperties;
 	private Collection<String> confidentialProperties;
-	private ObjEntity entity;
+	private CompiledEntity entity;
 
-	public MutableCommitLogLogEntity(ObjEntity entity) {
+	public MutableCommitLogLogEntity(CompiledEntity entity) {
 		this.entity = entity;
 		this.ignoredProperties = new HashSet<>();
 		this.confidentialProperties = new HashSet<>();
@@ -78,8 +78,8 @@ public class MutableCommitLogLogEntity implements CommitLogEntity {
 
 	MutableCommitLogLogEntity setIgnoreAttributes(boolean ignore) {
 		if (ignore) {
-			for (ObjAttribute a : entity.getAttributes()) {
-				this.ignoredProperties.add(a.getName());
+			for (CompiledAttribute a : entity.attributes()) {
+				this.ignoredProperties.add(a.name());
 			}
 		}
 
@@ -88,9 +88,9 @@ public class MutableCommitLogLogEntity implements CommitLogEntity {
 
 	MutableCommitLogLogEntity setIgnoreToOneRelationships(boolean ignore) {
 		if (ignore) {
-			for (ObjRelationship r : entity.getRelationships()) {
+			for (CompiledRelationship r : entity.relationships()) {
 				if (!r.isToMany()) {
-					this.ignoredProperties.add(r.getName());
+					this.ignoredProperties.add(r.name());
 				}
 			}
 		}
@@ -100,9 +100,9 @@ public class MutableCommitLogLogEntity implements CommitLogEntity {
 
 	MutableCommitLogLogEntity setIgnoreToManyRelationships(boolean ignore) {
 		if (ignore) {
-			for (ObjRelationship r : entity.getRelationships()) {
+			for (CompiledRelationship r : entity.relationships()) {
 				if (r.isToMany()) {
-					this.ignoredProperties.add(r.getName());
+					this.ignoredProperties.add(r.name());
 				}
 			}
 		}

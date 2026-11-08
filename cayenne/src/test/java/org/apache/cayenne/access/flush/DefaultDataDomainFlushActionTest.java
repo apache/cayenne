@@ -32,9 +32,8 @@ import org.apache.cayenne.access.flush.operation.DbRowOp;
 import org.apache.cayenne.access.flush.operation.DeleteDbRowOp;
 import org.apache.cayenne.access.flush.operation.InsertDbRowOp;
 import org.apache.cayenne.access.flush.operation.UpdateDbRowOp;
-import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.compiled.CompiledTable;
+import org.apache.cayenne.unit.CompiledTables;
 import org.apache.cayenne.query.resolved.DeleteBatch;
 import org.apache.cayenne.query.resolved.InsertBatch;
 import org.apache.cayenne.query.resolved.ResolvedBatch;
@@ -59,8 +58,8 @@ public class DefaultDataDomainFlushActionTest {
         ObjectId id9  = ObjectId.of("test2", "id", 4);
         ObjectId id10 = ObjectId.of("test",  "id", 6);
 
-        DbEntity test = mockEntity("test");
-        DbEntity test2 = mockEntity("test2");
+        CompiledTable test = mockEntity("test");
+        CompiledTable test2 = mockEntity("test2");
         BaseDbRowOp[] op = new BaseDbRowOp[10];
         op[0] = new InsertDbRowOp(mockObject(id1),  test2, id1); // +
         op[1] = new InsertDbRowOp(mockObject(id2),  test,  id2); // -
@@ -101,8 +100,8 @@ public class DefaultDataDomainFlushActionTest {
         ObjectId id4  = ObjectId.of("db:test");
         id4.getReplacementIdMap().put("id", 2);
 
-        DbEntity test = mockEntity("test");
-        DbEntity test2 = mockEntity("test2");
+        CompiledTable test = mockEntity("test");
+        CompiledTable test2 = mockEntity("test2");
         BaseDbRowOp[] op = new BaseDbRowOp[4];
         op[0] = new InsertDbRowOp(mockObject(id1),  test2, id1); // +
         op[1] = new InsertDbRowOp(mockObject(id2),  test,  id2); // -
@@ -133,8 +132,8 @@ public class DefaultDataDomainFlushActionTest {
         ObjectId id6  = ObjectId.of("test2", "id", 6);
         ObjectId id7  = ObjectId.of("test",  "id", 7);
 
-        DbEntity test = mockEntity("test");
-        DbEntity test2 = mockEntity("test2");
+        CompiledTable test = mockEntity("test");
+        CompiledTable test2 = mockEntity("test2");
 
         List<DbRowOp> ops = new ArrayList<>();
         ops.add(new InsertDbRowOp(mockObject(id1),  test,  id1));
@@ -152,33 +151,33 @@ public class DefaultDataDomainFlushActionTest {
         assertEquals(4, queries.size());
         assertInstanceOf(InsertBatch.class, queries.get(0));
         InsertBatch insert1 = (InsertBatch)queries.get(0);
-        assertSame(test, insert1.dbEntity());
+        assertSame(test, insert1.table());
         assertEquals(2, insert1.rows().size());
 
         assertInstanceOf(InsertBatch.class, queries.get(1));
         InsertBatch insert2 = (InsertBatch)queries.get(1);
-        assertSame(test2, insert2.dbEntity());
+        assertSame(test2, insert2.table());
         assertEquals(2, insert2.rows().size());
 
         assertInstanceOf(DeleteBatch.class, queries.get(2));
         DeleteBatch delete1 = (DeleteBatch)queries.get(2);
-        assertSame(test2, delete1.dbEntity());
+        assertSame(test2, delete1.table());
         assertEquals(1, delete1.rows().size());
 
         assertInstanceOf(DeleteBatch.class, queries.get(3));
         DeleteBatch delete2 = (DeleteBatch)queries.get(3);
-        assertSame(test, delete2.dbEntity());
+        assertSame(test, delete2.table());
         assertEquals(1, delete2.rows().size());
     }
 
     @Test
     public void dontMergeSameTableNameOnDifferentDataMaps() {
-        DbEntity test1Datamap1 = mockEntity("test1", "datamap1");
-        DbEntity test1Datamap2 = mockEntity("test1", "datamap2");
-        DbEntity test2Datamap1 = mockEntity("test2", "datamap1");
-        DbEntity test2Datamap2 = mockEntity("test2", "datamap2");
-        DbEntity test3Datamap1 = mockEntity("test3", "datamap1");
-        DbEntity test3Datamap2 = mockEntity("test3", "datamap2");
+        CompiledTable test1Datamap1 = mockEntity("test1", "datamap1");
+        CompiledTable test1Datamap2 = mockEntity("test1", "datamap2");
+        CompiledTable test2Datamap1 = mockEntity("test2", "datamap1");
+        CompiledTable test2Datamap2 = mockEntity("test2", "datamap2");
+        CompiledTable test3Datamap1 = mockEntity("test3", "datamap1");
+        CompiledTable test3Datamap2 = mockEntity("test3", "datamap2");
 
         ObjectId id1 = ObjectId.of("test1", "id", 1);
         ObjectId id2 = ObjectId.of("test1", "id", 2);
@@ -188,12 +187,12 @@ public class DefaultDataDomainFlushActionTest {
         ObjectId id6 = ObjectId.of("test3", "id", 6);
 
         UpdateDbRowOp update1 = new UpdateDbRowOp(mockObject(id3), test2Datamap1, id3);
-        update1.getValues().addValue(new DbAttribute("attr"), "abc", false);
-        update1.getValues().addValue(new DbAttribute("attr"), "abc", false);
+        update1.getValues().addValue(test2Datamap1.column("attr"), "abc", false);
+        update1.getValues().addValue(test2Datamap1.column("attr"), "abc", false);
 
         UpdateDbRowOp update2 = new UpdateDbRowOp(mockObject(id4), test2Datamap2, id4);
-        update2.getValues().addValue(new DbAttribute("attr"), "def", false);
-        update2.getValues().addValue(new DbAttribute("attr"), "def", false);
+        update2.getValues().addValue(test2Datamap2.column("attr"), "def", false);
+        update2.getValues().addValue(test2Datamap2.column("attr"), "def", false);
         List<DbRowOp> ops = List.of(
                 new InsertDbRowOp(mockObject(id1), test1Datamap1, id1),
                 new InsertDbRowOp(mockObject(id2), test1Datamap2, id2),
@@ -217,18 +216,11 @@ public class DefaultDataDomainFlushActionTest {
         return persistent;
     }
 
-    private DbEntity mockEntity(String name) {
-        return mockEntity(name, "defaultMap");
+    private CompiledTable mockEntity(String name) {
+        return CompiledTables.table(name);
     }
 
-    private DbEntity mockEntity(String name, String datamapName) {
-        DbAttribute attribute1 = new DbAttribute("id");
-        attribute1.setPrimaryKey(true);
-        DbAttribute attribute2 = new DbAttribute("attr");
-        DbEntity testEntity = new DbEntity(name);
-        testEntity.addAttribute(attribute1);
-        testEntity.addAttribute(attribute2);
-        testEntity.setDataMap(new DataMap(datamapName));
-        return testEntity;
+    private CompiledTable mockEntity(String name, String datamapName) {
+        return CompiledTables.table(name, datamapName);
     }
 }

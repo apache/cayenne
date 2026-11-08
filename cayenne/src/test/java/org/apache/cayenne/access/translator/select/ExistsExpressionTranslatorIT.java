@@ -20,8 +20,8 @@
 package org.apache.cayenne.access.translator.select;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
-import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.compiled.CompiledTable;
+import org.apache.cayenne.map.compiled.CompiledEntity;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.apache.cayenne.query.resolved.ResolvedQueries;
@@ -44,10 +44,10 @@ public class ExistsExpressionTranslatorIT {
     @BeforeEach
     public void setUp() {
         translatorContext = mock(SelectTranslatorContext.class);
-        DbEntity dbArtist = env.context().getEntityResolver().getDbEntity("ARTIST");
-        ObjEntity objArtist = env.context().getEntityResolver().getObjEntity("Artist");
-        when(translatorContext.getRootDbEntity()).thenReturn(dbArtist);
-        when(translatorContext.getSelect()).thenReturn(ResolvedQueries.select(objArtist, dbArtist));
+        CompiledTable artistTable = env.mapping().schema().table("ARTIST");
+        CompiledEntity artist = env.mapping().entity("Artist");
+        when(translatorContext.getRootDbEntity()).thenReturn(artistTable);
+        when(translatorContext.getSelect()).thenReturn(ResolvedQueries.select(artist, artistTable));
     }
 
     @Test
@@ -140,9 +140,9 @@ public class ExistsExpressionTranslatorIT {
         Expression exp = ExpressionFactory.exp("db:PAINTINGS").exists();
 
         translatorContext = mock(SelectTranslatorContext.class);
-        DbEntity dbArtist = env.context().getEntityResolver().getDbEntity("ARTIST");
-        when(translatorContext.getRootDbEntity()).thenReturn(dbArtist);
-        when(translatorContext.getSelect()).thenReturn(ResolvedQueries.select(null, dbArtist));
+        CompiledTable artistTable = env.mapping().schema().table("ARTIST");
+        when(translatorContext.getRootDbEntity()).thenReturn(artistTable);
+        when(translatorContext.getSelect()).thenReturn(ResolvedQueries.select(null, artistTable));
 
         Expression translated = new ExistsExpressionTranslator(translatorContext, exp).translate();
 

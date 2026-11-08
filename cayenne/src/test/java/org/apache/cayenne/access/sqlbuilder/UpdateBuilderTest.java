@@ -21,7 +21,7 @@ package org.apache.cayenne.access.sqlbuilder;
 
 import org.apache.cayenne.access.sqlbuilder.sqltree.Node;
 import org.apache.cayenne.access.sqlbuilder.sqltree.UpdateNode;
-import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.compiled.CompiledTable;
 import org.junit.jupiter.api.Test;
 
 import static org.apache.cayenne.access.sqlbuilder.SQLBuilder.*;
@@ -39,9 +39,8 @@ public class UpdateBuilderTest extends BaseSqlBuilderTest {
 
     @Test
     public void updateDbEntityCatalog() {
-        DbEntity entity = new DbEntity("test");
-        entity.setCatalog("catalog");
-        UpdateBuilder builder = new UpdateBuilder(entity);
+        CompiledTable table = compiledTable("test", "catalog", null);
+        UpdateBuilder builder = new UpdateBuilder(table);
         Node node = builder.build();
         assertInstanceOf(UpdateNode.class, node);
         assertSQL("UPDATE catalog.test", node);
@@ -50,10 +49,8 @@ public class UpdateBuilderTest extends BaseSqlBuilderTest {
 
     @Test
     public void updateDbEntityCatalogAndSchema() {
-        DbEntity entity = new DbEntity("test");
-        entity.setSchema("schema");
-        entity.setCatalog("catalog");
-        UpdateBuilder builder = new UpdateBuilder(entity);
+        CompiledTable table = compiledTable("test", "catalog", "schema");
+        UpdateBuilder builder = new UpdateBuilder(table);
         Node node = builder.build();
         assertInstanceOf(UpdateNode.class, node);
         assertSQL("UPDATE catalog.schema.test", node);

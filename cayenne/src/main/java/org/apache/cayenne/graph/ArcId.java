@@ -22,7 +22,7 @@ package org.apache.cayenne.graph;
 import java.util.Objects;
 
 import org.apache.cayenne.exp.DbPathExp;
-import org.apache.cayenne.reflect.ArcProperty;
+import org.apache.cayenne.map.compiled.CompiledRelationship;
 
 /**
  * Object that represents Arc identifier.
@@ -35,11 +35,11 @@ public class ArcId {
     private final String forwardArc;
     private final String reverseArc;
 
-    public ArcId(ArcProperty property) {
-        this.forwardArc = property.getName();
-        this.reverseArc = property.getComplementaryReverseArc() == null
-                ? DbPathExp.DB_PREFIX + property.getComplementaryReverseDbRelationshipPath()
-                : property.getComplementaryReverseArc().getName();
+    public ArcId(CompiledRelationship relationship) {
+        this.forwardArc = relationship.name();
+        this.reverseArc = relationship.reverse() == null
+                ? DbPathExp.DB_PREFIX + relationship.reverseDbPath().value()
+                : relationship.reverse().name();
     }
 
     public ArcId(String forwardArc, String reverseArc) {

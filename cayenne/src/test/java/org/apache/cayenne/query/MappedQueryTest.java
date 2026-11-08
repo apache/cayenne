@@ -24,13 +24,15 @@ import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.SubqueryExp;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.NamedProcedureQuery;
 import org.apache.cayenne.map.NamedQuery;
 import org.apache.cayenne.map.NamedSQLQuery;
 import org.apache.cayenne.map.NamedSelectQuery;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
+import org.apache.cayenne.map.compiled.CompiledMapping;
+import org.apache.cayenne.map.compiled.CompiledQuery;
+import org.apache.cayenne.map.compiled.TestMappings;
 import org.apache.cayenne.ql.ParsedObjectSelect;
 import org.apache.cayenne.query.resolved.ResolvedProcedure;
 import org.apache.cayenne.query.resolved.ResolvedQuery;
@@ -59,43 +61,57 @@ public class MappedQueryTest {
         return namedQuery;
     }
 
-    private static EntityResolver resolver(DataMap map, NamedQuery namedQuery) {
-        map.addNamedQuery(namedQuery);
-        return new EntityResolver(List.of(map));
+    private static CompiledMapping mapping(DataMap... maps) {
+        return TestMappings.compile(maps);
     }
 
-    private static EntityResolver fakeRootResolver() {
+    private static CompiledMapping mapping(DataMap map, NamedQuery namedQuery) {
+        map.addNamedQuery(namedQuery);
+        return mapping(map);
+    }
+
+    private static CompiledMapping fakeRootMapping() {
         DataMap map = new DataMap("map");
         map.addObjEntity(new ObjEntity("FakeRoot"));
-        return new EntityResolver(List.of(map));
+        return mapping(map);
     }
 
-    private static EntityResolver procedureResolver(String procedureName) {
+    private static CompiledMapping procedureMapping(String procedureName) {
         DataMap map = new DataMap("m");
         map.addProcedure(new Procedure(procedureName));
-        return new EntityResolver(List.of(map));
+        return mapping(map);
+    }
+
+    // compiles the query within its map, or an ad hoc one, as the runtime only sees compiled queries
+    private static CompiledQuery compiled(NamedQuery namedQuery) {
+        if (namedQuery.getName() == null) {
+            namedQuery.setName("q");
+        }
+        DataMap map = namedQuery.getDataMap() != null ? namedQuery.getDataMap() : new DataMap("m");
+        map.addNamedQuery(namedQuery);
+        return mapping(map).query(namedQuery.getName());
     }
 
     private static Query<?> build(NamedQuery namedQuery) {
-        return MappedQuery.query("q").resolveNamedQuery(namedQuery);
+        return MappedQuery.query("q").resolveNamedQuery(compiled(namedQuery));
     }
 
     private static Query<?> build(NamedQuery namedQuery, Map<String, ?> params) {
-        return MappedQuery.query("q").params(params).resolveNamedQuery(namedQuery);
+        return MappedQuery.query("q").params(params).resolveNamedQuery(compiled(namedQuery));
     }
 
     @Test
     public void resolve() {
         DataMap map = new DataMap("m");
         map.addObjEntity(new ObjEntity("FakeRoot"));
-        EntityResolver resolver = resolver(map, selectQuery("from FakeRoot limit 5"));
+        CompiledMapping mapping = mapping(map, selectQuery("from FakeRoot limit 5"));
 
-        ResolvedQuery resolved = MappedQuery.query("q").resolve(resolver);
+        ResolvedQuery resolved = MappedQuery.query("q").resolve(mapping);
         assertInstanceOf(ResolvedSelect.class, resolved);
         assertEquals(5, resolved.fetchLimit());
 
         CayenneRuntimeException e = assertThrows(CayenneRuntimeException.class,
-                () -> MappedQuery.query("unknown").resolve(resolver));
+                () -> MappedQuery.query("unknown").resolve(mapping));
         assertTrue(e.getUnlabeledMessage().contains("Unknown query name"), e.getUnlabeledMessage());
     }
 
@@ -166,7 +182,7 @@ public class MappedQueryTest {
 
         ObjectSelect<?> query = (ObjectSelect<?>) build(namedQuery);
         assertEquals("ARTIST", query.dbEntityName);
-        assertTrue(query.resolve(new EntityResolver(List.of(map))).fetchingDataRows());
+        assertTrue(query.resolve(mapping(map)).fetchingDataRows());
     }
 
     @Test
@@ -197,7 +213,7 @@ public class MappedQueryTest {
         assertEquals("select distinct self from FakeRoot limit 5 offset 2", query.toQL());
 
         // the settings that the query String has no syntax for are only visible once the query is resolved
-        ResolvedSelect resolved = query.resolve(fakeRootResolver());
+        ResolvedSelect resolved = query.resolve(fakeRootMapping());
         assertEquals(5, resolved.fetchLimit());
         assertEquals(2, resolved.fetchOffset());
         assertEquals(10, resolved.pageSize());
@@ -212,7 +228,7 @@ public class MappedQueryTest {
         ObjectSelect<?> query = (ObjectSelect<?>) build(selectQuery("from FakeRoot"));
         assertEquals("from FakeRoot", query.toQL());
 
-        ResolvedSelect resolved = query.resolve(fakeRootResolver());
+        ResolvedSelect resolved = query.resolve(fakeRootMapping());
         assertEquals(0, resolved.pageSize());
         assertEquals(0, resolved.statementFetchSize());
         assertFalse(resolved.fetchingDataRows());
@@ -235,9 +251,9 @@ public class MappedQueryTest {
                 .statementFetchSize(60)
                 .queryTimeout(7)
                 .forceNoCache()
-                .resolveNamedQuery(namedQuery);
+                .resolveNamedQuery(compiled(namedQuery));
 
-        ResolvedSelect resolved = query.resolve(fakeRootResolver());
+        ResolvedSelect resolved = query.resolve(fakeRootMapping());
         assertEquals(50, resolved.fetchLimit());
         assertEquals(20, resolved.fetchOffset());
         assertEquals(100, resolved.pageSize());
@@ -250,12 +266,12 @@ public class MappedQueryTest {
     @Test
     public void forceNoCacheOfNonCachingQuery() {
         NamedSelectQuery namedQuery = selectQuery("from FakeRoot");
-        ObjectSelect<?> query = (ObjectSelect<?>) MappedQuery.query("q").forceNoCache().resolveNamedQuery(namedQuery);
-        assertEquals(QueryCacheStrategy.NO_CACHE, query.resolve(fakeRootResolver()).cacheStrategy());
+        ObjectSelect<?> query = (ObjectSelect<?>) MappedQuery.query("q").forceNoCache().resolveNamedQuery(compiled(namedQuery));
+        assertEquals(QueryCacheStrategy.NO_CACHE, query.resolve(fakeRootMapping()).cacheStrategy());
 
         namedQuery.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
-        query = (ObjectSelect<?>) MappedQuery.query("q").forceNoCache().resolveNamedQuery(namedQuery);
-        assertEquals(QueryCacheStrategy.LOCAL_CACHE_REFRESH, query.resolve(fakeRootResolver()).cacheStrategy());
+        query = (ObjectSelect<?>) MappedQuery.query("q").forceNoCache().resolveNamedQuery(compiled(namedQuery));
+        assertEquals(QueryCacheStrategy.LOCAL_CACHE_REFRESH, query.resolve(fakeRootMapping()).cacheStrategy());
     }
 
     // ---- NamedSQLQuery ----
@@ -266,12 +282,12 @@ public class MappedQueryTest {
         namedQuery.setSql("abc");
 
         SQLQuery<?> query = assertInstanceOf(SQLQuery.class, build(namedQuery));
-        assertEquals("abc", query.resolve(new EntityResolver()).defaultTemplate());
+        assertEquals("abc", query.resolve(mapping()).defaultTemplate());
     }
 
     @Test
     public void sqlRoot() {
-        DataMap map = new DataMap();
+        DataMap map = new DataMap("m");
         DbEntity table = new DbEntity("A_T");
         map.addDbEntity(table);
         ObjEntity entity = new ObjEntity("A");
@@ -281,9 +297,10 @@ public class MappedQueryTest {
         NamedSQLQuery namedQuery = new NamedSQLQuery();
         namedQuery.setRoot(entity);
 
-        ResolvedQuery resolved = build(namedQuery).resolve(new EntityResolver(List.of(map)));
-        assertSame(table, resolved.dbEntity());
-        assertSame(map, resolved.dataMap());
+        CompiledMapping mapping = mapping(map);
+        ResolvedQuery resolved = build(namedQuery).resolve(mapping);
+        assertSame(mapping.schema().table("A_T"), resolved.table());
+        assertSame(mapping.schema().map("m"), resolved.dataMap());
     }
 
     @Test
@@ -293,9 +310,10 @@ public class MappedQueryTest {
         NamedSQLQuery namedQuery = new NamedSQLQuery();
         namedQuery.setRoot(map);
 
-        ResolvedQuery resolved = build(namedQuery).resolve(new EntityResolver(List.of(map)));
-        assertNull(resolved.dbEntity());
-        assertSame(map, resolved.dataMap());
+        CompiledMapping mapping = mapping(map);
+        ResolvedQuery resolved = build(namedQuery).resolve(mapping);
+        assertNull(resolved.table());
+        assertSame(mapping.schema().map("m"), resolved.dataMap());
     }
 
     @Test
@@ -315,7 +333,7 @@ public class MappedQueryTest {
         namedQuery.setCacheGroup("g1");
         namedQuery.setColumnNamesCapitalization(CapsStrategy.LOWER);
 
-        ResolvedSQL resolved = (ResolvedSQL) build(namedQuery).resolve(new EntityResolver());
+        ResolvedSQL resolved = (ResolvedSQL) build(namedQuery).resolve(mapping());
         assertEquals(10, resolved.pageSize());
         assertEquals(6, resolved.statementFetchSize());
         assertTrue(resolved.fetchingDataRows());
@@ -326,7 +344,7 @@ public class MappedQueryTest {
 
     @Test
     public void sqlPropertiesDefaults() {
-        ResolvedSQL resolved = (ResolvedSQL) build(new NamedSQLQuery()).resolve(new EntityResolver());
+        ResolvedSQL resolved = (ResolvedSQL) build(new NamedSQLQuery()).resolve(mapping());
         assertEquals(0, resolved.fetchLimit());
         assertEquals(0, resolved.fetchOffset());
         assertEquals(0, resolved.pageSize());
@@ -353,9 +371,9 @@ public class MappedQueryTest {
                 .statementFetchSize(60)
                 .queryTimeout(7)
                 .forceNoCache()
-                .resolveNamedQuery(namedQuery);
+                .resolveNamedQuery(compiled(namedQuery));
 
-        ResolvedSQL resolved = (ResolvedSQL) query.resolve(new EntityResolver());
+        ResolvedSQL resolved = (ResolvedSQL) query.resolve(mapping());
         assertEquals(50, resolved.fetchLimit());
         assertEquals(20, resolved.fetchOffset());
         assertEquals(100, resolved.pageSize());
@@ -371,7 +389,7 @@ public class MappedQueryTest {
         namedQuery.setSql("SELECT * FROM ARTIST WHERE ARTIST_NAME = #bind($name)");
 
         Map<String, Object> params = Map.of("name", "artist1");
-        ResolvedSQL resolved = (ResolvedSQL) build(namedQuery, params).resolve(new EntityResolver());
+        ResolvedSQL resolved = (ResolvedSQL) build(namedQuery, params).resolve(mapping());
         assertEquals(params, resolved.params());
     }
 
@@ -380,7 +398,7 @@ public class MappedQueryTest {
         NamedSQLQuery namedQuery = new NamedSQLQuery();
         namedQuery.getAdapterSql().put("adapter", "abc");
 
-        ResolvedSQL resolved = (ResolvedSQL) build(namedQuery).resolve(new EntityResolver());
+        ResolvedSQL resolved = (ResolvedSQL) build(namedQuery).resolve(mapping());
         assertNull(resolved.defaultTemplate());
         assertEquals("abc", resolved.templates().get("adapter"));
     }
@@ -394,7 +412,7 @@ public class MappedQueryTest {
         DataMap map = new DataMap("m");
         map.addObjEntity(new ObjEntity("A"));
 
-        PrefetchTreeNode prefetchTree = build(namedQuery).resolve(new EntityResolver(List.of(map))).prefetchTree();
+        PrefetchTreeNode prefetchTree = build(namedQuery).resolve(mapping(map)).prefetchTree();
         assertNotNull(prefetchTree);
         PrefetchTreeNode prefetch = prefetchTree.getNode("paintings");
         assertNotNull(prefetch);
@@ -407,13 +425,13 @@ public class MappedQueryTest {
     public void procedureWithParameters() {
         Map<String, Object> params = Map.of("a", "1", "b", "2");
         ResolvedProcedure resolved = (ResolvedProcedure) build(procedureQuery("p1"), params)
-                .resolve(procedureResolver("p1"));
+                .resolve(procedureMapping("p1"));
         assertEquals(params, resolved.params());
     }
 
     @Test
     public void procedureRoot() {
-        DataMap map = new DataMap();
+        DataMap map = new DataMap("m");
         Procedure procedure = new Procedure("p1");
         map.addProcedure(procedure);
         DbEntity table = new DbEntity("A_T");
@@ -425,24 +443,25 @@ public class MappedQueryTest {
         NamedProcedureQuery namedQuery = procedureQuery(procedure);
         namedQuery.setResultEntityName("A");
 
+        CompiledMapping mapping = mapping(map);
         ResolvedProcedure resolved = assertInstanceOf(ResolvedProcedure.class,
-                build(namedQuery).resolve(new EntityResolver(List.of(map))));
-        assertSame(procedure, resolved.procedure());
-        assertSame(table, resolved.dbEntity());
-        assertSame(map, resolved.dataMap());
+                build(namedQuery).resolve(mapping));
+        assertSame(mapping.schema().procedure("p1"), resolved.procedure());
+        assertSame(mapping.schema().table("A_T"), resolved.table());
+        assertSame(mapping.schema().map("m"), resolved.dataMap());
     }
 
     @Test
     public void procedureRootName() {
-        DataMap map = new DataMap();
+        DataMap map = new DataMap("m");
         Procedure procedure = new Procedure("p1");
         map.addProcedure(procedure);
 
-        ResolvedProcedure resolved = (ResolvedProcedure) build(procedureQuery("p1"))
-                .resolve(new EntityResolver(List.of(map)));
-        assertSame(procedure, resolved.procedure());
-        assertNull(resolved.dbEntity());
-        assertSame(map, resolved.dataMap());
+        CompiledMapping mapping = mapping(map);
+        ResolvedProcedure resolved = (ResolvedProcedure) build(procedureQuery("p1")).resolve(mapping);
+        assertSame(mapping.schema().procedure("p1"), resolved.procedure());
+        assertNull(resolved.table());
+        assertSame(mapping.schema().map("m"), resolved.dataMap());
     }
 
     @Test
@@ -468,7 +487,7 @@ public class MappedQueryTest {
         map.addProcedure(new Procedure("p1"));
         map.addObjEntity(new ObjEntity("A"));
 
-        ResolvedProcedure resolved = (ResolvedProcedure) build(namedQuery).resolve(new EntityResolver(List.of(map)));
+        ResolvedProcedure resolved = (ResolvedProcedure) build(namedQuery).resolve(mapping(map));
         assertEquals(5, resolved.fetchLimit());
         assertEquals(2, resolved.fetchOffset());
         assertEquals(10, resolved.pageSize());
@@ -496,9 +515,9 @@ public class MappedQueryTest {
                 .statementFetchSize(60)
                 .queryTimeout(7)
                 .forceNoCache()
-                .resolveNamedQuery(namedQuery);
+                .resolveNamedQuery(compiled(namedQuery));
 
-        ResolvedProcedure resolved = (ResolvedProcedure) query.resolve(procedureResolver("p1"));
+        ResolvedProcedure resolved = (ResolvedProcedure) query.resolve(procedureMapping("p1"));
         assertEquals(50, resolved.fetchLimit());
         assertEquals(20, resolved.fetchOffset());
         assertEquals(100, resolved.pageSize());
@@ -513,7 +532,7 @@ public class MappedQueryTest {
         NamedProcedureQuery namedQuery = procedureQuery("p1");
         namedQuery.setColumnNamesCapitalization(CapsStrategy.LOWER);
 
-        ResolvedProcedure resolved = (ResolvedProcedure) build(namedQuery).resolve(procedureResolver("p1"));
+        ResolvedProcedure resolved = (ResolvedProcedure) build(namedQuery).resolve(procedureMapping("p1"));
         assertEquals(CapsStrategy.LOWER, resolved.columnNameCaps());
     }
 }

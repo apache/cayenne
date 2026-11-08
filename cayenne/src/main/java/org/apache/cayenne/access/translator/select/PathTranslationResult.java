@@ -23,9 +23,9 @@ import java.util.List;
 import java.util.Optional;
 
 import org.apache.cayenne.exp.path.CayennePath;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbRelationship;
-import org.apache.cayenne.map.Embeddable;
+import org.apache.cayenne.map.compiled.CompiledColumn;
+import org.apache.cayenne.map.compiled.CompiledJoin;
+import org.apache.cayenne.map.compiled.CompiledEmbeddable;
 
 /**
  * Interface that describes result of path translation
@@ -36,17 +36,17 @@ interface PathTranslationResult {
 
     CayennePath getFinalPath();
 
-    Optional<DbRelationship> getDbRelationship();
+    Optional<CompiledJoin> getDbRelationship();
 
-    List<DbAttribute> getDbAttributes();
+    List<CompiledColumn> getDbAttributes();
 
     List<CayennePath> getAttributePaths();
 
-    default Optional<Embeddable> getEmbeddable() {
+    default Optional<CompiledEmbeddable> getEmbeddable() {
         return Optional.empty();
     }
 
-    default DbAttribute getLastAttribute() {
+    default CompiledColumn getLastAttribute() {
         return getDbAttributes().get(getDbAttributes().size() - 1);
     }
 

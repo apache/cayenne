@@ -84,7 +84,7 @@ public class CommitLogFilter implements DataChannelSyncFilter {
 	private void afterCommit(MutableChangeMap changes, ObjectContext context, GraphDiff contextDiff, GraphDiff dbDiff) {
 
 		GraphChangeHandler handler = new DiffFilter(entityFactory,
-				new DiffProcessor(changes, context.getEntityResolver()));
+				new DiffProcessor(changes, context.getMapping()));
 		contextDiff.apply(handler);
 		dbDiff.apply(handler);
 	}

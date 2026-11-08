@@ -24,6 +24,8 @@ import java.util.Map;
 
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.Entity;
+import org.apache.cayenne.map.compiled.CompiledTable;
+import org.apache.cayenne.map.compiled.CompiledEntity;
 
 /**
  * Generic path expression.
@@ -107,11 +109,32 @@ public abstract sealed class PathExp extends Expression permits DbIdPathExp, DbP
 	}
 
 	/**
-	 * Helper method to evaluate path expression with Cayenne Entity.
+	 * Helper method to evaluate path expression with an authored Cayenne Entity: returns the last attribute or
+	 * relationship of the path.
 	 */
 	protected Object evaluateEntityNode(Entity<?,?,?> entity) {
 		List<Object> components = entity.resolvePath(getExpandedPath());
 		return components.isEmpty() ? null : components.getLast();
+	}
+
+	/**
+	 * Helper method to evaluate path expression with a compiled entity: returns the last compiled attribute or
+	 * relationship of the path.
+	 *
+	 * @since 6.0
+	 */
+	protected Object evaluateEntityNode(CompiledEntity entity) {
+		return entity.resolvePath(getExpandedPath()).end();
+	}
+
+	/**
+	 * Helper method to evaluate path expression with a compiled table: returns the last compiled column or
+	 * relationship of the path.
+	 *
+	 * @since 6.0
+	 */
+	protected Object evaluateEntityNode(CompiledTable table) {
+		return table.resolvePath(getExpandedPath()).end();
 	}
 
 	@Override

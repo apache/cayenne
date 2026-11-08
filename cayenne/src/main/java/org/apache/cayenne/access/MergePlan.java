@@ -21,53 +21,57 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRowLayout;
 import org.apache.cayenne.DataRow;
-import org.apache.cayenne.map.DbAttribute;
-import org.apache.cayenne.map.DbJoin;
-import org.apache.cayenne.map.ObjRelationship;
-import org.apache.cayenne.reflect.AttributeProperty;
-import org.apache.cayenne.reflect.ClassDescriptor;
-import org.apache.cayenne.reflect.PropertyDescriptor;
-import org.apache.cayenne.reflect.ToManyProperty;
-import org.apache.cayenne.reflect.ToOneProperty;
+import org.apache.cayenne.map.compiled.CompiledColumnPair;
+import org.apache.cayenne.map.compiled.CompiledColumn;
+import org.apache.cayenne.map.compiled.CompiledEmbeddedAttribute;
+import org.apache.cayenne.map.compiled.CompiledAttribute;
+import org.apache.cayenne.map.compiled.CompiledEntity;
+import org.apache.cayenne.map.compiled.CompiledRelationship;
+import org.apache.cayenne.map.compiled.CompiledToManyRelationship;
+import org.apache.cayenne.map.compiled.CompiledToOneRelationship;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 /**
- * The columns that turn rows into objects of one {@link ClassDescriptor}: the primary key, the attributes and the
- * to-one foreign keys, by their positions in the descriptor's {@link ClassDescriptor#getSnapshotLayout() snapshot
+ * The columns that turn rows into objects of one {@link CompiledEntity}: the primary key, the attributes and the
+ * to-one foreign keys, by their positions in the entity's {@link CompiledEntity#snapshotLayout() snapshot
  * layout}, and a {@link DataRowLayout.Reader} of that layout, which reads a snapshot built from an object by position
- * and looks the positions up once per result set otherwise. A resolver builds a plan per descriptor for the rows it
+ * and looks the positions up once per result set otherwise. A resolver builds a plan per entity for the rows it
  * converts.
  */
 final class MergePlan {
 
-    final ClassDescriptor descriptor;
+    final CompiledEntity entity;
 
     final DataRowLayout layout;
     final DataRowLayout.Reader reader;
 
-    // the primary key of the descriptor's DbEntity, PK i being column pkColumns[i]
+    // the primary key of the entity's DbEntity, PK i being column pkColumns[i]
     final String[] pkNames;
     final int[] pkColumns;
 
     // attribute i being column attributeColumns[i]
-    final AttributeProperty[] attributes;
+    final CompiledAttribute[] attributes;
     final int[] attributeColumns;
 
-    final ToOneProperty[] toOnes;
+    final CompiledToOneRelationship[] toOnes;
     // per to-one, the columns of the FK join by join, or null when the FK does not define the arc
     final int[][] toOneFkColumns;
     // per to-one, the target PK column name of each join
     final String[][] toOneTargetNames;
 
-    final ToManyProperty[] toManys;
+    final CompiledToManyRelationship[] toManys;
 
-    private MergePlan(ClassDescriptor descriptor, DataRowLayout layout, String[] pkNames, int[] pkColumns,
-                      AttributeProperty[] attributes, int[] attributeColumns, ToOneProperty[] toOnes,
-                      int[][] toOneFkColumns, String[][] toOneTargetNames, ToManyProperty[] toManys) {
-        this.descriptor = descriptor;
+    // the embedded attributes, whose embeddable objects must exist before the attributes are written
+    final CompiledEmbeddedAttribute[] embeddedAttributes;
+
+    private MergePlan(CompiledEntity entity, DataRowLayout layout, String[] pkNames, int[] pkColumns,
+                      CompiledAttribute[] attributes, int[] attributeColumns, CompiledToOneRelationship[] toOnes,
+                      int[][] toOneFkColumns, String[][] toOneTargetNames, CompiledToManyRelationship[] toManys,
+                      CompiledEmbeddedAttribute[] embeddedAttributes) {
+        this.entity = entity;
         this.layout = layout;
         this.reader = layout.reader();
         this.pkNames = pkNames;
@@ -78,63 +82,63 @@ final class MergePlan {
         this.toOneFkColumns = toOneFkColumns;
         this.toOneTargetNames = toOneTargetNames;
         this.toManys = toManys;
+        this.embeddedAttributes = embeddedAttributes;
     }
 
-    static MergePlan of(ClassDescriptor descriptor) {
+    static MergePlan of(CompiledEntity entity) {
 
-        DataRowLayout layout = descriptor.getSnapshotLayout();
+        DataRowLayout layout = entity.snapshotLayout();
 
-        Collection<DbAttribute> pk = descriptor.getEntity().getDbEntity().getPrimaryKeys();
+        Collection<CompiledColumn> pk = entity.table().primaryKey();
         String[] pkNames = new String[pk.size()];
         int[] pkColumns = new int[pk.size()];
         int i = 0;
-        for (DbAttribute attribute : pk) {
-            pkNames[i] = attribute.getName();
-            pkColumns[i++] = column(layout, attribute.getName());
+        for (CompiledColumn column : pk) {
+            pkNames[i] = column.name();
+            pkColumns[i++] = column(layout, column.name());
         }
 
-        List<AttributeProperty> attributes = new ArrayList<>();
-        List<ToOneProperty> toOnes = new ArrayList<>();
-        List<ToManyProperty> toManys = new ArrayList<>();
-        for (PropertyDescriptor property : descriptor.getProperties()) {
-            switch (property) {
-                case AttributeProperty attribute -> attributes.add(attribute);
-                case ToOneProperty toOne -> toOnes.add(toOne);
-                case ToManyProperty toMany -> toManys.add(toMany);
-                default -> {
-                }
+        List<CompiledAttribute> attributes = new ArrayList<>(entity.attributes());
+        List<CompiledToOneRelationship> toOnes = new ArrayList<>();
+        List<CompiledToManyRelationship> toManys = new ArrayList<>();
+        for (CompiledRelationship relationship : entity.relationships()) {
+            switch (relationship) {
+                case CompiledToOneRelationship toOne -> toOnes.add(toOne);
+                case CompiledToManyRelationship toMany -> toManys.add(toMany);
             }
         }
 
         int[] attributeColumns = new int[attributes.size()];
         for (i = 0; i < attributeColumns.length; i++) {
-            attributeColumns[i] = column(layout, attributes.get(i).getAttribute().getDbAttributePath().value());
+            attributeColumns[i] = column(layout, attributes.get(i).dbPath().value());
         }
 
         int[][] toOneFkColumns = new int[toOnes.size()][];
         String[][] toOneTargetNames = new String[toOnes.size()][];
         for (i = 0; i < toOneFkColumns.length; i++) {
-            ObjRelationship relationship = toOnes.get(i).getRelationship();
+            CompiledToOneRelationship toOne = toOnes.get(i);
             // only an FK on the source lets the source snapshot tell whether the arc changed
-            if (!relationship.isForeignKey()) {
+            if (!toOne.isForeignKey()) {
                 continue;
             }
-            List<DbJoin> joins = relationship.getDbRelationships().getFirst().getJoins();
+            List<CompiledColumnPair> joins = toOne.joins().getFirst().columnPairs();
             int[] fkColumns = new int[joins.size()];
             String[] targetNames = new String[joins.size()];
             for (int j = 0; j < fkColumns.length; j++) {
-                fkColumns[j] = column(layout, joins.get(j).getSourceName());
-                targetNames[j] = joins.get(j).getTargetName();
+                fkColumns[j] = column(layout, joins.get(j).source().name());
+                targetNames[j] = joins.get(j).target().name();
             }
             toOneFkColumns[i] = fkColumns;
             toOneTargetNames[i] = targetNames;
         }
 
-        return new MergePlan(descriptor, layout, pkNames, pkColumns,
-                attributes.toArray(new AttributeProperty[0]), attributeColumns,
-                toOnes.toArray(new ToOneProperty[0]), toOneFkColumns, toOneTargetNames,
-                toManys.toArray(new ToManyProperty[0]));
+        return new MergePlan(entity, layout, pkNames, pkColumns,
+                attributes.toArray(new CompiledAttribute[0]), attributeColumns,
+                toOnes.toArray(new CompiledToOneRelationship[0]), toOneFkColumns, toOneTargetNames,
+                toManys.toArray(new CompiledToManyRelationship[0]),
+                entity.embeddedAttributes().toArray(new CompiledEmbeddedAttribute[0]));
     }
+
 
     private static int column(DataRowLayout layout, String name) {
         int column = layout.indexOf(name);
