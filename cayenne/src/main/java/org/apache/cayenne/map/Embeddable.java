@@ -33,7 +33,7 @@ import java.util.Map;
  * that doesn't have its own identity and is embedded in other persistent
  * classes. It can be viewed as a custom type mapped to one or more database
  * columns. Embeddable mapping can include optional default column names that
- * can be overriden by the owning entity.
+ * can be overridden by the owning entity.
  * 
  * @since 3.0
  */
