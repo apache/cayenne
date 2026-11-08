@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.testdo.weighted_sort;
 
-import org.apache.cayenne.ashwood.SortWeight;
+import org.apache.cayenne.annotation.SortWeight;
 import org.apache.cayenne.testdo.weighted_sort.auto._SortRoot;
 
 @SortWeight(2)

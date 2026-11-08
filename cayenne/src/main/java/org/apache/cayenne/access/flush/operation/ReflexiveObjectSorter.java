@@ -24,16 +24,15 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.ObjectSnapshots;
-import org.apache.cayenne.ashwood.graph.Digraph;
-import org.apache.cayenne.ashwood.graph.IndegreeTopologicalSort;
-import org.apache.cayenne.ashwood.graph.MapDigraph;
-import org.apache.cayenne.map.compiled.CompiledJoin;
 import org.apache.cayenne.map.compiled.CompiledEntity;
+import org.apache.cayenne.map.compiled.CompiledJoin;
 import org.apache.cayenne.map.compiled.CompiledRelationship;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 /**
@@ -42,9 +41,13 @@ import java.util.function.Function;
  * references through the reflexive relationships. The reverse order is used for deletes. The objects may be either
  * {@link Persistent} objects or {@link DbRowOp} operations on them.
  *
+ * <p>Linear in the objects and their reflexive references: the objects are indexed by identity once, and sorted
+ * with Kahn's algorithm over int arrays. Objects that depend on nothing among the sorted ones keep their relative
+ * order.
+ *
  * @since 6.0
  */
-public class ReflexiveObjectSorter {
+final class ReflexiveObjectSorter {
 
     /**
      * Sorts the objects in place. Does nothing if the table of the entity is not reflexive.
@@ -54,121 +57,127 @@ public class ReflexiveObjectSorter {
      * @param deleteOrder true to sort the objects in the order of deletion, false - in the order of insertion
      */
     @SuppressWarnings("unchecked")
-    public void sortObjectsForEntity(CompiledEntity entity, List<?> objects, boolean deleteOrder) {
-        if (objects == null || objects.isEmpty()) {
+    void sortObjectsForEntity(CompiledEntity entity, List<?> objects, boolean deleteOrder) {
+        if (objects == null || objects.size() < 2) {
             return;
         }
-
-        // if no sorting is required
         if (!entity.table().isReflexive()) {
             return;
         }
-
         Object probe = objects.getFirst();
         if (probe instanceof DbRowOp) {
-            sortObjectsForEntity(entity, (List<DbRowOp>) objects, deleteOrder, DbRowOp::getObject);
+            sort(entity, (List<DbRowOp>) objects, deleteOrder, DbRowOp::getObject);
         } else if (probe instanceof Persistent) {
-            sortObjectsForEntity(entity, (List<Persistent>) objects, deleteOrder, Function.identity());
+            sort(entity, (List<Persistent>) objects, deleteOrder, Function.identity());
         } else {
             throw new IllegalArgumentException("Can sort only Persistent or DbRow objects, got "
                     + probe.getClass().getSimpleName());
         }
     }
 
-    protected <E> void sortObjectsForEntity(
-            CompiledEntity entity,
-            List<E> objects,
-            boolean deleteOrder,
-            Function<E, Persistent> converter) {
+    private <E> void sort(CompiledEntity entity, List<E> objects, boolean deleteOrder,
+                          Function<E, Persistent> converter) {
 
-        Digraph<E, Boolean> objectDependencyGraph = buildDigraph(entity, objects, converter);
-
-        if (!topologicalSort(objects, objectDependencyGraph, deleteOrder)) {
-            throw new CayenneRuntimeException("Sorting objects for %s failed. Cycles found.", entity.name());
-        }
-    }
-
-    protected <E> Digraph<E, Boolean> buildDigraph(
-            CompiledEntity entity,
-            List<E> objects,
-            Function<E, Persistent> converter) {
-
-        CompiledRelationship[] reflexiveRels = getReflexiveRelationships(entity);
-
+        CompiledRelationship[] reflexiveRels = reflexiveRelationships(entity);
         int size = objects.size();
-        Digraph<E, Boolean> objectDependencyGraph = new MapDigraph<>();
-        Persistent[] masters = new Persistent[reflexiveRels.length];
+
+        // the objects by identity, to find each object's masters among the sorted objects
+        Persistent[] persistents = new Persistent[size];
+        Map<Persistent, Integer> positions = new IdentityHashMap<>(size * 2);
         for (int i = 0; i < size; i++) {
-            E current = objects.get(i);
-            objectDependencyGraph.addVertex(current);
-            int actualMasterCount = 0;
-            for (int k = 0; k < reflexiveRels.length; k++) {
-                CompiledRelationship reflexiveRel = reflexiveRels[k];
+            persistents[i] = converter.apply(objects.get(i));
+            positions.put(persistents[i], i);
+        }
 
-                if (reflexiveRel == null) {
-                    continue;
-                }
-
-                Persistent persistent = converter.apply(current);
-                masters[k] = (Persistent) reflexiveRel.readProperty(persistent);
-
-                if (masters[k] == null) {
-                    masters[k] = findReflexiveMaster(persistent, reflexiveRel);
-                }
-
-                if (masters[k] != null) {
-                    actualMasterCount++;
-                }
-            }
-
-            int mastersFound = 0;
-            for (int j = 0; j < size && mastersFound < actualMasterCount; j++) {
-
-                if (i == j) {
-                    continue;
-                }
-
-                E masterCandidate = objects.get(j);
-                for (Persistent master : masters) {
-                    if (converter.apply(masterCandidate) == master) {
-                        objectDependencyGraph.putArc(masterCandidate, current, Boolean.TRUE);
-                        mastersFound++;
+        // masters[i * rels + k]: the position of the master of object i over relationship k, or -1
+        int rels = reflexiveRels.length;
+        int[] masters = new int[size * rels];
+        int[] dependentCount = new int[size];
+        int[] inDegree = new int[size];
+        int edges = 0;
+        for (int i = 0; i < size; i++) {
+            for (int k = 0; k < rels; k++) {
+                int master = -1;
+                CompiledRelationship rel = reflexiveRels[k];
+                if (rel != null) {
+                    Persistent target = (Persistent) rel.readProperty(persistents[i]);
+                    if (target == null) {
+                        target = findReflexiveMaster(persistents[i], rel);
+                    }
+                    Integer position = target != null ? positions.get(target) : null;
+                    // a master outside the sorted objects, or the object itself, is not a dependency
+                    if (position != null && position != i) {
+                        master = position;
+                        dependentCount[master]++;
+                        inDegree[i]++;
+                        edges++;
                     }
                 }
+                masters[i * rels + k] = master;
             }
         }
-        return objectDependencyGraph;
-    }
 
-    protected <E> boolean topologicalSort(List<E> data, Digraph<E, Boolean> graph, boolean reverse) {
-        IndegreeTopologicalSort<E> sorter = new IndegreeTopologicalSort<>(graph);
-        List<E> sorted = new ArrayList<>(data.size());
-
-        while (sorter.hasNext()) {
-            E o = sorter.next();
-            if (o == null) {
-                return false;
+        if (edges == 0) {
+            // nothing depends on anything: insertion order is the list order, deletion order the reverse
+            if (deleteOrder) {
+                Collections.reverse(objects);
             }
-            sorted.add(o);
+            return;
         }
 
-        // since API requires sorting within the same array,
-        // simply replace all objects with objects in the right order...
-        // may come up with something cleaner later
-        data.clear();
-        data.addAll(sorted);
-
-        if (reverse) {
-            Collections.reverse(data);
+        // dependents of each master, in list order
+        int[] start = new int[size + 1];
+        for (int i = 0; i < size; i++) {
+            start[i + 1] = start[i] + dependentCount[i];
         }
-        return true;
+        int[] fill = new int[size];
+        int[] dependents = new int[edges];
+        for (int i = 0; i < size; i++) {
+            for (int k = 0; k < rels; k++) {
+                int master = masters[i * rels + k];
+                if (master != -1) {
+                    dependents[start[master] + fill[master]++] = i;
+                }
+            }
+        }
+
+        // Kahn's algorithm: objects become ready as their masters are emitted
+        int[] order = new int[size];
+        int ready = 0;
+        for (int i = 0; i < size; i++) {
+            if (inDegree[i] == 0) {
+                order[ready++] = i;
+            }
+        }
+        for (int next = 0; next < ready; next++) {
+            int master = order[next];
+            for (int e = start[master]; e < start[master + 1]; e++) {
+                int dependent = dependents[e];
+                if (--inDegree[dependent] == 0) {
+                    order[ready++] = dependent;
+                }
+            }
+        }
+        if (ready < size) {
+            throw new CayenneRuntimeException("Sorting objects for %s failed. Cycles found.", entity.name());
+        }
+
+        List<E> sorted = new ArrayList<>(size);
+        for (int i = 0; i < size; i++) {
+            sorted.add(objects.get(order[i]));
+        }
+        if (deleteOrder) {
+            Collections.reverse(sorted);
+        }
+        objects.clear();
+        objects.addAll(sorted);
     }
 
     /**
      * Returns the object relationships of the entity mapped to the reflexive relationships of its table, one per
      * reflexive DB relationship. An entry is null for a DB relationship that has no object relationship.
      */
-    protected CompiledRelationship[] getReflexiveRelationships(CompiledEntity entity) {
+    private static CompiledRelationship[] reflexiveRelationships(CompiledEntity entity) {
         List<CompiledJoin> reflexiveJoins = entity.table().reflexiveJoins();
         CompiledRelationship[] reflexiveRels = new CompiledRelationship[reflexiveJoins.size()];
         for (int i = 0; i < reflexiveRels.length; i++) {
@@ -178,30 +187,25 @@ public class ReflexiveObjectSorter {
         return reflexiveRels;
     }
 
-    protected Persistent findReflexiveMaster(Persistent object, CompiledRelationship toOneRel) {
-
-        ObjectContext context = object.getObjectContext();
-
-        // find committed snapshot - so we can't fetch from the context as it will return dirty snapshot;
-        // must go down the stack instead
-
-        // how do we handle this for NEW objects correctly? For now bail from the method
+    /**
+     * Finds the master of an object whose to-one property is not resolved (a fault) in the committed snapshot of
+     * the object, among the objects of its context. A new object has no snapshot, and its property is set or null.
+     */
+    private static Persistent findReflexiveMaster(Persistent object, CompiledRelationship toOneRel) {
         if (object.getObjectId().isTemporary()) {
             return null;
         }
-
+        ObjectContext context = object.getObjectContext();
+        // the committed snapshot, not the dirty one of the context: the object store has it
         DataRow snapshot = context.getObjectStore().getSnapshot(object.getObjectId());
         if (snapshot == null) {
             return null;
         }
-
         ObjectId targetId = ObjectSnapshots.targetId(toOneRel, snapshot);
         if (targetId == null) {
             return null;
         }
-
-        // not using 'localObject', looking up in context instead, as within the sorter
-        // we only care about objects participating in transaction, so no need to create hollow objects
+        // not 'localObject': only the objects taking part in the transaction matter, no need to create hollow ones
         return context.getObjectStore().getObject(targetId);
     }
 }

@@ -25,12 +25,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * An annotation that defines the insertion sorting "weight" of an entity that is used
- * when sorting DB operations. This annotation allows to override the topological sorting
- * algorithm used by Cayenne by default in special occasions.
- * 
+ * The former location of {@link org.apache.cayenne.annotation.SortWeight}. Still recognized, so that entity classes
+ * annotated with it keep their weight, but new code should use the annotation in {@code org.apache.cayenne.annotation}.
+ *
  * @since 3.1, since 4.0 moved to cayenne-server from cayenne-lifecycle
+ * @deprecated in favor of {@link org.apache.cayenne.annotation.SortWeight}
  */
+@Deprecated(since = "6.0")
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented

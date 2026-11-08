@@ -19,10 +19,6 @@
 package org.apache.cayenne.map.compiled;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.ashwood.graph.Digraph;
-import org.apache.cayenne.ashwood.graph.IndegreeTopologicalSort;
-import org.apache.cayenne.ashwood.graph.MapDigraph;
-import org.apache.cayenne.ashwood.graph.StrongConnection;
 import org.apache.cayenne.dba.TypesMapping;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
@@ -37,6 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.IdentityHashMap;
@@ -506,66 +503,51 @@ public final class SchemaCompiler {
          * Assigns each table its {@link CompiledTable#dependencyIndex() dependency index}: 0 for a table
          * referencing no other table by a foreign key to its primary key, otherwise one more than the deepest table
          * it references. The tables of a dependency cycle form one strongly connected component and share the index.
+         * The work is {@link DependencyLevels}; here the tables are numbered and their references collected.
          */
         private void assignDependencyIndexes(Collection<CompiledTable> allTables) {
-            // an arc from a referenced table to the table holding the FK, for FKs to primary keys
-            Digraph<CompiledTable, List<CompiledColumn>> referentialDigraph = new MapDigraph<>();
-            Map<CompiledTable, Set<CompiledTable>> referencedTables = new IdentityHashMap<>();
+            List<CompiledTable> tables = new ArrayList<>(allTables);
+            Map<CompiledTable, Integer> positions = new IdentityHashMap<>(tables.size() * 2);
+            for (CompiledTable table : tables) {
+                positions.put(table, positions.size());
+            }
+            // a referenced table missing from the set (one dropped as a duplicate) still takes part in the order
             for (CompiledTable table : allTables) {
-                referentialDigraph.addVertex(table);
-            }
-            for (CompiledTable destination : allTables) {
-                for (CompiledForeignKey foreignKey : destination.foreignKeys()) {
-                    CompiledTable origin = foreignKey.target();
-                    for (CompiledColumnPair pair : foreignKey.columnPairs()) {
-                        if (pair.target().isPrimaryKey()) {
-                            List<CompiledColumn> fks = referentialDigraph.getArc(origin, destination);
-                            if (fks == null) {
-                                fks = new ArrayList<>();
-                                referentialDigraph.putArc(origin, destination, fks);
-                            }
-                            fks.add(pair.target());
-                            referencedTables.computeIfAbsent(destination,
-                                    k -> Collections.newSetFromMap(new IdentityHashMap<>())).add(origin);
-                        }
+                for (CompiledForeignKey foreignKey : table.foreignKeys()) {
+                    if (!positions.containsKey(foreignKey.target())) {
+                        positions.put(foreignKey.target(), positions.size());
+                        tables.add(foreignKey.target());
                     }
                 }
             }
 
-            // the strongly connected components in topological order
-            StrongConnection<CompiledTable, List<CompiledColumn>> contractor =
-                    new StrongConnection<>(referentialDigraph);
-            Digraph<Collection<CompiledTable>, Collection<List<CompiledColumn>>> contracted =
-                    new MapDigraph<>();
-            contractor.contract(contracted);
-            IndegreeTopologicalSort<Collection<CompiledTable>> sorter = new IndegreeTopologicalSort<>(contracted);
-            List<Collection<CompiledTable>> components = new ArrayList<>();
-            Map<CompiledTable, Integer> componentOf = new IdentityHashMap<>();
-            while (sorter.hasNext()) {
-                Collection<CompiledTable> component = sorter.next();
-                for (CompiledTable table : component) {
-                    componentOf.put(table, components.size());
-                }
-                components.add(component);
-            }
-
-            // the level of a component is one more than the deepest component it references
-            int[] levels = new int[components.size()];
-            for (int i = 0; i < components.size(); i++) {
-                int level = 0;
-                for (CompiledTable table : components.get(i)) {
-                    for (CompiledTable referenced : referencedTables.getOrDefault(table, Set.of())) {
-                        int j = componentOf.get(referenced);
-                        if (j != i) {
-                            level = Math.max(level, levels[j] + 1);
-                        }
+            // for each table, the tables it references by a foreign key to their primary key
+            int[][] referenced = new int[tables.size()][];
+            for (int i = 0; i < tables.size(); i++) {
+                List<CompiledForeignKey> foreignKeys = tables.get(i).foreignKeys();
+                int[] targets = new int[foreignKeys.size()];
+                int count = 0;
+                for (CompiledForeignKey foreignKey : foreignKeys) {
+                    if (referencesPrimaryKey(foreignKey)) {
+                        targets[count++] = positions.get(foreignKey.target());
                     }
                 }
-                levels[i] = level;
-                for (CompiledTable table : components.get(i)) {
-                    table.dependencyIndex = level;
+                referenced[i] = count == targets.length ? targets : Arrays.copyOf(targets, count);
+            }
+
+            int[] levels = DependencyLevels.compute(referenced);
+            for (int i = 0; i < tables.size(); i++) {
+                tables.get(i).dependencyIndex = levels[i];
+            }
+        }
+
+        private static boolean referencesPrimaryKey(CompiledForeignKey foreignKey) {
+            for (CompiledColumnPair pair : foreignKey.columnPairs()) {
+                if (pair.target().isPrimaryKey()) {
+                    return true;
                 }
             }
+            return false;
         }
     }
 }

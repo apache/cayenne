@@ -183,10 +183,13 @@
      the `CompiledSchema` of the domain and the names of the node's maps instead of the authored DataMaps, and the
      strategy no longer receives the `SQLLogger`: a strategy is created through DI and injects the services it
      needs. A `CompiledSchema` is the DB half of a `CompiledMapping`, available as `mapping.schema()`.
-   * `EntitySorter`, `EntitySorterFactory` and `AshwoodEntitySorter` are removed. The dependency order of the tables
-     is a fact of the mapping: sort tables by `CompiledTable.dependencyIndex()` for the insert order and reverse it
-     for the delete order; `CompiledTable.isReflexive()` and the flush-time `ReflexiveObjectSorter` cover the rows
-     of self-referencing tables. `WeightedAshwoodEntitySorter` is a standalone helper over a `CompiledMapping`.
+   * `EntitySorter`, `EntitySorterFactory`, `AshwoodEntitySorter` and `WeightedAshwoodEntitySorter` are removed, and
+     so is the Ashwood graph library (`org.apache.cayenne.ashwood.graph`). The dependency order of the tables is a
+     fact of the mapping: sort tables by `CompiledTable.dependencyIndex()` for the insert order and reverse it for
+     the delete order. The flush orders its operations by `@SortWeight` and then by that index, and sorts the rows of
+     self-referencing tables (`CompiledTable.isReflexive()`) internally. `@SortWeight` moved to
+     `org.apache.cayenne.annotation.SortWeight` and is honored by default, without binding a weighted sorter; the
+     old `org.apache.cayenne.ashwood.SortWeight` is deprecated but still recognized.
    * `DataDomain` is constructed with a `MappingCompiler`, gets its mapping from `recompile(dataMaps)` and keeps
      only the compiled mapping: the authored DataMaps are not retained by the runtime, so `DataDomain.getDataMaps()`,
      `getDataMap(name)`, `addDataMap(..)` and `removeDataMap(..)` are gone, and `addNode(..)` takes the names of the

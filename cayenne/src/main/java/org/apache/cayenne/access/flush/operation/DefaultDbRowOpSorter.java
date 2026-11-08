@@ -30,12 +30,17 @@ import org.apache.cayenne.map.compiled.CompiledMapping;
 import org.apache.cayenne.map.compiled.CompiledEntity;
 
 /**
+ * Orders the operations of a flush: inserts, then updates, then deletes; within a kind by the tables, following the
+ * {@link org.apache.cayenne.annotation.SortWeight} of the entity classes and then the
+ * {@link CompiledTable#dependencyIndex() dependency index} of the tables (reversed for deletes); and within a
+ * self-referencing table by the references between the rows.
+ *
  * @since 4.2
  */
 public class DefaultDbRowOpSorter implements DbRowOpSorter {
 
     protected final Provider<DataDomain> dataDomainProvider;
-    protected final ReflexiveObjectSorter reflexiveSorter;
+    private final ReflexiveObjectSorter reflexiveSorter;
 
     // the comparator of the mapping it was created for; rebuilt when the domain mapping is replaced
     protected volatile DbRowComparator comparator;
@@ -106,7 +111,7 @@ public class DefaultDbRowOpSorter implements DbRowOpSorter {
 
         protected DbRowComparator(CompiledMapping mapping) {
             this.mapping = mapping;
-            this.entityComparator = Comparator.comparingInt(CompiledTable::dependencyIndex);
+            this.entityComparator = new WeightedTableComparator(mapping);
         }
 
         @Override
