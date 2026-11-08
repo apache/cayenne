@@ -43,6 +43,7 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.reflect.ArcProperty;
+import org.apache.cayenne.reflect.AttributeProperty;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.PropertyDescriptor;
 import org.apache.cayenne.reflect.ToManyProperty;
@@ -467,11 +468,12 @@ public class DataContext implements ObjectContext {
 
         doRegisterObject(object);
 
-        // now we need to find all arc changes, inject missing value holders and
-        // pull in all transient connected objects
+        // now we need to find all arc changes, inject missing value holders and embeddables, and pull in all
+        // transient connected objects
 
         for (PropertyDescriptor property : descriptor.getProperties()) {
             switch (property) {
+                case AttributeProperty attribute -> attribute.injectValueHolder(object);
                 case ToManyProperty toMany -> {
                     toMany.injectValueHolder(object);
 

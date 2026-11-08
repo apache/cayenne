@@ -39,6 +39,8 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class EmbeddingIT {
@@ -159,6 +161,58 @@ public class EmbeddingIT {
         assertEquals("E12", row.get("EMBEDDED20"));
         assertEquals("E21", row.get("EMBEDDED30"));
         assertEquals("E22", row.get("EMBEDDED40"));
+    }
+
+    @Test
+    public void newObject_EmbeddablesInjected() {
+        EmbedEntity1 o1 = env.context().newObject(EmbedEntity1.class);
+        assertNotNull(o1.getEmbedded1());
+        assertNotNull(o1.getEmbedded2());
+        assertNull(o1.getEmbedded1().getEmbedded10());
+    }
+
+    @Test
+    public void registerNewObject_EmbeddablesInjected() {
+        EmbedEntity1 o1 = new EmbedEntity1();
+        assertNull(o1.getEmbedded1());
+
+        env.context().registerNewObject(o1);
+        assertNotNull(o1.getEmbedded1());
+        assertNotNull(o1.getEmbedded2());
+    }
+
+    @Test
+    public void registerNewObject_EmbeddablesKept() {
+        EmbedEntity1 o1 = new EmbedEntity1();
+        Embeddable1 e1 = new Embeddable1();
+        e1.setEmbedded10("E11");
+        o1.setEmbedded1(e1);
+
+        env.context().registerNewObject(o1);
+        assertSame(e1, o1.getEmbedded1());
+        assertNotNull(o1.getEmbedded2());
+    }
+
+    @Test
+    public void nullEmbedded_CommittedAsNulls_RecreatedOnRefresh() {
+        EmbedEntity1 o1 = env.context().newObject(EmbedEntity1.class);
+        o1.setName("NAME");
+        o1.getEmbedded1().setEmbedded10("E11");
+        o1.setEmbedded2(null);
+        env.context().commitChanges();
+
+        DataRow row = ObjectSelect.dataRowQuery(EmbedEntity1.class).selectOne(env.context());
+        assertNotNull(row);
+        assertEquals("E11", row.get("EMBEDDED10"));
+        assertNull(row.get("EMBEDDED30"));
+        assertNull(row.get("EMBEDDED40"));
+
+        // the embeddable stays null on the committed object, and a refresh from the DB recreates it
+        assertNull(o1.getEmbedded2());
+        env.context().invalidateObjects(o1);
+        assertEquals("E11", o1.getEmbedded1().getEmbedded10());
+        assertNotNull(o1.getEmbedded2());
+        assertNull(o1.getEmbedded2().getEmbedded10());
     }
 
     @Test

@@ -160,8 +160,9 @@ public abstract class PersistentDescriptorFactory implements ClassDescriptorFact
         Accessor embeddedableAccessor = createEmbeddableAccessor(embeddableDescriptor, embeddableName,
                 attribute.getJavaClass());
 
-        Accessor accessor = new EmbeddedFieldAccessor(embeddableDescriptor, embeddedAccessor, embeddedableAccessor);
-        descriptor.addDeclaredProperty(new SimpleAttributeProperty(descriptor, accessor, attribute));
+        EmbeddedFieldAccessor accessor = new EmbeddedFieldAccessor(embeddedAccessor, embeddedableAccessor);
+        descriptor.addDeclaredProperty(new EmbeddedAttributeProperty(descriptor, embeddableDescriptor,
+                embeddedAccessor, accessor, attribute));
     }
 
     protected abstract void createToOneProperty(PersistentDescriptor descriptor, ObjRelationship relationship);

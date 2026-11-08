@@ -96,6 +96,9 @@ class DataRowUtils {
             int column = plan.attributeColumns[i];
             Object value = reader.get(snapshot, column);
 
+            // the embeddable of an embedded attribute must exist before the attribute is written; a no-op otherwise
+            property.injectValueHolder(object);
+
             // a null value is valid, so the column is only checked for when the value is null
             if (value != null || reader.has(snapshot, column)) {
                 property.writePropertyDirectly(object, null, value);
@@ -196,7 +199,11 @@ class DataRowUtils {
         // to-many relationships have nothing to merge
         for (PropertyDescriptor property : descriptor.getProperties()) {
             switch (property) {
-                case AttributeProperty attribute -> mergeAttribute(attribute, object, snapshot, diff);
+                case AttributeProperty attribute -> {
+                    // an embeddable the application reset to null is recreated before the snapshot is merged into it
+                    attribute.injectValueHolder(object);
+                    mergeAttribute(attribute, object, snapshot, diff);
+                }
                 case ToOneProperty toOne -> mergeToOne(context, toOne, object, snapshot, diff);
                 default -> {
                 }

@@ -19,9 +19,12 @@
 package org.apache.cayenne.reflect;
 
 /**
- * An accessor for fields storing embedded objects. This accessor will initialize null
- * fields with appropriate embeddable objects when needed during get and set calls.
- * 
+ * An accessor of a field of an embeddable object held by a persistent object: the composition of the accessor of
+ * the embedded object on the owner and the accessor of the field on the embeddable. The accessor does not create
+ * the embeddable; {@link EmbeddedAttributeProperty#injectValueHolder(Object)} does, when the framework prepares
+ * an object for access. Reading a field of a missing embeddable yields null, writing one is an error. Only one
+ * level of embedding is supported.
+ *
  * @since 3.0
  */
 public class EmbeddedFieldAccessor implements Accessor {
@@ -29,12 +32,12 @@ public class EmbeddedFieldAccessor implements Accessor {
     protected String propertyPath;
     protected Accessor embeddedAccessor;
     protected Accessor embeddableAccessor;
-    protected EmbeddableDescriptor embeddableDescriptor;
 
-    public EmbeddedFieldAccessor(EmbeddableDescriptor embeddableDescriptor,
-                                 Accessor embeddedAccessor, Accessor embeddableAccessor) {
+    /**
+     * @since 6.0
+     */
+    public EmbeddedFieldAccessor(Accessor embeddedAccessor, Accessor embeddableAccessor) {
         this.propertyPath = embeddedAccessor.getName() + "." + embeddableAccessor.getName();
-        this.embeddableDescriptor = embeddableDescriptor;
         this.embeddableAccessor = embeddableAccessor;
         this.embeddedAccessor = embeddedAccessor;
     }
@@ -44,24 +47,16 @@ public class EmbeddedFieldAccessor implements Accessor {
     }
 
     public Object getValue(Object object) throws PropertyException {
-        return embeddableAccessor.getValue(getEmbeddable(object));
+        Object embeddable = embeddedAccessor.getValue(object);
+        return embeddable != null ? embeddableAccessor.getValue(embeddable) : null;
     }
 
     public void setValue(Object object, Object newValue) throws PropertyException {
-        embeddableAccessor.setValue(getEmbeddable(object), newValue);
-    }
-
-    /**
-     * Returns an embeddable object for the owner object, initializing embeddable if it is
-     * null. Currently supports only one level of embedding.
-     */
-    protected Object getEmbeddable(Object owner) {
-        Object embeddable = embeddedAccessor.getValue(owner);
+        Object embeddable = embeddedAccessor.getValue(object);
         if (embeddable == null) {
-            embeddable = embeddableDescriptor.createObject(owner, embeddedAccessor.getName());
-            embeddedAccessor.setValue(owner, embeddable);
+            throw new PropertyException("Can't set '" + propertyPath + "': the embedded object '"
+                    + embeddedAccessor.getName() + "' is null", this, object);
         }
-
-        return embeddable;
+        embeddableAccessor.setValue(embeddable, newValue);
     }
 }
