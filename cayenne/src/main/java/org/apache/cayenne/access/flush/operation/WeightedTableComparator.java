@@ -31,9 +31,9 @@ import java.util.Map;
  * The insert order of the tables of a compiled mapping: by the {@link SortWeight} of their entity classes, then by
  * the {@link CompiledTable#dependencyIndex() dependency index}. Built once per mapping, as both are facts of the
  * mapping and its classes. The delete order is the reverse.
- *
- * @since 6.0 replaces {@code WeightedAshwoodEntitySorter}, which had to be bound to take effect
  */
+// TODO: this should go away eventually. Manual weights belong in the "compiled" layer. Also, hopefully we can do
+//  a better joh analyzing operation ordering (and creating non-conflicting operations), making @SOrtWeight unneeded
 final class WeightedTableComparator implements Comparator<CompiledTable> {
 
     static final int DEFAULT_WEIGHT = 1;

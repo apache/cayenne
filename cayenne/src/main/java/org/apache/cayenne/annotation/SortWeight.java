@@ -26,14 +26,14 @@ import java.lang.annotation.Target;
 
 /**
  * Overrides the order in which the rows of an entity's table are inserted and deleted relative to other tables
- * during a commit. By default the order follows the foreign keys: a table is inserted after the tables it
+ * during a commit. By default, the order follows the foreign keys: a table is inserted after the tables it
  * references and deleted before them. Tables of entities with a lower weight are inserted before tables of entities
  * with a higher weight, whatever their foreign keys say, and deleted after them; among equal weights the foreign
  * key order applies. Every entity has the weight 1 unless annotated.
  *
  * <p>Place it on the entity class. It is honored by the runtime without any configuration.
  *
- * @since 6.0 moved here from {@code org.apache.cayenne.ashwood}, and honored by default
+ * @since 6.0
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
