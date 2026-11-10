@@ -15,6 +15,7 @@ Date:
 Bug Fixes:
 
 CAY-3071 DataNodeSQLAction could lose update count info
+CAY-3073 AI plugin / MCP db import schema description inconsistencies
 
 ----------------------------------
 Release: 5.0-RC1

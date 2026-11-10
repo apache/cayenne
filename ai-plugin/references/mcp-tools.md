@@ -70,7 +70,7 @@ When the DataMap had no `<cgen>` block, the tool generated from a synthesized de
 
 ## Tool: `dbimport_run`
 
-Runs Cayenne reverse-engineering (dbimport) for one DataMap. Reads the JDBC connection from the DBConnector that CayenneModeler stored in preferences when the user last ran the reverse-engineering dialog for this DataMap. If the DataMap has a `<reverse-engineering>` block its filters are applied; otherwise the full database schema is imported. Rewrites the DataMap XML on disk with the merged schema.
+Runs Cayenne reverse-engineering (dbimport) for one DataMap. Reads the JDBC connection from the DBConnector that CayenneModeler stored in preferences when the user last ran the reverse-engineering dialog for this DataMap. If the DataMap has a `<dbImport>` block its filters are applied; otherwise the full database schema is imported. Rewrites the DataMap XML on disk with the merged schema.
 
 **Arguments:**
 
@@ -79,7 +79,7 @@ Runs Cayenne reverse-engineering (dbimport) for one DataMap. Reads the JDBC conn
 | `projectPath` | string | yes | Absolute path to the top-level Cayenne project descriptor (`cayenne-*.xml`), **not** a DataMap file. |
 | `dataMap` | string | yes | Name of the target DataMap as it appears in the `<map name="...">` element of the project descriptor. Not a file path. |
 
-JDBC URL, driver, and credentials are **not** arguments — they come from CayenneModeler preferences. Schema filters come from the DataMap's `<reverse-engineering>` block if present.
+JDBC URL, driver, and credentials are **not** arguments — they come from CayenneModeler preferences. Schema filters come from the DataMap's `<dbImport>` block if present.
 
 **Returns:** JSON object with fields:
 
