@@ -138,7 +138,7 @@ ____
 
 Runs Cayenne reverse engineering (dbimport) for a single DataMap inside the project.
 The tool reads the JDBC connection from CayenneModeler preferences on the local machine (the agent doesn't see the credentials).
-If the DataMap has a `<reverse-engineering>` block its filters are applied; otherwise the full database schema is imported.
+If the DataMap has a `<dbImport>` block its filters are applied; otherwise the full database schema is imported.
 The DataMap XML is rewritten on disk with the merged schema, and a JSON summary of what changed is returned.
 
 If no connection has been saved yet (`dbconnector_not_configured` error), open the project in the Modeler with
