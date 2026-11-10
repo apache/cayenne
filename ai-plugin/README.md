@@ -22,7 +22,7 @@ Apache Cayenne ORM workflows for Claude Code.
 
 This plugin teaches Claude how to:
 
-- Edit Cayenne DataMap (`*.map.xml`) and project descriptor (`cayenne-*.xml`) files a-la-carte (add entities, relationships, queries, embeddables).
+- Edit Cayenne DataMap (`*.map.xml`) and project descriptor (`cayenne-*.xml`) files a-la-carte (add entities, relationships, queries, embeddables). The DB layer (DbEntity / DbAttribute / DbRelationship) is left to DB import, and is only edited by hand if you explicitly say you don't use DB import.
 - Reverse-engineer a database schema into a DataMap by driving CayenneModeler.
 - Polish the reverse-engineered Object-layer names (entities, attributes, relationships) into idiomatic Java, fixing the few cases the deterministic name generator can't.
 - Regenerate Java entity classes from a DataMap.
@@ -85,8 +85,9 @@ Each skill is a thin trigger that loads the right reference docs and walks Claud
 
 ORM workflows go through:
 
-1. Direct XML edits — primary path for a-la-carte model changes.
-2. MCP `cgen_run` — class generation.
-3. MCP `open_project` → CayenneModeler GUI — full DB sync and visual editing.
+1. Direct XML edits — primary path for a-la-carte Object-layer model changes (and DB-layer changes only when you explicitly don't use DB import).
+2. MCP `dbimport_run` — the DB layer of the model, of any size, imported from the database.
+3. MCP `cgen_run` — class generation.
+4. MCP `open_project` → CayenneModeler GUI — upgrading mappings saved by an older Cayenne version, first-time DB connection setup, and visual editing.
 
 and will NOT use Maven or Gradle plugins

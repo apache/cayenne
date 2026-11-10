@@ -1,6 +1,6 @@
 ---
 name: cayenne-db-import
-description: "Use this skill when the user wants to import database schema metadata into a Cayenne DataMap — the *model/mapping only*, not names or Java classes. Trigger on phrases like 'reverse engineer the database', 'import the schema', 'generate a DataMap from my DB', 'add the new tables from the DB into the model', 'import the customer table', 'create entities from these tables', or any request to read database metadata to populate or update a DataMap's XML. This is for *full schema* or *bulk table* import; one-off a-la-carte entity additions belong in the cayenne-modeling skill. IMPORTANT — scope: this imports the mapping ONLY; it does not clean up the Object-layer names or (re)generate Java classes. When the user wants their whole project brought in line with the DB ('sync my project with the database', 'my schema changed, update everything', 'update my entities/classes from the DB'), that is the end-to-end `cayenne-full-db-sync` skill, which runs this import and then name cleanup and class generation. To regenerate classes alone use `cayenne-cgen`. The skill runs reverse engineering directly via the `mcp__cayenne__dbimport_run` MCP tool when a DBConnector is already configured; otherwise it opens the CayenneModeler GUI via `mcp__cayenne__open_project` to configure the connection first."
+description: "Use this skill when the user wants to import database schema metadata into a Cayenne DataMap — the *model/mapping only*, not names or Java classes. Trigger on phrases like 'reverse engineer the database', 'import the schema', 'generate a DataMap from my DB', 'add the new tables from the DB into the model', 'import the customer table', 'create entities from these tables', or any request to read database metadata to populate or update a DataMap's XML. This is the only way the DB layer of the model (DbEntity, DbAttribute, DbRelationship) gets created or changed, whatever the size — a full schema, a batch of tables, or a single new table, column or FK. Hand-editing the DB layer in `cayenne-modeling` is allowed only when the user has explicitly said they do not use DB import; Object-layer edits (ObjEntity, ObjAttribute, ObjRelationship) always belong in `cayenne-modeling`. IMPORTANT — scope: this imports the mapping ONLY; it does not clean up the Object-layer names or (re)generate Java classes. When the user wants their whole project brought in line with the DB ('sync my project with the database', 'my schema changed, update everything', 'update my entities/classes from the DB'), that is the end-to-end `cayenne-full-db-sync` skill, which runs this import and then name cleanup and class generation. To regenerate classes alone use `cayenne-cgen`. The skill runs reverse engineering directly via the `mcp__cayenne__dbimport_run` MCP tool when a DBConnector is already configured; otherwise it opens the CayenneModeler GUI via `mcp__cayenne__open_project` to configure the connection first."
 ---
 
 <!--
@@ -31,6 +31,21 @@ Import a database schema into a Cayenne DataMap using the `mcp__cayenne__dbimpor
 - `${CLAUDE_PLUGIN_ROOT}/references/dbimport-config.md` — field semantics for every dialog screen, so you can explain options in user terms.
 - `${CLAUDE_PLUGIN_ROOT}/references/mcp-tools.md` — `dbimport_run` and `open_project` tool references and failure modes.
 
+## Ownership
+
+DB import owns the **DB layer** of the DataMap: `<dbEntity>`, `<dbAttribute>` and `<dbRelationship>` elements are derived from DB metadata, never typed by hand. This applies to a one-column change as much as to a full schema import — the DB schema is changed first, then the import brings it into the model. The Object layer, queries and config blocks are hand-edited via `cayenne-modeling`.
+
+The one exception is a user who has explicitly said they do not use DB import for the project. Then `cayenne-modeling` hand-edits the DB layer and this skill is not used. Never assume that exception yourself: a `<dbImport>` block in the DataMap means DB import is in use; without one, and without an earlier answer from the user, `cayenne-modeling` asks once and saves the answer to persistent memory.
+
+After a successful import into a DataMap whose status was unclear, save to persistent memory (if you have one) that the project uses DB import.
+
+`dbimport_run` is a merge that applies every difference **without prompting**:
+
+- DB-layer elements that match the DB are kept; new tables, columns and FKs are added.
+- DB-layer elements with no counterpart in the DB — within the `<dbImport>` filters — are **removed**, including tables and relationships somebody added by hand. If the user mentions such elements, warn them before running, and suggest excluding them in `<dbImport>` or creating them in the DB first.
+- Object-layer edits (names, Java types, extra attributes) on entities that still match the DB are kept.
+- Relationships are the one part governed by a setting. With `<skipRelationshipsLoading>true</skipRelationshipsLoading>` in `<dbImport>`, the import neither reads FKs nor removes relationships from the model — DbRelationships are then the user's, hand-edited via `cayenne-modeling`. With `false` (the default), every FK is imported and a hand-made relationship with no FK in the DB is removed. Don't change this setting unless the user asks.
+
 ## Step 1 — Confirm scope
 
 Ask the user (one question, only if not obvious from the request):
@@ -58,7 +73,7 @@ If the tool is not available (server not registered), surface `cayenne-mcp-serve
 
 ### Interpreting the result
 
-- **`imported`** — success. Surface the `summary` counters (entities added/removed/modified, relationships added) to the user.
+- **`imported`** — success. Surface the `summary` counters (entities added/removed/modified, relationships added) to the user. Call out a non-zero `entitiesRemoved` explicitly — those entities were dropped from the model without a prompt.
 - **`up_to_date`** — the DataMap already matches the database. Tell the user nothing changed.
 - **`error`** — import started but failed mid-run. Show the `error.message` and the partial `summary`.
 - **`validation_failed`** — a pre-flight check failed. Use the `error.code` to guide next steps (see below).
@@ -124,7 +139,7 @@ Once the import succeeds:
 ## Anti-patterns
 
 - **Do not** suggest `mvn cayenne:cdbimport`, the Gradle `cdbimport` task, or hand-running the `cayenne-dbsync` Java APIs. `dbimport_run` is the only supported execution path.
-- **Do not** try to hand-write a DataMap from a DB schema description as a substitute — the import handles JDBC types, PK detection, FK relationships, and naming consistently. Hand-rolling produces subtle mistakes.
+- **Do not** hand-write any part of the DB layer as a substitute for an import — not a whole DataMap from a schema description, and not a single `<dbEntity>`, `<dbAttribute>` or `<dbRelationship>` "because it's just one". The import handles JDBC types, PK detection, FK relationships, and naming consistently; hand-rolling produces subtle mistakes and is overwritten by the next import. The only exception is a user who explicitly does not use DB import (see "Ownership").
 - **Do not** enable `forceDataMapCatalog` / `forceDataMapSchema` defensively. They suppress legitimate DB metadata and cause hard-to-debug issues in multi-catalog setups.
 - **Do not** offer reverse engineering without MCP — if the server isn't connected, point at `cayenne-mcp-server/README.md` and stop.
 - **Do not** run the import through the Modeler GUI dialog when `dbimport_run` is available — the GUI path is only for the first-time connection setup.
