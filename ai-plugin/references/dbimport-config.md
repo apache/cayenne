@@ -85,7 +85,7 @@ The parser silently skips elements it does not know. A filter in any other shape
 | Field | Type | Default | Meaning |
 |---|---|---|---|
 | `<skipPrimaryKeyLoading>` | boolean | `false` | When `true`, PK metadata is not read from the DB. Rare. |
-| `<skipRelationshipsLoading>` | boolean | `false` | When `true`, FKs are not read. Useful when FKs are missing in the schema and modeled manually. |
+| `<skipRelationshipsLoading>` | boolean | `false` | When `true`, FKs are not read, and relationships already in the model are left alone — the user maintains every DbRelationship by hand. Useful when FKs are missing in the schema and modeled manually. When `false`, a model relationship with no matching FK is dropped on import. |
 | `<forceDataMapCatalog>` | boolean | `false` | When `true`, every imported DbEntity is tagged with the DataMap's catalog, overriding the DB's reported value. Use only when the DB catalog reported by JDBC is wrong or noisy. |
 | `<forceDataMapSchema>` | boolean | `false` | Same as above for schema. |
 
@@ -102,9 +102,9 @@ After running the dialog, the chosen settings are persisted as a `<dbImport>` bl
 
 ## Re-running an import
 
-A second import against the same DataMap is *merge-based*: existing entities/attributes/relationships that match the DB are preserved; new ones are added; the user is offered a chance to drop ones that no longer exist in the DB.
+A second import against the same DataMap is *merge-based*: existing entities/attributes/relationships that match the DB are preserved; new ones are added; ones that no longer exist in the DB (within the `<dbImport>` filters) are dropped. The Modeler dialog lets the user review the changes first; the `dbimport_run` MCP tool applies all of them **without prompting**.
 
-User-edited names, types, and custom attributes generally survive re-import. Custom relationships that don't correspond to a DB FK do not survive.
+Object-layer edits — names, Java types, custom attributes — generally survive re-import. Hand-made DB-layer elements do not: a DbEntity, DbAttribute or DbRelationship with no counterpart in the DB is removed. The exception is relationships under `<skipRelationshipsLoading>true</skipRelationshipsLoading>`, which the import does not touch. Relationships are matched by their joins, not by name, so a renamed DbRelationship keeps its name. This is why the DB layer is not hand-edited in projects that use DB import — see "Who owns what" in the `cayenne-modeling` skill.
 
 ## Anti-patterns
 

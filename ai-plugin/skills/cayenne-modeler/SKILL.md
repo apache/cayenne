@@ -1,6 +1,6 @@
 ---
 name: cayenne-modeler
-description: "Use this skill when the user explicitly wants to open CayenneModeler (the GUI) on a Cayenne project, or when the modeling task is inherently visual — reverse engineering (delegated to cayenne-db-import), bulk relationship layout, multi-entity visual refactoring. Trigger on phrases like 'open the Modeler', 'open in CayenneModeler', 'launch the GUI', 'edit visually', 'show me the project in the Modeler'. Do NOT trigger as a fallback for ordinary a-la-carte XML edits — those belong in the cayenne-modeling skill, which is faster and doesn't require the user to context-switch."
+description: "Use this skill when the user explicitly wants to open CayenneModeler (the GUI) on a Cayenne project, or when the modeling task is one the Modeler has to do — upgrading a project saved by an older Cayenne version to the current format, first-time DB connection setup for reverse engineering (delegated to cayenne-db-import), bulk relationship layout, multi-entity visual refactoring. Trigger on phrases like 'open the Modeler', 'open in CayenneModeler', 'launch the GUI', 'edit visually', 'show me the project in the Modeler', 'upgrade the project', 'upgrade my old mapping', 'migrate the model to Cayenne 5'. Do NOT trigger as a fallback for ordinary a-la-carte XML edits — those belong in the cayenne-modeling skill, which is faster and doesn't require the user to context-switch."
 ---
 
 <!--
@@ -63,13 +63,15 @@ The tool spawns the Modeler asynchronously, then waits up to ~15 seconds for a s
 
 Once `open_project` returns `ok`, the user is in the GUI. From here, depending on intent:
 
+- **Upgrading an older project**: when the descriptor's `project-version` is lower than the current one, the Modeler offers to upgrade the project as it opens. Tell the user to accept the upgrade and save (File → Save), which rewrites `cayenne-*.xml` and every `*.map.xml` in the current format. Do not migrate the XML by hand, and hold any other model edits until the upgrade is saved.
 - **Reverse engineering**: that's the `cayenne-db-import` skill's job to walk them through. Do not duplicate that workflow here — just open and step out.
 - **Visual layout / bulk editing**: tell the user what tab to navigate to (e.g., DataMap → ObjEntity for entity-level edits, DataMap → Class Generation for cgen config) and let them work. Don't try to script GUI actions.
 - **Just wanted to see the project**: nothing more to do.
 
 ## When NOT to use this skill
 
-- **A-la-carte XML edits.** Adding one entity, tweaking one attribute, renaming a relationship — all faster as direct XML edits via `cayenne-modeling`. Don't context-switch the user to the GUI for trivial work.
+- **A-la-carte XML edits.** Adding one ObjEntity, tweaking one ObjAttribute, renaming a relationship — all faster as direct XML edits via `cayenne-modeling`. Don't context-switch the user to the GUI for trivial work.
+- **DB-layer changes.** New or changed tables, columns and FKs come from `cayenne-db-import` (via `dbimport_run`), not from GUI editing — unless the user has explicitly said they do not use DB import.
 - **Class generation.** That's `cayenne-cgen`'s job, fully scripted via MCP. No GUI needed.
 
 ## Anti-patterns
