@@ -27,13 +27,11 @@ Reference for the options shown by the CayenneModeler reverse-engineering dialog
     <catalog>
         <name>public</name>
         <schema>
-            <name>app</name>
             <includeTable>
-                <pattern>CUSTOMER.*</pattern>
+                <name>CUSTOMER.*</name>
             </includeTable>
-            <excludeTable>
-                <pattern>TMP_.*</pattern>
-            </excludeTable>
+            <excludeTable>TMP_.*</excludeTable>
+            <name>app</name>
         </schema>
     </catalog>
     <tableTypes>
@@ -60,13 +58,17 @@ Reference for the options shown by the CayenneModeler reverse-engineering dialog
 |---|---|---|
 | `<catalog><name>` | string | DB catalog to import from. Many databases have a single default catalog. |
 | `<schema><name>` | string | DB schema (Postgres `public`, MSSQL `dbo`, etc.). |
-| `<includeTable><pattern>` | regex | Tables to include. Multiple `<includeTable>` elements union. Default: include all. |
-| `<excludeTable><pattern>` | regex | Tables to skip. Multiple `<excludeTable>` elements union. |
-| `<includeColumn><pattern>` | regex | Columns to include (rarely needed). |
-| `<excludeColumn><pattern>` | regex | Columns to skip — useful for system columns (`CREATED_AT`, `ROWVERSION`). |
-| `<includeProcedure><pattern>` | regex | Stored procedures to include. By default, none are imported. |
-| `<excludeProcedure><pattern>` | regex | Stored procedures to skip. |
+| `<includeTable><name>` | regex | Tables to include. Multiple `<includeTable>` elements union. Default: include all. An `<includeTable>` may also hold `<includeColumn>` / `<excludeColumn>` elements that apply to that table only. |
+| `<excludeTable>` | regex | Tables to skip. The regex is the element's text. Multiple `<excludeTable>` elements union. |
+| `<includeColumn>` | regex | Columns to include (rarely needed). The regex is the element's text. |
+| `<excludeColumn>` | regex | Columns to skip — useful for system columns (`CREATED_AT`, `ROWVERSION`). The regex is the element's text. |
+| `<includeProcedure>` | regex | Stored procedures to include. The regex is the element's text. By default, none are imported. |
+| `<excludeProcedure>` | regex | Stored procedures to skip. The regex is the element's text. |
 | `<tableTypes><tableType>` | enum | Which JDBC table types to import. Typical values: `TABLE`, `VIEW`, `SYSTEM TABLE`, `GLOBAL TEMPORARY`, `LOCAL TEMPORARY`, `ALIAS`, `SYNONYM`. If empty, defaults to `TABLE`. |
+
+The filters can sit directly in `<dbImport>`, in a `<catalog>` or in a `<schema>`. Inside `<catalog>` and `<schema>` they come before `<name>`, as the XSD orders them and as Cayenne writes them.
+
+The parser silently skips elements it does not know. A filter in any other shape (for example `<includeTable><pattern>...</pattern></includeTable>`) is ignored without a warning: the import then runs unfiltered, and saving the DataMap writes the block back without that filter.
 
 ### Generation
 

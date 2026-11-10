@@ -65,7 +65,7 @@ import java.util.stream.Collectors;
 /**
  * MCP tool that runs Cayenne dbimport for a single DataMap inside a Cayenne project.
  * Reads JDBC connection info from the DBConnector stored in CayenneModeler preferences for
- * this DataMap. If the DataMap has a {@code <reverse-engineering>} block its filters are
+ * this DataMap. If the DataMap has a {@code <dbImport>} block its filters are
  * applied; otherwise the full database schema is imported. Returns a structured JSON summary
  * of what changed.
  *
@@ -121,7 +121,7 @@ public class DbImportRunTool {
                 .description("""
                         Run Cayenne dbimport for a named DataMap. Reads JDBC connection from the \
                         DBConnector stored for this DataMap in CayenneModeler preferences. If the \
-                        DataMap has a <reverse-engineering> block its filters are applied; otherwise \
+                        DataMap has a <dbImport> block its filters are applied; otherwise \
                         the full database schema is imported. Returns token-count summary and \
                         resolved connection metadata; actual schema changes are written to the \
                         DataMap XML on disk.""")

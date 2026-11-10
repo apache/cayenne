@@ -65,7 +65,7 @@ Both fields are required.
 
 ## `dbimport_run`
 
-Runs Cayenne reverse-engineering (dbimport) for a named DataMap. Reads JDBC connection info from the DBConnector that CayenneModeler stored in preferences for this DataMap. If the DataMap has a `<reverse-engineering>` block its filters are applied; otherwise the full database schema is imported. Rewrites the DataMap XML on disk with the merged schema.
+Runs Cayenne reverse-engineering (dbimport) for a named DataMap. Reads JDBC connection info from the DBConnector that CayenneModeler stored in preferences for this DataMap. If the DataMap has a `<dbImport>` block its filters are applied; otherwise the full database schema is imported. Rewrites the DataMap XML on disk with the merged schema.
 
 ### Input
 
@@ -76,7 +76,7 @@ Runs Cayenne reverse-engineering (dbimport) for a named DataMap. Reads JDBC conn
 }
 ```
 
-Both fields are required. JDBC URL, driver, and credentials are not inputs — they come from CayenneModeler preferences. Schema filters come from the DataMap's `<reverse-engineering>` block if present.
+Both fields are required. JDBC URL, driver, and credentials are not inputs — they come from CayenneModeler preferences. Schema filters come from the DataMap's `<dbImport>` block if present.
 
 ### Output
 

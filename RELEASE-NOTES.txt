@@ -30,6 +30,7 @@ CAY-3072 Replace the Ashwood graph library with linear-time sorts and remove it
 Bug fixes:
 
 CAY-3071 DataNodeSQLAction could lose update count info
+CAY-3073 AI plugin / MCP db import schema description inconsistencies
 
 ----------------------------------
 Release: 5.0-RC1
