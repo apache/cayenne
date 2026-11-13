@@ -39,7 +39,6 @@ import org.apache.cayenne.modeler.ui.action.DbEntitySyncAction;
 import org.apache.cayenne.modeler.ui.project.editor.EditorForm;
 import org.apache.cayenne.modeler.ui.project.editor.ExpressionConvertor;
 import org.apache.cayenne.modeler.ui.project.editor.query.ExistingSelectionProcessor;
-import org.apache.cayenne.projecttools.extension.info.ObjectInfo;
 import org.apache.cayenne.validation.ValidationException;
 
 import javax.swing.*;
@@ -192,7 +191,7 @@ public class DbEntityMainView extends ProjectPanel
         catalog.setText(entity.getCatalog());
         schema.setText(entity.getSchema());
         qualifier.setText(ExpressionConvertor.asString(entity.getQualifier()));
-        comment.setText(getComment(entity));
+        comment.setText(entity.getComment());
 
         catalogLabel.setEnabled(true);
         catalog.setEnabled(true);
@@ -289,10 +288,6 @@ public class DbEntityMainView extends ProjectPanel
         }
     }
 
-    private String getComment(DbEntity entity) {
-        return ObjectInfo.getFromMetaData(app.getMetaData(), entity, ObjectInfo.COMMENT);
-    }
-
     private void setComment(String value) {
         DbEntity entity = session.getSelectedDbEntity();
 
@@ -300,7 +295,7 @@ public class DbEntityMainView extends ProjectPanel
             return;
         }
 
-        ObjectInfo.putToMetaData(app.getMetaData(), entity, ObjectInfo.COMMENT, value);
+        entity.setComment(value);
         session.fireDbEntityEvent(DbEntityEvent.ofChange(this, entity));
     }
 }

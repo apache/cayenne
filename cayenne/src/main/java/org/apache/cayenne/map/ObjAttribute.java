@@ -69,6 +69,7 @@ public class ObjAttribute extends Attribute<ObjEntity, ObjAttribute, ObjRelation
         setDbAttributePathDirect(attribute.getDbAttributePath());
         setUsedForLocking(attribute.isUsedForLocking());
         setLazy(attribute.isLazy());
+        setComment(attribute.getComment());
     }
 
     @Override
@@ -121,10 +122,9 @@ public class ObjAttribute extends Attribute<ObjEntity, ObjAttribute, ObjRelation
                 .attribute("lazy", isLazy())
                 .attribute("dbAttributePath", getDbAttributePath() == null
                                 ? null
-                                : getDbAttributePath().value());
-
-        delegate.visitObjAttribute(this);
-        encoder.end();
+                                : getDbAttributePath().value())
+                .textTag("comment", getComment())
+                .end();
     }
 
     /**

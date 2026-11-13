@@ -19,9 +19,11 @@
 
 package org.apache.cayenne.map;
 
+import org.apache.cayenne.project.cgen.CgenDescriptor;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -329,6 +331,31 @@ public class DataMapTest {
         assertTrue(map.getEmbeddables().contains(e));
         map.removeEmbeddable("XYZ");
         assertFalse(map.getEmbeddables().contains(e));
+    }
+
+    @Test
+    public void addCgenDescriptor() {
+        CgenDescriptor first = new CgenDescriptor();
+        CgenDescriptor second = new CgenDescriptor();
+
+        DataMap map = new DataMap();
+        map.addCgenDescriptor(first);
+        map.addCgenDescriptor(second);
+        map.addCgenDescriptor(first);
+        assertEquals(List.of(first, second), map.getCgenDescriptors());
+    }
+
+    @Test
+    public void removeCgenDescriptor() {
+        CgenDescriptor first = new CgenDescriptor();
+        CgenDescriptor second = new CgenDescriptor();
+
+        DataMap map = new DataMap();
+        map.addCgenDescriptor(first);
+        map.addCgenDescriptor(second);
+
+        map.removeCgenDescriptor(first);
+        assertEquals(List.of(second), map.getCgenDescriptors());
     }
 
     @Test

@@ -22,6 +22,7 @@ package org.apache.cayenne.gen;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.project.cgen.CgenDescriptor;
 import org.apache.cayenne.resource.URLResource;
 import org.apache.cayenne.validation.ValidationException;
 import org.junit.jupiter.api.Assumptions;
@@ -36,10 +37,14 @@ import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -126,7 +131,7 @@ public class CgenConfigurationTest {
 
             assertEquals(tmp, config.getRootPath());
             assertEquals(tmp, config.requireOutputDirectory());
-            assertEquals(".", config.encodedDestDir());
+            assertNull(config.getDescriptor().getDestDir());
         }
 
         @Test
@@ -142,9 +147,104 @@ public class CgenConfigurationTest {
     }
 
     /**
+     * A configuration of a DataMap uses the DataMap directory as the root path, unless one is set. A configuration
+     * given a DataMap later, as by the build tool plugins, doesn't.
+     */
+    @Nested
+    public class DataMapRootPathTest {
+
+        private DataMap mapIn(Path dir) throws IOException {
+            DataMap map = new DataMap("test");
+            moveTo(map, dir);
+            return map;
+        }
+
+        private void moveTo(DataMap map, Path dir) throws IOException {
+            Path mapFile = Files.createFile(Files.createDirectories(dir).resolve("test.map.xml"));
+            map.setConfigurationSource(new URLResource(mapFile.toUri().toURL()));
+        }
+
+        @Test
+        public void followsTheDataMap(@TempDir Path tmp) throws IOException {
+            DataMap map = mapIn(tmp.resolve("old"));
+            CgenDescriptor descriptor = new CgenDescriptor();
+            descriptor.setDestDir("java");
+            CgenConfiguration configuration = new CgenConfiguration(descriptor, map);
+            assertEquals(tmp.resolve("old"), configuration.getRootPath());
+
+            moveTo(map, tmp.resolve("new"));
+            assertEquals(tmp.resolve("new"), configuration.getRootPath());
+            assertEquals(tmp.resolve("new/java"), configuration.requireOutputDirectory());
+        }
+
+        @Test
+        public void defaultConfigurationFollowsTheDataMap(@TempDir Path tmp) throws IOException {
+            DataMap map = mapIn(tmp.resolve("old"));
+            CgenConfiguration configuration = CgenConfiguration.createDefault(map, null);
+
+            moveTo(map, tmp.resolve("new"));
+            assertEquals(tmp.resolve("new"), configuration.getRootPath());
+            assertEquals(tmp.resolve("new"), configuration.requireOutputDirectory());
+        }
+
+        @Test
+        public void rootPathSet(@TempDir Path tmp) throws IOException {
+            CgenConfiguration configuration = new CgenConfiguration(new CgenDescriptor(), mapIn(tmp.resolve("map")));
+            configuration.setRootPath(tmp.resolve("root"));
+
+            assertEquals(tmp.resolve("root"), configuration.getRootPath());
+        }
+
+        /**
+         * The saved output directory of a DataMap is relative to the DataMap directory, so the one relative to another
+         * root path is stored absolute, pointing at the same directory before and after the DataMap is saved.
+         */
+        @Test
+        public void rootPathThenRelativeOutputDir(@TempDir Path tmp) throws IOException {
+            CgenConfiguration configuration = new CgenConfiguration(new CgenDescriptor(), mapIn(tmp.resolve("map")));
+            configuration.setRootPath(tmp.resolve("root"));
+            configuration.setOutputDir(Path.of("java"));
+
+            assertEquals(tmp.resolve("root/java"), configuration.requireOutputDirectory());
+            assertEquals(tmp.resolve("root/java"), Path.of(configuration.getDescriptor().getDestDir()));
+        }
+
+        @Test
+        public void relativeOutputDirThenRootPath(@TempDir Path tmp) throws IOException {
+            CgenDescriptor descriptor = new CgenDescriptor();
+            descriptor.setDestDir("java");
+            CgenConfiguration configuration = new CgenConfiguration(descriptor, mapIn(tmp.resolve("map")));
+            configuration.setRootPath(tmp.resolve("root"));
+
+            assertEquals(tmp.resolve("map/java"), configuration.requireOutputDirectory());
+            assertEquals(tmp.resolve("map/java"), Path.of(configuration.getDescriptor().getDestDir()));
+        }
+
+        @Test
+        public void addedWithRootPath(@TempDir Path tmp) throws IOException {
+            DataMap map = mapIn(tmp.resolve("map"));
+            CgenConfiguration configuration = new CgenConfiguration();
+            configuration.setRootPath(tmp.resolve("root"));
+            configuration.setOutputDir(Path.of("java"));
+
+            new CgenConfigList(map).add(configuration);
+
+            assertEquals(tmp.resolve("root/java"), configuration.requireOutputDirectory());
+            assertEquals(tmp.resolve("root/java"), Path.of(configuration.getDescriptor().getDestDir()));
+        }
+
+        @Test
+        public void dataMapSetLater(@TempDir Path tmp) throws IOException {
+            CgenConfiguration configuration = new CgenConfiguration();
+            configuration.setDataMap(mapIn(tmp));
+
+            assertNull(configuration.getRootPath());
+        }
+    }
+
+    /**
      * Setting the root path and the output directory are independent writes; neither reads the other, so
-     * the order in which they happen must not change the outcome. The XML loader sets them in one order
-     * (destDir during SAX parsing, root from a later DataMap callback) and everything else in the other.
+     * the order in which they happen must not change the outcome.
      */
     @Nested
     public class OrderIndependenceTest {
@@ -168,7 +268,7 @@ public class CgenConfigurationTest {
             CgenConfiguration b = outputFirst(root, out);
 
             assertEquals(a.outputDirectory(), b.outputDirectory());
-            assertEquals(a.encodedDestDir(), b.encodedDestDir());
+            assertEquals(a.getDescriptor().getDestDir(), b.getDescriptor().getDestDir());
         }
 
         @Test
@@ -192,116 +292,285 @@ public class CgenConfigurationTest {
         }
     }
 
-    /**
-     * {@code destDir} is what actually lands in the DataMap XML, so it has to survive an arbitrary number
-     * of save/load cycles unchanged.
-     */
     @Nested
-    public class DestDirRoundTripTest {
+    public class DescriptorTest {
 
-        private void assertRoundTrips(Path root, String destDir) {
-            CgenConfiguration loaded = new CgenConfiguration();
-            loaded.setOutputDir(Paths.get(destDir));
-            loaded.setRootPath(root);
+        private DataMap savedMapIn(Path dir) throws IOException {
+            Path mapFile = Files.createFile(dir.resolve("test.map.xml"));
+            DataMap map = new DataMap("test");
+            map.setConfigurationSource(new URLResource(mapFile.toUri().toURL()));
 
-            String encoded = loaded.encodedDestDir();
+            ObjEntity artist = new ObjEntity("Artist");
+            artist.setClassName("org.example.Artist");
+            map.addObjEntity(artist);
+            ObjEntity painting = new ObjEntity("Painting");
+            painting.setClassName("org.example.Painting");
+            map.addObjEntity(painting);
 
-            CgenConfiguration reloaded = new CgenConfiguration();
-            reloaded.setOutputDir(Paths.get(encoded));
-            reloaded.setRootPath(root);
-
-            assertEquals(encoded, reloaded.encodedDestDir());
-            assertEquals(loaded.outputDirectory(), reloaded.outputDirectory());
+            map.addEmbeddable(new Embeddable("org.example.Address"));
+            map.addEmbeddable(new Embeddable("org.example.Phone"));
+            return map;
         }
 
         @Test
-        public void currentDir(@TempDir Path tmp) {
-            assertRoundTrips(tmp, ".");
+        public void defaults() {
+            CgenConfiguration configuration = new CgenConfiguration();
+
+            assertEquals(CgenConfigList.DEFAULT_CONFIG_NAME, configuration.getName());
+            assertEquals("entity", configuration.getArtifactsGenerationMode());
+            assertEquals("*.java", configuration.getOutputPattern());
+            assertEquals(TemplateType.ENTITY_SUBCLASS.defaultTemplate(), configuration.getTemplate());
+            assertEquals(TemplateType.ENTITY_SUPERCLASS.defaultTemplate(), configuration.getSuperTemplate());
+            assertEquals(TemplateType.EMBEDDABLE_SUBCLASS.defaultTemplate(), configuration.getEmbeddableTemplate());
+            assertEquals(TemplateType.EMBEDDABLE_SUPERCLASS.defaultTemplate(),
+                    configuration.getEmbeddableSuperTemplate());
+            assertEquals(TemplateType.DATAMAP_SUBCLASS.defaultTemplate(), configuration.getDataMapTemplate());
+            assertEquals(TemplateType.DATAMAP_SUPERCLASS.defaultTemplate(), configuration.getDataMapSuperTemplate());
+            assertTrue(configuration.isDefault());
+            assertTrue(configuration.outputDirectory().isEmpty());
         }
 
         @Test
-        public void parentDir(@TempDir Path tmp) {
-            assertRoundTrips(tmp, "../java");
+        public void settersChangeTheDescriptor(@TempDir Path tmp) {
+            CgenConfiguration configuration = new CgenConfiguration();
+            configuration.setName("Custom");
+            configuration.setRootPath(tmp);
+            configuration.setOutputDir(Paths.get("..", "java"));
+            configuration.setArtifactsGenerationMode("ALL");
+            configuration.setMakePairs(false);
+            configuration.setUsePkgPath(false);
+            configuration.setOverwrite(true);
+            configuration.setCreatePropertyNames(true);
+            configuration.setCreatePKProperties(false);
+            configuration.setOutputPattern("*.groovy");
+            configuration.setSuperPkg("org.example.auto");
+            configuration.setExternalToolConfig("tools.properties");
+            configuration.setTemplate(new CgenTemplate("subclass", false, TemplateType.ENTITY_SUBCLASS));
+            configuration.setSuperTemplate(new CgenTemplate("superclass", false, TemplateType.ENTITY_SUPERCLASS));
+            configuration.setEmbeddableTemplate(
+                    new CgenTemplate("embeddable subclass", false, TemplateType.EMBEDDABLE_SUBCLASS));
+            configuration.setEmbeddableSuperTemplate(
+                    new CgenTemplate("embeddable superclass", false, TemplateType.EMBEDDABLE_SUPERCLASS));
+            configuration.setDataMapTemplate(
+                    new CgenTemplate("datamap subclass", false, TemplateType.DATAMAP_SUBCLASS));
+            configuration.setDataMapSuperTemplate(
+                    new CgenTemplate("datamap superclass", false, TemplateType.DATAMAP_SUPERCLASS));
+            configuration.getExcludedEntityArtifacts().add("Painting");
+            configuration.getExcludedEmbeddableArtifacts().add("org.example.Phone");
+
+            CgenDescriptor descriptor = configuration.getDescriptor();
+            assertEquals("Custom", descriptor.getName());
+            assertEquals("../java", descriptor.getDestDir());
+            assertEquals("all", descriptor.getMode());
+            assertFalse(descriptor.isMakePairs());
+            assertFalse(descriptor.isUsePkgPath());
+            assertTrue(descriptor.isOverwrite());
+            assertTrue(descriptor.isCreatePropertyNames());
+            assertFalse(descriptor.isCreatePKProperties());
+            assertEquals("*.groovy", descriptor.getOutputPattern());
+            assertEquals("org.example.auto", descriptor.getSuperPkg());
+            assertEquals("tools.properties", descriptor.getExternalToolConfig());
+            assertEquals("subclass", descriptor.getTemplate());
+            assertEquals("superclass", descriptor.getSuperTemplate());
+            assertEquals("embeddable subclass", descriptor.getEmbeddableTemplate());
+            assertEquals("embeddable superclass", descriptor.getEmbeddableSuperTemplate());
+            assertEquals("datamap subclass", descriptor.getDataMapTemplate());
+            assertEquals("datamap superclass", descriptor.getDataMapSuperTemplate());
+            assertEquals(Set.of("Painting"), descriptor.getExcludedEntities());
+            assertEquals(Set.of("org.example.Phone"), descriptor.getExcludedEmbeddables());
         }
 
         @Test
-        public void grandParentDir(@TempDir Path tmp) {
-            assertRoundTrips(tmp, "../../java");
+        public void outputDirInTheDescriptor(@TempDir Path tmp) {
+            CgenConfiguration configuration = new CgenConfiguration();
+            configuration.setRootPath(tmp);
+
+            configuration.setOutputDir(Paths.get("src", "main", "java"));
+            assertEquals("src/main/java", configuration.getDescriptor().getDestDir());
+
+            configuration.setOutputDir(tmp.resolve("out"));
+            assertEquals(tmp.resolve("out"), Paths.get(configuration.getDescriptor().getDestDir()));
+
+            configuration.setOutputDir(Paths.get(""));
+            assertNull(configuration.getDescriptor().getDestDir());
+            assertEquals(tmp, configuration.requireOutputDirectory());
+
+            configuration.getDescriptor().setDestDir("../java");
+            assertEquals(tmp.resolve("../java").normalize(), configuration.requireOutputDirectory());
         }
 
         @Test
-        public void plainChildDir(@TempDir Path tmp) {
-            assertRoundTrips(tmp, "cgenConfigTest");
+        public void wrapsTheStoredSettings(@TempDir Path tmp) throws IOException {
+            CgenDescriptor descriptor = new CgenDescriptor();
+            descriptor.setName("Custom");
+            descriptor.setDestDir("../java");
+            descriptor.setMode("all");
+            descriptor.setMakePairs(false);
+            descriptor.setUsePkgPath(false);
+            descriptor.setOverwrite(true);
+            descriptor.setCreatePropertyNames(true);
+            descriptor.setCreatePKProperties(false);
+            descriptor.setOutputPattern("*.groovy");
+            descriptor.setSuperPkg("org.example.auto");
+            descriptor.setExternalToolConfig("tools.properties");
+            descriptor.setTemplate("subclass");
+            descriptor.setSuperTemplate(TemplateType.ENTITY_SUPERCLASS.pathFromSourceRoot());
+            descriptor.setExcludedEntities(List.of("Painting", "Removed"));
+            descriptor.setExcludedEmbeddables(List.of("org.example.Phone"));
+
+            DataMap map = savedMapIn(tmp);
+            CgenConfiguration configuration = new CgenConfiguration(descriptor, map);
+
+            assertSame(descriptor, configuration.getDescriptor());
+            assertSame(map, configuration.getDataMap());
+            assertEquals(tmp, configuration.getRootPath());
+            assertEquals("Custom", configuration.getName());
+            assertEquals(tmp.resolve("../java").normalize(), configuration.requireOutputDirectory());
+            assertEquals("all", configuration.getArtifactsGenerationMode());
+            assertFalse(configuration.isMakePairs());
+            assertFalse(configuration.isUsePkgPath());
+            assertTrue(configuration.isOverwrite());
+            assertTrue(configuration.isCreatePropertyNames());
+            assertFalse(configuration.isCreatePKProperties());
+            assertEquals("*.groovy", configuration.getOutputPattern());
+            assertEquals("org.example.auto", configuration.getSuperPkg());
+            assertEquals("tools.properties", configuration.getExternalToolConfig());
+            assertEquals(new CgenTemplate("subclass", false, TemplateType.ENTITY_SUBCLASS),
+                    configuration.getTemplate());
+            assertEquals(TemplateType.ENTITY_SUPERCLASS.defaultTemplate(), configuration.getSuperTemplate());
+            assertEquals(TemplateType.EMBEDDABLE_SUBCLASS.defaultTemplate(), configuration.getEmbeddableTemplate());
+
+            assertEquals(Set.of("Artist"), configuration.getEntities());
+            assertEquals(Set.of("org.example.Address"), configuration.getEmbeddables());
+            assertSame(descriptor.getExcludedEntities(), configuration.getExcludedEntityArtifacts());
+            assertSame(descriptor.getExcludedEmbeddables(), configuration.getExcludedEmbeddableArtifacts());
         }
 
         @Test
-        public void emptyOutputPathEncodesAsCurrentDir(@TempDir Path tmp) {
-            CgenConfiguration config = new CgenConfiguration();
-            config.setRootPath(tmp);
+        public void inlineTemplatesHaveTheirOwnType() {
+            CgenDescriptor descriptor = new CgenDescriptor();
+            descriptor.setTemplate("subclass");
+            descriptor.setSuperTemplate("superclass");
+            descriptor.setEmbeddableTemplate("embeddable subclass");
+            descriptor.setEmbeddableSuperTemplate("embeddable superclass");
+            descriptor.setDataMapTemplate("datamap subclass");
+            descriptor.setDataMapSuperTemplate("datamap superclass");
 
-            assertEquals(".", config.encodedDestDir());
-            assertEquals(tmp, config.requireOutputDirectory());
-        }
-    }
+            CgenConfiguration configuration = new CgenConfiguration(descriptor, new DataMap("test"));
 
-    /**
-     * Rebasing follows the project to a new location while the generated classes keep going to the same
-     * physical directory. A configuration that never had an output directory keeps following the root.
-     */
-    @Nested
-    public class RebaseTest {
-
-        @Test
-        public void relativeOutputKeepsPointingAtTheSameDir(@TempDir Path tmp) {
-            Path oldRoot = tmp.resolve("old");
-            Path newRoot = tmp.resolve("new");
-
-            CgenConfiguration config = new CgenConfiguration();
-            config.setRootPath(oldRoot);
-            config.setOutputDir(Paths.get("../java"));
-
-            config.rebase(newRoot);
-
-            assertEquals(newRoot, config.getRootPath());
-            assertEquals(tmp.resolve("java"), config.requireOutputDirectory());
-            assertEquals("../java", config.encodedDestDir());
+            assertEquals(new CgenTemplate("subclass", false, TemplateType.ENTITY_SUBCLASS),
+                    configuration.getTemplate());
+            assertEquals(new CgenTemplate("superclass", false, TemplateType.ENTITY_SUPERCLASS),
+                    configuration.getSuperTemplate());
+            assertEquals(new CgenTemplate("embeddable subclass", false, TemplateType.EMBEDDABLE_SUBCLASS),
+                    configuration.getEmbeddableTemplate());
+            assertEquals(new CgenTemplate("embeddable superclass", false, TemplateType.EMBEDDABLE_SUPERCLASS),
+                    configuration.getEmbeddableSuperTemplate());
+            assertEquals(new CgenTemplate("datamap subclass", false, TemplateType.DATAMAP_SUBCLASS),
+                    configuration.getDataMapTemplate());
+            assertEquals(new CgenTemplate("datamap superclass", false, TemplateType.DATAMAP_SUPERCLASS),
+                    configuration.getDataMapSuperTemplate());
         }
 
+        /**
+         * The single class template is a default of the subclass template as well.
+         */
         @Test
-        public void absoluteOutputSurvives(@TempDir Path tmp) {
-            Path target = tmp.resolve("generated");
+        public void defaultTemplates() {
+            CgenConfiguration configuration = new CgenConfiguration();
+            assertNull(configuration.getDescriptor().getTemplate());
 
-            CgenConfiguration config = new CgenConfiguration();
-            config.setRootPath(tmp.resolve("old"));
-            config.setOutputDir(target);
+            configuration.setTemplate(TemplateType.ENTITY_SUBCLASS.defaultTemplate());
+            assertEquals("templates/v4_1/subclass.vm", configuration.getDescriptor().getTemplate());
+            assertEquals(TemplateType.ENTITY_SUBCLASS.defaultTemplate(), configuration.getTemplate());
 
-            config.rebase(tmp.resolve("new"));
+            configuration.setTemplate(TemplateType.ENTITY_SINGLE_CLASS.defaultTemplate());
+            assertEquals("templates/v4_1/singleclass.vm", configuration.getDescriptor().getTemplate());
+            assertEquals(TemplateType.ENTITY_SINGLE_CLASS.defaultTemplate(), configuration.getTemplate());
 
-            assertEquals(target, config.requireOutputDirectory());
-        }
-
-        @Test
-        public void neverConfiguredFollowsTheRoot(@TempDir Path tmp) {
-            Path newRoot = tmp.resolve("new");
-
-            CgenConfiguration config = new CgenConfiguration();
-            config.rebase(newRoot);
-
-            assertEquals(newRoot, config.requireOutputDirectory());
-            assertEquals(".", config.encodedDestDir());
+            configuration.getDescriptor().setTemplate("templates/v4_1/superclass.vm");
+            assertEquals(TemplateType.ENTITY_SUBCLASS.defaultTemplate(), configuration.getTemplate());
         }
 
         @Test
-        public void rejectsRelativeRoot() {
-            CgenConfiguration config = new CgenConfiguration();
-            assertThrows(ValidationException.class, () -> config.rebase(Paths.get("relative")));
+        public void wrappersOfOneDescriptorAgree() {
+            CgenDescriptor descriptor = new CgenDescriptor();
+            DataMap map = new DataMap("test");
+            CgenConfiguration first = new CgenConfiguration(descriptor, map);
+            CgenConfiguration second = new CgenConfiguration(descriptor, map);
+
+            first.setTemplate(TemplateType.ENTITY_SINGLE_CLASS.defaultTemplate());
+            assertEquals(TemplateType.ENTITY_SINGLE_CLASS.defaultTemplate(), second.getTemplate());
+
+            second.setTemplate(TemplateType.ENTITY_SUBCLASS.defaultTemplate());
+            assertEquals(TemplateType.ENTITY_SUBCLASS.defaultTemplate(), first.getTemplate());
+        }
+
+        @Test
+        public void singleClassTemplatesWrappedAgain() {
+            DataMap map = new DataMap("test");
+            CgenConfiguration configuration = new CgenConfiguration(new CgenDescriptor(), map);
+            configuration.setMakePairs(false);
+            configuration.setTemplate(TemplateType.ENTITY_SINGLE_CLASS.defaultTemplate());
+            configuration.setEmbeddableTemplate(TemplateType.EMBEDDABLE_SINGLE_CLASS.defaultTemplate());
+            configuration.setDataMapTemplate(TemplateType.DATAMAP_SINGLE_CLASS.defaultTemplate());
+
+            CgenConfiguration wrappedAgain = new CgenConfiguration(configuration.getDescriptor(), map);
+
+            assertFalse(wrappedAgain.isMakePairs());
+            CgenTemplate template = wrappedAgain.getTemplate();
+            assertTrue(template.isFile());
+            assertEquals(TemplateType.ENTITY_SINGLE_CLASS, template.getType());
+            assertEquals("templates/v4_1/singleclass.vm", template.getData());
+            assertEquals(TemplateType.EMBEDDABLE_SINGLE_CLASS.defaultTemplate(), wrappedAgain.getEmbeddableTemplate());
+            assertEquals(TemplateType.DATAMAP_SINGLE_CLASS.defaultTemplate(), wrappedAgain.getDataMapTemplate());
+        }
+
+        /**
+         * The descriptor can't tell a template file from a template text, so the configuration keeps the file.
+         */
+        @Test
+        public void customTemplateFile() {
+            CgenTemplate file = new CgenTemplate("custom/superclass.vm", true, TemplateType.ENTITY_SUPERCLASS);
+
+            CgenConfiguration configuration = new CgenConfiguration();
+            configuration.setSuperTemplate(file);
+
+            assertEquals("custom/superclass.vm", configuration.getDescriptor().getSuperTemplate());
+            assertSame(file, configuration.getSuperTemplate());
+
+            configuration.getDescriptor().setSuperTemplate("superclass");
+            assertEquals(new CgenTemplate("superclass", false, TemplateType.ENTITY_SUPERCLASS),
+                    configuration.getSuperTemplate());
+
+            configuration.getDescriptor().setSuperTemplate(null);
+            assertEquals(TemplateType.ENTITY_SUPERCLASS.defaultTemplate(), configuration.getSuperTemplate());
+        }
+
+        /**
+         * The names missing from the DataMap are only left out when saving.
+         */
+        @Test
+        public void excludedEntities(@TempDir Path tmp) throws IOException {
+            DataMap map = savedMapIn(tmp);
+            CgenConfiguration configuration = new CgenConfiguration(new CgenDescriptor(), map);
+            configuration.parseExcludedEntities("Painting,Removed");
+
+            assertEquals(List.of("Painting", "Removed"),
+                    List.copyOf(configuration.getDescriptor().getExcludedEntities()));
+
+            ObjEntity gallery = new ObjEntity("Gallery");
+            gallery.setClassName("org.example.Gallery");
+            map.addObjEntity(gallery);
+            configuration.resolveExcludedEntities();
+
+            assertEquals(Set.of("Artist", "Gallery"), configuration.getEntities());
         }
     }
 
     /**
      * Windows has more than one filesystem root - drive letters and UNC shares - and {@code relativize()}
-     * throws across them. Output directories that cannot be relativized against the project root must be
-     * stored and persisted absolute, unchanged. See CAY-2615 and CAY-2710.
+     * throws across them. See CAY-2615 and CAY-2710.
      */
     @Nested
     public class CgenWindowsConfigurationTest {
@@ -324,7 +593,6 @@ public class CgenConfigurationTest {
             Path outputDir = Paths.get("C:\\test1\\test2\\test3");
             configuration.setOutputDir(outputDir);
 
-            assertEquals(".", configuration.encodedDestDir());
             assertEquals(outputDir, configuration.requireOutputDirectory());
         }
 
@@ -334,7 +602,6 @@ public class CgenConfigurationTest {
             Path outputDir = Paths.get("C:\\test1\\test2\\testAnother");
             configuration.setOutputDir(outputDir);
 
-            assertEquals("../testAnother", configuration.encodedDestDir());
             assertEquals(outputDir, configuration.requireOutputDirectory());
         }
 
@@ -344,7 +611,6 @@ public class CgenConfigurationTest {
             Path outputDir = Paths.get("C:\\");
             configuration.setOutputDir(outputDir);
 
-            assertEquals(".", configuration.encodedDestDir());
             assertEquals(outputDir, configuration.requireOutputDirectory());
         }
 
@@ -354,7 +620,6 @@ public class CgenConfigurationTest {
             Path outputDir = Paths.get("E:\\test1\\test2\\test3");
             configuration.setOutputDir(outputDir);
 
-            assertEquals("E:/test1/test2/test3", configuration.encodedDestDir());
             assertEquals(outputDir, configuration.requireOutputDirectory());
         }
 
@@ -364,7 +629,6 @@ public class CgenConfigurationTest {
             Path outputDir = Paths.get("E:\\test1\\test2\\testAnother");
             configuration.setOutputDir(outputDir);
 
-            assertEquals("E:/test1/test2/testAnother", configuration.encodedDestDir());
             assertEquals(outputDir, configuration.requireOutputDirectory());
         }
 
@@ -374,7 +638,6 @@ public class CgenConfigurationTest {
             Path outputDir = Paths.get("E:\\");
             configuration.setOutputDir(outputDir);
 
-            assertEquals("E:/", configuration.encodedDestDir());
             assertEquals(outputDir, configuration.requireOutputDirectory());
         }
 
@@ -385,10 +648,9 @@ public class CgenConfigurationTest {
         public void uncShares() {
             configuration.setRootPath(Paths.get("\\\\server\\share\\project"));
             configuration.setOutputDir(Paths.get("\\\\server\\share\\java"));
-            assertEquals("../java", configuration.encodedDestDir());
+            assertEquals(Paths.get("\\\\server\\share\\java"), configuration.requireOutputDirectory());
 
             configuration.setOutputDir(Paths.get("\\\\server\\other\\java"));
-            assertEquals("//server/other/java", configuration.encodedDestDir());
             assertEquals(Paths.get("\\\\server\\other\\java"), configuration.requireOutputDirectory());
         }
 
@@ -401,7 +663,6 @@ public class CgenConfigurationTest {
             configuration.setRootPath(Paths.get("C:\\test1"));
             configuration.setOutputDir(Paths.get("C:foo"));
 
-            assertEquals("C:foo", configuration.encodedDestDir());
             assertEquals(Paths.get("C:\\test1\\foo"), configuration.requireOutputDirectory());
         }
 
@@ -415,7 +676,6 @@ public class CgenConfigurationTest {
             configuration.setRootPath(Paths.get("E:\\"));
             configuration.setOutputDir(Paths.get(""));
 
-            assertEquals(".", configuration.encodedDestDir());
             assertEquals(Paths.get("E:\\"), configuration.requireOutputDirectory());
         }
 
@@ -428,7 +688,6 @@ public class CgenConfigurationTest {
         public void nullRootPath() {
             configuration.setOutputDir(Path.of("C:\\test1\\test2\\test3"));
 
-            assertEquals("C:/test1/test2/test3", configuration.encodedDestDir());
             assertEquals(Paths.get("C:\\test1\\test2\\test3"), configuration.requireOutputDirectory());
         }
     }
@@ -454,7 +713,6 @@ public class CgenConfigurationTest {
             Path outputDir = Paths.get("/test1/test2/test3");
             configuration.setOutputDir(outputDir);
 
-            assertEquals(".", configuration.encodedDestDir());
             assertEquals(outputDir, configuration.requireOutputDirectory());
         }
 
@@ -464,7 +722,6 @@ public class CgenConfigurationTest {
             Path outputDir = Paths.get("/test1/test2/testAnother");
             configuration.setOutputDir(outputDir);
 
-            assertEquals("../testAnother", configuration.encodedDestDir());
             assertEquals(outputDir, configuration.requireOutputDirectory());
         }
 
@@ -474,7 +731,6 @@ public class CgenConfigurationTest {
             Path outputDir = Paths.get("/");
             configuration.setOutputDir(outputDir);
 
-            assertEquals(".", configuration.encodedDestDir());
             assertEquals(outputDir, configuration.requireOutputDirectory());
         }
 
@@ -483,7 +739,6 @@ public class CgenConfigurationTest {
             configuration.setRootPath(Paths.get("/test1/test2/test3"));
             configuration.setOutputDir(Paths.get("test1/test2/test3"));
 
-            assertEquals("test1/test2/test3", configuration.encodedDestDir());
             assertEquals(Paths.get("/test1/test2/test3/test1/test2/test3"), configuration.requireOutputDirectory());
         }
 
@@ -497,7 +752,6 @@ public class CgenConfigurationTest {
             configuration.setRootPath(Paths.get("/"));
             configuration.setOutputDir(Paths.get(""));
 
-            assertEquals(".", configuration.encodedDestDir());
             assertEquals(Paths.get("/"), configuration.requireOutputDirectory());
         }
 
@@ -510,7 +764,6 @@ public class CgenConfigurationTest {
         public void nullRootPath() {
             configuration.setOutputDir(Paths.get("/test1/test2/test3"));
 
-            assertEquals("/test1/test2/test3", configuration.encodedDestDir());
             assertEquals(Paths.get("/test1/test2/test3"), configuration.requireOutputDirectory());
         }
     }

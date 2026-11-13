@@ -19,14 +19,17 @@
 
 package org.apache.cayenne.dbsync.reverse.dbimport;
 
+import org.apache.cayenne.CoreModule;
 import org.apache.cayenne.dbsync.DbSyncModule;
 import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
+import org.apache.cayenne.project.ProjectLoadingMode;
 import org.slf4j.Logger;
 import org.junit.jupiter.api.Test;
 import org.slf4j.helpers.NOPLogger;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DbImportModuleTest {
@@ -37,5 +40,13 @@ public class DbImportModuleTest {
         Logger log = NOPLogger.NOP_LOGGER;
         Injector i = DIBootstrap.createInjector(new DbSyncModule(), new ToolsModule(log), new DbImportModule());
         assertTrue(i.getInstance(DbImportAction.class) instanceof DbImportAction);
+    }
+
+    @Test
+    public void fullProjectModel() {
+
+        // no ToolsModule here, DbImportModule must override the CoreModule default on its own
+        Injector i = DIBootstrap.createInjector(new CoreModule(), new DbImportModule());
+        assertEquals(ProjectLoadingMode.FULL, i.getInstance(ProjectLoadingMode.class));
     }
 }

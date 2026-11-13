@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.templateeditor;
 
-import org.apache.cayenne.project.xml.DefaultProjectMetaData;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.TemplateType;
 import org.apache.cayenne.map.DataMap;
@@ -79,7 +78,6 @@ public class PreviewActionConfiguratorTest {
         PreviewActionConfigurator actionConfigurator = new PreviewActionConfigurator(
                 type,
                 configurator,
-                new DefaultProjectMetaData(),
                 () -> dataMap,
                 () -> artifactName);
         ClassGenerationAction action = actionConfigurator.preparePreviewAction(TEST_TEMPLATE_TEXT);

@@ -19,15 +19,15 @@
 
 package org.apache.cayenne.dbsync.reverse.filters;
 
-import org.apache.cayenne.dbsync.reverse.dbimport.Catalog;
-import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeColumn;
-import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeProcedure;
-import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeTable;
-import org.apache.cayenne.dbsync.reverse.dbimport.IncludeColumn;
-import org.apache.cayenne.dbsync.reverse.dbimport.IncludeProcedure;
-import org.apache.cayenne.dbsync.reverse.dbimport.IncludeTable;
-import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
-import org.apache.cayenne.dbsync.reverse.dbimport.Schema;
+import org.apache.cayenne.project.dbimport.Catalog;
+import org.apache.cayenne.project.dbimport.ExcludeColumn;
+import org.apache.cayenne.project.dbimport.ExcludeProcedure;
+import org.apache.cayenne.project.dbimport.ExcludeTable;
+import org.apache.cayenne.project.dbimport.IncludeColumn;
+import org.apache.cayenne.project.dbimport.IncludeProcedure;
+import org.apache.cayenne.project.dbimport.IncludeTable;
+import org.apache.cayenne.project.dbimport.ReverseEngineering;
+import org.apache.cayenne.project.dbimport.Schema;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

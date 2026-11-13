@@ -32,7 +32,7 @@ import org.apache.cayenne.util.XMLSerializable;
  *
  * @since 6.0
  */
-public abstract sealed class NamedQuery implements ProjectNode, XMLSerializable
+public abstract sealed class NamedQuery implements ProjectNode, XMLSerializable, Commentable
         permits NamedSelectQuery, NamedSQLQuery, NamedProcedureQuery {
 
     public static final String OBJ_ENTITY_ROOT = "objEntity";
@@ -48,6 +48,7 @@ public abstract sealed class NamedQuery implements ProjectNode, XMLSerializable
     protected boolean fetchingDataRows;
     protected int pageSize;
     protected int statementFetchSize;
+    protected String comment;
 
     protected NamedQuery() {
         this.cacheStrategy = QueryCacheStrategy.getDefaultStrategy();
@@ -110,6 +111,16 @@ public abstract sealed class NamedQuery implements ProjectNode, XMLSerializable
 
     public void setCacheGroup(String cacheGroup) {
         this.cacheGroup = cacheGroup;
+    }
+
+    @Override
+    public String getComment() {
+        return comment;
+    }
+
+    @Override
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 
     @Override

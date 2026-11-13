@@ -61,7 +61,7 @@
 	<objRelationship name="gallery" source="Painting" target="Gallery" deleteRule="nullify" dbRelationshipPath="gallery"/>
 	<objRelationship name="info" source="Painting" target="PaintingInfo" deleteRule="nullify" dbRelationshipPath="id"/>
 	<objRelationship name="painting" source="PaintingInfo" target="Painting" deleteRule="nullify" dbRelationshipPath="painting"/>
-	<dbImport xmlns="http://cayenne.apache.org/schema/15/dbimport">
+	<dbImport>
 		<catalog>
 			<excludeTable>legacy_painting_info</excludeTable>
 			<excludeColumn>__service_column</excludeColumn>
@@ -78,7 +78,7 @@
 		<skipRelationshipsLoading>false</skipRelationshipsLoading>
 		<useJava7Types>false</useJava7Types>
 	</dbImport>
-	<cgen xmlns="http://cayenne.apache.org/schema/15/cgen">
+	<cgen>
 		<name>Default</name>
 		<destDir>../java</destDir>
 		<mode>entity</mode>

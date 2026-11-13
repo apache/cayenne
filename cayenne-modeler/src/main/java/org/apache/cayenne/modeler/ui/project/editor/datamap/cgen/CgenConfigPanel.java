@@ -134,10 +134,21 @@ public class CgenConfigPanel extends ProjectPanel {
     public void initForm(CgenConfiguration cgenConfiguration) {
         this.cgenConfiguration = cgenConfiguration;
 
-        Path outputDir = cgenConfiguration.outputDirectory().orElse(null);
+        Path outputDir = null;
+        boolean invalidOutputDir = false;
+        try {
+            outputDir = cgenConfiguration.outputDirectory().orElse(null);
+        } catch (ValidationException e) {
+            invalidOutputDir = true;
+        }
+
         if (outputDir != null) {
             outputFolder.setText(outputDir.toString());
             applyOutputFolder(outputFolder.getText());
+        } else if (invalidOutputDir) {
+            // a path of another OS, shown as is for the user to fix it
+            outputFolder.setText(cgenConfiguration.getDescriptor().getDestDir());
+            updateGenerateButton(false);
         } else {
             // unsaved project: no project root to resolve the output path against, so there is nothing
             // to show. Leave the field empty rather than running validation on a stale value.

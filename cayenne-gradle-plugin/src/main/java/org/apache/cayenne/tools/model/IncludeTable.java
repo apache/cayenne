@@ -84,9 +84,9 @@ public class IncludeTable extends PatternParam {
         }
     }
 
-    org.apache.cayenne.dbsync.reverse.dbimport.IncludeTable toIncludeTable() {
-        org.apache.cayenne.dbsync.reverse.dbimport.IncludeTable table
-                = new org.apache.cayenne.dbsync.reverse.dbimport.IncludeTable();
+    org.apache.cayenne.project.dbimport.IncludeTable toIncludeTable() {
+        org.apache.cayenne.project.dbimport.IncludeTable table
+                = new org.apache.cayenne.project.dbimport.IncludeTable();
         table.setPattern(getPattern());
 
         for(PatternParam includeColumn : includeColumns) {

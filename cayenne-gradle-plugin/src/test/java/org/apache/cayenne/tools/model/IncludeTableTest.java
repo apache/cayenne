@@ -21,9 +21,9 @@ package org.apache.cayenne.tools.model;
 
 import java.util.Collection;
 
-import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeColumn;
-import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeRelationship;
-import org.apache.cayenne.dbsync.reverse.dbimport.IncludeColumn;
+import org.apache.cayenne.project.dbimport.ExcludeColumn;
+import org.apache.cayenne.project.dbimport.ExcludeRelationship;
+import org.apache.cayenne.project.dbimport.IncludeColumn;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -95,7 +95,7 @@ public class IncludeTableTest {
         table.includeColumns("column1", "column2");
         table.excludeColumns("column3", "column4", "column5");
 
-        org.apache.cayenne.dbsync.reverse.dbimport.IncludeTable rrTable = table.toIncludeTable();
+        org.apache.cayenne.project.dbimport.IncludeTable rrTable = table.toIncludeTable();
         assertEquals("name", rrTable.getPattern());
         assertEquals(2, rrTable.getIncludeColumns().size());
         assertEquals(3, rrTable.getExcludeColumns().size());

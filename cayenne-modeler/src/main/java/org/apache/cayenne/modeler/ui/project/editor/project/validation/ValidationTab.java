@@ -19,7 +19,6 @@
 package org.apache.cayenne.modeler.ui.project.editor.project.validation;
 
 import org.apache.cayenne.project.Project;
-import org.apache.cayenne.project.xml.ProjectMetaData;
 import org.apache.cayenne.modeler.event.display.ProjectDisplayEvent;
 import org.apache.cayenne.modeler.event.display.ProjectDisplayListener;
 import org.apache.cayenne.modeler.event.display.ValidationConfigDisplayEvent;
@@ -44,7 +43,6 @@ import java.util.Set;
 public class ValidationTab extends ProjectPanel
         implements ProjectDisplayListener, ProjectListener, ValidationConfigDisplayListener {
 
-    private final ProjectMetaData metaData;
     private final InspectionCheckBoxTree inspectionTree;
     private final InspectionTreeModelListener inspectionTreeModelListener;
 
@@ -52,7 +50,6 @@ public class ValidationTab extends ProjectPanel
 
     public ValidationTab(ProjectSession session) {
         super(session);
-        this.metaData = app.getMetaData();
         this.inspectionTree = InspectionCheckBoxTree.build();
         this.inspectionTreeModelListener = new InspectionTreeModelListener();
 
@@ -72,25 +69,26 @@ public class ValidationTab extends ProjectPanel
         session.addProjectDisplayListener(this);
         session.addProjectListener(this);
         session.addValidationConfigDisplayListener(this);
-        refreshFromMetadata(session.getSelectedProject());
+        refreshFromProject(session.getSelectedProject());
         inspectionTree.getModel().addTreeModelListener(inspectionTreeModelListener);
     }
 
     @Override
     public void projectSelected(ProjectDisplayEvent e) {
-        refreshFromMetadata(e.getProject());
+        refreshFromProject(e.getProject());
     }
 
     @Override
     public void projectChanged(ProjectEvent e) {
-        refreshFromMetadata(e.getProject());
+        refreshFromProject(e.getProject());
     }
 
-    private void refreshFromMetadata(Project project) {
+    private void refreshFromProject(Project project) {
         // suspend tree listener to skip reverberated config updates
         inspectionTree.getModel().removeTreeModelListener(inspectionTreeModelListener);
         try {
-            configUpdated(ValidationConfig.fromMetadata(metaData, project));
+            // the tab is created before the project is selected
+            configUpdated(project != null ? ValidationConfig.fromProject(project) : new ValidationConfig());
         } finally {
             inspectionTree.getModel().addTreeModelListener(inspectionTreeModelListener);
         }

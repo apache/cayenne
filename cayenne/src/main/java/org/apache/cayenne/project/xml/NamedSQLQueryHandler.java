@@ -67,7 +67,7 @@ public class NamedSQLQueryHandler extends NamedQueryHandler {
                 prefetchSemantics = prefetchSemantics(attributes.getValue("type"));
                 yield true;
             }
-            case CACHE_GROUP_TAG -> true;
+            case CACHE_GROUP_TAG, CommentHandler.COMMENT_TAG -> true;
             default -> false;
         };
     }
@@ -85,6 +85,7 @@ public class NamedSQLQueryHandler extends NamedQueryHandler {
             case SQL_TAG -> addSql(data);
             case PREFETCH_TAG -> addPrefetch(data);
             case CACHE_GROUP_TAG -> namedQuery.setCacheGroup(data);
+            case CommentHandler.COMMENT_TAG -> CommentHandler.loadComment(loaderContext, namedQuery, data);
         }
         return true;
     }

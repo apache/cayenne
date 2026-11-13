@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ~   Licensed to the Apache Software Foundation (ASF) under one
+  ~  or more contributor license agreements.  See the NOTICE file
+  ~  distributed with this work for additional information
+  ~  regarding copyright ownership.  The ASF licenses this file
+  ~  to you under the Apache License, Version 2.0 (the
+  ~  "License"); you may not use this file except in compliance
+  ~  with the License.  You may obtain a copy of the License at
+  ~
+  ~    https://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing,
+  ~  software distributed under the License is distributed on an
+  ~  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~  KIND, either express or implied.  See the License for the
+  ~  specific language governing permissions and limitations
+  ~  under the License.
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+<!-- A comment on every kind of element that can have one -->
+<dataMap xmlns="http://cayenne.apache.org/schema/15/dataMap"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://cayenne.apache.org/schema/15/dataMap http://cayenne.apache.org/schema/15/dataMap.xsd"
+	defaultPackage="org.example">
+	<comment>dataMap &amp; &lt;escaped&gt;</comment>
+	<embeddable className="org.example.Address">
+		<comment>embeddable</comment>
+		<embeddableAttribute name="city" type="java.lang.String" dbAttributeName="CITY">
+			<comment>embeddableAttribute</comment>
+		</embeddableAttribute>
+		<embeddableAttribute name="street" type="java.lang.String" dbAttributeName="STREET"/>
+	</embeddable>
+	<procedure name="proc">
+		<comment>procedure</comment>
+		<procedureParameter name="in_param" type="INTEGER" direction="in">
+			<comment>procedureParameter</comment>
+		</procedureParameter>
+		<procedureParameter name="out_param" type="INTEGER" direction="out"/>
+	</procedure>
+	<dbEntity name="ARTIST">
+		<comment>dbEntity</comment>
+		<dbAttribute name="ARTIST_ID" type="INTEGER" primaryKey="true" mandatory="true">
+			<comment>dbAttribute</comment>
+		</dbAttribute>
+		<dbAttribute name="ARTIST_NAME" type="VARCHAR" length="254"/>
+		<dbAttribute name="CITY" type="VARCHAR" length="100">
+			<comment>
+				multi-line
+				dbAttribute
+			</comment>
+		</dbAttribute>
+		<dbAttribute name="STREET" type="VARCHAR" length="100">
+			<comment>  </comment>
+		</dbAttribute>
+	</dbEntity>
+	<dbEntity name="PAINTING">
+		<dbAttribute name="ARTIST_ID" type="INTEGER"/>
+		<dbAttribute name="PAINTING_ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<objEntity name="Artist" className="org.example.Artist" dbEntityName="ARTIST">
+		<comment>objEntity</comment>
+		<embeddedAttribute name="address" type="org.example.Address">
+			<comment>embeddedAttribute</comment>
+			<embeddableAttributeOverride name="city" dbAttributePath="CITY"/>
+		</embeddedAttribute>
+		<objAttribute name="artistName" type="java.lang.String" dbAttributePath="ARTIST_NAME">
+			<comment>objAttribute</comment>
+		</objAttribute>
+	</objEntity>
+	<objEntity name="Painting" className="org.example.Painting" dbEntityName="PAINTING"/>
+	<dbRelationship name="paintings" source="ARTIST" target="PAINTING" toMany="true">
+		<comment>dbRelationship</comment>
+		<dbAttributePair source="ARTIST_ID" target="ARTIST_ID"/>
+	</dbRelationship>
+	<dbRelationship name="artist" source="PAINTING" target="ARTIST" foreignKey="true">
+		<dbAttributePair source="ARTIST_ID" target="ARTIST_ID"/>
+	</dbRelationship>
+	<objRelationship name="paintings" source="Artist" target="Painting" dbRelationshipPath="paintings">
+		<comment>objRelationship</comment>
+	</objRelationship>
+	<objRelationship name="artist" source="Painting" target="Artist" dbRelationshipPath="artist"/>
+	<objectQuery name="objectQuery">
+		<comment>objectQuery</comment>
+		<ql><![CDATA[from Artist]]></ql>
+	</objectQuery>
+	<procedureQuery name="procedureQuery" root="procedure" rootName="proc">
+		<comment>procedureQuery</comment>
+	</procedureQuery>
+	<sqlQuery name="sqlQuery" root="dataMap">
+		<comment>sqlQuery</comment>
+		<sql><![CDATA[SELECT * FROM ARTIST]]></sql>
+	</sqlQuery>
+</dataMap>

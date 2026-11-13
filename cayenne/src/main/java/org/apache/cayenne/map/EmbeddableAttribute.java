@@ -28,11 +28,16 @@ import org.apache.cayenne.util.XMLSerializable;
  * 
  * @since 3.0
  */
-public class EmbeddableAttribute implements ProjectNode, XMLSerializable {
+public class EmbeddableAttribute implements ProjectNode, XMLSerializable, Commentable {
 
     protected String name;
     protected String type;
     protected String dbAttributeName;
+
+    /**
+     * @since 6.0
+     */
+    protected String comment;
 
     protected Embeddable embeddable;
 
@@ -56,9 +61,9 @@ public class EmbeddableAttribute implements ProjectNode, XMLSerializable {
         encoder.start("embeddableAttribute")
                 .attribute("name", getName())
                 .attribute("type", getType())
-                .attribute("dbAttributeName", dbAttributeName);
-        delegate.visitEmbeddableAttribute(this);
-        encoder.end();
+                .attribute("dbAttributeName", dbAttributeName)
+                .textTag("comment", getComment())
+                .end();
     }
 
     public String getDbAttributeName() {
@@ -83,6 +88,16 @@ public class EmbeddableAttribute implements ProjectNode, XMLSerializable {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    @Override
+    public String getComment() {
+        return comment;
+    }
+
+    @Override
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 
     public Embeddable getEmbeddable() {

@@ -19,10 +19,10 @@
 
 package org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree;
 
-import org.apache.cayenne.dbsync.reverse.dbimport.Catalog;
-import org.apache.cayenne.dbsync.reverse.dbimport.IncludeTable;
-import org.apache.cayenne.dbsync.reverse.dbimport.PatternParam;
-import org.apache.cayenne.dbsync.reverse.dbimport.Schema;
+import org.apache.cayenne.project.dbimport.Catalog;
+import org.apache.cayenne.project.dbimport.IncludeTable;
+import org.apache.cayenne.project.dbimport.PatternParam;
+import org.apache.cayenne.project.dbimport.Schema;
 
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;

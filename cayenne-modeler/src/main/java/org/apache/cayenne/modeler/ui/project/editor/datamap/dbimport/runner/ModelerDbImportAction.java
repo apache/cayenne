@@ -20,10 +20,10 @@
 package org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.runner;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.project.ProjectLoader;
 import org.apache.cayenne.project.DataMapLoader;
 import org.apache.cayenne.dbsync.reverse.configuration.DbAdapterFactory;
-import org.apache.cayenne.project.xml.ProjectMetaData;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
 import org.apache.cayenne.dbsync.reverse.dbimport.DbImportConfiguration;
@@ -35,6 +35,7 @@ import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportRes
 import org.apache.cayenne.projecttools.ProjectSaver;
 import org.slf4j.Logger;
 
+import javax.sql.DataSource;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.Collection;
@@ -56,7 +57,6 @@ public class ModelerDbImportAction extends DefaultDbImportAction {
             @Inject DbAdapterFactory adapterFactory,
             @Inject DataMapLoader mapLoader,
             @Inject MergerTokenFactoryProvider mergerTokenFactoryProvider,
-            @Inject ProjectMetaData metaData,
             @Inject ProjectLoader projectLoader) {
 
         super(
@@ -65,8 +65,7 @@ public class ModelerDbImportAction extends DefaultDbImportAction {
                 adapterFactory,
                 mapLoader,
                 mergerTokenFactoryProvider,
-                projectLoader,
-                metaData);
+                projectLoader);
 
         this.targetMap = targetMap;
         this.resultDialog = application.getFrame().getDbImportResultDialog();
@@ -141,5 +140,11 @@ public class ModelerDbImportAction extends DefaultDbImportAction {
     @Override
     protected DataMap existingTargetMap(DbImportConfiguration configuration) {
         return targetMap;
+    }
+
+    @Override
+    protected void applyDataMapReverseEngineering(DataMap targetDataMap, DbImportConfiguration configuration,
+                                                  DataSource dataSource, DbAdapter adapter) {
+        // the configuration is built from these settings already (see ModelerDbLoaderContext)
     }
 }

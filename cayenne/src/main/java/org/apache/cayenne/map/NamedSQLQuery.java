@@ -162,7 +162,8 @@ public final class NamedSQLQuery extends NamedQuery {
                 .attribute("columnNameCapitalization",
                         columnNamesCapitalization != null && columnNamesCapitalization != CapsStrategy.DEFAULT
                                 ? columnNamesCapitalization.name()
-                                : null);
+                                : null)
+                .textTag("comment", getComment());
 
         // encode default SQL
         if (sql != null) {
@@ -199,7 +200,6 @@ public final class NamedSQLQuery extends NamedQuery {
 
         encoder.nested(prefetchTree, delegate);
 
-        delegate.visitQuery(this);
         encoder.end();
     }
 }

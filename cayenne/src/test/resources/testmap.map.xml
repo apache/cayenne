@@ -86,9 +86,9 @@
 		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>
 	</objEntity>
 	<objEntity name="Artist" className="org.apache.cayenne.testdo.testmap.Artist" dbEntityName="ARTIST">
+		<comment>Example of a comment</comment>
 		<objAttribute name="artistName" type="java.lang.String" dbAttributePath="ARTIST_NAME"/>
 		<objAttribute name="dateOfBirth" type="java.util.Date" dbAttributePath="DATE_OF_BIRTH"/>
-		<info:property xmlns:info="http://cayenne.apache.org/schema/15/info" name="comment" value="Example of a comment"/>
 	</objEntity>
 	<objEntity name="ArtistCallback" className="org.apache.cayenne.testdo.testmap.ArtistCallback" dbEntityName="ARTIST_CT">
 		<objAttribute name="artistName" type="java.lang.String"/>
@@ -301,7 +301,7 @@ VALUES (#bind($id), #bind($title), #bind($price))]]></sql>
 	<sqlQuery name="SelectTestUpper" root="dataMap" rootName="testmap" dataRows="true" columnNameCapitalization="UPPER">
 		<sql><![CDATA[select * from ARTIST]]></sql>
 	</sqlQuery>
-	<cgen xmlns="http://cayenne.apache.org/schema/15/cgen">
+	<cgen>
 		<destDir>../java</destDir>
 		<mode>entity</mode>
 		<template>templates/v4_1/subclass.vm</template>

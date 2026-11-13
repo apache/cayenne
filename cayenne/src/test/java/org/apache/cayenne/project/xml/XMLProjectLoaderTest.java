@@ -24,6 +24,7 @@ import org.apache.cayenne.project.ConfigurationNameMapper;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.DataMapLoader;
 import org.apache.cayenne.project.DefaultConfigurationNameMapper;
+import org.apache.cayenne.project.ProjectLoadingMode;
 import org.apache.cayenne.project.upgrade.ProjectFileUpgrader;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.ClassLoaderManager;
@@ -38,6 +39,7 @@ import org.apache.cayenne.resource.URLResource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.w3c.dom.Element;
 import org.xml.sax.XMLReader;
 
 import java.io.File;
@@ -47,7 +49,11 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
+import static org.apache.cayenne.project.xml.XMLTestUtils.childElements;
+import static org.apache.cayenne.project.xml.XMLTestUtils.encode;
+import static org.apache.cayenne.project.xml.XMLTestUtils.parse;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class XMLProjectLoaderTest {
@@ -59,18 +65,25 @@ public class XMLProjectLoaderTest {
 
     @BeforeEach
     public void setUp() {
-        Module testModule = binder -> {
+        this.injector = DIBootstrap.createInjector(testModule(ProjectLoadingMode.RUNTIME));
+    }
+
+    private static Module testModule(ProjectLoadingMode loadingMode) {
+        return binder -> {
             binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
             binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
             binder.bind(DataMapLoader.class).to(XMLDataMapLoader.class);
             binder.bind(ProjectFileUpgrader.class).to(ProjectFileUpgrader.class);
             binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);
-            binder.bind(HandlerFactory.class).to(DefaultHandlerFactory.class);
-            binder.bind(ProjectMetaData.class).to(NoopProjectMetaData.class);
+            binder.bind(ProjectLoadingMode.class).toInstance(loadingMode);
             binder.bind(XMLReader.class).toProviderInstance(new XMLReaderProvider(false)).withoutScope();
         };
+    }
 
-        this.injector = DIBootstrap.createInjector(testModule);
+    private static XMLProjectLoader createLoader(ProjectLoadingMode loadingMode) {
+        XMLProjectLoader loader = new XMLProjectLoader();
+        DIBootstrap.createInjector(testModule(loadingMode)).injectMembers(loader);
+        return loader;
     }
 
     @Test
@@ -249,5 +262,92 @@ public class XMLProjectLoaderTest {
 
         assertEquals("testConfigMap3_1", map1.getName());
         assertEquals("testConfigMap3_2", map2.getName());
+    }
+
+    @Test
+    public void loadValidation() {
+        Project project = createLoader(ProjectLoadingMode.FULL).load(validationProject());
+
+        assertEquals(List.of("SQL_TEMPLATE_NO_ROOT", "PROJECT_NO_NAME", "NO_SUCH_INSPECTION", "DB_ENTITY_NO_PK"),
+                List.copyOf(project.getDisabledInspections()));
+    }
+
+    @Test
+    public void skipValidation() {
+        XMLProjectLoader loader = new XMLProjectLoader();
+        injector.injectMembers(loader);
+
+        Project project = loader.load(validationProject());
+        assertTrue(project.getDisabledInspections().isEmpty());
+
+        Project fullProject = createLoader(ProjectLoadingMode.FULL).load(validationProject());
+        fullProject.setDisabledInspections(List.of());
+        assertEquals(encode(fullProject), encode(project));
+    }
+
+    @Test
+    public void skipValidationOfOtherNamespace() {
+        // the pre-v15 "validation" extension namespace, not converted in a current version project
+        URL url = getClass().getResource("cayenne-testConfig13.xml");
+        Project project = createLoader(ProjectLoadingMode.FULL).load(new URLResource(url));
+
+        assertTrue(project.getDisabledInspections().isEmpty());
+    }
+
+    @Test
+    public void saveAndLoadValidation() throws Exception {
+        XMLProjectLoader fullLoader = createLoader(ProjectLoadingMode.FULL);
+        Project project = fullLoader.load(validationProject());
+        String xml = encode(project);
+
+        Element root = parse(xml).getDocumentElement();
+        List<Element> children = childElements(root);
+        assertEquals(List.of("map", "validation"), children.stream().map(Element::getLocalName).toList());
+        Element validation = children.get(1);
+        assertEquals(Project.SCHEMA_XSD, validation.getNamespaceURI());
+        assertEquals(List.copyOf(project.getDisabledInspections()),
+                childElements(validation).stream().map(Element::getTextContent).toList());
+
+        File projectFile = new File(tempDir, "cayenne-saveAndLoadValidation.xml");
+        Files.writeString(projectFile.toPath(), xml);
+        copyToTemp("testConfigMap2.map.xml");
+        Project loaded = fullLoader.load(new URLResource(projectFile.toURI().toURL()));
+        assertEquals(List.copyOf(project.getDisabledInspections()), List.copyOf(loaded.getDisabledInspections()));
+    }
+
+    @Test
+    public void saveEmptyValidation() {
+        Project project = createLoader(ProjectLoadingMode.FULL).load(validationProject());
+        project.setDisabledInspections(List.of());
+
+        String xml = encode(project);
+        assertFalse(xml.contains("validation"), xml);
+    }
+
+    @Test
+    public void loadOldVersionValidation() {
+        // version 14, upgraded in memory
+        URL url = getClass().getResource("cayenne-testConfig12.xml");
+        Project project = createLoader(ProjectLoadingMode.FULL).load(new URLResource(url));
+
+        // the inspection renamed in version 15 is upgraded
+        assertEquals(List.of("PROJECT_NO_NAME", "DB_RELATIONSHIP_FOREIGN_KEY_IN_GENERATED_PK"),
+                List.copyOf(project.getDisabledInspections()));
+    }
+
+    @Test
+    public void skipOldVersionValidation() {
+        XMLProjectLoader loader = new XMLProjectLoader();
+        injector.injectMembers(loader);
+
+        // version 14, upgraded in memory
+        URL url = getClass().getResource("cayenne-testConfig12.xml");
+        Project project = loader.load(new URLResource(url));
+
+        assertTrue(project.getDisabledInspections().isEmpty());
+    }
+
+    private URLResource validationProject() {
+        return new URLResource(getClass().getResource("cayenne-testConfig11.xml"));
     }
 }

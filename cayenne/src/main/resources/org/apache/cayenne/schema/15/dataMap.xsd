@@ -31,6 +31,7 @@
 	<xs:element name="dataMap">
 		<xs:complexType>
 			<xs:sequence>
+				<xs:element minOccurs="0" ref="cay:comment"/>
 				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:embeddable"/>
 				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:procedure"/>
 				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:dbEntity"/>
@@ -42,7 +43,8 @@
 					<xs:element ref="cay:sqlQuery"/>
 					<xs:element ref="cay:procedureQuery"/>
 				</xs:choice>
-				<xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other" processContents="lax"/>
+				<xs:element minOccurs="0" ref="cay:dbImport"/>
+				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:cgen"/>
 			</xs:sequence>
 			<xs:attribute name="defaultLockType">
 				<xs:annotation>
@@ -84,13 +86,12 @@
 	<xs:element name="dbEntity">
 		<xs:complexType>
 			<xs:sequence>
+				<xs:element minOccurs="0" ref="cay:comment"/>
 				<xs:element maxOccurs="unbounded" ref="cay:dbAttribute"/>
 				<xs:element minOccurs="0" ref="cay:dbKeyGenerator"/>
 
 				<!-- Qualifier for DB Entity -->
 				<xs:element minOccurs="0" ref="cay:qualifier"/>
-
-				<xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other" processContents="lax"/>
 			</xs:sequence>
 			<xs:attribute name="name" use="required" type="xs:string"/>
 			<xs:attribute name="schema" type="xs:string"/>
@@ -103,7 +104,7 @@
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
-				<xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other" processContents="lax"/>
+				<xs:element minOccurs="0" ref="cay:comment"/>
 			</xs:sequence>
 			<xs:attribute name="mandatory" type="xs:boolean"/>
 			<xs:attribute name="primaryKey" type="xs:boolean">
@@ -115,7 +116,7 @@
 			<xs:attribute name="length" type="xs:integer"/>
 			<xs:attribute name="name" use="required" type="xs:string"/>
 			<xs:attribute name="scale" type="xs:integer"/>
-			<xs:attribute name="attributePrecision" type="xs:integer"/>
+			<xs:attribute name="precision" type="xs:integer"/>
 			<xs:attribute name="type" use="required" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
@@ -126,12 +127,11 @@
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
+				<xs:element minOccurs="0" ref="cay:comment"/>
 				<xs:element minOccurs="0" ref="cay:qualifier"/>
 				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:embeddedAttribute"/>
 				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:objAttribute"/>
 				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:attributeOverride"/>
-
-				<xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other" processContents="lax"/>
 			</xs:sequence>
 			<xs:attribute name="className" type="xs:string"/>
 			<xs:attribute name="abstract" type="xs:boolean"/>
@@ -146,10 +146,16 @@
 
 	<xs:element name="qualifier" type="xs:string"/>
 
+	<xs:element name="comment" type="xs:string">
+		<xs:annotation>
+			<xs:documentation>A user comment of the enclosing element, e.g. shown in CayenneModeler or written to the Javadoc of the generated classes. Not used by the runtime.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+
 	<xs:element name="objAttribute">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other" processContents="lax"/>
+				<xs:element minOccurs="0" ref="cay:comment"/>
 			</xs:sequence>
 			<xs:attribute name="dbAttributePath" type="xs:string"/>
 			<xs:attribute name="lock" type="xs:boolean"/>
@@ -162,17 +168,15 @@
 	<xs:element name="attributeOverride">
 		<xs:complexType>
 			<xs:attribute name="dbAttributePath" type="xs:string"/>
-			<xs:attribute name="lock" type="xs:boolean"/>
 			<xs:attribute name="name" type="xs:string"/>
-			<xs:attribute name="type" type="xs:string"/>
 		</xs:complexType>
 	</xs:element>
 
 	<xs:element name="dbRelationship">
 		<xs:complexType>
 			<xs:sequence>
+				<xs:element minOccurs="0" ref="cay:comment"/>
 				<xs:element minOccurs="1" maxOccurs="unbounded" ref="cay:dbAttributePair"/>
-				<xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other" processContents="lax"/>
 			</xs:sequence>
 			<xs:attribute name="name" use="required" type="xs:string"/>
 			<xs:attribute name="source" use="required" type="xs:string"/>
@@ -190,7 +194,7 @@
 	<xs:element name="objRelationship">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other" processContents="lax"/>
+				<xs:element minOccurs="0" ref="cay:comment"/>
 			</xs:sequence>
 			<xs:attribute name="dbRelationshipPath" use="required" type="xs:string"/>
 			<xs:attribute name="deleteRule" type="xs:string"/>
@@ -209,9 +213,9 @@
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
+				<xs:element minOccurs="0" ref="cay:comment"/>
 				<xs:element minOccurs="0" ref="cay:ql"/>
 				<xs:element minOccurs="0" ref="cay:cacheGroup"/>
-				<xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other" processContents="lax"/>
 			</xs:sequence>
 			<xs:attribute name="name" use="required" type="xs:string"/>
 			<xs:attributeGroup ref="cay:querySettings"/>
@@ -224,10 +228,10 @@
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
+				<xs:element minOccurs="0" ref="cay:comment"/>
 				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:sql"/>
 				<xs:element minOccurs="0" ref="cay:cacheGroup"/>
 				<xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:prefetch"/>
-				<xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other" processContents="lax"/>
 			</xs:sequence>
 			<xs:attribute name="name" use="required" type="xs:string"/>
 			<xs:attribute name="root" type="xs:string"/>
@@ -243,8 +247,8 @@
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
+				<xs:element minOccurs="0" ref="cay:comment"/>
 				<xs:element minOccurs="0" ref="cay:cacheGroup"/>
-				<xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other" processContents="lax"/>
 			</xs:sequence>
 			<xs:attribute name="name" use="required" type="xs:string"/>
 			<xs:attribute name="root" type="xs:string"/>
@@ -349,14 +353,17 @@
 	<xs:element name="embeddable">
 		<xs:complexType>
 			<xs:sequence>
+				<xs:element minOccurs="0" ref="cay:comment"/>
 				<xs:element name="embeddableAttribute" minOccurs="0" maxOccurs="unbounded">
 					<xs:complexType>
+						<xs:sequence>
+							<xs:element minOccurs="0" ref="cay:comment"/>
+						</xs:sequence>
 						<xs:attribute name="name" use="required" type="xs:string"/>
 						<xs:attribute name="type" use="required" type="xs:string"/>
 						<xs:attribute name="dbAttributeName" use="required" type="xs:string"/>
 					</xs:complexType>
 				</xs:element>
-				<xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other" processContents="lax"/>
 			</xs:sequence>
 			<xs:attribute name="className" use="required" type="xs:string"/>
 		</xs:complexType>
@@ -365,6 +372,7 @@
 	<xs:element name="embeddedAttribute">
 		<xs:complexType>
 			<xs:sequence>
+				<xs:element minOccurs="0" ref="cay:comment"/>
 				<xs:element minOccurs="0" maxOccurs="unbounded"
 					ref="cay:embeddableAttributeOverride"/>
 			</xs:sequence>
@@ -383,20 +391,125 @@
 	<xs:element name="procedure">
 		<xs:complexType>
 			<xs:sequence>
+				<xs:element minOccurs="0" ref="cay:comment"/>
 				<xs:element minOccurs="0" maxOccurs="unbounded" name="procedureParameter">
 					<xs:complexType>
+						<xs:sequence>
+							<xs:element minOccurs="0" ref="cay:comment"/>
+						</xs:sequence>
 						<xs:attribute name="name" use="required" type="xs:string"/>
 						<xs:attribute name="type" use="required" type="xs:string"/>
 						<xs:attribute name="length" type="xs:integer"/>
+						<xs:attribute name="precision" type="xs:integer"/>
 						<xs:attribute name="direction" use="required" type="xs:string"/>
 					</xs:complexType>
 				</xs:element>
-				<xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other" processContents="lax"/>
 			</xs:sequence>
 			<xs:attribute name="name" use="required" type="xs:string"/>
 			<xs:attribute name="schema" type="xs:string"/>
 			<xs:attribute name="catalog" type="xs:string"/>
 			<xs:attribute name="returningValue" type="xs:boolean"/>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="dbImport">
+		<xs:annotation>
+			<xs:documentation>The settings used to import the DB schema into the DataMap, e.g. by CayenneModeler or the "cdbimport" build tool tasks. Not used by the runtime.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="cay:dbImportContainer">
+					<xs:sequence>
+						<xs:element name="catalog" minOccurs="0" maxOccurs="unbounded" type="cay:dbImportCatalog"/>
+						<xs:element name="schema" minOccurs="0" maxOccurs="unbounded" type="cay:dbImportSchema"/>
+						<xs:element name="tableTypes" minOccurs="0" type="cay:dbImportTableTypes"/>
+						<xs:element name="defaultPackage" minOccurs="0" type="xs:string"/>
+						<xs:element name="forceDataMapCatalog" minOccurs="0" type="xs:boolean"/>
+						<xs:element name="forceDataMapSchema" minOccurs="0" type="xs:boolean"/>
+						<xs:element name="meaningfulPkTables" minOccurs="0" type="xs:string"/>
+						<xs:element name="namingStrategy" minOccurs="0" type="xs:string"/>
+						<xs:element name="skipPrimaryKeyLoading" minOccurs="0" type="xs:boolean"/>
+						<xs:element name="skipRelationshipsLoading" minOccurs="0" type="xs:boolean"/>
+						<xs:element name="stripFromTableNames" minOccurs="0" type="xs:string"/>
+						<xs:element name="useJava7Types" minOccurs="0" type="xs:boolean"/>
+					</xs:sequence>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:complexType name="dbImportTableTypes">
+		<xs:sequence>
+			<xs:element name="tableType" minOccurs="0" maxOccurs="unbounded" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="dbImportIncludeTable">
+		<xs:sequence>
+			<xs:element name="name" minOccurs="0" type="xs:string"/>
+			<xs:element name="includeColumn" minOccurs="0" maxOccurs="unbounded" type="xs:string"/>
+			<xs:element name="excludeColumn" minOccurs="0" maxOccurs="unbounded" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="dbImportContainer" abstract="true">
+		<xs:sequence>
+			<xs:element name="includeTable" minOccurs="0" maxOccurs="unbounded" type="cay:dbImportIncludeTable"/>
+			<xs:element name="excludeTable" minOccurs="0" maxOccurs="unbounded" type="xs:string"/>
+			<xs:element name="includeColumn" minOccurs="0" maxOccurs="unbounded" type="xs:string"/>
+			<xs:element name="excludeColumn" minOccurs="0" maxOccurs="unbounded" type="xs:string"/>
+			<xs:element name="includeProcedure" minOccurs="0" maxOccurs="unbounded" type="xs:string"/>
+			<xs:element name="excludeProcedure" minOccurs="0" maxOccurs="unbounded" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="dbImportSchema">
+		<xs:complexContent>
+			<xs:extension base="cay:dbImportContainer">
+				<xs:sequence>
+					<xs:element name="name" minOccurs="0" type="xs:string"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:complexType name="dbImportCatalog">
+		<xs:complexContent>
+			<xs:extension base="cay:dbImportContainer">
+				<xs:sequence>
+					<xs:element name="name" minOccurs="0" type="xs:string"/>
+					<xs:element name="schema" minOccurs="0" maxOccurs="unbounded" type="cay:dbImportSchema"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:element name="cgen">
+		<xs:annotation>
+			<xs:documentation>The settings used to generate the classes of the DataMap, e.g. by CayenneModeler or the "cgen" build tool tasks. A DataMap can have several of them, told apart by name. Not used by the runtime.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="name" minOccurs="0" type="xs:string"/>
+				<xs:element name="excludeEntities" minOccurs="0" type="xs:string"/>
+				<xs:element name="excludeEmbeddables" minOccurs="0" type="xs:string"/>
+				<xs:element name="destDir" minOccurs="0" type="xs:string"/>
+				<xs:element name="mode" minOccurs="0" type="xs:string"/>
+				<xs:element name="template" minOccurs="0" type="xs:string"/>
+				<xs:element name="superTemplate" minOccurs="0" type="xs:string"/>
+				<xs:element name="embeddableTemplate" minOccurs="0" type="xs:string"/>
+				<xs:element name="embeddableSuperTemplate" minOccurs="0" type="xs:string"/>
+				<xs:element name="dataMapTemplate" minOccurs="0" type="xs:string"/>
+				<xs:element name="dataMapSuperTemplate" minOccurs="0" type="xs:string"/>
+				<xs:element name="outputPattern" minOccurs="0" type="xs:string"/>
+				<xs:element name="makePairs" minOccurs="0" type="xs:boolean"/>
+				<xs:element name="usePkgPath" minOccurs="0" type="xs:boolean"/>
+				<xs:element name="overwrite" minOccurs="0" type="xs:boolean"/>
+				<xs:element name="createPropertyNames" minOccurs="0" type="xs:boolean"/>
+				<xs:element name="superPkg" minOccurs="0" type="xs:string"/>
+				<xs:element name="createPKProperties" minOccurs="0" type="xs:boolean"/>
+				<xs:element name="externalToolConfig" minOccurs="0" type="xs:string"/>
+			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
 

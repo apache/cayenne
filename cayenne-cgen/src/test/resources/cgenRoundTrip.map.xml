@@ -4,7 +4,7 @@
           xsi:schemaLocation="http://cayenne.apache.org/schema/15/dataMap https://cayenne.apache.org/schema/15/dataMap.xsd">
     <objEntity name="Artist" className="org.example.Artist">
     </objEntity>
-    <cgen xmlns="http://cayenne.apache.org/schema/15/cgen">
+    <cgen>
         <name>Default</name>
         <destDir>../java</destDir>
         <mode>entity</mode>

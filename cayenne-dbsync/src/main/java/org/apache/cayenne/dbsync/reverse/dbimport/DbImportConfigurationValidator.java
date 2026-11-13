@@ -22,6 +22,8 @@ package org.apache.cayenne.dbsync.reverse.dbimport;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.reverse.configuration.DbAdapterFactory;
 import org.apache.cayenne.di.Injector;
+import org.apache.cayenne.project.dbimport.Catalog;
+import org.apache.cayenne.project.dbimport.ReverseEngineering;
 
 import java.util.Collection;
 import javax.sql.DataSource;

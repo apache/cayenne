@@ -21,7 +21,7 @@
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://cayenne.apache.org/schema/15/dataMap https://cayenne.apache.org/schema/15/dataMap.xsd">
 
-    <dbImport xmlns="http://cayenne.apache.org/schema/15/dbimport">
+    <dbImport>
         <schema>
             <name>SCHEMA_01</name>
             <excludeColumn>COL5</excludeColumn>

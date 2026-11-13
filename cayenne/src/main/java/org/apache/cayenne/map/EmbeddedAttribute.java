@@ -66,6 +66,7 @@ public class EmbeddedAttribute extends ObjAttribute {
         setDbAttributePathDirect(other.getDbAttributePath());
         setUsedForLocking(other.isUsedForLocking());
         setLazy(other.isLazy());
+        setComment(other.getComment());
         attributeOverrides = other.getAttributeOverrides();
     }
 
@@ -73,7 +74,8 @@ public class EmbeddedAttribute extends ObjAttribute {
     public void encodeAsXML(XMLEncoder encoder, ProjectNodeVisitor delegate) {
         encoder.start("embeddedAttribute")
                 .attribute("name", getName())
-                .attribute("type", getType());
+                .attribute("type", getType())
+                .textTag("comment", getComment());
 
         for (Map.Entry<String, String> e : attributeOverrides.entrySet()) {
             encoder.start("embeddableAttributeOverride")

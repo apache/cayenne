@@ -26,11 +26,10 @@ Reference for the embedded `<cgen>` block inside a DataMap that drives `mcp__cay
 <dataMap xmlns="http://cayenne.apache.org/schema/15/dataMap" ...>
     ...entities, relationships, etc...
 
-    <cgen xmlns="http://cayenne.apache.org/schema/15/cgen">
+    <cgen>
+        <name>Default</name>
         <destDir>../java</destDir>
         <mode>entity</mode>
-        <excludeEntities></excludeEntities>
-        <excludeEmbeddables></excludeEmbeddables>
         <outputPattern>*.java</outputPattern>
         <makePairs>true</makePairs>
         <usePkgPath>true</usePkgPath>
@@ -41,50 +40,56 @@ Reference for the embedded `<cgen>` block inside a DataMap that drives `mcp__cay
 </dataMap>
 ```
 
-Note the **different namespace** for `<cgen>` (`http://cayenne.apache.org/schema/15/cgen`) — it is a separate schema embedded in the dataMap schema.
+`<cgen>` is in the DataMap namespace, with no `xmlns` of its own. It goes last in the DataMap, after `<dbImport>` if there is one. A DataMap may have several `<cgen>` blocks with different `<name>`s; `mcp__cayenne__cgen_run` uses the first one. In a version 15 DataMap, a `<cgen>` with an `xmlns` of its own was written by a 6.0 snapshot build and is ignored — see "Files written by a 6.0 snapshot build" in `datamap-schema.md`.
+
+Every child element is optional; a missing one takes its default. The children that are present must follow this order: `<name>`, `<excludeEntities>`, `<excludeEmbeddables>`, `<destDir>`, `<mode>`, `<template>`, `<superTemplate>`, `<embeddableTemplate>`, `<embeddableSuperTemplate>`, `<dataMapTemplate>`, `<dataMapSuperTemplate>`, `<outputPattern>`, `<makePairs>`, `<usePkgPath>`, `<overwrite>`, `<createPropertyNames>`, `<superPkg>`, `<createPKProperties>`, `<externalToolConfig>`. Write the values without surrounding whitespace, and `true` / `false` in lowercase. The tables below group the fields by topic, not in this order.
 
 ## Field reference
 
-### Required
+### Name, destination and mode
 
 | Field | Default | Meaning |
 |---|---|---|
-| `<destDir>` | — | Output directory, **relative to the directory containing `*.map.xml`**. Typical values: `.`, `../java`, `../../main/java`. |
+| `<name>` | `Default` | Name of the config, shown in CayenneModeler. Keep it unique within the DataMap. |
+| `<destDir>` | `.` | Output directory, **relative to the directory containing `*.map.xml`**, or absolute (avoid it, see "Anti-patterns" below). The default is the DataMap's own directory, which is rarely right — set it, see "Determining `destDir`" below. Typical values: `../java`, `../../main/java`. |
 | `<mode>` | `entity` | What to generate. `entity` = per-entity classes. `all` = per-entity classes + a single DataMap class with named-query helpers. |
 
 ### Pairs vs single class
 
 | Field | Default | Meaning |
 |---|---|---|
-| `<makePairs>` | `true` | When `true`, generate two files per entity: `_Artist.java` (regenerated, never edit) and `Artist.java` (user subclass, edit freely). When `false`, generate a single `Artist.java` — overwritten each run. **Almost always leave at `true`.** |
-| `<overwrite>` | `false` | Only meaningful when `makePairs=false`. When `true`, the single subclass is overwritten on each run. Dangerous if user code lives there. |
+| `<makePairs>` | `true` | When `true`, generate two files per entity: `_Artist.java` (regenerated, never edit) and `Artist.java` (user subclass, edit freely). When `false`, generate a single `Artist.java`, from the single class templates (see "Templates" below). **Almost always leave at `true`.** |
+| `<overwrite>` | `false` | Only meaningful when `makePairs=false`. When `true`, the single class is overwritten on each run; when `false`, an existing one is left as is. Dangerous if user code lives there. |
 
 ### Filtering
 
 | Field | Default | Meaning |
 |---|---|---|
-| `<excludeEntities>` | (empty) | Comma-separated ObjEntity names to skip. Inverse — what's *included* is everything else. |
-| `<excludeEmbeddables>` | (empty) | Comma-separated embeddable class names to skip. |
+| `<excludeEntities>` | (empty) | Comma-separated ObjEntity names to skip, with no spaces. Inverse — what's *included* is everything else. |
+| `<excludeEmbeddables>` | (empty) | Comma-separated embeddable class names to skip, with no spaces. |
 
 ### Output
 
 | Field | Default | Meaning |
 |---|---|---|
 | `<outputPattern>` | `*.java` | File name pattern. `*` is replaced by the class name. Change to `*.kt` for Kotlin templates. |
-| `<encoding>` | platform default | Character encoding for generated files. |
 | `<usePkgPath>` | `true` | When `true`, generated files go into subdirectories matching their Java package (`com/example/Artist.java`). When `false`, all files are flat in `destDir`. |
-| `<superPkg>` | (empty) | Override package for generated superclasses (`_Artist`). By default, `<defaultPackage>.auto`. |
+| `<superPkg>` | (empty) | Override package for generated superclasses (`_Artist`). By default, the package of the subclass plus `.auto`. |
 
 ### Templates
 
 | Field | Default | Meaning |
 |---|---|---|
-| `<template>` | built-in `subclass.vm` | Velocity template for the user subclass (`Artist.java`). Use a CDATA path to a custom `.vm` file. |
-| `<superTemplate>` | built-in `superclass.vm` | Template for the auto-generated superclass (`_Artist.java`). |
-| `<embeddableTemplate>` | built-in | Template for embeddable subclass. |
-| `<embeddableSuperTemplate>` | built-in | Template for embeddable superclass. |
-| `<dataMapTemplate>` | built-in | Template for the DataMap helper class (only used when `<mode>` is `all`). |
-| `<dataMapSuperTemplate>` | built-in | Superclass template for the DataMap helper. |
+| `<template>` | `templates/v4_1/subclass.vm` | Velocity template for the user subclass (`Artist.java`), or for the single class when `makePairs=false`. |
+| `<superTemplate>` | `templates/v4_1/superclass.vm` | Template for the auto-generated superclass (`_Artist.java`). |
+| `<embeddableTemplate>` | `templates/v4_1/embeddable-subclass.vm` | Template for embeddable subclass, or for the single class when `makePairs=false`. |
+| `<embeddableSuperTemplate>` | `templates/v4_1/embeddable-superclass.vm` | Template for embeddable superclass. |
+| `<dataMapTemplate>` | `templates/v4_1/datamap-subclass.vm` | Template for the DataMap helper class (only used when `<mode>` is `all`), or for the single class when `makePairs=false`. |
+| `<dataMapSuperTemplate>` | `templates/v4_1/datamap-superclass.vm` | Superclass template for the DataMap helper. |
+
+- Use the `templates/v4_1/*.vm` paths for the built-in templates. Cayenne writes them for every template that is not customized.
+- Write any other value as the **text** of a custom Velocity template, normally in CDATA. It is not a path to a `.vm` file: a path that is not a built-in one is used as the template text itself.
+- With `makePairs=false`, set `<template>`, `<embeddableTemplate>` and `<dataMapTemplate>` to the built-in single class templates, `templates/v4_1/singleclass.vm`, `templates/v4_1/embeddable-singleclass.vm` and `templates/v4_1/datamap-singleclass.vm`, as CayenneModeler does. Otherwise the subclass templates are used.
 
 Custom templates are rare. Skip unless the user explicitly asks for them.
 
@@ -106,7 +111,7 @@ The MCP tool:
 
 1. Loads the project at `projectPath`.
 2. Finds the named DataMap (`dataMap` argument).
-3. Reads its embedded `<cgen>` block — or, if there is none, synthesizes a default config (see below).
+3. Reads its first `<cgen>` block — or, if there is none, synthesizes a default config (see below).
 4. Resolves `destDir` relative to the `*.map.xml` file.
 5. Runs the generator. Returns a JSON object listing files `written`, files `skipped` (already up-to-date), and any `errors`.
 
@@ -150,7 +155,7 @@ If the map file lives under a test resource directory (`src/test/resources/`, `t
 ## Recommended starting config
 
 ```xml
-<cgen xmlns="http://cayenne.apache.org/schema/15/cgen">
+<cgen>
     <destDir>../java</destDir>
     <mode>entity</mode>
     <makePairs>true</makePairs>
@@ -163,7 +168,7 @@ The `../java` value above assumes a standard Maven layout (`src/main/resources/`
 
 ## Anti-patterns
 
-- Setting `<makePairs>false</makePairs>` to "simplify" — you lose the ability to add user code without it being overwritten on the next cgen run.
+- Setting `<makePairs>false</makePairs>` to "simplify" — with the default `<overwrite>false</overwrite>` an existing class is left untouched, so model changes stop reaching it; with `<overwrite>true</overwrite>` they do, but every cgen run destroys the user code in it.
 - Editing `_<Entity>.java` files (the superclasses). They are regenerated. Customize `<Entity>.java` (the subclass) instead.
 - `<destDir>` as an absolute path checked into source — breaks reproducibility for other developers. Use a relative path.
 - Pasting `../java` blindly without checking the actual project layout. Inspect the tree first; see "Determining `destDir`" above.

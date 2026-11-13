@@ -75,13 +75,13 @@ public class DbRelationship extends Relationship<DbEntity, DbAttribute, DbRelati
 
         encoder.attribute("foreignKey", isForeignKey());
         encoder.attribute("toMany", isToMany());
+        encoder.textTag("comment", getComment());
 
         // skip empty joins that would otherwise be saved as useless "<dbAttributePair/>" tags
         encoder.nested(getJoins().stream()
                 .filter(j -> j.getSourceName() != null || j.getTargetName() != null)
                 .toList(), delegate);
 
-        delegate.visitDbRelationship(this);
         encoder.end();
     }
 

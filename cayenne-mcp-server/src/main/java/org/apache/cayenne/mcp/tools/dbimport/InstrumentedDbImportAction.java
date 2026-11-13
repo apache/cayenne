@@ -21,7 +21,6 @@ package org.apache.cayenne.mcp.tools.dbimport;
 import org.apache.cayenne.project.ProjectLoader;
 import org.apache.cayenne.project.DataMapLoader;
 import org.apache.cayenne.dbsync.reverse.configuration.DbAdapterFactory;
-import org.apache.cayenne.project.xml.ProjectMetaData;
 import org.apache.cayenne.dbsync.merge.token.MergerToken;
 import org.apache.cayenne.dbsync.merge.token.model.AddRelationshipToModel;
 import org.apache.cayenne.dbsync.merge.token.model.CreateTableToModel;
@@ -55,10 +54,9 @@ public class InstrumentedDbImportAction extends DefaultDbImportAction {
             @Inject DbAdapterFactory adapterFactory,
             @Inject DataMapLoader mapLoader,
             @Inject MergerTokenFactoryProvider mergerTokenFactoryProvider,
-            @Inject ProjectLoader projectLoader,
-            @Inject ProjectMetaData metaData) {
+            @Inject ProjectLoader projectLoader) {
         super(logger, projectSaver, adapterFactory, mapLoader,
-                mergerTokenFactoryProvider, projectLoader, metaData);
+                mergerTokenFactoryProvider, projectLoader);
     }
 
     @Override

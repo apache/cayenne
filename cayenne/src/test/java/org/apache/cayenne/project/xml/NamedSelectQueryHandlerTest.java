@@ -22,6 +22,7 @@ import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.NamedSelectQuery;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.project.ProjectLoadingMode;
 import org.apache.cayenne.ql.ParsedObjectSelect;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,6 +34,13 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class NamedSelectQueryHandlerTest extends BaseHandlerTest {
 
+    private static final String COMMENTED_QUERY = """
+            <objectQuery name="q">
+                <comment>q comment</comment>
+                <ql>from Artist</ql>
+            </objectQuery>
+            """;
+
     private DataMap map;
 
     @BeforeEach
@@ -41,7 +49,11 @@ public class NamedSelectQueryHandlerTest extends BaseHandlerTest {
     }
 
     private NamedSelectQuery parseQuery(String xml) throws Exception {
-        parse("objectQuery", xml, parent -> new NamedSelectQueryHandler(parent, map));
+        return parseQuery(xml, ProjectLoadingMode.RUNTIME);
+    }
+
+    private NamedSelectQuery parseQuery(String xml, ProjectLoadingMode loadingMode) throws Exception {
+        parse("objectQuery", xml, loadingMode, parent -> new NamedSelectQueryHandler(parent, map));
         return (NamedSelectQuery) map.getNamedQuery("q");
     }
 
@@ -150,5 +162,19 @@ public class NamedSelectQueryHandlerTest extends BaseHandlerTest {
 
         assertEquals("from Artist where", namedQuery.getQl());
         assertThrows(ExpressionException.class, () -> ParsedObjectSelect.parseUnbound(namedQuery.getQl()));
+    }
+
+    @Test
+    public void loadComments() throws Exception {
+        NamedSelectQuery namedQuery = parseQuery(COMMENTED_QUERY, ProjectLoadingMode.FULL);
+        assertEquals("q comment", namedQuery.getComment());
+        assertEquals("from Artist", namedQuery.getQl());
+    }
+
+    @Test
+    public void skipComments() throws Exception {
+        NamedSelectQuery namedQuery = parseQuery(COMMENTED_QUERY);
+        assertNull(namedQuery.getComment());
+        assertEquals("from Artist", namedQuery.getQl());
     }
 }

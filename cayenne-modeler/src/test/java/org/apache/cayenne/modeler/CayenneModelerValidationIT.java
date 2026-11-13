@@ -50,8 +50,7 @@ public class CayenneModelerValidationIT {
     public static void setUp() {
         injector = DIBootstrap.createInjector(List.of(
                 new ToolsModule(LOGGER),
-                new ProjectToolsModule(),
-                new ModelerModule()
+                new ProjectToolsModule()
         ));
     }
 
@@ -68,13 +67,8 @@ public class CayenneModelerValidationIT {
     @Test
     public void configLoaded() {
         URLResource projectResource = new URLResource(getClass().getResource(CAYENNE_CONFIGURED_VALIDATION_PROJECT));
-        Application application = new Application(
-                injector,
-                new UIInitializer() {
-                },
-                CliArgs.parse(new String[0]));
         Project project = injector.getInstance(ProjectLoader.class).load(projectResource);
-        ValidationConfig config = ValidationConfig.fromMetadata(application.getMetaData(), project);
+        ValidationConfig config = ValidationConfig.fromProject(project);
 
         assertNotNull(config);
         assertEquals(EnumSet.complementOf(EnumSet.of(

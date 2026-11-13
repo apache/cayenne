@@ -27,7 +27,6 @@ import org.apache.cayenne.modeler.event.model.DbRelationshipEvent;
 import org.apache.cayenne.modeler.project.DbRelationshipOps;
 import org.apache.cayenne.modeler.toolkit.table.CMTableModel;
 import org.apache.cayenne.modeler.project.ProjectSession;
-import org.apache.cayenne.projecttools.extension.info.ObjectInfo;
 import java.util.Objects;
 
 import javax.swing.*;
@@ -117,18 +116,10 @@ public class DbRelationshipTableModel extends CMTableModel<DbRelationship> {
             case CARDINALITY:
                 return rel.isToMany() ? Boolean.TRUE : Boolean.FALSE;
             case COMMENTS:
-                return getComment(rel);
+                return rel.getComment();
             default:
                 return null;
         }
-    }
-
-    private String getComment(DbRelationship rel) {
-        return ObjectInfo.getFromMetaData(session.app().getMetaData(), rel, ObjectInfo.COMMENT);
-    }
-
-    private void setComment(String newVal, DbRelationship rel) {
-        ObjectInfo.putToMetaData(session.app().getMetaData(), rel, ObjectInfo.COMMENT, newVal);
     }
 
     public void setUpdatedValueAt(Object aValue, int row, int column) {
@@ -184,7 +175,7 @@ public class DbRelationshipTableModel extends CMTableModel<DbRelationship> {
 
             updateDependentObjRelationships(rel);
         } else if (column == COMMENTS) {
-            setComment((String) aValue, rel);
+            rel.setComment((String) aValue);
             session.fireDbRelationshipEvent(DbRelationshipEvent.ofChange(eventSource, rel, entity));
         }
         fireTableRowsUpdated(row, row);

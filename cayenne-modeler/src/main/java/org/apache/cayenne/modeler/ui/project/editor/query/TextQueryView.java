@@ -32,7 +32,6 @@ import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
 import org.apache.cayenne.modeler.toolkit.text.QueryStatusLine;
 import org.apache.cayenne.modeler.ui.project.editor.EditorForm;
-import org.apache.cayenne.projecttools.extension.info.ObjectInfo;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -120,7 +119,7 @@ public abstract class TextQueryView<Q extends NamedQuery> extends BaseQueryMainT
      */
     protected void initNameAndComment(Q query) {
         name.setText(query.getName());
-        comment.setText(ObjectInfo.getFromMetaData(app.getMetaData(), query, ObjectInfo.COMMENT));
+        comment.setText(query.getComment());
     }
 
     private void setQueryComment(String text) {
@@ -128,7 +127,7 @@ public abstract class TextQueryView<Q extends NamedQuery> extends BaseQueryMainT
         if (query == null) {
             return;
         }
-        ObjectInfo.putToMetaData(app.getMetaData(), query, ObjectInfo.COMMENT, text);
+        query.setComment(text);
         session.fireQueryEvent(QueryEvent.ofChange(this, query));
     }
 

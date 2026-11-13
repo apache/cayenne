@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ~   Licensed to the Apache Software Foundation (ASF) under one
+  ~  or more contributor license agreements.  See the NOTICE file
+  ~  distributed with this work for additional information
+  ~  regarding copyright ownership.  The ASF licenses this file
+  ~  to you under the Apache License, Version 2.0 (the
+  ~  "License"); you may not use this file except in compliance
+  ~  with the License.  You may obtain a copy of the License at
+  ~
+  ~    https://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing,
+  ~  software distributed under the License is distributed on an
+  ~  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~  KIND, either express or implied.  See the License for the
+  ~  specific language governing permissions and limitations
+  ~  under the License.
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+<!-- Version 10, with queries that have cache groups and comments of the "info" extension, under two prefixes -->
+<data-map xmlns="http://cayenne.apache.org/schema/10/modelMap"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:i="http://cayenne.apache.org/schema/10/info"
+	xsi:schemaLocation="http://cayenne.apache.org/schema/10/modelMap http://cayenne.apache.org/schema/10/modelMap.xsd"
+	project-version="10">
+	<property name="defaultPackage" value="org.example"/>
+	<db-entity name="ARTIST">
+		<db-attribute name="ARTIST_ID" type="INTEGER" isPrimaryKey="true" isMandatory="true"/>
+		<db-attribute name="ARTIST_NAME" type="VARCHAR" length="254"/>
+	</db-entity>
+	<obj-entity name="Artist" className="org.example.Artist" dbEntityName="ARTIST">
+		<obj-attribute name="artistName" type="java.lang.String" db-attribute-path="ARTIST_NAME"/>
+	</obj-entity>
+	<query name="ArtistQuery" type="SelectQuery" root="obj-entity" root-name="Artist">
+		<property name="cayenne.GenericSelectQuery.fetchLimit" value="5"/>
+		<property name="cayenne.GenericSelectQuery.pageSize" value="10"/>
+		<property name="cayenne.GenericSelectQuery.cacheGroups" value="g1"/>
+		<qualifier><![CDATA[artistName = "a"]]></qualifier>
+		<info:property xmlns:info="http://cayenne.apache.org/schema/10/info" name="comment" value="select query"/>
+	</query>
+	<query name="ArtistQueryOtherPrefix" type="SelectQuery" root="obj-entity" root-name="Artist">
+		<i:property name="comment" value="select query, other prefix"/>
+	</query>
+	<query name="ArtistSql" type="SQLTemplate" root="obj-entity" root-name="Artist">
+		<property name="cayenne.GenericSelectQuery.cacheGroups" value="g2"/>
+		<info:property xmlns:info="http://cayenne.apache.org/schema/10/info" name="comment" value="SQL query"/>
+		<sql><![CDATA[select * from ARTIST]]></sql>
+		<prefetch type="joint"><![CDATA[paintings]]></prefetch>
+	</query>
+</data-map>

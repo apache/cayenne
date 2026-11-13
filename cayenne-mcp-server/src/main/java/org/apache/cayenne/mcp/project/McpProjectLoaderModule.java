@@ -18,25 +18,21 @@
  ****************************************************************/
 package org.apache.cayenne.mcp.project;
 
+import org.apache.cayenne.CoreModule;
 import org.apache.cayenne.project.ProjectLoader;
 import org.apache.cayenne.project.DataMapLoader;
 import org.apache.cayenne.project.upgrade.ProjectFileUpgrader;
-import org.apache.cayenne.project.xml.ProjectMetaData;
-import org.apache.cayenne.project.xml.DefaultProjectMetaData;
-import org.apache.cayenne.project.xml.HandlerFactory;
 import org.apache.cayenne.project.xml.XMLProjectLoader;
 import org.apache.cayenne.project.xml.XMLDataMapLoader;
 import org.apache.cayenne.project.xml.XMLReaderProvider;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
-import org.apache.cayenne.projecttools.extension.ExtensionAwareHandlerFactory;
 import org.apache.cayenne.resource.ClassLoaderResourceLocator;
 import org.apache.cayenne.resource.ResourceLocator;
 import org.xml.sax.XMLReader;
 
 /**
- * Wires the DI bindings needed to load a Cayenne project descriptor and read
- * its embedded extension metadata (e.g., cgen configuration).
+ * Wires the DI bindings needed to load a Cayenne project descriptor, including its tool-only parts.
  * Registered alongside {@link org.apache.cayenne.projecttools.ProjectToolsModule} and the
  * auto-loaded {@code CgenModule} when building the MCP tools injector.
  *
@@ -46,9 +42,10 @@ public class McpProjectLoaderModule implements Module {
 
     @Override
     public void configure(Binder binder) {
+        // cgen_run reads the tool-only parts of the project, and dbimport_run saves them back
+        CoreModule.extend(binder).loadFullProjectModel();
+
         binder.bind(ProjectLoader.class).to(XMLProjectLoader.class);
-        binder.bind(HandlerFactory.class).to(ExtensionAwareHandlerFactory.class);
-        binder.bind(ProjectMetaData.class).to(DefaultProjectMetaData.class);
         binder.bind(DataMapLoader.class).to(XMLDataMapLoader.class);
         binder.bind(ProjectFileUpgrader.class).to(ProjectFileUpgrader.class);
         binder.bind(ResourceLocator.class).to(ClassLoaderResourceLocator.class);

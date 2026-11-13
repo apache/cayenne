@@ -19,24 +19,27 @@
 
 package org.apache.cayenne.gen;
 
+import org.apache.cayenne.map.Commentable;
 import org.apache.cayenne.project.ProjectNode;
-import org.apache.cayenne.project.xml.ProjectMetaData;
-import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.projecttools.extension.info.ObjectInfo;
 
 /**
+ * Exposes the comments of the mapping objects to the class generation templates as "$metadataUtils".
+ *
  * @since 4.2
  */
 public class MetadataUtils {
 
-    @Inject
-    private ProjectMetaData metaData;
+    private static final String COMMENT_KEY = "comment";
 
     public String getComment(ProjectNode node) {
-        return getInfo(node, ObjectInfo.COMMENT);
+        return node instanceof Commentable commentable ? commentable.getComment() : null;
     }
 
+    /**
+     * @deprecated since 6.0 in favor of {@link #getComment(ProjectNode)}, as comments are the only supported info
+     */
+    @Deprecated(since = "6.0", forRemoval = true)
     public String getInfo(ProjectNode node, String key) {
-        return ObjectInfo.getFromMetaData(metaData, node, key);
+        return COMMENT_KEY.equals(key) ? getComment(node) : null;
     }
 }

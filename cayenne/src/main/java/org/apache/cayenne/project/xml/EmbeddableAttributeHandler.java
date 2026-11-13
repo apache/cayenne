@@ -52,8 +52,19 @@ public class EmbeddableAttributeHandler extends NamespaceAwareNestedTagHandler {
                 createEmbeddableAttributeOverride(attributes);
                 yield true;
             }
+            case CommentHandler.COMMENT_TAG -> true;
             default -> false;
         };
+    }
+
+    @Override
+    protected boolean processCharData(String localName, String data) {
+        if (CommentHandler.COMMENT_TAG.equals(localName)) {
+            CommentHandler.loadComment(loaderContext, embeddedAttribute, data);
+            return true;
+        }
+
+        return false;
     }
 
     private void createEmbeddableAttribute(Attributes attributes) {

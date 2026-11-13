@@ -20,47 +20,98 @@
 
 package org.apache.cayenne.gen;
 
-import java.util.ArrayList;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.project.cgen.CgenDescriptor;
+
+import java.util.IdentityHashMap;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
+import java.util.Objects;
 
 /**
- * Class stores set of CgenConfigurations using for classes generation
+ * A live view of the class generation settings of a DataMap ({@link DataMap#getCgenDescriptors()}) as
+ * CgenConfigurations. The list always wraps the same settings in the same configuration, keeping its state that is
+ * not stored in the DataMap, while another list of the same DataMap has configurations of its own.
  *
  * @since 4.2
  */
 public class CgenConfigList {
 
-    public static final String DEFAULT_CONFIG_NAME = "Default";
-    private final List<CgenConfiguration> configurations;
+    public static final String DEFAULT_CONFIG_NAME = CgenDescriptor.DEFAULT_NAME;
 
-    public CgenConfigList() {
-        this.configurations = new ArrayList<>();
+    private final DataMap dataMap;
+    private final Map<CgenDescriptor, CgenConfiguration> configurations;
+
+    /**
+     * @since 6.0
+     */
+    public CgenConfigList(DataMap dataMap) {
+        this.dataMap = Objects.requireNonNull(dataMap);
+        this.configurations = new IdentityHashMap<>();
     }
 
     public CgenConfiguration getByName(String name) {
-        return configurations.stream().filter(config -> config.getName().equals(name)).findFirst().orElse(null);
+        return dataMap.getCgenDescriptors().stream()
+                .filter(descriptor -> Objects.equals(descriptor.getName(), name))
+                .findFirst()
+                .map(this::configuration)
+                .orElse(null);
     }
 
+    /**
+     * Removes all the configurations with the given name.
+     */
     public void removeByName(String name) {
-        configurations.removeIf(configuration -> configuration.getName().equals(name));
+        for (CgenDescriptor descriptor : List.copyOf(dataMap.getCgenDescriptors())) {
+            if (Objects.equals(descriptor.getName(), name)) {
+                dataMap.removeCgenDescriptor(descriptor);
+                configurations.remove(descriptor);
+            }
+        }
     }
 
+    /**
+     * Adds the configuration settings to the DataMap.
+     *
+     * @throws IllegalArgumentException if the configuration is tied to another DataMap
+     */
     public void add(CgenConfiguration configuration) {
-        configurations.add(configuration);
+        DataMap configurationDataMap = configuration.getDataMap();
+        if (configurationDataMap != null && configurationDataMap != dataMap) {
+            throw new IllegalArgumentException("Configuration '%s' of DataMap '%s' can't be added to DataMap '%s'"
+                    .formatted(configuration.getName(), configurationDataMap.getName(), dataMap.getName()));
+        }
+
+        configuration.attachTo(dataMap);
+        dataMap.addCgenDescriptor(configuration.getDescriptor());
+        configurations.put(configuration.getDescriptor(), configuration);
     }
 
     public List<String> getNames() {
-        return configurations.stream()
-                .map(CgenConfiguration::getName)
-                .collect(Collectors.toList());
+        return dataMap.getCgenDescriptors().stream()
+                .map(CgenDescriptor::getName)
+                .toList();
     }
 
     public List<CgenConfiguration> getAll() {
-        return configurations;
+        return dataMap.getCgenDescriptors().stream()
+                .map(this::configuration)
+                .toList();
     }
 
     public boolean isExist(String name) {
-        return configurations.stream().anyMatch(c -> name.equals(c.getName()));
+        return dataMap.getCgenDescriptors().stream()
+                .anyMatch(descriptor -> Objects.equals(descriptor.getName(), name));
+    }
+
+    /**
+     * @since 6.0
+     */
+    public boolean isEmpty() {
+        return dataMap.getCgenDescriptors().isEmpty();
+    }
+
+    private CgenConfiguration configuration(CgenDescriptor descriptor) {
+        return configurations.computeIfAbsent(descriptor, d -> new CgenConfiguration(d, dataMap));
     }
 }

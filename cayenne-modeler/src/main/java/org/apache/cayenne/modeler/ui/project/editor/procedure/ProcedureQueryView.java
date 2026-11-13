@@ -41,7 +41,6 @@ import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.toolkit.Renderers;
 import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
 import org.apache.cayenne.modeler.project.ProjectComparators;
-import org.apache.cayenne.projecttools.extension.info.ObjectInfo;
 import org.apache.cayenne.query.CapsStrategy;
 import java.util.Objects;
 import org.apache.cayenne.validation.ValidationException;
@@ -139,7 +138,7 @@ public class ProcedureQueryView extends ProjectPanel {
 
         properties.setEnabled(true);
         name.setText(query.getName());
-        comment.setText(getQueryComment(query));
+        comment.setText(query.getComment());
 
         // init root choices and title label..
 
@@ -236,12 +235,8 @@ public class ProcedureQueryView extends ProjectPanel {
         if (query == null) {
             return;
         }
-        ObjectInfo.putToMetaData(app.getMetaData(), query, ObjectInfo.COMMENT, text);
+        query.setComment(text);
         session.fireQueryEvent(QueryEvent.ofChange(this, query));
-    }
-
-    private String getQueryComment(NamedQuery namedQuery) {
-        return ObjectInfo.getFromMetaData(app.getMetaData(), namedQuery, ObjectInfo.COMMENT);
     }
 
     final class ProcedureQueryPropertiesPanel extends RawQueryPropertiesPanel<NamedProcedureQuery> {

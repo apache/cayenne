@@ -19,10 +19,11 @@
 
 package org.apache.cayenne.modeler.undo;
 
-import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.DbImportTreeNode;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportTree;
+import org.apache.cayenne.project.dbimport.ReverseEngineering;
 
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
@@ -35,13 +36,15 @@ public class DbImportTreeUndoableEdit extends AbstractUndoableEdit {
     private ReverseEngineering nextReverseEngineering;
     private DbImportTree tree;
     private ProjectSession session;
+    private DataMap dataMap;
 
     public DbImportTreeUndoableEdit(ReverseEngineering previousReverseEngineering, ReverseEngineering nextReverseEngineering,
-                                    DbImportTree tree, ProjectSession session) {
+                                    DbImportTree tree, ProjectSession session, DataMap dataMap) {
         this.tree = tree;
         this.previousReverseEngineering = previousReverseEngineering;
         this.nextReverseEngineering = nextReverseEngineering;
         this.session = session;
+        this.dataMap = dataMap;
     }
 
     @Override
@@ -51,23 +54,32 @@ public class DbImportTreeUndoableEdit extends AbstractUndoableEdit {
 
     @Override
     public void redo() throws CannotRedoException {
-        tree.stopEditing();
-        tree.setReverseEngineering(this.nextReverseEngineering);
-        List<DbImportTreeNode> list = tree.getTreeExpandList();
-        session.app().getMetaData().add(session.getSelectedDataMap(), tree.getReverseEngineering());
-        session.setDirty(true);
-        tree.translateReverseEngineeringToTree(tree.getReverseEngineering(), false);
-        tree.expandTree(list);
+        apply(nextReverseEngineering);
     }
 
     @Override
     public void undo() throws CannotUndoException {
-        tree.stopEditing();
-        tree.setReverseEngineering(this.previousReverseEngineering);
-        List<DbImportTreeNode> list = tree.getTreeExpandList();
-        session.app().getMetaData().add(session.getSelectedDataMap(), tree.getReverseEngineering());
+        apply(previousReverseEngineering);
+    }
+
+    private void apply(ReverseEngineering snapshot) {
+        // the snapshot must stay intact for the next undo or redo, while the live settings are edited in place
+        ReverseEngineering reverseEngineering = new ReverseEngineering(snapshot);
+
+        // the tree shows the settings of the selected DataMap, that may be another one by now, or none
+        boolean shown = session.getSelectedDataMap() == dataMap;
+        if (shown) {
+            tree.stopEditing();
+        }
+
+        dataMap.setReverseEngineering(reverseEngineering);
         session.setDirty(true);
-        tree.translateReverseEngineeringToTree(tree.getReverseEngineering(), false);
-        tree.expandTree(list);
+
+        if (shown) {
+            tree.setReverseEngineering(reverseEngineering);
+            List<DbImportTreeNode> list = tree.getTreeExpandList();
+            tree.translateReverseEngineeringToTree(reverseEngineering, false);
+            tree.expandTree(list);
+        }
     }
 }

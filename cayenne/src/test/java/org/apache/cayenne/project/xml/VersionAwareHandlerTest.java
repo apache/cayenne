@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.project.xml;
 
+import org.apache.cayenne.project.ProjectLoadingMode;
 import org.apache.cayenne.project.upgrade.UpgradeHandler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,7 +35,7 @@ public class VersionAwareHandlerTest {
 
     @BeforeEach
     public void createHandler() {
-        handler = new VersionAwareHandler(new LoaderContext(null, null), "test"){
+        handler = new VersionAwareHandler(new LoaderContext(null, ProjectLoadingMode.RUNTIME), "test"){
         };
     }
 

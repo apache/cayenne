@@ -34,7 +34,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class UtilTest {
 
@@ -301,5 +300,25 @@ public class UtilTest {
         // arrays compare by content
         assertTrue(Util.idValueEquals(new byte[]{1, 2}, new byte[]{1, 2}));
         assertFalse(Util.idValueEquals(new byte[]{1, 2}, new byte[]{2, 1}));
+    }
+
+    @Test
+    public void encodeXmlText() {
+        assertNull(Util.encodeXmlText(null));
+        assertEquals("normalstring", Util.encodeXmlText("normalstring"));
+
+        // the quotes need no escaping in a text
+        assertEquals("&lt;a&gt; &amp; \"b\" 'c'", Util.encodeXmlText("<a> & \"b\" 'c'"));
+    }
+
+    @Test
+    public void encodeXmlTextInvalidChars() {
+        assertEquals("a\tb\r\nc", Util.encodeXmlText("a\tb\r\nc"));
+        assertEquals("bell", Util.encodeXmlText("be\u0007ll\u0000"));
+        assertEquals("ab", Util.encodeXmlText("a\uFFFE\uFFFFb"));
+
+        // a surrogate pair is kept, an unpaired surrogate is dropped
+        assertEquals("a\uD83D\uDE00b", Util.encodeXmlText("a\uD83D\uDE00b"));
+        assertEquals("ab", Util.encodeXmlText("a\uD83Db\uDE00"));
     }
 }

@@ -328,12 +328,18 @@ public final class UpgradeHandler_V14 implements UpgradeHandler {
             query.removeAttribute("root");
             query.removeAttribute("root-name");
             for (Element child : childElements(query)) {
+                // kept for the V15 upgrade to convert
+                if (UpgradeHandler_V15.isInfoProperty(child)) {
+                    continue;
+                }
+
                 if (!localName(child).equals("property") || isQueryStringProperty(child)) {
                     query.removeChild(child);
                 }
             }
 
-            Element selectElement = upgradeUnit.getDocument().createElementNS(query.getNamespaceURI(), "ql");
+            // no namespace, so it inherits the parent's one; createElementNS(null, ..) would be written with xmlns=""
+            Element selectElement = upgradeUnit.getDocument().createElement("ql");
             selectElement.appendChild(upgradeUnit.getDocument().createCDATASection(select));
             query.appendChild(selectElement);
         }
@@ -393,14 +399,14 @@ public final class UpgradeHandler_V14 implements UpgradeHandler {
             if (!cacheGroup.isEmpty()) {
                 Element next = null;
                 for (Element child : childElements(typedQuery)) {
-                    if (!localName(child).equals("ql") && !localName(child).equals("sql")) {
+                    if (!localName(child).equals("ql") && !localName(child).equals("sql")
+                            && !UpgradeHandler_V15.isInfoProperty(child)) {
                         next = child;
                         break;
                     }
                 }
 
-                Element element = upgradeUnit.getDocument()
-                        .createElementNS(typedQuery.getNamespaceURI(), "cache-group");
+                Element element = upgradeUnit.getDocument().createElement("cache-group");
                 element.appendChild(upgradeUnit.getDocument().createCDATASection(cacheGroup));
                 typedQuery.insertBefore(element, next);
             }

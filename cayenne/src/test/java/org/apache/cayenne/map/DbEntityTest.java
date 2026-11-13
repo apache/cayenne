@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.map;
 
-import org.apache.cayenne.project.BaseProjectNodeVisitor;
+import org.apache.cayenne.project.EmptyProjectNodeVisitor;
 import org.apache.cayenne.util.XMLEncoder;
 import org.junit.jupiter.api.Test;
 
@@ -80,7 +80,7 @@ public class DbEntityTest {
 
         StringWriter out = new StringWriter();
         XMLEncoder encoder = new XMLEncoder(new PrintWriter(out));
-        entity.encodeAsXML(encoder, new EncoderDummyVisitor());
+        entity.encodeAsXML(encoder, new EmptyProjectNodeVisitor());
 
         String ls = System.lineSeparator();
 
@@ -89,23 +89,5 @@ public class DbEntityTest {
                 "<dbAttribute name=\"a2\" type=\"VARCHAR\"/>" + ls +
                 "<dbAttribute name=\"a3\" type=\"BIGINT\"/>" + ls +
                 "</dbEntity>" + ls, out.toString());
-    }
-
-    private class EncoderDummyVisitor extends BaseProjectNodeVisitor<Object> {
-
-        @Override
-        public Object visitDbEntity(DbEntity entity) {
-            return null;
-        }
-
-        @Override
-        public Object visitDbAttribute(DbAttribute attribute) {
-            return null;
-        }
-
-        @Override
-        public Object visitDbRelationship(DbRelationship relationship) {
-            return null;
-        }
     }
 }

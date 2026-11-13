@@ -22,22 +22,26 @@ package org.apache.cayenne.modeler.project;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.gen.CgenConfigList;
 import org.apache.cayenne.gen.CgenConfiguration;
+import org.apache.cayenne.map.DataMap;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class CgenOpsTest {
 
     @Test
     public void uniqueConfigNameForEmptyList() {
-        assertEquals("Default", CgenOps.createUniqueConfigName(new CgenConfigList()));
+        assertEquals("Default", CgenOps.createUniqueConfigName(new CgenConfigList(new DataMap("test"))));
     }
 
     @Test
     public void uniqueConfigNameSkipsExisting() {
-        CgenConfigList configurations = new CgenConfigList();
+        DataMap dataMap = new DataMap("test");
+        CgenConfigList configurations = new CgenConfigList(dataMap);
         configurations.add(configuration("Default"));
+        assertSame(dataMap, configurations.getByName("Default").getDataMap());
         assertEquals("Default1", CgenOps.createUniqueConfigName(configurations));
 
         configurations.add(configuration("Default1"));
@@ -46,14 +50,14 @@ public class CgenOpsTest {
 
     @Test
     public void uniqueConfigNameIgnoresUnrelatedNames() {
-        CgenConfigList configurations = new CgenConfigList();
+        CgenConfigList configurations = new CgenConfigList(new DataMap("test"));
         configurations.add(configuration("client"));
         assertEquals("Default", CgenOps.createUniqueConfigName(configurations));
     }
 
     @Test
     public void uniqueConfigNameGivesUp() {
-        CgenConfigList configurations = new CgenConfigList();
+        CgenConfigList configurations = new CgenConfigList(new DataMap("test"));
         configurations.add(configuration(CgenConfigList.DEFAULT_CONFIG_NAME));
         for (int i = 1; i <= CgenOps.MAX_NAME_ATTEMPTS; i++) {
             configurations.add(configuration(CgenConfigList.DEFAULT_CONFIG_NAME + i));

@@ -41,6 +41,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.function.Predicate;
 
 /**
  * Base for the per-DataMap generator tabs of the DataDomain editor (Db Import,
@@ -48,25 +49,28 @@ import java.util.concurrent.ConcurrentMap;
  * lived in two parallel hierarchies. Subclasses implement {@link #runGenerators(Set)} and
  * {@link #showConfig(DataMap)}.
  */
-public abstract class ProjectGeneratorsTab<T> extends ProjectPanel implements DataMapListener {
+public abstract class ProjectGeneratorsTab extends ProjectPanel implements DataMapListener {
 
     protected static final Logger LOGGER = LoggerFactory.getLogger(ProjectGeneratorsTab.class);
 
     private final ConcurrentMap<DataMap, ProjectGeneratorsPanel> generatorsPanels;
     private final Set<DataMap> selectedDataMaps;
-    private final Class<T> type;
+    private final Predicate<DataMap> canRun;
     private final boolean selectAllByDefault;
     private final TopGeneratorPanel generationPanel;
 
+    /**
+     * @param canRun whether the generator can run on a DataMap; if not, the DataMap can't be selected
+     */
     protected ProjectGeneratorsTab(
             ProjectSession session,
-            Class<T> type, boolean selectAllByDefault,
+            Predicate<DataMap> canRun, boolean selectAllByDefault,
             String icon,
             String runTooltip) {
 
         super(session);
 
-        this.type = type;
+        this.canRun = canRun;
         this.selectAllByDefault = selectAllByDefault;
         this.generatorsPanels = new ConcurrentHashMap<>();
         this.selectedDataMaps = new HashSet<>();
@@ -114,7 +118,7 @@ public abstract class ProjectGeneratorsTab<T> extends ProjectPanel implements Da
         generatorsPanels.clear();
         for (DataMap dataMap : dataMaps) {
             ProjectGeneratorsPanel generatorPanel = new ProjectGeneratorsPanel(
-                    app, dataMap, "icon-datamap.png", type);
+                    dataMap, "icon-datamap.png", canRun.test(dataMap));
             initListenersForPanel(generatorPanel);
             generatorsPanels.put(dataMap, generatorPanel);
         }
@@ -184,7 +188,7 @@ public abstract class ProjectGeneratorsTab<T> extends ProjectPanel implements Da
     @Override
     public void dataMapAdded(DataMapEvent e) {
         ProjectGeneratorsPanel generatorPanel = new ProjectGeneratorsPanel(
-                app, e.getDataMap(), "icon-datamap.png", type);
+                e.getDataMap(), "icon-datamap.png", canRun.test(e.getDataMap()));
         initListenersForPanel(generatorPanel);
         generatorsPanels.put(e.getDataMap(), generatorPanel);
         if (generationPanel.selectAll.isSelected()) {

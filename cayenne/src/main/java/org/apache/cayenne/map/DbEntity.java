@@ -108,6 +108,8 @@ public class DbEntity extends Entity<DbEntity, DbAttribute, DbRelationship> impl
             encoder.attribute("catalog", getCatalog().trim());
         }
 
+        encoder.textTag("comment", getComment());
+
         encoder.nested(new TreeMap<>(getAttributeMap()), delegate);
 
         if (getPrimaryKeyGenerator() != null) {
@@ -120,7 +122,6 @@ public class DbEntity extends Entity<DbEntity, DbAttribute, DbRelationship> impl
             encoder.end();
         }
 
-        delegate.visitDbEntity(this);
         encoder.end();
     }
 

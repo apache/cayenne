@@ -19,16 +19,16 @@
 
 package org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport;
 
-import org.apache.cayenne.dbsync.reverse.dbimport.Catalog;
-import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeColumn;
-import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeProcedure;
-import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeTable;
-import org.apache.cayenne.dbsync.reverse.dbimport.IncludeColumn;
-import org.apache.cayenne.dbsync.reverse.dbimport.IncludeProcedure;
-import org.apache.cayenne.dbsync.reverse.dbimport.IncludeTable;
-import org.apache.cayenne.dbsync.reverse.dbimport.Schema;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.DbImportTreeNode;
+import org.apache.cayenne.project.dbimport.Catalog;
+import org.apache.cayenne.project.dbimport.ExcludeColumn;
+import org.apache.cayenne.project.dbimport.ExcludeProcedure;
+import org.apache.cayenne.project.dbimport.ExcludeTable;
+import org.apache.cayenne.project.dbimport.IncludeColumn;
+import org.apache.cayenne.project.dbimport.IncludeProcedure;
+import org.apache.cayenne.project.dbimport.IncludeTable;
+import org.apache.cayenne.project.dbimport.Schema;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;

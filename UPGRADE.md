@@ -198,6 +198,14 @@
      on both sides or neither, logging a warning. `ValueComparisonStrategyFactory.getStrategy(..)` takes the value
      `Class` instead of an `ObjAttribute`.
 
+*  Per [CAY-3074](https://issues.apache.org/jira/browse/CAY-3074) the project XML extension API is removed
+   (`ProjectMetaData`, `ProjectExtension`, `HandlerFactory`, the `org.apache.cayenne.dbsync.xml` and
+   `org.apache.cayenne.gen.xml` packages). Comments are on the `org.apache.cayenne.map.Commentable` mapping objects,
+   reverse engineering and cgen settings on `DataMap`, disabled inspections on `Project`. The reverse engineering
+   config classes moved from `org.apache.cayenne.dbsync.reverse.dbimport` to `org.apache.cayenne.project.dbimport`.
+   The runtime doesn't load these parts: code that needs them loads the project with
+   `CoreModule.extend(binder).loadFullProjectModel()`.
+
 *  Per [CAY-3075](https://issues.apache.org/jira/browse/CAY-3075) and
    [CAY-3076](https://issues.apache.org/jira/browse/CAY-3076) the commit operations are ordered by the dependencies
    between their rows, so the commits that failed with the 5.0 default sorter now work, e.g. with tables or rows

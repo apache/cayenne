@@ -25,7 +25,7 @@
     </dbEntity>
     <objEntity name="Person" className="Person" dbEntityName="PERSON">
     </objEntity>
-    <dbImport xmlns="http://cayenne.apache.org/schema/15/dbimport">
+    <dbImport>
            <tableTypes>
                <tableType>TABLE</tableType>
            </tableTypes>

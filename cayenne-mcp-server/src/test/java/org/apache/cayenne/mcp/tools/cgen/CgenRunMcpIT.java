@@ -180,7 +180,7 @@ public class CgenRunMcpIT {
                           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                           defaultPackage="%s">
                     <objEntity name="Person" className="%s.Person"/>
-                    <cgen xmlns="http://cayenne.apache.org/schema/15/cgen">
+                    <cgen>
                         <destDir>%s</destDir>
                         <mode>entity</mode>
                         <makePairs>%s</makePairs>

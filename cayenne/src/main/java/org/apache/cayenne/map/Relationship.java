@@ -29,10 +29,15 @@ import org.apache.cayenne.util.XMLSerializable;
  * notion of source and target entity. This makes DataMap a "digraph".
  */
 public abstract class Relationship<E extends Entity<E, A, R>, A extends Attribute<E, A, R>, R
-        extends Relationship<E, A, R>> implements XMLSerializable {
+        extends Relationship<E, A, R>> implements XMLSerializable, Commentable {
 
     protected String name;
     protected E sourceEntity;
+
+    /**
+     * @since 6.0
+     */
+    protected String comment;
 
     protected String targetEntityName;
     protected boolean toMany;
@@ -64,6 +69,16 @@ public abstract class Relationship<E extends Entity<E, A, R>, A extends Attribut
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    public String getComment() {
+        return comment;
+    }
+
+    @Override
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 
     /**

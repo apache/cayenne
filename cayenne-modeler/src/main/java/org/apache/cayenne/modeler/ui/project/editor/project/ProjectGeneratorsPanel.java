@@ -20,10 +20,7 @@ package org.apache.cayenne.modeler.ui.project.editor.project;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
-import org.apache.cayenne.project.xml.ProjectMetaData;
-import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 
 import javax.swing.JButton;
@@ -35,34 +32,30 @@ import java.awt.BorderLayout;
 class ProjectGeneratorsPanel extends JPanel {
 
     private final DataMap dataMap;
-    private final Class<?> type;
     private final String icon;
 
     private final JCheckBox checkConfig;
     private final JButton toConfigButton;
 
-    ProjectGeneratorsPanel(Application application, DataMap dataMap, String icon, Class<?> type) {
-        this.type = type;
+    /**
+     * @param canRun whether the generator can run on the DataMap; if not, the DataMap can't be selected
+     */
+    ProjectGeneratorsPanel(DataMap dataMap, String icon, boolean canRun) {
         this.icon = icon;
         this.dataMap = dataMap;
         this.checkConfig = new JCheckBox();
         this.toConfigButton = new JButton("Edit Config");
-        initLayout(application);
+        initLayout(canRun);
     }
 
-    private void initLayout(Application application) {
+    private void initLayout(boolean canRun) {
         setLayout(new BorderLayout());
         FormLayout layout = new FormLayout(
                 "left:pref, $rgap, fill:70dlu, $lcgap, fill:120, $lcgap, fill:120", "");
         DefaultFormBuilder builder = new DefaultFormBuilder(layout);
         JLabel dataMapLabel = new JLabel(dataMap.getName());
         dataMapLabel.setToolTipText(dataMap.getName());
-        ProjectMetaData metaData = application.getMetaData();
-        if (metaData.get(dataMap, type) == null) {
-            if (type == ReverseEngineering.class) {
-                checkConfig.setEnabled(false);
-            }
-        }
+        checkConfig.setEnabled(canRun);
         toConfigButton.setIcon(IconFactory.buildIcon(icon));
         builder.append(checkConfig, dataMapLabel, toConfigButton);
         add(builder.getPanel(), BorderLayout.CENTER);

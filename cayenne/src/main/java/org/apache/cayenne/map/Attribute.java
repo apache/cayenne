@@ -31,10 +31,15 @@ import org.apache.cayenne.util.XMLSerializable;
 public abstract class Attribute<
         E extends Entity<E, A, R>,
         A extends Attribute<E, A, R>,
-        R extends Relationship<E, A, R>> implements XMLSerializable {
+        R extends Relationship<E, A, R>> implements XMLSerializable, Commentable {
 
     protected String name;
     protected Entity<E, A, R> entity;
+
+    /**
+     * @since 6.0
+     */
+    protected String comment;
 
     /**
      * Creates an unnamed Attribute.
@@ -79,5 +84,13 @@ public abstract class Attribute<
         this.name = name;
     }
 
+    @Override
+    public String getComment() {
+        return comment;
+    }
 
+    @Override
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
 }

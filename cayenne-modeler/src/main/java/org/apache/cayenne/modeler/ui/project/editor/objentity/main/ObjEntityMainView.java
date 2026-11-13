@@ -49,7 +49,6 @@ import org.apache.cayenne.modeler.ui.project.editor.ExpressionConvertor;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.classname.ClassNameUpdaterController;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.duplicates.DuplicatedAttributesDialog;
 import org.apache.cayenne.modeler.ui.project.editor.query.ExistingSelectionProcessor;
-import org.apache.cayenne.projecttools.extension.info.ObjectInfo;
 import org.apache.cayenne.validation.ValidationException;
 
 import javax.swing.*;
@@ -271,7 +270,7 @@ public class ObjEntityMainView extends ProjectPanel implements ObjEntityDisplayL
         readOnly.setSelected(entity.isReadOnly());
 
         isAbstract.setSelected(entity.isAbstract());
-        comment.setText(getComment(entity));
+        comment.setText(entity.getComment());
 
         qualifier.setText(ExpressionConvertor.asString(entity.getDeclaredQualifier()));
 
@@ -437,12 +436,8 @@ public class ObjEntityMainView extends ProjectPanel implements ObjEntityDisplayL
             return;
         }
 
-        ObjectInfo.putToMetaData(app.getMetaData(), entity, ObjectInfo.COMMENT, value);
+        entity.setComment(value);
         session.fireObjEntityEvent(ObjEntityEvent.ofChange(this, entity));
-    }
-
-    private String getComment(ObjEntity entity) {
-        return ObjectInfo.getFromMetaData(app.getMetaData(), entity, ObjectInfo.COMMENT);
     }
 
 }

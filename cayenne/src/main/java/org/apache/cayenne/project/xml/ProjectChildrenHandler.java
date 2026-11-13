@@ -27,6 +27,7 @@ import org.apache.cayenne.resource.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;
+import org.xml.sax.ContentHandler;
 
 /**
  * @since 4.1
@@ -59,6 +60,19 @@ final class ProjectChildrenHandler extends NamespaceAwareNestedTagHandler {
             case ProjectHandler.PROJECT_TAG -> true;
             default -> false;
         };
+    }
+
+    @Override
+    protected ContentHandler createChildTagHandler(String namespaceURI, String localName,
+                                                   String qName, Attributes attributes) {
+
+        // tool-only settings
+        if (loaderContext.isFullModel() && namespaceURI.equals(targetNamespace)
+                && ValidationHandler.VALIDATION_TAG.equals(localName)) {
+            return new ValidationHandler(this, project);
+        }
+
+        return super.createChildTagHandler(namespaceURI, localName, qName, attributes);
     }
 
     private void addMap(Attributes attributes) {

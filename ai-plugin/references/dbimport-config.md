@@ -23,7 +23,7 @@ Reference for the options shown by the CayenneModeler reverse-engineering dialog
 ## XML shape (persisted inside a DataMap)
 
 ```xml
-<dbImport xmlns="http://cayenne.apache.org/schema/15/dbimport">
+<dbImport>
     <catalog>
         <name>public</name>
         <schema>
@@ -50,6 +50,10 @@ Reference for the options shown by the CayenneModeler reverse-engineering dialog
 </dbImport>
 ```
 
+`<dbImport>` is in the DataMap namespace, with no `xmlns` of its own. A DataMap has at most one, placed after the named queries and before any `<cgen>`. In a version 15 DataMap, a `<dbImport>` with an `xmlns` of its own was written by a 6.0 snapshot build and is ignored, so the import runs unfiltered — see "Files written by a 6.0 snapshot build" in `datamap-schema.md`.
+
+Every child element is optional. The children that are present must follow this order: the filters (`<includeTable>`, `<excludeTable>`, `<includeColumn>`, `<excludeColumn>`, `<includeProcedure>`, `<excludeProcedure>`, each kind grouped together in this order), `<catalog>`s, `<schema>`s, `<tableTypes>`, `<defaultPackage>`, `<forceDataMapCatalog>`, `<forceDataMapSchema>`, `<meaningfulPkTables>`, `<namingStrategy>`, `<skipPrimaryKeyLoading>`, `<skipRelationshipsLoading>`, `<stripFromTableNames>`, `<useJava7Types>`. Write the values without surrounding whitespace, and `true` / `false` in lowercase.
+
 ## Field reference
 
 ### Filtering
@@ -64,9 +68,9 @@ Reference for the options shown by the CayenneModeler reverse-engineering dialog
 | `<excludeColumn>` | regex | Columns to skip — useful for system columns (`CREATED_AT`, `ROWVERSION`). The regex is the element's text. |
 | `<includeProcedure>` | regex | Stored procedures to include. The regex is the element's text. By default, none are imported. |
 | `<excludeProcedure>` | regex | Stored procedures to skip. The regex is the element's text. |
-| `<tableTypes><tableType>` | enum | Which JDBC table types to import. Typical values: `TABLE`, `VIEW`, `SYSTEM TABLE`, `GLOBAL TEMPORARY`, `LOCAL TEMPORARY`, `ALIAS`, `SYNONYM`. If empty, defaults to `TABLE`. |
+| `<tableTypes><tableType>` | enum | Which JDBC table types to import. Typical values: `TABLE`, `VIEW`, `SYSTEM TABLE`, `GLOBAL TEMPORARY`, `LOCAL TEMPORARY`, `ALIAS`, `SYNONYM`. If none are given, tables and views are imported. |
 
-The filters can sit directly in `<dbImport>`, in a `<catalog>` or in a `<schema>`. Inside `<catalog>` and `<schema>` they come before `<name>`, as the XSD orders them and as Cayenne writes them.
+The filters can sit directly in `<dbImport>`, in a `<catalog>` or in a `<schema>`. Inside `<catalog>` and `<schema>` they come before `<name>` (and a `<catalog>`'s `<schema>`s come after its `<name>`), as the XSD orders them and as Cayenne writes them. Inside `<includeTable>` it is the other way round: its `<includeColumn>` / `<excludeColumn>` elements come after its `<name>`, and the loader skips the ones placed before it.
 
 The parser silently skips elements it does not know. A filter in any other shape (for example `<includeTable><pattern>...</pattern></includeTable>`) is ignored without a warning: the import then runs unfiltered, and saving the DataMap writes the block back without that filter.
 
@@ -74,7 +78,7 @@ The parser silently skips elements it does not know. A filter in any other shape
 
 | Field | Type | Default | Meaning |
 |---|---|---|---|
-| `<defaultPackage>` | string | (empty) | Java package for generated ObjEntity classes. If the DataMap already has `defaultPackage`, that wins. |
+| `<defaultPackage>` | string | (empty) | Java package for generated ObjEntity classes. When set, it also replaces the DataMap's `defaultPackage` when the import changes the DataMap; when empty, the DataMap's `defaultPackage` is used. |
 | `<namingStrategy>` | FQN string | `org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator` | Class implementing `ObjectNameGenerator` that converts `CUSTOMER_ORDER` → `CustomerOrder`, `customer_id` → `customerId`. Plug in a custom one for non-default conventions. |
 | `<stripFromTableNames>` | regex | (empty) | Regex applied to each table name *before* naming. E.g. `^TBL_` strips a `TBL_` prefix so `TBL_CUSTOMER` → `Customer`. |
 | `<meaningfulPkTables>` | comma-separated regex | (empty) | Tables whose PK columns should be mapped as ObjAttributes (visible on the Java side). `*` matches all. By default PKs are hidden. |

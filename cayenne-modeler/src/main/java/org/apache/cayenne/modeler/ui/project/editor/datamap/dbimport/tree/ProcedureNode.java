@@ -23,10 +23,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeProcedure;
-import org.apache.cayenne.dbsync.reverse.dbimport.FilterContainer;
-import org.apache.cayenne.dbsync.reverse.dbimport.IncludeProcedure;
-import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
+import org.apache.cayenne.project.dbimport.ExcludeProcedure;
+import org.apache.cayenne.project.dbimport.FilterContainer;
+import org.apache.cayenne.project.dbimport.IncludeProcedure;
+import org.apache.cayenne.project.dbimport.ReverseEngineering;
 
 abstract class ProcedureNode<T extends Node> extends Node<T> {
 

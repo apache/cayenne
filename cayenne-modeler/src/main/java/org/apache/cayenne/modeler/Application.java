@@ -24,7 +24,6 @@ import org.apache.cayenne.project.ProjectLoader;
 import org.apache.cayenne.project.DataMapLoader;
 import org.apache.cayenne.dbsync.reverse.configuration.DbAdapterFactory;
 import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
-import org.apache.cayenne.project.xml.ProjectMetaData;
 import org.apache.cayenne.dbsync.DbSyncModule;
 import org.apache.cayenne.dbsync.merge.factory.MergerTokenFactoryProvider;
 import org.apache.cayenne.di.DIBootstrap;
@@ -80,8 +79,7 @@ public class Application {
         Injector injector = DIBootstrap.createInjector(
                 new ProjectToolsModule(),
                 new DbSyncModule(),
-                new ToolsModule(LOGGER),
-                new ModelerModule());
+                new ToolsModule(LOGGER));
 
         SwingUtilities.invokeLater(() ->
                 new Application(injector, platformInit, cli).launch(cli.initialProject()));
@@ -152,10 +150,6 @@ public class Application {
 
     public DbAdapterFactory getDbAdapterFactory() {
         return injector.getInstance(DbAdapterFactory.class);
-    }
-
-    public ProjectMetaData getMetaData() {
-        return injector.getInstance(ProjectMetaData.class);
     }
 
     public MergerTokenFactoryProvider getMergerTokenFactoryProvider() {

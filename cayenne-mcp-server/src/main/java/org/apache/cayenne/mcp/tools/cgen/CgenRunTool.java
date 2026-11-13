@@ -23,7 +23,6 @@ import io.modelcontextprotocol.server.McpServerFeatures;
 import io.modelcontextprotocol.spec.McpSchema;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.ProjectLoader;
-import org.apache.cayenne.project.xml.ProjectMetaData;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.gen.CgenConfigList;
 import org.apache.cayenne.gen.CgenConfiguration;
@@ -157,9 +156,8 @@ public class CgenRunTool {
         // Step 4 — cgen configuration: use the <cgen> block stored in the DataMap, or, if there is none,
         // synthesize a default. This mirrors CayenneModeler and the Maven/Gradle plugins, all of which
         // fall back to a default config rather than failing — a missing <cgen> block is not an error.
-        ProjectMetaData metaData = injector.getInstance(ProjectMetaData.class);
-        CgenConfigList configList = metaData.get(dataMap, CgenConfigList.class);
-        boolean usedDefaultConfig = configList == null || configList.getAll().isEmpty();
+        CgenConfigList configList = new CgenConfigList(dataMap);
+        boolean usedDefaultConfig = configList.isEmpty();
         CgenConfiguration cgenConfig = usedDefaultConfig
                 ? CgenConfiguration.createDefault(dataMap, null)
                 : configList.getAll().getFirst();

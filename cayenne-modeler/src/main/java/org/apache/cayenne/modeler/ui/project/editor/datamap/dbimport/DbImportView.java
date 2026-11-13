@@ -20,7 +20,6 @@ package org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
-import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.apache.cayenne.modeler.toolkit.ProjectPanel;
@@ -29,6 +28,7 @@ import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.action.DbIm
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.ColorTreeRenderer;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.DbImportTreeNode;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.TransferableNode;
+import org.apache.cayenne.project.dbimport.ReverseEngineering;
 import javax.swing.*;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
@@ -174,12 +174,11 @@ public class DbImportView extends ProjectPanel {
         if (map != null) {
             initFromModel = true;
             configToolbar.unlockButtons();
-            ReverseEngineering reverseEngineering = DbImportView.this.app
-                    .getMetaData().get(map, ReverseEngineering.class);
+            ReverseEngineering reverseEngineering = map.getReverseEngineering();
             if (reverseEngineering == null) {
                 // create config with default values
                 reverseEngineering = new ReverseEngineering();
-                DbImportView.this.app.getMetaData().add(map, reverseEngineering);
+                map.setReverseEngineering(reverseEngineering);
             }
             configPanel.fillCheckboxes(reverseEngineering);
             configPanel.initializeTextFields(reverseEngineering);

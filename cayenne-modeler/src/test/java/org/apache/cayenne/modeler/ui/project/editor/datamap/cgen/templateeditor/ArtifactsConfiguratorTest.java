@@ -22,8 +22,6 @@ package org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.templateeditor
 import org.apache.cayenne.gen.Artifact;
 import org.apache.cayenne.gen.ArtifactsGenerationMode;
 import org.apache.cayenne.gen.CgenConfiguration;
-import org.apache.cayenne.project.xml.ProjectMetaData;
-import org.apache.cayenne.project.xml.DefaultProjectMetaData;
 import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.ClassGenerationActionFactory;
 import org.apache.cayenne.map.DataMap;
@@ -54,7 +52,6 @@ public class ArtifactsConfiguratorTest {
     public void config(){
         this.dataMap = configureDataMap();
         this.action = new ToolsInjectorBuilder()
-                .addModule(binder -> binder.bind(ProjectMetaData.class).to(DefaultProjectMetaData.class))
                 .create()
                 .getInstance(ClassGenerationActionFactory.class)
                 .createAction(createCgenConfiguration(), NOPLogger.NOP_LOGGER);

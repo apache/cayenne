@@ -36,15 +36,11 @@ import org.apache.cayenne.modeler.ui.project.editor.datamap.main.locking.Locking
 import org.apache.cayenne.modeler.ui.project.editor.datamap.main.pkg.PackageUpdateDialog;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.main.schema.SchemaUpdateDialog;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.main.superclass.SuperclassUpdateDialog;
-import org.apache.cayenne.projecttools.extension.info.ObjectInfo;
 import java.util.Objects;
 import org.apache.cayenne.validation.ValidationException;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Panel for editing a DataMap.
@@ -136,7 +132,7 @@ public class DataMapMainView extends ProjectPanel {
     private void initFromModel(DataMap map) {
         name.setText(map.getName());
         quoteSQLIdentifiers.setSelected(map.isQuotingSQLIdentifiers());
-        comment.setText(getComment(map));
+        comment.setText(map.getComment());
 
         // init default fields
         defaultLockType.setSelected(map.getDefaultLockType() != ObjEntity.LOCK_TYPE_NONE);
@@ -359,17 +355,13 @@ public class DataMapMainView extends ProjectPanel {
         if (dataMap == null) {
             return;
         }
-        String currentComment = getComment(dataMap);
+        String currentComment = dataMap.getComment();
         if (currentComment == null) {
             currentComment = "";
         }
         if (!currentComment.equals(comment)) {
-            ObjectInfo.putToMetaData(app.getMetaData(), dataMap, ObjectInfo.COMMENT, comment);
+            dataMap.setComment(comment);
             session.fireDataMapEvent(DataMapEvent.ofChange(this, dataMap));
         }
-    }
-
-    private String getComment(DataMap dataMap) {
-        return ObjectInfo.getFromMetaData(app.getMetaData(), dataMap, ObjectInfo.COMMENT);
     }
 }

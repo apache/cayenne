@@ -94,7 +94,8 @@ public final class NamedSelectQuery extends NamedQuery {
                 .attribute("cacheStrategy", cacheStrategy != QueryCacheStrategy.NO_CACHE ? cacheStrategy.name() : null)
                 .attribute("dataRows", fetchingDataRows)
                 .attribute("pageSize", pageSize)
-                .attribute("statementFetchSize", statementFetchSize);
+                .attribute("statementFetchSize", statementFetchSize)
+                .textTag("comment", getComment());
 
         if (ql != null && !ql.isBlank()) {
             encoder.start("ql").cdata(ql, true).end();
@@ -102,7 +103,6 @@ public final class NamedSelectQuery extends NamedQuery {
 
         encodeCacheGroup(encoder);
 
-        delegate.visitQuery(this);
         encoder.end();
     }
 }

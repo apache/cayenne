@@ -5,7 +5,7 @@
     <embeddable className="Embeddable"/>
     <objEntity name="ObjEntity" className="ObjEntity"/>
     <objEntity name="ObjEntity1" className="ObjEntity1"/>
-    <cgen xmlns="http://cayenne.apache.org/schema/15/cgen">
+    <cgen>
         <destDir>./customDirectory</destDir>
         <excludeEntities>ObjEntity</excludeEntities>
         <excludeEmbeddables>Embeddable</excludeEmbeddables>

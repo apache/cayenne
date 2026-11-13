@@ -67,16 +67,22 @@ public class ObjEntityHandler extends NamespaceAwareNestedTagHandler {
                 processStartAttributeOverride(attributes);
                 yield true;
             }
-            case QUALIFIER_TAG -> true;
+            case QUALIFIER_TAG, CommentHandler.COMMENT_TAG -> true;
             default -> false;
         };
     }
 
     @Override
-    protected ContentHandler createChildTagHandler(String namespaceURI, String localName, String qName, Attributes attributes) {
+    protected ContentHandler createChildTagHandler(String namespaceURI, String localName,
+                                                   String qName, Attributes attributes) {
+
         if (namespaceURI.equals(targetNamespace)
                 && EmbeddableAttributeHandler.EMBEDDED_ATTRIBUTE_TAG.equals(localName)) {
             return new EmbeddableAttributeHandler(this, entity);
+        }
+
+        if (namespaceURI.equals(targetNamespace) && OBJ_ATTRIBUTE_TAG.equals(localName)) {
+            return new CommentHandler(this, () -> lastAttribute);
         }
 
         return super.createChildTagHandler(namespaceURI, localName, qName, attributes);
@@ -84,8 +90,9 @@ public class ObjEntityHandler extends NamespaceAwareNestedTagHandler {
 
     @Override
     protected boolean processCharData(String localName, String data) {
-        if (QUALIFIER_TAG.equals(localName)) {
-            createQualifier(data);
+        switch (localName) {
+            case QUALIFIER_TAG -> createQualifier(data);
+            case CommentHandler.COMMENT_TAG -> CommentHandler.loadComment(loaderContext, entity, data);
         }
         return true;
     }
@@ -137,13 +144,5 @@ public class ObjEntityHandler extends NamespaceAwareNestedTagHandler {
                         qualifier);
             }
         }
-    }
-
-    public ObjEntity getEntity() {
-        return entity;
-    }
-
-    public ObjAttribute getLastAttribute() {
-        return lastAttribute;
     }
 }

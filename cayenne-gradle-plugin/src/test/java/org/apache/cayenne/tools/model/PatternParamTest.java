@@ -19,11 +19,11 @@
 
 package org.apache.cayenne.tools.model;
 
-import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeColumn;
-import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeProcedure;
-import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeTable;
-import org.apache.cayenne.dbsync.reverse.dbimport.IncludeColumn;
-import org.apache.cayenne.dbsync.reverse.dbimport.IncludeProcedure;
+import org.apache.cayenne.project.dbimport.ExcludeColumn;
+import org.apache.cayenne.project.dbimport.ExcludeProcedure;
+import org.apache.cayenne.project.dbimport.ExcludeTable;
+import org.apache.cayenne.project.dbimport.IncludeColumn;
+import org.apache.cayenne.project.dbimport.IncludeProcedure;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

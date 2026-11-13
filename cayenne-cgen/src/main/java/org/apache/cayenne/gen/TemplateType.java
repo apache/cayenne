@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.gen;
 
+import org.apache.cayenne.project.cgen.CgenDescriptor;
+
 /**
  * Defines class generation template types.
  *
@@ -25,23 +27,23 @@ package org.apache.cayenne.gen;
  */
 public enum TemplateType {
 
-    ENTITY_SINGLE_CLASS(false, "Single Entity Class", "templates/v4_1/singleclass.vm"),
+    ENTITY_SINGLE_CLASS(false, "Single Entity Class", CgenDescriptor.DEFAULT_SINGLE_CLASS_TEMPLATE),
 
-    ENTITY_SUPERCLASS(true, "Entity Superclass", "templates/v4_1/superclass.vm"),
+    ENTITY_SUPERCLASS(true, "Entity Superclass", CgenDescriptor.DEFAULT_SUPER_TEMPLATE),
 
-    ENTITY_SUBCLASS(false, "Entity Subclass", "templates/v4_1/subclass.vm"),
+    ENTITY_SUBCLASS(false, "Entity Subclass", CgenDescriptor.DEFAULT_TEMPLATE),
 
-    EMBEDDABLE_SINGLE_CLASS(false, "Single Embeddable Class", "templates/v4_1/embeddable-singleclass.vm"),
+    EMBEDDABLE_SINGLE_CLASS(false, "Single Embeddable Class", CgenDescriptor.DEFAULT_EMBEDDABLE_SINGLE_CLASS_TEMPLATE),
 
-    EMBEDDABLE_SUPERCLASS(true, "Embeddable Superclass", "templates/v4_1/embeddable-superclass.vm"),
+    EMBEDDABLE_SUPERCLASS(true, "Embeddable Superclass", CgenDescriptor.DEFAULT_EMBEDDABLE_SUPER_TEMPLATE),
 
-    EMBEDDABLE_SUBCLASS(false, "Embeddable Subclass", "templates/v4_1/embeddable-subclass.vm"),
+    EMBEDDABLE_SUBCLASS(false, "Embeddable Subclass", CgenDescriptor.DEFAULT_EMBEDDABLE_TEMPLATE),
 
-    DATAMAP_SINGLE_CLASS(false, "Single DataMap Class", "templates/v4_1/datamap-singleclass.vm"),
+    DATAMAP_SINGLE_CLASS(false, "Single DataMap Class", CgenDescriptor.DEFAULT_DATA_MAP_SINGLE_CLASS_TEMPLATE),
 
-    DATAMAP_SUPERCLASS(true, "DataMap Superclass", "templates/v4_1/datamap-superclass.vm"),
+    DATAMAP_SUPERCLASS(true, "DataMap Superclass", CgenDescriptor.DEFAULT_DATA_MAP_SUPER_TEMPLATE),
 
-    DATAMAP_SUBCLASS(false, "DataMap Subclass", "templates/v4_1/datamap-subclass.vm");
+    DATAMAP_SUBCLASS(false, "DataMap Subclass", CgenDescriptor.DEFAULT_DATA_MAP_TEMPLATE);
 
     private final boolean superclass;
     private final String readableName;

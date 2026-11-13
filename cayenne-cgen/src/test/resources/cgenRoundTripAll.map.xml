@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ~   Licensed to the Apache Software Foundation (ASF) under one
+  ~  or more contributor license agreements.  See the NOTICE file
+  ~  distributed with this work for additional information
+  ~  regarding copyright ownership.  The ASF licenses this file
+  ~  to you under the Apache License, Version 2.0 (the
+  ~  "License"); you may not use this file except in compliance
+  ~  with the License.  You may obtain a copy of the License at
+  ~
+  ~    https://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing,
+  ~  software distributed under the License is distributed on an
+  ~  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~  KIND, either express or implied.  See the License for the
+  ~  specific language governing permissions and limitations
+  ~  under the License.
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+<!-- Saved in another form: "ALL", trailing "/", unsorted and missing excludes, default path of another template -->
+<dataMap xmlns="http://cayenne.apache.org/schema/15/dataMap"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://cayenne.apache.org/schema/15/dataMap https://cayenne.apache.org/schema/15/dataMap.xsd">
+    <embeddable className="org.example.Address"/>
+    <embeddable className="org.example.Phone"/>
+    <objEntity name="Artist" className="org.example.Artist"/>
+    <objEntity name="Gallery" className="org.example.Gallery"/>
+    <objEntity name="Painting" className="org.example.Painting"/>
+    <cgen>
+        <name>Custom</name>
+        <excludeEntities>Painting,Removed,Artist</excludeEntities>
+        <excludeEmbeddables>org.example.Phone,org.example.Removed</excludeEmbeddables>
+        <destDir>../java/</destDir>
+        <mode>ALL</mode>
+        <template><![CDATA[subclass template]]></template>
+        <superTemplate><![CDATA[superclass template]]></superTemplate>
+        <embeddableTemplate><![CDATA[embeddable subclass template]]></embeddableTemplate>
+        <embeddableSuperTemplate><![CDATA[embeddable superclass template]]></embeddableSuperTemplate>
+        <dataMapTemplate><![CDATA[datamap subclass template]]></dataMapTemplate>
+        <dataMapSuperTemplate><![CDATA[datamap superclass template]]></dataMapSuperTemplate>
+        <outputPattern>*.groovy</outputPattern>
+        <makePairs>false</makePairs>
+        <usePkgPath>false</usePkgPath>
+        <overwrite>true</overwrite>
+        <createPropertyNames>true</createPropertyNames>
+        <superPkg>org.example.auto</superPkg>
+        <createPKProperties>false</createPKProperties>
+        <externalToolConfig>tools.properties</externalToolConfig>
+    </cgen>
+    <cgen>
+        <template>templates/v4_1/superclass.vm</template>
+    </cgen>
+</dataMap>

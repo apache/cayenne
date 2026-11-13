@@ -19,7 +19,6 @@
 package org.apache.cayenne.modeler.service.validator;
 
 import org.apache.cayenne.project.Project;
-import org.apache.cayenne.project.xml.ProjectMetaData;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.projecttools.validation.DefaultProjectValidator;
 import org.apache.cayenne.projecttools.validation.ValidationConfig;
@@ -28,9 +27,8 @@ public class ConfigurableProjectValidator extends DefaultProjectValidator {
 
     public ConfigurableProjectValidator(Application application) {
         super(() -> {
-            ProjectMetaData metaData = application.getMetaData();
             Project project = application.getFrame().getProjectSession().project();
-            return ValidationConfig.fromMetadata(metaData, project);
+            return ValidationConfig.fromProject(project);
         });
     }
 }

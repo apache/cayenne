@@ -18,8 +18,11 @@
  ****************************************************************/
 package org.apache.cayenne.project.upgrade;
 
+import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import javax.xml.xpath.XPath;
@@ -29,13 +32,21 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 /**
- * Upgrades projects to version 15
+ * Upgrades projects to version 15.
+ * <p>
+ * The DOM is parsed without namespaces, with "xmlns" declarations as plain attributes. So the elements are created and
+ * renamed without a namespace to inherit the one of their parent, and removing "xmlns" moves an element to it.
  *
  * @since 6.0
  */
 public final class UpgradeHandler_V15 implements UpgradeHandler {
+
+    private static final Pattern INFO_NAMESPACE = Pattern.compile("http://cayenne\\.apache\\.org/schema/\\d+/info");
+    private static final Pattern DBIMPORT_NAMESPACE =
+            Pattern.compile("http://cayenne\\.apache\\.org/schema/\\d+/dbimport");
 
     @Override
     public String getVersion() {
@@ -45,16 +56,16 @@ public final class UpgradeHandler_V15 implements UpgradeHandler {
     @Override
     public void upgradeProjectDOM(UpgradeContext context) {
         updateProjectSchema(context);
-        upgradeExtensionSchema(context, "/project", "validation");
+        convertValidationExtension(context);
         renameInspection(context);
     }
 
     @Override
     public void upgradeDataMapDOM(UpgradeContext context) {
         updateDataMapSchema(context);
-        upgradeExtensionSchema(context, "/dataMap", "cgen");
-        upgradeExtensionSchema(context, "/dataMap", "dbImport");
-        upgradeInfoSchema(context);
+        convertCgenExtension(context);
+        convertDbImportExtension(context);
+        convertInfoProperties(context);
         convertForeignKeys(context);
         dropSqlQueryDbRoots(context);
         dropEntityCallbacks(context);
@@ -74,17 +85,102 @@ public final class UpgradeHandler_V15 implements UpgradeHandler {
                 + "https://cayenne.apache.org/schema/15/dataMap.xsd");
     }
 
-    private void upgradeExtensionSchema(UpgradeContext upgradeUnit, String root, String extension) {
-        for (Element element : elements(upgradeUnit, root + "/*[local-name()='" + extension + "']")) {
-            element.setAttribute("xmlns", "http://cayenne.apache.org/schema/15/" + extension.toLowerCase());
+    // removing the namespace declaration moves the tags to the DataMap schema
+    private void convertCgenExtension(UpgradeContext upgradeUnit) {
+        for (Element cgen : elements(upgradeUnit, "/dataMap/*[local-name()='cgen']")) {
+            cgen.removeAttribute("xmlns");
         }
     }
 
-    private void upgradeInfoSchema(UpgradeContext upgradeUnit) {
-        for (Element element : elements(upgradeUnit, "//*[local-name()='property']")) {
-            if (element.hasAttribute("xmlns:info")) {
-                element.setAttribute("xmlns:info", "http://cayenne.apache.org/schema/15/info");
+    // the legacy "config" tag is renamed to "dbImport", or dropped if there's a "dbImport" already, as it was ignored
+    private void convertDbImportExtension(UpgradeContext upgradeUnit) {
+        String dbImportPath = "/dataMap/*[local-name()='dbImport']";
+        boolean hasDbImport = !elements(upgradeUnit, dbImportPath).isEmpty();
+        for (Element config : elements(upgradeUnit, "/dataMap/*[local-name()='config']")) {
+            String namespace = namespaceURI(config);
+            if (namespace == null || !DBIMPORT_NAMESPACE.matcher(namespace).matches()) {
+                continue;
             }
+
+            if (hasDbImport) {
+                config.getParentNode().removeChild(config);
+                upgradeUnit.recordChange("The legacy 'config' tag of the reverse engineering settings was removed, "
+                        + "as the DataMap has a 'dbImport' tag that replaces it", false);
+            } else {
+                upgradeUnit.getDocument().renameNode(config, null, "dbImport");
+                hasDbImport = true;
+            }
+        }
+
+        for (Element dbImport : elements(upgradeUnit, dbImportPath)) {
+            dbImport.removeAttribute("xmlns");
+        }
+    }
+
+    // "comment" properties become "comment" tags, the other properties are dropped
+    private void convertInfoProperties(UpgradeContext upgradeUnit) {
+        for (Element property : elements(upgradeUnit, "//*[local-name()='property']")) {
+            if (!isInfoProperty(property)) {
+                continue;
+            }
+
+            Element parent = (Element) property.getParentNode();
+            String name = property.getAttribute("name");
+            if ("comment".equals(name)) {
+                String comment = property.getAttribute("value");
+                if (!comment.isEmpty()) {
+                    commentElement(parent).setTextContent(comment);
+                }
+            } else {
+                upgradeUnit.recordChange("Property '%s' of %s was removed, as only comments are supported"
+                        .formatted(name, describe(parent)), false);
+            }
+            parent.removeChild(property);
+        }
+
+        removeInfoNamespaceDeclarations(upgradeUnit.getDocument());
+    }
+
+    // adds the "comment" as the first child if missing
+    private Element commentElement(Element parent) {
+        List<Element> children = childElements(parent);
+        for (Element child : children) {
+            if (localName(child).equals("comment")) {
+                return child;
+            }
+        }
+
+        Element comment = parent.getOwnerDocument().createElement("comment");
+        parent.insertBefore(comment, children.isEmpty() ? null : children.get(0));
+        return comment;
+    }
+
+    // e.g. "objEntity 'Artist'"
+    private String describe(Element element) {
+        String name = element.hasAttribute("name") ? element.getAttribute("name") : element.getAttribute("className");
+        return name.isEmpty() ? localName(element) : "%s '%s'".formatted(localName(element), name);
+    }
+
+    private void removeInfoNamespaceDeclarations(Document document) {
+        NodeList all = document.getElementsByTagName("*");
+        for (int i = 0; i < all.getLength(); i++) {
+            Element element = (Element) all.item(i);
+            NamedNodeMap attributes = element.getAttributes();
+            List<String> declarations = new ArrayList<>();
+            for (int j = 0; j < attributes.getLength(); j++) {
+                Attr attribute = (Attr) attributes.item(j);
+                if (attribute.getName().startsWith("xmlns:")
+                        && INFO_NAMESPACE.matcher(attribute.getValue()).matches()) {
+                    declarations.add(attribute.getName());
+                }
+            }
+            declarations.forEach(element::removeAttribute);
+        }
+    }
+
+    private void convertValidationExtension(UpgradeContext upgradeUnit) {
+        for (Element validation : elements(upgradeUnit, "/project/*[local-name()='validation']")) {
+            validation.removeAttribute("xmlns");
         }
     }
 
@@ -184,12 +280,12 @@ public final class UpgradeHandler_V15 implements UpgradeHandler {
         String source = relationship.getAttribute("target");
         String target = relationship.getAttribute("source");
 
-        Element reverse = document.createElementNS(relationship.getNamespaceURI(), "dbRelationship");
+        Element reverse = document.createElement("dbRelationship");
         reverse.setAttribute("name", reverseName(target, source, relationships));
         reverse.setAttribute("source", source);
         reverse.setAttribute("target", target);
         for (Element join : joins(relationship)) {
-            Element reverseJoin = document.createElementNS(join.getNamespaceURI(), "dbAttributePair");
+            Element reverseJoin = document.createElement("dbAttributePair");
             reverseJoin.setAttribute("source", join.getAttribute("target"));
             reverseJoin.setAttribute("target", join.getAttribute("source"));
             reverse.appendChild(reverseJoin);
@@ -247,6 +343,29 @@ public final class UpgradeHandler_V15 implements UpgradeHandler {
             pairs.add(reversed ? target + "->" + source : source + "->" + target);
         }
         return pairs;
+    }
+
+    /**
+     * Returns whether an element is a property of the "info" extension. Also used by {@link UpgradeHandler_V14}.
+     */
+    static boolean isInfoProperty(Element element) {
+        String name = element.getNodeName();
+        String namespace = namespaceURI(element);
+        return name.substring(name.indexOf(':') + 1).equals("property")
+                && namespace != null && INFO_NAMESPACE.matcher(namespace).matches();
+    }
+
+    // resolves the namespace from the "xmlns" attributes of the element and its ancestors
+    private static String namespaceURI(Element element) {
+        String name = element.getNodeName();
+        int colon = name.indexOf(':');
+        String declaration = colon > 0 ? "xmlns:" + name.substring(0, colon) : "xmlns";
+        for (Node node = element; node instanceof Element e; node = e.getParentNode()) {
+            if (e.hasAttribute(declaration)) {
+                return e.getAttribute(declaration);
+            }
+        }
+        return null;
     }
 
     private static String localName(Element element) {

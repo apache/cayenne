@@ -19,12 +19,7 @@
 
 package org.apache.cayenne.project.xml;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
-import org.apache.cayenne.project.Project;
-import org.apache.cayenne.project.ProjectLoader;
-import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.project.ProjectLoadingMode;
 import org.xml.sax.XMLReader;
 
 /**
@@ -32,47 +27,28 @@ import org.xml.sax.XMLReader;
  */
 public class LoaderContext {
 
-    Collection<DataMapLoaderListener> dataMapListeners;
+    private final XMLReader xmlReader;
 
-    Collection<ProjectLoaderListener> projectListeners;
+    private final ProjectLoadingMode loadingMode;
 
-    private XMLReader xmlReader;
-
-    private HandlerFactory factory;
-
-    public LoaderContext(XMLReader reader, HandlerFactory factory) {
+    /**
+     * @since 6.0
+     */
+    public LoaderContext(XMLReader reader, ProjectLoadingMode loadingMode) {
         this.xmlReader = reader;
-        this.factory = factory;
-        dataMapListeners = new ArrayList<>();
-        projectListeners = new ArrayList<>();
+        this.loadingMode = loadingMode;
     }
 
-    public HandlerFactory getFactory() {
-        return factory;
+    /**
+     * Returns true if the tool-only parts of the project model should be loaded.
+     *
+     * @since 6.0
+     */
+    public boolean isFullModel() {
+        return loadingMode == ProjectLoadingMode.FULL;
     }
 
     public XMLReader getXmlReader() {
         return xmlReader;
     }
-
-    public void addDataMapListener(DataMapLoaderListener listener) {
-        dataMapListeners.add(listener);
-    }
-
-    public void dataMapLoaded(DataMap dataMap) {
-        for(DataMapLoaderListener listener : dataMapListeners) {
-            listener.onDataMapLoaded(dataMap);
-        }
-    }
-
-    public void addProjectListener(ProjectLoaderListener listener) {
-        projectListeners.add(listener);
-    }
-
-    public void projectLoaded(Project project) {
-        for(ProjectLoaderListener listener : projectListeners) {
-            listener.onProjectLoaded(project);
-        }
-    }
-
 }

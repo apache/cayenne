@@ -22,11 +22,19 @@ package org.apache.cayenne.project.xml;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.project.ProjectLoadingMode;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class DbRelationshipHandlerTest extends BaseHandlerTest {
+
+    private static final String COMMENTED_RELATIONSHIP = """
+            <dbRelationship name="toPainting" source="ARTIST" target="PAINTING">
+                <comment>to painting</comment>
+                <dbAttributePair source="PAINTING_ID" target="ID"/>
+            </dbRelationship>
+            """;
 
     @Test
     public void parsing() throws Exception {
@@ -51,5 +59,28 @@ public class DbRelationshipHandlerTest extends BaseHandlerTest {
         assertFalse(relationship.isToMany());
         assertEquals("FAVORITE_PAINTING_ID", relationship.getJoins().get(0).getSourceName());
         assertEquals("ID", relationship.getJoins().get(0).getTargetName());
+    }
+
+    @Test
+    public void loadComments() throws Exception {
+        DbRelationship relationship = parseRelationship(ProjectLoadingMode.FULL);
+        assertEquals("to painting", relationship.getComment());
+        assertEquals(1, relationship.getJoins().size());
+    }
+
+    @Test
+    public void skipComments() throws Exception {
+        DbRelationship relationship = parseRelationship(ProjectLoadingMode.RUNTIME);
+        assertNull(relationship.getComment());
+        assertEquals(1, relationship.getJoins().size());
+    }
+
+    private DbRelationship parseRelationship(ProjectLoadingMode loadingMode) throws Exception {
+        DataMap map = new DataMap();
+        DbEntity entity = new DbEntity("ARTIST");
+        map.addDbEntity(entity);
+        parse("dbRelationship", COMMENTED_RELATIONSHIP, loadingMode,
+                parent -> new DbRelationshipHandler(parent, map));
+        return entity.getRelationship("toPainting");
     }
 }

@@ -61,8 +61,19 @@ public class DataMapHandler extends NamespaceAwareNestedTagHandler {
                 dataMap.setQuotingSQLIdentifiers("true".equals(attributes.getValue("quoteSqlIdentifiers")));
                 yield true;
             }
+            case CommentHandler.COMMENT_TAG -> true;
             default -> false;
         };
+    }
+
+    @Override
+    protected boolean processCharData(String localName, String data) {
+        if (CommentHandler.COMMENT_TAG.equals(localName)) {
+            CommentHandler.loadComment(loaderContext, dataMap, data);
+            return true;
+        }
+
+        return false;
     }
 
     @Override
@@ -81,16 +92,18 @@ public class DataMapHandler extends NamespaceAwareNestedTagHandler {
                 case NamedProcedureQueryHandler.PROCEDURE_QUERY_TAG ->
                         new NamedProcedureQueryHandler(this, dataMap);
                 case EmbeddableHandler.EMBEDDABLE_TAG -> new EmbeddableHandler(this, dataMap);
+                // tool-only settings
+                case DbImportHandler.DB_IMPORT_TAG -> loaderContext.isFullModel()
+                        ? new DbImportHandler(this, dataMap)
+                        : super.createChildTagHandler(namespaceURI, localName, qName, attributes);
+                case CgenHandler.CGEN_TAG -> loaderContext.isFullModel()
+                        ? new CgenHandler(this, dataMap)
+                        : super.createChildTagHandler(namespaceURI, localName, qName, attributes);
                 default -> super.createChildTagHandler(namespaceURI, localName, qName, attributes);
             };
         }
 
         return super.createChildTagHandler(namespaceURI, localName, qName, attributes);
-    }
-
-    @Override
-    protected void beforeScopeEnd() {
-        loaderContext.dataMapLoaded(dataMap);
     }
 
     public DataMap getDataMap() {

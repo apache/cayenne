@@ -19,12 +19,12 @@
 
 package org.apache.cayenne.tools.model;
 
-import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeColumn;
-import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeProcedure;
-import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeRelationship;
-import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeTable;
-import org.apache.cayenne.dbsync.reverse.dbimport.IncludeColumn;
-import org.apache.cayenne.dbsync.reverse.dbimport.IncludeProcedure;
+import org.apache.cayenne.project.dbimport.ExcludeColumn;
+import org.apache.cayenne.project.dbimport.ExcludeProcedure;
+import org.apache.cayenne.project.dbimport.ExcludeRelationship;
+import org.apache.cayenne.project.dbimport.ExcludeTable;
+import org.apache.cayenne.project.dbimport.IncludeColumn;
+import org.apache.cayenne.project.dbimport.IncludeProcedure;
 
 /**
  * @since 4.0

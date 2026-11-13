@@ -94,7 +94,7 @@ Apply the change following the schema in `datamap-schema.md` or `project-descrip
 
 The parts of these rules about writing `<dbEntity>`, `<dbAttribute>` and `<dbRelationship>` elements apply only when the user has opted out of DB import — or, for `<dbRelationship>` alone, when `<skipRelationshipsLoading>` is `true` (see "Who owns what"). Otherwise treat the DB layer as read-only input that the Object layer must reference correctly.
 
-1. **Element order matters.** The DataMap schema requires this order inside `<dataMap>`: `<procedure>`, `<embeddable>`, `<dbEntity>`, `<objEntity>`, `<dbRelationship>`, `<objRelationship>`, the queries (`<objectQuery>`, `<sqlQuery>`, `<procedureQuery>`), `<cgen>`, `<dbImport>`. Insert at the right place — don't append blindly.
+1. **Element order matters.** The DataMap schema requires this order inside `<dataMap>`: `<comment>`, `<embeddable>`, `<procedure>`, `<dbEntity>`, `<objEntity>`, `<dbRelationship>`, `<objRelationship>`, the queries (`<objectQuery>`, `<sqlQuery>`, `<procedureQuery>`), `<dbImport>`, `<cgen>`. Insert at the right place — don't append blindly. A `<comment>` always goes first in its element, see `datamap-schema.md`.
 
 2. **Cross-link consistently.**
    - An `<objEntity>` references a `<dbEntity>` by `dbEntityName="..."`. Make sure that DbEntity exists.

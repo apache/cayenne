@@ -20,7 +20,6 @@
 package org.apache.cayenne.tools;
 
 import groovy.lang.Reference;
-import org.apache.cayenne.project.xml.ProjectMetaData;
 import org.apache.cayenne.dbsync.filter.NamePatternMatcher;
 import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
 import org.apache.cayenne.di.Injector;
@@ -242,8 +241,6 @@ public class CgenTask extends BaseCayenneTask {
 
     private String destDirName;
 
-    private ProjectMetaData metaData;
-
     private boolean useConfigFromDataMap;
 
     private transient Injector injector;
@@ -255,8 +252,6 @@ public class CgenTask extends BaseCayenneTask {
         injector = new ToolsInjectorBuilder()
                 .addModule(new ToolsModule(LoggerFactory.getLogger(CgenTask.class)))
                 .create();
-
-        metaData = injector.getInstance(ProjectMetaData.class);
 
         CayenneGeneratorMapLoaderAction loaderAction = new CayenneGeneratorMapLoaderAction(injector);
         loaderAction.setMainDataMapFile(dataMapFile);
@@ -317,12 +312,12 @@ public class CgenTask extends BaseCayenneTask {
 
     List<CgenConfiguration> buildConfigurations(DataMap dataMap) {
         CgenConfiguration cgenConfiguration;
+        CgenConfigList cgenConfigList = new CgenConfigList(dataMap);
         if (hasConfig()) {
             getLogger().info("Using cgen config from pom.xml");
             return Collections.singletonList(cgenConfigFromPom(dataMap));
-        } else if (metaData != null && metaData.get(dataMap, CgenConfigList.class) != null) {
+        } else if (!cgenConfigList.isEmpty()) {
             getLogger().info("Using cgen config from " + dataMap.getName());
-            CgenConfigList cgenConfigList = metaData.get(dataMap, CgenConfigList.class);
             useConfigFromDataMap = true;
             return cgenConfigList.getAll();
         } else {

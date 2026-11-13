@@ -21,7 +21,6 @@ package org.apache.cayenne.dbsync.reverse.dbimport;
 import org.apache.cayenne.project.ProjectLoader;
 import org.apache.cayenne.project.DataMapLoader;
 import org.apache.cayenne.dbsync.reverse.configuration.DbAdapterFactory;
-import org.apache.cayenne.project.xml.ProjectMetaData;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.DbSyncModule;
 import org.apache.cayenne.dbsync.merge.builders.DataMapBuilder;
@@ -43,16 +42,22 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.projecttools.FileProjectSaver;
 import org.apache.cayenne.project.ProjectNode;
+import org.apache.cayenne.project.dbimport.ExcludeTable;
+import org.apache.cayenne.project.dbimport.ReverseEngineering;
+import org.apache.cayenne.project.dbimport.Schema;
 import org.apache.cayenne.resource.URLResource;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.unit.TestAdapters;
 import org.apache.cayenne.unit.jdbc.TestConnection;
 import org.apache.cayenne.unit.jdbc.TestDataSource;
 import org.apache.cayenne.dbsync.reverse.dbload.DefaultDbLoaderDelegate;
-import org.apache.cayenne.project.xml.DefaultProjectMetaData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
+import org.slf4j.Marker;
+import org.slf4j.event.Level;
+import org.slf4j.helpers.LegacyAbstractLogger;
+import org.slf4j.helpers.MessageFormatter;
 import org.slf4j.helpers.NOPLogger;
 
 import javax.sql.DataSource;
@@ -65,7 +70,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -93,10 +98,12 @@ public class DefaultDbImportActionTest {
     private Connection connection;
     private DbLoaderDelegate loaderDelegate;
     private ObjectNameGenerator nameGenerator;
+    private RecordingLogger logger;
 
     @BeforeEach
     public void before() {
         adapter = TestAdapters.jdbc();
+        logger = new RecordingLogger();
         connection = new TestConnection();
         loaderDelegate = new DefaultDbLoaderDelegate();
         nameGenerator = new DefaultObjectNameGenerator();
@@ -119,7 +126,7 @@ public class DefaultDbImportActionTest {
         };
 
         final boolean[] haveWeTriedToSave = {false};
-        DefaultDbImportAction action = buildDbImportAction(new FileProjectSaver(Collections.emptyList()) {
+        DefaultDbImportAction action = buildDbImportAction(new FileProjectSaver() {
             @Override
             public void save(ProjectNode rootNode) {
                 haveWeTriedToSave[0] = true;
@@ -161,7 +168,7 @@ public class DefaultDbImportActionTest {
 
         final boolean[] haveWeTriedToSave = {false};
         DefaultDbImportAction action = buildDbImportAction(
-            new FileProjectSaver(Collections.emptyList()) {
+            new FileProjectSaver() {
                 @Override
                 public void save(ProjectNode node) {
                     haveWeTriedToSave[0] = true;
@@ -264,11 +271,73 @@ public class DefaultDbImportActionTest {
         assertEquals(0, mapLoads.get());
     }
 
+    @Test
+    public void dataMapReverseEngineering() throws Exception {
+        DataMap map = new DataMap("map");
+        map.setReverseEngineering(reverseEngineering());
+        DbImportConfiguration config = new DbImportConfiguration();
+        config.setUseDataMapReverseEngineering(true);
+
+        DefaultDbImportAction action = buildDbImportAction(null, null, null);
+        action.applyDataMapReverseEngineering(map, config, null, null);
+
+        assertEquals("org.example", config.getDefaultPackage());
+        assertEquals("ARTIST", config.getMeaningfulPkTables());
+        assertTrue(config.getDbLoaderConfig().isSkipPrimaryKeyLoading());
+        assertArrayEquals(new String[]{"TABLE"}, config.getDbLoaderConfig().getTableTypes());
+        assertEquals("SCHEMA_01", config.getDbLoaderConfig().getFiltersConfig().getCatalogs()[0].schemas[0].name);
+        assertEquals(List.of(), logger.warnings);
+
+        // building the filters doesn't change the settings of the DataMap
+        assertEquals(1, map.getReverseEngineering().getExcludeTables().size());
+    }
+
+    @Test
+    public void dataMapReverseEngineeringSkipped() throws Exception {
+        DataMap map = new DataMap("map");
+        map.setReverseEngineering(reverseEngineering());
+        DbImportConfiguration config = new DbImportConfiguration();
+
+        DefaultDbImportAction action = buildDbImportAction(null, null, null);
+        action.applyDataMapReverseEngineering(map, config, null, null);
+
+        assertNull(config.getDefaultPackage());
+        assertFalse(config.getDbLoaderConfig().isSkipPrimaryKeyLoading());
+        assertEquals(List.of("Found several dbimport configs. DataMap dbimport config was skipped. "
+                + "Configuration selected from build file"), logger.warnings);
+    }
+
+    @Test
+    public void dataMapReverseEngineeringMissing() throws Exception {
+        DbImportConfiguration config = new DbImportConfiguration();
+        config.setUseDataMapReverseEngineering(true);
+
+        DefaultDbImportAction action = buildDbImportAction(null, null, null);
+        action.applyDataMapReverseEngineering(new DataMap("map"), config, null, null);
+
+        // no target DataMap yet
+        action.applyDataMapReverseEngineering(null, config, null, null);
+
+        assertNull(config.getDefaultPackage());
+        String missing = "Missing dbimport config. Database is imported completely.";
+        assertEquals(List.of(missing, missing), logger.warnings);
+    }
+
+    private static ReverseEngineering reverseEngineering() {
+        ReverseEngineering reverseEngineering = new ReverseEngineering();
+        reverseEngineering.setDefaultPackage("org.example");
+        reverseEngineering.setMeaningfulPkTables("ARTIST");
+        reverseEngineering.setSkipPrimaryKeyLoading(true);
+        reverseEngineering.addTableType("TABLE");
+        reverseEngineering.addSchema(new Schema("SCHEMA_01"));
+        reverseEngineering.addExcludeTable(new ExcludeTable("TMP_.*"));
+        return reverseEngineering;
+    }
+
     private DefaultDbImportAction buildDbImportAction(FileProjectSaver projectSaver, DataMapLoader mapLoader, final DbLoader dbLoader)
             throws Exception {
 
         DbAdapterFactory adapterFactory = (adapterType, dataSource) -> adapter;
-        ProjectMetaData metaData = new DefaultProjectMetaData();
         MergerTokenFactoryProvider mergerTokenFactoryProvider =
                 new MergerTokenFactoryProvider(Map.of(), new DefaultMergerTokenFactory());
 
@@ -277,8 +346,8 @@ public class DefaultDbImportActionTest {
             throw new UnsupportedOperationException("Unexpected project load: " + source);
         };
 
-        return new DefaultDbImportAction(NOPLogger.NOP_LOGGER, projectSaver, adapterFactory, mapLoader,
-                mergerTokenFactoryProvider, projectLoader, metaData) {
+        return new DefaultDbImportAction(logger, projectSaver, adapterFactory, mapLoader, mergerTokenFactoryProvider,
+                projectLoader) {
 
             protected DbLoader createDbLoader(DbAdapter adapter,
                                                Connection connection,
@@ -506,13 +575,55 @@ public class DefaultDbImportActionTest {
 
         int saves;
 
-        RecordingProjectSaver() {
-            super(Collections.emptyList());
-        }
-
         @Override
         public void save(ProjectNode rootNode) {
             saves++;
+        }
+    }
+
+    /**
+     * A logger that keeps the WARN messages, and drops the rest.
+     */
+    static class RecordingLogger extends LegacyAbstractLogger {
+
+        final List<String> warnings = new ArrayList<>();
+
+        @Override
+        protected String getFullyQualifiedCallerName() {
+            return null;
+        }
+
+        @Override
+        protected void handleNormalizedLoggingCall(Level level, Marker marker, String messagePattern,
+                                                   Object[] arguments, Throwable throwable) {
+            if (level == Level.WARN) {
+                warnings.add(MessageFormatter.basicArrayFormat(messagePattern, arguments));
+            }
+        }
+
+        @Override
+        public boolean isTraceEnabled() {
+            return false;
+        }
+
+        @Override
+        public boolean isDebugEnabled() {
+            return false;
+        }
+
+        @Override
+        public boolean isInfoEnabled() {
+            return false;
+        }
+
+        @Override
+        public boolean isWarnEnabled() {
+            return true;
+        }
+
+        @Override
+        public boolean isErrorEnabled() {
+            return false;
         }
     }
 }

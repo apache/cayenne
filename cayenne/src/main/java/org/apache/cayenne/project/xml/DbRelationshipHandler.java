@@ -55,8 +55,19 @@ public class DbRelationshipHandler extends NamespaceAwareNestedTagHandler {
                 createDbAttributePair(attributes);
                 yield true;
             }
+            case CommentHandler.COMMENT_TAG -> true;
             default -> false;
         };
+    }
+
+    @Override
+    protected boolean processCharData(String localName, String data) {
+        if (CommentHandler.COMMENT_TAG.equals(localName)) {
+            CommentHandler.loadComment(loaderContext, dbRelationship, data);
+            return true;
+        }
+
+        return false;
     }
 
     private void createRelationship(Attributes attributes) throws SAXException {
@@ -89,9 +100,5 @@ public class DbRelationshipHandler extends NamespaceAwareNestedTagHandler {
         join.setSourceName(attributes.getValue("source"));
         join.setTargetName(attributes.getValue("target"));
         dbRelationship.addJoin(join);
-    }
-
-    public DbRelationship getDbRelationship() {
-        return dbRelationship;
     }
 }

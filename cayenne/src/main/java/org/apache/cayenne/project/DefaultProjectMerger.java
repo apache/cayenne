@@ -66,6 +66,7 @@ public class DefaultProjectMerger implements ProjectMerger {
         merged.setName(projects[len - 1].getName());
         merged.setSharedCacheEnabled(projects[len - 1].isSharedCacheEnabled());
         merged.setValidatingObjectsOnCommit(projects[len - 1].isValidatingObjectsOnCommit());
+        merged.setDisabledInspections(projects[len - 1].getDisabledInspections());
 
         // iterate in reverse order to reduce add/remove operations
         for (int i = len - 1; i >= 0; i--) {

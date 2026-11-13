@@ -46,6 +46,8 @@ For every rename, walk the checklist for that element type. Element shapes are i
 | `rootName="X"` | Every `<sqlQuery>` with `root="objEntity"`. |
 | `from X` | The `<ql>` String of every `<objectQuery>` rooted in the entity. |
 | `resultEntity="X"` | `<procedureQuery>`. |
+| `superEntityName="X"` | Every `<objEntity>` that inherits from the entity. |
+| `X` in `<excludeEntities>` | Every `<cgen>` block of the DataMap. A stale `X` excludes nothing and is dropped on the next save, so `Y` silently starts being generated. |
 | Java | `ObjectSelect.query(X.class)` tracks `className`, so updating `className` + regenerating covers it. Also fix string-based entity lookups (`context.newObject("X")`, `objectSelect("X")`). |
 
 The `dbEntityName` does **not** change — the DbEntity keeps its DB-derived name.

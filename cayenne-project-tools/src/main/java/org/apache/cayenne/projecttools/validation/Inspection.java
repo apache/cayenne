@@ -150,8 +150,8 @@ public enum Inspection {
 
     /**
      * Returns true if this inspection is no longer performed and is retained only so previously saved project
-     * configurations that reference it still load. Deprecated inspections are hidden from the UI and stripped
-     * when a project is saved.
+     * configurations that reference it still load. Deprecated inspections are hidden from the UI and not stored by
+     * {@link ValidationConfig#applyTo}.
      *
      * @since 5.0
      */

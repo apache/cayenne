@@ -140,11 +140,11 @@ public final class NamedProcedureQuery extends NamedQuery {
                 .attribute("columnNameCapitalization",
                         columnNamesCapitalization != null && columnNamesCapitalization != CapsStrategy.DEFAULT
                                 ? columnNamesCapitalization.name()
-                                : null);
+                                : null)
+                .textTag("comment", getComment());
 
         encodeCacheGroup(encoder);
 
-        delegate.visitQuery(this);
         encoder.end();
     }
 }

@@ -19,19 +19,17 @@
 
 package org.apache.cayenne.gen;
 
-import org.apache.cayenne.project.ProjectNodeVisitor;
-import org.apache.cayenne.gen.internal.Utils;
-import org.apache.cayenne.gen.xml.CgenExtension;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;
-import org.apache.cayenne.util.XMLEncoder;
-import org.apache.cayenne.util.XMLSerializable;
+import org.apache.cayenne.project.cgen.CgenDescriptor;
+import org.apache.cayenne.project.cgen.CgenPaths;
+import org.apache.cayenne.util.Util;
 import org.apache.cayenne.validation.ValidationException;
 
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
@@ -40,41 +38,27 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Stores configuration for the code generation tool.
- * CgenConfiguration is stored in the dataMap xml file and used by Modeler and CLI tools (Maven, Gradle and Ant).
+ * Stores configuration for the code generation tool, used by Modeler and CLI tools (Maven, Gradle and Ant). Wraps a
+ * {@link CgenDescriptor} that holds the settings stored in the DataMap.
  *
  * @since 4.1
  */
-public class CgenConfiguration implements XMLSerializable {
+public class CgenConfiguration {
 
-    /**
-     * Absolute directory this configuration is anchored to, normally the one holding the Cayenne
-     * project XML. Null when cgen is driven directly by a tool (Ant, Maven or Gradle).
-     */
+    private final CgenDescriptor descriptor;
+
     private Path rootProjectPath;
 
-    /**
-     * Target directory for the generated classes, stored exactly as it was supplied - either absolute,
-     * or relative to the {@code rootProjectPath}. Never null: an empty path means "the root directory"
-     * when a root is known, and "not configured" when it isn't.
-     */
-    private Path cgenOutputPath = Path.of("");
+    // if no root path is set, use the DataMap directory, following the DataMap when it is moved
+    private boolean rootPathFromDataMap;
 
     private final Collection<Artifact> artifacts;
     private Set<String> entityArtifacts;
-    private final Collection<String> excludedEntityArtifacts;
     private Set<String> embeddableArtifacts;
-    private final Collection<String> excludedEmbeddableArtifacts;
 
-    private String name;
-    private String superPkg;
     private DataMap dataMap;
 
-    private ArtifactsGenerationMode artifactsGenerationMode;
-    private boolean makePairs;
-    private boolean overwrite;
-    private boolean usePkgPath;
-
+    // the templates that can't be rebuilt from the path or text stored in the descriptor, null otherwise
     private CgenTemplate template;
     private CgenTemplate superTemplate;
     private CgenTemplate embeddableTemplate;
@@ -87,43 +71,31 @@ public class CgenConfiguration implements XMLSerializable {
      * @since 5.0 renamed from querySuperTemplate
      */
     private CgenTemplate dataMapSuperTemplate;
-    private String outputPattern;
     private String encoding;
-    private boolean createPropertyNames;
-    /**
-     * @since 4.1
-     */
-    private boolean createPKProperties;
-
-    /**
-     * @since 4.2
-     */
-    private String externalToolConfig;
 
     public CgenConfiguration() {
-        this.name = CgenConfigList.DEFAULT_CONFIG_NAME;
+        this(new CgenDescriptor(), false);
+    }
 
-        // isDefault() method should be in sync with the following values
-        this.outputPattern = "*.java";
-        this.usePkgPath = true;
-        this.makePairs = true;
-        this.createPKProperties = true;
-        this.artifactsGenerationMode = ArtifactsGenerationMode.ENTITY;
+    /**
+     * Creates a configuration for the stored settings of a DataMap, selecting all entities and embeddables that are not
+     * excluded.
+     *
+     * @since 6.0
+     */
+    public CgenConfiguration(CgenDescriptor descriptor, DataMap dataMap) {
+        this(descriptor, true);
+        setDataMap(dataMap);
+        resolveExcludedEntities();
+        resolveExcludedEmbeddables();
+    }
 
+    private CgenConfiguration(CgenDescriptor descriptor, boolean rootPathFromDataMap) {
+        this.descriptor = Objects.requireNonNull(descriptor);
+        this.rootPathFromDataMap = rootPathFromDataMap;
         this.artifacts = new ArrayList<>();
         this.entityArtifacts = new HashSet<>();
-        this.excludedEntityArtifacts = new ArrayList<>();
         this.embeddableArtifacts = new HashSet<>();
-        this.excludedEmbeddableArtifacts = new ArrayList<>();
-
-        this.template = TemplateType.ENTITY_SUBCLASS.defaultTemplate();
-        this.superTemplate = TemplateType.ENTITY_SUPERCLASS.defaultTemplate();
-
-        this.dataMapTemplate = TemplateType.DATAMAP_SUBCLASS.defaultTemplate();
-        this.dataMapSuperTemplate = TemplateType.DATAMAP_SUPERCLASS.defaultTemplate();
-
-        this.embeddableTemplate = TemplateType.EMBEDDABLE_SUBCLASS.defaultTemplate();
-        this.embeddableSuperTemplate = TemplateType.EMBEDDABLE_SUPERCLASS.defaultTemplate();
     }
 
     /**
@@ -134,21 +106,25 @@ public class CgenConfiguration implements XMLSerializable {
      * @since 5.0
      */
     public static CgenConfiguration createDefault(DataMap dataMap, Path outputDir) {
-        CgenConfiguration config = new CgenConfiguration();
+        CgenConfiguration config = new CgenConfiguration(new CgenDescriptor(), true);
         config.setDataMap(dataMap);
         dataMap.getObjEntities().forEach(config::loadEntity);
         dataMap.getEmbeddables().forEach(config::loadEmbeddable);
 
-        Path root = Utils.rootPathForDataMap(dataMap).orElse(null);
-        if (root != null) {
-            config.setRootPath(root);
-        }
+        Path root = config.getRootPath();
         if (outputDir != null) {
             config.setOutputDir(outputDir);
         } else if (root != null) {
-            Utils.getMavenSrcPathForPath(root).map(Path::of).ifPresent(config::setOutputDir);
+            CgenPaths.mavenSourceDir(root).ifPresent(config::setOutputDir);
         }
         return config;
+    }
+
+    /**
+     * @since 6.0
+     */
+    public CgenDescriptor getDescriptor() {
+        return descriptor;
     }
 
     public void resetCollections() {
@@ -157,19 +133,19 @@ public class CgenConfiguration implements XMLSerializable {
     }
 
     public String getSuperPkg() {
-        return superPkg;
+        return descriptor.getSuperPkg();
     }
 
     public void setSuperPkg(String superPkg) {
-        this.superPkg = superPkg;
+        descriptor.setSuperPkg(superPkg);
     }
 
     public String getName() {
-        return name;
+        return descriptor.getName();
     }
 
     public void setName(String name) {
-        this.name = name;
+        descriptor.setName(name);
     }
 
     public DataMap getDataMap() {
@@ -180,32 +156,54 @@ public class CgenConfiguration implements XMLSerializable {
         this.dataMap = dataMap;
     }
 
-    public void setArtifactsGenerationMode(String mode) {
-        if (ArtifactsGenerationMode.ENTITY.getLabel().equalsIgnoreCase(mode)) {
-            this.artifactsGenerationMode = ArtifactsGenerationMode.ENTITY;
-        } else {
-            this.artifactsGenerationMode = ArtifactsGenerationMode.ALL;
+    // makes this configuration behave as if created for the stored settings of the DataMap
+    void attachTo(DataMap dataMap) {
+        if (this.dataMap != dataMap || !rootPathFromDataMap) {
+            // a relative output directory of the stored settings is relative to the DataMap directory, so the one
+            // resolved against the root path is made absolute
+            if (rootProjectPath != null) {
+                outputDirectory().ifPresent(this::storeOutputDir);
+            }
+            setDataMap(dataMap);
+            rootPathFromDataMap = true;
+            resolveExcludedEntities();
+            resolveExcludedEmbeddables();
         }
     }
 
-    public String getArtifactsGenerationMode() {
-        return artifactsGenerationMode.getLabel();
+    public void setArtifactsGenerationMode(String mode) {
+        descriptor.setMode(mode);
     }
 
+    public String getArtifactsGenerationMode() {
+        return descriptor.getMode();
+    }
 
     public boolean isMakePairs() {
-        return makePairs;
+        return descriptor.isMakePairs();
     }
 
     public void setMakePairs(boolean makePairs) {
-        this.makePairs = makePairs;
+        descriptor.setMakePairs(makePairs);
     }
 
+    /**
+     * Returns the root path set for this configuration, or the DataMap directory for a configuration of a DataMap.
+     *
+     * @see #setRootPath(Path)
+     */
     public Path getRootPath() {
+        if (rootProjectPath == null && rootPathFromDataMap && dataMap != null) {
+            return CgenPaths.dataMapDir(dataMap).orElse(null);
+        }
         return rootProjectPath;
     }
 
     /**
+     * Sets the root path, that relative template paths and a relative output directory are resolved against. The
+     * stored settings of a DataMap keep a relative output directory relative to the DataMap directory, as they are
+     * saved, so for them the output directory is made absolute instead, keeping its effective location.
+     *
      * @param rootProjectPath root path for the Cayenne project this config relates to
      * @see #setOutputDir(Path)
      */
@@ -213,39 +211,70 @@ public class CgenConfiguration implements XMLSerializable {
         if (!Objects.requireNonNull(rootProjectPath).isAbsolute()) {
             throw new ValidationException("Project root path '%s' should be absolute.", rootProjectPath);
         }
+
+        if (rootPathFromDataMap) {
+            storeOutputDir(outputDirectory().orElseGet(() -> rootProjectPath.resolve(storedOutputDir()).normalize()));
+        }
         this.rootProjectPath = rootProjectPath;
     }
 
     /**
-     * Stores the output directory exactly as supplied. Setting the output directory and setting
-     * the root path are independent operations that may happen in any order; they are combined
-     * lazily by {@link #outputDirectory()} and at serialization time.
+     * Stores the output directory as supplied, with "/" separators. Setting the output directory and setting
+     * the root path are independent operations that may happen in any order; they are combined lazily by
+     * {@link #outputDirectory()}. The exception is a configuration of the stored settings of a DataMap with a root path
+     * set, that stores a relative directory resolved against the root path (see {@link #setRootPath(Path)}).
      *
-     * @param dir absolute directory, or a directory relative to the {@code rootProjectPath}
+     * @param dir absolute directory, or a directory relative to the root path
      * @see #setRootPath(Path)
      * @see #outputDirectory()
      * @since 5.0 replaces {@code updateOutputPath()}
      */
     public void setOutputDir(Path dir) {
-        this.cgenOutputPath = Objects.requireNonNull(dir, "Null output directory");
+        Objects.requireNonNull(dir, "Null output directory");
+        storeOutputDir(rootPathFromDataMap && rootProjectPath != null && !dir.isAbsolute()
+                ? rootProjectPath.resolve(dir).normalize()
+                : dir);
+    }
+
+    private void storeOutputDir(Path dir) {
+        String path = dir.toString();
+        descriptor.setDestDir(path.isEmpty() ? null : Util.substBackslashes(path));
+    }
+
+    // an empty path means "the root directory" when a root is known, and "not configured" when it isn't
+    private Path storedOutputDir() {
+        String destDir = descriptor.getDestDir();
+        if (destDir == null) {
+            return Path.of("");
+        }
+
+        // a DataMap may come from another OS, so its output directory is only checked here
+        try {
+            return Path.of(destDir);
+        } catch (InvalidPathException e) {
+            throw new ValidationException("Invalid output directory '%s': %s", destDir, e.getMessage());
+        }
     }
 
     /**
-     * Calculates the effective output directory by combining the stored output directory with the {@code rootProjectPath}.
+     * Calculates the effective output directory by combining the stored output directory with the root path.
      *
      * @return the effective output directory, or an empty {@code Optional} when the stored path is
      * relative and there is no root path to resolve it against
+     * @throws ValidationException if the stored output directory is not a valid path
      *
      * @see #setRootPath(Path)
      * @see #setOutputDir(Path)
      * @since 5.0 replaces {@code buildOutputPath()}
      */
     public Optional<Path> outputDirectory() {
-        if (cgenOutputPath.isAbsolute()) {
-            return Optional.of(cgenOutputPath.normalize());
+        Path out = storedOutputDir();
+        if (out.isAbsolute()) {
+            return Optional.of(out.normalize());
         }
-        if (rootProjectPath != null) {
-            return Optional.of(rootProjectPath.resolve(cgenOutputPath).normalize());
+        Path root = getRootPath();
+        if (root != null) {
+            return Optional.of(root.resolve(out).normalize());
         }
         return Optional.empty();
     }
@@ -260,112 +289,131 @@ public class CgenConfiguration implements XMLSerializable {
         return outputDirectory().orElseThrow(() -> new ValidationException("Output directory is not set."));
     }
 
-    /**
-     * Moves this configuration to a new root path while keeping the effective output directory pointing
-     * at the same physical location. Used when a project is saved to a new location. A configuration
-     * that never had an output directory keeps following the root.
-     *
-     * @param newRoot new absolute root path
-     * @see #setRootPath(Path)
-     * @since 5.0
-     */
-    public void rebase(Path newRoot) {
-        Path effective = outputDirectory().orElse(null);
-        setRootPath(newRoot);
-        if (effective != null) {
-            this.cgenOutputPath = effective;
-        }
-    }
-
-    /**
-     * Renders the output directory for the {@code destDir} XML tag: relative to the root path whenever
-     * the two can be relativized, absolute otherwise, always with Unix separators.
-     *
-     * @return the {@code destDir} value, never empty
-     * @since 5.0
-     */
-    String encodedDestDir() {
-        Path out = cgenOutputPath;
-        if (rootProjectPath != null
-                && rootProjectPath.isAbsolute()
-                && out.isAbsolute()
-                && Objects.equals(rootProjectPath.getRoot(), out.getRoot())) {
-            out = rootProjectPath.relativize(out);
-        }
-        String encoded = out.toString();
-        return encoded.isEmpty() ? "." : separatorsToUnix(encoded);
-    }
-
     public boolean isOverwrite() {
-        return overwrite;
+        return descriptor.isOverwrite();
     }
 
     public void setOverwrite(boolean overwrite) {
-        this.overwrite = overwrite;
+        descriptor.setOverwrite(overwrite);
     }
 
     public boolean isUsePkgPath() {
-        return usePkgPath;
+        return descriptor.isUsePkgPath();
     }
 
     public void setUsePkgPath(boolean usePkgPath) {
-        this.usePkgPath = usePkgPath;
+        descriptor.setUsePkgPath(usePkgPath);
     }
 
     public CgenTemplate getTemplate() {
-        return template;
+        return resolveTemplate(template, descriptor.getTemplate(), TemplateType.ENTITY_SUBCLASS);
     }
 
     public void setTemplate(CgenTemplate template) {
-        this.template = template;
+        descriptor.setTemplate(storedTemplate(template));
+        this.template = keptTemplate(template, TemplateType.ENTITY_SUBCLASS);
     }
 
     public CgenTemplate getSuperTemplate() {
-        return superTemplate;
+        return resolveTemplate(superTemplate, descriptor.getSuperTemplate(), TemplateType.ENTITY_SUPERCLASS);
     }
 
     public void setSuperTemplate(CgenTemplate superTemplate) {
-        this.superTemplate = superTemplate;
+        descriptor.setSuperTemplate(storedTemplate(superTemplate));
+        this.superTemplate = keptTemplate(superTemplate, TemplateType.ENTITY_SUPERCLASS);
     }
 
     public CgenTemplate getEmbeddableTemplate() {
-        return embeddableTemplate;
+        return resolveTemplate(
+                embeddableTemplate,
+                descriptor.getEmbeddableTemplate(),
+                TemplateType.EMBEDDABLE_SUBCLASS);
     }
 
     public void setEmbeddableTemplate(CgenTemplate embeddableTemplate) {
-        this.embeddableTemplate = embeddableTemplate;
+        descriptor.setEmbeddableTemplate(storedTemplate(embeddableTemplate));
+        this.embeddableTemplate = keptTemplate(embeddableTemplate, TemplateType.EMBEDDABLE_SUBCLASS);
     }
 
     public CgenTemplate getEmbeddableSuperTemplate() {
-        return embeddableSuperTemplate;
+        return resolveTemplate(
+                embeddableSuperTemplate,
+                descriptor.getEmbeddableSuperTemplate(),
+                TemplateType.EMBEDDABLE_SUPERCLASS);
     }
 
     public void setEmbeddableSuperTemplate(CgenTemplate embeddableSuperTemplate) {
-        this.embeddableSuperTemplate = embeddableSuperTemplate;
+        descriptor.setEmbeddableSuperTemplate(storedTemplate(embeddableSuperTemplate));
+        this.embeddableSuperTemplate = keptTemplate(embeddableSuperTemplate, TemplateType.EMBEDDABLE_SUPERCLASS);
     }
 
     public CgenTemplate getDataMapTemplate() {
-        return dataMapTemplate;
+        return resolveTemplate(dataMapTemplate, descriptor.getDataMapTemplate(), TemplateType.DATAMAP_SUBCLASS);
     }
 
     public void setDataMapTemplate(CgenTemplate dataMapTemplate) {
-        this.dataMapTemplate = dataMapTemplate;
+        descriptor.setDataMapTemplate(storedTemplate(dataMapTemplate));
+        this.dataMapTemplate = keptTemplate(dataMapTemplate, TemplateType.DATAMAP_SUBCLASS);
     }
 
     public CgenTemplate getDataMapSuperTemplate() {
-        return dataMapSuperTemplate;
+        return resolveTemplate(
+                dataMapSuperTemplate,
+                descriptor.getDataMapSuperTemplate(),
+                TemplateType.DATAMAP_SUPERCLASS);
     }
 
     public void setDataMapSuperTemplate(CgenTemplate dataMapSuperTemplate) {
-        this.dataMapSuperTemplate = dataMapSuperTemplate;
+        descriptor.setDataMapSuperTemplate(storedTemplate(dataMapSuperTemplate));
+        this.dataMapSuperTemplate = keptTemplate(dataMapSuperTemplate, TemplateType.DATAMAP_SUPERCLASS);
+    }
+
+    // builds the template from the stored path or text, unless the kept template matches it. The stored template is
+    // normalized as it is when saved.
+    private static CgenTemplate resolveTemplate(CgenTemplate kept, String stored, TemplateType type) {
+        if (kept != null && kept.getData().equals(stored)) {
+            return kept;
+        }
+
+        TemplateType singleClassType = singleClassType(type);
+        String template = CgenDescriptor.normalizeTemplate(
+                stored,
+                type.pathFromSourceRoot(),
+                singleClassType != null ? singleClassType.pathFromSourceRoot() : null);
+
+        if (template.equals(type.pathFromSourceRoot())) {
+            return type.defaultTemplate();
+        }
+        if (singleClassType != null && template.equals(singleClassType.pathFromSourceRoot())) {
+            return singleClassType.defaultTemplate();
+        }
+        return new CgenTemplate(template, false, type);
+    }
+
+    private static CgenTemplate keptTemplate(CgenTemplate template, TemplateType type) {
+        return template != null && !template.equals(resolveTemplate(null, template.getData(), type)) ? template : null;
+    }
+
+    private static String storedTemplate(CgenTemplate template) {
+        return template != null ? template.getData() : null;
+    }
+
+    // the single class type that shares the template setting of the given type, null for a superclass type
+    private static TemplateType singleClassType(TemplateType type) {
+        return switch (type) {
+            case ENTITY_SUBCLASS -> TemplateType.ENTITY_SINGLE_CLASS;
+            case EMBEDDABLE_SUBCLASS -> TemplateType.EMBEDDABLE_SINGLE_CLASS;
+            case DATAMAP_SUBCLASS -> TemplateType.DATAMAP_SINGLE_CLASS;
+            default -> null;
+        };
     }
 
     public String getOutputPattern() {
-        return outputPattern;
+        return descriptor.getOutputPattern();
     }
 
     public void setOutputPattern(String outputPattern) {
-        this.outputPattern = outputPattern;
+        descriptor.setOutputPattern(outputPattern);
     }
 
     public String getEncoding() {
@@ -377,19 +425,19 @@ public class CgenConfiguration implements XMLSerializable {
     }
 
     public boolean isCreatePropertyNames() {
-        return createPropertyNames;
+        return descriptor.isCreatePropertyNames();
     }
 
     public void setCreatePropertyNames(boolean createPropertyNames) {
-        this.createPropertyNames = createPropertyNames;
+        descriptor.setCreatePropertyNames(createPropertyNames);
     }
 
     public boolean isCreatePKProperties() {
-        return createPKProperties;
+        return descriptor.isCreatePKProperties();
     }
 
     public void setCreatePKProperties(boolean createPKProperties) {
-        this.createPKProperties = createPKProperties;
+        descriptor.setCreatePKProperties(createPKProperties);
     }
 
     public Collection<Artifact> getArtifacts() {
@@ -404,12 +452,18 @@ public class CgenConfiguration implements XMLSerializable {
         return embeddableArtifacts;
     }
 
+    /**
+     * @since 4.2
+     */
     public String getExternalToolConfig() {
-        return externalToolConfig;
+        return descriptor.getExternalToolConfig();
     }
 
+    /**
+     * @since 4.2
+     */
     public void setExternalToolConfig(String config) {
-        this.externalToolConfig = config;
+        descriptor.setExternalToolConfig(config);
     }
 
     void addArtifact(Artifact artifact) {
@@ -431,15 +485,7 @@ public class CgenConfiguration implements XMLSerializable {
      * @since 5.0 renamed from {@code loadEntities()}
      */
     public void parseExcludedEntities(String entities) {
-        excludedEntityArtifacts.addAll(Arrays.asList(entities.split(",")));
-    }
-
-    private String getExcludedEntities() {
-        Set<String> existing = dataMap.getObjEntityMap().keySet();
-        return excludedEntityArtifacts.stream()
-                .filter(existing::contains)
-                .sorted()
-                .collect(Collectors.joining(","));
+        descriptor.getExcludedEntities().addAll(CgenDescriptor.parseExcludedNames(entities));
     }
 
     /**
@@ -447,25 +493,18 @@ public class CgenConfiguration implements XMLSerializable {
      * @since 5.0 renamed from {@code loadEmbeddables()}
      */
     public void parseExcludedEmbeddables(String embeddables) {
-        excludedEmbeddableArtifacts.addAll(Arrays.asList(embeddables.split(",")));
-    }
-
-    private String getExcludedEmbeddables() {
-        Set<String> existing = dataMap.getEmbeddableMap().keySet();
-        return excludedEmbeddableArtifacts.stream()
-                .filter(existing::contains)
-                .sorted()
-                .collect(Collectors.joining(","));
+        descriptor.getExcludedEmbeddables().addAll(CgenDescriptor.parseExcludedNames(embeddables));
     }
 
     /**
      * @since 5.0 renamed from {@code resolveExcludeEntities()}
      */
     public void resolveExcludedEntities() {
+        Set<String> excluded = descriptor.getExcludedEntities();
         entityArtifacts = dataMap.getObjEntities()
                 .stream()
                 .map(ObjEntity::getName)
-                .filter(name -> !excludedEntityArtifacts.contains(name))
+                .filter(name -> !excluded.contains(name))
                 .collect(Collectors.toSet());
     }
 
@@ -473,10 +512,11 @@ public class CgenConfiguration implements XMLSerializable {
      * @since 5.0 renamed from {@code resolveExcludeEmbeddables()}
      */
     public void resolveExcludedEmbeddables() {
+        Set<String> excluded = descriptor.getExcludedEmbeddables();
         embeddableArtifacts = dataMap.getEmbeddables()
                 .stream()
                 .map(Embeddable::getClassName)
-                .filter(className -> !excludedEmbeddableArtifacts.contains(className))
+                .filter(className -> !excluded.contains(className))
                 .collect(Collectors.toSet());
     }
 
@@ -484,64 +524,31 @@ public class CgenConfiguration implements XMLSerializable {
      * @since 5.0 renamed from {@code getExcludeEntityArtifacts()}
      */
     public Collection<String> getExcludedEntityArtifacts() {
-        return excludedEntityArtifacts;
+        return descriptor.getExcludedEntities();
     }
 
     /**
      * @since 5.0 renamed from {@code getExcludeEmbeddableArtifacts()}
      */
     public Collection<String> getExcludedEmbeddableArtifacts() {
-        return excludedEmbeddableArtifacts;
-    }
-
-    @Override
-    public void encodeAsXML(XMLEncoder encoder, ProjectNodeVisitor<?> delegate) {
-        encoder.start("cgen")
-                .attribute("xmlns", CgenExtension.NAMESPACE)
-                .simpleTag("name", this.name)
-                .simpleTag("excludeEntities", getExcludedEntities())
-                .simpleTag("excludeEmbeddables", getExcludedEmbeddables())
-                .simpleTag("destDir", encodedDestDir())
-                .simpleTag("mode", this.artifactsGenerationMode.getLabel())
-                .start("template").cdata(this.template.getData(), !this.template.isFile()).end()
-                .start("superTemplate").cdata(this.superTemplate.getData(), !this.superTemplate.isFile()).end()
-                .start("embeddableTemplate").cdata(this.embeddableTemplate.getData(), !this.embeddableTemplate.isFile()).end()
-                .start("embeddableSuperTemplate").cdata(this.embeddableSuperTemplate.getData(), !this.embeddableSuperTemplate.isFile()).end()
-                .start("dataMapTemplate").cdata(this.dataMapTemplate.getData(), !this.dataMapTemplate.isFile()).end()
-                .start("dataMapSuperTemplate").cdata(this.dataMapSuperTemplate.getData(), !this.dataMapSuperTemplate.isFile()).end()
-                .simpleTag("outputPattern", this.outputPattern)
-                .simpleTag("makePairs", Boolean.toString(this.makePairs))
-                .simpleTag("usePkgPath", Boolean.toString(this.usePkgPath))
-                .simpleTag("overwrite", Boolean.toString(this.overwrite))
-                .simpleTag("createPropertyNames", Boolean.toString(this.createPropertyNames))
-                .simpleTag("superPkg", separatorsToUnix(this.superPkg))
-                .simpleTag("createPKProperties", Boolean.toString(this.createPKProperties))
-                .simpleTag("externalToolConfig", this.externalToolConfig)
-                .end();
+        return descriptor.getExcludedEmbeddables();
     }
 
     /**
      * @return is this configuration with all values set to the default
      */
     public boolean isDefault() {
-        // this must be is sync with actual default values
-        return makePairs
-                && usePkgPath
-                && !overwrite
-                && createPKProperties
-                && !createPropertyNames
-                && "*.java".equals(outputPattern)
-                && template.equals(TemplateType.ENTITY_SUBCLASS.defaultTemplate())
-                && superTemplate.equals(TemplateType.ENTITY_SUPERCLASS.defaultTemplate())
-                && (superPkg == null || superPkg.isEmpty())
-                && (externalToolConfig == null || externalToolConfig.isEmpty());
-    }
-
-    private String separatorsToUnix(String path) {
-        if (path != null) {
-            return path.replace('\\', '/');
-        }
-        return null;
+        // must be in sync with the CgenDescriptor defaults
+        return isMakePairs()
+                && isUsePkgPath()
+                && !isOverwrite()
+                && isCreatePKProperties()
+                && !isCreatePropertyNames()
+                && "*.java".equals(getOutputPattern())
+                && getTemplate().equals(TemplateType.ENTITY_SUBCLASS.defaultTemplate())
+                && getSuperTemplate().equals(TemplateType.ENTITY_SUPERCLASS.defaultTemplate())
+                && (getSuperPkg() == null || getSuperPkg().isEmpty())
+                && (getExternalToolConfig() == null || getExternalToolConfig().isEmpty());
     }
 
     public CgenTemplate getTemplateByType(TemplateType type) {

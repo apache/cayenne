@@ -19,9 +19,9 @@
 
 package org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.action;
 
-import org.apache.cayenne.dbsync.reverse.dbimport.IncludeColumn;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportTree;
+import org.apache.cayenne.project.dbimport.IncludeColumn;
 
 public class AddIncludeColumnAction extends AddPatternParamAction {
 

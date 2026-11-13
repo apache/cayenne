@@ -27,7 +27,7 @@
         <xs:complexType>
             <xs:sequence>
                 <xs:element minOccurs="0" maxOccurs="unbounded" ref="cay:map"/>
-                <xs:any minOccurs="0" maxOccurs="unbounded" namespace="##other" processContents="lax"/>
+                <xs:element minOccurs="0" ref="cay:validation"/>
             </xs:sequence>
             <xs:attribute name="sharedCache" type="xs:boolean" default="true">
                 <xs:annotation>
@@ -48,6 +48,21 @@
         </xs:annotation>
         <xs:complexType>
             <xs:attribute name="name" use="required" type="xs:string"/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="validation">
+        <xs:annotation>
+            <xs:documentation>The project validation inspections disabled by the user, e.g. in CayenneModeler. Not used by the runtime.</xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="exclude" minOccurs="0" maxOccurs="unbounded" type="xs:string">
+                    <xs:annotation>
+                        <xs:documentation>The name of a disabled inspection.</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+            </xs:sequence>
         </xs:complexType>
     </xs:element>
 

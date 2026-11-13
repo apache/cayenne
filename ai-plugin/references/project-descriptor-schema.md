@@ -41,13 +41,15 @@ This references a sibling `mydb.map.xml`.
 
 ## Contents
 
-The descriptor is a list of DataMaps plus two project-wide switches. That is all the schema allows.
+The descriptor is a list of DataMaps, two project-wide switches and the validation inspections disabled in
+CayenneModeler. That is all the schema allows.
 
 | Element/attribute | Meaning |
 |---|---|
 | `<map name="...">` | References a sibling DataMap file. Must match the `*.map.xml` file name minus the extension. A descriptor may list any number of maps. |
 | `sharedCache="false"` | Attribute of `<project>`. Turns off the snapshot cache shared between all `ObjectContext`s. Default `true`. |
 | `validateOnCommit="false"` | Attribute of `<project>`. Turns off object validation before commit. Default `true`. |
+| `<validation>` | Optional, after the `<map>` elements. One `<exclude>` per validation inspection disabled in CayenneModeler, e.g. `<exclude>OBJ_ENTITY_NO_NAME</exclude>`. Ignored by the runtime. |
 
 ```xml
 <project xmlns="http://cayenne.apache.org/schema/15/project" ...
@@ -55,6 +57,9 @@ The descriptor is a list of DataMaps plus two project-wide switches. That is all
          validateOnCommit="true">
     <map name="customers"/>
     <map name="orders"/>
+    <validation>
+        <exclude>OBJ_ENTITY_NO_NAME</exclude>
+    </validation>
 </project>
 ```
 

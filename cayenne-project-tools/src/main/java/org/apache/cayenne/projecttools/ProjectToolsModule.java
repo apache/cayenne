@@ -35,13 +35,6 @@ import org.apache.cayenne.projecttools.validation.ProjectValidator;
  */
 public class ProjectToolsModule implements Module {
 
-    /**
-     * @since 5.0
-     */
-    public static ProjectToolsModuleExtender extend(Binder binder) {
-        return new ProjectToolsModuleExtender(binder);
-    }
-
     public void configure(Binder binder) {
         binder.bind(ProjectSaver.class).to(FileProjectSaver.class);
         binder.bind(ProjectValidator.class).to(DefaultProjectValidator.class);
@@ -49,7 +42,5 @@ public class ProjectToolsModule implements Module {
         binder.bind(ConfigurationNameMapper.class).to(DefaultConfigurationNameMapper.class);
 
         binder.bind(ProjectUpgrader.class).to(DefaultProjectUpgrader.class);
-
-        extend(binder).initAllExtensions();
     }
 }

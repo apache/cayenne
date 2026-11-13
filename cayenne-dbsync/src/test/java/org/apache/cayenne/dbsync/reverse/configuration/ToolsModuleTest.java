@@ -26,11 +26,13 @@ import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
 import org.apache.cayenne.unit.jdbc.TestConnection;
 import org.apache.cayenne.unit.jdbc.TestDataSource;
+import org.apache.cayenne.project.ProjectLoadingMode;
 import org.slf4j.Logger;
 import org.slf4j.helpers.NOPLogger;
 import org.junit.jupiter.api.Test;
 
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -45,6 +47,7 @@ public class ToolsModuleTest {
         assertSame(log, i.getInstance(Logger.class));
         assertTrue(i.getInstance(AdhocObjectFactory.class) instanceof DefaultAdhocObjectFactory);
         assertTrue(i.getInstance(DbAdapterFactory.class) instanceof DefaultDbAdapterFactory);
+        assertEquals(ProjectLoadingMode.FULL, i.getInstance(ProjectLoadingMode.class));
     }
 
     @Test

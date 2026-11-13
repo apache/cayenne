@@ -34,6 +34,7 @@ import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.ListBuilder;
 import org.apache.cayenne.di.MapBuilder;
 import org.apache.cayenne.graph.GraphChangeHandler;
+import org.apache.cayenne.project.ProjectLoadingMode;
 import org.apache.cayenne.tx.TransactionFilter;
 
 import java.util.function.Consumer;
@@ -149,6 +150,17 @@ public class CoreModuleExtender {
      */
     public CoreModuleExtender addProjectLocation(String location) {
         contributeProjectLocations().add(location);
+        return this;
+    }
+
+    /**
+     * Configures the stack to load the full project model, including its tool-only parts. Needed by the tools that
+     * read, save or upgrade the project.
+     *
+     * @since 6.0
+     */
+    public CoreModuleExtender loadFullProjectModel() {
+        binder.bind(ProjectLoadingMode.class).toInstance(ProjectLoadingMode.FULL);
         return this;
     }
 

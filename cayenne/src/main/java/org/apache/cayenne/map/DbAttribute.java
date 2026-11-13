@@ -127,7 +127,7 @@ public class DbAttribute extends Attribute<DbEntity, DbAttribute, DbRelationship
             encoder.attribute("precision", getAttributePrecision());
         }
 
-        delegate.visitDbAttribute(this);
+        encoder.textTag("comment", getComment());
         encoder.end();
     }
 

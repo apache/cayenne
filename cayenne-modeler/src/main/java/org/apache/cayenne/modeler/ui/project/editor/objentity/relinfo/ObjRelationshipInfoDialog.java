@@ -41,7 +41,6 @@ import org.apache.cayenne.modeler.toolkit.tree.EntityTreeRelationshipFilter;
 import org.apache.cayenne.modeler.ui.dbrelationship.DbRelationshipDialog;
 import org.apache.cayenne.modeler.undo.CreateObjRelationshipUndoableEdit;
 import org.apache.cayenne.modeler.undo.ObjRelationshipUndoableEdit;
-import org.apache.cayenne.projecttools.extension.info.ObjectInfo;
 import org.apache.cayenne.util.DeleteRuleUpdater;
 
 import javax.swing.*;
@@ -236,7 +235,7 @@ public class ObjRelationshipInfoDialog extends ProjectDialog implements TreeSele
         usedForLocking.setSelected(relationship.isUsedForLocking());
         DeleteRule rule = relationship.getDeleteRule();
         deleteRule.setSelectedItem(rule != null ? rule.name().toLowerCase() : "");
-        comment.setText(ObjectInfo.getFromMetaData(app.getMetaData(), relationship, ObjectInfo.COMMENT));
+        comment.setText(relationship.getComment());
 
         setSemantics();
         // setup path
@@ -373,7 +372,7 @@ public class ObjRelationshipInfoDialog extends ProjectDialog implements TreeSele
     }
 
     private void setComment() {
-        ObjectInfo.putToMetaData(app.getMetaData(), relationship, ObjectInfo.COMMENT, comment.getText());
+        relationship.setComment(comment.getText());
     }
 
     private void setSemantics() {

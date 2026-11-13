@@ -18,10 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.tools;
 
-import org.apache.cayenne.dbsync.reverse.dbimport.Catalog;
 import org.apache.cayenne.dbsync.reverse.dbimport.DbImportConfiguration;
-import org.apache.cayenne.dbsync.reverse.dbimport.IncludeTable;
-import org.apache.cayenne.dbsync.reverse.dbimport.Schema;
+import org.apache.cayenne.project.dbimport.Catalog;
+import org.apache.cayenne.project.dbimport.IncludeTable;
+import org.apache.cayenne.project.dbimport.Schema;
 import org.apache.cayenne.test.jdbc.SQLReader;
 import org.apache.maven.api.plugin.testing.InjectMojo;
 import org.apache.maven.api.plugin.testing.MojoTest;
@@ -36,6 +36,7 @@ import org.slf4j.helpers.NOPLogger;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -50,6 +51,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 @MojoTest
@@ -270,6 +272,44 @@ public class DbImporterMojoTest {
             @InjectMojo(goal = "cdbimport", pom = "src/test/resources/org/apache/cayenne/tools/dbimport/testConfigFromDataMap-pom.xml")
             DbImporterMojo mojo) throws Exception {
         test(mojo, "testConfigFromDataMap");
+    }
+
+    /**
+     * The tool-only settings are kept on save. The DataMap and the project are saved in place, unlike in the other
+     * tests, as the project references the DataMap by name.
+     */
+    @Test
+    public void keepsToolSettings(
+            @InjectMojo(goal = "cdbimport",
+                    pom = "src/test/resources/org/apache/cayenne/tools/dbimport/testKeepsToolSettings-pom.xml")
+            DbImporterMojo mojo) throws Exception {
+        File mapFile = mojo.getMap();
+        File projectFile = new File(mapFile.getParentFile(), "cayenne-testKeepsToolSettings.xml");
+
+        DbImportDataSourceConfig dataSource = mojo.getDataSource();
+        prepareDatabase("testKeepsToolSettings", dataSource);
+        try {
+            mojo.execute();
+        } finally {
+            cleanDb(dataSource);
+        }
+
+        String map = Files.readString(mapFile.toPath());
+        assertTrue(map.contains("<dbAttribute name=\"ARTIST_NAME\""), map);
+        assertTrue(map.contains("<comment>imported &amp; kept</comment>"), map);
+        assertTrue(map.contains("<comment>artists</comment>"), map);
+        assertTrue(map.contains("<cgen>"), map);
+        assertTrue(map.contains("<name>Custom</name>"), map);
+        assertTrue(map.contains("<destDir>../java</destDir>"), map);
+        assertTrue(map.contains("<mode>all</mode>"), map);
+        assertTrue(map.contains("<superPkg>org.example.auto</superPkg>"), map);
+
+        String project = Files.readString(projectFile.toPath());
+        // the project had no schema location before the save
+        assertTrue(project.contains("xsi:schemaLocation"), project);
+        assertTrue(project.contains("<map name=\"testKeepsToolSettings\"/>"), project);
+        assertTrue(project.contains("<validation>"), project);
+        assertTrue(project.contains("<exclude>PROJECT_NO_NAME</exclude>"), project);
     }
 
     @Test

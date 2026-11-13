@@ -40,7 +40,7 @@ public class DisableValidationInspectionAction extends UpdateValidationConfigAct
     public void performAction(ActionEvent e) {
         Inspection inspection = (Inspection) getValue(INSPECTION_PARAM);
         Project project = app.getFrame().getProjectSession().project();
-        ValidationConfig config = ValidationConfig.fromMetadata(app.getMetaData(), project);
+        ValidationConfig config = ValidationConfig.fromProject(project);
 
         EnumSet<Inspection> enabledInspections = EnumSet.copyOf(config.getEnabledInspections());
         enabledInspections.remove(inspection);

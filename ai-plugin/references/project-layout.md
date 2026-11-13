@@ -66,5 +66,7 @@ When ambiguous, ask the user which project they mean. Cache the answer for the r
 | Add/configure a DataNode (DB connection) | Project descriptor (`cayenne-*.xml`) — `<node>` element |
 | Embedded code-generation config (`<cgen>`) | DataMap (`*.map.xml`) |
 | Embedded reverse-engineering config (`<dbImport>`) | DataMap (`*.map.xml`) |
+| Comment on a mapping element | DataMap (`*.map.xml`) — `<comment>` element, first in the commented element |
+| Validation inspections disabled in CayenneModeler | Project descriptor (`cayenne-*.xml`) — `<validation>` element |
 
 Schema details live in `datamap-schema.md` and `project-descriptor-schema.md`.

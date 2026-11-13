@@ -61,24 +61,32 @@ public class DbEntityHandler extends NamespaceAwareNestedTagHandler {
                 createDbAttribute(attributes);
                 yield true;
             }
-            case QUALIFIER_TAG -> true;
+            case QUALIFIER_TAG, CommentHandler.COMMENT_TAG -> true;
             default -> false;
         };
     }
 
     @Override
     protected boolean processCharData(String localName, String data) {
-        if (QUALIFIER_TAG.equals(localName)) {
-            createQualifier(data);
+        switch (localName) {
+            case QUALIFIER_TAG -> createQualifier(data);
+            case CommentHandler.COMMENT_TAG -> CommentHandler.loadComment(loaderContext, entity, data);
         }
         return true;
     }
 
     @Override
-    protected ContentHandler createChildTagHandler(String namespaceURI, String localName, String qName, Attributes attributes) {
+    protected ContentHandler createChildTagHandler(String namespaceURI, String localName,
+                                                   String qName, Attributes attributes) {
+
         if (DbKeyGeneratorHandler.DB_KEY_GENERATOR_TAG.equals(localName)) {
             return new DbKeyGeneratorHandler(this, entity);
         }
+
+        if (namespaceURI.equals(targetNamespace) && DB_ATTRIBUTE_TAG.equals(localName)) {
+            return new CommentHandler(this, () -> lastAttribute);
+        }
+
         return super.createChildTagHandler(namespaceURI, localName, qName, attributes);
     }
 
@@ -131,13 +139,5 @@ public class DbEntityHandler extends NamespaceAwareNestedTagHandler {
                         qualifier);
             }
         }
-    }
-
-    public DbEntity getEntity() {
-        return entity;
-    }
-
-    public DbAttribute getLastAttribute() {
-        return lastAttribute;
     }
 }

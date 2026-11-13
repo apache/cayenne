@@ -27,7 +27,6 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.toolkit.table.CMTableModel;
-import org.apache.cayenne.projecttools.extension.info.ObjectInfo;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -130,7 +129,7 @@ public class ObjRelationshipTableModel extends CMTableModel<ObjRelationship> {
             case REL_TARGET_PATH:
                 return relationship.getDbRelationshipPath();
             case REL_COMMENT:
-                return getComment(relationship);
+                return relationship.getComment();
             default:
                 return null;
         }
@@ -207,7 +206,7 @@ public class ObjRelationshipTableModel extends CMTableModel<ObjRelationship> {
                 fireTableCellUpdated(row, column);
                 break;
             case REL_COMMENT:
-                setComment((String)value, relationship);
+                relationship.setComment((String) value);
                 fireTableRowsUpdated(row, row);
                 break;
         }
@@ -324,13 +323,5 @@ public class ObjRelationshipTableModel extends CMTableModel<ObjRelationship> {
         } else {
             return value1.compareTo(value2);
         }
-    }
-
-    private String getComment(ObjRelationship rel) {
-        return ObjectInfo.getFromMetaData(session.app().getMetaData(), rel, ObjectInfo.COMMENT);
-    }
-
-    private void setComment(String newVal, ObjRelationship rel) {
-        ObjectInfo.putToMetaData(session.app().getMetaData(), rel, ObjectInfo.COMMENT, newVal);
     }
 }

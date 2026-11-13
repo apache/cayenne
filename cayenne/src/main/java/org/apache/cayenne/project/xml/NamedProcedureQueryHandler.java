@@ -56,15 +56,16 @@ public class NamedProcedureQueryHandler extends NamedQueryHandler {
                 namedQuery.setColumnNamesCapitalization(columnNameCapitalization(attributes));
                 yield true;
             }
-            case CACHE_GROUP_TAG -> true;
+            case CACHE_GROUP_TAG, CommentHandler.COMMENT_TAG -> true;
             default -> false;
         };
     }
 
     @Override
     protected boolean processCharData(String localName, String data) {
-        if (CACHE_GROUP_TAG.equals(localName)) {
-            namedQuery.setCacheGroup(data);
+        switch (localName) {
+            case CACHE_GROUP_TAG -> namedQuery.setCacheGroup(data);
+            case CommentHandler.COMMENT_TAG -> CommentHandler.loadComment(loaderContext, namedQuery, data);
         }
         return true;
     }

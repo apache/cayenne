@@ -23,6 +23,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.EmbeddableAttribute;
 import org.xml.sax.Attributes;
+import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
 /**
@@ -36,6 +37,8 @@ public class EmbeddableHandler extends NamespaceAwareNestedTagHandler {
     private DataMap map;
 
     private Embeddable embeddable;
+
+    private EmbeddableAttribute lastAttribute;
 
     public EmbeddableHandler(NamespaceAwareNestedTagHandler parentHandler, DataMap map) {
         super(parentHandler);
@@ -53,8 +56,30 @@ public class EmbeddableHandler extends NamespaceAwareNestedTagHandler {
                 createEmbeddableAttribute(attributes);
                 yield true;
             }
+            case CommentHandler.COMMENT_TAG -> true;
             default -> false;
         };
+    }
+
+    @Override
+    protected boolean processCharData(String localName, String data) {
+        if (CommentHandler.COMMENT_TAG.equals(localName)) {
+            CommentHandler.loadComment(loaderContext, embeddable, data);
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
+    protected ContentHandler createChildTagHandler(String namespaceURI, String localName,
+                                                   String qName, Attributes attributes) {
+
+        if (namespaceURI.equals(targetNamespace) && EMBEDDABLE_ATTRIBUTE_TAG.equals(localName)) {
+            return new CommentHandler(this, () -> lastAttribute);
+        }
+
+        return super.createChildTagHandler(namespaceURI, localName, qName, attributes);
     }
 
     private void createEmbeddable(Attributes attributes) {
@@ -63,13 +88,9 @@ public class EmbeddableHandler extends NamespaceAwareNestedTagHandler {
     }
 
     private void createEmbeddableAttribute(Attributes attributes) {
-        EmbeddableAttribute ea = new EmbeddableAttribute(attributes.getValue("name"));
-        ea.setType(attributes.getValue("type"));
-        ea.setDbAttributeName(attributes.getValue("dbAttributeName"));
-        embeddable.addAttribute(ea);
-    }
-
-    public Embeddable getEmbeddable() {
-        return embeddable;
+        lastAttribute = new EmbeddableAttribute(attributes.getValue("name"));
+        lastAttribute.setType(attributes.getValue("type"));
+        lastAttribute.setDbAttributeName(attributes.getValue("dbAttributeName"));
+        embeddable.addAttribute(lastAttribute);
     }
 }

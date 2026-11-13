@@ -26,7 +26,9 @@ import org.apache.cayenne.util.XMLSerializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * A Cayenne mapping project, normally loaded from XML configuration. It is the root of the project nodes tree,
@@ -48,10 +50,16 @@ public class Project implements ProjectNode, XMLSerializable {
 	protected Collection<DataMap> dataMaps;
 	protected Resource configurationSource;
 
+	/**
+	 * @since 6.0
+	 */
+	protected Set<String> disabledInspections;
+
 	public Project() {
 		sharedCacheEnabled = true;
 		validatingObjectsOnCommit = true;
 		dataMaps = new ArrayList<>(5);
+		disabledInspections = new LinkedHashSet<>();
 	}
 
 	@Override
@@ -74,7 +82,14 @@ public class Project implements ProjectNode, XMLSerializable {
 			}
 		}
 
-		delegate.visitProject(this);
+		if (!disabledInspections.isEmpty()) {
+			encoder.start("validation");
+			for (String inspection : disabledInspections) {
+				encoder.textTag("exclude", inspection);
+			}
+			encoder.end();
+		}
+
 		encoder.end();
 	}
 
@@ -111,6 +126,33 @@ public class Project implements ProjectNode, XMLSerializable {
 
 	public void setValidatingObjectsOnCommit(boolean validatingObjectsOnCommit) {
 		this.validatingObjectsOnCommit = validatingObjectsOnCommit;
+	}
+
+	/**
+	 * Returns the names of the disabled project validation inspections. Not used by the runtime.
+	 *
+	 * @since 6.0
+	 */
+	public Set<String> getDisabledInspections() {
+		return Collections.unmodifiableSet(disabledInspections);
+	}
+
+	/**
+	 * Replaces the names of the disabled project validation inspections. The names are trimmed, deduplicated and
+	 * otherwise unchecked, and the blank ones are skipped.
+	 *
+	 * @since 6.0
+	 */
+	public void setDisabledInspections(Collection<String> disabledInspections) {
+		Set<String> names = new LinkedHashSet<>();
+		if (disabledInspections != null) {
+			for (String name : disabledInspections) {
+				if (name != null && !name.isBlank()) {
+					names.add(name.trim());
+				}
+			}
+		}
+		this.disabledInspections = names;
 	}
 
 	public Collection<DataMap> getDataMaps() {

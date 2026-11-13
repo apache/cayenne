@@ -326,4 +326,16 @@ public class XMLEncoder {
         }
         return this;
     }
+
+    /**
+     * Prints an XML element with an escaped text value. Prints nothing if the text is blank.
+     *
+     * @since 6.0
+     */
+    public XMLEncoder textTag(String tag, String text) {
+        if (!Util.isBlank(text)) {
+            start(tag).cdata(Util.encodeXmlText(text)).end();
+        }
+        return this;
+    }
 }

@@ -21,9 +21,9 @@ package org.apache.cayenne.projecttools;
 import java.io.PrintWriter;
 
 import org.apache.cayenne.project.BaseProjectNodeVisitor;
+import org.apache.cayenne.project.EmptyProjectNodeVisitor;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.projecttools.extension.SaverDelegate;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
 
@@ -32,12 +32,10 @@ import org.apache.cayenne.util.XMLSerializable;
  */
 class ConfigurationSaver extends BaseProjectNodeVisitor<Void> {
 
-    private PrintWriter printWriter;
-    private SaverDelegate delegate;
+    private final PrintWriter printWriter;
 
-    ConfigurationSaver(PrintWriter printWriter, SaverDelegate delegate) {
+    ConfigurationSaver(PrintWriter printWriter) {
         this.printWriter = printWriter;
-        this.delegate = delegate;
     }
 
     @Override
@@ -55,7 +53,6 @@ class ConfigurationSaver extends BaseProjectNodeVisitor<Void> {
     private void encodeNode(XMLSerializable node) {
         XMLEncoder encoder = new XMLEncoder(printWriter, "\t");
         encoder.println("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
-        delegate.setXMLEncoder(encoder);
-        node.encodeAsXML(encoder, delegate);
+        node.encodeAsXML(encoder, new EmptyProjectNodeVisitor());
     }
 }

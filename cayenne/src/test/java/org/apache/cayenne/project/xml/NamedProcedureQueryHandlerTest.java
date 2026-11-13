@@ -21,6 +21,7 @@ package org.apache.cayenne.project.xml;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.NamedProcedureQuery;
+import org.apache.cayenne.project.ProjectLoadingMode;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,6 +31,13 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class NamedProcedureQueryHandlerTest extends BaseHandlerTest {
 
+    private static final String COMMENTED_QUERY = """
+            <procedureQuery name="q">
+                <comment>q comment</comment>
+                <cacheGroup>g</cacheGroup>
+            </procedureQuery>
+            """;
+
     private DataMap map;
 
     @BeforeEach
@@ -38,7 +46,11 @@ public class NamedProcedureQueryHandlerTest extends BaseHandlerTest {
     }
 
     private NamedProcedureQuery parseQuery(String xml) throws Exception {
-        parse("procedureQuery", xml, parent -> new NamedProcedureQueryHandler(parent, map));
+        return parseQuery(xml, ProjectLoadingMode.RUNTIME);
+    }
+
+    private NamedProcedureQuery parseQuery(String xml, ProjectLoadingMode loadingMode) throws Exception {
+        parse("procedureQuery", xml, loadingMode, parent -> new NamedProcedureQueryHandler(parent, map));
         return (NamedProcedureQuery) map.getNamedQuery("q");
     }
 
@@ -87,5 +99,19 @@ public class NamedProcedureQueryHandlerTest extends BaseHandlerTest {
         assertSame(map, parseQuery("""
                 <procedureQuery name="q" root="procedure" rootName="NoSuchProcedure"/>
                 """).getRoot());
+    }
+
+    @Test
+    public void loadComments() throws Exception {
+        NamedProcedureQuery namedQuery = parseQuery(COMMENTED_QUERY, ProjectLoadingMode.FULL);
+        assertEquals("q comment", namedQuery.getComment());
+        assertEquals("g", namedQuery.getCacheGroup());
+    }
+
+    @Test
+    public void skipComments() throws Exception {
+        NamedProcedureQuery namedQuery = parseQuery(COMMENTED_QUERY);
+        assertNull(namedQuery.getComment());
+        assertEquals("g", namedQuery.getCacheGroup());
     }
 }

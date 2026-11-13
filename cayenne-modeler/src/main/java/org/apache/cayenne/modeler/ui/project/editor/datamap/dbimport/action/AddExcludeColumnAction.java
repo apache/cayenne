@@ -19,9 +19,9 @@
 
 package org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.action;
 
-import org.apache.cayenne.dbsync.reverse.dbimport.ExcludeColumn;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DbImportTree;
+import org.apache.cayenne.project.dbimport.ExcludeColumn;
 
 public class AddExcludeColumnAction extends AddPatternParamAction {
 

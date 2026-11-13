@@ -31,7 +31,7 @@
 		<objAttribute name="col3" type="java.math.BigDecimal" dbAttributePath="COL3"/>
 		<objAttribute name="col4" type="java.lang.String" dbAttributePath="COL4"/>
 	</objEntity>
-	<dbImport xmlns="http://cayenne.apache.org/schema/15/dbimport">
+	<dbImport>
 		<schema>
 			<excludeColumn>COL5</excludeColumn>
 			<name>SCHEMA_01</name>

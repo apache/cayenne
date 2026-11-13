@@ -26,8 +26,8 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
 /**
- * Base class for handlers that can delegate execution of unknown tags to
- * handlers produced by factory.
+ * Base class for namespace aware handlers. Tags without a dedicated child handler are skipped, with their text passed
+ * to {@link #processCharData(String, String)} of this handler.
  *
  * @since 4.1
  */
@@ -69,8 +69,7 @@ abstract public class NamespaceAwareNestedTagHandler extends SAXNestedTagHandler
 
         ContentHandler childHandler = createChildTagHandler(namespaceURI, localName, qName, attributes);
 
-        boolean validNamespace = allowAllNamespaces || namespaceURI.equals(targetNamespace);
-        if(!validNamespace || !processElement(namespaceURI, localName, attributes)) {
+        if(!processesNamespace(namespaceURI) || !processElement(namespaceURI, localName, attributes)) {
             // recursively pass element down into child handlers
             childHandler.startElement(namespaceURI, localName, qName, attributes);
         }
@@ -85,7 +84,9 @@ abstract public class NamespaceAwareNestedTagHandler extends SAXNestedTagHandler
         super.endElement(namespaceURI, localName, qName);
         String data = charactersBuffer.toString();
         if(!processCharData(localName, data)) {
-            if(namespaceURI.equals(targetNamespace) && parentHandler instanceof NamespaceAwareNestedTagHandler namespaceAwareNestedTagHandler) {
+            if(namespaceURI.equals(targetNamespace)
+                    && parentHandler instanceof NamespaceAwareNestedTagHandler namespaceAwareNestedTagHandler
+                    && namespaceAwareNestedTagHandler.processesNamespace(namespaceURI)) {
                 namespaceAwareNestedTagHandler.processCharData(localName, data);
             }
         }
@@ -94,8 +95,11 @@ abstract public class NamespaceAwareNestedTagHandler extends SAXNestedTagHandler
     @Override
     protected ContentHandler createChildTagHandler(String namespaceURI, String localName,
                                                    String qName, Attributes attributes) {
-        // try to pass unknown tags to someone else
-        return loaderContext.getFactory().createHandler(namespaceURI, localName, this);
+        return new SkippedTagHandler(this, namespaceURI);
+    }
+
+    private boolean processesNamespace(String namespaceURI) {
+        return allowAllNamespaces || namespaceURI.equals(targetNamespace);
     }
 
     public void setTargetNamespace(String targetNamespace) {

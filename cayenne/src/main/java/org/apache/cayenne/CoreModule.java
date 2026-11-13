@@ -87,12 +87,9 @@ import org.apache.cayenne.project.DataMapLoader;
 import org.apache.cayenne.project.DefaultConfigurationNameMapper;
 import org.apache.cayenne.project.DefaultProjectMerger;
 import org.apache.cayenne.project.ProjectLoader;
+import org.apache.cayenne.project.ProjectLoadingMode;
 import org.apache.cayenne.project.ProjectMerger;
 import org.apache.cayenne.project.upgrade.ProjectFileUpgrader;
-import org.apache.cayenne.project.xml.DefaultHandlerFactory;
-import org.apache.cayenne.project.xml.HandlerFactory;
-import org.apache.cayenne.project.xml.NoopProjectMetaData;
-import org.apache.cayenne.project.xml.ProjectMetaData;
 import org.apache.cayenne.project.xml.XMLDataMapLoader;
 import org.apache.cayenne.project.xml.XMLProjectLoader;
 import org.apache.cayenne.project.xml.XMLReaderProvider;
@@ -274,6 +271,8 @@ public class CoreModule implements Module {
         binder.bind(DataMapLoader.class).to(XMLDataMapLoader.class);
         binder.bind(ProjectFileUpgrader.class).to(ProjectFileUpgrader.class);
 
+        binder.bind(ProjectLoadingMode.class).toInstance(ProjectLoadingMode.RUNTIME);
+
         // a locator of resources, such as XML descriptors
         binder.bind(ResourceLocator.class).to(ClassLoaderResourceLocator.class);
 
@@ -294,8 +293,6 @@ public class CoreModule implements Module {
         binder.bind(SQLTemplateTranslator.class).to(DefaultSQLTemplateTranslator.class);
         binder.bind(TemplateContextFactory.class).to(DefaultTemplateContextFactory.class);
 
-        binder.bind(HandlerFactory.class).to(DefaultHandlerFactory.class);
-        binder.bind(ProjectMetaData.class).to(NoopProjectMetaData.class);
         binder.bind(XMLReader.class).toProviderInstance(new XMLReaderProvider(false)).withoutScope();
 
         binder.bind(DataDomainFlushActionFactory.class).to(DefaultDataDomainFlushActionFactory.class);

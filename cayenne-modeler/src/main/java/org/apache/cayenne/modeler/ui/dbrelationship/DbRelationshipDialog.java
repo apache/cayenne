@@ -43,7 +43,6 @@ import org.apache.cayenne.modeler.toolkit.combobox.CMComboBox;
 import org.apache.cayenne.modeler.toolkit.table.CMTable;
 import org.apache.cayenne.modeler.undo.CreateDbRelationshipUndoableEdit;
 import org.apache.cayenne.modeler.undo.DbRelationshipUndoableEdit;
-import org.apache.cayenne.projecttools.extension.info.ObjectInfo;
 
 import javax.swing.*;
 import javax.swing.table.TableColumn;
@@ -200,7 +199,7 @@ public class DbRelationshipDialog extends ProjectDialog {
             enableInfo();
         }
 
-        comment.setText(ObjectInfo.getFromMetaData(app.getMetaData(), relationship, ObjectInfo.COMMENT));
+        comment.setText(relationship.getComment());
     }
 
     private void initBindings() {
@@ -364,7 +363,7 @@ public class DbRelationshipDialog extends ProjectDialog {
         // check after commit, as it filters out empty joins
         boolean updatingReverse = !relationship.getJoins().isEmpty();
 
-        ObjectInfo.putToMetaData(app.getMetaData(), relationship, ObjectInfo.COMMENT, comment.getText());
+        relationship.setComment(comment.getText());
 
         // If new reverse DbRelationship was created, add it to the target.
         // Don't create reverse with no joins - makes no sense...
@@ -455,7 +454,7 @@ public class DbRelationshipDialog extends ProjectDialog {
             return true;
         }
 
-        String oldComment = ObjectInfo.getFromMetaData(app.getMetaData(), relationship, ObjectInfo.COMMENT);
+        String oldComment = relationship.getComment();
         return !Objects.equals(oldComment != null ? oldComment : "", comment.getText());
     }
 

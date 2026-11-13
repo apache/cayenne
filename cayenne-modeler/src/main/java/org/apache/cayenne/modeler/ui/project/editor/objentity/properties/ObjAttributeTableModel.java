@@ -36,7 +36,6 @@ import org.apache.cayenne.modeler.event.model.ObjEntityEvent;
 import org.apache.cayenne.modeler.project.DbEntityOps;
 import org.apache.cayenne.modeler.toolkit.table.CMTableModel;
 import org.apache.cayenne.modeler.project.ProjectSession;
-import org.apache.cayenne.projecttools.extension.info.ObjectInfo;
 import java.util.Objects;
 
 import java.util.ArrayList;
@@ -147,7 +146,7 @@ public class ObjAttributeTableModel extends CMTableModel<ObjAttribute> {
             case DB_ATTRIBUTE_TYPE -> getDBAttributeType(attribute, dbAttribute);
             case LOCKING -> attribute.isUsedForLocking();
             case LAZY -> attribute.isLazy();
-            case COMMENT -> getComment(attribute);
+            case COMMENT -> attribute.getComment();
             default -> null;
         };
     }
@@ -243,6 +242,7 @@ public class ObjAttributeTableModel extends CMTableModel<ObjAttribute> {
         attributeNew.setType(attribute.getType());
         attributeNew.setUsedForLocking(attribute.isUsedForLocking());
         attributeNew.setLazy(attribute.isLazy());
+        attributeNew.setComment(attribute.getComment());
 
         entity.updateAttribute(attributeNew);
 
@@ -320,7 +320,7 @@ public class ObjAttributeTableModel extends CMTableModel<ObjAttribute> {
                 fireTableCellUpdated(row, column);
                 break;
             case COMMENT:
-                setComment((String) value, attribute);
+                attribute.setComment((String) value);
             default:
                 fireTableRowsUpdated(row, row);
                 break;
@@ -425,14 +425,6 @@ public class ObjAttributeTableModel extends CMTableModel<ObjAttribute> {
             }
             return null;
         }
-    }
-
-    private String getComment(ObjAttribute attr) {
-        return ObjectInfo.getFromMetaData(session.app().getMetaData(), attr, ObjectInfo.COMMENT);
-    }
-
-    private void setComment(String newVal, ObjAttribute attr) {
-        ObjectInfo.putToMetaData(session.app().getMetaData(), attr, ObjectInfo.COMMENT, newVal);
     }
 
     @Override

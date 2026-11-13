@@ -29,6 +29,7 @@ import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.pref.adapters.FileChooserPrefs;
 import org.apache.cayenne.modeler.toolkit.filechooser.FileFilters;
+import org.apache.cayenne.project.cgen.CgenPaths;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.URLResource;
 import org.slf4j.Logger;
@@ -86,7 +87,8 @@ public class ImportDataMapAction extends AppAction {
 
             if (baseResource != null) {
                 Resource dataMapResource = baseResource.getRelativeResource(nameMapper.configurationLocation(newMap));
-                newMap.setConfigurationSource(dataMapResource);
+                // rebases the cgen output directories, which are relative to the DataMap
+                CgenPaths.moveDataMap(newMap, dataMapResource);
             }
 
             CreateDataMapAction.onMapCreated(app.getFrame(), getProjectSession(), newMap);

@@ -74,6 +74,7 @@ public class ObjRelationshipUndoableEdit extends CayenneUndoableEdit {
         rel.setDbRelationshipPath(objRelationship.getDbRelationshipPath());
         rel.setCollectionType(objRelationship.getCollectionType());
         rel.setMapKey(objRelationship.getMapKey());
+        rel.setComment(objRelationship.getComment());
         return rel;
     }
 }

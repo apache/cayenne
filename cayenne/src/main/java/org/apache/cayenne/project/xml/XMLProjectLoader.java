@@ -23,6 +23,7 @@ import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.project.ConfigurationNameMapper;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.ProjectLoader;
+import org.apache.cayenne.project.ProjectLoadingMode;
 import org.apache.cayenne.project.DataMapLoader;
 import org.apache.cayenne.project.upgrade.ProjectFileUpgrader;
 import org.apache.cayenne.di.Inject;
@@ -54,10 +55,13 @@ public class XMLProjectLoader implements ProjectLoader {
     protected ConfigurationNameMapper nameMapper;
 
     @Inject
-    protected HandlerFactory handlerFactory;
-
-    @Inject
     protected ProjectFileUpgrader upgrader;
+
+    /**
+     * @since 6.0
+     */
+    @Inject
+    protected ProjectLoadingMode loadingMode;
 
     @Override
     public Project load(Resource source) throws ConfigurationException {
@@ -89,14 +93,12 @@ public class XMLProjectLoader implements ProjectLoader {
         project.setName(nameMapper.projectNodeName(Project.class, configurationResource));
 
         XMLReader parser = xmlReaderProvider.get();
-        LoaderContext loaderContext = new LoaderContext(parser, handlerFactory);
+        LoaderContext loaderContext = new LoaderContext(parser, loadingMode);
 
         ProjectHandler rootHandler = new ProjectHandler(project, loaderContext, nameMapper, dataMapLoader);
         parser.setContentHandler(rootHandler);
         parser.setErrorHandler(rootHandler);
         parser.parse(input);
-
-        loaderContext.projectLoaded(project);
 
         return project;
     }

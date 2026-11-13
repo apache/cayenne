@@ -135,7 +135,7 @@ public class ObjRelationship extends Relationship<ObjEntity, ObjAttribute, ObjRe
         // things, but it is consistent across map package
         encoder.attribute("dbRelationshipPath", getValidRelationshipPath());
 
-        delegate.visitObjRelationship(this);
+        encoder.textTag("comment", getComment());
         encoder.end();
     }
 

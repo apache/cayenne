@@ -22,8 +22,8 @@ package org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.cayenne.dbsync.reverse.dbimport.FilterContainer;
-import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
+import org.apache.cayenne.project.dbimport.FilterContainer;
+import org.apache.cayenne.project.dbimport.ReverseEngineering;
 
 class CatalogProcedureNode extends ProcedureNode<CatalogNode> {
 

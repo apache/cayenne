@@ -19,7 +19,7 @@
 
 package org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree;
 
-import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
+import org.apache.cayenne.project.dbimport.ReverseEngineering;
 
 abstract class Node<P extends Node> {
     private final String name;

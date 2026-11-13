@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ~   Licensed to the Apache Software Foundation (ASF) under one
+  ~  or more contributor license agreements.  See the NOTICE file
+  ~  distributed with this work for additional information
+  ~  regarding copyright ownership.  The ASF licenses this file
+  ~  to you under the Apache License, Version 2.0 (the
+  ~  "License"); you may not use this file except in compliance
+  ~  with the License.  You may obtain a copy of the License at
+  ~
+  ~    https://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing,
+  ~  software distributed under the License is distributed on an
+  ~  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~  KIND, either express or implied.  See the License for the
+  ~  specific language governing permissions and limitations
+  ~  under the License.
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+<!-- Class generation settings: two configs, one with every setting, after the reverse engineering settings -->
+<dataMap xmlns="http://cayenne.apache.org/schema/15/dataMap"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://cayenne.apache.org/schema/15/dataMap http://cayenne.apache.org/schema/15/dataMap.xsd"
+	defaultPackage="org.example">
+	<embeddable className="org.example.Address">
+		<embeddableAttribute name="city" type="java.lang.String" dbAttributeName="CITY"/>
+	</embeddable>
+	<embeddable className="org.example.Phone">
+		<embeddableAttribute name="number" type="java.lang.String" dbAttributeName="NUMBER"/>
+	</embeddable>
+	<dbEntity name="ARTIST">
+		<dbAttribute name="ARTIST_ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="ARTIST_NAME" type="VARCHAR" length="254"/>
+	</dbEntity>
+	<objEntity name="Artist" className="org.example.Artist" dbEntityName="ARTIST">
+		<objAttribute name="artistName" type="java.lang.String" dbAttributePath="ARTIST_NAME"/>
+	</objEntity>
+	<objEntity name="Painting" className="org.example.Painting"/>
+	<dbImport>
+		<defaultPackage>org.example.imported</defaultPackage>
+		<forceDataMapCatalog>false</forceDataMapCatalog>
+		<forceDataMapSchema>false</forceDataMapSchema>
+		<namingStrategy>org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator</namingStrategy>
+		<skipPrimaryKeyLoading>false</skipPrimaryKeyLoading>
+		<skipRelationshipsLoading>false</skipRelationshipsLoading>
+		<useJava7Types>false</useJava7Types>
+	</dbImport>
+	<cgen>
+		<name>Custom &amp; more</name>
+		<excludeEntities>Painting</excludeEntities>
+		<excludeEmbeddables>org.example.Phone</excludeEmbeddables>
+		<destDir>../java</destDir>
+		<mode>all</mode>
+		<template>custom/subclass.vm</template>
+		<superTemplate><![CDATA[
+#if($a < $b)
+superclass
+#end
+]]></superTemplate>
+		<embeddableTemplate>custom/embeddable-subclass.vm</embeddableTemplate>
+		<embeddableSuperTemplate>custom/embeddable-superclass.vm</embeddableSuperTemplate>
+		<dataMapTemplate>custom/datamap-subclass.vm</dataMapTemplate>
+		<dataMapSuperTemplate>custom/datamap-superclass.vm</dataMapSuperTemplate>
+		<outputPattern>*.groovy</outputPattern>
+		<makePairs>false</makePairs>
+		<usePkgPath>false</usePkgPath>
+		<overwrite>true</overwrite>
+		<createPropertyNames>true</createPropertyNames>
+		<superPkg>org.example.auto</superPkg>
+		<createPKProperties>false</createPKProperties>
+		<externalToolConfig>tools.properties</externalToolConfig>
+	</cgen>
+	<cgen>
+		<name>Default</name>
+		<destDir>.</destDir>
+		<mode>entity</mode>
+	</cgen>
+</dataMap>

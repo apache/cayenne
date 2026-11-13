@@ -23,11 +23,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.function.BiFunction;
 
-import org.apache.cayenne.dbsync.reverse.dbimport.FilterContainer;
-import org.apache.cayenne.dbsync.reverse.dbimport.IncludeColumn;
-import org.apache.cayenne.dbsync.reverse.dbimport.IncludeTable;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.DbImportTreeNode;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.TransferableNode;
+import org.apache.cayenne.project.dbimport.FilterContainer;
+import org.apache.cayenne.project.dbimport.IncludeColumn;
+import org.apache.cayenne.project.dbimport.IncludeTable;
 
 public class PrintTablesBiFunction implements BiFunction<FilterContainer, DbImportTreeNode, Void> {
 

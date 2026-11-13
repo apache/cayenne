@@ -44,8 +44,20 @@ public class ObjRelationshipHandler extends NamespaceAwareNestedTagHandler {
 
     @Override
     protected boolean processElement(String namespaceURI, String localName, Attributes attributes) throws SAXException {
-        if (OBJ_RELATIONSHIP_TAG.equals(localName)) {
-            addObjRelationship(attributes);
+        return switch (localName) {
+            case OBJ_RELATIONSHIP_TAG -> {
+                addObjRelationship(attributes);
+                yield true;
+            }
+            case CommentHandler.COMMENT_TAG -> true;
+            default -> false;
+        };
+    }
+
+    @Override
+    protected boolean processCharData(String localName, String data) {
+        if (CommentHandler.COMMENT_TAG.equals(localName)) {
+            CommentHandler.loadComment(loaderContext, objRelationship, data);
             return true;
         }
 
@@ -80,9 +92,5 @@ public class ObjRelationshipHandler extends NamespaceAwareNestedTagHandler {
         objRelationship.setCollectionType(attributes.getValue("collectionType"));
         objRelationship.setMapKey(attributes.getValue("mapKey"));
         source.addRelationship(objRelationship);
-    }
-
-    public ObjRelationship getObjRelationship() {
-        return objRelationship;
     }
 }

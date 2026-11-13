@@ -1,35 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <dataMap xmlns="http://cayenne.apache.org/schema/14/dataMap"
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	 xmlns:info="http://cayenne.apache.org/schema/14/info"
 	 xsi:schemaLocation="http://cayenne.apache.org/schema/14/dataMap https://cayenne.apache.org/schema/14/dataMap.xsd"
 	 defaultPackage="org.apache.cayenne.x">
+	<info:property name="comment" value="a map &amp; &lt;more&gt;"/>
 	<dbEntity name="ARTIST">
 		<dbAttribute name="ARTIST_ID" type="INTEGER" primaryKey="true" mandatory="true"/>
-		<dbAttribute name="ARTIST_NAME" type="VARCHAR" length="254"/>
+		<dbAttribute name="ARTIST_NAME" type="VARCHAR" length="254">
+			<info:property xmlns:info="http://cayenne.apache.org/schema/14/info" name="comment" value="a name"/>
+		</dbAttribute>
 		<info:property xmlns:info="http://cayenne.apache.org/schema/14/info" name="comment" value="artists"/>
 	</dbEntity>
 	<dbEntity name="ARTIST_EXHIBIT">
 		<dbAttribute name="ARTIST_ID" type="INTEGER" primaryKey="true" mandatory="true"/>
 		<dbAttribute name="EXHIBIT_ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<property name="comment" value="not an info property"/>
 	</dbEntity>
 	<dbEntity name="GALLERY">
 		<dbAttribute name="GALLERY_ID" type="INTEGER" primaryKey="true" mandatory="true"/>
 		<dbAttribute name="GALLERY_NAME" type="VARCHAR" length="100"/>
+		<info:property xmlns:info="http://cayenne.apache.org/schema/14/info" name="comment" value="first"/>
+		<info:property xmlns:info="http://cayenne.apache.org/schema/14/info" name="comment" value="second"/>
 	</dbEntity>
 	<dbEntity name="PAINTING">
 		<dbAttribute name="ARTIST_ID" type="INTEGER"/>
 		<dbAttribute name="GALLERY_NAME" type="VARCHAR" length="100"/>
 		<dbAttribute name="OTHER_ID" type="INTEGER"/>
 		<dbAttribute name="PAINTING_ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<property xmlns="http://cayenne.apache.org/schema/14/info" name="comment" value="paintings"/>
 	</dbEntity>
 	<dbEntity name="PAINTING_INFO">
 		<dbAttribute name="PAINTING_ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<info:property xmlns:info="http://cayenne.apache.org/schema/14/info" name="comment" value=""/>
 	</dbEntity>
 	<objEntity name="Artist" className="org.apache.cayenne.x.Artist" dbEntityName="ARTIST">
 		<postAdd methodName="onPostAdd"/>
 		<prePersist methodName="onPrePersist"/>
 		<postLoad methodName="onPostLoad"/>
 		<objAttribute name="artistName" type="java.lang.String" dbAttributePath="ARTIST_NAME"/>
+		<info:property xmlns:info="http://cayenne.apache.org/schema/14/info" name="label" value="An artist"/>
 	</objEntity>
 	<dbRelationship name="artistExhibitArray" source="ARTIST" target="ARTIST_EXHIBIT" toDependentPK="true" toMany="true">
 		<dbAttributePair source="ARTIST_ID" target="ARTIST_ID"/>
@@ -55,6 +65,7 @@
 	<objRelationship name="self" source="Artist" target="Artist" deleteRule="nullify" dbRelationshipPath="self"/>
 	<sqlQuery name="byEntity" root="objEntity" rootName="Artist">
 		<sql><![CDATA[SELECT * FROM ARTIST]]></sql>
+		<i:property xmlns:i="http://cayenne.apache.org/schema/13/info" name="comment" value="by entity"/>
 	</sqlQuery>
 	<sqlQuery name="byTable" root="dbEntity" rootName="ARTIST">
 		<sql><![CDATA[SELECT * FROM ARTIST]]></sql>
@@ -70,4 +81,10 @@
 			<name>SCHEMA_01</name>
 		</schema>
 	</dbImport>
+	<config xmlns="http://cayenne.apache.org/schema/10/dbimport">
+		<catalog>
+			<name>CATALOG_01</name>
+		</catalog>
+	</config>
+	<config xmlns="http://example.org/config"/>
 </dataMap>

@@ -21,7 +21,11 @@ package org.apache.cayenne.project.xml;
 
 import java.io.InputStream;
 import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.project.ProjectLoadingMode;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
@@ -36,7 +40,7 @@ public abstract class BaseHandlerTest {
      */
     protected void parse(String tag, HandlerFactory factory) throws Exception {
         try(InputStream in = BaseHandlerTest.class.getResource(getClass().getSimpleName() + ".xml").openStream()) {
-            parse(tag, new InputSource(in), factory);
+            parse(tag, new InputSource(in), ProjectLoadingMode.RUNTIME, factory);
         }
     }
 
@@ -44,12 +48,28 @@ public abstract class BaseHandlerTest {
      * Parses an XML document passed as a String.
      */
     protected void parse(String tag, String xml, HandlerFactory factory) throws Exception {
-        parse(tag, new InputSource(new StringReader(xml)), factory);
+        parse(tag, xml, ProjectLoadingMode.RUNTIME, factory);
     }
 
-    private void parse(String tag, InputSource source, HandlerFactory factory) throws Exception {
+    protected void parse(String tag, String xml, ProjectLoadingMode loadingMode, HandlerFactory factory)
+            throws Exception {
+        parse(tag, new InputSource(new StringReader(xml)), loadingMode, factory);
+    }
+
+    protected DataMap parseDataMap(String xml, ProjectLoadingMode loadingMode) throws Exception {
+        List<DataMapHandler> handlers = new ArrayList<>();
+        parse("dataMap", xml, loadingMode, parent -> {
+            DataMapHandler handler = new DataMapHandler(parent, null);
+            handlers.add(handler);
+            return handler;
+        });
+        return handlers.get(0).getDataMap();
+    }
+
+    private void parse(String tag, InputSource source, ProjectLoadingMode loadingMode, HandlerFactory factory)
+            throws Exception {
         XMLReader parser = new XMLReaderProvider(false).get();
-        DefaultHandler handler = new TestRootHandler(parser, tag, factory);
+        DefaultHandler handler = new TestRootHandler(parser, tag, loadingMode, factory);
         parser.setContentHandler(handler);
         parser.parse(source);
     }
@@ -61,10 +81,11 @@ public abstract class BaseHandlerTest {
     public static class TestRootHandler extends NamespaceAwareNestedTagHandler {
 
         private String rootTag;
-        private BaseHandlerTest.HandlerFactory factory;
+        private HandlerFactory factory;
 
-        public TestRootHandler(XMLReader parser, String rootTag, BaseHandlerTest.HandlerFactory factory) {
-            super(new LoaderContext(parser, new DefaultHandlerFactory()));
+        public TestRootHandler(XMLReader parser, String rootTag, ProjectLoadingMode loadingMode,
+                               HandlerFactory factory) {
+            super(new LoaderContext(parser, loadingMode));
             setTargetNamespace("");
             this.rootTag = rootTag;
             this.factory = factory;

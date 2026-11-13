@@ -54,19 +54,38 @@ practice:
 
 ## Element order
 
-The schema enforces this order inside `<dataMap>`:
+The schema requires this order inside `<dataMap>` (`?` — at most one, `*` — any number):
 
-1. `<procedure>` *
+1. `<comment>` ?
 2. `<embeddable>` *
-3. `<dbEntity>` *
-4. `<objEntity>` *
-5. `<dbRelationship>` *
-6. `<objRelationship>` *
-7. `<objectQuery>`, `<sqlQuery>`, `<procedureQuery>` * (in any mix)
-8. `<cgen>` ? (different namespace, embedded)
-9. `<dbImport>` ? (different namespace, embedded)
+3. `<procedure>` *
+4. `<dbEntity>` *
+5. `<objEntity>` *
+6. `<dbRelationship>` *
+7. `<objRelationship>` *
+8. `<objectQuery>`, `<sqlQuery>`, `<procedureQuery>` * (in any mix)
+9. `<dbImport>` ?
+10. `<cgen>` *
 
-When inserting elements by hand, respect this order or Cayenne's parser will reject the file.
+All of them are in the DataMap namespace. Keep this order when inserting elements by
+hand. Cayenne writes the elements in this order, schema-aware tools reject a misplaced element, and Cayenne's loader
+fails on or silently misreads some misplaced elements: a `<dbRelationship>` or `<objRelationship>` placed before the
+entity it starts from fails the loading, and a `<sqlQuery>` or `<procedureQuery>` placed before the entity or
+procedure it is rooted in loads with the DataMap as its root instead.
+
+## `<comment>` — user comment
+
+Most elements can hold a free-text comment, edited in CayenneModeler and ignored by the runtime. The default class
+generation templates write the comment of an ObjEntity to the Javadoc of the generated class.
+
+```xml
+<objEntity name="Artist" className="com.example.Artist" dbEntityName="ARTIST">
+    <comment>A painter. Paintings &amp; exhibitions are separate entities.</comment>
+    <objAttribute name="artistName" type="java.lang.String" dbAttributePath="ARTIST_NAME">
+        <comment>The name as signed on the paintings</comment>
+    </objAttribute>
+</objEntity>
+```
 
 ## `<dbEntity>` — database table
 
@@ -86,6 +105,7 @@ Attribute fields:
 | `type` | JDBC type name: `INTEGER`, `BIGINT`, `VARCHAR`, `CHAR`, `DATE`, `TIMESTAMP`, `BOOLEAN`, `BIT`, `NUMERIC`, `DECIMAL`, `FLOAT`, `DOUBLE`, `BLOB`, `CLOB`, `VARBINARY`, etc. |
 | `length` | Column length (for VARCHAR, CHAR, VARBINARY, NUMERIC) |
 | `scale` | Decimal scale (NUMERIC, DECIMAL) |
+| `precision` | Numeric precision, rarely set (the digits of NUMERIC/DECIMAL go in `length`) |
 | `primaryKey` | `true` for PK columns |
 | `mandatory` | `true` for NOT NULL |
 | `generated` | `true` for DB-generated columns (identity, sequence) |
@@ -110,6 +130,7 @@ Element attributes:
 | `superEntityName` | For inheritance — name of parent ObjEntity |
 | `readOnly` | `true` to disallow writes |
 | `abstract` | `true` for abstract entities (single-table inheritance) |
+| `lockType` | `optimistic` for optimistic locking on the properties marked with `lock` |
 
 `objAttribute`:
 
@@ -118,6 +139,12 @@ Element attributes:
 | `name` | Java property name |
 | `type` | Java type, FQN — `java.lang.String`, `java.lang.Integer`, `java.util.Date`, `java.math.BigDecimal`, `byte[]`, `boolean`, etc. |
 | `dbAttributePath` | Column name. May be a dotted path through a `dbRelationship` for derived attributes: `toArtist.ARTIST_NAME`. |
+| `lock` | `true` to use the attribute for optimistic locking |
+| `lazy` | `true` to load the attribute's value lazily, on first access |
+
+The children of `<objEntity>` go in this order: `<comment>`, `<qualifier>`, `<embeddedAttribute>`s,
+`<objAttribute>`s, `<attributeOverride>`s. An entity with `superEntityName` maps an inherited attribute to another
+column with `<attributeOverride name="..." dbAttributePath="..."/>`.
 
 PK columns are not normally mapped as `objAttribute` — they're handled implicitly. Map a PK column only if `meaningfulPK` (you want to expose the PK value to the Java side).
 
@@ -158,6 +185,9 @@ Each `<dbAttributePair>` is one column of the join. Compound joins use multiple 
 | `target` | Target ObjEntity name |
 | `deleteRule` | `nullify`, `cascade` or `deny` (no attribute means no action) |
 | `dbRelationshipPath` | One or more `<dbRelationship>` names, dot-separated for flattened (many-to-many) relationships: `artistGroupArray.toGroup` |
+| `collectionType` | Java collection of a to-many: `java.util.List` (default), `java.util.Set`, `java.util.Map` or `java.util.Collection` |
+| `mapKey` | For `java.util.Map`: the target entity property used as the map key (default: the target's PK value, or its ObjectId if the PK is compound) |
+| `lock` | `true` to use the relationship for optimistic locking |
 
 Every `objRelationship` requires a matching `dbRelationship` (or chain) — never add one without the backing DB-layer relationship.
 
@@ -193,7 +223,7 @@ To embed it inside an ObjEntity, use `<embeddedAttribute>`:
 </procedure>
 ```
 
-`direction` is `in`, `out`, or `in_out`.
+`direction` is `in`, `out`, or `in_out`. `length` and `precision` are optional.
 
 ## Named queries
 
@@ -236,13 +266,16 @@ Use a second `<sql>` with `adapterClass=` to vary by DB adapter. SQL query templ
 <procedureQuery name="SearchArtists" root="procedure" rootName="search_artists" resultEntity="Artist"/>
 ```
 
-## `<cgen>` — embedded code-gen config
-
-A separate namespace, embedded directly in the DataMap. See `cgen-config.md` for fields.
-
 ## `<dbImport>` — embedded reverse-engineering config
 
-A separate namespace, used by the Modeler's reverse-engineering dialog to persist its options. See `dbimport-config.md` for fields.
+At most one, after the named queries. Holds the DB import options, edited on the "DB Import" tab of CayenneModeler and
+read by the `dbimport_run` MCP tool. See `dbimport-config.md` for fields.
+
+## `<cgen>` — embedded code-gen config
+
+Any number, last in the DataMap, told apart by their `<name>`. Holds the class generation options, edited on the
+"Class Generation" tab of CayenneModeler and read by the `cgen_run` MCP tool, which uses the first `<cgen>`. See
+`cgen-config.md` for fields.
 
 ## Anti-patterns to avoid
 

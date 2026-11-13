@@ -29,7 +29,7 @@ import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * A superclass of nested tag handlers for parsing of XML documents with SAX.
- * This class is not namespace aware, i.e. tags like &lt;info:property/> and &lt;property/>
+ * This class is not namespace aware, i.e. tags like &lt;ext:property/> and &lt;property/>
  * will be treated as equal.
  * Use {@link NamespaceAwareNestedTagHandler} if you need to process namespaces.
  *

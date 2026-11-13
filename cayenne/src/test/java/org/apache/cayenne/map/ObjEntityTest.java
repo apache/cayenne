@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.map;
 
-import org.apache.cayenne.project.BaseProjectNodeVisitor;
+import org.apache.cayenne.project.EmptyProjectNodeVisitor;
 import org.apache.cayenne.util.XMLEncoder;
 import org.junit.jupiter.api.Test;
 
@@ -44,7 +44,7 @@ public class ObjEntityTest {
 
         StringWriter out = new StringWriter();
         XMLEncoder encoder = new XMLEncoder(new PrintWriter(out));
-        entity.encodeAsXML(encoder, new EncoderDummyVisitor());
+        entity.encodeAsXML(encoder, new EmptyProjectNodeVisitor());
 
         String ls = System.lineSeparator();
 
@@ -70,7 +70,7 @@ public class ObjEntityTest {
 
         StringWriter out = new StringWriter();
         XMLEncoder encoder = new XMLEncoder(new PrintWriter(out));
-        entity.encodeAsXML(encoder, new EncoderDummyVisitor());
+        entity.encodeAsXML(encoder, new EmptyProjectNodeVisitor());
 
         String ls = System.lineSeparator();
 
@@ -81,21 +81,70 @@ public class ObjEntityTest {
                 "</objEntity>" + ls, out.toString());
     }
 
-    private class EncoderDummyVisitor extends BaseProjectNodeVisitor<Object> {
-        @Override
-        public Object visitObjEntity(ObjEntity entity) {
-            return null;
-        }
+    @Test
+    public void encodeAsXMLComments() {
+        ObjEntity entity = new ObjEntity("X");
+        entity.setClassName("org.example.Xc");
+        entity.setComment("<X> & co");
 
-        @Override
-        public Object visitObjAttribute(ObjAttribute attribute) {
-            return null;
-        }
+        ObjAttribute a1 = new ObjAttribute("a1", "int", entity);
+        a1.setComment("a1 comment");
+        entity.addAttribute(a1);
+        entity.addAttribute(new ObjAttribute("a2", "int", entity));
 
-        @Override
-        public Object visitObjRelationship(ObjRelationship relationship) {
-            return null;
-        }
+        EmbeddedAttribute a3 = new EmbeddedAttribute("a3", "org.example.E", entity);
+        a3.setComment("a3 comment");
+        entity.addAttribute(a3);
+
+        StringWriter out = new StringWriter();
+        XMLEncoder encoder = new XMLEncoder(new PrintWriter(out));
+        entity.encodeAsXML(encoder, new EmptyProjectNodeVisitor());
+
+        String ls = System.lineSeparator();
+
+        // a comment goes first, and an element with no comment stays empty
+        assertEquals("<objEntity name=\"X\" className=\"org.example.Xc\">" + ls +
+                "<comment>&lt;X&gt; &amp; co</comment>" + ls +
+                "<embeddedAttribute name=\"a3\" type=\"org.example.E\">" + ls +
+                "<comment>a3 comment</comment>" + ls +
+                "</embeddedAttribute>" + ls +
+                "<objAttribute name=\"a1\" type=\"int\">" + ls +
+                "<comment>a1 comment</comment>" + ls +
+                "</objAttribute>" + ls +
+                "<objAttribute name=\"a2\" type=\"int\"/>" + ls +
+                "</objEntity>" + ls, out.toString());
+    }
+
+    @Test
+    public void inheritedAttributeComment() {
+        DataMap map = new DataMap("m");
+
+        ObjEntity superEntity = new ObjEntity("Super");
+        ObjAttribute attribute = new ObjAttribute("a1", "int", superEntity);
+        attribute.setComment("a1 comment");
+        superEntity.addAttribute(attribute);
+        EmbeddedAttribute embedded = new EmbeddedAttribute("e1", "org.example.E", superEntity);
+        embedded.setComment("e1 comment");
+        superEntity.addAttribute(embedded);
+        map.addObjEntity(superEntity);
+
+        ObjEntity subEntity = new ObjEntity("Sub");
+        subEntity.setSuperEntityName("Super");
+        map.addObjEntity(subEntity);
+
+        // the inherited attributes are copies, made per call
+        ObjAttribute inherited = subEntity.getAttribute("a1");
+        assertNotSame(attribute, inherited);
+        assertEquals("a1 comment", inherited.getComment());
+
+        ObjAttribute inheritedFromMap = subEntity.getAttributeMap().get("a1");
+        assertNotSame(attribute, inheritedFromMap);
+        assertEquals("a1 comment", inheritedFromMap.getComment());
+
+        ObjAttribute inheritedEmbedded = subEntity.getAttributeMap().get("e1");
+        assertInstanceOf(EmbeddedAttribute.class, inheritedEmbedded);
+        assertNotSame(embedded, inheritedEmbedded);
+        assertEquals("e1 comment", inheritedEmbedded.getComment());
     }
 
 }

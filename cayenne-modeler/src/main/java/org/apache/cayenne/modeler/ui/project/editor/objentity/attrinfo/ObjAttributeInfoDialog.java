@@ -46,7 +46,6 @@ import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.ui.project.editor.objentity.properties.ObjAttributeTableModel;
 import org.apache.cayenne.modeler.toolkit.tree.EntityTreeAttributeRelationshipFilter;
 import org.apache.cayenne.modeler.toolkit.tree.EntityTreeModel;
-import org.apache.cayenne.projecttools.extension.info.ObjectInfo;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
@@ -299,7 +298,7 @@ public class ObjAttributeInfoDialog extends ProjectDialog implements TreeSelecti
         typeComboBox.setSelectedItem(attribute.getType());
         usedForLockingCheckBox.setSelected(attribute.isUsedForLocking());
         lazyCheckBox.setSelected(attribute.isLazy());
-        commentField.setText(ObjectInfo.getFromMetaData(app.getMetaData(), attr, ObjectInfo.COMMENT));
+        commentField.setText(attr.getComment());
 
         cancelButton.addActionListener(e -> dispose());
         selectPathButton.addActionListener(e -> setPath(true));
@@ -472,10 +471,7 @@ public class ObjAttributeInfoDialog extends ProjectDialog implements TreeSelecti
             attributeSaved.setName(attributeName.getText());
             attributeSaved.setUsedForLocking(usedForLockingCheckBox.isSelected());
             attributeSaved.setLazy(lazyCheckBox.isSelected());
-            ObjectInfo.putToMetaData(app.getMetaData(),
-                    attributeSaved,
-                    ObjectInfo.COMMENT,
-                    commentField.getText());
+            attributeSaved.setComment(commentField.getText());
         }
 
         if (!(attributeSaved instanceof EmbeddedAttribute) || isRegisteredType(attributeSaved.getType())) {
@@ -541,23 +537,21 @@ public class ObjAttributeInfoDialog extends ProjectDialog implements TreeSelecti
         boolean isOverrideTableChange =
                 ((OverrideEmbeddableAttributeTableModel) overrideAttributeTable.getModel())
                         .isAttributeOverrideChange();
-        String comment = ObjectInfo.getFromMetaData(app.getMetaData(), attribute, ObjectInfo.COMMENT);
         return isOverrideTableChange
                 || !attribute.getName().equals(attributeName.getText())
                 || (attribute.getType() == null && typeComboBox.getSelectedItem() != null)
                 || !Objects.equals(attribute.getType(), typeComboBox.getSelectedItem())
                 || attribute.isUsedForLocking() != usedForLockingCheckBox.isSelected()
                 || attribute.isLazy() != lazyCheckBox.isSelected()
-                || !Objects.equals(comment, commentField.getText());
+                || !Objects.equals(attribute.getComment(), commentField.getText());
     }
 
     private void updateTable() {
-        String comment = ObjectInfo.getFromMetaData(app.getMetaData(), attributeSaved, ObjectInfo.COMMENT);
         model.setUpdatedValueAt(attributeSaved.getName(), row, 0);
         model.setUpdatedValueAt(attributeSaved.getType(), row, 1);
         model.setUpdatedValueAt(attributeSaved.isUsedForLocking(), row, 4);
         model.setUpdatedValueAt(attributeSaved.isLazy(), row, 5);
-        model.setUpdatedValueAt(comment, row, 6);
+        model.setUpdatedValueAt(attributeSaved.getComment(), row, 6);
     }
 
     private void saveMapping() {
@@ -713,8 +707,7 @@ public class ObjAttributeInfoDialog extends ProjectDialog implements TreeSelecti
         attributeSaved.setType(attribute.getType());
         attributeSaved.setUsedForLocking(attribute.isUsedForLocking());
         attributeSaved.setLazy(attribute.isLazy());
-        String comment = ObjectInfo.getFromMetaData(app.getMetaData(), attribute, ObjectInfo.COMMENT);
-        ObjectInfo.putToMetaData(app.getMetaData(), attributeSaved, ObjectInfo.COMMENT, comment);
+        attributeSaved.setComment(attribute.getComment());
 
         if (attributeSaved instanceof EmbeddedAttribute) {
             Map<String, String> attrOverrides = (attribute instanceof EmbeddedAttribute)

@@ -24,11 +24,28 @@ import java.sql.Types;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.project.ProjectLoadingMode;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class DbEntityHandlerTest extends BaseHandlerTest {
+
+    // a comment may follow other children, such as a skipped tag of another namespace
+    private static final String COMMENTED_ENTITY = """
+            <dbEntity name="ARTIST">
+                <comment>entity</comment>
+                <dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true">
+                    <comment>id</comment>
+                </dbAttribute>
+                <dbAttribute name="NAME" type="VARCHAR" length="100"/>
+                <dbAttribute name="DATE" type="DATE">
+                    <x:extra xmlns:x="urn:example"/>
+                    <comment>date</comment>
+                </dbAttribute>
+                <qualifier><![CDATA[NAME = "test"]]></qualifier>
+            </dbEntity>
+            """;
 
     @Test
     public void load() throws Exception {
@@ -75,5 +92,31 @@ public class DbEntityHandlerTest extends BaseHandlerTest {
         assertFalse(attribute.isGenerated());
         assertEquals(10, attribute.getScale());
         assertEquals(Types.BIT, attribute.getType());
+    }
+
+    @Test
+    public void loadComments() throws Exception {
+        DataMap map = new DataMap();
+        parse("dbEntity", COMMENTED_ENTITY, ProjectLoadingMode.FULL, parent -> new DbEntityHandler(parent, map));
+
+        DbEntity entity = map.getDbEntity("ARTIST");
+        assertEquals("entity", entity.getComment());
+        assertEquals("id", entity.getAttribute("ID").getComment());
+        assertNull(entity.getAttribute("NAME").getComment());
+        assertEquals("date", entity.getAttribute("DATE").getComment());
+        assertEquals(Types.DATE, entity.getAttribute("DATE").getType());
+        assertEquals("NAME = \"test\"", entity.getQualifier().toString());
+    }
+
+    @Test
+    public void skipComments() throws Exception {
+        DataMap map = new DataMap();
+        parse("dbEntity", COMMENTED_ENTITY, ProjectLoadingMode.RUNTIME, parent -> new DbEntityHandler(parent, map));
+
+        DbEntity entity = map.getDbEntity("ARTIST");
+        assertNull(entity.getComment());
+        assertEquals(3, entity.getAttributes().size());
+        entity.getAttributes().forEach(a -> assertNull(a.getComment()));
+        assertEquals("NAME = \"test\"", entity.getQualifier().toString());
     }
 }

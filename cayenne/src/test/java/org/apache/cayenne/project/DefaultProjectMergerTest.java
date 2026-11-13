@@ -21,6 +21,9 @@ package org.apache.cayenne.project;
 import org.apache.cayenne.map.DataMap;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+import java.util.Set;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class DefaultProjectMergerTest {
@@ -57,9 +60,11 @@ public class DefaultProjectMergerTest {
     public void merged_Settings() {
         Project d1 = new Project();
         d1.setSharedCacheEnabled(false);
+        d1.setDisabledInspections(List.of("A", "B"));
 
         Project d2 = new Project();
         d2.setValidatingObjectsOnCommit(false);
+        d2.setDisabledInspections(List.of("C"));
 
         DefaultProjectMerger merger = new DefaultProjectMerger();
 
@@ -67,6 +72,7 @@ public class DefaultProjectMergerTest {
         Project merged = merger.merge(d1, d2);
         assertTrue(merged.isSharedCacheEnabled());
         assertFalse(merged.isValidatingObjectsOnCommit());
+        assertEquals(Set.of("C"), merged.getDisabledInspections());
     }
 
     @Test

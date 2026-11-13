@@ -19,8 +19,10 @@
 
 package org.apache.cayenne.projecttools.upgrade;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.ProjectLoader;
+import org.apache.cayenne.project.ProjectLoadingMode;
 import org.apache.cayenne.project.upgrade.UpgradeContext;
 import org.apache.cayenne.project.upgrade.ProjectFileUpgrader;
 import org.apache.cayenne.project.upgrade.UpgradeHandler;
@@ -72,6 +74,9 @@ public class DefaultProjectUpgrader implements ProjectUpgrader {
     @Inject
     private ProjectFileUpgrader upgrader;
 
+    @Inject
+    private ProjectLoadingMode loadingMode;
+
     @Override
     public PreUpgradeState checkUpgradeNeeded(Resource resource) {
         String version = upgrader.readVersion(resource);
@@ -84,6 +89,13 @@ public class DefaultProjectUpgrader implements ProjectUpgrader {
 
     @Override
     public PostUpgradeState upgrade(Resource resource) {
+        // a runtime-only load would drop the tool-only parts on save
+        if (loadingMode != ProjectLoadingMode.FULL) {
+            throw new CayenneRuntimeException("Upgrading project files requires the %s project loading mode, "
+                    + "but the current mode is %s. Enable it with 'CoreModule.extend(binder).loadFullProjectModel()'",
+                    ProjectLoadingMode.FULL, loadingMode);
+        }
+
         String version = upgrader.readVersion(resource);
 
         // upgrade and save DOM of the project and all its DataMaps

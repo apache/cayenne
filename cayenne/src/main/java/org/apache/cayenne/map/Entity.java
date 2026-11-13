@@ -41,12 +41,17 @@ import java.util.Map;
 public abstract class Entity<
         E extends Entity<E, A, R>,
         A extends Attribute<E, A, R>,
-        R extends Relationship<E, A, R>> implements XMLSerializable {
+        R extends Relationship<E, A, R>> implements XMLSerializable, Commentable {
 
     public static final String PATH_SEPARATOR = ".";
 
     protected String name;
     protected DataMap dataMap;
+
+    /**
+     * @since 6.0
+     */
+    protected String comment;
 
     protected final Map<String, A> attributes = new LinkedHashMap<>();
     protected final Map<String, R> relationships = new LinkedHashMap<>();
@@ -81,6 +86,15 @@ public abstract class Entity<
         this.name = name;
     }
 
+    @Override
+    public String getComment() {
+        return comment;
+    }
+
+    @Override
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
 
     /**
      * @return parent DataMap of this entity.

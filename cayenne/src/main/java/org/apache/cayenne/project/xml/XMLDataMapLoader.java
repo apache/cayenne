@@ -21,6 +21,7 @@ package org.apache.cayenne.project.xml;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.project.DataMapLoader;
+import org.apache.cayenne.project.ProjectLoadingMode;
 import org.apache.cayenne.project.upgrade.ProjectFileUpgrader;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
@@ -42,13 +43,16 @@ public class XMLDataMapLoader implements DataMapLoader {
     private static final String DATA_MAP_LOCATION_SUFFIX = ".map.xml";
 
     @Inject
-    protected HandlerFactory handlerFactory;
-
-    @Inject
     protected Provider<XMLReader> xmlReaderProvider;
 
     @Inject
     protected ProjectFileUpgrader upgrader;
+
+    /**
+     * @since 6.0
+     */
+    @Inject
+    protected ProjectLoadingMode loadingMode;
 
     public DataMap load(Resource source) throws CayenneRuntimeException {
 
@@ -78,7 +82,7 @@ public class XMLDataMapLoader implements DataMapLoader {
 
     protected DataMap parse(Resource configurationResource, InputSource input) throws Exception {
         XMLReader parser = xmlReaderProvider.get();
-        LoaderContext loaderContext = new LoaderContext(parser, handlerFactory);
+        LoaderContext loaderContext = new LoaderContext(parser, loadingMode);
 
         RootDataMapHandler rootHandler = new RootDataMapHandler(loaderContext, configurationResource);
         parser.setContentHandler(rootHandler);
@@ -123,9 +127,5 @@ public class XMLDataMapLoader implements DataMapLoader {
         }
 
         return location;
-    }
-
-    public void setHandlerFactory(HandlerFactory handlerFactory) {
-        this.handlerFactory = handlerFactory;
     }
 }

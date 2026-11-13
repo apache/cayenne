@@ -312,6 +312,43 @@ public class Util {
     }
 
     /**
+     * Encodes a string so that it can be used as the text of an XML element. Will do conversion of the greater/less
+     * signs and ampersands, and drop the characters that XML 1.0 can't hold, such as most of the control characters.
+     * The line ends are left as is, to be normalized to "\n" by an XML parser.
+     *
+     * @since 6.0
+     */
+    public static String encodeXmlText(String string) {
+        if (string == null) {
+            return null;
+        }
+
+        StringBuilder encoded = new StringBuilder(string.length());
+        string.codePoints().forEach(c -> {
+            switch (c) {
+                case '<' -> encoded.append("&lt;");
+                case '>' -> encoded.append("&gt;");
+                case '&' -> encoded.append("&amp;");
+                default -> {
+                    if (isXmlChar(c)) {
+                        encoded.appendCodePoint(c);
+                    }
+                }
+            }
+        });
+
+        return encoded.toString();
+    }
+
+    // the "Char" production of XML 1.0, also excluding the unpaired surrogates
+    private static boolean isXmlChar(int c) {
+        return c == '\t' || c == '\n' || c == '\r'
+                || (c >= 0x20 && c <= 0xD7FF)
+                || (c >= 0xE000 && c <= 0xFFFD)
+                || (c >= 0x10000 && c <= 0x10FFFF);
+    }
+
+    /**
      * Returns true if a Member is accessible via reflection under normal Java
      * access controls.
      *

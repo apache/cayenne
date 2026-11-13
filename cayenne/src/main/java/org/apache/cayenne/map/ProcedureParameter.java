@@ -28,7 +28,7 @@ import org.apache.cayenne.util.XMLSerializable;
 /**
  * A descriptor for the Procedure parameter.
  */
-public class ProcedureParameter implements ProjectNode, XMLSerializable {
+public class ProcedureParameter implements ProjectNode, XMLSerializable, Commentable {
 
     public static final int IN_OUT_PARAMETER = 3;
     public static final int IN_PARAMETER = 1;
@@ -36,6 +36,11 @@ public class ProcedureParameter implements ProjectNode, XMLSerializable {
 
     protected String name;
     protected Procedure procedure;
+
+    /**
+     * @since 6.0
+     */
+    protected String comment;
 
     protected int direction = -1;
 
@@ -74,7 +79,15 @@ public class ProcedureParameter implements ProjectNode, XMLSerializable {
         this.name = name;
     }
 
+    @Override
+    public String getComment() {
+        return comment;
+    }
 
+    @Override
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
 
     /**
      * Prints itself as XML to the provided PrintWriter.
@@ -98,7 +111,7 @@ public class ProcedureParameter implements ProjectNode, XMLSerializable {
             encoder.attribute("direction", "out");
         }
 
-        delegate.visitProcedureParameter(this);
+        encoder.textTag("comment", getComment());
         encoder.end();
     }
 

@@ -58,6 +58,17 @@ public class ObjAttributeTest {
     }
 
     @Test
+    public void copyComment() {
+        ObjAttribute attribute = new ObjAttribute("a1", "int", null);
+        attribute.setComment("a1 comment");
+        assertEquals("a1 comment", new ObjAttribute(attribute).getComment());
+
+        EmbeddedAttribute embedded = new EmbeddedAttribute("e1", "org.example.E", null);
+        embedded.setComment("e1 comment");
+        assertEquals("e1 comment", new EmbeddedAttribute(embedded).getComment());
+    }
+
+    @Test
     public void getJavaClass() throws Exception {
 
         ObjAttribute a1 = new ObjAttribute("test");

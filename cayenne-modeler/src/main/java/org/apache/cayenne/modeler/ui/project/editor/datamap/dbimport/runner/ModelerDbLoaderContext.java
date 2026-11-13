@@ -21,7 +21,6 @@ package org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.runner;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.dbsync.reverse.dbimport.DbImportConfiguration;
-import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.dbsync.reverse.dbload.DbLoaderDelegate;
 import org.apache.cayenne.dbsync.reverse.filters.FiltersConfigBuilder;
 import org.apache.cayenne.map.DataMap;
@@ -30,6 +29,7 @@ import org.apache.cayenne.modeler.pref.dbconnector.DBConnector;
 import org.apache.cayenne.modeler.dbconnector.DBConnectorFactory;
 import org.apache.cayenne.modeler.service.classloader.ModelerClassLoader;
 import org.apache.cayenne.modeler.project.ProjectSession;
+import org.apache.cayenne.project.dbimport.ReverseEngineering;
 import org.apache.cayenne.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -108,12 +108,12 @@ public class ModelerDbLoaderContext {
         if (connectionInfo == null) {
             return false;
         }
-        ReverseEngineering metaReverseEngineering = application.getMetaData().get(dataMap, ReverseEngineering.class);
-        if(metaReverseEngineering == null) {
+        ReverseEngineering dataMapReverseEngineering = dataMap.getReverseEngineering();
+        if(dataMapReverseEngineering == null) {
             return false;
         }
-        // Create copy of metaReverseEngineering
-        ReverseEngineering reverseEngineering = new ReverseEngineering(metaReverseEngineering);
+        // a copy, as building the filters changes the settings
+        ReverseEngineering reverseEngineering = new ReverseEngineering(dataMapReverseEngineering);
 
         DbImportConfiguration config = new DbImportConfiguration() {
             @Override
@@ -140,7 +140,6 @@ public class ModelerDbLoaderContext {
         return true;
     }
 
-    // Fill config from metadata reverseEngineering
     private void fillConfig(DbImportConfiguration config, DBConnector connectionInfo,
                             ReverseEngineering reverseEngineering) {
         config.setAdapter(connectionInfo.getDbAdapter());

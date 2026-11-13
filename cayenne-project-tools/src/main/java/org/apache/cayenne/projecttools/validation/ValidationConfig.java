@@ -19,17 +19,19 @@
 package org.apache.cayenne.projecttools.validation;
 
 import org.apache.cayenne.project.Project;
-import org.apache.cayenne.project.xml.ProjectMetaData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.Optional;
 import java.util.Set;
 
 /**
  * @since 5.0
  */
 public class ValidationConfig {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ValidationConfig.class);
 
     private final Set<Inspection> enabledInspections;
 
@@ -53,7 +55,32 @@ public class ValidationConfig {
         return enabledInspections.contains(inspection);
     }
 
-    public static ValidationConfig fromMetadata(ProjectMetaData metaData, Project project) {
-        return Optional.ofNullable(metaData.get(project, ValidationConfig.class)).orElseGet(ValidationConfig::new);
+    /**
+     * Creates a config that enables all the inspections except the ones disabled in the project.
+     *
+     * @since 6.0
+     */
+    public static ValidationConfig fromProject(Project project) {
+        Set<Inspection> enabledInspections = EnumSet.allOf(Inspection.class);
+        for (String name : project.getDisabledInspections()) {
+            try {
+                enabledInspections.remove(Inspection.valueOf(name));
+            } catch (IllegalArgumentException e) {
+                LOGGER.debug("Ignoring unknown validation inspection '{}'", name);
+            }
+        }
+        return new ValidationConfig(enabledInspections);
+    }
+
+    /**
+     * Replaces the disabled inspections of the project with the ones of this config, except the deprecated ones.
+     *
+     * @since 6.0
+     */
+    public void applyTo(Project project) {
+        Set<Inspection> disabledInspections = EnumSet.allOf(Inspection.class);
+        disabledInspections.removeAll(enabledInspections);
+        disabledInspections.removeIf(Inspection::isDeprecated);
+        project.setDisabledInspections(disabledInspections.stream().map(Inspection::name).toList());
     }
 }

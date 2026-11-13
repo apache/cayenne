@@ -21,7 +21,6 @@ package org.apache.cayenne.modeler.ui.action;
 
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.modeler.event.model.ProjectEvent;
-import org.apache.cayenne.project.xml.ProjectMetaData;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.toolkit.AppAction;
 import org.apache.cayenne.modeler.undo.CayenneUndoManager;
@@ -29,6 +28,7 @@ import org.apache.cayenne.modeler.undo.UpdateValidationConfigUndoableEdit;
 import org.apache.cayenne.projecttools.validation.ValidationConfig;
 
 import java.awt.event.ActionEvent;
+import java.util.List;
 
 /**
  * Requires config provided with {@link UpdateValidationConfigAction#putConfig(ValidationConfig)}.
@@ -54,15 +54,15 @@ public class UpdateValidationConfigAction extends AppAction {
 
     @Override
     public void performAction(ActionEvent e) {
-        ProjectMetaData metaData = app.getMetaData();
-        Project project = app.getFrame().getProjectSession().project();
+        Project project = getProjectSession().project();
         ValidationConfig config = (ValidationConfig) getValue(CONFIG_PARAM);
-        ValidationConfig oldConfig = ValidationConfig.fromMetadata(metaData, project);
-        metaData.add(project, config);
+        List<String> oldDisabledInspections = List.copyOf(project.getDisabledInspections());
+        config.applyTo(project);
 
         if (undoable) {
             CayenneUndoManager undoManager = app.getUndoManager();
-            undoManager.addEdit(new UpdateValidationConfigUndoableEdit(getProjectSession(), oldConfig, config));
+            undoManager.addEdit(new UpdateValidationConfigUndoableEdit(getProjectSession(), oldDisabledInspections,
+                    config));
         }
         getProjectSession().fireProjectEvent(ProjectEvent.ofChange(e.getSource(), project));
     }

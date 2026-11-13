@@ -24,6 +24,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.ProcedureParameter;
 import org.xml.sax.Attributes;
+import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
 /**
@@ -37,6 +38,8 @@ public class ProcedureHandler extends NamespaceAwareNestedTagHandler {
     private DataMap map;
 
     private Procedure procedure;
+
+    private ProcedureParameter lastParameter;
 
     public ProcedureHandler(NamespaceAwareNestedTagHandler parentHandler, DataMap map) {
         super(parentHandler);
@@ -54,8 +57,30 @@ public class ProcedureHandler extends NamespaceAwareNestedTagHandler {
                 addProcedureParameter(attributes);
                 yield true;
             }
+            case CommentHandler.COMMENT_TAG -> true;
             default -> false;
         };
+    }
+
+    @Override
+    protected boolean processCharData(String localName, String data) {
+        if (CommentHandler.COMMENT_TAG.equals(localName)) {
+            CommentHandler.loadComment(loaderContext, procedure, data);
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
+    protected ContentHandler createChildTagHandler(String namespaceURI, String localName,
+                                                   String qName, Attributes attributes) {
+
+        if (namespaceURI.equals(targetNamespace) && PROCEDURE_PARAMETER_TAG.equals(localName)) {
+            return new CommentHandler(this, () -> lastParameter);
+        }
+
+        return super.createChildTagHandler(namespaceURI, localName, qName, attributes);
     }
 
     private void addProcedure(Attributes attributes) throws SAXException{
@@ -78,36 +103,32 @@ public class ProcedureHandler extends NamespaceAwareNestedTagHandler {
             throw new SAXException("ProcedureHandler::addProcedureParameter() - no procedure parameter name.");
         }
 
-        ProcedureParameter parameter = new ProcedureParameter(name);
+        lastParameter = new ProcedureParameter(name);
 
         String type = attributes.getValue("type");
         if (type != null) {
-            parameter.setType(TypesMapping.getSqlTypeByName(type));
+            lastParameter.setType(TypesMapping.getSqlTypeByName(type));
         }
 
         String length = attributes.getValue("length");
         if (length != null) {
-            parameter.setMaxLength(Integer.parseInt(length));
+            lastParameter.setMaxLength(Integer.parseInt(length));
         }
 
         String precision = attributes.getValue("precision");
         if (precision != null) {
-            parameter.setPrecision(Integer.parseInt(precision));
+            lastParameter.setPrecision(Integer.parseInt(precision));
         }
 
         String direction = attributes.getValue("direction");
         if ("in".equals(direction)) {
-            parameter.setDirection(ProcedureParameter.IN_PARAMETER);
+            lastParameter.setDirection(ProcedureParameter.IN_PARAMETER);
         } else if ("out".equals(direction)) {
-            parameter.setDirection(ProcedureParameter.OUT_PARAMETER);
+            lastParameter.setDirection(ProcedureParameter.OUT_PARAMETER);
         } else if ("in_out".equals(direction)) {
-            parameter.setDirection(ProcedureParameter.IN_OUT_PARAMETER);
+            lastParameter.setDirection(ProcedureParameter.IN_OUT_PARAMETER);
         }
 
-        procedure.addCallParameter(parameter);
-    }
-
-    public Procedure getProcedure() {
-        return procedure;
+        procedure.addCallParameter(lastParameter);
     }
 }

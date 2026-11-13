@@ -19,10 +19,6 @@
 
 package org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.action;
 
-import org.apache.cayenne.dbsync.reverse.dbimport.Catalog;
-import org.apache.cayenne.dbsync.reverse.dbimport.IncludeTable;
-import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
-import org.apache.cayenne.dbsync.reverse.dbimport.Schema;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.ui.action.DBConnectionAwareAction;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.tree.DbImportTreeNode;
@@ -33,6 +29,10 @@ import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.DBSchemaPan
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.PrintColumnsBiFunction;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.PrintTablesBiFunction;
 import org.apache.cayenne.modeler.pref.dbconnector.DBConnector;
+import org.apache.cayenne.project.dbimport.Catalog;
+import org.apache.cayenne.project.dbimport.IncludeTable;
+import org.apache.cayenne.project.dbimport.ReverseEngineering;
+import org.apache.cayenne.project.dbimport.Schema;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -25,12 +25,11 @@ import org.apache.cayenne.project.ProjectNodeVisitor;
 import org.apache.cayenne.project.upgrade.UpgradeHandler;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.projecttools.extension.ProjectExtension;
-import org.apache.cayenne.projecttools.extension.SaverDelegate;
+import org.apache.cayenne.project.cgen.CgenDescriptor;
+import org.apache.cayenne.project.cgen.CgenPaths;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.URLResource;
 import org.apache.cayenne.util.Util;
-import org.apache.cayenne.util.XMLEncoder;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -41,11 +40,12 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.HashSet;
-import java.util.List;
+import java.util.IdentityHashMap;
+import java.util.Map;
 
 /**
  * A ProjectSaver saving project configuration to the file system.
@@ -61,24 +61,12 @@ public class FileProjectSaver implements ProjectSaver {
     protected ProjectNodeVisitor<Collection<ProjectNode>> saveableNodesGetter;
     protected String fileEncoding;
 
-    protected Collection<ProjectExtension> extensions;
-    protected SaverDelegate delegate;
-
-    public FileProjectSaver(@Inject List<ProjectExtension> extensions) {
+    public FileProjectSaver() {
         resourceGetter = new ConfigurationSourceGetter();
         saveableNodesGetter = new SaveableNodesGetter();
 
         // this is not configurable yet... probably doesn't have to be
         fileEncoding = "UTF-8";
-
-        List<ProjectExtension> sorted = new ArrayList<>(extensions);
-        sorted.sort(Comparator.comparingInt(ProjectExtension::order));
-        this.extensions = sorted;
-        Collection<SaverDelegate> delegates = new ArrayList<>(sorted.size());
-        for (ProjectExtension extension : sorted) {
-            delegates.add(extension.createSaverDelegate());
-        }
-        delegate = new CompoundSaverDelegate(delegates);
     }
 
     @Override
@@ -106,8 +94,6 @@ public class FileProjectSaver implements ProjectSaver {
         Collection<ProjectNode> nodes = rootNode.acceptVisitor(saveableNodesGetter);
         Collection<SaveUnit> units = new ArrayList<>(nodes.size());
 
-        delegate.setBaseDirectory(baseResource);
-
         for (ProjectNode node : nodes) {
             String targetLocation = nameMapper.configurationLocation(node);
 
@@ -117,26 +103,22 @@ public class FileProjectSaver implements ProjectSaver {
 			}
 
             Resource targetResource = baseResource.getRelativeResource(targetLocation);
-            units.add(createSaveUnit(node, targetResource, null));
-
-            for (ProjectExtension extension : extensions) {
-                ProjectNodeVisitor<String> namingDelegate = extension.createNamingDelegate();
-                SaverDelegate unitSaverDelegate = extension.createSaverDelegate();
-                String fileName = node.acceptVisitor(namingDelegate);
-                if (fileName != null) {
-                    // not null means that this should go to a separate file
-                    targetResource = baseResource.getRelativeResource(fileName);
-                    units.add(createSaveUnit(node, targetResource, unitSaverDelegate));
-                }
-            }
+            units.add(createSaveUnit(node, targetResource));
         }
 
         checkAccess(units);
 
+        Map<CgenDescriptor, CgenOutputDir> originalCgenOutputDirs = new IdentityHashMap<>();
+        boolean saved = false;
         try {
+            rebaseCgenOutputDirs(units, originalCgenOutputDirs);
             saveToTempFiles(units);
             saveCommit(units);
+            saved = true;
         } finally {
+            if (!saved) {
+                restoreCgenOutputDirs(originalCgenOutputDirs);
+            }
             clearTempFiles(units);
         }
 
@@ -155,11 +137,10 @@ public class FileProjectSaver implements ProjectSaver {
         }
     }
 
-    SaveUnit createSaveUnit(ProjectNode node, Resource targetResource, SaverDelegate delegate) {
+    SaveUnit createSaveUnit(ProjectNode node, Resource targetResource) {
 
         SaveUnit unit = new SaveUnit();
         unit.node = node;
-        unit.delegate = delegate;
         unit.sourceConfiguration = node.acceptVisitor(resourceGetter);
 
         if (unit.sourceConfiguration == null) {
@@ -205,6 +186,42 @@ public class FileProjectSaver implements ProjectSaver {
         }
     }
 
+    /**
+     * Rebases the cgen output directories of the saved DataMaps to their target directories. Must run before the
+     * DataMaps are written and before their new locations are committed.
+     *
+     * @param originalOutputDirs collects the original directories for {@link #restoreCgenOutputDirs(Map)}
+     */
+    void rebaseCgenOutputDirs(Collection<SaveUnit> units, Map<CgenDescriptor, CgenOutputDir> originalOutputDirs) {
+        for (SaveUnit unit : units) {
+            if (unit.node instanceof DataMap dataMap) {
+                Path oldRoot = CgenPaths.dataMapDir(dataMap).orElse(null);
+                Path newRoot = unit.targetFile.getParentFile().toPath();
+                for (CgenDescriptor descriptor : dataMap.getCgenDescriptors()) {
+                    if (!originalOutputDirs.containsKey(descriptor)) {
+                        originalOutputDirs.put(descriptor, new CgenOutputDir(
+                                descriptor.getDestDir(),
+                                dataMap,
+                                dataMap.getConfigurationSource()));
+                        descriptor.setDestDir(CgenPaths.rebase(descriptor.getDestDir(), oldRoot, newRoot));
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Restores the cgen output directories after a failed save, except for the DataMaps already committed to their
+     * new location.
+     */
+    void restoreCgenOutputDirs(Map<CgenDescriptor, CgenOutputDir> originalOutputDirs) {
+        originalOutputDirs.forEach((descriptor, original) -> {
+            if (original.dataMap().getConfigurationSource() == original.dataMapSource()) {
+                descriptor.setDestDir(original.destDir());
+            }
+        });
+    }
+
     void saveToTempFiles(Collection<SaveUnit> units) {
 
         for (SaveUnit unit : units) {
@@ -239,17 +256,7 @@ public class FileProjectSaver implements ProjectSaver {
     }
 
     void saveToTempFile(SaveUnit unit, PrintWriter printWriter) {
-        ProjectNodeVisitor<?> visitor;
-        if (unit.delegate == null) {
-            visitor = new ConfigurationSaver(printWriter, delegate);
-        } else {
-            XMLEncoder encoder = new XMLEncoder(printWriter, "\t");
-            encoder.println("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
-            unit.delegate.setXMLEncoder(encoder);
-            visitor = unit.delegate;
-        }
-
-        unit.node.acceptVisitor(visitor);
+        unit.node.acceptVisitor(new ConfigurationSaver(printWriter));
     }
 
     void saveCommit(Collection<SaveUnit> units) {
@@ -277,10 +284,8 @@ public class FileProjectSaver implements ProjectSaver {
 
             unit.targetTempFile = null;
             try {
-                if (unit.delegate == null) {
-                    URLResource targetUrlResource = new URLResource(targetFile.toURI().toURL());
-                    unit.node.acceptVisitor(new ConfigurationSourceSetter(targetUrlResource, nameMapper));
-                }
+                URLResource targetUrlResource = new URLResource(targetFile.toURI().toURL());
+                unit.node.acceptVisitor(new ConfigurationSourceSetter(targetUrlResource, nameMapper));
             } catch (MalformedURLException e) {
                 throw new CayenneRuntimeException("Malformed URL for file '%s'", e, targetFile.getAbsolutePath());
             }
@@ -368,10 +373,12 @@ public class FileProjectSaver implements ProjectSaver {
         }
     }
 
+    record CgenOutputDir(String destDir, DataMap dataMap, Resource dataMapSource) {
+    }
+
     static class SaveUnit {
 
         private ProjectNode node;
-        private SaverDelegate delegate;
 
         // source can be an abstract resource, but target is always a file...
         private Resource sourceConfiguration;

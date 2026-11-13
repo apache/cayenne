@@ -26,7 +26,6 @@ import org.apache.cayenne.modeler.event.model.DbAttributeEvent;
 import org.apache.cayenne.modeler.toolkit.table.CMTableModel;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.undo.ChangePKGeneratorUndoableEdit;
-import org.apache.cayenne.projecttools.extension.info.ObjectInfo;
 import java.util.Objects;
 
 import javax.swing.*;
@@ -245,7 +244,7 @@ public class DbAttributeTableModel extends CMTableModel<DbAttribute> {
     }
 
     public String getComment(DbAttribute attr) {
-        return ObjectInfo.getFromMetaData(session.app().getMetaData(), attr, ObjectInfo.COMMENT);
+        return attr.getComment();
     }
 
     public void setMaxLength(String newVal, DbAttribute attr) {
@@ -331,7 +330,7 @@ public class DbAttributeTableModel extends CMTableModel<DbAttribute> {
     }
 
     public void setComment(String newVal, DbAttribute attr) {
-        ObjectInfo.putToMetaData(session.app().getMetaData(), attr, ObjectInfo.COMMENT, newVal);
+        attr.setComment(newVal);
     }
 
     public boolean isCellEditable(int row, int col) {

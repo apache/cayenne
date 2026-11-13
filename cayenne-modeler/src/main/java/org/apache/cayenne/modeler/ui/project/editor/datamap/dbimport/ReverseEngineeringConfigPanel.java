@@ -21,7 +21,6 @@ package org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.FormLayout;
-import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.toolkit.ProjectPanel;
 import org.apache.cayenne.modeler.toolkit.combobox.AutoCompletion;
@@ -29,6 +28,7 @@ import org.apache.cayenne.modeler.toolkit.combobox.CMComboBox;
 import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
 import org.apache.cayenne.modeler.project.ProjectSession;
 import org.apache.cayenne.modeler.NameGeneratorPreferences;
+import org.apache.cayenne.project.dbimport.ReverseEngineering;
 
 import javax.swing.*;
 import java.awt.*;
@@ -176,7 +176,7 @@ public class ReverseEngineeringConfigPanel extends ProjectPanel {
 
     ReverseEngineering getReverseEngineeringBySelectedMap() {
         DataMap dataMap = session.getSelectedDataMap();
-        return app.getMetaData().get(dataMap, ReverseEngineering.class);
+        return dataMap.getReverseEngineering();
     }
 
     void initStrategy(ReverseEngineering reverseEngineering) {

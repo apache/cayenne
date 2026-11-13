@@ -54,7 +54,7 @@ public class NamedSelectQueryHandler extends NamedQueryHandler {
                 loadQuerySettings(namedQuery, attributes);
                 yield true;
             }
-            case QL_TAG, CACHE_GROUP_TAG -> true;
+            case QL_TAG, CACHE_GROUP_TAG, CommentHandler.COMMENT_TAG -> true;
             default -> false;
         };
     }
@@ -64,6 +64,7 @@ public class NamedSelectQueryHandler extends NamedQueryHandler {
         switch (localName) {
             case QL_TAG -> setSelect(data);
             case CACHE_GROUP_TAG -> namedQuery.setCacheGroup(data);
+            case CommentHandler.COMMENT_TAG -> CommentHandler.loadComment(loaderContext, namedQuery, data);
         }
         return true;
     }

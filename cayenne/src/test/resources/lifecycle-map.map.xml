@@ -159,7 +159,7 @@
 	<objRelationship name="parent" source="AuditableChild5" target="Auditable5" deleteRule="nullify" dbRelationshipPath="parent"/>
 	<objRelationship name="e4s" source="E3" target="E4" deleteRule="deny" dbRelationshipPath="e34s.e4"/>
 	<objRelationship name="e3s" source="E4" target="E3" deleteRule="deny" dbRelationshipPath="e34s.e3"/>
-	<cgen xmlns="http://cayenne.apache.org/schema/15/cgen">
+	<cgen>
 		<destDir>../java</destDir>
 		<mode>entity</mode>
 		<template>templates/v4_1/subclass.vm</template>

@@ -24,6 +24,8 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.project.ProjectNode;
 import org.apache.cayenne.project.ProjectNodeVisitor;
 import org.apache.cayenne.project.Project;
+import org.apache.cayenne.project.cgen.CgenDescriptor;
+import org.apache.cayenne.project.dbimport.ReverseEngineering;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.util.ToStringBuilder;
 import org.apache.cayenne.util.Util;
@@ -35,6 +37,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
@@ -48,7 +51,7 @@ import static java.util.Collections.emptyList;
  * tables, ObjEntities - mapping persistent Java classes, Procedures - mapping
  * database stored procedures.
  */
-public class DataMap implements ProjectNode, XMLSerializable, MappingNamespace, Comparable<DataMap> {
+public class DataMap implements ProjectNode, XMLSerializable, MappingNamespace, Comparable<DataMap>, Commentable {
 
     /**
      * The namespace in which the data map XML file will be created.
@@ -66,11 +69,22 @@ public class DataMap implements ProjectNode, XMLSerializable, MappingNamespace, 
     protected String defaultSuperclass;
     protected int defaultLockType;
 
+    /**
+     * @since 6.0
+     */
+    protected String comment;
+
+    /**
+     * @since 6.0
+     */
+    protected ReverseEngineering reverseEngineering;
+
     private final Map<String, Embeddable> embeddablesMap;
     private final Map<String, ObjEntity> objEntityMap;
     private final Map<String, DbEntity> dbEntityMap;
     private final Map<String, Procedure> procedureMap;
     private final Map<String, NamedQuery> namedQueryMap;
+    private final List<CgenDescriptor> cgenDescriptors;
 
     protected Resource configurationSource;
     protected Project project;
@@ -85,6 +99,7 @@ public class DataMap implements ProjectNode, XMLSerializable, MappingNamespace, 
         dbEntityMap = new HashMap<>();
         procedureMap = new HashMap<>();
         namedQueryMap = new HashMap<>();
+        cgenDescriptors = new ArrayList<>();
         defaultLockType = ObjEntity.LOCK_TYPE_NONE;
         setName(mapName);
     }
@@ -157,6 +172,7 @@ public class DataMap implements ProjectNode, XMLSerializable, MappingNamespace, 
                 .attribute("defaultSchema", defaultSchema, true)
                 .attribute("defaultSuperclass", defaultSuperclass, true)
                 .attribute("quoteSqlIdentifiers", quotingSQLIdentifiers ? "true" : null, true)
+                .textTag("comment", getComment())
                 .nested(new TreeMap<>(getEmbeddableMap()), delegate)
                 .nested(new TreeMap<>(getProcedureMap()), delegate)
                 .nested(new TreeMap<>(getDbEntityMap()), delegate)
@@ -166,10 +182,15 @@ public class DataMap implements ProjectNode, XMLSerializable, MappingNamespace, 
         encodeDbRelationshipsAsXML(encoder, delegate);
         encodeObjRelationshipsAsXML(encoder, delegate);
 
-        // named queries at the end just to keep logic from older versions
+        // named queries after the relationships just to keep logic from older versions
         encoder.nested(new TreeMap<>(getNamedQueryMap()), delegate);
 
-        delegate.visitDataMap(this);
+        // tool-only settings after everything the runtime uses
+        encoder.nested(reverseEngineering, delegate);
+        for (CgenDescriptor descriptor : cgenDescriptors) {
+            descriptor.encodeAsXML(encoder, this);
+        }
+
         encoder.end();
     }
 
@@ -210,6 +231,58 @@ public class DataMap implements ProjectNode, XMLSerializable, MappingNamespace, 
      */
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    public String getComment() {
+        return comment;
+    }
+
+    @Override
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    /**
+     * Returns the reverse engineering settings of this DataMap, or null if there are none. Not used by the runtime.
+     *
+     * @since 6.0
+     */
+    public ReverseEngineering getReverseEngineering() {
+        return reverseEngineering;
+    }
+
+    /**
+     * @since 6.0
+     */
+    public void setReverseEngineering(ReverseEngineering reverseEngineering) {
+        this.reverseEngineering = reverseEngineering;
+    }
+
+    /**
+     * Returns the class generation settings of this DataMap, in the order they were added. Not used by the runtime.
+     *
+     * @since 6.0
+     */
+    public List<CgenDescriptor> getCgenDescriptors() {
+        return Collections.unmodifiableList(cgenDescriptors);
+    }
+
+    /**
+     * @since 6.0
+     */
+    public void addCgenDescriptor(CgenDescriptor descriptor) {
+        Objects.requireNonNull(descriptor);
+        if (!cgenDescriptors.contains(descriptor)) {
+            cgenDescriptors.add(descriptor);
+        }
+    }
+
+    /**
+     * @since 6.0
+     */
+    public void removeCgenDescriptor(CgenDescriptor descriptor) {
+        cgenDescriptors.remove(descriptor);
     }
 
     /**

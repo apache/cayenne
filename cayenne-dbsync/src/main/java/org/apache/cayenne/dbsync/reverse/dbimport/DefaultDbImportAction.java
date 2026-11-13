@@ -34,7 +34,7 @@ import org.apache.cayenne.project.ProjectNode;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.ProjectLoader;
 import org.apache.cayenne.project.DataMapLoader;
-import org.apache.cayenne.project.xml.ProjectMetaData;
+import org.apache.cayenne.project.dbimport.ReverseEngineering;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dbsync.merge.DataMapMerger;
 import org.apache.cayenne.dbsync.reverse.configuration.DbAdapterFactory;
@@ -80,7 +80,6 @@ public class DefaultDbImportAction implements DbImportAction {
     private final DataMapLoader mapLoader;
     private final MergerTokenFactoryProvider mergerTokenFactoryProvider;
     private final ProjectLoader projectLoader;
-    private final ProjectMetaData metaData;
     private boolean hasChanges;
     private Collection<MergerToken> tokens;
     private DataMap loadedDataMap;
@@ -90,14 +89,12 @@ public class DefaultDbImportAction implements DbImportAction {
                                  @Inject DbAdapterFactory adapterFactory,
                                  @Inject DataMapLoader mapLoader,
                                  @Inject MergerTokenFactoryProvider mergerTokenFactoryProvider,
-                                 @Inject ProjectLoader projectLoader,
-                                 @Inject ProjectMetaData metaData) {
+                                 @Inject ProjectLoader projectLoader) {
         this.logger = logger;
         this.projectSaver = projectSaver;
         this.adapterFactory = adapterFactory;
         this.mapLoader = mapLoader;
         this.mergerTokenFactoryProvider = mergerTokenFactoryProvider;
-        this.metaData = metaData;
         this.projectLoader = projectLoader;
     }
 
@@ -165,17 +162,7 @@ public class DefaultDbImportAction implements DbImportAction {
         DataMap sourceDataMap;
         DataMap targetDataMap = existingTargetMap(config);
 
-        ReverseEngineering dataMapReverseEngineering = metaData.get(targetDataMap, ReverseEngineering.class);
-        if ((config.isUseDataMapReverseEngineering()) && (dataMapReverseEngineering != null)) {
-            putReverseEngineeringToConfig(dataMapReverseEngineering, config, dataSource, adapter);
-        }
-        if ((dataMapReverseEngineering != null) && (!config.isUseDataMapReverseEngineering())) {
-            logger.warn("Found several dbimport configs. DataMap dbimport config was skipped. " +
-                    "Configuration selected from build file");
-        }
-        if ((dataMapReverseEngineering == null) && (config.isUseDataMapReverseEngineering())) {
-            logger.warn("Missing dbimport config. Database is imported completely.");
-        }
+        applyDataMapReverseEngineering(targetDataMap, config, dataSource, adapter);
 
         try (Connection connection = dataSource.getConnection()) {
             sourceDataMap = load(config, adapter, connection);
@@ -211,6 +198,32 @@ public class DefaultDbImportAction implements DbImportAction {
         hasChanges |= checkDataMapProperties(targetDataMap, config);
         hasChanges |= hasTokensToImport(tokens);
         return sourceDataMap;
+    }
+
+    /**
+     * Copies the reverse engineering settings of the target DataMap to the import configuration, if
+     * {@link DbImportConfiguration#isUseDataMapReverseEngineering()} is true.
+     *
+     * @param targetDataMap the existing DataMap to import into, or null
+     * @since 6.0
+     */
+    protected void applyDataMapReverseEngineering(DataMap targetDataMap,
+                                                  DbImportConfiguration config,
+                                                  DataSource dataSource,
+                                                  DbAdapter adapter) throws SQLException {
+        ReverseEngineering dataMapReverseEngineering = targetDataMap != null
+                ? targetDataMap.getReverseEngineering()
+                : null;
+        if (config.isUseDataMapReverseEngineering() && dataMapReverseEngineering != null) {
+            putReverseEngineeringToConfig(dataMapReverseEngineering, config, dataSource, adapter);
+        }
+        if (dataMapReverseEngineering != null && !config.isUseDataMapReverseEngineering()) {
+            logger.warn("Found several dbimport configs. DataMap dbimport config was skipped. " +
+                    "Configuration selected from build file");
+        }
+        if (dataMapReverseEngineering == null && config.isUseDataMapReverseEngineering()) {
+            logger.warn("Missing dbimport config. Database is imported completely.");
+        }
     }
 
     private void putReverseEngineeringToConfig(ReverseEngineering reverseEngineering,

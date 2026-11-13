@@ -37,11 +37,16 @@ import java.util.Map;
  * 
  * @since 3.0
  */
-public class Embeddable implements ProjectNode, XMLSerializable {
+public class Embeddable implements ProjectNode, XMLSerializable, Commentable {
 
 	protected String className;
 	protected Map<String, EmbeddableAttribute> attributes;
 	protected DataMap dataMap;
+
+	/**
+	 * @since 6.0
+	 */
+	protected String comment;
 
 	public Embeddable() {
 		this(null);
@@ -136,6 +141,16 @@ public class Embeddable implements ProjectNode, XMLSerializable {
 		this.className = className;
 	}
 
+	@Override
+	public String getComment() {
+		return comment;
+	}
+
+	@Override
+	public void setComment(String comment) {
+		this.comment = comment;
+	}
+
 	/**
 	 * {@link XMLSerializable} implementation that generates XML for embeddable.
 	 */
@@ -143,8 +158,8 @@ public class Embeddable implements ProjectNode, XMLSerializable {
 	public void encodeAsXML(XMLEncoder encoder, ProjectNodeVisitor<?> delegate) {
 		encoder.start("embeddable")
 				.attribute("className", getClassName())
-				.nested(attributes, delegate);
-		delegate.visitEmbeddable(this);
-		encoder.end();
+				.textTag("comment", getComment())
+				.nested(attributes, delegate)
+				.end();
 	}
 }

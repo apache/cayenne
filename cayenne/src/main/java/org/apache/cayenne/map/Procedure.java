@@ -31,10 +31,15 @@ import org.apache.cayenne.util.XMLSerializable;
 /**
  * A mapping descriptor for a database stored procedure.
  */
-public class Procedure implements ProjectNode, XMLSerializable {
+public class Procedure implements ProjectNode, XMLSerializable, Commentable {
 
     protected String name;
     protected DataMap dataMap;
+
+    /**
+     * @since 6.0
+     */
+    protected String comment;
 
     protected String catalog;
     protected String schema;
@@ -69,7 +74,15 @@ public class Procedure implements ProjectNode, XMLSerializable {
         this.name = name;
     }
 
+    @Override
+    public String getComment() {
+        return comment;
+    }
 
+    @Override
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
 
     /**
      * Prints itself as XML to the provided XMLEncoder.
@@ -83,9 +96,9 @@ public class Procedure implements ProjectNode, XMLSerializable {
                 .attribute("schema", getSchema())
                 .attribute("catalog", getCatalog())
                 .attribute("returningValue", isReturningValue())
-                .nested(getCallParameters(), delegate);
-        delegate.visitProcedure(this);
-        encoder.end();
+                .textTag("comment", getComment())
+                .nested(getCallParameters(), delegate)
+                .end();
     }
 
     /**

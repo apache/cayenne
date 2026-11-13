@@ -36,7 +36,6 @@ import org.apache.cayenne.modeler.event.display.EmbeddableDisplayListener;
 import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
 import org.apache.cayenne.modeler.project.ProjectComparators;
 import org.apache.cayenne.modeler.ui.project.editor.EditorForm;
-import org.apache.cayenne.projecttools.extension.info.ObjectInfo;
 import java.util.Objects;
 import org.apache.cayenne.validation.ValidationException;
 
@@ -177,7 +176,7 @@ public class EmbeddableMainView extends ProjectPanel implements EmbeddableDispla
 
     private void initFromModel(Embeddable embeddable) {
         className.setText(embeddable.getClassName());
-        comment.setText(getComment(embeddable));
+        comment.setText(embeddable.getComment());
     }
 
     void setComment(String comment) {
@@ -187,11 +186,7 @@ public class EmbeddableMainView extends ProjectPanel implements EmbeddableDispla
             return;
         }
 
-        ObjectInfo.putToMetaData(app.getMetaData(), embeddable, ObjectInfo.COMMENT, comment);
+        embeddable.setComment(comment);
         session.fireEmbeddableEvent(EmbeddableEvent.ofChange(this, embeddable), session.getSelectedDataMap());
-    }
-
-    String getComment(Embeddable embeddable) {
-        return ObjectInfo.getFromMetaData(app.getMetaData(), embeddable, ObjectInfo.COMMENT);
     }
 }

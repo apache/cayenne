@@ -218,7 +218,7 @@
 		<dbAttributePair source="PAINTING_ID" target="PAINTING_ID"/>
 	</dbRelationship>
 	<objRelationship name="artistArray" source="ArtGroup" target="Artist" collectionType="java.util.Map" lock="true" deleteRule="cascade" dbRelationshipPath="artistGroupArray.toArtist">
-		<info:property xmlns:info="http://cayenne.apache.org/schema/15/info" name="comment" value="artistGroupArray.toArtist"/>
+		<comment>artistGroupArray.toArtist</comment>
 	</objRelationship>
 	<objRelationship name="childGroupsArray" source="ArtGroup" target="ArtGroup" deleteRule="nullify" dbRelationshipPath="toChildGroups"/>
 	<objRelationship name="toParentGroup" source="ArtGroup" target="ArtGroup" deleteRule="nullify" dbRelationshipPath="toParentGroup"/>

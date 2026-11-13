@@ -32,7 +32,7 @@ Verify the server is registered with `claude mcp list` — you should see an ent
 
 ## Tool: `cgen_run`
 
-Runs Cayenne's class generator for one DataMap. Uses the `<cgen>` config block embedded in that DataMap if present; if the DataMap has no `<cgen>` block, the tool synthesizes a default config (all entities and embeddables, `makePairs=true`, destination derived from the standard Maven layout) and generates anyway — a missing block is **not** an error.
+Runs Cayenne's class generator for one DataMap. Uses the first `<cgen>` config block embedded in that DataMap if present; if the DataMap has no `<cgen>` block, the tool synthesizes a default config (all entities and embeddables, `makePairs=true`, destination derived from the standard Maven layout) and generates anyway — a missing block is **not** an error.
 
 **Arguments:**
 
@@ -64,7 +64,7 @@ When the DataMap had no `<cgen>` block, the tool generated from a synthesized de
 
 - `projectPath` not readable or not a valid Cayenne project → validation error.
 - `dataMap` doesn't match any `<map name="...">` → validation error.
-- `<cgen>` block present but specifies no resolvable destination directory → `destdir_not_specified`.
+- A `<cgen>` block without `<destDir>` is not an error: the classes go to the DataMap's own directory, reported in `resolved.destDir`. (`destdir_not_specified` is only returned for a DataMap without a file location, and a DataMap loaded from `projectPath` always has one.)
 
 **Source:** `cayenne-mcp-server/src/main/java/org/apache/cayenne/mcp/tools/cgen/CgenRunTool.java`.
 

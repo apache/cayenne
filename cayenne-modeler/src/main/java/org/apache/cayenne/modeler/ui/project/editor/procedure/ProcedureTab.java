@@ -34,7 +34,6 @@ import org.apache.cayenne.map.MappingNamespace;
 import org.apache.cayenne.modeler.event.model.ProcedureEvent;
 import org.apache.cayenne.modeler.toolkit.text.CMUndoableTextField;
 import org.apache.cayenne.modeler.ui.action.CreateProcedureParameterAction;
-import org.apache.cayenne.projecttools.extension.info.ObjectInfo;
 import org.apache.cayenne.modeler.toolkit.checkbox.CMCheckBox;
 import java.util.Objects;
 import org.apache.cayenne.validation.ValidationException;
@@ -132,7 +131,7 @@ public class ProcedureTab extends ProjectPanel implements ProcedureDisplayListen
         name.setText(procedure.getName());
         schema.setText(procedure.getSchema());
         catalog.setText(procedure.getCatalog());
-        comment.setText(getComment(procedure));
+        comment.setText(procedure.getComment());
 
         ignoreChange = true;
         returnsValue.setSelected(procedure.isReturningValue());
@@ -204,11 +203,7 @@ public class ProcedureTab extends ProjectPanel implements ProcedureDisplayListen
             return;
         }
 
-        ObjectInfo.putToMetaData(app.getMetaData(), procedure, ObjectInfo.COMMENT, comment);
+        procedure.setComment(comment);
         session.fireProcedureEvent(ProcedureEvent.ofChange(this, procedure));
-    }
-
-    String getComment(Procedure procedure) {
-        return ObjectInfo.getFromMetaData(app.getMetaData(), procedure, ObjectInfo.COMMENT);
     }
 }

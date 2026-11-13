@@ -22,18 +22,14 @@ package org.apache.cayenne.modeler.project;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.gen.CgenConfigList;
 import org.apache.cayenne.gen.CgenConfiguration;
-import org.apache.cayenne.gen.internal.Utils;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.pref.adapters.GeneralPrefs;
 import org.apache.cayenne.project.Project;
-import org.apache.cayenne.resource.Resource;
+import org.apache.cayenne.project.cgen.CgenPaths;
 
-import java.net.URISyntaxException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.prefs.Preferences;
 import java.util.Optional;
+import java.util.prefs.Preferences;
 
 public class CgenOps {
 
@@ -57,11 +53,16 @@ public class CgenOps {
     }
 
     public static CgenConfiguration createDefaultCgenConfiguration(DataMap map, ProjectSession session) {
-        CgenConfiguration configuration = CgenConfiguration.createDefault(map, baseDir(session).orElse(null));
+        return CgenConfiguration.createDefault(map, baseDir(session).orElse(null));
+    }
 
+    /**
+     * Applies the Modeler preferences, that are not a part of the stored settings, to a configuration about to
+     * generate classes.
+     */
+    public static void applyPreferences(CgenConfiguration configuration, ProjectSession session) {
         Preferences preferences = session.app().getPrefsLocator().appNode(GeneralPrefs.NODE);
         configuration.setEncoding(new GeneralPrefs(preferences).getEncoding());
-        return configuration;
     }
 
     /**
@@ -69,30 +70,12 @@ public class CgenOps {
      * Empty for a project that has not been saved yet.
      */
     public static Optional<Path> baseDir(ProjectSession session) {
-        Path projectRoot = projectRoot(session);
-        if (projectRoot == null) {
+        Project project = session.project();
+        if (project == null) {
             return Optional.empty();
         }
 
-        return Optional.of(Utils.getMavenSrcPathForPath(projectRoot)
-                .map(Paths::get)
-                .orElse(projectRoot));
-    }
-
-    private static Path projectRoot(ProjectSession session) {
-        Project project = session.project();
-        if (project == null) {
-            return null;
-        }
-        Resource resource = project.getConfigurationSource();
-        if (resource == null) {
-            return null;
-        }
-        try {
-            Path path = Path.of(resource.getURL().toURI());
-            return Files.isRegularFile(path) ? path.getParent() : path;
-        } catch (URISyntaxException e) {
-            return null;
-        }
+        return CgenPaths.resourceDir(project.getConfigurationSource())
+                .map(projectRoot -> CgenPaths.mavenSourceDir(projectRoot).orElse(projectRoot));
     }
 }

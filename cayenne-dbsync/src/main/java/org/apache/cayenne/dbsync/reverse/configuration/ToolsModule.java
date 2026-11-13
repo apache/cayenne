@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.dbsync.reverse.configuration;
 
-import org.apache.cayenne.CoreModule;
 import org.apache.cayenne.access.flush.DataDomainFlushActionFactory;
 import org.apache.cayenne.access.flush.DefaultDataDomainFlushActionFactory;
 import org.apache.cayenne.access.flush.operation.DbRowOpPlanner;
@@ -37,9 +36,6 @@ import org.apache.cayenne.project.DataMapLoader;
 import org.apache.cayenne.DefaultRuntimeProperties;
 import org.apache.cayenne.RuntimeProperties;
 import org.apache.cayenne.project.upgrade.ProjectFileUpgrader;
-import org.apache.cayenne.project.xml.ProjectMetaData;
-import org.apache.cayenne.project.xml.DefaultProjectMetaData;
-import org.apache.cayenne.project.xml.HandlerFactory;
 import org.apache.cayenne.project.xml.XMLProjectLoader;
 import org.apache.cayenne.project.xml.XMLDataMapLoader;
 import org.apache.cayenne.project.xml.XMLReaderProvider;
@@ -67,7 +63,6 @@ import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
 import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
 import org.apache.cayenne.log.SQLLogger;
 import org.apache.cayenne.log.Slf4jSQLLogger;
-import org.apache.cayenne.projecttools.extension.ExtensionAwareHandlerFactory;
 import org.apache.cayenne.reflect.generic.DefaultValueComparisonStrategyFactory;
 import org.apache.cayenne.reflect.generic.ValueComparisonStrategyFactory;
 import org.apache.cayenne.resource.ClassLoaderResourceLocator;
@@ -92,10 +87,11 @@ public class ToolsModule implements Module {
 
     public void configure(Binder binder) {
 
-        new ToolsProjectModuleExtender(binder).initAllExtensions();
-
         new ToolsCoreModuleExtender(binder)
                 .initAllExtensions()
+
+                // the tools read and save the tool-only parts of the project
+                .loadFullProjectModel()
 
                 // the catch-all detector goes first, as detectors are tried in reverse order
                 .addAdapterDetector(GenericAdapterDetector.class)
@@ -134,8 +130,6 @@ public class ToolsModule implements Module {
         binder.bind(DataMapLoader.class).to(XMLDataMapLoader.class);
         binder.bind(ProjectFileUpgrader.class).to(ProjectFileUpgrader.class);
         binder.bind(ProjectLoader.class).to(XMLProjectLoader.class);
-        binder.bind(HandlerFactory.class).to(ExtensionAwareHandlerFactory.class);
-        binder.bind(ProjectMetaData.class).to(DefaultProjectMetaData.class);
         binder.bind(XMLReader.class).toProviderInstance(new XMLReaderProvider(true)).withoutScope();
         binder.bind(DataDomainFlushActionFactory.class).to(DefaultDataDomainFlushActionFactory.class);
         binder.bind(DbRowOpPlanner.class).to(DefaultDbRowOpPlanner.class);

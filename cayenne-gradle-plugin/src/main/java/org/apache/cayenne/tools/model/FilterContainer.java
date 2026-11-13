@@ -151,7 +151,7 @@ public class FilterContainer {
         return target;
     }
 
-    <C extends org.apache.cayenne.dbsync.reverse.dbimport.FilterContainer> C fillContainer(final C container) {
+    <C extends org.apache.cayenne.project.dbimport.FilterContainer> C fillContainer(final C container) {
         container.setName(name);
         for(IncludeTable table : includeTables) {
             container.addIncludeTable(table.toIncludeTable());

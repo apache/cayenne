@@ -23,6 +23,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.map.NamedSQLQuery;
+import org.apache.cayenne.project.ProjectLoadingMode;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.QueryCacheStrategy;
@@ -35,6 +36,13 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class NamedSQLQueryHandlerTest extends BaseHandlerTest {
 
+    private static final String COMMENTED_QUERY = """
+            <sqlQuery name="q">
+                <comment>q comment</comment>
+                <sql>select * from ARTIST</sql>
+            </sqlQuery>
+            """;
+
     private DataMap map;
 
     @BeforeEach
@@ -43,7 +51,11 @@ public class NamedSQLQueryHandlerTest extends BaseHandlerTest {
     }
 
     private NamedSQLQuery parseQuery(String xml) throws Exception {
-        parse("sqlQuery", xml, parent -> new NamedSQLQueryHandler(parent, map));
+        return parseQuery(xml, ProjectLoadingMode.RUNTIME);
+    }
+
+    private NamedSQLQuery parseQuery(String xml, ProjectLoadingMode loadingMode) throws Exception {
+        parse("sqlQuery", xml, loadingMode, parent -> new NamedSQLQueryHandler(parent, map));
         return (NamedSQLQuery) map.getNamedQuery("q");
     }
 
@@ -148,5 +160,19 @@ public class NamedSQLQueryHandlerTest extends BaseHandlerTest {
         assertSame(map, parseQuery("""
                 <sqlQuery name="q" root="objEntity" rootName="NoSuchEntity"/>
                 """).getRoot());
+    }
+
+    @Test
+    public void loadComments() throws Exception {
+        NamedSQLQuery namedQuery = parseQuery(COMMENTED_QUERY, ProjectLoadingMode.FULL);
+        assertEquals("q comment", namedQuery.getComment());
+        assertEquals("select * from ARTIST", namedQuery.getSql());
+    }
+
+    @Test
+    public void skipComments() throws Exception {
+        NamedSQLQuery namedQuery = parseQuery(COMMENTED_QUERY);
+        assertNull(namedQuery.getComment());
+        assertEquals("select * from ARTIST", namedQuery.getSql());
     }
 }

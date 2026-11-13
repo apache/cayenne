@@ -28,8 +28,8 @@
         <dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true" length="10"/>
     </dbEntity>
     <objEntity name="Parent" className="Parent" dbEntityName="PARENT">
+        <comment>test</comment>
         <objAttribute name="col2" type="java.lang.String" dbAttributePath="COL2"/>
         <objAttribute name="col4" type="java.lang.String" dbAttributePath="COL4"/>
-        <info:property xmlns:info="http://cayenne.apache.org/schema/15/info" name="comment" value="test"/>
     </objEntity>
 </dataMap>

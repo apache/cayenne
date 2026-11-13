@@ -26,7 +26,6 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.project.BaseProjectNodeVisitor;
 import org.apache.cayenne.project.ProjectNode;
 import org.apache.cayenne.project.ProjectNodeVisitor;
-import org.apache.cayenne.project.xml.ProjectMetaData;
 import org.apache.cayenne.gen.CgenConfigList;
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.ClassGenerationAction;
@@ -50,6 +49,7 @@ import org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.action.AddCgenC
 import org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.action.EditCgenConfigAction;
 import org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.action.RemoveCgenConfigAction;
 import org.apache.cayenne.tools.ToolsInjectorBuilder;
+import org.apache.cayenne.validation.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.helpers.NOPLogger;
@@ -88,6 +88,8 @@ public class CgenPanel extends ProjectPanel implements ObjEntityListener, Embedd
     private final JButton removeConfigBtn;
 
     private CgenConfigList cgenConfigList;
+    // shown for a DataMap with no stored configuration, and stored in it once edited
+    private CgenConfiguration defaultConfiguration;
     private Object currentClass;
     private CgenConfiguration configuration;
 
@@ -106,9 +108,11 @@ public class CgenPanel extends ProjectPanel implements ObjEntityListener, Embedd
         this.generateButton.setIcon(IconFactory.buildIcon("icon-gen_java.png"));
         this.generateButton.setEnabled(false);
         this.configurationsComboBox = new JComboBox<>();
-        this.addConfigBtn = new AddCgenConfigAction(app, configurationsComboBox, () -> cgenConfigList).buildButton();
-        this.editConfigBtn = new EditCgenConfigAction(app, configurationsComboBox, () -> cgenConfigList, () -> configuration).buildButton();
-        this.removeConfigAction = new RemoveCgenConfigAction(app, configurationsComboBox, () -> cgenConfigList, () -> configuration);
+        this.addConfigBtn = new AddCgenConfigAction(app, configurationsComboBox, this::editedConfigList).buildButton();
+        this.editConfigBtn = new EditCgenConfigAction(
+                app, configurationsComboBox, this::editedConfigList, () -> configuration).buildButton();
+        this.removeConfigAction = new RemoveCgenConfigAction(
+                app, configurationsComboBox, this::editedConfigList, () -> configuration);
         this.removeConfigBtn = removeConfigAction.buildButton();
 
         this.cgenConfigPanel = new CgenConfigPanel(session, this);
@@ -221,19 +225,33 @@ public class CgenPanel extends ProjectPanel implements ObjEntityListener, Embedd
         updateEmbeddables();
     }
 
+    /**
+     * Called when the configuration is edited, storing the default configuration in the DataMap.
+     */
     public void checkCgenConfigDirty() {
         if (initFromModel || configuration == null) {
             return;
         }
 
-        DataMap map = session.getSelectedDataMap();
-        CgenConfigList existingConfigurations = app.getMetaData().get(map, CgenConfigList.class);
-        if (existingConfigurations == null) {
+        // the edited configuration belongs to the DataMap of the panel, that may not be the selected one
+        if (cgenConfigList.isEmpty()) {
             cgenConfigList.add(configuration);
-            app.getMetaData().add(map, cgenConfigList);
         }
 
         session.setDirty(true);
+    }
+
+    // the configuration follows a mapping change, that doesn't make the default configuration an edited one
+    private void mappingChanged() {
+        if (!initFromModel && configuration != null && !cgenConfigList.isEmpty()) {
+            session.setDirty(true);
+        }
+    }
+
+    // the configurations for an action that changes them, with the shown default configuration stored first
+    private CgenConfigList editedConfigList() {
+        checkCgenConfigDirty();
+        return cgenConfigList;
     }
 
     public void initFromModel(DataMap map) {
@@ -263,8 +281,11 @@ public class CgenPanel extends ProjectPanel implements ObjEntityListener, Embedd
             return;
         }
 
-        DataMap dataMap = session.getSelectedDataMap();
-        configuration = CgenOps.createDefaultCgenConfiguration(dataMap, session);
+        if (defaultConfiguration == null) {
+            defaultConfiguration = CgenOps.createDefaultCgenConfiguration(session.getSelectedDataMap(), session);
+        }
+        configuration = defaultConfiguration;
+        DataMap dataMap = configuration.getDataMap();
         addToSelectedEntities(dataMap.getObjEntities()
                 .stream()
                 .map(Entity::getName)
@@ -321,16 +342,20 @@ public class CgenPanel extends ProjectPanel implements ObjEntityListener, Embedd
 
     private void initConfigurationsComboBox() {
         configurationsComboBox.removeAllItems();
-        cgenConfigList.getNames().forEach(configurationsComboBox::addItem);
+        if (cgenConfigList.isEmpty()) {
+            configurationsComboBox.addItem(defaultConfiguration.getName());
+        } else {
+            cgenConfigList.getNames().forEach(configurationsComboBox::addItem);
+        }
     }
 
     private void initCgenConfigurations(DataMap dataMap) {
-        cgenConfigList = app.getMetaData().get(dataMap, CgenConfigList.class);
-        if (cgenConfigList == null) {
-            cgenConfigList = new CgenConfigList();
-            cgenConfigList.add(CgenOps.createDefaultCgenConfiguration(dataMap, session));
-            app.getMetaData().add(dataMap, cgenConfigList);
-        }
+        cgenConfigList = new CgenConfigList(dataMap);
+
+        // not stored in the DataMap until edited, so that just showing it doesn't change the DataMap
+        defaultConfiguration = cgenConfigList.isEmpty()
+                ? CgenOps.createDefaultCgenConfiguration(dataMap, session)
+                : null;
     }
 
     private void initListeners() {
@@ -349,11 +374,18 @@ public class CgenPanel extends ProjectPanel implements ObjEntityListener, Embedd
             if (initFromModel) {
                 return;
             }
-            selectionModel.clearAll();
-            setConfiguration((String) configurationsComboBox.getSelectedItem());
-            cgenConfigPanel.initForm(configuration);
-            classesSelector.validate(classes);
-            classesSelector.refresh();
+
+            // showing another configuration doesn't change it
+            initFromModel = true;
+            try {
+                selectionModel.clearAll();
+                setConfiguration((String) configurationsComboBox.getSelectedItem());
+                cgenConfigPanel.initForm(configuration);
+                classesSelector.validate(classes);
+                classesSelector.refresh();
+            } finally {
+                initFromModel = false;
+            }
         });
         generatorSelectedAction();
     }
@@ -365,8 +397,8 @@ public class CgenPanel extends ProjectPanel implements ObjEntityListener, Embedd
     }
 
     private void generateAction() {
+        CgenOps.applyPreferences(configuration, session);
         ClassGenerationAction generator = new ToolsInjectorBuilder()
-                .addModule(binder -> binder.bind(ProjectMetaData.class).toInstance(app.getMetaData()))
                 .create()
                 .getInstance(ClassGenerationActionFactory.class)
                 .createAction(configuration, NOPLogger.NOP_LOGGER);
@@ -450,7 +482,7 @@ public class CgenPanel extends ProjectPanel implements ObjEntityListener, Embedd
         if (configuration != null) {
             configuration.loadEntity(objEntity);
         }
-        checkCgenConfigDirty();
+        mappingChanged();
     }
 
     private void addToSelectedEmbeddables(Collection<String> embeddables) {
@@ -472,7 +504,7 @@ public class CgenPanel extends ProjectPanel implements ObjEntityListener, Embedd
                 configuration.getEntities().add(newName);
             }
         }
-        checkCgenConfigDirty();
+        mappingChanged();
     }
 
     @Override
@@ -486,7 +518,7 @@ public class CgenPanel extends ProjectPanel implements ObjEntityListener, Embedd
         if (configuration != null) {
             configuration.getEntities().remove(e.getEntity().getName());
         }
-        checkCgenConfigDirty();
+        mappingChanged();
     }
 
     @Override
@@ -503,7 +535,7 @@ public class CgenPanel extends ProjectPanel implements ObjEntityListener, Embedd
                 configuration.getEmbeddables().add(newClassName);
             }
         }
-        checkCgenConfigDirty();
+        mappingChanged();
     }
 
     @Override
@@ -514,7 +546,7 @@ public class CgenPanel extends ProjectPanel implements ObjEntityListener, Embedd
         if (configuration != null) {
             configuration.loadEmbeddable(embeddable);
         }
-        checkCgenConfigDirty();
+        mappingChanged();
     }
 
     @Override
@@ -523,7 +555,7 @@ public class CgenPanel extends ProjectPanel implements ObjEntityListener, Embedd
         if (configuration != null) {
             configuration.getEmbeddables().remove(e.getEmbeddable().getClassName());
         }
-        checkCgenConfigDirty();
+        mappingChanged();
     }
 
     @Override
@@ -549,8 +581,12 @@ public class CgenPanel extends ProjectPanel implements ObjEntityListener, Embedd
      */
     private void onProjectSaved(ProjectAfterSaveEvent e) {
         if (cgenConfigPanel != null && configuration != null) {
-            cgenConfigPanel.getOutputFolder()
-                    .setText(configuration.outputDirectory().map(Path::toString).orElse(""));
+            try {
+                cgenConfigPanel.getOutputFolder()
+                        .setText(configuration.outputDirectory().map(Path::toString).orElse(""));
+            } catch (ValidationException ex) {
+                // an invalid path is not changed by saving, and stays shown as is
+            }
         }
     }
 

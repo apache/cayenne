@@ -128,6 +128,8 @@ public class ObjEntity extends Entity<ObjEntity, ObjAttribute, ObjRelationship> 
             encoder.attribute("superClassName", getSuperClassName());
         }
 
+        encoder.textTag("comment", getComment());
+
         if (qualifier != null) {
             encoder.start("qualifier").nested(qualifier, delegate).end();
         }
@@ -155,7 +157,6 @@ public class ObjEntity extends Entity<ObjEntity, ObjAttribute, ObjRelationship> 
                     .end();
         }
 
-        delegate.visitObjEntity(this);
         encoder.end();
     }
 

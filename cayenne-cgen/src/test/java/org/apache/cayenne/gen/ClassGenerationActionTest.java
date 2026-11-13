@@ -32,6 +32,7 @@ import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.map.NamedQuery;
+import org.apache.cayenne.project.cgen.CgenDescriptor;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -55,12 +56,7 @@ public class ClassGenerationActionTest extends CgenCase {
 	public void setUp() throws Exception {
 		writers = new ArrayList<>(3);
 		cgenConfiguration = new CgenConfiguration();
-		action = new TestClassGenerationAction(
-				cgenConfiguration,
-				getUnitTestInjector().getInstance(ToolsUtilsFactory.class),
-				getUnitTestInjector().getInstance(MetadataUtils.class),
-				NOPLogger.NOP_LOGGER,
-				writers);
+		action = newTestAction();
 	}
 
 	@AfterEach
@@ -75,6 +71,15 @@ public class ClassGenerationActionTest extends CgenCase {
 				getUnitTestInjector().getInstance(ToolsUtilsFactory.class),
 				getUnitTestInjector().getInstance(MetadataUtils.class),
 				NOPLogger.NOP_LOGGER);
+	}
+
+	private ClassGenerationAction newTestAction() {
+		return new TestClassGenerationAction(
+				cgenConfiguration,
+				getUnitTestInjector().getInstance(ToolsUtilsFactory.class),
+				getUnitTestInjector().getInstance(MetadataUtils.class),
+				NOPLogger.NOP_LOGGER,
+				writers);
 	}
 
 	@Test
@@ -169,6 +174,39 @@ public class ClassGenerationActionTest extends CgenCase {
 		assertTrue(superclass.contains("public char getName()"), superclass);
 		assertTrue(superclass.contains("return this.name;"), superclass);
 
+	}
+
+	@Test
+	public void executeArtifactPairsComment() throws Exception {
+
+		ObjEntity testEntity1 = new ObjEntity("TE1");
+		testEntity1.setClassName("org.example.TestClass1");
+		testEntity1.setComment("A test entity");
+
+		cgenConfiguration.setMakePairs(true);
+
+		List<String> generated = execute(new EntityArtifact(testEntity1));
+		assertEquals(2, generated.size());
+
+		// the comment goes to the superclass Javadoc
+		String superclass = generated.get(0);
+		assertTrue(superclass.contains(" * A test entity"), superclass);
+		assertFalse(generated.get(1).contains("A test entity"), generated.get(1));
+	}
+
+	@Test
+	public void executeArtifactPairsInlineTemplates() throws Exception {
+
+		CgenDescriptor descriptor = new CgenDescriptor();
+		descriptor.setTemplate("subclass template");
+		descriptor.setSuperTemplate("superclass template");
+		cgenConfiguration = new CgenConfiguration(descriptor, new DataMap("testmap"));
+		action = newTestAction();
+
+		ObjEntity testEntity1 = new ObjEntity("TE1");
+		testEntity1.setClassName("org.example.TestClass1");
+
+		assertEquals(List.of("superclass template", "subclass template"), execute(new EntityArtifact(testEntity1)));
 	}
 
 	@Test

@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.ui.project.editor.project.dbimport;
 
-import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.modeler.event.display.DataMapDisplayEvent;
 import org.apache.cayenne.modeler.project.ProjectSession;
@@ -27,12 +26,12 @@ import org.apache.cayenne.modeler.ui.project.editor.datamap.dbimport.action.Mode
 
 import java.util.Set;
 
-public class ProjectDbImportTab extends ProjectGeneratorsTab<ReverseEngineering> {
+public class ProjectDbImportTab extends ProjectGeneratorsTab {
 
     private final ModelerDbImportAction dbImportAction;
 
     public ProjectDbImportTab(ProjectSession session) {
-        super(session, ReverseEngineering.class, false,
+        super(session, dataMap -> dataMap.getReverseEngineering() != null, false,
                 "icon-dbi-runImport.png", "Run reverse engineering on selected datamaps.");
         this.dbImportAction = new ModelerDbImportAction(app);
     }

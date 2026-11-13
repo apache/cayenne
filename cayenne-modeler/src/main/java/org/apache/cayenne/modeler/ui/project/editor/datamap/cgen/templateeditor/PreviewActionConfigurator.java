@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.templateeditor;
 
-import org.apache.cayenne.project.xml.ProjectMetaData;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Key;
 import org.apache.cayenne.gen.ArtifactsGenerationMode;
@@ -53,7 +52,6 @@ public class PreviewActionConfigurator {
     public PreviewActionConfigurator(TemplateEditor editor) {
         this(editor.getTemplateType(),
                 editor.getArtefactsConfigurator(),
-                editor.app().getMetaData(),
                 editor::getCurrentDataMap,
                 editor::getSelectedArtifactName);
     }
@@ -65,7 +63,6 @@ public class PreviewActionConfigurator {
     PreviewActionConfigurator(
             TemplateType templateType,
             ArtefactsConfigurator artefactsConfigurator,
-            ProjectMetaData metaData,
             Supplier<DataMap> dataMap,
             Supplier<String> selectedArtifactName) {
 
@@ -73,12 +70,11 @@ public class PreviewActionConfigurator {
         this.artefactsConfigurator = artefactsConfigurator;
         this.dataMap = dataMap;
         this.selectedArtifactName = selectedArtifactName;
-        this.injector = createInjector(metaData);
+        this.injector = createInjector();
     }
 
-    private static Injector createInjector(ProjectMetaData metaData) {
+    private static Injector createInjector() {
         return new ToolsInjectorBuilder()
-                .addModule(binder -> binder.bind(ProjectMetaData.class).toInstance(metaData))
                 .addModule(binder -> binder.bind(ClassGenerationActionFactory.class).to(PreviewClassGenerationFactory.class))
                 .addModule(binder -> binder.bind(TPL_EDITOR_WRITER).to(StringWriter.class))
                 .create();

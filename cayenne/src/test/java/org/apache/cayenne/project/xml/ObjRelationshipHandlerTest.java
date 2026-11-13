@@ -23,11 +23,18 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DeleteRule;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.project.ProjectLoadingMode;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ObjRelationshipHandlerTest extends BaseHandlerTest {
+
+    private static final String COMMENTED_RELATIONSHIP = """
+            <objRelationship name="artists" source="ArtGroup" target="Artist" dbRelationshipPath="toArtists">
+                <comment>artists</comment>
+            </objRelationship>
+            """;
 
     @Test
     public void load() throws Exception {
@@ -53,5 +60,28 @@ public class ObjRelationshipHandlerTest extends BaseHandlerTest {
         assertEquals("artistName", relationship.getMapKey());
         assertEquals("Artist", relationship.getTargetEntityName());
         assertTrue(relationship.isUsedForLocking());
+    }
+
+    @Test
+    public void loadComments() throws Exception {
+        ObjRelationship relationship = parseRelationship(ProjectLoadingMode.FULL);
+        assertEquals("artists", relationship.getComment());
+        assertEquals("Artist", relationship.getTargetEntityName());
+    }
+
+    @Test
+    public void skipComments() throws Exception {
+        ObjRelationship relationship = parseRelationship(ProjectLoadingMode.RUNTIME);
+        assertNull(relationship.getComment());
+        assertEquals("Artist", relationship.getTargetEntityName());
+    }
+
+    private ObjRelationship parseRelationship(ProjectLoadingMode loadingMode) throws Exception {
+        DataMap map = new DataMap();
+        ObjEntity entity = new ObjEntity("ArtGroup");
+        map.addObjEntity(entity);
+        parse("objRelationship", COMMENTED_RELATIONSHIP, loadingMode,
+                parent -> new ObjRelationshipHandler(parent, map));
+        return entity.getRelationship("artists");
     }
 }

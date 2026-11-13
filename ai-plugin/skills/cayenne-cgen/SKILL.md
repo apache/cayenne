@@ -61,7 +61,7 @@ The tool returns structured JSON. Report:
 
 - `summary.filesConsidered` and `summary.filesWritten` verbatim — these are the headline.
 - The first few entries in `files` (relative paths). Full list is informational; offer to dump it if the user asks.
-- `error`, when non-null — this is blocking. Read the message and explain in user terms (a missing entity class name, a bad template path, an invalid `<destDir>`, etc.).
+- `error`, when non-null — this is blocking. Read the message and explain in user terms (a missing entity class name, an error in a custom template, an invalid `<destDir>`, etc.).
 - `resolved.destDir` — the absolute output directory. If the DataMap had no `<cgen>` block, the tool generated from a synthesized default; report this destination so the user can confirm it's right, and offer to persist a `<cgen>` block (via `cayenne-modeling`) if they want to customize destination, templates, or entity filtering.
 
 cgen always runs in full, but rewrites a file only when the generated contents differ from what is on disk. So `files` is exactly what changed, and a `status` of `up_to_date` means the Java was already in sync with the model — say so plainly rather than implying work was skipped.

@@ -75,6 +75,7 @@ public class DbRelationshipUndoableEdit extends CayenneUndoableEdit {
         rel.setJoins(dbRelationship.getJoins().stream()
                 .map(j -> new DbJoin(rel, j.getSourceName(), j.getTargetName()))
                 .toList());
+        rel.setComment(dbRelationship.getComment());
         return rel;
     }
 }

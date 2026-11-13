@@ -18,21 +18,27 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.undo;
 
-import org.apache.cayenne.modeler.ui.action.UpdateValidationConfigAction;
+import org.apache.cayenne.modeler.event.model.ProjectEvent;
 import org.apache.cayenne.modeler.project.ProjectSession;
+import org.apache.cayenne.project.Project;
 import org.apache.cayenne.projecttools.validation.ValidationConfig;
 
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
+import java.util.List;
 
 public class UpdateValidationConfigUndoableEdit extends CayenneUndoableEdit {
 
-    private final ValidationConfig oldConfig;
+    private final List<String> oldDisabledInspections;
     private final ValidationConfig newConfig;
 
-    public UpdateValidationConfigUndoableEdit(ProjectSession session, ValidationConfig oldConfig, ValidationConfig newConfig) {
+    /**
+     * @param oldDisabledInspections restored as is on undo, including the names unknown to {@link ValidationConfig}
+     */
+    public UpdateValidationConfigUndoableEdit(ProjectSession session, List<String> oldDisabledInspections,
+                                              ValidationConfig newConfig) {
         super(session);
-        this.oldConfig = oldConfig;
+        this.oldDisabledInspections = oldDisabledInspections;
         this.newConfig = newConfig;
     }
 
@@ -43,17 +49,15 @@ public class UpdateValidationConfigUndoableEdit extends CayenneUndoableEdit {
 
     @Override
     public void redo() throws CannotRedoException {
-        globalActions.getAction(UpdateValidationConfigAction.class)
-                .putConfig(newConfig)
-                .setUndoable(false)
-                .performAction(this);
+        Project project = session.project();
+        newConfig.applyTo(project);
+        session.fireProjectEvent(ProjectEvent.ofChange(this, project));
     }
 
     @Override
     public void undo() throws CannotUndoException {
-        globalActions.getAction(UpdateValidationConfigAction.class)
-                .putConfig(oldConfig)
-                .setUndoable(false)
-                .performAction(this);
+        Project project = session.project();
+        project.setDisabledInspections(oldDisabledInspections);
+        session.fireProjectEvent(ProjectEvent.ofChange(this, project));
     }
 }

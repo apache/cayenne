@@ -24,8 +24,8 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 import groovy.lang.Closure;
-import org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineering;
-import org.apache.cayenne.dbsync.reverse.dbimport.Schema;
+import org.apache.cayenne.project.dbimport.ReverseEngineering;
+import org.apache.cayenne.project.dbimport.Schema;
 
 /**
  * @since 4.0

@@ -20,7 +20,6 @@
 package org.apache.cayenne.modeler.ui.project.editor.project.cgen;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.project.xml.ProjectMetaData;
 import org.apache.cayenne.gen.CgenConfigList;
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.ClassGenerationAction;
@@ -34,36 +33,36 @@ import org.apache.cayenne.tools.ToolsInjectorBuilder;
 import org.slf4j.helpers.NOPLogger;
 
 import javax.swing.JOptionPane;
+import java.util.List;
 import java.util.Set;
 
-public class ProjectCgenTab extends ProjectGeneratorsTab<CgenConfiguration> {
+public class ProjectCgenTab extends ProjectGeneratorsTab {
 
     public ProjectCgenTab(ProjectSession session) {
-        super(session, CgenConfiguration.class, true,
+        super(session, dataMap -> true, true,
                 "icon-gen_java.png", "Run class generation on selected datamaps.");
     }
 
     @Override
     public void runGenerators(Set<DataMap> dataMaps) {
-        ProjectMetaData metaData = app.getMetaData();
         if (dataMaps.isEmpty()) {
             showEmptyMessage();
             return;
         }
         boolean generationFail = false;
         ClassGenerationActionFactory actionFactory = new ToolsInjectorBuilder()
-                .addModule(binder -> binder.bind(ProjectMetaData.class).toInstance(metaData))
                 .create()
                 .getInstance(ClassGenerationActionFactory.class);
 
         for (DataMap dataMap : dataMaps) {
             try {
-                CgenConfigList cgenConfigList = metaData.get(dataMap, CgenConfigList.class);
-                if (cgenConfigList == null) {
-                    cgenConfigList = new CgenConfigList();
-                    cgenConfigList.add(CgenOps.createDefaultCgenConfiguration(dataMap, session));
+                // the default configuration is not stored in the DataMap
+                List<CgenConfiguration> cgenConfigurations = new CgenConfigList(dataMap).getAll();
+                if (cgenConfigurations.isEmpty()) {
+                    cgenConfigurations = List.of(CgenOps.createDefaultCgenConfiguration(dataMap, session));
                 }
-                for (CgenConfiguration cgenConfiguration : cgenConfigList.getAll()) {
+                for (CgenConfiguration cgenConfiguration : cgenConfigurations) {
+                    CgenOps.applyPreferences(cgenConfiguration, session);
                     ClassGenerationAction action = actionFactory.createAction(cgenConfiguration,
                             NOPLogger.NOP_LOGGER);
                     action.prepareArtifacts();
