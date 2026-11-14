@@ -20,15 +20,12 @@
 package org.apache.cayenne.access.flush.operation;
 
 import org.apache.cayenne.ObjectId;
-import org.apache.cayenne.PersistenceState;
-import org.apache.cayenne.Persistent;
 import org.apache.cayenne.map.compiled.CompiledTable;
 import org.apache.cayenne.unit.CompiledTables;
+import org.apache.cayenne.unit.TestObjects;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class BaseDbRowOpTest {
 
@@ -36,8 +33,8 @@ public class BaseDbRowOpTest {
     public void equals_SameId() {
         ObjectId id = ObjectId.of("test");
 
-        DbRowOp row1 = new InsertDbRowOp(mockObject(id), mockEntity(), id);
-        DbRowOp row2 = new InsertDbRowOp(mockObject(id), mockEntity(), id);
+        DbRowOp row1 = new InsertDbRowOp(TestObjects.modifiedObject(id), table(), id);
+        DbRowOp row2 = new InsertDbRowOp(TestObjects.modifiedObject(id), table(), id);
 
         assertEquals(row1, row2);
         assertEquals(row2, row1);
@@ -48,8 +45,8 @@ public class BaseDbRowOpTest {
         ObjectId id1 = ObjectId.of("test", "id", 1);
         ObjectId id2 = ObjectId.of("test", "id", 1);
 
-        DbRowOp row1 = new InsertDbRowOp(mockObject(id1), mockEntity(), id1);
-        DbRowOp row2 = new InsertDbRowOp(mockObject(id2), mockEntity(), id2);
+        DbRowOp row1 = new InsertDbRowOp(TestObjects.modifiedObject(id1), table(), id1);
+        DbRowOp row2 = new InsertDbRowOp(TestObjects.modifiedObject(id2), table(), id2);
 
         assertEquals(row1, row2);
         assertEquals(row2, row1);
@@ -60,8 +57,8 @@ public class BaseDbRowOpTest {
         ObjectId id1 = ObjectId.of("test", "id", 1);
         ObjectId id2 = ObjectId.of("test", "id", 1);
 
-        DbRowOp row1 = new InsertDbRowOp(mockObject(id1), mockEntity(), id1);
-        DbRowOp row2 = new DeleteDbRowOp(mockObject(id2), mockEntity(), id2);
+        DbRowOp row1 = new InsertDbRowOp(TestObjects.modifiedObject(id1), table(), id1);
+        DbRowOp row2 = new DeleteDbRowOp(TestObjects.modifiedObject(id2), table(), id2);
 
         assertNotEquals(row1, row2);
         assertNotEquals(row2, row1);
@@ -72,8 +69,8 @@ public class BaseDbRowOpTest {
         ObjectId id1 = ObjectId.of("test", "id", 1);
         ObjectId id2 = ObjectId.of("test", "id", 1);
 
-        DbRowOp row1 = new InsertDbRowOp(mockObject(id1), mockEntity(), id1);
-        DbRowOp row2 = new UpdateDbRowOp(mockObject(id2), mockEntity(), id2);
+        DbRowOp row1 = new InsertDbRowOp(TestObjects.modifiedObject(id1), table(), id1);
+        DbRowOp row2 = new UpdateDbRowOp(TestObjects.modifiedObject(id2), table(), id2);
 
         assertEquals(row1, row2);
         assertEquals(row2, row1);
@@ -84,8 +81,8 @@ public class BaseDbRowOpTest {
         ObjectId id1 = ObjectId.of("test", "id", 1);
         ObjectId id2 = ObjectId.of("test", "id", 1);
 
-        DbRowOp row1 = new DeleteDbRowOp(mockObject(id1), mockEntity(), id1);
-        DbRowOp row2 = new UpdateDbRowOp(mockObject(id2), mockEntity(), id2);
+        DbRowOp row1 = new DeleteDbRowOp(TestObjects.modifiedObject(id1), table(), id1);
+        DbRowOp row2 = new UpdateDbRowOp(TestObjects.modifiedObject(id2), table(), id2);
 
         assertEquals(row1, row2);
         assertEquals(row2, row1);
@@ -96,21 +93,15 @@ public class BaseDbRowOpTest {
         ObjectId id1 = ObjectId.of("test", "id", 1);
         ObjectId id2 = ObjectId.of("test", "id", 2);
 
-        DbRowOp row1 = new InsertDbRowOp(mockObject(id1), mockEntity(), id1);
-        DbRowOp row2 = new InsertDbRowOp(mockObject(id2), mockEntity(), id2);
+        DbRowOp row1 = new InsertDbRowOp(TestObjects.modifiedObject(id1), table(), id1);
+        DbRowOp row2 = new InsertDbRowOp(TestObjects.modifiedObject(id2), table(), id2);
 
         assertNotEquals(row1, row2);
         assertNotEquals(row2, row1);
     }
 
-    private Persistent mockObject(ObjectId id) {
-        Persistent persistent = mock(Persistent.class);
-        when(persistent.getObjectId()).thenReturn(id);
-        when(persistent.getPersistenceState()).thenReturn(PersistenceState.MODIFIED);
-        return persistent;
-    }
 
-    private CompiledTable mockEntity() {
+    private CompiledTable table() {
         return CompiledTables.table("TEST");
     }
 }

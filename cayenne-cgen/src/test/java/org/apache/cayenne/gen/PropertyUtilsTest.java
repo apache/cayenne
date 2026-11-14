@@ -40,6 +40,10 @@ import org.apache.cayenne.map.EmbeddedAttribute;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbJoin;
+import org.apache.cayenne.map.DbRelationship;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -49,9 +53,6 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class PropertyUtilsTest {
 
@@ -92,16 +93,7 @@ public class PropertyUtilsTest {
     @Test
     public void importRelationship() {
         String typeName = "org.example.model.TargetEntity";
-        ObjEntity entity = mock(ObjEntity.class);
-        when(entity.getClassName()).thenReturn(typeName);
-        when(entity.getName()).thenReturn("target");
-
-        ObjRelationship relationship = mock(ObjRelationship.class);
-        when(relationship.isToMany()).thenReturn(true);
-        when(relationship.getCollectionType()).thenReturn("java.util.List");
-        when(relationship.getTargetEntityName()).thenReturn("target");
-        when(relationship.getName()).thenReturn("list_rel");
-        when(relationship.getTargetEntity()).thenReturn(entity);
+        ObjRelationship relationship = toMany("list_rel", typeName, "java.util.List");
 
         Map<String, String> importTypesMap = importUtils.importTypesMap;
         assertEquals(0, importTypesMap.size());
@@ -274,15 +266,7 @@ public class PropertyUtilsTest {
         importUtils.addType(EntityProperty.class.getName());
         importUtils.addType(typeName);
 
-        ObjEntity entity = mock(ObjEntity.class);
-        when(entity.getClassName()).thenReturn(typeName);
-        when(entity.getName()).thenReturn("target");
-
-        ObjRelationship relationship = mock(ObjRelationship.class);
-        when(relationship.isToMany()).thenReturn(false);
-        when(relationship.getTargetEntityName()).thenReturn("target");
-        when(relationship.getName()).thenReturn("to_one_rel");
-        when(relationship.getTargetEntity()).thenReturn(entity);
+        ObjRelationship relationship = toOne("to_one_rel", typeName);
 
         String definition = propertyUtils.propertyDefinition(relationship);
         assertEquals("public static final EntityProperty<TargetEntity> TO_ONE_REL = PropertyFactory.createEntity(\"to_one_rel\", TargetEntity.class);",
@@ -296,16 +280,7 @@ public class PropertyUtilsTest {
         importUtils.addType(ListProperty.class.getName());
         importUtils.addType(typeName);
 
-        ObjEntity entity = mock(ObjEntity.class);
-        when(entity.getClassName()).thenReturn(typeName);
-        when(entity.getName()).thenReturn("target");
-
-        ObjRelationship relationship = mock(ObjRelationship.class);
-        when(relationship.isToMany()).thenReturn(true);
-        when(relationship.getCollectionType()).thenReturn("java.util.List");
-        when(relationship.getTargetEntityName()).thenReturn("target");
-        when(relationship.getName()).thenReturn("list_rel");
-        when(relationship.getTargetEntity()).thenReturn(entity);
+        ObjRelationship relationship = toMany("list_rel", typeName, "java.util.List");
 
         String definition = propertyUtils.propertyDefinition(relationship);
         assertEquals("public static final ListProperty<TargetEntity> LIST_REL = PropertyFactory.createList(\"list_rel\", TargetEntity.class);",
@@ -319,16 +294,7 @@ public class PropertyUtilsTest {
         importUtils.addType(SetProperty.class.getName());
         importUtils.addType(typeName);
 
-        ObjEntity entity = mock(ObjEntity.class);
-        when(entity.getClassName()).thenReturn(typeName);
-        when(entity.getName()).thenReturn("target");
-
-        ObjRelationship relationship = mock(ObjRelationship.class);
-        when(relationship.isToMany()).thenReturn(true);
-        when(relationship.getCollectionType()).thenReturn("java.util.Set");
-        when(relationship.getTargetEntityName()).thenReturn("target");
-        when(relationship.getName()).thenReturn("set_rel");
-        when(relationship.getTargetEntity()).thenReturn(entity);
+        ObjRelationship relationship = toMany("set_rel", typeName, "java.util.Set");
 
         String definition = propertyUtils.propertyDefinition(relationship);
         assertEquals("public static final SetProperty<TargetEntity> SET_REL = PropertyFactory.createSet(\"set_rel\", TargetEntity.class);",
@@ -342,25 +308,69 @@ public class PropertyUtilsTest {
         importUtils.addType(MapProperty.class.getName());
         importUtils.addType(typeName);
 
-        ObjAttribute attribute = mock(ObjAttribute.class);
-        when(attribute.getType()).thenReturn(String.class.getName());
-
-        ObjEntity entity = mock(ObjEntity.class);
-        when(entity.getClassName()).thenReturn(typeName);
-        when(entity.getName()).thenReturn("target");
-        when(entity.getAttribute(anyString())).thenReturn(attribute);
-
-        ObjRelationship relationship = mock(ObjRelationship.class);
-        when(relationship.isToMany()).thenReturn(true);
-        when(relationship.getCollectionType()).thenReturn("java.util.Map");
-        when(relationship.getMapKey()).thenReturn("key");
-        when(relationship.getTargetEntityName()).thenReturn("target");
-        when(relationship.getName()).thenReturn("map_rel");
-        when(relationship.getTargetEntity()).thenReturn(entity);
+        ObjRelationship relationship = toMany("map_rel", typeName, "java.util.Map");
+        relationship.setMapKey("key");
 
         String definition = propertyUtils.propertyDefinition(relationship);
         assertEquals("public static final MapProperty<String, TargetEntity> MAP_REL = PropertyFactory.createMap(\"map_rel\", String.class, TargetEntity.class);",
                 definition);
     }
 
+    private static ObjRelationship toOne(String name, String targetClass) {
+        return relationship(name, targetClass, false, null);
+    }
+
+    private static ObjRelationship toMany(String name, String targetClass, String collectionType) {
+        return relationship(name, targetClass, true, collectionType);
+    }
+
+    /**
+     * Creates a relationship from a "source" entity to a "target" entity of the given class, that has a String "key"
+     * attribute.
+     */
+    private static ObjRelationship relationship(
+            String name, String targetClass, boolean toMany, String collectionType) {
+        DbEntity sourceTable = new DbEntity("SOURCE");
+        sourceTable.addAttribute(pk("ID"));
+        sourceTable.addAttribute(new DbAttribute("TARGET_ID"));
+
+        DbEntity targetTable = new DbEntity("TARGET");
+        targetTable.addAttribute(pk("ID"));
+        targetTable.addAttribute(new DbAttribute("SOURCE_ID"));
+
+        DataMap map = new DataMap("M");
+        map.addDbEntity(sourceTable);
+        map.addDbEntity(targetTable);
+
+        DbRelationship dbRelationship = new DbRelationship("db_rel");
+        sourceTable.addRelationship(dbRelationship);
+        dbRelationship.setTargetEntityName("TARGET");
+        dbRelationship.setToMany(toMany);
+        dbRelationship.addJoin(toMany
+                ? new DbJoin(dbRelationship, "ID", "SOURCE_ID")
+                : new DbJoin(dbRelationship, "TARGET_ID", "ID"));
+
+        ObjEntity source = new ObjEntity("source");
+        source.setDbEntityName("SOURCE");
+        map.addObjEntity(source);
+
+        ObjEntity target = new ObjEntity("target");
+        target.setDbEntityName("TARGET");
+        target.setClassName(targetClass);
+        target.addAttribute(new ObjAttribute("key", String.class.getName(), target));
+        map.addObjEntity(target);
+
+        ObjRelationship relationship = new ObjRelationship(name);
+        source.addRelationship(relationship);
+        relationship.setTargetEntityName("target");
+        relationship.setDbRelationshipPath("db_rel");
+        relationship.setCollectionType(collectionType);
+        return relationship;
+    }
+
+    private static DbAttribute pk(String name) {
+        DbAttribute attribute = new DbAttribute(name);
+        attribute.setPrimaryKey(true);
+        return attribute;
+    }
 }

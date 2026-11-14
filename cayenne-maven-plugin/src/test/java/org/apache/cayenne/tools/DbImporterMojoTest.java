@@ -30,8 +30,8 @@ import org.codehaus.plexus.util.FileUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
 import org.xmlunit.matchers.CompareMatcher;
+import org.slf4j.helpers.NOPLogger;
 
 import java.io.File;
 import java.io.IOException;
@@ -50,7 +50,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.mock;
 
 
 @MojoTest
@@ -75,12 +74,12 @@ public class DbImporterMojoTest {
             @InjectMojo(goal = "cdbimport", pom = "src/test/resources/org/apache/cayenne/tools/dbimporter-pom2.xml") DbImporterMojo mojo2,
             @InjectMojo(goal = "cdbimport", pom = "src/test/resources/org/apache/cayenne/tools/dbimporter-pom3.xml") DbImporterMojo mojo3) throws Exception {
 
-        DbImportConfiguration parameters1 = mojo1.createConfig(mock(Logger.class));
+        DbImportConfiguration parameters1 = mojo1.createConfig(NOPLogger.NOP_LOGGER);
         assertNull(parameters1.getMeaningfulPkTables());
         assertPathEquals("target/test/org/apache/cayenne/tools/dbimporter-map1.map.xml", parameters1.getTargetDataMap().getPath());
 
-        assertEquals("x,b*", mojo2.createConfig(mock(Logger.class)).getMeaningfulPkTables());
-        assertEquals("*", mojo3.createConfig(mock(Logger.class)).getMeaningfulPkTables());
+        assertEquals("x,b*", mojo2.createConfig(NOPLogger.NOP_LOGGER).getMeaningfulPkTables());
+        assertEquals("*", mojo3.createConfig(NOPLogger.NOP_LOGGER).getMeaningfulPkTables());
     }
 
     @Test
@@ -88,11 +87,11 @@ public class DbImporterMojoTest {
             @InjectMojo(goal = "cdbimport", pom = "src/test/resources/org/apache/cayenne/tools/dbimporter-pom1.xml") DbImporterMojo mojo1,
             @InjectMojo(goal = "cdbimport", pom = "src/test/resources/org/apache/cayenne/tools/dbimporter-pom2.xml") DbImporterMojo mojo2) throws Exception {
 
-        DbImportConfiguration parameters1 = mojo1.createConfig(mock(Logger.class));
+        DbImportConfiguration parameters1 = mojo1.createConfig(NOPLogger.NOP_LOGGER);
         assertNotNull(parameters1.getTargetDataMap());
         assertPathEquals("target/test/org/apache/cayenne/tools/dbimporter-map1.map.xml", parameters1.getTargetDataMap().getPath());
 
-        assertNull(mojo2.createConfig(mock(Logger.class)).getTargetDataMap());
+        assertNull(mojo2.createConfig(NOPLogger.NOP_LOGGER).getTargetDataMap());
     }
 
     @Test

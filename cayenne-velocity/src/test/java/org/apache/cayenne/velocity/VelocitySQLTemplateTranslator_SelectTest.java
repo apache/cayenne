@@ -27,19 +27,16 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import java.util.Collections;
 
 import org.apache.cayenne.access.jdbc.RSColumn;
 import org.apache.cayenne.access.translator.TranslatedSQL;
-import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.compiled.CompiledMapping;
 import org.apache.cayenne.map.compiled.TestMappings;
 import org.apache.cayenne.query.SQLQuery;
+import org.apache.cayenne.unit.TestAdapters;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -51,9 +48,7 @@ public class VelocitySQLTemplateTranslator_SelectTest {
 	@BeforeEach
 	public void before() {
 		processor = new VelocitySQLTemplateTranslator();
-		adapter = mock(DbAdapter.class);
-		when(adapter.preferredBindingType(anyInt())).thenAnswer(i -> i.getArgument(0));
-		when(adapter.getExtendedTypes()).thenReturn(new ExtendedTypeMap());
+		adapter = TestAdapters.jdbc();
 	}
 
 	@Test

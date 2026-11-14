@@ -27,8 +27,6 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class ValueObjectTypeFactoryTest {
 
@@ -39,18 +37,17 @@ public class ValueObjectTypeFactoryTest {
     @BeforeEach
     public void setUpRegistry(){
         List<ValueObjectType<?, ?>> list = new ArrayList<>();
-        list.add(createMockValueType(UUID.class, byte[].class));
-        list.add(createMockValueType(String.class, String.class));
-        list.add(createMockValueType(int.class, int.class));
-        list.add(createMockValueType(String[].class, String[].class));
-        list.add(createMockValueType(TestClass.class, BigDecimal.class));
+        list.add(new StubValueObjectType<>(UUID.class, byte[].class));
+        list.add(new StubValueObjectType<>(String.class, String.class));
+        list.add(new StubValueObjectType<>(int.class, int.class));
+        list.add(new StubValueObjectType<>(String[].class, String[].class));
+        list.add(new StubValueObjectType<>(TestClass.class, BigDecimal.class));
 
         DefaultValueObjectTypeRegistry registry = new DefaultValueObjectTypeRegistry(list);
 
         ExtendedTypeMap extendedTypeMap = new ExtendedTypeMap();
 
-        tstType1 = mock(ExtendedType.class);
-        when(tstType1.getClassName()).thenReturn("byte[]");
+        tstType1 = new MockExtendedType("byte[]");
         extendedTypeMap.registerType(tstType1);
 
         tstType2 = new MockExtendedType(String.class);
@@ -59,8 +56,7 @@ public class ValueObjectTypeFactoryTest {
         tstType3 = new MockExtendedType(int.class);
         extendedTypeMap.registerType(tstType3);
 
-        tstType4 = mock(ExtendedType.class);
-        when(tstType4.getClassName()).thenReturn(String[].class.getCanonicalName());
+        tstType4 = new MockExtendedType(String[].class.getCanonicalName());
         extendedTypeMap.registerType(tstType4);
 
         tstType5 = new MockExtendedType(BigDecimal.class);
@@ -69,12 +65,6 @@ public class ValueObjectTypeFactoryTest {
         factory = new ValueObjectTypeFactory(extendedTypeMap,registry);
     }
 
-    private ValueObjectType createMockValueType(Class<?> valueClass, Class<?> targetClass) {
-        ValueObjectType valueObjectType = mock(ValueObjectType.class);
-        when(valueObjectType.getValueType()).thenReturn(valueClass);
-        when(valueObjectType.getTargetType()).thenReturn(targetClass);
-        return valueObjectType;
-    }
 
     @Test
     public void uUIDtoByteArray(){
@@ -125,9 +115,7 @@ public class ValueObjectTypeFactoryTest {
             map.registerType(bigDecimalType);
 
             List<ValueObjectType<?, ?>> list = new ArrayList<>();
-            valueObjectType = mock(ValueObjectType.class);
-            when(valueObjectType.getValueType()).thenReturn(TestClass.class);
-            when(valueObjectType.getTargetType()).thenReturn(BigDecimal.class);
+            valueObjectType = new StubValueObjectType<>(TestClass.class, BigDecimal.class);
             list.add(valueObjectType);
 
             DefaultValueObjectTypeRegistry registry = new DefaultValueObjectTypeRegistry(list);

@@ -35,12 +35,11 @@ import org.apache.cayenne.dbsync.reverse.filters.TableFilter;
 import org.apache.maven.api.plugin.testing.InjectMojo;
 import org.apache.maven.api.plugin.testing.MojoTest;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
+import org.slf4j.helpers.NOPLogger;
 
 import static org.apache.cayenne.dbsync.reverse.dbimport.ReverseEngineeringUtils.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.mock;
 
 @MojoTest
 public class DbImporterMojoConfigurationTest {
@@ -79,7 +78,7 @@ public class DbImporterMojoConfigurationTest {
     public void loadSchema2(
             @InjectMojo(goal = "cdbimport", pom = "src/test/resources/org/apache/cayenne/tools/config/pom-schema-2.xml")
             DbImporterMojo mojo) throws Exception {
-        DbImportConfiguration dbImportConfiguration = mojo.createConfig(mock(Logger.class));
+        DbImportConfiguration dbImportConfiguration = mojo.createConfig(NOPLogger.NOP_LOGGER);
         dbImportConfiguration.setFiltersConfig(new FiltersConfigBuilder(mojo.getReverseEngineering()).build());
 
         FiltersConfig filters = dbImportConfiguration.getDbLoaderConfig().getFiltersConfig();
@@ -105,7 +104,7 @@ public class DbImporterMojoConfigurationTest {
     public void defaultPackage(
             @InjectMojo(goal = "cdbimport", pom = "src/test/resources/org/apache/cayenne/tools/config/pom-default-package.xml")
             DbImporterMojo mojo) throws Exception {
-        DbImportConfiguration config = mojo.createConfig(mock(Logger.class));
+        DbImportConfiguration config = mojo.createConfig(NOPLogger.NOP_LOGGER);
         assertEquals("com.example.test", config.getDefaultPackage());
     }
 

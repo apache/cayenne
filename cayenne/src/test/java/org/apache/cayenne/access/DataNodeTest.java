@@ -23,6 +23,8 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.unit.DataNodes;
+import org.apache.cayenne.unit.TestAdapters;
+import org.apache.cayenne.dba.JdbcPkGenerator;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -31,8 +33,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class DataNodeTest {
 
@@ -56,7 +56,7 @@ public class DataNodeTest {
 
     @Test
     public void initializer() {
-        DbAdapter a1 = mock(DbAdapter.class);
+        DbAdapter a1 = TestAdapters.jdbc();
         AtomicInteger initCount = new AtomicInteger();
         DataNode node = node(() -> {
             initCount.incrementAndGet();
@@ -72,7 +72,7 @@ public class DataNodeTest {
 
     @Test
     public void initializer_RetriedAfterFailure() {
-        DbAdapter a1 = mock(DbAdapter.class);
+        DbAdapter a1 = TestAdapters.jdbc();
         AtomicInteger initCount = new AtomicInteger();
         DataNode node = node(() -> {
             if (initCount.incrementAndGet() == 1) {
@@ -94,7 +94,7 @@ public class DataNodeTest {
 
     @Test
     public void pkGeneratorFromAdapter() {
-        PkGenerator generator = mock(PkGenerator.class);
+        PkGenerator generator = new JdbcPkGenerator();
         DataNode node = node(() -> adapterWithPkGenerator(generator), null);
 
         // requesting the generator resolves the adapter
@@ -103,8 +103,8 @@ public class DataNodeTest {
 
     @Test
     public void pkGeneratorCustom() {
-        PkGenerator custom = mock(PkGenerator.class);
-        DataNode node = node(() -> adapterWithPkGenerator(mock(PkGenerator.class)), custom);
+        PkGenerator custom = new JdbcPkGenerator();
+        DataNode node = node(() -> adapterWithPkGenerator(new JdbcPkGenerator()), custom);
 
         // the custom generator is used in place of the adapter default, before and after the adapter is resolved
         assertSame(custom, node.getPkGenerator());
@@ -113,8 +113,6 @@ public class DataNodeTest {
     }
 
     private DbAdapter adapterWithPkGenerator(PkGenerator pkGenerator) {
-        DbAdapter adapter = mock(DbAdapter.class);
-        when(adapter.createPkGenerator()).thenReturn(pkGenerator);
-        return adapter;
+        return TestAdapters.jdbc(pkGenerator);
     }
 }

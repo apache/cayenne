@@ -21,37 +21,38 @@ package org.apache.cayenne.access;
 
 import java.util.HashMap;
 
-import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.MockDataChannel;
+import org.apache.cayenne.unit.TestObjects;
+import org.apache.cayenne.event.NoopEventManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 public class DataContextObjectStoreTest {
 
+    private DataContext context;
     private DataContextObjectStore objectStore;
 
     @BeforeEach
     public void before() {
-        DataRowStore sharedCache = mock(DataRowStore.class);
-        this.objectStore = DataContext.builder(mock(DataChannel.class))
-                .snapshotCache(sharedCache)
+        this.context = DataContext.builder(new MockDataChannel())
+                .snapshotCache(new DataRowStore("test", 100, new NoopEventManager()))
                 .objectMap(new HashMap<>())
-                .build()
-                .getObjectStore();
+                .build();
+        this.objectStore = context.getObjectStore();
     }
 
     @Test
     public void registerObject() {
 
         ObjectId id = ObjectId.of("E1", "ID", 500);
-        Persistent object = mock(Persistent.class);
+        Persistent object = TestObjects.committedObject(id);
 
         objectStore.registerObject(id, object);
         assertSame(object, objectStore.getObject(id));
@@ -61,13 +62,15 @@ public class DataContextObjectStoreTest {
     public void unregisterObject() {
 
         ObjectId id = ObjectId.of("E1", "ID", 500);
-        Persistent object = mock(Persistent.class);
+        Persistent object = TestObjects.committedObject(id);
+        object.setObjectContext(context);
 
         objectStore.registerObject(id, object);
         Object unregistered = objectStore.unregisterObject(id);
         assertSame(object, unregistered);
 
-        verify(object, times(0)).setObjectId(null);
-        verify(object).setObjectContext(null);
-        verify(object).setPersistenceState(PersistenceState.TRANSIENT);    }
+        assertSame(id, object.getObjectId());
+        assertNull(object.getObjectContext());
+        assertEquals(PersistenceState.TRANSIENT, object.getPersistenceState());
+    }
 }

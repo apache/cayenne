@@ -31,18 +31,15 @@ import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.jdbc.PSParameter;
 import org.apache.cayenne.access.translator.TranslatedSQL;
-import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.compiled.CompiledMapping;
 import org.apache.cayenne.map.compiled.TestMappings;
 import org.apache.cayenne.query.SQLQuery;
+import org.apache.cayenne.unit.TestAdapters;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class DefaultSQLTemplateTranslatorTest {
 
@@ -52,9 +49,7 @@ public class DefaultSQLTemplateTranslatorTest {
     @BeforeEach
     public void before() {
         processor = new DefaultSQLTemplateTranslator(new DefaultTemplateContextFactory());
-        adapter = mock(DbAdapter.class);
-        when(adapter.preferredBindingType(anyInt())).thenAnswer(i -> i.getArgument(0));
-        when(adapter.getExtendedTypes()).thenReturn(new ExtendedTypeMap());
+        adapter = TestAdapters.jdbc();
     }
 
     @Test

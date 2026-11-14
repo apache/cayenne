@@ -51,6 +51,13 @@ public final class TestMappings {
         binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
     });
 
+    /**
+     * Returns a mapping with no maps, for the code that needs a mapping, but never looks anything up in it.
+     */
+    public static CompiledMapping empty() {
+        return CompiledMapping.empty();
+    }
+
     public static CompiledMapping compile(DataMap... maps) {
         DefaultMappingCompiler compiler = new DefaultMappingCompiler(
                 INJECTOR.getInstance(ValueComparisonStrategyFactory.class),

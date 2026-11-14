@@ -28,16 +28,14 @@ import org.apache.cayenne.access.translator.TranslatedStatement;
 import org.apache.cayenne.RuntimeProperties;
 import org.apache.cayenne.unit.CompiledTables;
 import org.apache.cayenne.query.resolved.ResolvedQueries;
+import org.apache.cayenne.DefaultRuntimeProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Types;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class Slf4jSQLLoggerTest {
 
@@ -45,15 +43,12 @@ public class Slf4jSQLLoggerTest {
 
     @BeforeEach
     public void setUp() {
-        RuntimeProperties props = mock(RuntimeProperties.class);
-        when(props.getInt(eq(RuntimeProperties.JDBC_LOG_BATCH_ROW_THRESHOLD_PROPERTY), anyInt())).thenReturn(3);
-        logger = new Slf4jSQLLogger(props);
+        logger = loggerWithThreshold(3);
     }
 
     private static Slf4jSQLLogger loggerWithThreshold(int threshold) {
-        RuntimeProperties props = mock(RuntimeProperties.class);
-        when(props.getInt(eq(RuntimeProperties.JDBC_LOG_BATCH_ROW_THRESHOLD_PROPERTY), anyInt())).thenReturn(threshold);
-        return new Slf4jSQLLogger(props);
+        return new Slf4jSQLLogger(new DefaultRuntimeProperties(
+                Map.of(RuntimeProperties.JDBC_LOG_BATCH_ROW_THRESHOLD_PROPERTY, String.valueOf(threshold))));
     }
 
     private static String line(Slf4jSQLLogger logger, TranslatedStatement statement, String label, int count) {

@@ -19,61 +19,40 @@
 
 package org.apache.cayenne.access.flush;
 
-import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.access.ObjectDiff;
-import org.apache.cayenne.access.DataContextObjectStore;
+import org.apache.cayenne.access.flush.operation.DbRowOp;
 import org.apache.cayenne.access.flush.operation.DbRowOpType;
-import org.apache.cayenne.access.flush.operation.DbRowOpVisitor;
+import org.apache.cayenne.access.flush.operation.DeleteDbRowOp;
 import org.apache.cayenne.access.flush.operation.InsertDbRowOp;
-import org.apache.cayenne.access.flush.operation.Values;
-import org.apache.cayenne.map.compiled.CompiledColumnPair;
-import org.apache.cayenne.map.compiled.CompiledColumn;
+import org.apache.cayenne.access.flush.operation.UpdateDbRowOp;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.map.DbJoin;
+import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.compiled.CompiledJoin;
-import org.apache.cayenne.map.compiled.CompiledEntity;
-import org.apache.cayenne.map.compiled.CompiledRelationship;
-import org.apache.cayenne.map.compiled.CompiledToOneRelationship;
+import org.apache.cayenne.map.compiled.CompiledTable;
+import org.apache.cayenne.unit.CompiledTables;
+import org.apache.cayenne.unit.TestObjects;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
 
 public class ArcValuesCreationHandlerTest {
 
+    private RecordingFactory factory;
     private ArcValuesCreationHandler handler;
-    private DbRowOpFactory factory;
-    private InsertDbRowOp dbRowOp;
-    private Values values;
 
-    @SuppressWarnings("unchecked")
     @BeforeEach
     public void setup() {
-        factory = mock(DbRowOpFactory.class);
+        factory = new RecordingFactory();
         handler = new ArcValuesCreationHandler(factory, DbRowOpType.INSERT);
-        dbRowOp = mock(InsertDbRowOp.class);
-        values = new Values(dbRowOp, false);
-
-        ObjectDiff diff = mock(ObjectDiff.class);
-        CompiledEntity entity = mock(CompiledEntity.class);
-        CompiledRelationship relationship = mock(CompiledToOneRelationship.class);
-        CompiledJoin join = mock(CompiledJoin.class);
-        DataContextObjectStore store = mock(DataContextObjectStore.class);
-        Persistent object = mock(Persistent.class);
-
-        when(relationship.joins()).thenReturn(Collections.singletonList(join));
-        when(entity.relationship(anyString())).thenReturn(relationship);
-        when(dbRowOp.accept(any(DbRowOpVisitor.class))).thenCallRealMethod();
-        when(dbRowOp.getValues()).thenReturn(values);
-        when(factory.getDiff()).thenReturn(diff);
-        when(factory.getEntity()).thenReturn(entity);
-        when(factory.getStore()).thenReturn(store);
-        when(factory.getObject()).thenReturn(object);
-        when(factory.getOrCreate(isNull(), any(ObjectId.class), any(DbRowOpType.class))).thenReturn(dbRowOp);
     }
 
     @Test
@@ -86,8 +65,7 @@ public class ArcValuesCreationHandlerTest {
 
         handler.processRelationship(join, srcId, targetId, true);
 
-        assertNotNull(handler);
-        verify(factory).getOrCreate(isNull(), eq(targetId), eq(DbRowOpType.UPDATE));
+        assertRow(UpdateDbRowOp.class, "test2", targetId);
         assertTrue(targetId.isReplacementIdAttached());
         assertEquals(1, targetId.getReplacementIdMap().size());
         assertEquals(1, targetId.getReplacementIdMap().get("id2"));
@@ -104,8 +82,7 @@ public class ArcValuesCreationHandlerTest {
 
         handler.processRelationship(join, srcId, targetId, true);
 
-        assertNotNull(handler);
-        verify(factory).getOrCreate(isNull(), eq(srcId), eq(DbRowOpType.INSERT));
+        assertRow(InsertDbRowOp.class, "test1", srcId);
         assertTrue(srcId.isReplacementIdAttached());
         assertEquals(1, srcId.getReplacementIdMap().size());
         assertEquals(2, srcId.getReplacementIdMap().get("id1"));
@@ -122,13 +99,11 @@ public class ArcValuesCreationHandlerTest {
 
         handler.processRelationship(join, srcId, targetId, true);
 
-        assertNotNull(handler);
-        verify(factory).getOrCreate(isNull(), eq(targetId), eq(DbRowOpType.UPDATE));
+        UpdateDbRowOp row = assertRow(UpdateDbRowOp.class, "test2", targetId);
         assertFalse(srcId.isReplacementIdAttached());
         assertFalse(targetId.isReplacementIdAttached());
 
-        verify(dbRowOp).getValues();
-        Map<String, Object> snapshot = values.getSnapshot();
+        Map<String, Object> snapshot = row.getValues().getSnapshot();
         assertEquals(1, snapshot.size());
         assertEquals(1, snapshot.get("fk"));
     }
@@ -143,18 +118,50 @@ public class ArcValuesCreationHandlerTest {
 
         handler.processRelationship(join, srcId, targetId, true);
 
-        assertNotNull(handler);
-        verify(factory).getOrCreate(isNull(), eq(srcId), eq(DbRowOpType.INSERT));
+        InsertDbRowOp row = assertRow(InsertDbRowOp.class, "test1", srcId);
         assertFalse(srcId.isReplacementIdAttached());
         assertFalse(targetId.isReplacementIdAttached());
 
-        verify(dbRowOp).getValues();
-        Map<String, Object> snapshot = values.getSnapshot();
-        assertEquals(1, snapshot.size());
+        Map<String, Object> snapshot = row.getValues().getSnapshot();
         assertEquals(2, snapshot.get("fk"));
     }
 
-    final static class DbRelBuilder {
+    private <T extends DbRowOp> T assertRow(Class<T> type, String table, ObjectId id) {
+        assertEquals(1, factory.rows.size(), factory.rows.toString());
+        DbRowOp row = factory.rows.get(id);
+        assertInstanceOf(type, row);
+        assertEquals(table, row.getEntity().name());
+        return type.cast(row);
+    }
+
+    /**
+     * Creates the rows like the real factory, but for a fixed object, without a context or a diff being processed.
+     */
+    static class RecordingFactory extends DbRowOpFactory {
+
+        private static final Persistent OBJECT = TestObjects.modifiedObject(ObjectId.of("test1", "id1", 1));
+
+        final Map<ObjectId, DbRowOp> rows = new HashMap<>();
+
+        RecordingFactory() {
+            super(null, null, new HashSet<>(), null);
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        <E extends DbRowOp> E getOrCreate(CompiledTable table, ObjectId id, DbRowOpType type) {
+            return (E) rows.computeIfAbsent(id, i -> switch (type) {
+                case INSERT -> new InsertDbRowOp(OBJECT, table, i);
+                case UPDATE -> new UpdateDbRowOp(OBJECT, table, i);
+                case DELETE -> new DeleteDbRowOp(OBJECT, table, i);
+            });
+        }
+    }
+
+    /**
+     * Builds a to-one join from the "test1" table to the "test2" table over a single pair of columns.
+     */
+    static final class DbRelBuilder {
         private String srcName;
         private String dstName;
         private boolean srcPk;
@@ -184,19 +191,28 @@ public class ArcValuesCreationHandlerTest {
         }
 
         CompiledJoin build() {
-            CompiledJoin join = mock(CompiledJoin.class);
-            when(join.isForeignKey()).thenReturn(foreignKey);
-            CompiledColumn src = mock(CompiledColumn.class);
-            when(src.name()).thenReturn(srcName);
-            when(src.isPrimaryKey()).thenReturn(srcPk);
-            CompiledColumn target = mock(CompiledColumn.class);
-            when(target.name()).thenReturn(dstName);
-            when(target.isPrimaryKey()).thenReturn(dstPk);
-            when(join.columnPairs()).thenReturn(Collections.singletonList(new CompiledColumnPair(src, target)));
+            DbEntity src = table("test1", srcName, srcPk);
+            DbEntity target = table("test2", dstName, dstPk);
 
-            CompiledJoin mockJoin = mock(CompiledJoin.class);
-            when(join.reverse()).thenReturn(mockJoin);
-            return join;
+            DbRelationship relationship = new DbRelationship("rel");
+            src.addRelationship(relationship);
+            relationship.setTargetEntityName(target.getName());
+            relationship.setToMany(false);
+            relationship.setForeignKey(foreignKey);
+            relationship.addJoin(new DbJoin(relationship, srcName, dstName));
+
+            DataMap map = new DataMap("M");
+            map.addDbEntity(src);
+            map.addDbEntity(target);
+            return CompiledTables.compile(map).table("test1").join("rel");
+        }
+
+        private static DbEntity table(String name, String column, boolean pk) {
+            DbAttribute attribute = new DbAttribute(column);
+            attribute.setPrimaryKey(pk);
+            DbEntity table = new DbEntity(name);
+            table.addAttribute(attribute);
+            return table;
         }
     }
 }

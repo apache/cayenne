@@ -24,23 +24,20 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.cayenne.ObjectId;
-import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.map.compiled.CompiledTable;
 import org.apache.cayenne.unit.CompiledTables;
+import org.apache.cayenne.unit.TestObjects;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class QualifierTest {
 
     @Test
     public void scalarObjectIdQualifier() {
         ObjectId id = ObjectId.of("test", "id", 123);
-        Persistent persistent = mockObject(id);
-        DbRowOp row = mockRow(persistent);
+        Persistent persistent = TestObjects.modifiedObject(id);
+        DbRowOp row = row(persistent);
 
         Qualifier qualifier = new Qualifier(row);
         Map<String, Object> qualifierSnapshot = qualifier.getSnapshot();
@@ -59,8 +56,8 @@ public class QualifierTest {
         idMap.put("id2", 321);
         ObjectId id = ObjectId.of("test", idMap);
 
-        Persistent persistent = mockObject(id);
-        DbRowOp row = mockRow(persistent);
+        Persistent persistent = TestObjects.modifiedObject(id);
+        DbRowOp row = row(persistent);
 
         Qualifier qualifier = new Qualifier(row);
         Map<String, Object> qualifierSnapshot = qualifier.getSnapshot();
@@ -73,8 +70,8 @@ public class QualifierTest {
     @Test
     public void additionalQualifier() {
         ObjectId id = ObjectId.of("test", "id", 123);
-        Persistent persistent = mockObject(id);
-        DbRowOp row = mockRow(persistent);
+        Persistent persistent = TestObjects.modifiedObject(id);
+        DbRowOp row = row(persistent);
 
         Qualifier qualifier = new Qualifier(row);
         qualifier.addAdditionalQualifier(CompiledTables.column("attr"), 42, true);
@@ -95,8 +92,8 @@ public class QualifierTest {
     @Test
     public void optimisticQualifier() {
         ObjectId id = ObjectId.of("test", "id", 123);
-        Persistent persistent = mockObject(id);
-        DbRowOp row = mockRow(persistent);
+        Persistent persistent = TestObjects.modifiedObject(id);
+        DbRowOp row = row(persistent);
 
         Qualifier qualifier = new Qualifier(row);
         qualifier.addAdditionalQualifier(CompiledTables.column("attr"), 42, true);
@@ -117,22 +114,22 @@ public class QualifierTest {
     @Test
     public void sameBatch() {
         ObjectId id1 = ObjectId.of("test", "id", 123);
-        Persistent persistent1 = mockObject(id1);
-        DbRowOp row1 = mockRow(persistent1);
+        Persistent persistent1 = TestObjects.modifiedObject(id1);
+        DbRowOp row1 = row(persistent1);
 
         Qualifier qualifier1 = new Qualifier(row1);
 
         ObjectId id2 = ObjectId.of("test", "id", 321);
-        Persistent persistent2 = mockObject(id2);
-        DbRowOp row2 = mockRow(persistent2);
+        Persistent persistent2 = TestObjects.modifiedObject(id2);
+        DbRowOp row2 = row(persistent2);
 
         Qualifier qualifier2 = new Qualifier(row2);
 
         assertTrue(qualifier1.isSameBatch(qualifier2));
 
         ObjectId id3 = ObjectId.of("test", "id", 321);
-        Persistent persistent3 = mockObject(id3);
-        DbRowOp row3 = mockRow(persistent3);
+        Persistent persistent3 = TestObjects.modifiedObject(id3);
+        DbRowOp row3 = row(persistent3);
 
         Qualifier qualifier3 = new Qualifier(row3);
         qualifier3.addAdditionalQualifier(CompiledTables.column("attr"), 42);
@@ -140,23 +137,7 @@ public class QualifierTest {
         assertFalse(qualifier1.isSameBatch(qualifier3));
     }
 
-    private DbRowOp mockRow(Persistent persistent) {
-        DbRowOp row = mock(DbRowOp.class);
-        ObjectId objectId = persistent.getObjectId();
-        when(row.getChangeId()).thenReturn(objectId);
-        when(row.getObject()).thenReturn(persistent);
-        when(row.getEntity()).thenReturn(mockEntity());
-        return row;
-    }
-
-    private Persistent mockObject(ObjectId id) {
-        Persistent persistent = mock(Persistent.class);
-        when(persistent.getObjectId()).thenReturn(id);
-        when(persistent.getPersistenceState()).thenReturn(PersistenceState.MODIFIED);
-        return persistent;
-    }
-
-    private CompiledTable mockEntity() {
-        return CompiledTables.table("TEST");
+    private DbRowOp row(Persistent persistent) {
+        return new UpdateDbRowOp(persistent, CompiledTables.table("TEST"), persistent.getObjectId());
     }
 }

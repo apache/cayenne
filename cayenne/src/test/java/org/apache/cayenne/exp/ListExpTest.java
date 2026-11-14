@@ -20,6 +20,7 @@ package org.apache.cayenne.exp;
 
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.unit.TestObjects;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -29,16 +30,13 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class ListExpTest {
 
     @Test
 	public void constructorWithCollection() {
 		ObjectId objectId = ObjectId.of("Artist", "ARTIST_ID", 1);
-		Persistent artist = mock(Persistent.class);
-		when(artist.getObjectId()).thenReturn(objectId);
+		Persistent artist = TestObjects.committedObject(objectId);
 
 		ListExp exp = new ListExp(Collections.singletonList(artist));
 		assertNotNull(exp.getOperand(0));
@@ -52,8 +50,7 @@ public class ListExpTest {
 	@Test
 	public void equals() throws Exception {
 		ObjectId objectId = ObjectId.of("Artist", "ARTIST_ID", 1);
-		Persistent artist = mock(Persistent.class);
-		when(artist.getObjectId()).thenReturn(objectId);
+		Persistent artist = TestObjects.committedObject(objectId);
 
 		ListExp exp = new ListExp(Collections.singletonList(artist));
 
@@ -69,8 +66,7 @@ public class ListExpTest {
 	@Test
 	public void hashCodeValue() throws Exception {
 		ObjectId objectId = ObjectId.of("Artist", "ARTIST_ID", 1);
-		Persistent artist = mock(Persistent.class);
-		when(artist.getObjectId()).thenReturn(objectId);
+		Persistent artist = TestObjects.committedObject(objectId);
 
 		ListExp exp = new ListExp(Collections.singletonList(artist));
 		List<Persistent> collection = new ArrayList<>();

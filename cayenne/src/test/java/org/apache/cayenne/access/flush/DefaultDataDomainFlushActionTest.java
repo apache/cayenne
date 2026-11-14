@@ -25,8 +25,6 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.cayenne.ObjectId;
-import org.apache.cayenne.PersistenceState;
-import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.flush.operation.BaseDbRowOp;
 import org.apache.cayenne.access.flush.operation.DbRowOp;
 import org.apache.cayenne.access.flush.operation.DeleteDbRowOp;
@@ -37,11 +35,10 @@ import org.apache.cayenne.unit.CompiledTables;
 import org.apache.cayenne.query.resolved.DeleteBatch;
 import org.apache.cayenne.query.resolved.InsertBatch;
 import org.apache.cayenne.query.resolved.ResolvedBatch;
+import org.apache.cayenne.unit.TestObjects;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 public class DefaultDataDomainFlushActionTest {
 
@@ -58,22 +55,22 @@ public class DefaultDataDomainFlushActionTest {
         ObjectId id9  = ObjectId.of("test2", "id", 4);
         ObjectId id10 = ObjectId.of("test",  "id", 6);
 
-        CompiledTable test = mockEntity("test");
-        CompiledTable test2 = mockEntity("test2");
+        CompiledTable test = table("test");
+        CompiledTable test2 = table("test2");
         BaseDbRowOp[] op = new BaseDbRowOp[10];
-        op[0] = new InsertDbRowOp(mockObject(id1),  test2, id1); // +
-        op[1] = new InsertDbRowOp(mockObject(id2),  test,  id2); // -
-        op[2] = new DeleteDbRowOp(mockObject(id3),  test,  id3); // -
-        op[3] = new UpdateDbRowOp(mockObject(id4),  test,  id4); // +
-        op[4] = new InsertDbRowOp(mockObject(id5),  test2, id5); // -
-        op[5] = new DeleteDbRowOp(mockObject(id6),  test,  id6); // +
-        op[6] = new InsertDbRowOp(mockObject(id7),  test,  id7); // -
-        op[7] = new UpdateDbRowOp(mockObject(id8),  test2, id8); // +
-        op[8] = new DeleteDbRowOp(mockObject(id9),  test2, id9); // -
-        op[9] = new DeleteDbRowOp(mockObject(id10), test,  id10);// -
+        op[0] = new InsertDbRowOp(TestObjects.modifiedObject(id1),  test2, id1); // +
+        op[1] = new InsertDbRowOp(TestObjects.modifiedObject(id2),  test,  id2); // -
+        op[2] = new DeleteDbRowOp(TestObjects.modifiedObject(id3),  test,  id3); // -
+        op[3] = new UpdateDbRowOp(TestObjects.modifiedObject(id4),  test,  id4); // +
+        op[4] = new InsertDbRowOp(TestObjects.modifiedObject(id5),  test2, id5); // -
+        op[5] = new DeleteDbRowOp(TestObjects.modifiedObject(id6),  test,  id6); // +
+        op[6] = new InsertDbRowOp(TestObjects.modifiedObject(id7),  test,  id7); // -
+        op[7] = new UpdateDbRowOp(TestObjects.modifiedObject(id8),  test2, id8); // +
+        op[8] = new DeleteDbRowOp(TestObjects.modifiedObject(id9),  test2, id9); // -
+        op[9] = new DeleteDbRowOp(TestObjects.modifiedObject(id10), test,  id10);// -
 
-        DefaultDataDomainFlushAction action = mock(DefaultDataDomainFlushAction.class);
-        when(action.mergeSameObjectIds((List<DbRowOp>) any(List.class))).thenCallRealMethod();
+        // the tested methods use no state of the action
+        DefaultDataDomainFlushAction action = new DefaultDataDomainFlushAction(null, null, null);
 
         Collection<DbRowOp> merged = action.mergeSameObjectIds(new ArrayList<>(Arrays.asList(op)));
         assertEquals(7, merged.size());
@@ -100,16 +97,16 @@ public class DefaultDataDomainFlushActionTest {
         ObjectId id4  = ObjectId.of("db:test");
         id4.getReplacementIdMap().put("id", 2);
 
-        CompiledTable test = mockEntity("test");
-        CompiledTable test2 = mockEntity("test2");
+        CompiledTable test = table("test");
+        CompiledTable test2 = table("test2");
         BaseDbRowOp[] op = new BaseDbRowOp[4];
-        op[0] = new InsertDbRowOp(mockObject(id1),  test2, id1); // +
-        op[1] = new InsertDbRowOp(mockObject(id2),  test,  id2); // -
-        op[2] = new DeleteDbRowOp(mockObject(id3),  test,  id3); // -
-        op[3] = new UpdateDbRowOp(mockObject(id4),  test,  id4); // +
+        op[0] = new InsertDbRowOp(TestObjects.modifiedObject(id1),  test2, id1); // +
+        op[1] = new InsertDbRowOp(TestObjects.modifiedObject(id2),  test,  id2); // -
+        op[2] = new DeleteDbRowOp(TestObjects.modifiedObject(id3),  test,  id3); // -
+        op[3] = new UpdateDbRowOp(TestObjects.modifiedObject(id4),  test,  id4); // +
 
-        DefaultDataDomainFlushAction action = mock(DefaultDataDomainFlushAction.class);
-        when(action.mergeSameObjectIds((List<DbRowOp>) any(List.class))).thenCallRealMethod();
+        // the tested methods use no state of the action
+        DefaultDataDomainFlushAction action = new DefaultDataDomainFlushAction(null, null, null);
 
         Collection<DbRowOp> merged = action.mergeSameObjectIds(new ArrayList<>(Arrays.asList(op)));
         assertEquals(3, merged.size());
@@ -132,20 +129,20 @@ public class DefaultDataDomainFlushActionTest {
         ObjectId id6  = ObjectId.of("test2", "id", 6);
         ObjectId id7  = ObjectId.of("test",  "id", 7);
 
-        CompiledTable test = mockEntity("test");
-        CompiledTable test2 = mockEntity("test2");
+        CompiledTable test = table("test");
+        CompiledTable test2 = table("test2");
 
         List<DbRowOp> ops = new ArrayList<>();
-        ops.add(new InsertDbRowOp(mockObject(id1),  test,  id1));
-        ops.add(new InsertDbRowOp(mockObject(id2),  test,  id2));
-        ops.add(new InsertDbRowOp(mockObject(id3),  test2, id5));
-        ops.add(new InsertDbRowOp(mockObject(id4),  test2, id7));
-        ops.add(new UpdateDbRowOp(mockObject(id5),  test,  id3));
-        ops.add(new DeleteDbRowOp(mockObject(id6),  test2, id6));
-        ops.add(new DeleteDbRowOp(mockObject(id7),  test,  id4));
+        ops.add(new InsertDbRowOp(TestObjects.modifiedObject(id1),  test,  id1));
+        ops.add(new InsertDbRowOp(TestObjects.modifiedObject(id2),  test,  id2));
+        ops.add(new InsertDbRowOp(TestObjects.modifiedObject(id3),  test2, id5));
+        ops.add(new InsertDbRowOp(TestObjects.modifiedObject(id4),  test2, id7));
+        ops.add(new UpdateDbRowOp(TestObjects.modifiedObject(id5),  test,  id3));
+        ops.add(new DeleteDbRowOp(TestObjects.modifiedObject(id6),  test2, id6));
+        ops.add(new DeleteDbRowOp(TestObjects.modifiedObject(id7),  test,  id4));
 
-        DefaultDataDomainFlushAction action = mock(DefaultDataDomainFlushAction.class);
-        when(action.createQueries((List<DbRowOp>) any(List.class))).thenCallRealMethod();
+        // the tested methods use no state of the action
+        DefaultDataDomainFlushAction action = new DefaultDataDomainFlushAction(null, null, null);
 
         List<ResolvedBatch> queries = action.createQueries(ops);
         assertEquals(4, queries.size());
@@ -172,12 +169,12 @@ public class DefaultDataDomainFlushActionTest {
 
     @Test
     public void dontMergeSameTableNameOnDifferentDataMaps() {
-        CompiledTable test1Datamap1 = mockEntity("test1", "datamap1");
-        CompiledTable test1Datamap2 = mockEntity("test1", "datamap2");
-        CompiledTable test2Datamap1 = mockEntity("test2", "datamap1");
-        CompiledTable test2Datamap2 = mockEntity("test2", "datamap2");
-        CompiledTable test3Datamap1 = mockEntity("test3", "datamap1");
-        CompiledTable test3Datamap2 = mockEntity("test3", "datamap2");
+        CompiledTable test1Datamap1 = table("test1", "datamap1");
+        CompiledTable test1Datamap2 = table("test1", "datamap2");
+        CompiledTable test2Datamap1 = table("test2", "datamap1");
+        CompiledTable test2Datamap2 = table("test2", "datamap2");
+        CompiledTable test3Datamap1 = table("test3", "datamap1");
+        CompiledTable test3Datamap2 = table("test3", "datamap2");
 
         ObjectId id1 = ObjectId.of("test1", "id", 1);
         ObjectId id2 = ObjectId.of("test1", "id", 2);
@@ -186,41 +183,35 @@ public class DefaultDataDomainFlushActionTest {
         ObjectId id5 = ObjectId.of("test3", "id", 5);
         ObjectId id6 = ObjectId.of("test3", "id", 6);
 
-        UpdateDbRowOp update1 = new UpdateDbRowOp(mockObject(id3), test2Datamap1, id3);
+        UpdateDbRowOp update1 = new UpdateDbRowOp(TestObjects.modifiedObject(id3), test2Datamap1, id3);
         update1.getValues().addValue(test2Datamap1.column("attr"), "abc", false);
         update1.getValues().addValue(test2Datamap1.column("attr"), "abc", false);
 
-        UpdateDbRowOp update2 = new UpdateDbRowOp(mockObject(id4), test2Datamap2, id4);
+        UpdateDbRowOp update2 = new UpdateDbRowOp(TestObjects.modifiedObject(id4), test2Datamap2, id4);
         update2.getValues().addValue(test2Datamap2.column("attr"), "def", false);
         update2.getValues().addValue(test2Datamap2.column("attr"), "def", false);
         List<DbRowOp> ops = List.of(
-                new InsertDbRowOp(mockObject(id1), test1Datamap1, id1),
-                new InsertDbRowOp(mockObject(id2), test1Datamap2, id2),
+                new InsertDbRowOp(TestObjects.modifiedObject(id1), test1Datamap1, id1),
+                new InsertDbRowOp(TestObjects.modifiedObject(id2), test1Datamap2, id2),
                 update1,
                 update2,
-                new DeleteDbRowOp(mockObject(id5), test3Datamap1, id5),
-                new DeleteDbRowOp(mockObject(id6), test3Datamap2, id6)
+                new DeleteDbRowOp(TestObjects.modifiedObject(id5), test3Datamap1, id5),
+                new DeleteDbRowOp(TestObjects.modifiedObject(id6), test3Datamap2, id6)
         );
 
-        DefaultDataDomainFlushAction action = mock(DefaultDataDomainFlushAction.class);
-        when(action.createQueries((List<DbRowOp>) any(List.class))).thenCallRealMethod();
+        // the tested methods use no state of the action
+        DefaultDataDomainFlushAction action = new DefaultDataDomainFlushAction(null, null, null);
 
         List<ResolvedBatch> queries = action.createQueries(ops);
         assertEquals(6, queries.size());
     }
 
-    private Persistent mockObject(ObjectId id) {
-        Persistent persistent = mock(Persistent.class);
-        when(persistent.getObjectId()).thenReturn(id);
-        when(persistent.getPersistenceState()).thenReturn(PersistenceState.MODIFIED);
-        return persistent;
-    }
 
-    private CompiledTable mockEntity(String name) {
+    private CompiledTable table(String name) {
         return CompiledTables.table(name);
     }
 
-    private CompiledTable mockEntity(String name, String datamapName) {
+    private CompiledTable table(String name, String datamapName) {
         return CompiledTables.table(name, datamapName);
     }
 }

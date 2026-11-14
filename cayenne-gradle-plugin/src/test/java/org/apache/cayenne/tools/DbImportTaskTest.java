@@ -34,7 +34,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
 
 public class DbImportTaskTest {
 
@@ -56,10 +55,10 @@ public class DbImportTaskTest {
 
     @Test
     public void fullConfigCreation() {
-        File mockFile = mock(File.class);
+        File mapFile = new File("map.map.xml");
 
         // configure task
-        task.setMap(mockFile);
+        task.setMap(mapFile);
         task.setAdapter("org.apache.cayenne.test.adapter");
         task.dataSource(new Closure<DataSourceConfig>(task, task) {
             DataSourceConfig doCall(DataSourceConfig dataSourceConfig) {

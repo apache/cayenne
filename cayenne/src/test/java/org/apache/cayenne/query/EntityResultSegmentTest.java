@@ -19,6 +19,10 @@
 package org.apache.cayenne.query;
 
 import org.apache.cayenne.map.compiled.CompiledEntity;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.map.compiled.TestMappings;
+import org.apache.cayenne.unit.CompiledTables;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -28,7 +32,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.mock;
 
 public class EntityResultSegmentTest {
     private final List<String> expectedColumnPath = List.of("key1", "key2");
@@ -37,7 +40,16 @@ public class EntityResultSegmentTest {
             new ConcurrentHashMap<>(Map.of("key1", "value1", "key2", "value2"));
 
     private final EntityResultSegment resultSegment =
-            new EntityResultSegment(mock(CompiledEntity.class), fields, fields.size());
+            new EntityResultSegment(entity(), fields, fields.size());
+
+    private static CompiledEntity entity() {
+        DataMap map = new DataMap("M");
+        map.addDbEntity(CompiledTables.authoredTable("T"));
+        ObjEntity entity = new ObjEntity("E");
+        entity.setDbEntityName("T");
+        map.addObjEntity(entity);
+        return TestMappings.compile(map).entity("E");
+    }
 
     @Test
     public void columnPath() {

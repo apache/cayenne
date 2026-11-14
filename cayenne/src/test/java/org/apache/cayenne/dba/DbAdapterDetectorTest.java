@@ -19,6 +19,7 @@
 package org.apache.cayenne.dba;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.unit.TestAdapters;
 import org.junit.jupiter.api.Test;
 
 import java.sql.DatabaseMetaData;
@@ -33,8 +34,8 @@ public class DbAdapterDetectorTest {
 
     @Test
     public void detect_LastDetectorWins() {
-        DbAdapter a1 = mock(DbAdapter.class);
-        DbAdapter a2 = mock(DbAdapter.class);
+        DbAdapter a1 = TestAdapters.jdbc();
+        DbAdapter a2 = TestAdapters.jdbc();
         DbAdapterDetector d1 = md -> a1;
         DbAdapterDetector d2 = md -> a2;
 
@@ -44,7 +45,7 @@ public class DbAdapterDetectorTest {
 
     @Test
     public void detect_SkipsUnmatchedDetectors() {
-        DbAdapter a1 = mock(DbAdapter.class);
+        DbAdapter a1 = TestAdapters.jdbc();
         DbAdapterDetector d1 = md -> a1;
         DbAdapterDetector d2 = md -> null;
 

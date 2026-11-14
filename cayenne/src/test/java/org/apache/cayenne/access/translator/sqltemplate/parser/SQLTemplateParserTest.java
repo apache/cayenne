@@ -27,16 +27,13 @@ import java.util.Map;
 import org.apache.cayenne.access.translator.sqltemplate.Context;
 import org.apache.cayenne.access.translator.sqltemplate.DefaultTemplateContextFactory;
 import org.apache.cayenne.access.translator.sqltemplate.TemplateContextFactory;
-import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.unit.TestAdapters;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class SQLTemplateParserTest {
 
@@ -46,9 +43,7 @@ public class SQLTemplateParserTest {
     @BeforeEach
     public void setUp() {
         contextFactory = new DefaultTemplateContextFactory();
-        adapter = mock(DbAdapter.class);
-        when(adapter.preferredBindingType(anyInt())).thenAnswer(i -> i.getArgument(0));
-        when(adapter.getExtendedTypes()).thenReturn(new ExtendedTypeMap());
+        adapter = TestAdapters.jdbc();
     }
 
     @Test

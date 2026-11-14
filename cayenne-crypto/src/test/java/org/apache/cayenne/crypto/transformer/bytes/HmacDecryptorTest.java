@@ -20,24 +20,24 @@
 package org.apache.cayenne.crypto.transformer.bytes;
 
 import java.security.Key;
+import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.cayenne.crypto.unit.SwapBytesTransformer;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class HmacDecryptorTest {
 
     @Test
     public void decrypt() throws Exception {
-        HmacDecryptor decryptor = mock(HmacDecryptor.class);
-        decryptor.delegate = SwapBytesTransformer.decryptor();
-        when(decryptor.createHmac(any(byte[].class))).thenReturn(new byte[]{0, 1, 2, 3, 4, 5, 6, 7});
-        when(decryptor.decrypt(any(byte[].class), anyInt(), (Key)any())).thenCallRealMethod();
+        Key key = new SecretKeySpec("key".getBytes(), "AES");
+        HmacDecryptor decryptor = new HmacDecryptor(SwapBytesTransformer.decryptor(), null, key) {
+            @Override
+            byte[] createHmac(byte[] input) {
+                return new byte[]{0, 1, 2, 3, 4, 5, 6, 7};
+            }
+        };
 
         byte[] expectedResult = {-1, -2, -3};
 

@@ -29,14 +29,13 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.query.PrefetchProcessor;
 import org.apache.cayenne.query.PrefetchTreeNode;
+import org.apache.cayenne.access.types.DefaultValueObjectTypeRegistry;
+import org.apache.cayenne.unit.TestObjects;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * This class is testing converting Expressions to cache key part.
@@ -46,20 +45,9 @@ public class ToCacheKeyTraversalHandlerTest {
     private ValueObjectTypeRegistry registry;
     private StringBuilder cacheKey;
 
-    @SuppressWarnings("unchecked")
     @BeforeEach
     public void createObjects() {
-        registry = mock(ValueObjectTypeRegistry.class);
-
-        // mock value type for Double class
-        ValueObjectType mockType = mock(ValueObjectType.class);
-        when(mockType.getValueType()).thenReturn(Double.class);
-        when(mockType.toCacheKey(any())).thenReturn("<value placeholder>");
-        when(registry.getValueType(eq(Double.class))).thenReturn(mockType);
-
-        // value type for TestValue class
-        ValueObjectType testType = new TestValueType();
-        when(registry.getValueType(eq(TestValue.class))).thenReturn(testType);
+        registry = new DefaultValueObjectTypeRegistry(List.of(new PlaceholderDoubleType(), new TestValueType()));
     }
 
     /**
@@ -155,15 +143,11 @@ public class ToCacheKeyTraversalHandlerTest {
      */
     @Test
     public void cacheKeyWithPersistentObject() {
-        Persistent persistent1 = mock(Persistent.class);
-        ObjectId objectId1 = mock(ObjectId.class);
-        when(objectId1.toString()).thenReturn("objId1");
-        when(persistent1.getObjectId()).thenReturn(objectId1);
+        ObjectId objectId1 = ObjectId.of("E", "ID", 1);
+        Persistent persistent1 = TestObjects.committedObject(objectId1);
 
-        Persistent persistent2 = mock(Persistent.class);
-        ObjectId objectId2 = mock(ObjectId.class);
-        when(objectId2.toString()).thenReturn("objId2");
-        when(persistent2.getObjectId()).thenReturn(objectId2);
+        ObjectId objectId2 = ObjectId.of("E", "ID", 2);
+        Persistent persistent2 = TestObjects.committedObject(objectId2);
 
         ExpressionFactory.greaterOrEqualExp("testPath", persistent1).traverse(newHandler());
         String s1 = cacheKey.toString();
@@ -174,8 +158,8 @@ public class ToCacheKeyTraversalHandlerTest {
         ExpressionFactory.greaterOrEqualExp("testPath", persistent2).traverse(newHandler());
         String s3 = cacheKey.toString();
 
-        assertTrue(s1.contains("objId1"));
-        assertTrue(s3.contains("objId2"));
+        assertTrue(s1.contains(objectId1.toString()));
+        assertTrue(s3.contains(objectId2.toString()));
         assertEquals(s1, s2);
         assertNotEquals(s2, s3);
     }
@@ -354,7 +338,37 @@ public class ToCacheKeyTraversalHandlerTest {
     }
 
     /**
-     * Test value object descriptor, we need only toCacheKey() method
+     * Marks Double as a custom value object, with a fixed cache key
+     */
+    static class PlaceholderDoubleType implements ValueObjectType<Double, Double> {
+        @Override
+        public Class<Double> getTargetType() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public Class<Double> getValueType() {
+            return Double.class;
+        }
+
+        @Override
+        public Double toJavaObject(Double value) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public Double fromJavaObject(Double object) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public String toCacheKey(Double object) {
+            return "<value placeholder>";
+        }
+    }
+
+    /**
+     * Test value object descriptor, we need only getValueType() and toCacheKey() methods
      */
     static class TestValueType implements ValueObjectType<TestValue, Integer> {
         @Override
@@ -364,7 +378,7 @@ public class ToCacheKeyTraversalHandlerTest {
 
         @Override
         public Class<TestValue> getValueType() {
-            throw new UnsupportedOperationException();
+            return TestValue.class;
         }
 
         @Override

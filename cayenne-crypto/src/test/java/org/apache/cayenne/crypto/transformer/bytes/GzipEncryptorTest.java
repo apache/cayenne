@@ -20,17 +20,12 @@ package org.apache.cayenne.crypto.transformer.bytes;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 import org.apache.cayenne.crypto.unit.CryptoUnitUtils;
 import org.junit.jupiter.api.Test;
-import org.mockito.stubbing.Answer;
 
 public class GzipEncryptorTest {
 
@@ -53,17 +48,10 @@ public class GzipEncryptorTest {
     @Test
     public void encrypt() {
 
-        BytesEncryptor delegate = mock(BytesEncryptor.class);
-        when(delegate.encrypt(any(byte[].class), anyInt(), any(byte[].class))).thenAnswer((Answer<byte[]>) invocation -> {
-            Object[] args = invocation.getArguments();
-
-            byte[] answer = (byte[]) args[0];
-            int offset = (Integer) args[1];
-
-            assertEquals(1, offset);
-
-            return answer;
-        });
+        BytesEncryptor delegate = (input, outputOffset, flags) -> {
+            assertEquals(1, outputOffset);
+            return input;
+        };
 
         GzipEncryptor e = new GzipEncryptor(delegate);
 

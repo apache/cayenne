@@ -27,8 +27,8 @@ import org.apache.cayenne.query.SQLQuery;
 import org.apache.cayenne.query.resolved.ResolvedQuery;
 import org.apache.cayenne.query.resolved.ResolvedSQL;
 import org.junit.jupiter.api.Test;
+import org.apache.cayenne.map.compiled.TestMappings;
 
-import static org.mockito.Mockito.mock;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -40,7 +40,7 @@ public class CayenneSqlExceptionTest {
     @Test
     public void messageIncludesSql() {
         SQLQuery<?> query = SQLQuery.query("SELECT * FROM ARTIST");
-        ResolvedSQL resolved = query.resolve(mock(CompiledMapping.class));
+        ResolvedSQL resolved = query.resolve(TestMappings.empty());
         TranslatedStatement statement = new TranslatedSQL(resolved, "SELECT * FROM ARTIST", null, null);
         Throwable cause = new RuntimeException("boom");
 
@@ -58,7 +58,7 @@ public class CayenneSqlExceptionTest {
     @Test
     public void queryNotIncludedInMessage() {
         SQLQuery<?> query = SQLQuery.query("SELECT * FROM ARTIST");
-        ResolvedSQL resolved = query.resolve(mock(CompiledMapping.class));
+        ResolvedSQL resolved = query.resolve(TestMappings.empty());
         TranslatedStatement statement = new TranslatedSQL(resolved, "SELECT * FROM ARTIST", null, null);
 
         CayenneSqlException e = new CayenneSqlException("Query exception.", context(resolved, statement),
@@ -72,7 +72,7 @@ public class CayenneSqlExceptionTest {
     public void sqlWithPercentDoesNotBreakFormatting() {
         // SQL may contain '%' (e.g. LIKE patterns); it must not be interpreted as a format specifier
         SQLQuery<?> query = SQLQuery.query("SELECT * FROM ARTIST WHERE NAME LIKE '%foo%'");
-        ResolvedSQL resolved = query.resolve(mock(CompiledMapping.class));
+        ResolvedSQL resolved = query.resolve(TestMappings.empty());
         TranslatedStatement statement = new TranslatedSQL(resolved, "SELECT * FROM ARTIST WHERE NAME LIKE '%foo%'",
                 null, null);
         CayenneSqlException e = new CayenneSqlException("Query exception.", context(resolved, statement),
@@ -84,7 +84,7 @@ public class CayenneSqlExceptionTest {
     @Test
     public void untranslatedRunHasNoStatement() {
         SQLQuery<?> query = SQLQuery.query("SELECT * FROM ARTIST");
-        CompiledMapping mapping = mock(CompiledMapping.class);
+        CompiledMapping mapping = TestMappings.empty();
         StatementContext context = new StatementContext(query.resolve(mapping), mapping);
 
 
@@ -106,7 +106,7 @@ public class CayenneSqlExceptionTest {
     }
 
     private static StatementContext context(ResolvedQuery query, TranslatedStatement statement) {
-        StatementContext context = new StatementContext(query, mock(CompiledMapping.class));
+        StatementContext context = new StatementContext(query, TestMappings.empty());
         context.setTranslatedStatement(statement);
         return context;
     }

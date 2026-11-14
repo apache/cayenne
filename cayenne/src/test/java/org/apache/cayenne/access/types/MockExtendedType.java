@@ -26,6 +26,7 @@ import java.sql.ResultSet;
 public class MockExtendedType implements ExtendedType<Object> {
 
     protected Class<?> objectClass;
+    protected String className;
 
     public MockExtendedType() {
         this(Object.class);
@@ -33,11 +34,20 @@ public class MockExtendedType implements ExtendedType<Object> {
 
     public MockExtendedType(Class<?> objectClass) {
         this.objectClass = objectClass;
+        this.className = objectClass.getName();
+    }
+
+    /**
+     * Creates a type registered under an arbitrary class name, such as "byte[]", that materializes plain Objects.
+     */
+    public MockExtendedType(String className) {
+        this.objectClass = Object.class;
+        this.className = className;
     }
 
     @Override
     public String getClassName() {
-        return objectClass.getName();
+        return className;
     }
 
     @Override

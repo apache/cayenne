@@ -22,17 +22,24 @@ package org.apache.cayenne.access.flush.operation;
 import java.util.List;
 import java.util.stream.IntStream;
 
+import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.map.compiled.CompiledTable;
+import org.apache.cayenne.unit.CompiledTables;
+import org.apache.cayenne.unit.TestObjects;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
 
 public class DbRowOpGraphTest {
 
     private static List<DbRowOp> ops(int n) {
-        return IntStream.range(0, n).mapToObj(i -> mock(DbRowOp.class)).toList();
+        CompiledTable table = CompiledTables.table("t");
+        return IntStream.range(0, n).<DbRowOp>mapToObj(i -> {
+            ObjectId id = ObjectId.of("t", "id", i);
+            return new InsertDbRowOp(TestObjects.modifiedObject(id), table, id);
+        }).toList();
     }
 
     @Test

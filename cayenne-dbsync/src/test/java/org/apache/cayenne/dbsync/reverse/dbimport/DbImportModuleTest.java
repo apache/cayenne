@@ -25,16 +25,16 @@ import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.slf4j.Logger;
 import org.junit.jupiter.api.Test;
+import org.slf4j.helpers.NOPLogger;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
 
 public class DbImportModuleTest {
 
     @Test
     public void moduleContents() {
 
-        Logger log = mock(Logger.class);
+        Logger log = NOPLogger.NOP_LOGGER;
         Injector i = DIBootstrap.createInjector(new DbSyncModule(), new ToolsModule(log), new DbImportModule());
         assertTrue(i.getInstance(DbImportAction.class) instanceof DbImportAction);
     }

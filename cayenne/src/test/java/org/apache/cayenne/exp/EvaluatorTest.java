@@ -20,6 +20,7 @@ package org.apache.cayenne.exp;
 
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.unit.TestObjects;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -33,8 +34,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class EvaluatorTest {
 
@@ -212,23 +211,20 @@ public class EvaluatorTest {
     public void evaluator_Persistent() {
 
         ObjectId lhsId = ObjectId.of("X", "k", 3);
-        Persistent lhs = mock(Persistent.class);
-        when(lhs.getObjectId()).thenReturn(lhsId);
+        Persistent lhs = TestObjects.committedObject(lhsId);
 
         Evaluator e = Evaluator.evaluator(lhs);
         assertNotNull(e);
 
         ObjectId rhsId1 = ObjectId.of("X", "k", 3);
-        Persistent rhs1 = mock(Persistent.class);
-        when(rhs1.getObjectId()).thenReturn(rhsId1);
+        Persistent rhs1 = TestObjects.committedObject(rhsId1);
 
         assertTrue(e.eq(lhs, rhs1));
         assertTrue(e.eq(lhs, rhsId1));
         assertTrue(e.eq(lhs, 3));
 
         ObjectId rhsId2 = ObjectId.of("X", "k", 4);
-        Persistent rhs2 = mock(Persistent.class);
-        when(rhs2.getObjectId()).thenReturn(rhsId2);
+        Persistent rhs2 = TestObjects.committedObject(rhsId2);
 
         assertFalse(e.eq(lhs, rhs2));
         assertFalse(e.eq(lhs, rhsId2));
@@ -239,23 +235,20 @@ public class EvaluatorTest {
     public void evaluator_Persistent_StringId() {
 
         ObjectId lhsId = ObjectId.of("X", "k", "A");
-        Persistent lhs = mock(Persistent.class);
-        when(lhs.getObjectId()).thenReturn(lhsId);
+        Persistent lhs = TestObjects.committedObject(lhsId);
 
         Evaluator e = Evaluator.evaluator(lhs);
         assertNotNull(e);
 
         ObjectId rhsId1 = ObjectId.of("X", "k", "A");
-        Persistent rhs1 = mock(Persistent.class);
-        when(rhs1.getObjectId()).thenReturn(rhsId1);
+        Persistent rhs1 = TestObjects.committedObject(rhsId1);
 
         assertTrue(e.eq(lhs, rhs1));
         assertTrue(e.eq(lhs, rhsId1));
         assertTrue(e.eq(lhs, "A"));
 
         ObjectId rhsId2 = ObjectId.of("X", "k", "B");
-        Persistent rhs2 = mock(Persistent.class);
-        when(rhs2.getObjectId()).thenReturn(rhsId2);
+        Persistent rhs2 = TestObjects.committedObject(rhsId2);
 
         assertFalse(e.eq(lhs, rhs2));
         assertFalse(e.eq(lhs, rhsId2));
@@ -269,8 +262,7 @@ public class EvaluatorTest {
         lhsIdMap.put("a", 1);
         lhsIdMap.put("b", "B");
         ObjectId lhsId = ObjectId.of("X", lhsIdMap);
-        Persistent lhs = mock(Persistent.class);
-        when(lhs.getObjectId()).thenReturn(lhsId);
+        Persistent lhs = TestObjects.committedObject(lhsId);
 
         Evaluator e = Evaluator.evaluator(lhs);
         assertNotNull(e);
@@ -279,8 +271,7 @@ public class EvaluatorTest {
         rhsId1Map.put("a", 1);
         rhsId1Map.put("b", "B");
         ObjectId rhsId1 = ObjectId.of("X", rhsId1Map);
-        Persistent rhs1 = mock(Persistent.class);
-        when(rhs1.getObjectId()).thenReturn(rhsId1);
+        Persistent rhs1 = TestObjects.committedObject(rhsId1);
 
         assertTrue(e.eq(lhs, rhs1));
         assertTrue(e.eq(lhs, rhsId1));
@@ -290,8 +281,7 @@ public class EvaluatorTest {
         rhsId2Map.put("a", 1);
         rhsId2Map.put("b", "BX");
         ObjectId rhsId2 = ObjectId.of("X", rhsId2Map);
-        Persistent rhs2 = mock(Persistent.class);
-        when(rhs2.getObjectId()).thenReturn(rhsId2);
+        Persistent rhs2 = TestObjects.committedObject(rhsId2);
 
         assertFalse(e.eq(lhs, rhs2));
         assertFalse(e.eq(lhs, rhsId2));

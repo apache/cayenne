@@ -25,6 +25,7 @@ import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
 import org.slf4j.Logger;
+import org.slf4j.helpers.NOPLogger;
 import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
@@ -41,7 +42,7 @@ public class ToolsModuleTest {
     @Test
     public void moduleContents() {
 
-        Logger log = mock(Logger.class);
+        Logger log = NOPLogger.NOP_LOGGER;
         Injector i = DIBootstrap.createInjector(new ToolsModule(log));
 
         assertSame(log, i.getInstance(Logger.class));
@@ -51,7 +52,7 @@ public class ToolsModuleTest {
 
     @Test
     public void dbApdater() throws Exception {
-        Logger log = mock(Logger.class);
+        Logger log = NOPLogger.NOP_LOGGER;
         Injector i = DIBootstrap.createInjector(new ToolsModule(log));
 
         DbAdapterFactory factory = i.getInstance(DbAdapterFactory.class);

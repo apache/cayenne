@@ -28,8 +28,8 @@ import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.SelectResult;
 import org.apache.cayenne.UpdateResult;
 import org.apache.cayenne.access.translator.TranslatedSQL;
-import org.apache.cayenne.map.compiled.CompiledMapping;
 import org.apache.cayenne.query.resolved.ResolvedSQL;
+import org.apache.cayenne.map.compiled.TestMappings;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -40,12 +40,11 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.mockito.Mockito.mock;
 
 public class StatementContextTest {
 
     private static StatementContext context() {
-        return new StatementContext(ResolvedSQL.raw("SELECT 1"), mock(CompiledMapping.class));
+        return new StatementContext(ResolvedSQL.raw("SELECT 1"), TestMappings.empty());
     }
 
     @Test
@@ -75,7 +74,7 @@ public class StatementContextTest {
         SelectResult<Object> select = new SelectResult<>(List.of(new Object()));
         UpdateResult update = new UpdateResult(new int[]{1});
         OutParametersResult out = new OutParametersResult(Map.of("p", 1));
-        ResultIterator<?> iterator = mock(ResultIterator.class);
+        ResultIterator<?> iterator = ListResultIterator.of();
 
         context.addResult(select);
         context.addResult(update);

@@ -21,21 +21,22 @@ package org.apache.cayenne.crypto.transformer.bytes;
 
 import org.apache.cayenne.crypto.unit.SwapBytesTransformer;
 import org.junit.jupiter.api.Test;
+import java.security.Key;
+import javax.crypto.spec.SecretKeySpec;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class HmacEncryptorTest {
 
     @Test
     public void encrypt() throws Exception {
-        HmacEncryptor encryptor = mock(HmacEncryptor.class);
-        encryptor.delegate = SwapBytesTransformer.encryptor();
-        when(encryptor.createHmac(any(byte[].class))).thenReturn(new byte[]{0, 1, 2, 3, 4, 5, 6, 7});
-        when(encryptor.encrypt(any(byte[].class), anyInt(), any(byte[].class))).thenCallRealMethod();
+        Key key = new SecretKeySpec("key".getBytes(), "AES");
+        HmacEncryptor encryptor = new HmacEncryptor(SwapBytesTransformer.encryptor(), null, key) {
+            @Override
+            byte[] createHmac(byte[] input) {
+                return new byte[]{0, 1, 2, 3, 4, 5, 6, 7};
+            }
+        };
 
         byte[] input = {-1, -2, -3};
 

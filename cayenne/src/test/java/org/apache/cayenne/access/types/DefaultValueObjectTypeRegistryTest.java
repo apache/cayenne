@@ -26,8 +26,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class DefaultValueObjectTypeRegistryTest {
 
@@ -36,13 +34,8 @@ public class DefaultValueObjectTypeRegistryTest {
 
     @BeforeEach
     public void setUpRegistry() {
-        valueObjectType1 = mock(ValueObjectType.class);
-        when(valueObjectType1.getValueType()).thenReturn(Integer.class);
-        when(valueObjectType1.getTargetType()).thenReturn(Integer.class);
-
-        valueObjectType2 = mock(ValueObjectType.class);
-        when(valueObjectType2.getValueType()).thenReturn(Number.class);
-        when(valueObjectType2.getTargetType()).thenReturn(Integer.class);
+        valueObjectType1 = new StubValueObjectType<>(Integer.class, Integer.class);
+        valueObjectType2 = new StubValueObjectType<>(Number.class, Integer.class);
 
         List<ValueObjectType<?, ?>> list = new ArrayList<>();
         list.add(valueObjectType1);

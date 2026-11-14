@@ -22,11 +22,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.security.Key;
 
 import org.apache.cayenne.crypto.CryptoConstants;
 import org.apache.cayenne.crypto.key.KeySource;
@@ -38,8 +37,17 @@ public class DefaultBytesTransformerFactoryTest {
     public void createEncryptionHeader() {
 
         Map<String, String> properties = new HashMap<>();
-        KeySource keySource = mock(KeySource.class);
-        when(keySource.getDefaultKeyAlias()).thenReturn("bla");
+        KeySource keySource = new KeySource() {
+            @Override
+            public Key getKey(String alias) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public String getDefaultKeyAlias() {
+                return "bla";
+            }
+        };
 
         Header h1 = DefaultBytesTransformerFactory.createEncryptionHeader(properties, keySource);
         assertNotNull(h1);

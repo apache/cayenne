@@ -20,8 +20,6 @@
 package org.apache.cayenne.access.flush.operation;
 
 import org.apache.cayenne.ObjectId;
-import org.apache.cayenne.PersistenceState;
-import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
@@ -32,6 +30,8 @@ import org.apache.cayenne.map.compiled.CompiledTable;
 import org.apache.cayenne.map.compiled.CompiledMapping;
 import org.apache.cayenne.map.compiled.TestMappings;
 import org.apache.cayenne.unit.CompiledTables;
+import org.apache.cayenne.unit.TestObjects;
+import org.apache.cayenne.unit.TestDomains;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -41,8 +41,6 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.when;
 
 public class GraphBasedDbRowOpSorterTest {
     private CompiledMapping mapping;
@@ -65,9 +63,7 @@ public class GraphBasedDbRowOpSorterTest {
         parent.addJoin(new DbJoin(parent, "parent_id", "id"));
 
         mapping = TestMappings.compile(map);
-
-        DataDomain dataDomain = mock(DataDomain.class);
-        when(dataDomain.getMapping()).thenReturn(mapping);
+        DataDomain dataDomain = TestDomains.of(mapping);
 
         sorter = new GraphBasedDbRowOpSorter(() -> dataDomain);
     }
@@ -86,10 +82,10 @@ public class GraphBasedDbRowOpSorterTest {
         ObjectId id3 = ObjectId.of("test3", "id", 3);
         ObjectId id4 = ObjectId.of("test1", "id", 4);
 
-        DbRowOp op1 = new InsertDbRowOp(mockObject(id1), mockEntity("test4"), id1);
-        DbRowOp op2 = new InsertDbRowOp(mockObject(id2), mockEntity("test2"), id2);
-        DbRowOp op3 = new InsertDbRowOp(mockObject(id3), mockEntity("test3"), id3);
-        DbRowOp op4 = new InsertDbRowOp(mockObject(id4), mockEntity("test1"), id4);
+        DbRowOp op1 = new InsertDbRowOp(TestObjects.modifiedObject(id1), table("test4"), id1);
+        DbRowOp op2 = new InsertDbRowOp(TestObjects.modifiedObject(id2), table("test2"), id2);
+        DbRowOp op3 = new InsertDbRowOp(TestObjects.modifiedObject(id3), table("test3"), id3);
+        DbRowOp op4 = new InsertDbRowOp(TestObjects.modifiedObject(id4), table("test1"), id4);
 
         List<DbRowOp> rows = Arrays.asList(op1, op2, op3, op4);
         List<DbRowOp> expected = Arrays.asList(op1, op2, op3, op4);
@@ -105,11 +101,11 @@ public class GraphBasedDbRowOpSorterTest {
         ObjectId id3 = ObjectId.of("test", "id", 2);
         ObjectId id4 = ObjectId.of("test", "id", 3);
 
-        CompiledTable test = mockEntity("test");
-        InsertDbRowOp op1 = new InsertDbRowOp(mockObject(id1), test, id1);
-        InsertDbRowOp op2 = new InsertDbRowOp(mockObject(id2), test, id2);
-        DeleteDbRowOp op3 = new DeleteDbRowOp(mockObject(id3), test, id3);
-        DeleteDbRowOp op4 = new DeleteDbRowOp(mockObject(id4), test, id4);
+        CompiledTable test = table("test");
+        InsertDbRowOp op1 = new InsertDbRowOp(TestObjects.modifiedObject(id1), test, id1);
+        InsertDbRowOp op2 = new InsertDbRowOp(TestObjects.modifiedObject(id2), test, id2);
+        DeleteDbRowOp op3 = new DeleteDbRowOp(TestObjects.modifiedObject(id3), test, id3);
+        DeleteDbRowOp op4 = new DeleteDbRowOp(TestObjects.modifiedObject(id4), test, id4);
 
         List<DbRowOp> rows = Arrays.asList(op1, op2, op3, op4);
         List<DbRowOp> expected = Arrays.asList(op3, op1, op2, op4);
@@ -131,19 +127,19 @@ public class GraphBasedDbRowOpSorterTest {
         ObjectId id9  = ObjectId.of("test2", "id", 4);
         ObjectId id10 = ObjectId.of("test",  "id", 8);
 
-        CompiledTable test = mockEntity("test");
-        CompiledTable test2 = mockEntity("test2");
+        CompiledTable test = table("test");
+        CompiledTable test2 = table("test2");
         BaseDbRowOp[] op = new BaseDbRowOp[10];
-        op[0] = new InsertDbRowOp(mockObject(id1),  test2, id1);
-        op[1] = new InsertDbRowOp(mockObject(id2),  test,  id2);
-        op[2] = new DeleteDbRowOp(mockObject(id3),  test,  id3);
-        op[3] = new UpdateDbRowOp(mockObject(id4),  test,  id4);
-        op[4] = new InsertDbRowOp(mockObject(id5),  test2, id5);
-        op[5] = new DeleteDbRowOp(mockObject(id6),  test,  id6);
-        op[6] = new InsertDbRowOp(mockObject(id7),  test,  id7);
-        op[7] = new UpdateDbRowOp(mockObject(id8),  test2, id8);
-        op[8] = new DeleteDbRowOp(mockObject(id9),  test2, id9);
-        op[9] = new DeleteDbRowOp(mockObject(id10), test,  id10);
+        op[0] = new InsertDbRowOp(TestObjects.modifiedObject(id1),  test2, id1);
+        op[1] = new InsertDbRowOp(TestObjects.modifiedObject(id2),  test,  id2);
+        op[2] = new DeleteDbRowOp(TestObjects.modifiedObject(id3),  test,  id3);
+        op[3] = new UpdateDbRowOp(TestObjects.modifiedObject(id4),  test,  id4);
+        op[4] = new InsertDbRowOp(TestObjects.modifiedObject(id5),  test2, id5);
+        op[5] = new DeleteDbRowOp(TestObjects.modifiedObject(id6),  test,  id6);
+        op[6] = new InsertDbRowOp(TestObjects.modifiedObject(id7),  test,  id7);
+        op[7] = new UpdateDbRowOp(TestObjects.modifiedObject(id8),  test2, id8);
+        op[8] = new DeleteDbRowOp(TestObjects.modifiedObject(id9),  test2, id9);
+        op[9] = new DeleteDbRowOp(TestObjects.modifiedObject(id10), test,  id10);
 
         List<DbRowOp> expected = Arrays.asList(op[2], op[8], op[9], op[0], op[1], op[3], op[4], op[5], op[6], op[7]);
         List<DbRowOp> sorted = sorter.sort(Arrays.asList(op));
@@ -158,11 +154,11 @@ public class GraphBasedDbRowOpSorterTest {
         ObjectId id3 = ObjectId.of("reflexive", "id", 3);
         ObjectId id4 = ObjectId.of("reflexive", "id", 4);
 
-        CompiledTable reflexive = mockEntity("reflexive");
-        DbRowOp op1 = new InsertDbRowOp(mockObject(id1), reflexive, id1);
-        DbRowOp op2 = new InsertDbRowOp(mockObject(id2), reflexive, id2);
-        DbRowOp op3 = new InsertDbRowOp(mockObject(id3), reflexive, id3);
-        DbRowOp op4 = new InsertDbRowOp(mockObject(id4), reflexive, id4);
+        CompiledTable reflexive = table("reflexive");
+        DbRowOp op1 = new InsertDbRowOp(TestObjects.modifiedObject(id1), reflexive, id1);
+        DbRowOp op2 = new InsertDbRowOp(TestObjects.modifiedObject(id2), reflexive, id2);
+        DbRowOp op3 = new InsertDbRowOp(TestObjects.modifiedObject(id3), reflexive, id3);
+        DbRowOp op4 = new InsertDbRowOp(TestObjects.modifiedObject(id4), reflexive, id4);
 
         List<DbRowOp> rows = Arrays.asList(op1, op2, op3, op4);
         List<DbRowOp> expected = Arrays.asList(op1, op2, op3, op4);
@@ -171,14 +167,8 @@ public class GraphBasedDbRowOpSorterTest {
         assertEquals(expected, sorted); // no actual sorting is done
     }
 
-    private Persistent mockObject(ObjectId id) {
-        Persistent persistent = mock(Persistent.class);
-        when(persistent.getObjectId()).thenReturn(id);
-        when(persistent.getPersistenceState()).thenReturn(PersistenceState.MODIFIED);
-        return persistent;
-    }
 
-    private CompiledTable mockEntity(String name) {
+    private CompiledTable table(String name) {
         return mapping.schema().table(name);
     }
 }

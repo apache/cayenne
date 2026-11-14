@@ -23,11 +23,11 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.jdbc.reader.DefaultRowReaderFactory;
 import org.apache.cayenne.access.jdbc.reader.RowReader;
 import org.apache.cayenne.access.types.ExtendedTypeMap;
-import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.query.resolved.ResolvedQueries;
 import org.apache.cayenne.unit.jdbc.TestConnection;
 import org.apache.cayenne.unit.jdbc.TestResultSet;
 import org.apache.cayenne.unit.jdbc.TestStatement;
+import org.apache.cayenne.unit.TestAdapters;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
@@ -37,7 +37,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
 
 public class RSIteratorTest {
 
@@ -50,7 +49,7 @@ public class RSIteratorTest {
 
 		RSColumn[] columns = RSColumn.rowBuilder().resultSet(rs).build(new ExtendedTypeMap());
 		RowReader<?> rowReader = new DefaultRowReaderFactory().rowReader(columns, null, ResolvedQueries.select(),
-				mock(DbAdapter.class));
+				TestAdapters.jdbc());
 
 		RSIterator it = new RSIterator(s, rs, rowReader);
 
@@ -68,7 +67,7 @@ public class RSIteratorTest {
 		TestResultSet rs = new TestResultSet("rs");
 		rs.addColumn("a", new Object[] { "1", "2", "3" });
 
-		RowReader<?> rowReader = mock(RowReader.class);
+		RowReader<?> rowReader = resultSet -> null;
 
 		try (RSIterator it = new RSIterator(s, rs, rowReader);) {
 

@@ -25,8 +25,8 @@ import org.apache.cayenne.dba.sqlserver.SQLServerAdapter;
 import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
-import org.slf4j.Logger;
 import org.junit.jupiter.api.Test;
+import org.slf4j.helpers.NOPLogger;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -62,7 +62,7 @@ public class DbGeneratorTaskTest {
         DataSource ds = mock(DataSource.class);
         when(ds.getConnection()).thenReturn(connection);
 
-        Injector injector = DIBootstrap.createInjector(new ToolsModule(mock(Logger.class)));
+        Injector injector = DIBootstrap.createInjector(new ToolsModule(NOPLogger.NOP_LOGGER));
 
         DbGeneratorTask task = new DbGeneratorTask();
 

@@ -19,21 +19,21 @@
 package org.apache.cayenne.query;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
 
 import org.apache.cayenne.DataRow;
-import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.mysql.MySQLAdapter;
 import org.apache.cayenne.dba.postgres.PostgresAdapter;
 import org.apache.cayenne.map.compiled.CompiledMapping;
 import org.apache.cayenne.query.resolved.ResolvedQuery;
 import org.apache.cayenne.query.resolved.ResolvedSQL;
 import org.junit.jupiter.api.Test;
+import org.apache.cayenne.map.compiled.TestMappings;
+import org.apache.cayenne.unit.TestAdapters;
 
 public class SQLQueryTest {
 
 	private static ResolvedSQL resolved(SQLQuery<?> query) {
-		return query.resolve(mock(CompiledMapping.class));
+		return query.resolve(TestMappings.empty());
 	}
 
 	@Test
@@ -87,7 +87,7 @@ public class SQLQueryTest {
 	@Test
 	public void resolve() {
 		SQLQuery<DataRow> q = SQLQuery.query("bla");
-		ResolvedSQL resolved = q.resolve(mock(CompiledMapping.class));
+		ResolvedSQL resolved = q.resolve(TestMappings.empty());
 		assertSame(q, resolved.source());
 		assertEquals("bla", resolved.defaultTemplate());
 		assertTrue(resolved.fetchingDataRows());
@@ -97,19 +97,19 @@ public class SQLQueryTest {
 	@Test
 	public void resolve_ParamsArray_Single() {
 		SQLQuery<DataRow> q = SQLQuery.query("bla").paramsArray("a");
-		assertArrayEquals(new Object[] { "a" }, q.resolve(mock(CompiledMapping.class)).positionalParams().toArray());
+		assertArrayEquals(new Object[] { "a" }, q.resolve(TestMappings.empty()).positionalParams().toArray());
 	}
 
 	@Test
 	public void resolve_ParamsArray_Multiple() {
 		SQLQuery<DataRow> q = SQLQuery.query("bla").paramsArray("a", "b");
-		assertArrayEquals(new Object[] { "a", "b" }, q.resolve(mock(CompiledMapping.class)).positionalParams().toArray());
+		assertArrayEquals(new Object[] { "a", "b" }, q.resolve(TestMappings.empty()).positionalParams().toArray());
 	}
 
 	@Test
 	public void resolve_DataNode() {
 		SQLQuery<DataRow> q = SQLQuery.query("bla").dataNode("n1");
-		assertEquals("n1", q.resolve(mock(CompiledMapping.class)).dataNodeName());
+		assertEquals("n1", q.resolve(TestMappings.empty()).dataNodeName());
 	}
 
 	@Test
@@ -121,17 +121,17 @@ public class SQLQueryTest {
 				.dialectAppend(PostgresAdapter.class, "postgres")
 				.dialectAppend(PostgresAdapter.class, " plus");
 
-		ResolvedSQL resolved = q.resolve(mock(CompiledMapping.class));
+		ResolvedSQL resolved = q.resolve(TestMappings.empty());
 		assertEquals("default plus", resolved.defaultTemplate());
 		assertEquals("mysql plus", resolved.templates().get(MySQLAdapter.class.getName()));
 		assertEquals("postgres plus", resolved.templates().get(PostgresAdapter.class.getName()));
-		assertEquals("default plus", resolved.template(mock(DbAdapter.class)));
+		assertEquals("default plus", resolved.template(TestAdapters.jdbc()));
 	}
 
 	@Test
 	public void getMetadata_ParamsArray_Multiple_Cache() {
 
-		CompiledMapping mapping = mock(CompiledMapping.class);
+		CompiledMapping mapping = TestMappings.empty();
 		ResolvedQuery md0 = SQLQuery.query("bla").localCache().resolve(mapping);
 		ResolvedQuery md1 = SQLQuery.query("bla").localCache().paramsArray("a").resolve(mapping);
 		ResolvedQuery md2 = SQLQuery.query("bla").localCache().paramsArray("a", "b").resolve(mapping);
@@ -151,6 +151,6 @@ public class SQLQueryTest {
 	@Test
 	public void notReadOnlyMetadata() {
 		// raw SQL is opaque, so SQLQuery keeps the regular transaction
-		assertFalse(SQLQuery.query("SELECT * FROM X").resolve(mock(CompiledMapping.class)).readOnly());
+		assertFalse(SQLQuery.query("SELECT * FROM X").resolve(TestMappings.empty()).readOnly());
 	}
 }

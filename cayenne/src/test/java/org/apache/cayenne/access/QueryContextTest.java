@@ -22,11 +22,12 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.map.compiled.CompiledMapping;
 import org.apache.cayenne.query.SQLQuery;
 import org.apache.cayenne.unit.DataNodes;
 import org.apache.cayenne.query.resolved.ResolvedQuery;
 import org.apache.cayenne.query.resolved.ResolvedSQL;
+import org.apache.cayenne.MockDataChannel;
+import org.apache.cayenne.map.compiled.TestMappings;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -36,7 +37,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
 
 public class QueryContextTest {
 
@@ -45,14 +45,14 @@ public class QueryContextTest {
     }
 
     private static StatementContext newStatementContext(String sql) {
-        return new StatementContext(ResolvedSQL.raw(sql), mock(CompiledMapping.class));
+        return new StatementContext(ResolvedSQL.raw(sql), TestMappings.empty());
     }
 
     @Test
     public void queryAndResolvedQuery() {
         SQLQuery<DataRow> query = SQLQuery.query("SELECT 1");
-        ResolvedQuery resolved = query.resolve(mock(CompiledMapping.class));
-        ObjectContext objectContext = mock(ObjectContext.class);
+        ResolvedQuery resolved = query.resolve(TestMappings.empty());
+        ObjectContext objectContext = DataContext.builder(new MockDataChannel()).build();
 
         QueryContext context = new QueryContext(objectContext, query, resolved, true);
 

@@ -27,7 +27,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
 
 public class CayenneRuntimeBuilderTest {
 
@@ -94,7 +93,7 @@ public class CayenneRuntimeBuilderTest {
 	@Test
 	public void extraModules() {
 
-		Module m = mock(Module.class);
+		Module m = binder -> {};
 
 		runtime = new CayenneRuntimeBuilder(null).addModule(m).build();
 

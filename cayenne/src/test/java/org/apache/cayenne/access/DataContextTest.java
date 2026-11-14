@@ -19,18 +19,17 @@
 
 package org.apache.cayenne.access;
 
-import org.apache.cayenne.DataChannel;
+import org.apache.cayenne.MockDataChannel;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
 
 public class DataContextTest {
     @Test
     public void userPropertiesLazyInit() {
-        DataContext context = DataContext.builder(mock(DataChannel.class)).build();
+        DataContext context = DataContext.builder(new MockDataChannel()).build();
         assertNull(context.userProperties);
 
         Map<String, Object> properties = context.getUserProperties();

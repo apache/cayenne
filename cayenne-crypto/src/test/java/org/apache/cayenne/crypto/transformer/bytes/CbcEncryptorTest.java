@@ -21,7 +21,6 @@ package org.apache.cayenne.crypto.transformer.bytes;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.mock;
 
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -45,7 +44,7 @@ public class CbcEncryptorTest {
     @Test
     public void constructor() throws NoSuchAlgorithmException, NoSuchPaddingException {
         byte[] iv = { 1, 2, 3, 4, 5, 6 };
-        Key key = mock(Key.class);
+        Key key = new SecretKeySpec(new byte[8], "DES");
         Cipher cipher = Cipher.getInstance("DES/CBC/PKCS5Padding");
         assertEquals(8, cipher.getBlockSize());
         assertThrows(CayenneCryptoException.class, () -> new CbcEncryptor(cipher, key, iv));

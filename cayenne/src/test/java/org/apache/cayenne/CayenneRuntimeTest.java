@@ -23,27 +23,25 @@ import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.ObjectContextFactory;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.tx.BaseTransaction;
-import org.apache.cayenne.tx.TransactionDescriptor;
 import org.apache.cayenne.tx.TransactionFactory;
+import org.apache.cayenne.tx.Transaction;
+import org.apache.cayenne.tx.ReadOnlyTransaction;
+import org.apache.cayenne.map.compiled.TestMappings;
+import org.apache.cayenne.unit.TestDomains;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
 import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class CayenneRuntimeTest {
 
     @Test
     public void performInTransaction() {
 
-        final BaseTransaction tx = mock(BaseTransaction.class);
-        final TransactionFactory txFactory = mock(TransactionFactory.class);
-        when(txFactory.createTransaction()).thenReturn(tx);
-        when(txFactory.createTransaction(any(TransactionDescriptor.class))).thenReturn(tx);
+        Transaction tx = new ReadOnlyTransaction();
+        TransactionFactory txFactory = descriptor -> tx;
 
         Module module = binder -> binder.bind(TransactionFactory.class).toInstance(txFactory);
 
@@ -82,7 +80,7 @@ public class CayenneRuntimeTest {
 
     @Test
     public void getObjectContext_CustomModule() {
-        ObjectContext context = DataContext.builder(mock(DataChannel.class)).build();
+        ObjectContext context = DataContext.builder(new MockDataChannel()).build();
         ObjectContextFactory factory = new ObjectContextFactory() {
 
             @Override
@@ -98,7 +96,7 @@ public class CayenneRuntimeTest {
 
         // 'newContext()' resolves the DataDomain to pass to the factory, so a binding must exist
         Module module = binder -> {
-            binder.bind(DataDomain.class).toInstance(mock(DataDomain.class));
+            binder.bind(DataDomain.class).toInstance(TestDomains.of(TestMappings.empty()));
             binder.bind(ObjectContextFactory.class).toInstance(factory);
         };
 

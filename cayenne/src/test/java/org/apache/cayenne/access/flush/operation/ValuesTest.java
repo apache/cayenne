@@ -22,24 +22,21 @@ package org.apache.cayenne.access.flush.operation;
 import java.util.Collections;
 
 import org.apache.cayenne.ObjectId;
-import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.map.compiled.CompiledColumn;
-import org.apache.cayenne.map.compiled.CompiledTable;
 import org.apache.cayenne.unit.CompiledTables;
+import org.apache.cayenne.unit.TestObjects;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class ValuesTest {
 
     @Test
     public void emptyValues() {
         ObjectId id = ObjectId.of("test", "id", 123);
-        Persistent persistent = mockObject(id);
-        DbRowOp row = mockRow(persistent);
+        Persistent persistent = TestObjects.modifiedObject(id);
+        DbRowOp row = row(persistent);
 
         Values values = new Values(row, false);
 
@@ -52,8 +49,8 @@ public class ValuesTest {
     @Test
     public void valuesWithId() {
         ObjectId id = ObjectId.of("test", "id", 123);
-        Persistent persistent = mockObject(id);
-        DbRowOp row = mockRow(persistent);
+        Persistent persistent = TestObjects.modifiedObject(id);
+        DbRowOp row = row(persistent);
 
         Values values = new Values(row, true);
 
@@ -66,8 +63,8 @@ public class ValuesTest {
     @Test
     public void valuesWithUpdatedAttributes() {
         ObjectId id = ObjectId.of("test", "id", 123);
-        Persistent persistent = mockObject(id);
-        DbRowOp row = mockRow(persistent);
+        Persistent persistent = TestObjects.modifiedObject(id);
+        DbRowOp row = row(persistent);
 
         Values values = new Values(row, false);
         CompiledColumn column1 = CompiledTables.column("attr1");
@@ -79,23 +76,7 @@ public class ValuesTest {
         assertFalse(values.isEmpty());
     }
 
-    private DbRowOp mockRow(Persistent persistent) {
-        DbRowOp row = mock(DbRowOp.class);
-        ObjectId objectId = persistent.getObjectId();
-        when(row.getChangeId()).thenReturn(objectId);
-        when(row.getObject()).thenReturn(persistent);
-        when(row.getEntity()).thenReturn(mockEntity());
-        return row;
-    }
-
-    private Persistent mockObject(ObjectId id) {
-        Persistent persistent = mock(Persistent.class);
-        when(persistent.getObjectId()).thenReturn(id);
-        when(persistent.getPersistenceState()).thenReturn(PersistenceState.MODIFIED);
-        return persistent;
-    }
-
-    private CompiledTable mockEntity() {
-        return CompiledTables.table("TEST");
+    private DbRowOp row(Persistent persistent) {
+        return new UpdateDbRowOp(persistent, CompiledTables.table("TEST"), persistent.getObjectId());
     }
 }

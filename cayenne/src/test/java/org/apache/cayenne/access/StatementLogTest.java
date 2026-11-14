@@ -35,10 +35,10 @@ import org.apache.cayenne.access.translator.TranslatedProcedure;
 import org.apache.cayenne.access.translator.TranslatedSelect;
 import org.apache.cayenne.access.translator.TranslatedStatement;
 import org.apache.cayenne.log.SQLLogger;
-import org.apache.cayenne.map.compiled.CompiledMapping;
 import org.apache.cayenne.query.resolved.ResolvedQueries;
 import org.apache.cayenne.query.resolved.ResolvedQuery;
 import org.apache.cayenne.query.resolved.ResolvedSQL;
+import org.apache.cayenne.map.compiled.TestMappings;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -51,9 +51,6 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 public class StatementLogTest {
 
@@ -138,7 +135,7 @@ public class StatementLogTest {
     }
 
     private static StatementContext statementContext(ResolvedQuery query, SQLLogger logger) {
-        StatementContext statementContext = new StatementContext(query, mock(CompiledMapping.class));
+        StatementContext statementContext = new StatementContext(query, TestMappings.empty());
         statementContext.setLogger(logger);
         return statementContext;
     }
@@ -334,10 +331,7 @@ public class StatementLogTest {
         CapturingLogger logger = new CapturingLogger();
         StatementContext statementContext = statementContext(logger);
 
-        @SuppressWarnings("unchecked")
-        ResultIterator<Object> iterator = mock(ResultIterator.class);
-        when(iterator.hasNextRow()).thenReturn(true, true, false);
-        when(iterator.nextRow()).thenReturn(new Object(), new Object());
+        ListResultIterator<Object> iterator = ListResultIterator.of(new Object(), new Object());
 
         statementContext.setTranslatedStatement(select());
         statementContext.addResult(iterator);
@@ -351,16 +345,16 @@ public class StatementLogTest {
         }
         stored.close();
 
-        verify(iterator).close();
+        assertTrue(iterator.isClosed());
         assertEquals(List.of("selected:2"), logger.calls);
     }
 
     @Test
     public void iteratorNotWrappedWhenLoggingDisabled() {
         StatementContext statementContext = new StatementContext(ResolvedSQL.raw("SELECT 1"),
-                mock(CompiledMapping.class));
+                TestMappings.empty());
 
-        ResultIterator<?> iterator = mock(ResultIterator.class);
+        ResultIterator<?> iterator = ListResultIterator.of();
         statementContext.setTranslatedStatement(select());
         statementContext.addResult(iterator);
 
