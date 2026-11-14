@@ -40,6 +40,11 @@ public class DeleteDbRowOp extends BaseDbRowOp implements DbRowOpWithQualifier {
         return visitor.visitDelete(this);
     }
 
+    @Override
+    public DbRowOpType getType() {
+        return DbRowOpType.DELETE;
+    }
+
     public void setChangeId(ObjectId changeId) {
         this.changeId = changeId;
         this.hashCode = changeId.hashCode();

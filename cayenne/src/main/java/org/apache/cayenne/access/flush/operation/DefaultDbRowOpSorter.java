@@ -116,8 +116,8 @@ public class DefaultDbRowOpSorter implements DbRowOpSorter {
 
         @Override
         public int compare(DbRowOp left, DbRowOp right) {
-            DbRowOpType leftType = left.accept(DbRowTypeVisitor.INSTANCE);
-            DbRowOpType rightType = right.accept(DbRowTypeVisitor.INSTANCE);
+            DbRowOpType leftType = left.getType();
+            DbRowOpType rightType = right.getType();
             int result = leftType.compareTo(rightType);
 
             // 1. sort by op type
@@ -135,26 +135,6 @@ public class DefaultDbRowOpSorter implements DbRowOpSorter {
             // TODO: 3. sort updates by changed and null attributes to batch it better,
             //  need to check cost vs benefit though
             return result;
-        }
-    }
-
-    protected static class DbRowTypeVisitor implements DbRowOpVisitor<DbRowOpType> {
-
-        private static final DbRowTypeVisitor INSTANCE = new DbRowTypeVisitor();
-
-        @Override
-        public DbRowOpType visitInsert(InsertDbRowOp diffSnapshot) {
-            return DbRowOpType.INSERT;
-        }
-
-        @Override
-        public DbRowOpType visitUpdate(UpdateDbRowOp diffSnapshot) {
-            return DbRowOpType.UPDATE;
-        }
-
-        @Override
-        public DbRowOpType visitDelete(DeleteDbRowOp diffSnapshot) {
-            return DbRowOpType.DELETE;
         }
     }
 }

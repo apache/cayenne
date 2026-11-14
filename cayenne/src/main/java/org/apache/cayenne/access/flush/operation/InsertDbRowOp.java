@@ -41,6 +41,11 @@ public class InsertDbRowOp extends BaseDbRowOp implements DbRowOpWithValues {
     }
 
     @Override
+    public DbRowOpType getType() {
+        return DbRowOpType.INSERT;
+    }
+
+    @Override
     public Values getValues() {
         return values;
     }

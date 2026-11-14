@@ -43,6 +43,11 @@ public class UpdateDbRowOp extends BaseDbRowOp implements DbRowOpWithValues, DbR
     }
 
     @Override
+    public DbRowOpType getType() {
+        return DbRowOpType.UPDATE;
+    }
+
+    @Override
     public Qualifier getQualifier() {
         return qualifier;
     }

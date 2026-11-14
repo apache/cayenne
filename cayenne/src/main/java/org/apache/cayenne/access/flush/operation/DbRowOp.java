@@ -33,6 +33,13 @@ public interface DbRowOp {
 
     <T> T accept(DbRowOpVisitor<T> visitor);
 
+    /**
+     * Returns the type of the operation, as used for sorting.
+     *
+     * @since 6.0
+     */
+    DbRowOpType getType();
+
     CompiledTable getEntity();
 
     ObjectId getChangeId();

@@ -53,7 +53,6 @@ import org.apache.cayenne.util.SingleEntryMap;
  */
 public class GraphBasedDbRowOpSorter implements DbRowOpSorter {
 
-    private final DbRowOpTypeVisitor rowOpTypeVisitor = new DbRowOpTypeVisitor();
     private final Provider<DataDomain> dataDomainProvider;
 
     // the FK-holding relationships by table of the mapping they were indexed for;
@@ -113,7 +112,7 @@ public class GraphBasedDbRowOpSorter implements DbRowOpSorter {
         Map<EffectiveOpId, int[]> indexById = HashMap.newHashMap(size);
         for (int i = 0; i < size; i++) {
             DbRowOp op = dbRows.get(i);
-            types[i] = op.accept(rowOpTypeVisitor);
+            types[i] = op.getType();
             ids[i] = effectiveIdFor(op);
 
             int[] sameIdOps = indexById.putIfAbsent(ids[i], new int[]{i});
@@ -356,23 +355,6 @@ public class GraphBasedDbRowOpSorter implements DbRowOpSorter {
             });
 
             return snapshot;
-        }
-    }
-
-    private static class DbRowOpTypeVisitor implements DbRowOpVisitor<DbRowOpType> {
-        @Override
-        public DbRowOpType visitDelete(DeleteDbRowOp dbRow) {
-            return DbRowOpType.DELETE;
-        }
-
-        @Override
-        public DbRowOpType visitInsert(InsertDbRowOp dbRow) {
-            return DbRowOpType.INSERT;
-        }
-
-        @Override
-        public DbRowOpType visitUpdate(UpdateDbRowOp dbRow) {
-            return DbRowOpType.UPDATE;
         }
     }
 }

@@ -43,6 +43,14 @@ public class DeleteInsertDbRowOp extends BaseDbRowOp {
         return insert.accept(visitor);
     }
 
+    /**
+     * Returns the type of the insert, as the operation is sorted as an insert.
+     */
+    @Override
+    public DbRowOpType getType() {
+        return insert.getType();
+    }
+
     @Override
     public boolean isSameBatch(DbRowOp rowOp) {
         return false;
