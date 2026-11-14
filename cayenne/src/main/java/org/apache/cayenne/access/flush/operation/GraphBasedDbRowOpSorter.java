@@ -316,6 +316,12 @@ public class GraphBasedDbRowOpSorter implements DbRowOpSorter {
 
         @Override
         public List<Map<String, Object>> visitDelete(DeleteDbRowOp dbRow) {
+            // a join table row of a flattened relationship: its id has the FKs, while the object of the op is one
+            // of the related objects, and its snapshot is of another table
+            if(dbRow.getChangeId().getEntityName().startsWith(DbPathExp.DB_PREFIX)) {
+                return Collections.singletonList(dbRow.getChangeId().getIdSnapshot());
+            }
+
             Map<String, Object> cachedSnapshot = getCachedSnapshot(dbRow.getObject());
             return Collections.singletonList(cachedSnapshot);
         }

@@ -51,7 +51,6 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
-import static org.apache.cayenne.access.flush.operation.DbRowOpSorterIT.Sorter.DEFAULT;
 import static org.apache.cayenne.access.flush.operation.DbRowOpSorterIT.Sorter.GRAPH;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -73,7 +72,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * Rows referencing each other                            -        -
  * Meaningful PK: delete and insert, change               -        +
  * Flattened relationship join rows: insert               +        +
- * Flattened relationship join rows: delete               +        -
+ * Flattened relationship join rows: delete               +        +
  * Flattened attribute of a related row: insert           +        +
  * </pre>
  */
@@ -383,11 +382,10 @@ public class DbRowOpSorterIT {
             assertOrder(chain(insertOf(m), insertOf("SORT_TAG")), chain(insertOf(c), insertOf("SORT_TAG")));
         }
 
-        // TODO: not supported by GRAPH, as it reads the FKs of a deleted join row from the snapshot of the related
-        //       object, not from the row id, so it finds no dependency
-        @Test
-        public void delete() {
-            sorter.use(DEFAULT);
+        @ParameterizedTest
+        @EnumSource
+        public void delete(Sorter type) {
+            sorter.use(type);
 
             SortMaster m = master("m");
             SortChild c = child("c", null);
