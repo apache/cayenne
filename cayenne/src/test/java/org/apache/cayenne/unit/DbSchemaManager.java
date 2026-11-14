@@ -336,18 +336,18 @@ public class DbSchemaManager {
         Set<CompiledTable> excluded = Set.copyOf(excludeEntities(localTables));
 
         // the dependency index is computed across all the maps of the domain and is the insert order; the name
-        // makes the order deterministic within a dependency level
+        // makes the order deterministic within a dependency level. Only the index is reversed for the delete order,
+        // the name order is kept: the tables of a cycle share the index, and the name order is what the test data
+        // with circular FKs (e.g. IV_IMPL <-> IV_OTHER) relies on in both directions
         List<CompiledTable> tables = new ArrayList<>(localTables.size());
         for (CompiledTable table : localTables) {
             if (!excluded.contains(table)) {
                 tables.add(table);
             }
         }
-        tables.sort(Comparator.comparingInt(CompiledTable::dependencyIndex).thenComparing(CompiledTable::name));
 
-        if (deleteOrder) {
-            Collections.reverse(tables);
-        }
+        Comparator<CompiledTable> byIndex = Comparator.comparingInt(CompiledTable::dependencyIndex);
+        tables.sort((deleteOrder ? byIndex.reversed() : byIndex).thenComparing(CompiledTable::name));
         return tables;
     }
 
