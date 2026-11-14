@@ -65,10 +65,14 @@ public class PrefsManager {
     private final List<PreferenceMigration> migrations;
 
     private final PrefsLocator locator;
+
+    // Unsaved ids are keyed by identity and can't clash between projects. They are removed per project on reset
     private final Map<Project, String> newProjectIds;
     private final Map<DataMap, String> newDataMapIds;
-    private final Map<String, String> stagingDataMap;
-    private final Map<String, String> stagingProject;
+
+    // Staging records are keyed by the new path id, and are kept per project, so that with several projects open at
+    // once, resetting the state of one of them (on save, open or close) doesn't affect the others
+    private final Map<Project, Staging> staging;
 
     private static List<PreferenceMigration> toV5Migrations() {
         return Stream.of(
@@ -92,8 +96,7 @@ public class PrefsManager {
         this.migrations = toV5Migrations();
         this.newProjectIds = new IdentityHashMap<>();
         this.newDataMapIds = new IdentityHashMap<>();
-        this.stagingDataMap = new HashMap<>();
-        this.stagingProject = new HashMap<>();
+        this.staging = new IdentityHashMap<>();
     }
 
     /**
@@ -141,17 +144,17 @@ public class PrefsManager {
         reconcileProject(project);
 
         for (DataMap map : project.getDataMaps()) {
-            reconcileDataMap(map);
+            reconcileDataMap(project, map);
         }
 
-        resetTransientState();
+        resetTransientState(project);
     }
 
     /**
      * Records a pending DataMap rename so that {@link #commitProject(Project)} can migrate
      * the DataMap's preferences subtree from the old node to the new one.
      */
-    public void stageDataMapRename(DataMap map, String newName) {
+    public void stageDataMapRename(Project project, DataMap map, String newName) {
         String oldPath = dataMapPath(map);
         if (oldPath == null) {
             return;
@@ -159,7 +162,7 @@ public class PrefsManager {
         int slash = oldPath.lastIndexOf('/');
         String dir = slash >= 0 ? oldPath.substring(0, slash + 1) : "";
         String newPath = dir + nameMapper.configurationLocation(DataMap.class, newName);
-        stagingDataMap.put(PreferenceNodeIds.idForPath(newPath), oldPath);
+        staging(project).dataMaps.put(PreferenceNodeIds.idForPath(newPath), oldPath);
     }
 
     /**
@@ -174,20 +177,20 @@ public class PrefsManager {
         int slash = oldPath.lastIndexOf('/');
         String dir = slash >= 0 ? oldPath.substring(0, slash + 1) : "";
         String newPath = dir + nameMapper.configurationLocation(Project.class, newProjectName);
-        stagingProject.put(PreferenceNodeIds.idForPath(newPath), oldPath);
+        staging(project).projects.put(PreferenceNodeIds.idForPath(newPath), oldPath);
     }
 
     /**
      * Records a pending DataMap move (project Save As) so that preferences are carried to
      * the new location. Must be called before the save writes updated paths to disk.
      */
-    public void stageDataMapMove(DataMap map, File newProjectDir) {
+    public void stageDataMapMove(Project project, DataMap map, File newProjectDir) {
         String oldPath = dataMapPath(map);
         if (oldPath == null) {
             return;
         }
         String newPath = new File(newProjectDir, nameMapper.configurationLocation(DataMap.class, map.getName())).getPath();
-        stagingDataMap.put(PreferenceNodeIds.idForPath(newPath), oldPath);
+        staging(project).dataMaps.put(PreferenceNodeIds.idForPath(newPath), oldPath);
     }
 
     /**
@@ -201,18 +204,23 @@ public class PrefsManager {
         }
         String fileName = new File(oldPath).getName();
         String newPath = new File(newProjectDir, fileName).getPath();
-        stagingProject.put(PreferenceNodeIds.idForPath(newPath), oldPath);
+        staging(project).projects.put(PreferenceNodeIds.idForPath(newPath), oldPath);
     }
 
     /**
-     * Resets all transient per-project state: in-memory unsaved-id bookkeeping and
-     * persisted staging records. Call on both project open and project close.
+     * Resets transient state of a single project: in-memory unsaved-id bookkeeping and staging records. Call on both
+     * project open and project close. The state of other open projects is not affected.
      */
-    public void resetTransientState() {
-        newProjectIds.clear();
-        newDataMapIds.clear();
-        stagingDataMap.clear();
-        stagingProject.clear();
+    public void resetTransientState(Project project) {
+        if (project == null) {
+            return;
+        }
+
+        newProjectIds.remove(project);
+        for (DataMap map : project.getDataMaps()) {
+            newDataMapIds.remove(map);
+        }
+        staging.remove(project);
     }
 
     /**
@@ -243,6 +251,7 @@ public class PrefsManager {
         }
         newProjectIds.clear();
         newDataMapIds.clear();
+        staging.clear();
 
         if (!importLegacyPreferences && !migrations.isEmpty()) {
             int highest = migrations.getLast().version();
@@ -288,7 +297,8 @@ public class PrefsManager {
         }
         String savedId = PreferenceNodeIds.idForPath(currentPath);
 
-        String stagedOldPath = stagingProject.get(savedId);
+        Staging projectStaging = staging.get(project);
+        String stagedOldPath = projectStaging != null ? projectStaging.projects.get(savedId) : null;
         if (stagedOldPath != null) {
             String oldId = PreferenceNodeIds.idForPath(stagedOldPath);
             if (!oldId.equals(savedId)) {
@@ -303,14 +313,15 @@ public class PrefsManager {
         }
     }
 
-    private void reconcileDataMap(DataMap map) {
+    private void reconcileDataMap(Project project, DataMap map) {
         String currentPath = dataMapPath(map);
         if (currentPath == null) {
             return;
         }
         String savedId = PreferenceNodeIds.idForPath(currentPath);
 
-        String stagedOldPath = stagingDataMap.get(savedId);
+        Staging projectStaging = staging.get(project);
+        String stagedOldPath = projectStaging != null ? projectStaging.dataMaps.get(savedId) : null;
         if (stagedOldPath != null) {
             String oldId = PreferenceNodeIds.idForPath(stagedOldPath);
             if (!oldId.equals(savedId)) {
@@ -323,6 +334,10 @@ public class PrefsManager {
         if (oldId != null && !oldId.equals(savedId)) {
             relocate(locator::dataMapNode, oldId, savedId);
         }
+    }
+
+    private Staging staging(Project project) {
+        return staging.computeIfAbsent(project, p -> new Staging());
     }
 
     private static void relocate(Function<String, Preferences> nodeForId, String oldId, String newId) {
@@ -345,6 +360,14 @@ public class PrefsManager {
 
         Resource resource = map.getConfigurationSource();
         return resource == null ? null : resource.getURL().getPath();
+    }
+
+    /**
+     * Pending rename / move records of a single project, keyed by the new path id, with the old path as a value.
+     */
+    private static class Staging {
+        final Map<String, String> dataMaps = new HashMap<>();
+        final Map<String, String> projects = new HashMap<>();
     }
 
     private static String newUnsavedId() {

@@ -288,7 +288,7 @@ public class DataMapMainView extends ProjectPanel {
 
         // completely new name, set new name for the map
         DataMapEvent e = DataMapEvent.ofChange(this, map, oldName);
-        app.getPrefsManager().stageDataMapRename(map, newName);
+        app.getPrefsManager().stageDataMapRename(session.project(), map, newName);
         map.setName(newName);
 
         session.fireDataMapEvent(e);

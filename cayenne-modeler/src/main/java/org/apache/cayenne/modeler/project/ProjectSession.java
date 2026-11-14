@@ -188,7 +188,7 @@ public class ProjectSession {
     public void projectClosed() {
 
         setDirty(false);
-        app.getPrefsManager().resetTransientState();
+        app.getPrefsManager().resetTransientState(project);
 
         this.project = null;
         this.unusedResources = null;

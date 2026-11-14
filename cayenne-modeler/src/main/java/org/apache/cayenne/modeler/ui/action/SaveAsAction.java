@@ -89,7 +89,7 @@ public class SaveAsAction extends AppAction {
         PrefsManager repo = app.getPrefsManager();
         repo.stageProjectMove(p, projectDir);
         for (DataMap map : p.getDataMaps()) {
-            repo.stageDataMapMove(map, projectDir);
+            repo.stageDataMapMove(p, map, projectDir);
         }
 
         URLResource res = new URLResource(projectDir.toURI().toURL());
