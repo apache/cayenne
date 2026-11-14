@@ -19,101 +19,135 @@
 
 package org.apache.cayenne.access.flush.operation;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Deque;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
- * Graph sorting, copy of DIGraph implementation from cayenne-di.
+ * A dependency graph of {@link DbRowOp}s, with a linear-time (Kahn's algorithm) topological sort. Vertices are
+ * addressed by the index of the op in the list the graph was created with, so the graph does no hashing, no boxing,
+ * and doesn't depend on {@link DbRowOp} "equals". An edge "from -> to" means that "from" depends on "to", so "to"
+ * is sorted before "from".
  */
 class DbRowOpGraph {
 
-	/**
-	 * {@link LinkedHashMap} is used for supporting insertion order.
-	 */
-	private final Map<DbRowOp, List<DbRowOp>> neighbors = new LinkedHashMap<>();
+    private static final int[] NO_EDGES = new int[0];
 
-	DbRowOpGraph() {
-	}
+    private final List<DbRowOp> ops;
 
-	/**
-	 * Add a vertex to the graph. Nothing happens if vertex is already in graph.
-	 */
-	void add(DbRowOp vertex) {
-		neighbors.putIfAbsent(vertex, new ArrayList<>(0));
-	}
+    // adjacency lists, in the edge insertion order
+    private final int[][] edges;
+    private final int[] edgeCounts;
 
-	/**
-	 * Add an edge to the graph; if either vertex does not exist, it's added.
-	 * This implementation allows the creation of multi-edges and self-loops.
-	 */
-	void add(DbRowOp from, DbRowOp to) {
-		neighbors.computeIfAbsent(from, k -> new ArrayList<>(4)).add(to);
-		this.add(to);
-	}
+    // vertices in the order they were first added to the graph, either explicitly or as an edge end
+    private final int[] vertexOrder;
+    private final boolean[] inGraph;
+    private int vertexCount;
 
-	/**
-	 * Return (as a Map) the in-degree of each vertex.
-	 */
-	private Map<DbRowOp, Integer> inDegree() {
-		Map<DbRowOp, Integer> result = LinkedHashMap.newLinkedHashMap(neighbors.size());
+    DbRowOpGraph(List<DbRowOp> ops) {
+        int size = ops.size();
+        this.ops = ops;
+        this.edges = new int[size][];
+        this.edgeCounts = new int[size];
+        this.vertexOrder = new int[size];
+        this.inGraph = new boolean[size];
+        Arrays.fill(edges, NO_EDGES);
+    }
 
-		neighbors.forEach((from, neighbors) -> {
-			neighbors.forEach(to -> result.compute(to, (k, old) -> {
-				if(old == null) {
-					return 1;
-				}
-				return old + 1;
-			}));
-			result.putIfAbsent(from, 0);
-		});
+    /**
+     * Adds a vertex to the graph. Nothing happens if the vertex is already in the graph.
+     */
+    void add(int vertex) {
+        if (!inGraph[vertex]) {
+            inGraph[vertex] = true;
+            vertexOrder[vertexCount++] = vertex;
+        }
+    }
 
-		return result;
-	}
+    /**
+     * Adds an edge to the graph, adding either vertex if it is not there yet. Multi-edges are allowed.
+     */
+    void add(int from, int to) {
+        add(from);
 
-	/**
-	 * Return (as a List) the topological sort of the vertices. Throws an exception if cycles are detected.
-	 */
-	List<DbRowOp> topSort() {
-		Map<DbRowOp, Integer> degree = inDegree();
-		Deque<DbRowOp> zeroDegree = new ArrayDeque<>(neighbors.size() / 2);
-		ArrayList<DbRowOp> result = new ArrayList<>(neighbors.size());
+        int[] fromEdges = edges[from];
+        int count = edgeCounts[from];
+        if (count == fromEdges.length) {
+            fromEdges = Arrays.copyOf(fromEdges, Math.max(4, count * 2));
+            edges[from] = fromEdges;
+        }
+        fromEdges[count] = to;
+        edgeCounts[from] = count + 1;
 
-		degree.forEach((k, v) -> {
-			if(v == 0) {
-				zeroDegree.push(k);
-			}
-		});
+        add(to);
+    }
 
-		while (!zeroDegree.isEmpty()) {
-			DbRowOp v = zeroDegree.removeFirst();
-			result.add(v);
+    /**
+     * Returns the topologically sorted ops, dependencies first. Throws an exception if a cycle is detected.
+     */
+    List<DbRowOp> topSort() {
+        int n = vertexCount;
+        int[] inDegree = new int[ops.size()];
 
-			neighbors.get(v).forEach(neighbor ->
-					degree.computeIfPresent(neighbor, (k, oldValue) -> {
-						int newValue = --oldValue;
-						if(newValue == 0) {
-							zeroDegree.addLast(neighbor);
-						}
-						return newValue;
-					})
-			);
-		}
+        // in-degrees, plus the order of the vertices to seed the queue with. This order (each vertex's targets
+        // first, then the vertex itself) is preserved from the original map-based implementation, as it determines
+        // the relative order of the independent ops.
+        int[] degreeOrder = new int[n];
+        int degreeOrderSize = 0;
+        boolean[] seen = new boolean[ops.size()];
+        for (int i = 0; i < n; i++) {
+            int from = vertexOrder[i];
+            int[] fromEdges = edges[from];
+            for (int e = 0, count = edgeCounts[from]; e < count; e++) {
+                int to = fromEdges[e];
+                inDegree[to]++;
+                if (!seen[to]) {
+                    seen[to] = true;
+                    degreeOrder[degreeOrderSize++] = to;
+                }
+            }
+            if (!seen[from]) {
+                seen[from] = true;
+                degreeOrder[degreeOrderSize++] = from;
+            }
+        }
 
-		// Check that we have used the entire graph (if not, there was a cycle)
-		if (result.size() != neighbors.size()) {
-			Set<DbRowOp> remainingKeys = new HashSet<>(neighbors.keySet());
-			remainingKeys.removeIf(result::contains);
-			throw new IllegalStateException("Cycle detected in list for keys: " + remainingKeys);
-		}
+        // each vertex is queued exactly once, so a plain array works as a FIFO queue. Seed vertices go in reverse
+        int[] queue = new int[n];
+        int tail = 0;
+        for (int i = degreeOrderSize - 1; i >= 0; i--) {
+            if (inDegree[degreeOrder[i]] == 0) {
+                queue[tail++] = degreeOrder[i];
+            }
+        }
 
-		Collections.reverse(result);
-		return result;
-	}
+        for (int head = 0; head < tail; head++) {
+            int v = queue[head];
+            int[] vEdges = edges[v];
+            for (int e = 0, count = edgeCounts[v]; e < count; e++) {
+                int to = vEdges[e];
+                if (--inDegree[to] == 0) {
+                    queue[tail++] = to;
+                }
+            }
+        }
+
+        // if not all the vertices were queued, there was a cycle
+        if (tail != n) {
+            List<DbRowOp> remaining = new ArrayList<>(n - tail);
+            for (int i = 0; i < n; i++) {
+                if (inDegree[vertexOrder[i]] > 0) {
+                    remaining.add(ops.get(vertexOrder[i]));
+                }
+            }
+            throw new IllegalStateException("Cycle detected in list for keys: " + remaining);
+        }
+
+        // the queue has the dependents first, so reverse it
+        List<DbRowOp> result = new ArrayList<>(n);
+        for (int i = n - 1; i >= 0; i--) {
+            result.add(ops.get(queue[i]));
+        }
+        return result;
+    }
 }

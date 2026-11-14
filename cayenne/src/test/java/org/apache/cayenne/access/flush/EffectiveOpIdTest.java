@@ -30,14 +30,21 @@ public class EffectiveOpIdTest {
 
     @Test
     public void equalsTempGeneratedId() {
+        IdGenerationMarker marker = IdGenerationMarker.marker();
         ObjectId id1 = ObjectId.of("test");
-        id1.getReplacementIdMap().put("pk", IdGenerationMarker.marker());
-        EffectiveOpId effectiveOpId1 = new EffectiveOpId("test", Collections.singletonMap("pk", IdGenerationMarker.marker()));
+        id1.getReplacementIdMap().put("pk", marker);
+        EffectiveOpId effectiveOpId1 = new EffectiveOpId("test", Collections.singletonMap("pk", marker));
 
-        EffectiveOpId effectiveOpId2 = new EffectiveOpId("test", Collections.singletonMap("pk", ObjectIdValueSupplier.getFor(id1, "pk")));
-
+        // the deferred value of the PK resolves to the marker
+        EffectiveOpId effectiveOpId2 = new EffectiveOpId(
+                "test",
+                Collections.singletonMap("pk", ObjectIdValueSupplier.getFor(id1, "pk")));
         assertEquals(effectiveOpId1, effectiveOpId2);
+
+        // the PKs not generated yet are all different (CAY-2801)
         assertNotEquals(id1.getReplacementIdMap().get("pk"), IdGenerationMarker.marker());
+        EffectiveOpId effectiveOpId3 = new EffectiveOpId("test", Collections.singletonMap("pk", IdGenerationMarker.marker()));
+        assertNotEquals(effectiveOpId1, effectiveOpId3);
     }
 
 }

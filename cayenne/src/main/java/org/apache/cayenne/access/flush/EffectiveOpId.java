@@ -71,7 +71,8 @@ public class EffectiveOpId {
 
         EffectiveOpId that = (EffectiveOpId) o;
 
-        if(id == that.id) return true;
+        // the ids built from FK snapshots have no ObjectId, and must be compared by the snapshots
+        if(id != null && id == that.id) return true;
 
         if(snapshot.isEmpty()) {
             return false;

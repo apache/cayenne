@@ -20,6 +20,7 @@
 package org.apache.cayenne.access.flush.operation;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -102,23 +103,37 @@ public class GraphBasedDbRowOpSorter implements DbRowOpSorter {
         // lazy init Cayenne model data
         Map<CompiledTable, List<CompiledJoin>> relationships = initDataSync();
 
-        // build index op by ID
-        Map<EffectiveOpId, List<DbRowOp>> indexById = HashMap.newHashMap(dbRows.size());
-        dbRows.forEach(op -> indexById
-                .computeIfAbsent(effectiveIdFor(op), id -> new ArrayList<>(1))
-                .add(op)
-        );
-        boolean hasMeaningfulIds = indexById.size() != dbRows.size();
+        // ops are addressed by their index in the list from here on
+        int size = dbRows.size();
+        DbRowOpType[] types = new DbRowOpType[size];
+        EffectiveOpId[] ids = new EffectiveOpId[size];
+
+        // build op index by ID. Multiple ops per ID are only possible with meaningful IDs, so the value arrays are
+        // almost always of size 1
+        Map<EffectiveOpId, int[]> indexById = HashMap.newHashMap(size);
+        for (int i = 0; i < size; i++) {
+            DbRowOp op = dbRows.get(i);
+            types[i] = op.accept(rowOpTypeVisitor);
+            ids[i] = effectiveIdFor(op);
+
+            int[] sameIdOps = indexById.putIfAbsent(ids[i], new int[]{i});
+            if (sameIdOps != null) {
+                int[] expanded = Arrays.copyOf(sameIdOps, sameIdOps.length + 1);
+                expanded[sameIdOps.length] = i;
+                indexById.put(ids[i], expanded);
+            }
+        }
+        boolean hasMeaningfulIds = indexById.size() != size;
 
         // build ops dependency graph
-        DbRowOpGraph graph = new DbRowOpGraph();
-        dbRows.forEach(op -> {
-            processRelationships(relationships, indexById, graph, op);
-            if(hasMeaningfulIds) {
-                processMeaningfulIds(indexById, graph, op);
+        DbRowOpGraph graph = new DbRowOpGraph(dbRows);
+        for (int i = 0; i < size; i++) {
+            processRelationships(relationships, indexById, types, graph, dbRows, i);
+            if (hasMeaningfulIds) {
+                processMeaningfulIds(indexById, types, ids, graph, i);
             }
-            graph.add(op);
-        });
+            graph.add(i);
+        }
 
         // sort
         return graph.topSort();
@@ -126,90 +141,116 @@ public class GraphBasedDbRowOpSorter implements DbRowOpSorter {
 
     private void processRelationships(
             Map<CompiledTable, List<CompiledJoin>> relationships,
-            Map<EffectiveOpId, List<DbRowOp>> indexByDbId,
+            Map<EffectiveOpId, int[]> indexById,
+            DbRowOpType[] types,
             DbRowOpGraph graph,
-            DbRowOp op) {
-        // get graph edges for reflexive relationships
-        DbRowOpType opType = op.accept(rowOpTypeVisitor);
-        relationships.getOrDefault(op.getEntity(), Collections.emptyList()).forEach(relationship ->
-            getParentsOpId(op, relationship).forEach((parentOpId, snapshot) ->
-                indexByDbId.getOrDefault(parentOpId, Collections.emptyList()).forEach(parentOp -> {
-                    if(op == parentOp) {
-                        return;
-                    }
-                    DbRowOpType parentOpType = parentOp.accept(rowOpTypeVisitor);
-                    // 1. Our insert can depend on others insert or update
-                    // 2. Our update can depend on others insert or update, or others delete can depend on our update
-                    // 3. Others delete can depend on our delete
-                    switch (opType) {
-                        case INSERT:
-                            if(parentOpType != DbRowOpType.DELETE) {
-                                graph.add(op, parentOp);
-                            }
-                            break;
-                        case UPDATE:
-                            switch (parentOpType) {
-                                case INSERT:
-                                    graph.add(op, parentOp);
-                                    break;
-                                case DELETE:
-                                    graph.add(parentOp, op);
-                                    break;
-                                case UPDATE:
-                                    // Update will only depend on the operations where FK could be affected
-                                    Boolean fkReferenceUpdated = parentOp.accept(new FkUpdateChecker(relationship));
-                                    if (fkReferenceUpdated == Boolean.TRUE) {
-                                        // TODO: this sorting logic works only for the setting relationship to null case
-                                        //       if the meaningful PK is updated we got more places to cover, before fixing this logic
-                                        //       namely:
-                                        //          - no update would be generated for any dependent entities for the master PK update
-                                        //          - update would fail with constraint violation even if it is generated
-                                        graph.add(parentOp, op);
-                                    }
-                                    break;
-                            }
-                            break;
-                        case DELETE:
-                            if(parentOpType == DbRowOpType.DELETE) {
-                                graph.add(parentOp, op);
-                            }
-                    }
-                })
-            )
-        );
-    }
+            List<DbRowOp> dbRows,
+            int opIndex) {
 
-    private void processMeaningfulIds(Map<EffectiveOpId, List<DbRowOp>> indexById, DbRowOpGraph graph, DbRowOp op) {
-        // get graph edges from same ID operations, for such operations delete depends on other operations
-        indexById.get(effectiveIdFor(op)).forEach(sameIdOp -> {
-            if(op == sameIdOp) {
-                return;
-            }
-            DbRowOpType sameIdOpType = sameIdOp.accept(rowOpTypeVisitor);
-            if(sameIdOpType == DbRowOpType.DELETE) {
-                graph.add(op, sameIdOp);
-            }
-        });
-    }
+        DbRowOp op = dbRows.get(opIndex);
+        List<CompiledJoin> joins = relationships.get(op.getEntity());
+        if (joins == null) {
+            return;
+        }
 
-    private Map<EffectiveOpId, Map<String, Object>> getParentsOpId(DbRowOp op, CompiledJoin join) {
-        List<Map<String, Object>> parentIdSnapshots = op.accept(new DbRowOpSnapshotVisitor(join));
-        if(parentIdSnapshots.size() == 1) {
-            EffectiveOpId id = effectiveIdFor(join, parentIdSnapshots.get(0));
-            if(id != null) {
-                return Collections.singletonMap(id, parentIdSnapshots.get(0));
-            } else {
-                return Collections.emptyMap();
-            }
-        } else {
-            Map<EffectiveOpId, Map<String, Object>> effectiveOpIds = HashMap.newHashMap(parentIdSnapshots.size());
-            parentIdSnapshots.forEach(snapshot -> {
-                EffectiveOpId id = this.effectiveIdFor(join, snapshot);
-                if(id != null) {
-                    effectiveOpIds.put(id, snapshot);
+        DbRowOpType opType = types[opIndex];
+        for (CompiledJoin relationship : joins) {
+            List<Map<String, Object>> parentSnapshots = op.accept(new DbRowOpSnapshotVisitor(relationship));
+            EffectiveOpId prevParentId = null;
+            for (Map<String, Object> parentSnapshot : parentSnapshots) {
+                EffectiveOpId parentId = effectiveIdFor(relationship, parentSnapshot);
+
+                // there are at most 2 snapshots (new and old state of an UPDATE), so checking for a duplicate ID
+                // against the previous one is enough
+                if (parentId == null || parentId.equals(prevParentId)) {
+                    continue;
                 }
-            });
-            return effectiveOpIds;
+                prevParentId = parentId;
+
+                int[] parentOps = indexById.get(parentId);
+                if (parentOps == null) {
+                    continue;
+                }
+
+                for (int parentIndex : parentOps) {
+                    if (parentIndex != opIndex) {
+                        addRelationshipEdge(graph, dbRows, relationship, opIndex, opType, parentIndex,
+                                types[parentIndex]);
+                    }
+                }
+            }
+        }
+    }
+
+    private static void addRelationshipEdge(
+            DbRowOpGraph graph,
+            List<DbRowOp> dbRows,
+            CompiledJoin relationship,
+            int opIndex,
+            DbRowOpType opType,
+            int parentIndex,
+            DbRowOpType parentOpType) {
+
+        // 1. Our insert can depend on others insert or update
+        // 2. Our update can depend on others insert or update, or others delete can depend on our update
+        // 3. Others delete can depend on our delete
+        switch (opType) {
+            case INSERT -> {
+                if (parentOpType != DbRowOpType.DELETE) {
+                    graph.add(opIndex, parentIndex);
+                }
+            }
+            case UPDATE -> {
+                switch (parentOpType) {
+                    case INSERT -> graph.add(opIndex, parentIndex);
+                    case DELETE -> graph.add(parentIndex, opIndex);
+                    case UPDATE -> {
+                        // Update will only depend on the operations where FK could be affected
+                        if (fkReferenceUpdated((UpdateDbRowOp) dbRows.get(parentIndex), relationship)) {
+                            // TODO: this sorting logic works only for the setting relationship to null case
+                            //       if the meaningful PK is updated we got more places to cover, before fixing this
+                            //       logic namely:
+                            //          - no update would be generated for any dependent entities for the master PK
+                            //            update
+                            //          - update would fail with constraint violation even if it is generated
+                            graph.add(parentIndex, opIndex);
+                        }
+                    }
+                }
+            }
+            case DELETE -> {
+                if (parentOpType == DbRowOpType.DELETE) {
+                    graph.add(parentIndex, opIndex);
+                }
+            }
+        }
+    }
+
+    private static boolean fkReferenceUpdated(UpdateDbRowOp parentOp, CompiledJoin join) {
+        List<CompiledColumn> updatedColumns = parentOp.getValues().getUpdatedAttributes();
+        for (CompiledColumnPair pair : join.columnPairs()) {
+            String targetName = pair.target().name();
+            for (CompiledColumn column : updatedColumns) {
+                if (column.name().equals(targetName)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private static void processMeaningfulIds(
+            Map<EffectiveOpId, int[]> indexById,
+            DbRowOpType[] types,
+            EffectiveOpId[] ids,
+            DbRowOpGraph graph,
+            int opIndex) {
+
+        // get graph edges from same ID operations, for such operations delete depends on other operations
+        for (int sameIdIndex : indexById.get(ids[opIndex])) {
+            if (sameIdIndex != opIndex && types[sameIdIndex] == DbRowOpType.DELETE) {
+                graph.add(opIndex, sameIdIndex);
+            }
         }
     }
 
@@ -332,26 +373,6 @@ public class GraphBasedDbRowOpSorter implements DbRowOpSorter {
         @Override
         public DbRowOpType visitUpdate(UpdateDbRowOp dbRow) {
             return DbRowOpType.UPDATE;
-        }
-    }
-
-    private static class FkUpdateChecker implements DbRowOpVisitor<Boolean> {
-        private final CompiledJoin join;
-
-        public FkUpdateChecker(CompiledJoin join) {
-            this.join = join;
-        }
-
-        @Override
-        public Boolean visitUpdate(UpdateDbRowOp dbRow) {
-            for(CompiledColumnPair join : join.columnPairs()) {
-                for (CompiledColumn column : dbRow.getValues().getUpdatedAttributes()) {
-                    if (column.name().equals(join.target().name())) {
-                        return true;
-                    }
-                }
-            }
-            return false;
         }
     }
 }
