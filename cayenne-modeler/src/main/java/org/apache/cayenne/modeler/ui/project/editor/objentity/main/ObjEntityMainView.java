@@ -179,11 +179,11 @@ public class ObjEntityMainView extends ProjectPanel implements ObjEntityDisplayL
                 }
 
                 if (duplicateAttributes != null && !duplicateAttributes.isEmpty()) {
-                    DuplicatedAttributesDialog.showDialog(
+                    boolean proceeded = DuplicatedAttributesDialog.showDialog(
                             app,
-                            app.getFrame(),
+                            SwingUtilities.getWindowAncestor(this),
                             session, duplicateAttributes, superEntity, entity);
-                    if (DuplicatedAttributesDialog.getResult().equals(DuplicatedAttributesDialog.CANCEL_RESULT)) {
+                    if (!proceeded) {
                         superEntityCombo.setSelectedItem(entity.getSuperEntity());
                         superClassName.setText(entity.getSuperClassName());
                         return;

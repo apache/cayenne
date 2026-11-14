@@ -49,15 +49,8 @@ import java.util.List;
  */
 public class DuplicatedAttributesDialog extends AppDialog {
 
-    protected static DuplicatedAttributesDialog instance;
-
     private static final String DELETE_ACTION = "delete";
     private static final String RENAME_ACTION = "rename";
-
-    public static final String CANCEL_RESULT = "cancel";
-    public static final String PROCEEDED_RESULT = "proceeded";
-
-    static String result = CANCEL_RESULT;
 
     protected List<DuplicatedAttributeInfo> duplicatedAttributes;
 
@@ -68,27 +61,30 @@ public class DuplicatedAttributesDialog extends AppDialog {
     protected JButton cancelButton;
     protected JButton proceedButton;
 
-    public static void showDialog(Application application, Window owner, ProjectSession session,
-                                  List<ObjAttribute> duplicatedAttributes,
-                                  ObjEntity superEntity, ObjEntity entity) {
+    private boolean proceeded;
 
-        if (instance == null) {
-            instance = new DuplicatedAttributesDialog(application, owner);
-            instance.centerOnOwner();
-        }
+    /**
+     * Shows a modal dialog to resolve the attribute name collisions, returning true if the user chose to proceed,
+     * and false if the operation was canceled.
+     */
+    public static boolean showDialog(Application application, Window owner, ProjectSession session,
+                                     List<ObjAttribute> duplicatedAttributes,
+                                     ObjEntity superEntity, ObjEntity entity) {
 
-        instance.setSuperEntity(superEntity);
-        instance.setEntity(entity);
-        instance.setDuplicatedAttributes(session, duplicatedAttributes);
-        instance.updateTable();
-        instance.setVisible(true);
+        DuplicatedAttributesDialog dialog = new DuplicatedAttributesDialog(application, owner);
+        dialog.centerOnOwner();
+        dialog.setSuperEntity(superEntity);
+        dialog.setEntity(entity);
+        dialog.setDuplicatedAttributes(session, duplicatedAttributes);
+        dialog.updateTable();
+        dialog.setVisible(true);
+        return dialog.proceeded;
     }
 
     protected DuplicatedAttributesDialog(Application application, Window owner) {
         super(application, owner, "Duplicated Attributes", ModalityType.APPLICATION_MODAL);
 
         makeCloseableOnEscape();
-        result = CANCEL_RESULT;
 
         initView();
         initController();
@@ -126,21 +122,17 @@ public class DuplicatedAttributesDialog extends AppDialog {
     private void initController() {
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         cancelButton.addActionListener(e -> {
-            result = CANCEL_RESULT;
+            proceeded = false;
             setVisible(false);
             dispose();
         });
 
         proceedButton.addActionListener(e -> {
             applyChanges();
-            result = PROCEEDED_RESULT;
+            proceeded = true;
             setVisible(false);
             dispose();
         });
-    }
-
-    public static String getResult() {
-        return result;
     }
 
     private void updateTable() {
