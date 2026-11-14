@@ -50,10 +50,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
 
 public class DataContextIT {
 
@@ -343,11 +342,13 @@ public class DataContextIT {
 
 	@Test
 	public void performQuery_Routing() {
-		Query<?> query = mock(Query.class);
-		when(query.resolve(any(CompiledMapping.class)))
-				.thenReturn(ObjectSelect.query(Artist.class).resolve(context.getMapping()));
+		List<CompiledMapping> resolvedWith = new ArrayList<>();
+		Query<Artist> query = mapping -> {
+			resolvedWith.add(mapping);
+			return ObjectSelect.query(Artist.class).resolve(mapping);
+		};
 		context.execute(query);
-		verify(query).resolve(eq(context.getMapping()));
+		assertEquals(List.of(context.getMapping()), resolvedWith);
 	}
 
 	@Test

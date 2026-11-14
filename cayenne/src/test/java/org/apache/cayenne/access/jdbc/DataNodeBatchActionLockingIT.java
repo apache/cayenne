@@ -24,7 +24,6 @@ import org.apache.cayenne.unit.DataNodes;
 import org.apache.cayenne.access.OptimisticLockException;
 import org.apache.cayenne.access.StatementContext;
 import org.apache.cayenne.access.StatementContexts;
-import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
 import org.apache.cayenne.access.translator.TranslatedBatch;
 import org.apache.cayenne.access.translator.batch.DeleteBatchTranslator;
 import org.apache.cayenne.dba.JdbcAdapter;
@@ -49,7 +48,6 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.mock;
 
 public class DataNodeBatchActionLockingIT {
 
@@ -83,7 +81,7 @@ public class DataNodeBatchActionLockingIT {
 
 		boolean generatesKeys = false;
 
-		DataNode node = DataNodes.withAdapter(adapter, mock(RowReaderFactory.class));
+		DataNode node = DataNodes.withAdapter(adapter);
 		DataNodeBatchAction action = new DataNodeBatchAction(translated, node, false);
 		StatementContext statementContext = StatementContexts.newRun(node, mapping, batchQuery);
 		statementContext.setTranslatedStatement(translated);
@@ -107,7 +105,7 @@ public class DataNodeBatchActionLockingIT {
 
 		boolean generatesKeys = false;
 
-		DataNode node = DataNodes.withAdapter(adapter, mock(RowReaderFactory.class));
+		DataNode node = DataNodes.withAdapter(adapter);
 		DataNodeBatchAction action = new DataNodeBatchAction(translated, node, false);
 		StatementContext statementContext = StatementContexts.newRun(node, mapping, batchQuery);
 		statementContext.setTranslatedStatement(translated);

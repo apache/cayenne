@@ -62,7 +62,7 @@ public class HavingTranslationStageTest {
                 .withHaving(having)
                 .withDbEntity(mapping.schema().table("mock"))
                 .build();
-        return new MockSelectTranslatorContext(query);
+        return new TestSelectTranslatorContext(query);
     }
 
     @Test

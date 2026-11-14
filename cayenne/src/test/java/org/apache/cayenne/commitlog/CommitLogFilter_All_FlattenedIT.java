@@ -22,34 +22,31 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.commitlog.db.E3;
 import org.apache.cayenne.commitlog.db.E4;
-import org.apache.cayenne.commitlog.model.ChangeMap;
 import org.apache.cayenne.commitlog.model.ObjectChange;
 import org.apache.cayenne.commitlog.model.ObjectChangeType;
 import org.apache.cayenne.commitlog.model.ToManyRelationshipChange;
+import org.apache.cayenne.commitlog.unit.RecordingCommitLogListener;
 import org.apache.cayenne.commitlog.unit.FlattenedRuntimeCase;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.CoreModule;
 import org.apache.cayenne.CayenneRuntimeBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.stubbing.Answer;
 
 import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 public class CommitLogFilter_All_FlattenedIT extends FlattenedRuntimeCase {
 
 	protected ObjectContext context;
-	protected CommitLogListener mockListener;
+	protected RecordingCommitLogListener listener;
 
 	@Override
 	protected CayenneRuntimeBuilder configureCayenne() {
-		this.mockListener = mock(CommitLogListener.class);
+		this.listener = new RecordingCommitLogListener();
 		return super.configureCayenne()
-				.addModule(b -> CoreModule.extend(b).addCommitLogListener(mockListener));
+				.addModule(b -> CoreModule.extend(b).addCommitLogListener(listener));
 	}
 
 	@BeforeEach
@@ -68,11 +65,10 @@ public class CommitLogFilter_All_FlattenedIT extends FlattenedRuntimeCase {
 		E4 e4_1 = ObjectSelect.query(E4.class).where(E4.SELF.eqId(11)).selectOne(context);
 		E4 e4_2 = ObjectSelect.query(E4.class).where(E4.SELF.eqId(12)).selectOne(context);
 
-		doAnswer((Answer<Object>) invocation -> {
+		listener.onCommit((originatingContext, changes) -> {
 
-			assertSame(context, invocation.getArguments()[0]);
+			assertSame(context, originatingContext);
 
-			ChangeMap changes = (ChangeMap) invocation.getArguments()[1];
 			assertNotNull(changes);
 			assertEquals(3, changes.getUniqueChanges().size());
 
@@ -118,16 +114,14 @@ public class CommitLogFilter_All_FlattenedIT extends FlattenedRuntimeCase {
 
 			assertEquals(1, e42c1.getAdded().size());
 			assertTrue(e42c1.getAdded().contains(e3.getObjectId()));
-
-			return null;
-		}).when(mockListener).onPostCommit(any(ObjectContext.class), any(ChangeMap.class));
+		});
 
 		e3.removeFromE4s(e4_1);
 		e3.addToE4s(e4_2);
 
 		context.commitChanges();
 
-		verify(mockListener).onPostCommit(any(ObjectContext.class), any(ChangeMap.class));
+		listener.singleCall();
 	}
 
 }

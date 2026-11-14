@@ -19,21 +19,20 @@
 
 package org.apache.cayenne.access.types;
 
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Types;
 import java.util.UUID;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.unit.jdbc.TestConnection;
+import org.apache.cayenne.unit.jdbc.TestPreparedStatement;
+import org.apache.cayenne.unit.jdbc.TestResultSet;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 public class UUIDTypeTest {
 
@@ -76,16 +75,14 @@ public class UUIDTypeTest {
 
     @Test
     public void materializeFromCharColumn() throws Exception {
-        ResultSet rs = mock(ResultSet.class);
-        when(rs.getString(1)).thenReturn(UUID_VALUE.toString());
+        ResultSet rs = row(UUID_VALUE.toString());
 
         assertEquals(UUID_VALUE, type.materializeObject(rs, 1, Types.VARCHAR));
     }
 
     @Test
     public void materializeFromCharColumnRejectsMalformedValue() throws Exception {
-        ResultSet rs = mock(ResultSet.class);
-        when(rs.getString(1)).thenReturn("not-a-uuid-100%");
+        ResultSet rs = row("not-a-uuid-100%");
 
         CayenneRuntimeException e = assertThrows(CayenneRuntimeException.class,
                 () -> type.materializeObject(rs, 1, Types.VARCHAR));
@@ -94,30 +91,21 @@ public class UUIDTypeTest {
 
     @Test
     public void materializeFromBinaryColumn() throws Exception {
-        ResultSet rs = mock(ResultSet.class);
-        when(rs.getBytes(1)).thenReturn(UUID_BYTES);
+        ResultSet rs = row(UUID_BYTES);
 
         assertEquals(UUID_VALUE, type.materializeObject(rs, 1, Types.VARBINARY));
     }
 
     @Test
     public void materializeFromOtherColumn() throws Exception {
-        ResultSet rs = mock(ResultSet.class);
-
-        when(rs.getObject(1)).thenReturn(UUID_VALUE);
-        assertEquals(UUID_VALUE, type.materializeObject(rs, 1, Types.OTHER));
-
-        when(rs.getObject(1)).thenReturn(UUID_VALUE.toString());
-        assertEquals(UUID_VALUE, type.materializeObject(rs, 1, Types.OTHER));
-
-        when(rs.getObject(1)).thenReturn(UUID_BYTES);
-        assertEquals(UUID_VALUE, type.materializeObject(rs, 1, Types.OTHER));
+        assertEquals(UUID_VALUE, type.materializeObject(row(UUID_VALUE), 1, Types.OTHER));
+        assertEquals(UUID_VALUE, type.materializeObject(row(UUID_VALUE.toString()), 1, Types.OTHER));
+        assertEquals(UUID_VALUE, type.materializeObject(row(UUID_BYTES), 1, Types.OTHER));
     }
 
     @Test
     public void materializeFromOtherColumnRejectsUnknownValue() throws Exception {
-        ResultSet rs = mock(ResultSet.class);
-        when(rs.getObject(1)).thenReturn(42);
+        ResultSet rs = row(42);
 
         CayenneRuntimeException e = assertThrows(CayenneRuntimeException.class,
                 () -> type.materializeObject(rs, 1, Types.OTHER));
@@ -126,7 +114,7 @@ public class UUIDTypeTest {
 
     @Test
     public void materializeNull() throws Exception {
-        ResultSet rs = mock(ResultSet.class);
+        ResultSet rs = row(null);
 
         assertNull(type.materializeObject(rs, 1, Types.VARCHAR));
         assertNull(type.materializeObject(rs, 1, Types.VARBINARY));
@@ -135,39 +123,51 @@ public class UUIDTypeTest {
 
     @Test
     public void setJdbcObjectOnCharColumn() throws Exception {
-        PreparedStatement st = mock(PreparedStatement.class);
+        TestPreparedStatement st = statement();
         type.setJdbcObject(st, UUID_VALUE, 1, Types.VARCHAR, -1);
 
-        verify(st).setString(1, UUID_VALUE.toString());
+        assertEquals(UUID_VALUE.toString(), st.getParameter(1));
     }
 
     @Test
     public void setJdbcObjectOnBinaryColumn() throws Exception {
-        PreparedStatement st = mock(PreparedStatement.class);
+        TestPreparedStatement st = statement();
         type.setJdbcObject(st, UUID_VALUE, 1, Types.VARBINARY, -1);
 
-        verify(st).setBytes(1, UUID_BYTES);
+        assertArrayEquals(UUID_BYTES, (byte[]) st.getParameter(1));
     }
 
     @Test
     public void setJdbcObjectOnOtherColumn() throws Exception {
-        PreparedStatement st = mock(PreparedStatement.class);
+        TestPreparedStatement st = statement();
         type.setJdbcObject(st, UUID_VALUE, 1, Types.OTHER, -1);
 
-        verify(st).setObject(1, UUID_VALUE);
+        assertEquals(UUID_VALUE, st.getParameter(1));
     }
 
     @Test
     public void setJdbcObjectNull() throws Exception {
-        PreparedStatement st = mock(PreparedStatement.class);
+        TestPreparedStatement st = statement();
         type.setJdbcObject(st, null, 1, Types.VARBINARY, -1);
 
-        verify(st).setNull(1, Types.VARBINARY);
+        assertEquals(new TestPreparedStatement.Null(Types.VARBINARY), st.getParameter(1));
     }
 
     @Test
     public void typeToString() {
         assertEquals("NULL", type.toString(null));
         assertEquals("'00112233-4455-6677-8899-aabbccddeeff'", type.toString(UUID_VALUE));
+    }
+
+    // a result set positioned on its only row, with a single column holding the value
+    private static ResultSet row(Object value) {
+        TestResultSet rs = new TestResultSet("rs");
+        rs.addColumn("c", new Object[]{value});
+        rs.next();
+        return rs;
+    }
+
+    private static TestPreparedStatement statement() {
+        return new TestPreparedStatement(new TestConnection(), "INSERT", 1);
     }
 }

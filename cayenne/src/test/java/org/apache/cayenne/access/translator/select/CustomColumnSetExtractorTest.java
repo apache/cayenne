@@ -74,7 +74,7 @@ public class CustomColumnSetExtractorTest extends BaseColumnExtractorTest {
                 .withResultSetMapping(new ResultSegments(
                         List.of(new ScalarResultSegment("name", String.class, -1)), true))
                 .build();
-        SelectTranslatorContext context = new MockSelectTranslatorContext(query, mapping);
+        SelectTranslatorContext context = new TestSelectTranslatorContext(query, mapping);
 
         CustomColumnSetExtractor extractor = new CustomColumnSetExtractor(context, properties);
         extractor.extract();

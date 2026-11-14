@@ -20,7 +20,6 @@ package org.apache.cayenne.access.translator.select;
 
 import java.util.Set;
 
-import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.compiled.CompiledMapping;
 import org.apache.cayenne.map.compiled.CompiledEntity;
 import org.apache.cayenne.query.ObjectSelect;
@@ -28,9 +27,9 @@ import org.apache.cayenne.testdo.inheritance_vertical.IvRoot;
 import org.apache.cayenne.testdo.inheritance_vertical.IvSub3;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
+import org.apache.cayenne.unit.TestAdapters;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.mockito.Mockito;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -51,7 +50,7 @@ public class DescriptorColumnExtractorVerticalInheritanceIT {
         CompiledEntity entity = mapping.entity(entityName);
 
         SelectTranslatorContext translatorContext =
-                new SelectTranslatorContext(query.resolve(mapping), Mockito.mock(DbAdapter.class), mapping, null);
+                new SelectTranslatorContext(query.resolve(mapping), TestAdapters.jdbc(), mapping, null);
 
         new DescriptorColumnExtractor(translatorContext, entity).extract();
         return translatorContext;

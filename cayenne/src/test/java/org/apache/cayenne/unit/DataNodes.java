@@ -36,6 +36,15 @@ public final class DataNodes {
         return new DataNode(name, null, null, null, null, null, null, null, null, null, null, null);
     }
 
+    /**
+     * Returns a node with the given adapter, for the code that does not read any rows.
+     */
+    public static DataNode withAdapter(DbAdapter adapter) {
+        return withAdapter(adapter, (columns, segments, query, a) -> {
+            throw new UnsupportedOperationException("This node does not read rows");
+        });
+    }
+
     public static DataNode withAdapter(DbAdapter adapter, RowReaderFactory rowReaderFactory) {
         return new DataNode(null, null, () -> adapter, null, null, rowReaderFactory, null, null, null, null, null,
                 null);

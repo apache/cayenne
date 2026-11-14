@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.editor.templateeditor;
+package org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.templateeditor;
 
 import org.apache.cayenne.project.xml.DefaultProjectMetaData;
 import org.apache.cayenne.gen.ClassGenerationAction;
@@ -26,41 +26,21 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.NamedQuery;
-import org.apache.cayenne.modeler.Application;
-import org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.templateeditor.ArtefactsConfigurator;
-import org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.templateeditor.DataMapArtefactsConfigurator;
-import org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.templateeditor.EmbeddableArtefactsConfigurator;
-import org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.templateeditor.EntityArtefactsConfigurator;
-import org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.templateeditor.PreviewActionConfigurator;
-import org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.templateeditor.TemplateEditor;
+import org.apache.cayenne.map.NamedSelectQuery;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import java.io.Writer;
-import org.apache.cayenne.map.NamedSelectQuery;
-
-import static org.mockito.Mockito.mock;
 
 public class PreviewActionConfiguratorTest {
 
     private static final String TEST_TEMPLATE_TEXT = "TestTemplate";
-    private TemplateEditor editor;
-
+    private DataMap dataMap;
 
     @BeforeEach
     public void config() {
-        DataMap dataMap = configureDataMap();
-
-        Application application = mock(Application.class);
-
-        this.editor = mock(TemplateEditor.class);
-
-        Mockito.when(editor.app()).thenReturn(application);
-        Mockito.when(application.getMetaData()).thenReturn(new DefaultProjectMetaData());
-        Mockito.when(editor.getCurrentDataMap()).thenReturn(dataMap);
-
+        this.dataMap = configureDataMap();
     }
 
     private DataMap configureDataMap() {
@@ -96,11 +76,12 @@ public class PreviewActionConfiguratorTest {
 
     private void actionTest(String artifactName, TemplateType type, ArtefactsConfigurator configurator) throws Exception {
 
-        Mockito.when(editor.getSelectedArtifactName()).thenReturn(artifactName);
-        Mockito.when(editor.getTemplateType()).thenReturn(type);
-        Mockito.when(editor.getArtefactsConfigurator()).thenReturn(configurator);
-
-        PreviewActionConfigurator actionConfigurator = new PreviewActionConfigurator(editor);
+        PreviewActionConfigurator actionConfigurator = new PreviewActionConfigurator(
+                type,
+                configurator,
+                new DefaultProjectMetaData(),
+                () -> dataMap,
+                () -> artifactName);
         ClassGenerationAction action = actionConfigurator.preparePreviewAction(TEST_TEMPLATE_TEXT);
         action.execute();
         Writer writer = actionConfigurator.getWriter();

@@ -19,17 +19,16 @@
 
 package org.apache.cayenne.datasource;
 
+import org.apache.cayenne.unit.jdbc.TestConnection;
+import org.apache.cayenne.unit.jdbc.TestDataSource;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.stubbing.Answer;
-import org.mockito.stubbing.OngoingStubbing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -39,9 +38,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class ManagedPoolingDataSourceIT {
 
@@ -62,7 +58,8 @@ public class ManagedPoolingDataSourceIT {
 		parameters.setMinConnections(poolSize / 2);
 		parameters.setMaxQueueWaitTime(1000);
 		parameters.setValidationQuery("SELECT 1");
-        UnmanagedPoolingDataSource unmanagedPool = new UnmanagedPoolingDataSource(dataSourceManager.mockDataSource, parameters);
+        UnmanagedPoolingDataSource unmanagedPool =
+                new UnmanagedPoolingDataSource(dataSourceManager.dataSource, parameters);
 		this.managedPool = new ManagedPoolingDataSource(unmanagedPool, 10000);
 	}
 
@@ -150,36 +147,25 @@ public class ManagedPoolingDataSourceIT {
 
 		static final String NO_CONNECTIONS_MESSAGE = "no connections at the moment";
 
-		private final DataSource mockDataSource;
-		private final OngoingStubbing<Connection> createConnectionMock;
+		private volatile boolean on = true;
 
-		OnOffDataSourceManager() throws SQLException {
-			this.mockDataSource = mock(DataSource.class);
-			this.createConnectionMock = when(mockDataSource.getConnection());
-			on();
-		}
+		// opens a new connection on every call, unless the DB is "off"
+		private final DataSource dataSource = new TestDataSource() {
+			@Override
+			public Connection getConnection() throws SQLException {
+				if (!on) {
+					throw new SQLException(NO_CONNECTIONS_MESSAGE);
+				}
+				return new TestConnection();
+			}
+		};
 
 		void off() {
-			createConnectionMock.thenAnswer((Answer<Connection>) invocation -> {
-                throw new SQLException(NO_CONNECTIONS_MESSAGE);
-            });
+			on = false;
 		}
 
-		void on() throws SQLException {
-			createConnectionMock.thenAnswer((Answer<Connection>) invocation -> {
-                Connection c = mock(Connection.class);
-                when(c.createStatement()).thenAnswer((Answer<Statement>) invocation1 -> {
-
-                    ResultSet mockRs = mock(ResultSet.class);
-                    when(mockRs.next()).thenReturn(true, false, false, false);
-
-                    Statement mockStatement = mock(Statement.class);
-                    when(mockStatement.executeQuery(anyString())).thenReturn(mockRs);
-                    return mockStatement;
-                });
-
-                return c;
-            });
+		void on() {
+			on = true;
 		}
 	}
 }

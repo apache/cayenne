@@ -38,16 +38,25 @@ import java.sql.SQLXML;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Minimal JDBC {@link PreparedStatement} stub for tests.
- * Returns a pre-configured updateCount from {@link #executeUpdate()}; all parameter
- * bind methods are no-ops.
+ * Returns a pre-configured updateCount from {@link #executeUpdate()}. The values bound via setString, setBytes,
+ * setObject and setNull are kept and returned by {@link #getParameter(int)}; other bind methods are no-ops.
  */
 public class TestPreparedStatement extends TestStatement implements PreparedStatement {
 
+    /**
+     * A NULL bound to a parameter, with its declared JDBC type.
+     */
+    public record Null(int sqlType) {
+    }
+
     private final String sql;
     private final int updateCount;
+    private final Map<Integer, Object> parameters = new HashMap<>();
 
     public TestPreparedStatement(Connection connection, String sql, int updateCount) {
         super(connection);
@@ -57,6 +66,13 @@ public class TestPreparedStatement extends TestStatement implements PreparedStat
 
     public String getSql() {
         return sql;
+    }
+
+    /**
+     * Returns the value bound to the parameter, a {@link Null} for a bound NULL, or null if nothing was bound.
+     */
+    public Object getParameter(int index) {
+        return parameters.get(index);
     }
 
     @Override
@@ -71,6 +87,10 @@ public class TestPreparedStatement extends TestStatement implements PreparedStat
 
     @Override
     public ResultSet executeQuery() {
+        record("executeQuery");
+        if (getConnection() instanceof TestConnection testConnection && testConnection.getQueryFailure() != null) {
+            throw testConnection.getQueryFailure();
+        }
         return new TestResultSet(sql);
     }
 
@@ -79,9 +99,13 @@ public class TestPreparedStatement extends TestStatement implements PreparedStat
         return new TestResultSet(sql);
     }
 
-    // --- parameter bind no-ops ---
+    // --- parameter binding ---
 
-    @Override public void setNull(int parameterIndex, int sqlType) {}
+    @Override
+    public void setNull(int parameterIndex, int sqlType) {
+        parameters.put(parameterIndex, new Null(sqlType));
+    }
+
     @Override public void setNull(int parameterIndex, int sqlType, String typeName) {}
     @Override public void setBoolean(int parameterIndex, boolean x) {}
     @Override public void setByte(int parameterIndex, byte x) {}
@@ -91,8 +115,8 @@ public class TestPreparedStatement extends TestStatement implements PreparedStat
     @Override public void setFloat(int parameterIndex, float x) {}
     @Override public void setDouble(int parameterIndex, double x) {}
     @Override public void setBigDecimal(int parameterIndex, BigDecimal x) {}
-    @Override public void setString(int parameterIndex, String x) {}
-    @Override public void setBytes(int parameterIndex, byte[] x) {}
+    @Override public void setString(int parameterIndex, String x) { parameters.put(parameterIndex, x); }
+    @Override public void setBytes(int parameterIndex, byte[] x) { parameters.put(parameterIndex, x); }
     @Override public void setDate(int parameterIndex, Date x) {}
     @Override public void setDate(int parameterIndex, Date x, Calendar cal) {}
     @Override public void setTime(int parameterIndex, Time x) {}
@@ -111,7 +135,7 @@ public class TestPreparedStatement extends TestStatement implements PreparedStat
     @Override public void setCharacterStream(int parameterIndex, Reader reader) {}
     @Override public void setNCharacterStream(int parameterIndex, Reader value, long length) {}
     @Override public void setNCharacterStream(int parameterIndex, Reader value) {}
-    @Override public void setObject(int parameterIndex, Object x) {}
+    @Override public void setObject(int parameterIndex, Object x) { parameters.put(parameterIndex, x); }
     @Override public void setObject(int parameterIndex, Object x, int targetSqlType) {}
     @Override public void setObject(int parameterIndex, Object x, int targetSqlType, int scaleOrLength) {}
     @Override public void setRef(int parameterIndex, Ref x) {}

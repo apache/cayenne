@@ -23,24 +23,27 @@ import org.apache.cayenne.CayenneRuntime;
 import org.apache.cayenne.map.compiled.CompiledColumn;
 import org.apache.cayenne.map.compiled.CompiledTable;
 import org.apache.cayenne.map.compiled.CompiledMapping;
+import org.apache.cayenne.map.DataMap;
+import org.apache.cayenne.map.DbAttribute;
+import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.unit.CompiledTables;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.security.Key;
 import java.sql.Types;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import javax.crypto.spec.SecretKeySpec;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class DefaultValueTransformerFactoryIT {
 
@@ -68,7 +71,7 @@ public class DefaultValueTransformerFactoryIT {
 
     @BeforeEach
     public void before() {
-        f = new DefaultValueTransformerFactory(mock(KeySource.class), dbToBytes, objectToBytes);
+        f = new DefaultValueTransformerFactory(new FixedKeySource(), dbToBytes, objectToBytes);
     }
 
     @Test
@@ -81,22 +84,17 @@ public class DefaultValueTransformerFactoryIT {
         assertEquals("byte[]", f.getJavaType(t2_cb));
 
         // a column with no ObjAttributes mapped to it
-        CompiledTable fakeTable = mock(CompiledTable.class);
-        when(fakeTable.name()).thenReturn("FAKE");
-        when(fakeTable.entities()).thenReturn(List.of());
+        DbEntity fake = new DbEntity("FAKE");
+        fake.addAttribute(new DbAttribute("fake1", Types.VARBINARY, fake));
+        fake.addAttribute(new DbAttribute("fake2", Types.VARCHAR, fake));
+        DataMap fakeMap = new DataMap("fakeMap");
+        fakeMap.addDbEntity(fake);
+        CompiledTable fakeTable = CompiledTables.compile(fakeMap).table("FAKE");
 
-        CompiledColumn fakeA1 = mock(CompiledColumn.class);
-        when(fakeA1.name()).thenReturn("fake1");
-        when(fakeA1.table()).thenReturn(fakeTable);
-        when(fakeA1.jdbcType()).thenReturn(Types.VARBINARY);
-
+        CompiledColumn fakeA1 = fakeTable.column("fake1");
         assertEquals("byte[]", f.getJavaType(fakeA1));
 
-        CompiledColumn fakeA2 = mock(CompiledColumn.class);
-        when(fakeA2.name()).thenReturn("fake2");
-        when(fakeA2.table()).thenReturn(fakeTable);
-        when(fakeA2.jdbcType()).thenReturn(Types.VARCHAR);
-
+        CompiledColumn fakeA2 = fakeTable.column("fake2");
         assertEquals("java.lang.String", f.getJavaType(fakeA2));
     }
 
@@ -255,5 +253,21 @@ public class DefaultValueTransformerFactoryIT {
         objectToBytes.put(BigDecimal.class.getName(), BigDecimalConverter.INSTANCE);
 
         return objectToBytes;
+    }
+
+    // a single default AES key
+    static class FixedKeySource implements KeySource {
+
+        private static final Key KEY = new SecretKeySpec(new byte[16], "AES");
+
+        @Override
+        public Key getKey(String alias) {
+            return "default".equals(alias) ? KEY : null;
+        }
+
+        @Override
+        public String getDefaultKeyAlias() {
+            return "default";
+        }
     }
 }

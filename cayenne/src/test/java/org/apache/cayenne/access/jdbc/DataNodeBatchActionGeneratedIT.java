@@ -27,7 +27,6 @@ import org.apache.cayenne.UpdateResult;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.StatementContext;
 import org.apache.cayenne.access.StatementContexts;
-import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
 import org.apache.cayenne.access.translator.TranslatedBatch;
 import org.apache.cayenne.access.translator.batch.InsertBatchTranslator;
 import org.apache.cayenne.dba.JdbcAdapter;
@@ -52,7 +51,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
 
 public class DataNodeBatchActionGeneratedIT {
 
@@ -64,7 +62,7 @@ public class DataNodeBatchActionGeneratedIT {
         InsertBatch batch = new InsertBatch(mapping.entity(GeneratedColumnTestEntity.class).table(),
                 List.of());
         TranslatedBatch translated = new InsertBatchTranslator().translate(batch, adapter);
-        DataNode node = DataNodes.withAdapter(adapter, mock(RowReaderFactory.class));
+        DataNode node = DataNodes.withAdapter(adapter);
         return new DataNodeBatchAction(translated, node, false);
     }
 

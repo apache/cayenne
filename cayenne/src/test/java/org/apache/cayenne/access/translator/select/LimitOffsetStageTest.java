@@ -49,7 +49,7 @@ public class LimitOffsetStageTest {
                 .withDbEntity(mapping.schema().table("mock"))
                 .withLimitOffset(123, 321)
                 .build();
-        context = new MockSelectTranslatorContext(query);
+        context = new TestSelectTranslatorContext(query);
     }
 
     @Test

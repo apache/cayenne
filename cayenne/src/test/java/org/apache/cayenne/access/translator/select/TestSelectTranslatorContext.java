@@ -19,26 +19,20 @@
 
 package org.apache.cayenne.access.translator.select;
 
-import org.apache.cayenne.access.types.ExtendedTypeMap;
-import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.compiled.CompiledMapping;
 import org.apache.cayenne.query.resolved.ResolvedSelect;
+import org.apache.cayenne.unit.TestAdapters;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+/**
+ * A translator context of a select, with a generic JDBC adapter, for the tests of the translation stages.
+ */
+class TestSelectTranslatorContext extends SelectTranslatorContext {
 
-public class MockSelectTranslatorContext extends SelectTranslatorContext {
-    MockSelectTranslatorContext(ResolvedSelect select) {
-        super(select, mockAdapter(), null, null);
+    TestSelectTranslatorContext(ResolvedSelect select) {
+        super(select, TestAdapters.jdbc(), null, null);
     }
 
-    MockSelectTranslatorContext(ResolvedSelect select, CompiledMapping mapping) {
-        super(select, mockAdapter(), mapping, null);
-    }
-
-    private static DbAdapter mockAdapter() {
-        DbAdapter adapter = mock(DbAdapter.class);
-        when(adapter.getExtendedTypes()).thenReturn(new ExtendedTypeMap());
-        return adapter;
+    TestSelectTranslatorContext(ResolvedSelect select, CompiledMapping mapping) {
+        super(select, TestAdapters.jdbc(), mapping, null);
     }
 }

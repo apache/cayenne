@@ -27,24 +27,43 @@ import javax.sql.DataSource;
 
 /**
  * Minimal JDBC {@link DataSource} stub for tests. Returns a configurable
- * {@link Connection} (default: a fresh {@link TestConnection}) from {@link #getConnection()}.
+ * {@link Connection} (default: a fresh {@link TestConnection}) from {@link #getConnection()}, or fails with a
+ * configured exception, and counts the requests for a connection.
  */
 public class TestDataSource implements DataSource {
 
     private Connection connection = new TestConnection();
+    private SQLException failure;
+    private int connectionRequests;
 
     public void setupConnection(Connection connection) {
         this.connection = connection;
     }
 
+    /**
+     * Makes the requests for a connection fail with the given exception, as a DataSource of a DB that is down.
+     */
+    public TestDataSource failGetConnection(SQLException failure) {
+        this.failure = failure;
+        return this;
+    }
+
+    public int getConnectionRequests() {
+        return connectionRequests;
+    }
+
     @Override
-    public Connection getConnection() {
+    public Connection getConnection() throws SQLException {
+        connectionRequests++;
+        if (failure != null) {
+            throw failure;
+        }
         return connection;
     }
 
     @Override
-    public Connection getConnection(String username, String password) {
-        return connection;
+    public Connection getConnection(String username, String password) throws SQLException {
+        return getConnection();
     }
 
     @Override public PrintWriter getLogWriter() { return null; }

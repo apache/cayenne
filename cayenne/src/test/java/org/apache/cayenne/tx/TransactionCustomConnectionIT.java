@@ -26,18 +26,18 @@ import org.apache.cayenne.CayenneRuntime;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
+import org.apache.cayenne.unit.RecordingTransactionListener;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Check if connection can be decorated with listeners and that default connection of TransactionDescriptor
@@ -75,7 +75,7 @@ public class TransactionCustomConnectionIT {
     public void connectionDecorationWithListeners() {
         Transaction t = new CayenneTransaction(NoopSQLLogger.getInstance());
         //add listeners which will check if connection object will be changed after every decorate call
-        List<TransactionListener> listeners = addAndGetListenersWithCustomReadonlyTo(t);
+        List<RecordingTransactionListener> listeners = addAndGetListenersWithCustomReadonlyTo(t);
         BaseTransaction.bindThreadTransaction(t);
         try {
             ObjectSelect.query(Artist.class).select(context);
@@ -90,8 +90,8 @@ public class TransactionCustomConnectionIT {
             });
 
             //check if every decoration from listener was called
-            for (TransactionListener transactionListener : listeners) {
-                verify(transactionListener).decorateConnection(any(), any());
+            for (RecordingTransactionListener transactionListener : listeners) {
+                assertEquals(1, transactionListener.decorateConnectionCalls);
             }
         } finally {
             BaseTransaction.bindThreadTransaction(null);
@@ -99,38 +99,18 @@ public class TransactionCustomConnectionIT {
         }
     }
 
-    private List<TransactionListener> addAndGetListenersWithCustomReadonlyTo(Transaction t) {
-        Class<?>[] classes = new Class[]{ListenerWithFirstReadonlyDecorator.class, ListenerWithSecondReadonlyDecorator.class};
-        List<TransactionListener> listeners = new ArrayList<>();
-        for (Class<?> aClass : classes) {
-            TransactionListener listener = (TransactionListener) mock(aClass);
-            listeners.add(listener);
-            when(listener.decorateConnection(any(), any())).thenCallRealMethod();
-            t.addListener(listener);
-        }
+    private List<RecordingTransactionListener> addAndGetListenersWithCustomReadonlyTo(Transaction t) {
+        List<RecordingTransactionListener> listeners =
+                List.of(new ListenerWithFirstReadonlyDecorator(), new ListenerWithSecondReadonlyDecorator());
+        listeners.forEach(t::addListener);
         return listeners;
     }
 
     //listener, which will check if readonly property of connection is false and set it to true
-    class ListenerWithFirstReadonlyDecorator implements TransactionListener {
+    class ListenerWithFirstReadonlyDecorator extends RecordingTransactionListener {
 
         @Override
-        public void willCommit(Transaction tx) {
-
-        }
-
-        @Override
-        public void willRollback(Transaction tx) {
-
-        }
-
-        @Override
-        public void willAddConnection(Transaction tx, String connectionName, Connection connection) {
-
-        }
-
-        @Override
-        public Connection decorateConnection(Transaction tx, Connection connection) {
+        protected Connection decorate(Transaction tx, Connection connection) {
             try {
                 firstReadonlyCondition = connection.isReadOnly();
                 connection.setReadOnly(!firstReadonlyCondition);
@@ -146,25 +126,10 @@ public class TransactionCustomConnectionIT {
     }
 
     //listener, which will check if readonly property of connection is true and set it to false
-    class ListenerWithSecondReadonlyDecorator implements TransactionListener {
+    class ListenerWithSecondReadonlyDecorator extends RecordingTransactionListener {
 
         @Override
-        public void willCommit(Transaction tx) {
-
-        }
-
-        @Override
-        public void willRollback(Transaction tx) {
-
-        }
-
-        @Override
-        public void willAddConnection(Transaction tx, String connectionName, Connection connection) {
-
-        }
-
-        @Override
-        public Connection decorateConnection(Transaction tx, Connection connection) {
+        protected Connection decorate(Transaction tx, Connection connection) {
             try {
                 assertEquals(!firstReadonlyCondition, connection.isReadOnly());
                 connection.setReadOnly(!connection.isReadOnly());
@@ -192,13 +157,20 @@ public class TransactionCustomConnectionIT {
                 throwables.printStackTrace();
             }
 
-            TransactionDescriptor mockDescriptor = mock(TransactionDescriptor.class);
-            when(mockDescriptor.getConnectionSupplier()).thenReturn(() -> connection);
-            when(mockDescriptor.getPropagation()).thenReturn(TransactionPropagation.REQUIRES_NEW);
-            when(mockDescriptor.getIsolation()).thenReturn(Connection.TRANSACTION_SERIALIZABLE);
+            AtomicInteger supplied = new AtomicInteger();
+            TransactionDescriptor descriptor = TransactionDescriptor.builder()
+                    .connectionSupplier(() -> {
+                        supplied.incrementAndGet();
+                        return connection;
+                    })
+                    .propagation(TransactionPropagation.REQUIRES_NEW)
+                    .isolation(Connection.TRANSACTION_SERIALIZABLE)
+                    .build();
 
-            performInTransaction(mockDescriptor);
-            verify(mockDescriptor, times(2)).getConnectionSupplier();
+            performInTransaction(descriptor);
+
+            // the connection of the descriptor is used in place of a new one
+            assertTrue(supplied.get() > 0);
         } finally {
             BaseTransaction.bindThreadTransaction(null);
             t.commit();

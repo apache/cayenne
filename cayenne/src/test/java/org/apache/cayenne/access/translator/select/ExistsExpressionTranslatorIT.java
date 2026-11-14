@@ -31,8 +31,6 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class ExistsExpressionTranslatorIT {
 
@@ -43,11 +41,9 @@ public class ExistsExpressionTranslatorIT {
 
     @BeforeEach
     public void setUp() {
-        translatorContext = mock(SelectTranslatorContext.class);
         CompiledTable artistTable = env.mapping().schema().table("ARTIST");
         CompiledEntity artist = env.mapping().entity("Artist");
-        when(translatorContext.getRootDbEntity()).thenReturn(artistTable);
-        when(translatorContext.getSelect()).thenReturn(ResolvedQueries.select(artist, artistTable));
+        translatorContext = new TestSelectTranslatorContext(ResolvedQueries.select(artist, artistTable), env.mapping());
     }
 
     @Test
@@ -139,10 +135,8 @@ public class ExistsExpressionTranslatorIT {
     public void dbPath() {
         Expression exp = ExpressionFactory.exp("db:PAINTINGS").exists();
 
-        translatorContext = mock(SelectTranslatorContext.class);
         CompiledTable artistTable = env.mapping().schema().table("ARTIST");
-        when(translatorContext.getRootDbEntity()).thenReturn(artistTable);
-        when(translatorContext.getSelect()).thenReturn(ResolvedQueries.select(null, artistTable));
+        translatorContext = new TestSelectTranslatorContext(ResolvedQueries.select(null, artistTable), env.mapping());
 
         Expression translated = new ExistsExpressionTranslator(translatorContext, exp).translate();
 

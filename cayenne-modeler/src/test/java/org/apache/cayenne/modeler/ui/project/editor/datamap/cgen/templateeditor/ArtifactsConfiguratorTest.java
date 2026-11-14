@@ -17,7 +17,7 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.editor.templateeditor;
+package org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.templateeditor;
 
 import org.apache.cayenne.gen.Artifact;
 import org.apache.cayenne.gen.ArtifactsGenerationMode;
@@ -30,9 +30,6 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Embeddable;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.NamedQuery;
-import org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.templateeditor.DataMapArtefactsConfigurator;
-import org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.templateeditor.EmbeddableArtefactsConfigurator;
-import org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.templateeditor.EntityArtefactsConfigurator;
 import org.apache.cayenne.tools.ToolsInjectorBuilder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

@@ -28,11 +28,13 @@ import org.apache.cayenne.gen.ClassGenerationAction;
 import org.apache.cayenne.gen.ClassGenerationActionFactory;
 import org.apache.cayenne.gen.CgenTemplate;
 import org.apache.cayenne.gen.TemplateType;
+import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.tools.ToolsInjectorBuilder;
 import org.slf4j.helpers.NOPLogger;
 
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.function.Supplier;
 
 
 /**
@@ -42,20 +44,39 @@ public class PreviewActionConfigurator {
 
     public static final String TEMPLATE_EDITOR_WRITER = "tplEditorWriter";
     private static final Key<StringWriter> TPL_EDITOR_WRITER = Key.get(StringWriter.class, TEMPLATE_EDITOR_WRITER);
-    private final TemplateEditor editor;
     private final TemplateType templateType;
     private final ArtefactsConfigurator artefactsConfigurator;
+    private final Supplier<DataMap> dataMap;
+    private final Supplier<String> selectedArtifactName;
     private final Injector injector;
 
     public PreviewActionConfigurator(TemplateEditor editor) {
-        this.editor = editor;
-        this.templateType = editor.getTemplateType();
-        this.artefactsConfigurator = editor.getArtefactsConfigurator();
-        this.injector = getInjector();
+        this(editor.getTemplateType(),
+                editor.getArtefactsConfigurator(),
+                editor.app().getMetaData(),
+                editor::getCurrentDataMap,
+                editor::getSelectedArtifactName);
     }
 
-    private Injector getInjector() {
-        ProjectMetaData metaData = editor.app().getMetaData();
+    /**
+     * Creates a configurator over the editor state it needs. The DataMap and the selected artifact are read on each
+     * preview, as they change while the editor is open.
+     */
+    PreviewActionConfigurator(
+            TemplateType templateType,
+            ArtefactsConfigurator artefactsConfigurator,
+            ProjectMetaData metaData,
+            Supplier<DataMap> dataMap,
+            Supplier<String> selectedArtifactName) {
+
+        this.templateType = templateType;
+        this.artefactsConfigurator = artefactsConfigurator;
+        this.dataMap = dataMap;
+        this.selectedArtifactName = selectedArtifactName;
+        this.injector = createInjector(metaData);
+    }
+
+    private static Injector createInjector(ProjectMetaData metaData) {
         return new ToolsInjectorBuilder()
                 .addModule(binder -> binder.bind(ProjectMetaData.class).toInstance(metaData))
                 .addModule(binder -> binder.bind(ClassGenerationActionFactory.class).to(PreviewClassGenerationFactory.class))
@@ -70,7 +91,7 @@ public class PreviewActionConfigurator {
         ClassGenerationAction action = injector
                 .getInstance(ClassGenerationActionFactory.class)
                 .createAction(previewCgenConfiguration, NOPLogger.NOP_LOGGER);
-        artefactsConfigurator.config(action, editor.getSelectedArtifactName());
+        artefactsConfigurator.config(action, selectedArtifactName.get());
         return action;
     }
 
@@ -98,7 +119,7 @@ public class PreviewActionConfigurator {
 
     private CgenConfiguration createPreviewCgenConfiguration() {
         CgenConfiguration cgenConfiguration = new CgenConfiguration();
-        cgenConfiguration.setDataMap(editor.getCurrentDataMap());
+        cgenConfiguration.setDataMap(dataMap.get());
         cgenConfiguration.setMakePairs(false);
         cgenConfiguration.setArtifactsGenerationMode(ArtifactsGenerationMode.ALL.getLabel());
         return cgenConfiguration;

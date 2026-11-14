@@ -16,36 +16,27 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
+
 package org.apache.cayenne.dba.postgres;
 
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.StatementContext;
 import org.apache.cayenne.access.jdbc.PSParameter;
 import org.apache.cayenne.access.jdbc.RSColumn;
-import org.apache.cayenne.access.jdbc.reader.RowReader;
-import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
 import org.apache.cayenne.access.translator.TranslatedSelect;
-import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.map.compiled.CompiledMapping;
+import org.apache.cayenne.map.compiled.TestMappings;
 import org.apache.cayenne.query.resolved.ResolvedQueries;
+import org.apache.cayenne.query.resolved.ResolvedSelect;
+import org.apache.cayenne.unit.DataNodes;
+import org.apache.cayenne.unit.TestAdapters;
+import org.apache.cayenne.unit.jdbc.TestConnection;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InOrder;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 /**
  * Checks the local transaction that PostgresSelectAction opens around a select. pgjdbc uses a server-side cursor
@@ -54,97 +45,75 @@ import static org.mockito.Mockito.when;
  */
 public class PostgresSelectActionTest {
 
-    private Connection connection;
-    private PreparedStatement statement;
+    private TestConnection connection;
     private DataNode dataNode;
 
     @BeforeEach
-    public void setUp() throws Exception {
-        RowReaderFactory rowReaderFactory = mock(RowReaderFactory.class);
-        when(rowReaderFactory.rowReader(any(), any(), any(), any())).thenReturn(mock(RowReader.class));
-
-        dataNode = mock(DataNode.class);
-        when(dataNode.getAdapter()).thenReturn(mock(DbAdapter.class));
-        when(dataNode.getRowReaderFactory()).thenReturn(rowReaderFactory);
-
-        ResultSet resultSet = mock(ResultSet.class);
-        when(resultSet.next()).thenReturn(false);
-
-        statement = mock(PreparedStatement.class);
-        when(statement.executeQuery()).thenReturn(resultSet);
-
-        connection = mock(Connection.class);
-        when(connection.prepareStatement(anyString())).thenReturn(statement);
-
+    public void setUp() {
+        dataNode = DataNodes.withAdapter(TestAdapters.jdbc(), (columns, segments, query, adapter) -> rs -> null);
+        connection = new TestConnection();
     }
 
-    private PostgresSelectAction action(int statementFetchSize) {
+    private void execute(int statementFetchSize) throws Exception {
+        ResolvedSelect query = ResolvedQueries.select(statementFetchSize);
         TranslatedSelect select = new TranslatedSelect(
-                ResolvedQueries.select(statementFetchSize),
+                query,
                 "SELECT 1",
                 new PSParameter[0],
                 new RSColumn[0],
                 null,
                 false,
                 false);
-        return new PostgresSelectAction(select, dataNode);
-    }
-
-    private StatementContext context() {
-        StatementContext context = mock(StatementContext.class);
-        return context;
+        StatementContext context = new StatementContext(query, TestMappings.empty());
+        new PostgresSelectAction(select, dataNode).execute(connection, context);
     }
 
     @Test
     public void fetchSizeOnAutoCommitConnectionRunsInTransaction() throws Exception {
-        when(connection.getAutoCommit()).thenReturn(true);
+        connection.autoCommit(true);
 
-        action(10).execute(connection, context());
+        execute(10);
 
-        InOrder inOrder = inOrder(connection, statement);
-        inOrder.verify(connection).setAutoCommit(false);
-        inOrder.verify(statement).setFetchSize(10);
-        inOrder.verify(statement).executeQuery();
-        inOrder.verify(connection).commit();
-        inOrder.verify(connection).setAutoCommit(true);
-        verify(connection, never()).rollback();
+        assertEquals(List.of(
+                "setAutoCommit(false)",
+                "setFetchSize(10)",
+                "executeQuery",
+                "statement.close",
+                "commit",
+                "setAutoCommit(true)"), connection.getCalls());
     }
 
     @Test
     public void noFetchSizeOnAutoCommitConnectionLeavesAutoCommitAlone() throws Exception {
-        when(connection.getAutoCommit()).thenReturn(true);
+        connection.autoCommit(true);
 
-        action(0).execute(connection, context());
+        execute(0);
 
-        verify(statement, never()).setFetchSize(anyInt());
-        verify(connection, never()).setAutoCommit(anyBoolean());
-        verify(connection, never()).commit();
+        assertEquals(List.of("executeQuery", "statement.close"), connection.getCalls());
     }
 
     @Test
     public void fetchSizeInsideExistingTransactionIsNotCommittedLocally() throws Exception {
-        when(connection.getAutoCommit()).thenReturn(false);
+        connection.autoCommit(false);
 
-        action(10).execute(connection, context());
+        execute(10);
 
         // the transaction belongs to the caller: the fetch size is passed through, but nothing is committed here
-        verify(statement).setFetchSize(10);
-        verify(connection, never()).setAutoCommit(anyBoolean());
-        verify(connection, never()).commit();
+        assertEquals(List.of("setFetchSize(10)", "executeQuery", "statement.close"), connection.getCalls());
     }
 
     @Test
-    public void failureInTransactionRollsBackAndRestoresAutoCommit() throws Exception {
-        when(connection.getAutoCommit()).thenReturn(true);
-        when(statement.executeQuery()).thenThrow(new RuntimeException("boom"));
+    public void failureInTransactionRollsBackAndRestoresAutoCommit() {
+        connection.autoCommit(true).failQuery(new RuntimeException("boom"));
 
-        assertThrows(RuntimeException.class,
-                () -> action(10).execute(connection, context()));
+        assertThrows(RuntimeException.class, () -> execute(10));
 
-        InOrder inOrder = inOrder(connection);
-        inOrder.verify(connection).setAutoCommit(false);
-        inOrder.verify(connection).rollback();
-        inOrder.verify(connection).setAutoCommit(true);
-        verify(connection, never()).commit();
+        assertEquals(List.of(
+                "setAutoCommit(false)",
+                "setFetchSize(10)",
+                "executeQuery",
+                "statement.close",
+                "rollback",
+                "setAutoCommit(true)"), connection.getCalls());
     }
 }

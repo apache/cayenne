@@ -20,18 +20,15 @@
 package org.apache.cayenne.tx;
 
 import java.sql.Connection;
+import java.util.List;
 
-import javax.sql.DataSource;
-
+import org.apache.cayenne.unit.jdbc.TestConnection;
+import org.apache.cayenne.unit.jdbc.TestDataSource;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 public class ReadOnlyTransactionTest {
 
@@ -43,34 +40,44 @@ public class ReadOnlyTransactionTest {
     @Test
     public void addListenerIsNoOp() {
         // read-only queries must not fire transaction events
-        new ReadOnlyTransaction().addListener(mock(TransactionListener.class));
+        new ReadOnlyTransaction().addListener(new TransactionListener() {
+            @Override
+            public void willCommit(Transaction tx) {
+            }
+
+            @Override
+            public void willRollback(Transaction tx) {
+            }
+
+            @Override
+            public void willAddConnection(Transaction tx, String connectionName, Connection connection) {
+            }
+        });
     }
 
     @Test
     public void ensuresAutoCommitAndDoesNotCloseEarly() throws Exception {
-        Connection connection = mock(Connection.class);
-        when(connection.getAutoCommit()).thenReturn(false);
-        DataSource dataSource = mock(DataSource.class);
-        when(dataSource.getConnection()).thenReturn(connection);
+        TestConnection connection = new TestConnection().autoCommit(false);
+        TestDataSource dataSource = new TestDataSource();
+        dataSource.setupConnection(connection);
 
         ReadOnlyTransaction tx = new ReadOnlyTransaction();
         Connection handed = tx.getOrCreateConnection("node", dataSource);
 
         // reads run in autocommit mode
-        verify(connection, times(1)).setAutoCommit(true);
+        assertEquals(List.of("setAutoCommit(true)"), connection.getCalls());
 
         // the handed-out connection is a decorator that does not close the real connection
         assertNotSame(connection, handed);
         handed.close();
-        verify(connection, never()).close();
+        assertFalse(connection.isClosed());
     }
 
     @Test
     public void commitClosesWithoutCommittingOrRollingBack() throws Exception {
-        Connection connection = mock(Connection.class);
-        when(connection.getAutoCommit()).thenReturn(true);
-        DataSource dataSource = mock(DataSource.class);
-        when(dataSource.getConnection()).thenReturn(connection);
+        TestConnection connection = new TestConnection().autoCommit(true);
+        TestDataSource dataSource = new TestDataSource();
+        dataSource.setupConnection(connection);
 
         ReadOnlyTransaction tx = new ReadOnlyTransaction();
         tx.getOrCreateConnection("node", dataSource);
@@ -78,9 +85,6 @@ public class ReadOnlyTransactionTest {
 
         // a read-only transaction never commits, rolls back, or disables autocommit; it just
         // returns the connection to the pool by closing it
-        verify(connection, never()).commit();
-        verify(connection, never()).rollback();
-        verify(connection, never()).setAutoCommit(false);
-        verify(connection, times(1)).close();
+        assertEquals(List.of("close"), connection.getCalls());
     }
 }

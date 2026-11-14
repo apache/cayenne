@@ -17,11 +17,10 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.modeler.editor.templateeditor;
+package org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.templateeditor;
 
 import org.apache.cayenne.gen.CgenConfiguration;
 import org.apache.cayenne.gen.TemplateType;
-import org.apache.cayenne.modeler.ui.project.editor.datamap.cgen.templateeditor.EditorTemplateSaver;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

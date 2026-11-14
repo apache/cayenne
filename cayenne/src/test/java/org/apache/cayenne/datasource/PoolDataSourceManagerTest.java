@@ -20,26 +20,20 @@ package org.apache.cayenne.datasource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
-
-import java.sql.SQLException;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 public class PoolDataSourceManagerTest {
 
-	private UnmanagedPoolingDataSource mockPoolingDataSource;
+	private StubPoolingDataSource poolingDataSource;
 	private PoolingDataSourceManager dataSourceManager;
 
 	@BeforeEach
-	public void before() throws SQLException {
-		this.mockPoolingDataSource = mock(UnmanagedPoolingDataSource.class);
-		this.dataSourceManager = new PoolingDataSourceManager(mockPoolingDataSource, 100);
+	public void before() {
+		this.poolingDataSource = new StubPoolingDataSource();
+		this.dataSourceManager = new PoolingDataSourceManager(poolingDataSource, 100);
 	}
 
 	@AfterEach
@@ -50,31 +44,21 @@ public class PoolDataSourceManagerTest {
 	@Test
 	public void run_Manage() throws InterruptedException {
 
-		final int[] counter = new int[1];
-
-		doAnswer(new Answer<Object>() {
-			@Override
-			public Object answer(InvocationOnMock invocation) throws Throwable {
-				counter[0]++;
-				return null;
-			}
-		}).when(mockPoolingDataSource).managePool();
-
 		dataSourceManager.start();
 
 		// we can't predict the number of 'managePool' invocations, but it
 		// should be incrementing as the time goes
 
-		int c0 = counter[0];
+		int c0 = poolingDataSource.managePoolCalls.get();
 		assertEquals(0, c0);
 		Thread.sleep(300);
 
-		int c1 = counter[0];
+		int c1 = poolingDataSource.managePoolCalls.get();
 		assertTrue(c1 > c0);
 
 		Thread.sleep(300);
 
-		int c2 = counter[0];
+		int c2 = poolingDataSource.managePoolCalls.get();
 		assertTrue(c2 > c1);
 	}
 }

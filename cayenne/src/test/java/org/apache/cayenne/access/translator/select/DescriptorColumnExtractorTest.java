@@ -57,7 +57,7 @@ public class DescriptorColumnExtractorTest extends BaseColumnExtractorTest {
         ResolvedSelect query = new MockResolvedSelectBuilder()
                 .withDbEntity(mapping.schema().table("mock"))
                 .build();
-        SelectTranslatorContext context = new MockSelectTranslatorContext(query, mapping);
+        SelectTranslatorContext context = new TestSelectTranslatorContext(query, mapping);
 
         DescriptorColumnExtractor extractor = new DescriptorColumnExtractor(context, mapping.entity("mock"));
         extractor.extract();

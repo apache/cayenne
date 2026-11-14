@@ -20,20 +20,13 @@
 package org.apache.cayenne.crypto.transformer.bytes;
 
 import java.security.Key;
+import java.util.Arrays;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.cayenne.crypto.unit.CryptoUnitUtils;
 import org.junit.jupiter.api.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyByte;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 
 public class HmacCreatorTest {
 
@@ -42,23 +35,15 @@ public class HmacCreatorTest {
      */
     @Test
     public void createHmac() {
-        final byte[] headerData = "The quick".getBytes();
-        Header header = mock(Header.class);
-
-        doReturn(headerData.length).when(header).size();
-        doAnswer(new Answer<Void>() {
-            @Override
-            public Void answer(InvocationOnMock invocation) throws Throwable {
-                byte[] input = (byte[])invocation.getArguments()[0];
-                System.arraycopy(headerData, 0, input, 0, headerData.length);
-                return null;
-            }
-        }).when(header).store(any(byte[].class), anyInt(), anyByte());
+        // a header is any byte sequence whose 4th byte is its size: here the first 32 bytes of the sample input,
+        // as the 4th byte of the sample input is a space, i.e. 32
+        byte[] sample = "The quick brown fox jumps over the lazy dog".getBytes();
+        Header header = Header.create(Arrays.copyOf(sample, 32), 0);
 
         Key key = new SecretKeySpec("key".getBytes(), "AES");
         HmacCreator creator = new HmacCreator(header, key) {};
 
-        byte[] hmac = creator.createHmac(" brown fox jumps over the lazy dog".getBytes());
+        byte[] hmac = creator.createHmac(Arrays.copyOfRange(sample, 32, sample.length));
         byte[] hmacExpected = CryptoUnitUtils.hexToBytes("f7bc83f430538424b13298e6aa6fb143ef4d59a14946175997479dbc2d1a3cd8");
 
         assertArrayEquals(hmacExpected, hmac);

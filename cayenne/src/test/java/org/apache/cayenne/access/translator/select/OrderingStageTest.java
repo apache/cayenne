@@ -76,7 +76,7 @@ public class OrderingStageTest {
                 .withObjEntity(mapping.entity("mock"))
                 .withDistinct( true )
                 .build();
-        context = new MockSelectTranslatorContext(query);
+        context = new TestSelectTranslatorContext(query);
     }
 
     @Test

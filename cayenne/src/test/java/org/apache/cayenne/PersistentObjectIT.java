@@ -21,13 +21,13 @@ package org.apache.cayenne;
 
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
+import org.apache.cayenne.access.DataContext;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.mockito.Mockito.mock;
 
 public class PersistentObjectIT {
 
@@ -36,7 +36,7 @@ public class PersistentObjectIT {
 
     @Test
     public void testObjectContext() {
-        ObjectContext context = mock(ObjectContext.class);
+        ObjectContext context = DataContext.builder(new MockDataChannel()).build();
         PersistentObject object = new MockPersistentObject();
 
         assertNull(object.getObjectContext());

@@ -22,12 +22,11 @@ package org.apache.cayenne.dbsync.reverse.dbload;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import org.apache.cayenne.unit.jdbc.TestResultSet;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class ExportedKeyTest {
 
@@ -45,43 +44,30 @@ public class ExportedKeyTest {
 
     @Test
     public void equalsExportedKey() throws SQLException {
-        ResultSet rs1 = mock(ResultSet.class);
-        when(rs1.getString("PKTABLE_CAT")).thenReturn("PKCatalog");
-        when(rs1.getString("PKTABLE_SCHEM")).thenReturn(null);
-        when(rs1.getString("PKTABLE_NAME")).thenReturn("PKTable");
-        when(rs1.getString("PKCOLUMN_NAME")).thenReturn("PKColumn");
-        when(rs1.getString("PK_NAME")).thenReturn("PKName");
-
-        when(rs1.getString("FKTABLE_CAT")).thenReturn("FKCatalog");
-        when(rs1.getString("FKTABLE_SCHEM")).thenReturn("FKSchema");
-        when(rs1.getString("FKTABLE_NAME")).thenReturn("FKTable");
-        when(rs1.getString("FKCOLUMN_NAME")).thenReturn("FKColumn");
-        when(rs1.getString("FK_NAME")).thenReturn("FKName");
-
-        when(rs1.getShort("KEY_SEQ")).thenReturn((short) 1);
-
-        ExportedKey keyData1 = ExportedKey.fromResultSet(rs1);
-
-        ResultSet rs2 = mock(ResultSet.class);
-        when(rs2.getString("PKTABLE_CAT")).thenReturn("PKCatalog");
-        when(rs2.getString("PKTABLE_SCHEM")).thenReturn(null);
-        when(rs2.getString("PKTABLE_NAME")).thenReturn("PKTable");
-        when(rs2.getString("PKCOLUMN_NAME")).thenReturn("PKColumn");
-        when(rs2.getString("PK_NAME")).thenReturn("PKName");
-
-        when(rs2.getString("FKTABLE_CAT")).thenReturn("FKCatalog");
-        when(rs2.getString("FKTABLE_SCHEM")).thenReturn("FKSchema");
-        when(rs2.getString("FKTABLE_NAME")).thenReturn("FKTable");
-        when(rs2.getString("FKCOLUMN_NAME")).thenReturn("FKColumn");
-        when(rs2.getString("FK_NAME")).thenReturn("FKName");
-
-        when(rs2.getShort("KEY_SEQ")).thenReturn((short)1);
-
-        ExportedKey keyData2 = ExportedKey.fromResultSet(rs2);
+        ExportedKey keyData1 = ExportedKey.fromResultSet(exportedKeyRow());
+        ExportedKey keyData2 = ExportedKey.fromResultSet(exportedKeyRow());
 
         assertTrue(keyData1.equals(keyData2));
         assertTrue(keyData2.equals(keyData1));
 
         assertEquals(keyData1.hashCode(), keyData2.hashCode());
+    }
+
+    // a result set positioned on a row of DatabaseMetaData.getExportedKeys()
+    private static ResultSet exportedKeyRow() {
+        TestResultSet rs = new TestResultSet("exportedKeys");
+        rs.addColumn("PKTABLE_CAT", new Object[]{"PKCatalog"});
+        rs.addColumn("PKTABLE_SCHEM", new Object[]{null});
+        rs.addColumn("PKTABLE_NAME", new Object[]{"PKTable"});
+        rs.addColumn("PKCOLUMN_NAME", new Object[]{"PKColumn"});
+        rs.addColumn("PK_NAME", new Object[]{"PKName"});
+        rs.addColumn("FKTABLE_CAT", new Object[]{"FKCatalog"});
+        rs.addColumn("FKTABLE_SCHEM", new Object[]{"FKSchema"});
+        rs.addColumn("FKTABLE_NAME", new Object[]{"FKTable"});
+        rs.addColumn("FKCOLUMN_NAME", new Object[]{"FKColumn"});
+        rs.addColumn("FK_NAME", new Object[]{"FKName"});
+        rs.addColumn("KEY_SEQ", new Object[]{(short) 1});
+        rs.next();
+        return rs;
     }
 }

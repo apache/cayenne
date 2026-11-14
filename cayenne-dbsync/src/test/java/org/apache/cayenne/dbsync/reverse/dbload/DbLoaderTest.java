@@ -23,8 +23,13 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
+import java.util.Map;
 
+import org.apache.cayenne.DefaultRuntimeProperties;
+import org.apache.cayenne.access.types.DefaultValueObjectTypeRegistry;
 import org.apache.cayenne.dba.DbAdapter;
+import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dbsync.naming.DefaultObjectNameGenerator;
 import org.apache.cayenne.dbsync.reverse.filters.FiltersConfig;
 import org.apache.cayenne.dbsync.reverse.filters.PatternFilter;
@@ -32,11 +37,12 @@ import org.apache.cayenne.dbsync.reverse.filters.TableFilter;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Procedure;
+import org.apache.cayenne.unit.TestAdapters;
+import org.apache.cayenne.unit.jdbc.TestConnection;
+import org.apache.cayenne.unit.jdbc.TestResultSet;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 public class DbLoaderTest {
 
@@ -82,29 +88,23 @@ public class DbLoaderTest {
     }
 
     private DataMap load(boolean supportsCatalogs) throws SQLException {
-        DbAdapter adapter = mock(DbAdapter.class);
+        DbAdapter adapter = supportsCatalogs ? TestAdapters.jdbc() : new JdbcAdapter(
+                new DefaultRuntimeProperties(Map.of()),
+                List.of(),
+                List.of(),
+                List.of(),
+                new DefaultValueObjectTypeRegistry(List.of())) {
 
-        when(adapter.tableTypeForTable()).thenReturn("TABLE");
-        when(adapter.tableTypeForView()).thenReturn("VIEW");
-        when(adapter.supportsCatalogsOnReverseEngineering()).thenReturn(supportsCatalogs);
+            @Override
+            public boolean supportsCatalogsOnReverseEngineering() {
+                return false;
+            }
+        };
 
-        ResultSet tables = tablesResultSet();
-        ResultSet procedures = proceduresResultSet();
-        ResultSet columns = emptyResultSet();
-        ResultSet primaryKeys = emptyResultSet();
-        ResultSet exportedKeys = emptyResultSet();
-        ResultSet procedureColumns = emptyResultSet();
-
-        DatabaseMetaData metaData = mock(DatabaseMetaData.class);
-        when(metaData.getTables(any(), any(), any(), any())).thenReturn(tables);
-        when(metaData.getColumns(any(), any(), any(), any())).thenReturn(columns);
-        when(metaData.getPrimaryKeys(any(), any(), any())).thenReturn(primaryKeys);
-        when(metaData.getExportedKeys(any(), any(), any())).thenReturn(exportedKeys);
-        when(metaData.getProcedures(any(), any(), any())).thenReturn(procedures);
-        when(metaData.getProcedureColumns(any(), any(), any(), any())).thenReturn(procedureColumns);
-
-        Connection connection = mock(Connection.class);
-        when(connection.getMetaData()).thenReturn(metaData);
+        // all other metadata results are empty
+        Connection connection = new TestConnection()
+                .metaDataResult("getTables", tablesResultSet())
+                .metaDataResult("getProcedures", proceduresResultSet());
 
         DbLoaderConfiguration config = new DbLoaderConfiguration();
         config.setFiltersConfig(FiltersConfig.create(null, null, TableFilter.everything(),
@@ -113,27 +113,21 @@ public class DbLoaderTest {
         return new DbLoader(adapter, connection, config, null, new DefaultObjectNameGenerator()).load();
     }
 
-    private static ResultSet tablesResultSet() throws SQLException {
-        ResultSet rs = mock(ResultSet.class);
-        when(rs.next()).thenReturn(true, false);
-        when(rs.getString("TABLE_NAME")).thenReturn(TABLE);
-        when(rs.getString("TABLE_CAT")).thenReturn(CATALOG);
-        when(rs.getString("TABLE_SCHEM")).thenReturn(SCHEMA);
-        when(rs.getString("TABLE_TYPE")).thenReturn("TABLE");
+    private static ResultSet tablesResultSet() {
+        TestResultSet rs = new TestResultSet("tables");
+        rs.addColumn("TABLE_NAME", new Object[]{TABLE});
+        rs.addColumn("TABLE_CAT", new Object[]{CATALOG});
+        rs.addColumn("TABLE_SCHEM", new Object[]{SCHEMA});
+        rs.addColumn("TABLE_TYPE", new Object[]{"TABLE"});
         return rs;
     }
 
-    private static ResultSet proceduresResultSet() throws SQLException {
-        ResultSet rs = mock(ResultSet.class);
-        when(rs.next()).thenReturn(true, false);
-        when(rs.getString("PROCEDURE_NAME")).thenReturn(PROCEDURE);
-        when(rs.getString("PROCEDURE_CAT")).thenReturn(CATALOG);
-        when(rs.getString("PROCEDURE_SCHEM")).thenReturn(SCHEMA);
-        when(rs.getShort("PROCEDURE_TYPE")).thenReturn((short) DatabaseMetaData.procedureNoResult);
+    private static ResultSet proceduresResultSet() {
+        TestResultSet rs = new TestResultSet("procedures");
+        rs.addColumn("PROCEDURE_NAME", new Object[]{PROCEDURE});
+        rs.addColumn("PROCEDURE_CAT", new Object[]{CATALOG});
+        rs.addColumn("PROCEDURE_SCHEM", new Object[]{SCHEMA});
+        rs.addColumn("PROCEDURE_TYPE", new Object[]{(short) DatabaseMetaData.procedureNoResult});
         return rs;
-    }
-
-    private static ResultSet emptyResultSet() {
-        return mock(ResultSet.class);
     }
 }

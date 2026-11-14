@@ -84,7 +84,7 @@ public class QualifierTranslatorTest {
                 .withDbEntity(mapping.schema().table("mock"))
                 .withObjEntity(mapping.entity("mock"))
                 .build();
-        SelectTranslatorContext context = new MockSelectTranslatorContext(query, mapping);
+        SelectTranslatorContext context = new TestSelectTranslatorContext(query, mapping);
         translator = new QualifierTranslator(context);
     }
 

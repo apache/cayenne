@@ -24,18 +24,15 @@ import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
+import org.apache.cayenne.unit.jdbc.TestConnection;
+import org.apache.cayenne.unit.jdbc.TestDataSource;
 import org.slf4j.Logger;
 import org.slf4j.helpers.NOPLogger;
 import org.junit.jupiter.api.Test;
 
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class ToolsModuleTest {
 
@@ -57,12 +54,8 @@ public class ToolsModuleTest {
 
         DbAdapterFactory factory = i.getInstance(DbAdapterFactory.class);
 
-        DatabaseMetaData metaData = mock(DatabaseMetaData.class);
-        when(metaData.getDatabaseProductName()).thenReturn("HSQL Database Engine");
-        Connection connection = mock(Connection.class);
-        when(connection.getMetaData()).thenReturn(metaData);
-        DataSource dataSource = mock(DataSource.class);
-        when(dataSource.getConnection()).thenReturn(connection);
+        TestDataSource dataSource = new TestDataSource();
+        dataSource.setupConnection(new TestConnection().databaseProductName("HSQL Database Engine"));
 
         // no explicit adapter type - must detect the adapter off the DataSource
         assertTrue(factory.createAdapter(null, dataSource) instanceof HSQLDBAdapter);

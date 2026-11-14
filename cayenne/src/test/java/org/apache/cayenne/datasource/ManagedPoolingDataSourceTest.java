@@ -18,41 +18,36 @@
  ****************************************************************/
 package org.apache.cayenne.datasource;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import org.apache.cayenne.unit.jdbc.TestConnection;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class ManagedPoolingDataSourceTest {
 
-	private Connection[] mockConnections;
-	private UnmanagedPoolingDataSource mockPoolingDataSource;
+	private Connection[] connections;
+	private StubPoolingDataSource poolingDataSource;
 	private ManagedPoolingDataSource dataSource;
 
 	@BeforeEach
-	public void before() throws SQLException {
+	public void before() {
 
-		this.mockConnections = new Connection[4];
-		for (int i = 0; i < mockConnections.length; i++) {
-			mockConnections[i] = mock(Connection.class);
+		this.connections = new Connection[4];
+		for (int i = 0; i < connections.length; i++) {
+			connections[i] = new TestConnection();
 		}
 
-		this.mockPoolingDataSource = mock(UnmanagedPoolingDataSource.class);
-		when(mockPoolingDataSource.getConnection()).thenReturn(mockConnections[0], mockConnections[1],
-				mockConnections[2], mockConnections[3]);
-
-		this.dataSource = new ManagedPoolingDataSource(mockPoolingDataSource);
+		this.poolingDataSource = new StubPoolingDataSource(connections);
+		this.dataSource = new ManagedPoolingDataSource(poolingDataSource);
 	}
 
 	@AfterEach
@@ -62,10 +57,10 @@ public class ManagedPoolingDataSourceTest {
 
 	@Test
 	public void getConnection() throws SQLException {
-		assertSame(mockConnections[0], dataSource.getConnection());
-		assertSame(mockConnections[1], dataSource.getConnection());
-		assertSame(mockConnections[2], dataSource.getConnection());
-		assertSame(mockConnections[3], dataSource.getConnection());
+		assertSame(connections[0], dataSource.getConnection());
+		assertSame(connections[1], dataSource.getConnection());
+		assertSame(connections[2], dataSource.getConnection());
+		assertSame(connections[3], dataSource.getConnection());
 	}
 
 	@Test
@@ -73,14 +68,14 @@ public class ManagedPoolingDataSourceTest {
 		assertNotNull(dataSource.getConnection());
 
 		// state before shutdown
-		verify(mockPoolingDataSource, times(0)).close();
+		assertEquals(0, poolingDataSource.closeCalls.get());
 		assertFalse(dataSource.getDataSourceManager().isStopped());
 		assertTrue(dataSource.getDataSourceManager().isAlive());
 
 		dataSource.close();
 
 		// state after shutdown
-		verify(mockPoolingDataSource, times(1)).close();
+		assertEquals(1, poolingDataSource.closeCalls.get());
 		assertTrue(dataSource.getDataSourceManager().isStopped());
 
 		// give the thread some time to process interrupt and die

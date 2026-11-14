@@ -26,34 +26,31 @@ import org.apache.cayenne.commitlog.db.Auditable3;
 import org.apache.cayenne.commitlog.db.Auditable4;
 import org.apache.cayenne.commitlog.db.AuditableChild1;
 import org.apache.cayenne.commitlog.model.AttributeChange;
-import org.apache.cayenne.commitlog.model.ChangeMap;
 import org.apache.cayenne.commitlog.model.ObjectChange;
 import org.apache.cayenne.commitlog.model.ObjectChangeType;
 import org.apache.cayenne.commitlog.model.ToManyRelationshipChange;
+import org.apache.cayenne.commitlog.unit.RecordingCommitLogListener;
 import org.apache.cayenne.commitlog.unit.AuditableRuntimeCase;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.CoreModule;
 import org.apache.cayenne.CayenneRuntimeBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.stubbing.Answer;
 
 import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 public class CommitLogFilter_FilteredIT extends AuditableRuntimeCase {
 
 	protected ObjectContext context;
-	protected CommitLogListener mockListener;
+	protected RecordingCommitLogListener listener;
 
 	@Override
 	protected CayenneRuntimeBuilder configureCayenne() {
-		this.mockListener = mock(CommitLogListener.class);
+		this.listener = new RecordingCommitLogListener();
 		return super.configureCayenne().addModule(
-				b -> CoreModule.extend(b).commitLogAnnotationEntitiesOnly().addCommitLogListener(mockListener));
+				b -> CoreModule.extend(b).commitLogAnnotationEntitiesOnly().addCommitLogListener(listener));
 	}
 
 	@BeforeEach
@@ -64,11 +61,10 @@ public class CommitLogFilter_FilteredIT extends AuditableRuntimeCase {
 	@Test
 	public void postCommit_Insert() {
 
-		doAnswer((Answer<Object>) invocation -> {
+		listener.onCommit((originatingContext, changes) -> {
 
-			assertSame(context, invocation.getArguments()[0]);
+			assertSame(context, originatingContext);
 
-			ChangeMap changes = (ChangeMap) invocation.getArguments()[1];
 			assertNotNull(changes);
 			assertEquals(2, changes.getChanges().size());
 			assertEquals(1, changes.getUniqueChanges().size());
@@ -80,27 +76,24 @@ public class CommitLogFilter_FilteredIT extends AuditableRuntimeCase {
 
 			assertEquals(Confidential.getInstance(),
 					c.getAttributeChanges().get(Auditable2.CHAR_PROPERTY2.getName()).getNewValue());
-
-			return null;
-		}).when(mockListener).onPostCommit(any(ObjectContext.class), any(ChangeMap.class));
+		});
 
 		Auditable2 a1 = context.newObject(Auditable2.class);
 		a1.setCharProperty1("yy");
 		a1.setCharProperty2("zz");
 		context.commitChanges();
 
-		verify(mockListener).onPostCommit(any(ObjectContext.class), any(ChangeMap.class));
+		listener.singleCall();
 	}
 
 	@Test
 	public void postCommit_Update() throws SQLException {
 		auditable2.insert(1, "P1_1", "P2_1");
 
-		doAnswer((Answer<Object>) invocation -> {
+		listener.onCommit((originatingContext, changes) -> {
 
-			assertSame(context, invocation.getArguments()[0]);
+			assertSame(context, originatingContext);
 
-			ChangeMap changes = (ChangeMap) invocation.getArguments()[1];
 			assertNotNull(changes);
 			assertEquals(1, changes.getUniqueChanges().size());
 
@@ -112,27 +105,24 @@ public class CommitLogFilter_FilteredIT extends AuditableRuntimeCase {
 			assertNotNull(pc);
 			assertEquals(Confidential.getInstance(), pc.getOldValue());
 			assertEquals(Confidential.getInstance(), pc.getNewValue());
-
-			return null;
-		}).when(mockListener).onPostCommit(any(ObjectContext.class), any(ChangeMap.class));
+		});
 
 		Auditable2 a1 = ObjectSelect.query(Auditable2.class).where(Auditable2.SELF.eqId(1)).selectOne(context);
 		a1.setCharProperty1("P1_2");
 		a1.setCharProperty2("P2_2");
 		context.commitChanges();
 
-		verify(mockListener).onPostCommit(any(ObjectContext.class), any(ChangeMap.class));
+		listener.singleCall();
 	}
 
 	@Test
 	public void postCommit_Delete() throws SQLException {
 		auditable2.insert(1, "P1_1", "P2_1");
 
-		doAnswer((Answer<Object>) invocation -> {
+		listener.onCommit((originatingContext, changes) -> {
 
-			assertSame(context, invocation.getArguments()[0]);
+			assertSame(context, originatingContext);
 
-			ChangeMap changes = (ChangeMap) invocation.getArguments()[1];
 			assertNotNull(changes);
 			assertEquals(1, changes.getUniqueChanges().size());
 
@@ -142,15 +132,13 @@ public class CommitLogFilter_FilteredIT extends AuditableRuntimeCase {
 			assertEquals(1, c.getAttributeChanges().size());
 			assertEquals(Confidential.getInstance(),
 					c.getAttributeChanges().get(Auditable2.CHAR_PROPERTY2.getName()).getOldValue());
-
-			return null;
-		}).when(mockListener).onPostCommit(any(ObjectContext.class), any(ChangeMap.class));
+		});
 
 		Auditable2 a1 = ObjectSelect.query(Auditable2.class).where(Auditable2.SELF.eqId(1)).selectOne(context);
 		context.deleteObject(a1);
 		context.commitChanges();
 
-		verify(mockListener).onPostCommit(any(ObjectContext.class), any(ChangeMap.class));
+		listener.singleCall();
 	}
 
 	@Test
@@ -169,11 +157,10 @@ public class CommitLogFilter_FilteredIT extends AuditableRuntimeCase {
 
 		final Auditable1 a1 = ObjectSelect.query(Auditable1.class).where(Auditable1.SELF.eqId(1)).selectOne(context);
 
-		doAnswer((Answer<Object>) invocation -> {
+		listener.onCommit((originatingContext, changes) -> {
 
-			assertSame(context, invocation.getArguments()[0]);
+			assertSame(context, originatingContext);
 
-			ChangeMap changes = (ChangeMap) invocation.getArguments()[1];
 			assertNotNull(changes);
 			assertEquals(1, changes.getUniqueChanges().size());
 
@@ -193,9 +180,7 @@ public class CommitLogFilter_FilteredIT extends AuditableRuntimeCase {
 
 			assertEquals(1, a1c1.getRemoved().size());
 			assertTrue(a1c1.getRemoved().contains(ac1.getObjectId()));
-
-			return null;
-		}).when(mockListener).onPostCommit(any(ObjectContext.class), any(ChangeMap.class));
+		});
 
 		a1.removeFromChildren1(ac1);
 		a1.addToChildren1(ac2);
@@ -203,7 +188,7 @@ public class CommitLogFilter_FilteredIT extends AuditableRuntimeCase {
 
 		context.commitChanges();
 
-		verify(mockListener).onPostCommit(any(ObjectContext.class), any(ChangeMap.class));
+		listener.singleCall();
 	}
 
 	@Test
@@ -213,22 +198,19 @@ public class CommitLogFilter_FilteredIT extends AuditableRuntimeCase {
 
 		final Auditable3 a3 = ObjectSelect.query(Auditable3.class).where(Auditable3.SELF.eqId(1)).selectOne(context);
 
-		doAnswer((Answer<Object>) invocation -> {
+		listener.onCommit((originatingContext, changes) -> {
 
-			assertSame(context, invocation.getArguments()[0]);
+			assertSame(context, originatingContext);
 
-			ChangeMap changes = (ChangeMap) invocation.getArguments()[1];
 			assertNull(changes.getChanges().get(ObjectId.of("Auditable3", Auditable3.ID_PK_COLUMN, 1)));
-
-			return null;
-		}).when(mockListener).onPostCommit(any(ObjectContext.class), any(ChangeMap.class));
+		});
 
 		a3.setCharProperty1("33");
 		a3.setCharProperty2("34");
 
 		context.commitChanges();
 
-		verify(mockListener).onPostCommit(any(ObjectContext.class), any(ChangeMap.class));
+		listener.singleCall();
 	}
 
 	@Test
@@ -242,22 +224,19 @@ public class CommitLogFilter_FilteredIT extends AuditableRuntimeCase {
 		final Auditable4 a41 = ObjectSelect.query(Auditable4.class).where(Auditable4.SELF.eqId(11)).selectOne(context);
 		final Auditable4 a42 = ObjectSelect.query(Auditable4.class).where(Auditable4.SELF.eqId(12)).selectOne(context);
 
-		doAnswer((Answer<Object>) invocation -> {
+		listener.onCommit((originatingContext, changes) -> {
 
-			assertSame(context, invocation.getArguments()[0]);
+			assertSame(context, originatingContext);
 
-			ChangeMap changes = (ChangeMap) invocation.getArguments()[1];
 			assertNull(changes.getChanges().get(ObjectId.of("Auditable3", Auditable3.ID_PK_COLUMN, 1)));
-
-			return null;
-		}).when(mockListener).onPostCommit(any(ObjectContext.class), any(ChangeMap.class));
+		});
 
 		a3.removeFromAuditable4s(a41);
 		a3.addToAuditable4s(a42);
 
 		context.commitChanges();
 
-		verify(mockListener).onPostCommit(any(ObjectContext.class), any(ChangeMap.class));
+		listener.singleCall();
 	}
 
 	@Test
@@ -271,20 +250,17 @@ public class CommitLogFilter_FilteredIT extends AuditableRuntimeCase {
 
 		final Auditable4 a4 = ObjectSelect.query(Auditable4.class).where(Auditable4.SELF.eqId(11)).selectOne(context);
 
-		doAnswer((Answer<Object>) invocation -> {
+		listener.onCommit((originatingContext, changes) -> {
 
-			assertSame(context, invocation.getArguments()[0]);
+			assertSame(context, originatingContext);
 
-			ChangeMap changes = (ChangeMap) invocation.getArguments()[1];
 			assertNull(changes.getChanges().get(ObjectId.of("Auditable4", Auditable4.ID_PK_COLUMN, 11)));
-
-			return null;
-		}).when(mockListener).onPostCommit(any(ObjectContext.class), any(ChangeMap.class));
+		});
 
 		a4.setAuditable3(a32);
 
 		context.commitChanges();
 
-		verify(mockListener).onPostCommit(any(ObjectContext.class), any(ChangeMap.class));
+		listener.singleCall();
 	}
 }

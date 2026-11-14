@@ -33,9 +33,11 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.Connection;
 import java.sql.Driver;
+import java.sql.DriverPropertyInfo;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -45,11 +47,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 /**
  * Checks that Cayenne stack startup is lazy in regard to the DB access: the runtime must start even if the DB is down,
@@ -120,12 +117,8 @@ public class CayenneRuntimeLazyStartupTest {
     @Test
     public void startup_CayennePool() throws SQLException {
 
-        List<Throwable> accessStacks = new CopyOnWriteArrayList<>();
-        Driver driver = mock(Driver.class);
-        when(driver.connect(any(), any())).thenAnswer(i -> {
-            accessStacks.add(new Throwable("Driver accessed"));
-            throw new SQLException("DB is down");
-        });
+        DownDriver driver = new DownDriver();
+        List<Throwable> accessStacks = driver.accessStacks;
 
         // the pool itself is not lazy - it tries to open "min" connections when created, but it ignores the failures
         DataSource dataSource = CayenneDataSource.of("jdbc:down:db").driver(driver).pool(1, 2).build();
@@ -148,14 +141,14 @@ public class CayenneRuntimeLazyStartupTest {
     @Test
     public void startup_CayennePool_ZeroMinConnections_NoDriverAccess() throws SQLException {
 
-        Driver driver = mock(Driver.class);
+        DownDriver driver = new DownDriver();
         DataSource dataSource = CayenneDataSource.of("jdbc:down:db").driver(driver).pool(0, 2).build();
 
         runtime = CayenneRuntime.of().addConfig("cayenne-testmap.xml").defaultDataNode(dataSource).build();
         runtime.getDataDomain();
         runtime.newContext();
 
-        verify(driver, never()).connect(any(), any());
+        assertTrue(driver.accessStacks.isEmpty());
     }
 
     @Test
@@ -275,6 +268,50 @@ public class CayenneRuntimeLazyStartupTest {
         @Override
         public boolean isWrapperFor(Class<?> iface) {
             return false;
+        }
+    }
+
+    /**
+     * A driver of a DB that is down, that records the stack of each attempt to connect.
+     */
+    static class DownDriver implements Driver {
+
+        final List<Throwable> accessStacks = new CopyOnWriteArrayList<>();
+
+        @Override
+        public Connection connect(String url, Properties info) throws SQLException {
+            accessStacks.add(new Throwable("Driver accessed"));
+            throw new SQLException("DB is down");
+        }
+
+        @Override
+        public boolean acceptsURL(String url) {
+            return true;
+        }
+
+        @Override
+        public DriverPropertyInfo[] getPropertyInfo(String url, Properties info) {
+            return new DriverPropertyInfo[0];
+        }
+
+        @Override
+        public int getMajorVersion() {
+            return 1;
+        }
+
+        @Override
+        public int getMinorVersion() {
+            return 0;
+        }
+
+        @Override
+        public boolean jdbcCompliant() {
+            return false;
+        }
+
+        @Override
+        public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+            throw new SQLFeatureNotSupportedException();
         }
     }
 }

@@ -51,7 +51,7 @@ public class IdColumnExtractorTest extends BaseColumnExtractorTest {
         ResolvedSelect query = new MockResolvedSelectBuilder()
                 .withDbEntity(mapping.schema().table("mock"))
                 .build();
-        SelectTranslatorContext context = new MockSelectTranslatorContext(query);
+        SelectTranslatorContext context = new TestSelectTranslatorContext(query);
 
         IdColumnExtractor extractor = new IdColumnExtractor(context, mapping.entity("Mock"));
         extractor.extract();
@@ -92,7 +92,7 @@ public class IdColumnExtractorTest extends BaseColumnExtractorTest {
         ResolvedSelect query = new MockResolvedSelectBuilder()
                 .withDbEntity(mapping.schema().table("mock1"))
                 .build();
-        SelectTranslatorContext context = new MockSelectTranslatorContext(query);
+        SelectTranslatorContext context = new TestSelectTranslatorContext(query);
 
         CayennePath prefix = CayennePath.of("prefix");
         context.getTableTree().addJoinTable(prefix, mapping.schema().table("mock1").join("prefix"), JoinType.INNER);

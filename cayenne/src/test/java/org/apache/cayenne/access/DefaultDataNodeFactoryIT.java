@@ -34,6 +34,8 @@ import org.apache.cayenne.CayenneRuntimeBuilder;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.apache.cayenne.unit.TestProject;
+import org.apache.cayenne.dba.JdbcPkGenerator;
+import org.apache.cayenne.unit.jdbc.TestDataSource;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -44,9 +46,6 @@ import java.sql.SQLException;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 public class DefaultDataNodeFactoryIT {
 
@@ -181,8 +180,7 @@ public class DefaultDataNodeFactoryIT {
 
     @Test
     public void adapterDetectionIsLazy() throws SQLException {
-        DataSource brokenDataSource = mock(DataSource.class);
-        when(brokenDataSource.getConnection()).thenThrow(new SQLException("DB is down"));
+        TestDataSource brokenDataSource = new TestDataSource().failGetConnection(new SQLException("DB is down"));
 
         // the stack must start when the DB is not available...
         DataNode node = factory().createDataNode("channel", DataNodeDescriptor.of("n1")
@@ -191,7 +189,7 @@ public class DefaultDataNodeFactoryIT {
 
         // ... and fail only when the adapter is actually needed
         assertThrows(CayenneRuntimeException.class, node::getAdapter);
-        verify(brokenDataSource).getConnection();
+        assertEquals(1, brokenDataSource.getConnectionRequests());
     }
 
     @Test
@@ -227,7 +225,7 @@ public class DefaultDataNodeFactoryIT {
 
     @Test
     public void pkGeneratorFromDescriptor() {
-        PkGenerator generator = mock(PkGenerator.class);
+        PkGenerator generator = new JdbcPkGenerator();
         DataNode node = factory().createDataNode("channel", DataNodeDescriptor.of("n1")
                 .dataSource(CayenneTestsEnv.COMMON_SCHEMA.dataSource())
                 .pkGenerator(generator)

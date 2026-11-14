@@ -43,7 +43,7 @@ public class DbEntityColumnExtractorTest extends BaseColumnExtractorTest {
                         .withDbEntity(compileMockDbEntity("mock"))
                         
                 .build();
-        SelectTranslatorContext context = new MockSelectTranslatorContext(query);
+        SelectTranslatorContext context = new TestSelectTranslatorContext(query);
 
         DbEntityColumnExtractor extractor = new DbEntityColumnExtractor(context);
         extractor.extract(CayennePath.EMPTY_PATH);
@@ -91,7 +91,7 @@ public class DbEntityColumnExtractorTest extends BaseColumnExtractorTest {
         ResolvedSelect query = new MockResolvedSelectBuilder()
                 .withDbEntity(table)
                 .build();
-        SelectTranslatorContext context = new MockSelectTranslatorContext(query);
+        SelectTranslatorContext context = new TestSelectTranslatorContext(query);
 
         CayennePath prefix = CayennePath.of("prefix");
         context.getTableTree().addJoinTable(prefix, table.join("prefix"), JoinType.INNER);

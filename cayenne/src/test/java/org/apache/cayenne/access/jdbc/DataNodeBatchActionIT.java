@@ -20,7 +20,6 @@
 package org.apache.cayenne.access.jdbc;
 
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.map.compiled.CompiledMapping;
 import org.apache.cayenne.query.resolved.InsertBatch;
@@ -35,7 +34,6 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.mockito.Mockito.mock;
 
 public class DataNodeBatchActionIT {
 
@@ -49,7 +47,7 @@ public class DataNodeBatchActionIT {
         // test with adapter that supports keys
         JdbcAdapter adapter = buildAdapter(true);
 
-        DataNode node = DataNodes.withAdapter(adapter, mock(RowReaderFactory.class));
+        DataNode node = DataNodes.withAdapter(adapter);
 
         InsertBatch batch2 = new InsertBatch(mapping.entity(Artist.class).table(), List.of());
         TranslatedBatch translated = new InsertBatchTranslator().translate(batch2, adapter);
@@ -63,7 +61,7 @@ public class DataNodeBatchActionIT {
         // test with adapter that does not support keys...
         JdbcAdapter adapter = buildAdapter(false);
 
-        DataNode node = DataNodes.withAdapter(adapter, mock(RowReaderFactory.class));
+        DataNode node = DataNodes.withAdapter(adapter);
 
         InsertBatch batch2 = new InsertBatch(mapping.entity(Artist.class).table(), List.of());
         TranslatedBatch translated = new InsertBatchTranslator().translate(batch2, adapter);

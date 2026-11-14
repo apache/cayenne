@@ -24,30 +24,28 @@ import org.apache.cayenne.commitlog.db.Auditable1;
 import org.apache.cayenne.commitlog.db.AuditableChild1;
 import org.apache.cayenne.commitlog.db.AuditableChild1x;
 import org.apache.cayenne.commitlog.model.*;
+import org.apache.cayenne.commitlog.unit.RecordingCommitLogListener;
 import org.apache.cayenne.commitlog.unit.AuditableRuntimeCase;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.CoreModule;
 import org.apache.cayenne.CayenneRuntimeBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 
 import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 public class CommitLogFilterIT extends AuditableRuntimeCase {
 
     protected ObjectContext context;
-    protected CommitLogListener mockListener;
+    protected RecordingCommitLogListener listener;
 
     @Override
     protected CayenneRuntimeBuilder configureCayenne() {
-        this.mockListener = mock(CommitLogListener.class);
+        this.listener = new RecordingCommitLogListener();
         return super.configureCayenne()
-                .addModule(b -> CoreModule.extend(b).addCommitLogListener(mockListener));
+                .addModule(b -> CoreModule.extend(b).addCommitLogListener(listener));
     }
 
     @BeforeEach
@@ -64,14 +62,13 @@ public class CommitLogFilterIT extends AuditableRuntimeCase {
 
         context.commitChanges();
 
-        ArgumentCaptor<ChangeMap> changeMap = ArgumentCaptor.forClass(ChangeMap.class);
-        verify(mockListener).onPostCommit(any(ObjectContext.class), changeMap.capture());
+        ChangeMap changeMap = listener.singleCall().changes();
 
-        assertNotNull(changeMap.getValue());
-        assertEquals(2, changeMap.getValue().getChanges().size());
-        assertEquals(1, changeMap.getValue().getUniqueChanges().size());
+        assertNotNull(changeMap);
+        assertEquals(2, changeMap.getChanges().size());
+        assertEquals(1, changeMap.getUniqueChanges().size());
 
-        ObjectChange c = changeMap.getValue().getUniqueChanges().iterator().next();
+        ObjectChange c = changeMap.getUniqueChanges().iterator().next();
         assertNotNull(c);
         assertEquals(ObjectChangeType.INSERT, c.getType());
         assertEquals(1, c.getAttributeChanges().size());
@@ -94,13 +91,12 @@ public class CommitLogFilterIT extends AuditableRuntimeCase {
 
         context.commitChanges();
 
-        ArgumentCaptor<ChangeMap> changeMap = ArgumentCaptor.forClass(ChangeMap.class);
-        verify(mockListener).onPostCommit(any(ObjectContext.class), changeMap.capture());
+        ChangeMap changeMap = listener.singleCall().changes();
 
-        assertNotNull(changeMap.getValue());
-        assertEquals(1, changeMap.getValue().getUniqueChanges().size());
+        assertNotNull(changeMap);
+        assertEquals(1, changeMap.getUniqueChanges().size());
 
-        ObjectChange c = changeMap.getValue().getChanges().get(ObjectId.of("Auditable1", Auditable1.ID_PK_COLUMN, 1));
+        ObjectChange c = changeMap.getChanges().get(ObjectId.of("Auditable1", Auditable1.ID_PK_COLUMN, 1));
         assertNotNull(c);
         assertEquals(ObjectChangeType.UPDATE, c.getType());
         assertEquals(1, c.getAttributeChanges().size());
@@ -125,14 +121,13 @@ public class CommitLogFilterIT extends AuditableRuntimeCase {
         context.deleteObject(a1);
         context.commitChanges();
 
-        ArgumentCaptor<ChangeMap> changeMap = ArgumentCaptor.forClass(ChangeMap.class);
-        verify(mockListener).onPostCommit(any(ObjectContext.class), changeMap.capture());
+        ChangeMap changeMap = listener.singleCall().changes();
 
-        assertNotNull(changeMap.getValue());
-        assertEquals(3, changeMap.getValue().getUniqueChanges().size());
+        assertNotNull(changeMap);
+        assertEquals(3, changeMap.getUniqueChanges().size());
 
         // check from the perspective of the master object
-        ObjectChange masterChange = changeMap.getValue().getChanges().get(ObjectId.of("Auditable1", Auditable1.ID_PK_COLUMN, 1));
+        ObjectChange masterChange = changeMap.getChanges().get(ObjectId.of("Auditable1", Auditable1.ID_PK_COLUMN, 1));
         assertNotNull(masterChange);
         assertEquals(ObjectChangeType.DELETE, masterChange.getType());
 
@@ -145,7 +140,8 @@ public class CommitLogFilterIT extends AuditableRuntimeCase {
         assertTrue(masterChange.getToOneRelationshipChanges().isEmpty(), "No N..1 relationships in the entity");
 
         // check from the perspective of the child object
-        ObjectChange childChange = changeMap.getValue().getChanges().get(ObjectId.of("AuditableChild1", AuditableChild1.ID_PK_COLUMN, 2));
+        ObjectChange childChange = changeMap.getChanges()
+                .get(ObjectId.of("AuditableChild1", AuditableChild1.ID_PK_COLUMN, 2));
         assertNotNull(childChange);
         assertEquals(ObjectChangeType.DELETE, childChange.getType());
 
@@ -169,13 +165,14 @@ public class CommitLogFilterIT extends AuditableRuntimeCase {
         context.deleteObject(ac1);
         context.commitChanges();
 
-        ArgumentCaptor<ChangeMap> changeMap = ArgumentCaptor.forClass(ChangeMap.class);
-        verify(mockListener).onPostCommit(any(ObjectContext.class), changeMap.capture());
+        ChangeMap changeMap = listener.singleCall().changes();
 
-        assertNotNull(changeMap.getValue());
-        assertEquals(2, changeMap.getValue().getUniqueChanges().size());
+        assertNotNull(changeMap);
+        assertEquals(2, changeMap.getUniqueChanges().size());
 
-        ObjectChange change = changeMap.getValue().getChanges().get(ObjectId.of("AuditableChild1", AuditableChild1.ID_PK_COLUMN, 2));
+        ObjectChange change = changeMap.getChanges()
+
+                .get(ObjectId.of("AuditableChild1", AuditableChild1.ID_PK_COLUMN, 2));
         assertNotNull(change);
         assertEquals(ObjectChangeType.DELETE, change.getType());
 
@@ -200,13 +197,14 @@ public class CommitLogFilterIT extends AuditableRuntimeCase {
         context.deleteObject(ac1);
         context.commitChanges();
 
-        ArgumentCaptor<ChangeMap> changeMap = ArgumentCaptor.forClass(ChangeMap.class);
-        verify(mockListener).onPostCommit(any(ObjectContext.class), changeMap.capture());
+        ChangeMap changeMap = listener.singleCall().changes();
 
-        assertNotNull(changeMap.getValue());
-        assertEquals(1, changeMap.getValue().getUniqueChanges().size());
+        assertNotNull(changeMap);
+        assertEquals(1, changeMap.getUniqueChanges().size());
 
-        ObjectChange change = changeMap.getValue().getChanges().get(ObjectId.of("AuditableChild1x", AuditableChild1x.ID_PK_COLUMN, 2));
+        ObjectChange change = changeMap.getChanges()
+
+                .get(ObjectId.of("AuditableChild1x", AuditableChild1x.ID_PK_COLUMN, 2));
         assertNotNull(change);
         assertEquals(ObjectChangeType.DELETE, change.getType());
 
@@ -246,13 +244,12 @@ public class CommitLogFilterIT extends AuditableRuntimeCase {
 
         context.commitChanges();
 
-        ArgumentCaptor<ChangeMap> changeMap = ArgumentCaptor.forClass(ChangeMap.class);
-        verify(mockListener).onPostCommit(any(ObjectContext.class), changeMap.capture());
+        ChangeMap changeMap = listener.singleCall().changes();
 
-        assertNotNull(changeMap.getValue());
-        assertEquals(5, changeMap.getValue().getUniqueChanges().size());
+        assertNotNull(changeMap);
+        assertEquals(5, changeMap.getUniqueChanges().size());
 
-        ObjectChange a1c = changeMap.getValue().getChanges().get(
+        ObjectChange a1c = changeMap.getChanges().get(
             ObjectId.of("Auditable1", Auditable1.ID_PK_COLUMN, 1));
         assertNotNull(a1c);
         assertEquals(ObjectChangeType.UPDATE, a1c.getType());
@@ -260,7 +257,7 @@ public class CommitLogFilterIT extends AuditableRuntimeCase {
         assertEquals(2, a1c1.getAdded().size());
         assertEquals(1, a1c1.getRemoved().size());
 
-        ObjectChange a2c = changeMap.getValue().getChanges().get(
+        ObjectChange a2c = changeMap.getChanges().get(
             ObjectId.of("Auditable1", Auditable1.ID_PK_COLUMN, 2));
         assertNotNull(a2c);
         assertEquals(ObjectChangeType.UPDATE, a2c.getType());
@@ -268,7 +265,7 @@ public class CommitLogFilterIT extends AuditableRuntimeCase {
         assertEquals(0, a2c1.getAdded().size());
         assertEquals(1, a2c1.getRemoved().size());
 
-        ObjectChange ac1c = changeMap.getValue().getChanges().get(
+        ObjectChange ac1c = changeMap.getChanges().get(
                 ObjectId.of("AuditableChild1", AuditableChild1.ID_PK_COLUMN, 1));
         assertNotNull(ac1c);
         assertEquals(ObjectChangeType.UPDATE, ac1c.getType());
@@ -276,7 +273,7 @@ public class CommitLogFilterIT extends AuditableRuntimeCase {
         assertEquals(a1.getObjectId(), ac1c1.getOldValue());
         assertNull(ac1c1.getNewValue());
 
-        ObjectChange ac2c = changeMap.getValue().getChanges().get(
+        ObjectChange ac2c = changeMap.getChanges().get(
                 ObjectId.of("AuditableChild1", AuditableChild1.ID_PK_COLUMN, 2));
         assertNotNull(ac2c);
         assertEquals(ObjectChangeType.UPDATE, ac2c.getType());
@@ -285,7 +282,7 @@ public class CommitLogFilterIT extends AuditableRuntimeCase {
         assertEquals(a2.getObjectId(), ac2c1.getOldValue());
         assertEquals(a1.getObjectId(), ac2c1.getNewValue());
 
-        ObjectChange ac3c = changeMap.getValue().getChanges().get(
+        ObjectChange ac3c = changeMap.getChanges().get(
                 ObjectId.of("AuditableChild1", AuditableChild1.ID_PK_COLUMN, 3));
         assertNotNull(ac3c);
         assertEquals(ObjectChangeType.UPDATE, ac3c.getType());
@@ -317,13 +314,12 @@ public class CommitLogFilterIT extends AuditableRuntimeCase {
 
         context.commitChanges();
 
-        ArgumentCaptor<ChangeMap> changeMap = ArgumentCaptor.forClass(ChangeMap.class);
-        verify(mockListener).onPostCommit(any(ObjectContext.class), changeMap.capture());
+        ChangeMap changeMap = listener.singleCall().changes();
 
-        assertNotNull(changeMap.getValue());
-        assertEquals(4, changeMap.getValue().getUniqueChanges().size());
+        assertNotNull(changeMap);
+        assertEquals(4, changeMap.getUniqueChanges().size());
 
-        ObjectChange a1c = changeMap.getValue().getChanges().get(ObjectId.of("Auditable1", Auditable1.ID_PK_COLUMN, 1));
+        ObjectChange a1c = changeMap.getChanges().get(ObjectId.of("Auditable1", Auditable1.ID_PK_COLUMN, 1));
         assertNotNull(a1c);
         assertEquals(ObjectChangeType.UPDATE, a1c.getType());
         assertEquals(0, a1c.getAttributeChanges().size());

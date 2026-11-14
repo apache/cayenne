@@ -18,17 +18,16 @@
  ****************************************************************/
 
 package org.apache.cayenne.access.translator.select;
-import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.map.compiled.CompiledEntity;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.unit.TestAdapters;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -43,7 +42,7 @@ public class ObjPathProcessorIT {
     public void prepareTranslationContext() {
         SelectTranslatorContext translatorContext = new SelectTranslatorContext(
                 ObjectSelect.query(Persistent.class, "IvSub3").resolve(env.mapping()),
-                Mockito.mock(DbAdapter.class),
+                TestAdapters.jdbc(),
                 env.mapping(),
                 null
         );

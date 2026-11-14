@@ -18,77 +18,74 @@
  ****************************************************************/
 package org.apache.cayenne.datasource;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+import org.apache.cayenne.unit.jdbc.TestConnection;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class PoolAwareConnectionTest {
 
-	private UnmanagedPoolingDataSource parentMock;
-	private Connection connectionMock;
+	private TestConnection connection;
+	private StubPoolingDataSource parent;
 
 	@BeforeEach
-	public void before() throws SQLException {
-		connectionMock = mock(Connection.class);
-
-		parentMock = mock(UnmanagedPoolingDataSource.class);
-		when(parentMock.createUnwrapped()).thenReturn(connectionMock);
+	public void before() {
+		connection = new TestConnection();
+		parent = new StubPoolingDataSource();
 	}
 
 	@Test
 	public void recover() throws SQLException {
-		PoolAwareConnection paConnection = new PoolAwareConnection(parentMock, connectionMock, null);
-		SQLException e = mock(SQLException.class);
+		TestConnection replacement = new TestConnection();
+		parent.reconnects.add(replacement);
 
-		verify(parentMock, times(0)).createUnwrapped();
-		paConnection.recover(e);
-		verify(parentMock, times(1)).createUnwrapped();
+		PoolAwareConnection paConnection = new PoolAwareConnection(parent, connection, null);
+		paConnection.recover(new SQLException("E1"));
 
-		assertSame(connectionMock, paConnection.getConnection());
+		assertTrue(connection.isClosed());
+		assertSame(replacement, paConnection.getConnection());
+		assertEquals(1, parent.createUnwrappedCalls.get());
 	}
 
 	@Test
 	public void prepareStatement() throws SQLException {
-		PreparedStatement firstTry = mock(PreparedStatement.class);
-		PreparedStatement secondTry = mock(PreparedStatement.class);
-
-		when(connectionMock.prepareStatement(anyString())).thenReturn(firstTry, secondTry);
-
-		PoolAwareConnection paConnection = new PoolAwareConnection(parentMock, connectionMock, null);
+		PoolAwareConnection paConnection = new PoolAwareConnection(parent, connection, null);
 		PreparedStatement st = paConnection.prepareStatement("SELECT 1");
-		assertSame(firstTry, st);
+
+		assertSame(connection.getPreparedStatements().get(0), st);
+		assertEquals(0, parent.createUnwrappedCalls.get());
 	}
 
 	@Test
 	public void prepareStatement_Recover() throws SQLException {
+		connection.failPrepareStatement(new SQLException("E1"));
+		TestConnection replacement = new TestConnection();
+		parent.reconnects.add(replacement);
 
-		PreparedStatement secondTry = mock(PreparedStatement.class);
-		when(connectionMock.prepareStatement(anyString())).thenThrow(new SQLException("E1")).thenReturn(secondTry);
-
-		PoolAwareConnection paConnection = new PoolAwareConnection(parentMock, connectionMock, null);
+		PoolAwareConnection paConnection = new PoolAwareConnection(parent, connection, null);
 		PreparedStatement st = paConnection.prepareStatement("SELECT 1");
-		assertSame(secondTry, st);
+
+		// the statement is prepared again over a new connection
+		assertSame(replacement.getPreparedStatements().get(0), st);
 	}
 
 	@Test
-	public void prepareStatement_Recover_Impossible() throws SQLException {
-
+	public void prepareStatement_Recover_Impossible() {
 		SQLException original = new SQLException("E1");
-		when(connectionMock.prepareStatement(anyString())).thenThrow(original);
-		PoolAwareConnection paConnection = new PoolAwareConnection(parentMock, connectionMock, null);
+		connection.failPrepareStatement(original);
+
+		// no reconnects available
+		PoolAwareConnection paConnection = new PoolAwareConnection(parent, connection, null);
 
 		SQLException thrown = assertThrows(SQLException.class, () -> paConnection.prepareStatement("SELECT 1"));
 		assertSame(original, thrown);
 	}
+
 }

@@ -38,7 +38,7 @@ public class GroupByStageTest {
     @BeforeEach
     public void prepareContext() {
         ResolvedSelect query = new MockResolvedSelectBuilder().build();
-        context = new MockSelectTranslatorContext(query);
+        context = new TestSelectTranslatorContext(query);
     }
 
     // no result columns

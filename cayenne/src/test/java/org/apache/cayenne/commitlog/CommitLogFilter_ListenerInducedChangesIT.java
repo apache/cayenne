@@ -26,14 +26,13 @@ import org.apache.cayenne.commitlog.model.AttributeChange;
 import org.apache.cayenne.commitlog.model.ChangeMap;
 import org.apache.cayenne.commitlog.model.ObjectChange;
 import org.apache.cayenne.commitlog.model.ObjectChangeType;
+import org.apache.cayenne.commitlog.unit.RecordingCommitLogListener;
 import org.apache.cayenne.commitlog.unit.AuditableRuntimeCase;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.CoreModule;
 import org.apache.cayenne.CayenneRuntimeBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -41,8 +40,6 @@ import java.util.Comparator;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 /**
  * Testing capturing changes introduced by the pre-commit listeners.
@@ -50,13 +47,13 @@ import static org.mockito.Mockito.*;
 public class CommitLogFilter_ListenerInducedChangesIT extends AuditableRuntimeCase {
 
 	protected ObjectContext context;
-	protected CommitLogListener mockListener;
+	protected RecordingCommitLogListener commitLogListener;
 
 	@Override
 	protected CayenneRuntimeBuilder configureCayenne() {
-		this.mockListener = mock(CommitLogListener.class);
+		this.commitLogListener = new RecordingCommitLogListener();
 		return super.configureCayenne().addModule(
-				b -> CoreModule.extend(b).addCommitLogListener(mockListener));
+				b -> CoreModule.extend(b).addCommitLogListener(commitLogListener));
 	}
 
 	@BeforeEach
@@ -74,11 +71,11 @@ public class CommitLogFilter_ListenerInducedChangesIT extends AuditableRuntimeCa
 		final Auditable1 a1 = context.newObject(Auditable1.class);
 		a1.setCharProperty1("yy");
 
-		doAnswer((Answer<Object>) invocation -> {
+		commitLogListener.onCommit((originatingContext, changes) -> {
 
 			assertNotNull(listener.c);
 
-			List<ObjectChange> sortedChanges = sortedChanges(invocation);
+			List<ObjectChange> sortedChanges = sortedChanges(originatingContext, changes);
 
 			assertEquals(2, sortedChanges.size());
 
@@ -92,13 +89,11 @@ public class CommitLogFilter_ListenerInducedChangesIT extends AuditableRuntimeCa
 					.get(AuditableChild1.CHAR_PROPERTY1.getName());
 			assertNotNull(listenerInducedChange);
 			assertEquals("c1", listenerInducedChange.getNewValue());
-
-			return null;
-		}).when(mockListener).onPostCommit(any(ObjectContext.class), any(ChangeMap.class));
+		});
 
 		context.commitChanges();
 
-		verify(mockListener).onPostCommit(any(ObjectContext.class), any(ChangeMap.class));
+		commitLogListener.singleCall();
 	}
 
 	@Test
@@ -116,12 +111,12 @@ public class CommitLogFilter_ListenerInducedChangesIT extends AuditableRuntimeCa
 				.selectFirst(context);
 		a1.setCharProperty1("zz");
 
-		doAnswer((Answer<Object>) invocation -> {
+		commitLogListener.onCommit((originatingContext, changes) -> {
 
 			assertNotNull(listener.toDelete);
 			assertEquals(1, listener.toDelete.size());
 
-			List<ObjectChange> sortedChanges = sortedChanges(invocation);
+			List<ObjectChange> sortedChanges = sortedChanges(originatingContext, changes);
 
 			assertEquals(2, sortedChanges.size());
 
@@ -135,13 +130,11 @@ public class CommitLogFilter_ListenerInducedChangesIT extends AuditableRuntimeCa
 					.get(AuditableChild1.CHAR_PROPERTY1.getName());
 			assertNotNull(listenerInducedChange);
 			assertEquals("yyc", listenerInducedChange.getOldValue());
-
-			return null;
-		}).when(mockListener).onPostCommit(any(ObjectContext.class), any(ChangeMap.class));
+		});
 
 		context.commitChanges();
 
-		verify(mockListener).onPostCommit(any(ObjectContext.class), any(ChangeMap.class));
+		commitLogListener.singleCall();
 	}
 
 	@Test
@@ -159,12 +152,12 @@ public class CommitLogFilter_ListenerInducedChangesIT extends AuditableRuntimeCa
 				.selectFirst(context);
 		a1.setCharProperty1("zz");
 
-		doAnswer((Answer<Object>) invocation -> {
+		commitLogListener.onCommit((originatingContext, changes) -> {
 
 			assertNotNull(listener.toUpdate);
 			assertEquals(1, listener.toUpdate.size());
 
-			List<ObjectChange> sortedChanges = sortedChanges(invocation);
+			List<ObjectChange> sortedChanges = sortedChanges(originatingContext, changes);
 
 			assertEquals(2, sortedChanges.size());
 
@@ -179,19 +172,15 @@ public class CommitLogFilter_ListenerInducedChangesIT extends AuditableRuntimeCa
 			assertNotNull(listenerInducedChange);
 			assertEquals("yyc", listenerInducedChange.getOldValue());
 			assertEquals("yyc_", listenerInducedChange.getNewValue());
-
-			return null;
-		}).when(mockListener).onPostCommit(any(ObjectContext.class), any(ChangeMap.class));
+		});
 
 		context.commitChanges();
 
-		verify(mockListener).onPostCommit(any(ObjectContext.class), any(ChangeMap.class));
+		commitLogListener.singleCall();
 	}
 
-	private List<ObjectChange> sortedChanges(InvocationOnMock invocation) {
-		assertSame(context, invocation.getArguments()[0]);
-
-		ChangeMap changes = (ChangeMap) invocation.getArguments()[1];
+	private List<ObjectChange> sortedChanges(ObjectContext originatingContext, ChangeMap changes) {
+		assertSame(context, originatingContext);
 
 		List<ObjectChange> sortedChanges = new ArrayList<>(changes.getUniqueChanges());
 		sortedChanges.sort(Comparator.comparing(o -> o.getPostCommitId().getEntityName()));

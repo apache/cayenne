@@ -19,15 +19,14 @@
 
 package org.apache.cayenne.access;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.graph.ArcId;
 import org.apache.cayenne.graph.GraphChangeHandler;
 import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.testdo.testmap.Artist;
@@ -37,6 +36,9 @@ import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DataContextCommitIT {
 
@@ -61,12 +63,11 @@ public class DataContextCommitIT {
         assertFalse(context.hasChanges());
         assertNotEquals(beforeId, afterId);
 
-        GraphChangeHandler diffChecker = mock(GraphChangeHandler.class);
+        RecordingChangeHandler diffChecker = new RecordingChangeHandler();
 
         diff.apply(diffChecker);
 
-        verify(diffChecker).nodeIdChanged(beforeId, afterId);
-        verifyNoMoreInteractions(diffChecker);
+        assertEquals(List.of("nodeIdChanged(" + beforeId + ", " + afterId + ")"), diffChecker.calls);
     }
 
     @Test
@@ -90,11 +91,10 @@ public class DataContextCommitIT {
         assertNotNull(diff);
         assertFalse(context.hasChanges());
 
-        GraphChangeHandler diffChecker = mock(GraphChangeHandler.class);
+        RecordingChangeHandler diffChecker = new RecordingChangeHandler();
 
         diff.apply(diffChecker);
-        verify(diffChecker).nodeIdChanged(beforeId, afterId);
-        verifyNoMoreInteractions(diffChecker);
+        assertEquals(List.of("nodeIdChanged(" + beforeId + ", " + afterId + ")"), diffChecker.calls);
     }
 
     @Test
@@ -110,5 +110,43 @@ public class DataContextCommitIT {
         GraphDiff diff3 = context.flushToParent(true);
         assertNotNull(diff3);
         assertFalse(context.hasChanges());
+    }
+
+    /**
+     * Records the calls it receives as strings, to compare a diff with the expected changes.
+     */
+    static class RecordingChangeHandler implements GraphChangeHandler {
+
+        final List<String> calls = new ArrayList<>();
+
+        @Override
+        public void nodeIdChanged(ObjectId id, ObjectId newId) {
+            calls.add("nodeIdChanged(" + id + ", " + newId + ")");
+        }
+
+        @Override
+        public void nodeCreated(ObjectId id) {
+            calls.add("nodeCreated(" + id + ")");
+        }
+
+        @Override
+        public void nodeRemoved(ObjectId id) {
+            calls.add("nodeRemoved(" + id + ")");
+        }
+
+        @Override
+        public void nodePropertyChanged(ObjectId id, String property, Object oldValue, Object newValue) {
+            calls.add("nodePropertyChanged(" + id + ", " + property + ")");
+        }
+
+        @Override
+        public void arcCreated(ObjectId id, ObjectId targetId, ArcId arcId) {
+            calls.add("arcCreated(" + id + ", " + targetId + ", " + arcId + ")");
+        }
+
+        @Override
+        public void arcDeleted(ObjectId id, ObjectId targetId, ArcId arcId) {
+            calls.add("arcDeleted(" + id + ", " + targetId + ", " + arcId + ")");
+        }
     }
 }

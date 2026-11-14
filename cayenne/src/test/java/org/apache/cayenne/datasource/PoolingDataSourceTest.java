@@ -22,21 +22,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
-import org.apache.cayenne.datasource.PoolAwareConnection;
-import org.apache.cayenne.datasource.UnmanagedPoolingDataSource;
-import org.apache.cayenne.datasource.PoolingDataSourceParameters;
+import org.apache.cayenne.unit.jdbc.TestConnection;
+import org.apache.cayenne.unit.jdbc.TestDataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 public class PoolingDataSourceTest {
 
@@ -45,13 +40,13 @@ public class PoolingDataSourceTest {
 
 	@BeforeEach
 	public void before() throws SQLException {
-		nonPooling = mock(DataSource.class);
-		when(nonPooling.getConnection()).thenAnswer(new Answer<Connection>() {
+		// opens a new connection on every call
+		nonPooling = new TestDataSource() {
 			@Override
-			public Connection answer(InvocationOnMock invocation) throws Throwable {
-				return mock(Connection.class);
+			public Connection getConnection() {
+				return new TestConnection();
 			}
-		});
+		};
 		params = new PoolingDataSourceParameters();
 	}
 
@@ -150,7 +145,7 @@ public class PoolingDataSourceTest {
 	@Test
 	public void validateUnchecked() {
 
-		final PoolAwareConnection[] connections = validConnections(4);
+		final ValidatedConnection[] connections = validConnections(4);
 
 		params.setMinConnections(4);
 		params.setMaxConnections(10);
@@ -166,12 +161,10 @@ public class PoolingDataSourceTest {
 		};
 
 		// now that the pool is created, invalidate a few leading connections
-		when(connections[0].validate()).thenReturn(false);
-		when(connections[1].validate()).thenReturn(false);
+		connections[0].valid = false;
+		connections[1].valid = false;
 
-		Connection faceHeadConnection = mock(Connection.class);
-		PoolAwareConnection fakeHead = mock(PoolAwareConnection.class);
-		when(fakeHead.getConnection()).thenReturn(faceHeadConnection);
+		ValidatedConnection fakeHead = new ValidatedConnection(false);
 
 		assertSame(connections[2], ds.validateUnchecked(fakeHead));
 	}
@@ -198,16 +191,30 @@ public class PoolingDataSourceTest {
 		assertNotNull(c);
 	}
 
-	PoolAwareConnection[] validConnections(int size) {
-		PoolAwareConnection[] connections = new PoolAwareConnection[size];
+	ValidatedConnection[] validConnections(int size) {
+		ValidatedConnection[] connections = new ValidatedConnection[size];
 		for (int i = 0; i < size; i++) {
-			Connection c = mock(Connection.class);
-
-			connections[i] = mock(PoolAwareConnection.class);
-			when(connections[i].getConnection()).thenReturn(c);
-			when(connections[i].validate()).thenReturn(true);
+			connections[i] = new ValidatedConnection(true);
 		}
 		return connections;
+	}
+
+	/**
+	 * A pooled connection with a preset validation result.
+	 */
+	static class ValidatedConnection extends PoolAwareConnection {
+
+		boolean valid;
+
+		ValidatedConnection(boolean valid) {
+			super(null, new TestConnection(), null);
+			this.valid = valid;
+		}
+
+		@Override
+		boolean validate() {
+			return valid;
+		}
 	}
 
 }

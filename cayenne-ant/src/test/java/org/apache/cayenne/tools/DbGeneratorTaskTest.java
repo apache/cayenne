@@ -25,17 +25,14 @@ import org.apache.cayenne.dba.sqlserver.SQLServerAdapter;
 import org.apache.cayenne.dbsync.reverse.configuration.ToolsModule;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
+import org.apache.cayenne.unit.jdbc.TestConnection;
+import org.apache.cayenne.unit.jdbc.TestDataSource;
 import org.junit.jupiter.api.Test;
 import org.slf4j.helpers.NOPLogger;
 
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class DbGeneratorTaskTest {
 
@@ -55,12 +52,8 @@ public class DbGeneratorTaskTest {
 
     @Test
     public void setAdapter() throws Exception {
-        DatabaseMetaData metaData = mock(DatabaseMetaData.class);
-        when(metaData.getDatabaseProductName()).thenReturn("HSQL Database Engine");
-        Connection connection = mock(Connection.class);
-        when(connection.getMetaData()).thenReturn(metaData);
-        DataSource ds = mock(DataSource.class);
-        when(ds.getConnection()).thenReturn(connection);
+        TestDataSource ds = new TestDataSource();
+        ds.setupConnection(new TestConnection().databaseProductName("HSQL Database Engine"));
 
         Injector injector = DIBootstrap.createInjector(new ToolsModule(NOPLogger.NOP_LOGGER));
 

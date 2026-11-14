@@ -22,123 +22,83 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.StatementContext;
 import org.apache.cayenne.access.jdbc.PSParameter;
 import org.apache.cayenne.access.jdbc.RSColumn;
-import org.apache.cayenne.access.jdbc.reader.RowReader;
-import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
 import org.apache.cayenne.access.translator.TranslatedSelect;
-import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.map.compiled.CompiledMapping;
+import org.apache.cayenne.map.compiled.TestMappings;
 import org.apache.cayenne.query.resolved.ResolvedQueries;
+import org.apache.cayenne.query.resolved.ResolvedSelect;
+import org.apache.cayenne.unit.DataNodes;
+import org.apache.cayenne.unit.TestAdapters;
+import org.apache.cayenne.unit.jdbc.TestConnection;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InOrder;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class MySQLSelectActionTest {
 
-    private Connection connection;
-    private PreparedStatement statement;
+    private TestConnection connection;
     private DataNode dataNode;
 
     @BeforeEach
-    public void setUp() throws Exception {
-        RowReaderFactory rowReaderFactory = mock(RowReaderFactory.class);
-        when(rowReaderFactory.rowReader(any(), any(), any(), any())).thenReturn(mock(RowReader.class));
-
-        dataNode = mock(DataNode.class);
-        when(dataNode.getAdapter()).thenReturn(mock(DbAdapter.class));
-        when(dataNode.getRowReaderFactory()).thenReturn(rowReaderFactory);
-
-        ResultSet resultSet = mock(ResultSet.class);
-        when(resultSet.next()).thenReturn(false);
-
-        statement = mock(PreparedStatement.class);
-        when(statement.executeQuery()).thenReturn(resultSet);
-
-        connection = mock(Connection.class);
-        when(connection.prepareStatement(anyString())).thenReturn(statement);
-
+    public void setUp() {
+        dataNode = DataNodes.withAdapter(TestAdapters.jdbc(), (columns, segments, query, adapter) -> rs -> null);
+        connection = new TestConnection();
     }
 
-    private MySQLSelectAction action(int statementFetchSize) {
+    private void execute(int statementFetchSize, boolean iterated, boolean exclusiveConnection) throws Exception {
+        ResolvedSelect query = ResolvedQueries.select(statementFetchSize);
         TranslatedSelect select = new TranslatedSelect(
-                ResolvedQueries.select(statementFetchSize),
+                query,
                 "SELECT 1",
                 new PSParameter[0],
                 new RSColumn[0],
                 null,
                 false,
                 false);
-        return new MySQLSelectAction(select, dataNode);
-    }
 
-    private StatementContext context(boolean iterated, boolean exclusiveConnection) {
-        StatementContext context = mock(StatementContext.class);
-        when(context.getMapping()).thenReturn(mock(CompiledMapping.class));
-        when(context.isIteratedResult()).thenReturn(iterated);
-        when(context.isExclusiveConnection()).thenReturn(exclusiveConnection);
-        return context;
+        StatementContext context = new StatementContext(query, TestMappings.empty());
+        context.setIteratedResult(iterated);
+        context.setExclusiveConnection(exclusiveConnection);
+
+        new MySQLSelectAction(select, dataNode).execute(connection, context);
     }
 
     @Test
     public void noFetchSizeOnListResultLeavesDriverDefault() throws Exception {
-
-        action(0).execute(connection, context(false, false));
-
-        verify(statement, never()).setFetchSize(anyInt());
+        execute(0, false, false);
+        assertEquals(List.of("executeQuery", "statement.close"), connection.getCalls());
     }
 
     @Test
     public void noFetchSizeOnIteratorWithExclusiveConnectionStreams() throws Exception {
-
-        action(0).execute(connection, context(true, true));
-
-        InOrder inOrder = inOrder(statement);
-        inOrder.verify(statement).setFetchSize(Integer.MIN_VALUE);
-        inOrder.verify(statement).executeQuery();
+        execute(0, true, true);
+        assertEquals(List.of("setFetchSize(" + Integer.MIN_VALUE + ")", "executeQuery"), connection.getCalls());
     }
 
     @Test
     public void noFetchSizeOnIteratorInCallerTransactionLeavesDriverDefault() throws Exception {
-
-        action(0).execute(connection, context(true, false));
-
-        verify(statement, never()).setFetchSize(anyInt());
+        execute(0, true, false);
+        assertEquals(List.of("executeQuery"), connection.getCalls());
     }
 
     @Test
     public void streamingFetchSizeOnListResultIsPassedThrough() throws Exception {
-
-        action(Integer.MIN_VALUE).execute(connection, context(false, false));
-
-        verify(statement).setFetchSize(Integer.MIN_VALUE);
+        execute(Integer.MIN_VALUE, false, false);
+        assertEquals(List.of("setFetchSize(" + Integer.MIN_VALUE + ")", "executeQuery", "statement.close"),
+                connection.getCalls());
     }
 
     @Test
     public void streamingFetchSizeOnIteratorInCallerTransactionIsPassedThrough() throws Exception {
-
-        action(Integer.MIN_VALUE).execute(connection, context(true, false));
-
-        verify(statement).setFetchSize(Integer.MIN_VALUE);
+        execute(Integer.MIN_VALUE, true, false);
+        assertEquals(List.of("setFetchSize(" + Integer.MIN_VALUE + ")", "executeQuery"), connection.getCalls());
     }
 
     @Test
     public void positiveFetchSizeOnIteratorWithExclusiveConnectionIsPassedThrough() throws Exception {
-
-        action(100).execute(connection, context(true, true));
-
-        verify(statement).setFetchSize(100);
-        verify(statement, never()).setFetchSize(Integer.MIN_VALUE);
+        execute(100, true, true);
+        assertEquals(List.of("setFetchSize(100)", "executeQuery"), connection.getCalls());
     }
 }

@@ -27,16 +27,13 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class DefaultTransactionManagerIT {
 
     @Test
     public void performInTransaction_Local() {
 
-        final BaseTransaction tx = mock(BaseTransaction.class);
+        final Transaction tx = new ReadOnlyTransaction();
 
         DefaultTransactionManager txManager = createDefaultTxManager(() -> tx);
 
@@ -52,11 +49,11 @@ public class DefaultTransactionManagerIT {
     @Test
     public void performInTransaction_ExistingTx() {
 
-        final BaseTransaction tx1 = mock(BaseTransaction.class);
+        final Transaction tx1 = new ReadOnlyTransaction();
 
         DefaultTransactionManager txManager = createDefaultTxManager(() -> tx1);
 
-        final BaseTransaction tx2 = mock(BaseTransaction.class);
+        final Transaction tx2 = new ReadOnlyTransaction();
         BaseTransaction.bindThreadTransaction(tx2);
         try {
 
@@ -74,7 +71,7 @@ public class DefaultTransactionManagerIT {
 
     @Test
     public void nestedPropagation() {
-        final BaseTransaction tx = mock(BaseTransaction.class);
+        final Transaction tx = new ReadOnlyTransaction();
 
         assertNull(BaseTransaction.getThreadTransaction());
 
@@ -99,7 +96,7 @@ public class DefaultTransactionManagerIT {
 
     @Test
     public void mandatoryPropagationNotStarted() {
-        final BaseTransaction tx = mock(BaseTransaction.class);
+        final Transaction tx = new ReadOnlyTransaction();
 
         assertNull(BaseTransaction.getThreadTransaction());
 
@@ -126,7 +123,7 @@ public class DefaultTransactionManagerIT {
 
     @Test
     public void mandatoryPropagation() {
-        final BaseTransaction tx = mock(BaseTransaction.class);
+        final Transaction tx = new ReadOnlyTransaction();
 
         assertNull(BaseTransaction.getThreadTransaction());
 
@@ -152,8 +149,8 @@ public class DefaultTransactionManagerIT {
 
     @Test
     public void requiresNewPropagation() {
-        final BaseTransaction tx1 = mock(BaseTransaction.class);
-        final BaseTransaction tx2 = mock(BaseTransaction.class);
+        final Transaction tx1 = new ReadOnlyTransaction();
+        final Transaction tx2 = new ReadOnlyTransaction();
         final AtomicInteger counter = new AtomicInteger(0);
 
         assertNull(BaseTransaction.getThreadTransaction());
@@ -184,14 +181,7 @@ public class DefaultTransactionManagerIT {
     }
 
     private DefaultTransactionManager createDefaultTxManager(final Supplier<Transaction> txSupplier) {
-        return new DefaultTransactionManager(createMockFactory(txSupplier));
-    }
-
-    private TransactionFactory createMockFactory(final Supplier<Transaction> supplier) {
-        TransactionFactory txFactory = mock(TransactionFactory.class);
-        when(txFactory.createTransaction()).thenReturn(supplier.get());
-        when(txFactory.createTransaction(any(TransactionDescriptor.class))).thenReturn(supplier.get());
-        return txFactory;
+        return new DefaultTransactionManager(descriptor -> txSupplier.get());
     }
 
 }

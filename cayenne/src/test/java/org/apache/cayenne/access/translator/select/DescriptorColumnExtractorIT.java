@@ -18,16 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.access.translator.select;
 
-import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.compiled.CompiledMapping;
 import org.apache.cayenne.map.compiled.CompiledEntity;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.testmap.CompoundPaintingLongNames;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
+import org.apache.cayenne.unit.TestAdapters;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -56,7 +55,7 @@ public class DescriptorColumnExtractorIT {
         SelectTranslatorContext translatorContext = new SelectTranslatorContext(
                 ObjectSelect.query(CompoundPaintingLongNames.class)
                         .column(CompoundPaintingLongNames.SELF).resolve(mapping),
-                Mockito.mock(DbAdapter.class),
+                TestAdapters.jdbc(),
                 mapping,
                 null);
 

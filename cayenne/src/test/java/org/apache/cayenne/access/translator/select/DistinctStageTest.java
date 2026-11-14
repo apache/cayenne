@@ -55,7 +55,7 @@ public class DistinctStageTest {
     @Test
     public void noSuppression() {
         ResolvedSelect query = new MockResolvedSelectBuilder().withDistinct(true).build();
-        SelectTranslatorContext context = new MockSelectTranslatorContext(query);
+        SelectTranslatorContext context = new TestSelectTranslatorContext(query);
 
         assertFalse(context.isDistinctSuppression());
 
@@ -73,7 +73,7 @@ public class DistinctStageTest {
                         .withSuppressDistinct()
                         
                 .build();
-        SelectTranslatorContext context = new MockSelectTranslatorContext(query);
+        SelectTranslatorContext context = new TestSelectTranslatorContext(query);
 
         assertFalse(context.isDistinctSuppression());
 
@@ -89,7 +89,7 @@ public class DistinctStageTest {
                 .withDistinct(true)
                 
                 .build();
-        SelectTranslatorContext context = new MockSelectTranslatorContext(query);
+        SelectTranslatorContext context = new TestSelectTranslatorContext(query);
 
         CompiledColumn column = compiledColumn("attr", Types.LONGVARBINARY);
         Node node = new ColumnNode("t0", "attr", null, column);

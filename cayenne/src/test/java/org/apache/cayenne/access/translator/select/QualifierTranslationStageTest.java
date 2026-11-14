@@ -63,7 +63,7 @@ public class QualifierTranslationStageTest {
                 .withWhere(where)
                 .withDbEntity(mapping.schema().table("mock"))
                 .build();
-        return new MockSelectTranslatorContext(query);
+        return new TestSelectTranslatorContext(query);
     }
 
     @Test

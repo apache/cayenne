@@ -20,6 +20,7 @@ package org.apache.cayenne.dba;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.unit.TestAdapters;
+import org.apache.cayenne.unit.jdbc.TestConnection;
 import org.junit.jupiter.api.Test;
 
 import java.sql.DatabaseMetaData;
@@ -28,7 +29,6 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.mock;
 
 public class DbAdapterDetectorTest {
 
@@ -40,7 +40,7 @@ public class DbAdapterDetectorTest {
         DbAdapterDetector d2 = md -> a2;
 
         // detectors are tried in reverse order, so that custom detectors added last take precedence
-        assertSame(a2, DbAdapterDetector.detect(mock(DatabaseMetaData.class), List.of(d1, d2)));
+        assertSame(a2, DbAdapterDetector.detect(new TestConnection().getMetaData(), List.of(d1, d2)));
     }
 
     @Test
@@ -49,13 +49,13 @@ public class DbAdapterDetectorTest {
         DbAdapterDetector d1 = md -> a1;
         DbAdapterDetector d2 = md -> null;
 
-        assertSame(a1, DbAdapterDetector.detect(mock(DatabaseMetaData.class), List.of(d1, d2)));
+        assertSame(a1, DbAdapterDetector.detect(new TestConnection().getMetaData(), List.of(d1, d2)));
     }
 
     @Test
     public void detect_NothingMatches() {
         DbAdapterDetector d1 = md -> null;
-        DatabaseMetaData md = mock(DatabaseMetaData.class);
+        DatabaseMetaData md = new TestConnection().getMetaData();
 
         assertThrows(CayenneRuntimeException.class, () -> DbAdapterDetector.detect(md, List.of(d1)));
         assertThrows(CayenneRuntimeException.class, () -> DbAdapterDetector.detect(md, List.of()));
@@ -68,6 +68,6 @@ public class DbAdapterDetectorTest {
         };
 
         assertThrows(CayenneRuntimeException.class,
-                () -> DbAdapterDetector.detect(mock(DatabaseMetaData.class), List.of(d1)));
+                () -> DbAdapterDetector.detect(new TestConnection().getMetaData(), List.of(d1)));
     }
 }

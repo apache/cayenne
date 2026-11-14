@@ -20,45 +20,24 @@ package org.apache.cayenne;
 
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.tx.Transaction;
-import org.apache.cayenne.tx.TransactionListener;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
+import org.apache.cayenne.unit.RecordingTransactionListener;
 import org.apache.cayenne.validation.ValidationException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-import java.sql.Connection;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 public class CayenneRuntimeIT {
 
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.TESTMAP_PROJECT);
 
-    static class DefaultListenerImpl implements TransactionListener {
-
-        @Override
-        public void willCommit(Transaction tx) {
-        }
-
-        @Override
-        public void willRollback(Transaction tx) {
-        }
-
-        @Override
-        public void willAddConnection(Transaction tx, String connectionName, Connection connection) {
-        }
-    }
-
     @Test
     public void performInTransaction_Local_Callback() {
 
-        TransactionListener callback = mock(DefaultListenerImpl.class);
-        when(callback.decorateConnection(any(Transaction.class), any(Connection.class))).thenCallRealMethod();
+        RecordingTransactionListener callback = new RecordingTransactionListener();
 
         Artist a = env.runtime().performInTransaction(() -> {
             Artist localArtist = env.runtime().newContext().newObject(Artist.class);
@@ -69,17 +48,16 @@ public class CayenneRuntimeIT {
 
         assertEquals("A1", a.getArtistName());
         assertEquals(PersistenceState.COMMITTED, a.getPersistenceState());
-        verify(callback).willCommit(any(Transaction.class));
-        verify(callback).willAddConnection(any(Transaction.class), any(String.class), any(Connection.class));
-        verify(callback, times(0)).willRollback(any(Transaction.class));
-        verify(callback).decorateConnection(any(Transaction.class), any(Connection.class));
+        assertEquals(1, callback.willCommitCalls);
+        assertEquals(1, callback.willAddConnectionCalls);
+        assertEquals(0, callback.willRollbackCalls);
+        assertEquals(1, callback.decorateConnectionCalls);
     }
 
     @Test
     public void performInTransaction_Local_Callback_Rollback() {
 
-        TransactionListener callback = mock(TransactionListener.class);
-        when(callback.decorateConnection(any(Transaction.class), any(Connection.class))).thenCallRealMethod();
+        RecordingTransactionListener callback = new RecordingTransactionListener();
 
         try {
             env.runtime().performInTransaction(() -> {
@@ -88,9 +66,9 @@ public class CayenneRuntimeIT {
                 return localArtist;
             }, callback);
         } catch (ValidationException v) {
-            verify(callback).willRollback(any(Transaction.class));
-            verify(callback, times(0)).willAddConnection(any(Transaction.class), any(String.class), any(Connection.class));
-            verify(callback, times(0)).willCommit(any(Transaction.class));
+            assertEquals(1, callback.willRollbackCalls);
+            assertEquals(0, callback.willAddConnectionCalls);
+            assertEquals(0, callback.willCommitCalls);
         }
     }
 
