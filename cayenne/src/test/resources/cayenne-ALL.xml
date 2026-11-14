@@ -54,6 +54,7 @@
 	<map name="array-type"/>
 	<map name="cay-2032"/>
 	<map name="weighted-sort"/>
+	<map name="sorting"/>
 	<map name="hybrid-data-object"/>
 	<map name="legacy-date-time"/>
 	<map name="inheritance-with-enum"/>

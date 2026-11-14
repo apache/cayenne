@@ -78,6 +78,7 @@ public class CayenneProjects {
     public static final String UUID_PROJECT = "cayenne-uuid.xml";
     public static final String CUSTOM_NAME_PROJECT = "custom-name-file.xml";
     public static final String WEIGHTED_SORT_PROJECT = "cayenne-weighted-sort.xml";
+    public static final String SORTING_PROJECT = "cayenne-sorting.xml";
     public static final String HYBRID_DATA_OBJECT_PROJECT = "cayenne-hybrid-data-object.xml";
     public static final String INHERITANCE_WITH_ENUM_PROJECT = "cayenne-inheritance-with-enum.xml";
     public static final String LAZY_ATTRIBUTES_PROJECT = "cayenne-lazy-attributes.xml";

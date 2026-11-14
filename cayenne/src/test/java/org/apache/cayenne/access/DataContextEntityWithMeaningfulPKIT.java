@@ -20,7 +20,6 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.Cayenne;
-import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
@@ -36,7 +35,6 @@ import org.apache.cayenne.testdo.meaningful_pk.MeaningfulPkTest2;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -197,47 +195,6 @@ public class DataContextEntityWithMeaningfulPKIT {
         assertEquals(2, obj2.getPkAttribute());
     }
 
-    @Disabled("Insert will fail")
-    @Test
-    public void insertDelete() {
-        MeaningfulPk pkObj = context.newObject(MeaningfulPk.class);
-        pkObj.setPk("123");
-        context.commitChanges();
-
-        context.deleteObject(pkObj);
-        MeaningfulPk pkObj2 = context.newObject(MeaningfulPk.class);
-        pkObj2.setPk("123");
-        context.commitChanges();
-    }
-
-    @Test
-    @Disabled
-    public void test_MeaningfulPkInsertDeleteCascade() {
-        // setup
-        MeaningfulPKTest1 obj = context.newObject(MeaningfulPKTest1.class);
-        obj.setPkAttribute(1000);
-        obj.setDescr("aaa");
-        context.commitChanges();
-
-        // must be able to set reverse relationship
-        MeaningfulPKDep dep = context.newObject(MeaningfulPKDep.class);
-        dep.setMeaningfulPK(obj);
-        dep.setPk(10);
-        context.commitChanges();
-
-        // test
-        context.deleteObject(obj);
-
-        MeaningfulPKTest1 obj2 = context.newObject(MeaningfulPKTest1.class);
-        obj2.setPkAttribute(1000);
-        obj2.setDescr("bbb");
-
-        MeaningfulPKDep dep2 = context.newObject(MeaningfulPKDep.class);
-        dep2.setMeaningfulPK(obj2);
-        dep2.setPk(10);
-        context.commitChanges();
-    }
-
     @Test
     public void meaningfulFKToOneInvalidate() {
         MeaningfulPk pk = context.newObject(MeaningfulPk.class);
@@ -253,27 +210,6 @@ public class DataContextEntityWithMeaningfulPKIT {
         assertEquals("test2", depChild.getDescr());
         assertNotNull(depChild.getMeaningfulPk());
         assertNull(depChild.getMeaningfulPk().getPk());
-    }
-
-    @Test
-    public void meaningfulPkWithFkUpdate() {
-        // setup
-        MeaningfulPKTest1 obj = context.newObject(MeaningfulPKTest1.class);
-        obj.setPkAttribute(1001);
-        obj.setDescr("aaa");
-        context.commitChanges();
-
-        MeaningfulPKDep dep = context.newObject(MeaningfulPKDep.class);
-        dep.setMeaningfulPK(obj);
-        dep.setPk(10);
-        context.commitChanges();
-
-        // this would fail as the DefaultDbRowOpSorter unable to deal with the meaningful PK update
-        assertThrows(CayenneRuntimeException.class, () -> {
-            dep.setMeaningfulPK(null);
-            obj.setPkAttribute(1002);
-            context.commitChanges();
-        });
     }
 
     @Test
