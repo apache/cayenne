@@ -199,6 +199,23 @@ public class DbRowOpSorterIT {
 
         @ParameterizedTest
         @EnumSource
+        public void insertWithOtherTables(Sorter type) {
+            sorter.use(type);
+
+            // SORT_MASTER is at the same dependency level as SORT_TREE, and its rows mix with the rows of SORT_TREE
+            // in the commit
+            master("m1");
+            SortTree root = tree("root", null);
+            master("m2");
+            SortTree child = tree("child", root);
+            master("m3");
+            SortTree grandChild = tree("grandChild", child);
+
+            assertOrder(insertOf(root), insertOf(child), insertOf(grandChild));
+        }
+
+        @ParameterizedTest
+        @EnumSource
         public void delete(Sorter type) {
             sorter.use(type);
 

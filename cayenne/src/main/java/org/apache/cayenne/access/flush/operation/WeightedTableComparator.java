@@ -29,8 +29,9 @@ import java.util.Map;
 
 /**
  * The insert order of the tables of a compiled mapping: by the {@link SortWeight} of their entity classes, then by
- * the {@link CompiledTable#dependencyIndex() dependency index}. Built once per mapping, as both are facts of the
- * mapping and its classes. The delete order is the reverse.
+ * the {@link CompiledTable#dependencyIndex() dependency index}, then by name, so that the rows of a table are kept
+ * together when sorted, as the rows of a reflexive table are sorted as one block. Built once per mapping, as all of
+ * these are facts of the mapping and its classes. The delete order is the reverse.
  */
 // TODO: this should go away eventually. Manual weights belong in the "compiled" layer. Also, hopefully we can do
 //  a better joh analyzing operation ordering (and creating non-conflicting operations), making @SOrtWeight unneeded
@@ -73,7 +74,18 @@ final class WeightedTableComparator implements Comparator<CompiledTable> {
             return 0;
         }
         int delta = weight(t1) - weight(t2);
-        return delta != 0 ? delta : Integer.compare(t1.dependencyIndex(), t2.dependencyIndex());
+        if (delta != 0) {
+            return delta;
+        }
+
+        delta = Integer.compare(t1.dependencyIndex(), t2.dependencyIndex());
+        if (delta != 0) {
+            return delta;
+        }
+
+        // distinct tables never compare as equal, so that the rows of each table stay together when sorted
+        delta = t1.name().compareTo(t2.name());
+        return delta != 0 ? delta : t1.map().name().compareTo(t2.map().name());
     }
 
     private int weight(CompiledTable table) {
