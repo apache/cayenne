@@ -31,6 +31,7 @@ import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.log.SQLLogger;
 import org.apache.cayenne.query.resolved.DeleteBatch;
 import org.apache.cayenne.query.resolved.InsertBatch;
+import org.apache.cayenne.query.resolved.ResolvedBatch;
 import org.apache.cayenne.query.resolved.UpdateBatch;
 import org.junit.jupiter.api.Assertions;
 
@@ -56,6 +57,9 @@ public class TelemetricDataNodeFactory extends DefaultDataNodeFactory {
         private final AtomicInteger queryCounter = new AtomicInteger();
         private volatile boolean blockingQueries;
 
+        // the DML batches executed while recording, or null when not recording
+        private volatile List<ResolvedBatch> batchRecorder;
+
         public TelemetricDataNode(
                 String name,
                 DataSource dataSource,
@@ -80,6 +84,18 @@ public class TelemetricDataNodeFactory extends DefaultDataNodeFactory {
                 Assertions.fail("Query is unexpected: "
                         + statementContexts.stream().map(c -> c.getResolvedQuery().source()).toList());
             }
+
+            // recorded before running, so that the batches the DB rejects are recorded too, along with the following
+            // ones that don't run
+            List<ResolvedBatch> recorder = batchRecorder;
+            if (recorder != null) {
+                for (StatementContext context : statementContexts) {
+                    if (context.getResolvedQuery() instanceof ResolvedBatch batch) {
+                        recorder.add(batch);
+                    }
+                }
+            }
+
             super.execute(statementContexts);
             queryCounter.addAndGet(statementContexts.size());
         }
@@ -90,6 +106,10 @@ public class TelemetricDataNodeFactory extends DefaultDataNodeFactory {
 
         public void setBlockingQueries(boolean blockingQueries) {
             this.blockingQueries = blockingQueries;
+        }
+
+        public void setBatchRecorder(List<ResolvedBatch> batchRecorder) {
+            this.batchRecorder = batchRecorder;
         }
     }
 

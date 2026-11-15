@@ -25,6 +25,7 @@ import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.map.compiled.CompiledDataMap;
 import org.apache.cayenne.project.DataSourceDescriptor;
+import org.apache.cayenne.query.resolved.ResolvedBatch;
 import org.apache.cayenne.CoreModule;
 import org.apache.cayenne.access.DataNodeFactory;
 import org.apache.cayenne.datasource.CayenneDataSource;
@@ -242,6 +243,10 @@ public class CayenneTestsEnv implements BeforeEachCallback, AfterEachCallback {
 
     public int runWithQueryCounter(Runnable task) {
         return TestTelemetry.runWithQueryCounter(scope.runtime(), task);
+    }
+
+    public List<ResolvedBatch> runWithBatchRecorder(Runnable task) {
+        return TestTelemetry.runWithBatchRecorder(scope.runtime(), task);
     }
 
     public AdhocObjectFactory adhocObjectFactory() {

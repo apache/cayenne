@@ -20,8 +20,12 @@ package org.apache.cayenne.unit.telemetry;
 
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.CayenneRuntime;
+import org.apache.cayenne.query.resolved.ResolvedBatch;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 public class TestTelemetry {
 
@@ -51,6 +55,27 @@ public class TestTelemetry {
             end = node.getQueriesCount();
         }
         return end - start;
+    }
+
+    /**
+     * Runs the task, and returns the DML batches it sent to the DB, including the ones the DB rejected.
+     */
+    public static List<ResolvedBatch> runWithBatchRecorder(CayenneRuntime runtime, Runnable task) {
+        Collection<DataNode> nodes = runtime.getDataDomain().getDataNodes();
+        List<ResolvedBatch> batches = Collections.synchronizedList(new ArrayList<>());
+        setBatchRecorder(nodes, batches);
+        try {
+            task.run();
+        } finally {
+            setBatchRecorder(nodes, null);
+        }
+        return List.copyOf(batches);
+    }
+
+    private static void setBatchRecorder(Collection<DataNode> nodes, List<ResolvedBatch> batches) {
+        for (DataNode node : nodes) {
+            ((TelemetricDataNodeFactory.TelemetricDataNode) node).setBatchRecorder(batches);
+        }
     }
 
     private static void setBlockingQueries(Collection<DataNode> nodes, boolean blocking) {

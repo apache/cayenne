@@ -43,6 +43,7 @@ import org.apache.cayenne.testdo.sorting.SortLink;
 import org.apache.cayenne.testdo.sorting.SortMaster;
 import org.apache.cayenne.testdo.sorting.SortPk;
 import org.apache.cayenne.testdo.sorting.SortPkChild;
+import org.apache.cayenne.testdo.sorting.SortProfile;
 import org.apache.cayenne.testdo.sorting.SortTree;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
@@ -60,17 +61,18 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * operations it requires, and passes if the DB accepts the commit, and the order holds. To catch the orders that are
  * right by chance, the sorter sorts several permutations of its input, and the order is checked in each of them.
  *
- * <p>The cases with no order satisfying all the dependencies are not supported yet. The sorter breaks a dependency
- * cycle in them, and runs the SQL anyway, as the DB may still accept it, e.g. with no FK constraints, or with the
- * deferred ones. Their tests, marked with TODO, check the incorrect order produced now with
- * {@link #assertIncorrectOrder(List[])}, so that any change of it is noticed.
+ * <p>The cases that need more than an order of the operations produced from the object changes, e.g. the rows
+ * referencing each other, are in {@link org.apache.cayenne.access.flush.FlushDmlIT}. The cases not supported yet,
+ * marked with TODO, check the incorrect order produced now with {@link #assertIncorrectOrder(List[])}, so that any
+ * change of it is noticed.
  *
  * <pre>
  * FK to another table: insert, delete, move, nullify
  * FK to the same table: insert, delete, nullify, re-parent, mixed with the rows of other tables
  * Tables referencing each other: insert, delete
- * Rows referencing each other: update; insert, delete (not supported)
- * Meaningful PK: delete and insert, change
+ * Rows referencing each other: update
+ * Meaningful PK: delete and insert, change, change and insert the old PK (not supported)
+ * Unique key: delete and insert (not supported)
  * Flattened relationship join rows: insert, delete
  * Flattened attribute of a related row: insert
  * </pre>
@@ -102,8 +104,8 @@ public class GraphDbRowOpSorterIT {
         env.table("SORT_TREE", "PARENT_ID").update().set("PARENT_ID", null, Types.INTEGER).execute();
         env.table("SORT_A", "B_ID").update().set("B_ID", null, Types.INTEGER).execute();
         env.table("SORT_B", "A_ID").update().set("A_ID", null, Types.INTEGER).execute();
-        for (String table : List.of("SORT_LINK", "SORT_TAG", "SORT_CHILD", "SORT_MASTER", "SORT_TREE", "SORT_A",
-                "SORT_B", "SORT_PK_CHILD", "SORT_PK")) {
+        for (String table : List.of("SORT_LINK", "SORT_TAG", "SORT_CHILD", "SORT_PROFILE", "SORT_MASTER", "SORT_TREE",
+                "SORT_A", "SORT_B", "SORT_PK_CHILD", "SORT_PK")) {
             env.table(table).deleteAll();
         }
     }
@@ -258,32 +260,6 @@ public class GraphDbRowOpSorterIT {
 
             assertOrder(insertOf(c), insertOf(gc), updateOf(p));
         }
-
-        @Test
-        public void rowCycle() {
-            SortTree t1 = tree("t1", null);
-            SortTree t2 = tree("t2", t1);
-            t1.setParent(t2);
-
-            // TODO: no order of the inserts works. The cycle should be broken by an insert with a null FK and an update
-            //  setting it. For now any order of the inserts is produced
-            assertIncorrectOrder(chain(insertOf(t1)), chain(insertOf(t2)));
-        }
-
-        @Test
-        public void deleteRowCycle() {
-            SortTree t1 = tree("t1", null);
-            SortTree t2 = tree("t2", t1);
-            context.commitChanges();
-            t1.setParent(t2);
-            context.commitChanges();
-
-            context.deleteObjects(t1, t2);
-
-            // TODO: no order of the deletes works. The cycle should be broken by an update setting an FK to null
-            //  first. For now any order of the deletes is produced
-            assertIncorrectOrder(chain(deleteOf(t1)), chain(deleteOf(t2)));
-        }
     }
 
     /**
@@ -331,32 +307,6 @@ public class GraphDbRowOpSorterIT {
 
             assertOrder(chain(updateOf(a)), chain(updateOf(b)));
         }
-
-        @Test
-        public void rowCycle() {
-            SortA a = a("a", null);
-            SortB b = b("b", a);
-            a.setB(b);
-
-            // TODO: no order of the inserts works. The cycle should be broken by an insert with a null FK and an update
-            //  setting it. For now the inserts are in the table order
-            assertIncorrectOrder(chain(insertOf(a), insertOf(b)));
-        }
-
-        @Test
-        public void deleteRowCycle() {
-            SortA a = a("a", null);
-            SortB b = b("b", a);
-            context.commitChanges();
-            a.setB(b);
-            context.commitChanges();
-
-            context.deleteObjects(a, b);
-
-            // TODO: no order of the deletes works. The cycle should be broken by an update setting an FK to null
-            //  first. For now the deletes are in the table order
-            assertIncorrectOrder(chain(deleteOf(b), deleteOf(a)));
-        }
     }
 
     @Nested
@@ -396,6 +346,41 @@ public class GraphDbRowOpSorterIT {
             p.setPk(2);
 
             assertOrder(updateOf(c), updateOf(p));
+        }
+
+        @Test
+        public void changePkAndInsertOldPk() {
+            SortPk p1 = pk(1, "p1");
+            context.commitChanges();
+
+            p1.setPk(2);
+            SortPk p2 = pk(1, "p2");
+
+            // TODO: the insert should wait for the update freeing its PK, as it waits for a delete. For now the inserts
+            //  come first
+            assertIncorrectOrder(chain(insertOf(p2), updateOf(p1)));
+        }
+    }
+
+    /**
+     * A unique key that is not the PK: the FK of a one-to-one relationship, with a unique constraint on it.
+     */
+    @Nested
+    public class UniqueKey {
+
+        @Test
+        public void deleteAndInsertSameKey() {
+            SortMaster m = master("m");
+            SortProfile p1 = profile("p1", m);
+            context.commitChanges();
+
+            // replacing the profile of the master
+            context.deleteObject(p1);
+            SortProfile p2 = profile("p2", m);
+
+            // TODO: the insert should wait for the delete freeing the key. The model has no unique keys, so the
+            //  dependency is unknown, and the inserts come first
+            assertIncorrectOrder(chain(insertOf(p2), deleteOf(p1)));
         }
     }
 
@@ -539,6 +524,13 @@ public class GraphDbRowOpSorterIT {
         c.setName(name);
         c.setMaster(master);
         return c;
+    }
+
+    private SortProfile profile(String name, SortMaster master) {
+        SortProfile p = context.newObject(SortProfile.class);
+        p.setName(name);
+        p.setMaster(master);
+        return p;
     }
 
     private SortTree tree(String name, SortTree parent) {
