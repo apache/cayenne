@@ -22,11 +22,13 @@ package org.apache.cayenne.access.flush.operation;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Predicate;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.DataDomain;
@@ -46,7 +48,6 @@ import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -57,14 +58,18 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * The cases of ordering the operations of a commit by {@link GraphDbRowOpSorter}. Each case states the order of the
  * operations it requires, and passes if the DB accepts the commit, and the order holds. To catch the orders that are
- * right by chance, the sorter sorts several permutations of its input, and the order is checked in each of them. The
- * cases not supported are disabled.
+ * right by chance, the sorter sorts several permutations of its input, and the order is checked in each of them.
+ *
+ * <p>The cases with no order satisfying all the dependencies are not supported yet. The sorter breaks a dependency
+ * cycle in them, and runs the SQL anyway, as the DB may still accept it, e.g. with no FK constraints, or with the
+ * deferred ones. Their tests, marked with TODO, check the incorrect order produced now with
+ * {@link #assertIncorrectOrder(List[])}, so that any change of it is noticed.
  *
  * <pre>
  * FK to another table: insert, delete, move, nullify
  * FK to the same table: insert, delete, nullify, re-parent, mixed with the rows of other tables
  * Tables referencing each other: insert, delete
- * Rows referencing each other: update; insert (not supported)
+ * Rows referencing each other: update; insert, delete (not supported)
  * Meaningful PK: delete and insert, change
  * Flattened relationship join rows: insert, delete
  * Flattened attribute of a related row: insert
@@ -240,15 +245,29 @@ public class GraphDbRowOpSorterIT {
         }
 
         @Test
-        @Disabled("""
-                Not supported: no order of the inserts works, the cycle could only be broken by an \
-                insert with a null FK and an update""")
         public void rowCycle() {
             SortTree t1 = tree("t1", null);
             SortTree t2 = tree("t2", t1);
             t1.setParent(t2);
 
+            // TODO: no order of the inserts works. The cycle should be broken by an insert with a null FK and an update
+            //  setting it. For now any order of the inserts is produced
+            assertIncorrectOrder(chain(insertOf(t1)), chain(insertOf(t2)));
+        }
+
+        @Test
+        public void deleteRowCycle() {
+            SortTree t1 = tree("t1", null);
+            SortTree t2 = tree("t2", t1);
             context.commitChanges();
+            t1.setParent(t2);
+            context.commitChanges();
+
+            context.deleteObjects(t1, t2);
+
+            // TODO: no order of the deletes works. The cycle should be broken by an update setting an FK to null
+            //  first. For now any order of the deletes is produced
+            assertIncorrectOrder(chain(deleteOf(t1)), chain(deleteOf(t2)));
         }
     }
 
@@ -299,15 +318,29 @@ public class GraphDbRowOpSorterIT {
         }
 
         @Test
-        @Disabled("""
-                Not supported: no order of the inserts works, the cycle could only be broken by an \
-                insert with a null FK and an update""")
         public void rowCycle() {
             SortA a = a("a", null);
             SortB b = b("b", a);
             a.setB(b);
 
+            // TODO: no order of the inserts works. The cycle should be broken by an insert with a null FK and an update
+            //  setting it. For now the inserts are in the table order
+            assertIncorrectOrder(chain(insertOf(a), insertOf(b)));
+        }
+
+        @Test
+        public void deleteRowCycle() {
+            SortA a = a("a", null);
+            SortB b = b("b", a);
             context.commitChanges();
+            a.setB(b);
+            context.commitChanges();
+
+            context.deleteObjects(a, b);
+
+            // TODO: no order of the deletes works. The cycle should be broken by an update setting an FK to null
+            //  first. For now the deletes are in the table order
+            assertIncorrectOrder(chain(deleteOf(b), deleteOf(a)));
         }
     }
 
@@ -545,6 +578,31 @@ public class GraphDbRowOpSorterIT {
         context.commitChanges();
 
         for (List<DbRowOp> sorted : sortedPermutations()) {
+            for (List<Op> chain : chains) {
+                assertTrue(inOrder(chain, sorted), () -> chain + " expected, got " + sorted);
+            }
+        }
+    }
+
+    /**
+     * Commits the changes of a case the sorter doesn't support yet, i.e. no order of its operations satisfies all their
+     * dependencies, and checks that the chains are the only operations, in the order the sorter produces now. Not a
+     * correct order, but the one to track: a change of the sorting fails the case, that can then check the correct
+     * order with {@link #assertOrder(List[])}. The commit result is not checked, as it depends on the DB: with the FK
+     * constraints checked immediately, the DB rejects the commit, while without them, or with the deferred or
+     * cascading ones (the test schema on HSQL cascades the deletes), the DB accepts it.
+     */
+    @SafeVarargs
+    private void assertIncorrectOrder(List<Op>... chains) {
+        try {
+            context.commitChanges();
+        } catch (CayenneRuntimeException e) {
+            // the DB rejected the order
+        }
+
+        int opCount = Arrays.stream(chains).mapToInt(List::size).sum();
+        for (List<DbRowOp> sorted : sortedPermutations()) {
+            assertEquals(opCount, sorted.size(), () -> "Unexpected operations in " + sorted);
             for (List<Op> chain : chains) {
                 assertTrue(inOrder(chain, sorted), () -> chain + " expected, got " + sorted);
             }

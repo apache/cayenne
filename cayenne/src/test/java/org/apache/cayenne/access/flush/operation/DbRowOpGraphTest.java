@@ -30,7 +30,6 @@ import org.apache.cayenne.unit.TestObjects;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DbRowOpGraphTest {
@@ -130,7 +129,102 @@ public class DbRowOpGraphTest {
         graph.add(1, 2);
         graph.add(2, 1);
 
-        IllegalStateException e = assertThrows(IllegalStateException.class, () -> graph.topSort(ONE_GROUP));
-        assertTrue(e.getMessage().startsWith("Cycle detected"));
+        // the cycle is broken at the first op in the list order
+        assertEquals(ops, graph.topSort(ONE_GROUP));
+    }
+
+    @Test
+    public void cycleBrokenByGroupOrder() {
+        DbRowOp b0 = op("b", 0);
+        DbRowOp a0 = op("a", 0);
+
+        DbRowOpGraph graph = graph(List.of(b0, a0));
+        graph.add(0, 1);
+        graph.add(1, 0);
+
+        // the group order wins over the list order
+        assertEquals(List.of(a0, b0), graph.topSort(BY_TABLE));
+    }
+
+    @Test
+    public void cycleDependentsWait() {
+        List<DbRowOp> ops = ops(4);
+        DbRowOpGraph graph = new DbRowOpGraph(ops);
+
+        // 0 -> (1 <-> 2) -> 3: only an edge of the cycle is broken. 0 is the first in the list, but is not on the
+        // cycle, so it still waits for the cycle, and the cycle for 3
+        graph.add(0, 1);
+        graph.add(0, 2);
+        graph.add(1, 2);
+        graph.add(2, 1);
+        graph.add(2, 3);
+
+        assertEquals(List.of(ops.get(3), ops.get(1), ops.get(2), ops.get(0)), graph.topSort(ONE_GROUP));
+    }
+
+    @Test
+    public void twoCycles() {
+        List<DbRowOp> ops = ops(4);
+        DbRowOpGraph graph = new DbRowOpGraph(ops);
+
+        // 0 <-> 1 -> 2 <-> 3: the cycle depending on nothing else is broken first, at 2, then the other one, at 0
+        graph.add(0, 1);
+        graph.add(1, 0);
+        graph.add(1, 2);
+        graph.add(2, 3);
+        graph.add(3, 2);
+
+        assertEquals(List.of(ops.get(2), ops.get(3), ops.get(0), ops.get(1)), graph.topSort(ONE_GROUP));
+    }
+
+    @Test
+    public void cycleDependingOnCycle() {
+        List<DbRowOp> ops = ops(4);
+        DbRowOpGraph graph = new DbRowOpGraph(ops);
+
+        // 0 <-> 1, 0 -> 2, 2 <-> 3: 0 is the first in the list, but breaking its cycle first would sort it before 2,
+        // breaking the edge 0 -> 2 that is on no cycle
+        graph.add(0, 1);
+        graph.add(1, 0);
+        graph.add(0, 2);
+        graph.add(2, 3);
+        graph.add(3, 2);
+
+        assertEquals(List.of(ops.get(2), ops.get(3), ops.get(0), ops.get(1)), graph.topSort(ONE_GROUP));
+    }
+
+    @Test
+    public void cycleLeavingCycle() {
+        List<DbRowOp> ops = ops(3);
+        DbRowOpGraph graph = new DbRowOpGraph(ops);
+
+        // 0 <-> 1, 1 <-> 2, 2 -> 0: one component, still cyclic after 0 is released, and broken again at 1
+        graph.add(0, 1);
+        graph.add(1, 0);
+        graph.add(1, 2);
+        graph.add(2, 1);
+        graph.add(2, 0);
+
+        assertEquals(ops, graph.topSort(ONE_GROUP));
+    }
+
+    @Test
+    public void longCycle() {
+        int n = 100_000;
+        List<DbRowOp> ops = ops(n);
+        DbRowOpGraph graph = new DbRowOpGraph(ops);
+
+        // a chain long enough to overflow the stack if the components were found recursively
+        for (int i = 0; i < n; i++) {
+            graph.add(i, (i + 1) % n);
+        }
+
+        List<DbRowOp> sorted = graph.topSort(ONE_GROUP);
+        assertEquals(n, sorted.size());
+
+        // broken at 0, then the chain from the end
+        assertEquals(ops.get(0), sorted.get(0));
+        assertEquals(ops.get(n - 1), sorted.get(1));
+        assertEquals(ops.get(1), sorted.get(n - 1));
     }
 }
