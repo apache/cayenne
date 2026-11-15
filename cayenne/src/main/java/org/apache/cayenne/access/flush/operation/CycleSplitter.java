@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -42,6 +43,8 @@ import org.apache.cayenne.map.compiled.CompiledJoin;
  *     <li>A delete gets an update setting the FKs to NULL before it, so that the deletes of the rows the FKs reference
  *     depend on the update instead of the delete.</li>
  * </ul>
+ * An insert of a row referencing itself by the PK the insert generates is split the same way, as a cycle of one
+ * operation.
  */
 final class CycleSplitter {
 
@@ -96,7 +99,13 @@ final class CycleSplitter {
 
             for (int v : candidates(cycle)) {
                 boolean done = switch (pass.types()[v]) {
-                    case INSERT -> splitInsert(v);
+                    case INSERT -> {
+                        List<CompiledColumn> fks = insertFks(v);
+                        if (fks != null) {
+                            splitInsert(v, fks);
+                        }
+                        yield fks != null;
+                    }
                     case DELETE -> nullFksBeforeDelete(v);
                     case UPDATE -> false;
                 };
@@ -111,6 +120,20 @@ final class CycleSplitter {
                 inCycle[v] = false;
             }
         }
+
+        // the inserts referencing their own rows by the generated PKs are the cycles of one operation
+        Map<Integer, List<CompiledJoin>> selfReferences = new LinkedHashMap<>();
+        for (DefaultDbRowOpPlanner.SelfReference reference : pass.selfReferences()) {
+            selfReferences.computeIfAbsent(reference.insert(), i -> new ArrayList<>()).add(reference.join());
+        }
+
+        selfReferences.forEach((v, joins) -> {
+            List<CompiledColumn> fks = split[v] ? null : nullableFks(joins);
+            if (fks != null) {
+                splitInsert(v, fks);
+                split[v] = true;
+            }
+        });
 
         return result;
     }
@@ -135,12 +158,7 @@ final class CycleSplitter {
         return candidates;
     }
 
-    private boolean splitInsert(int v) {
-        List<CompiledColumn> fks = insertFks(v);
-        if (fks == null) {
-            return false;
-        }
-
+    private void splitInsert(int v, List<CompiledColumn> fks) {
         InsertDbRowOp insert = (InsertDbRowOp) ops.get(v);
         InsertDbRowOp insertWithoutFks = new InsertDbRowOp(
                 insert.getObject(),
@@ -151,7 +169,6 @@ final class CycleSplitter {
 
         result().set(v, insertWithoutFks);
         result().add(fkUpdate);
-        return true;
     }
 
     private boolean nullFksBeforeDelete(int v) {
