@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -85,7 +86,8 @@ public class DefaultDbRowOpPlanner implements DbRowOpPlanner {
      * Orders the operations. The operations with dependency cycles, i.e. with no order satisfying all the dependencies,
      * are replaced by the operations that can be ordered when possible: an insert of a cycle is split into an insert
      * with its nullable FKs referencing the cycle set to NULL, and an update setting them after the rows they reference
-     * are inserted. So the result may have more operations than the input. The input operations are not changed.
+     * are inserted, and a delete of a cycle gets an update setting its nullable FKs referencing the cycle to NULL
+     * before the deletes. So the result may have more operations than the input. The input operations are not changed.
      * The cycles that can't be resolved this way are broken by sorting one of their operations ahead of its
      * dependencies, and run as such, as the DB may still accept them, e.g. with deferred FK constraints.
      */
@@ -94,15 +96,20 @@ public class DefaultDbRowOpPlanner implements DbRowOpPlanner {
         DefaultDbRowOpPlannerIndex index = index();
 
         List<DbRowOp> ops = dbRows;
+
+        // the FKs of the deleted rows set to NULL before the deletes, by an update added to break a cycle, so that the
+        // deletes no longer depend on each other by these FKs. By the identity of the delete operations
+        Map<DbRowOp, Set<CompiledJoin>> nulledFks = new IdentityHashMap<>();
+
         while (true) {
-            SortPass pass = sortPass(index, ops);
+            SortPass pass = sortPass(index, ops, nulledFks);
             if (pass.cycles().isEmpty()) {
                 return pass.sorted();
             }
 
-            // each pass splits an insert of each of the cycles it found, unless it already split an insert of the
-            // same cycle, and the next pass finds the cycles left
-            List<DbRowOp> split = InsertCycleSplitter.split(index, ops, pass);
+            // each pass splits an operation of each of the cycles it found, unless it already split an operation of
+            // the same cycle, and the next pass finds the cycles left
+            List<DbRowOp> split = CycleSplitter.split(index, ops, pass, nulledFks);
             if (split == null) {
                 LOGGER.warn("""
                         Dependency cycles of the operations that can't be broken. Sending the operations in an order \
@@ -113,7 +120,10 @@ public class DefaultDbRowOpPlanner implements DbRowOpPlanner {
         }
     }
 
-    private SortPass sortPass(DefaultDbRowOpPlannerIndex index, List<DbRowOp> dbRows) {
+    private SortPass sortPass(
+            DefaultDbRowOpPlannerIndex index,
+            List<DbRowOp> dbRows,
+            Map<DbRowOp, Set<CompiledJoin>> nulledFks) {
 
         // ops are addressed by their index in the list from here on
         int size = dbRows.size();
@@ -161,7 +171,8 @@ public class DefaultDbRowOpPlanner implements DbRowOpPlanner {
                 new DbRowOpGraph(dbRows),
                 tablesWithDeletes,
                 tablesWithReferencedUpdates,
-                index.toOnesByEntity());
+                index.toOnesByEntity(),
+                nulledFks);
 
         for (int i = 0; i < size; i++) {
             edges.addRelationshipEdges(index.byEntity(), i);
@@ -173,7 +184,14 @@ public class DefaultDbRowOpPlanner implements DbRowOpPlanner {
         edges.addPendingEdges();
 
         List<DbRowOp> sorted = edges.graph.topSort(index.batchOrder());
-        return new SortPass(dbRows, sorted, types, ids, indexById, edges.graph.brokenCycles());
+        return new SortPass(
+                dbRows,
+                sorted,
+                types,
+                ids,
+                indexById,
+                edges.graph.brokenCycles(),
+                edges.deleteDependencies);
     }
 
     private static boolean updatesReferencedColumn(UpdateDbRowOp op, Set<CompiledColumn> referencedColumns) {
@@ -225,6 +243,7 @@ public class DefaultDbRowOpPlanner implements DbRowOpPlanner {
      * @param sorted    the sorted operations
      * @param cycles    the dependency cycles broken by the sort, each as the indices of the operations depending on
      *                  each other
+     * @param deleteDependencies the dependencies of the deletes on the deletes of the rows they reference
      */
     record SortPass(
             List<DbRowOp> ops,
@@ -232,11 +251,22 @@ public class DefaultDbRowOpPlanner implements DbRowOpPlanner {
             DbRowOpType[] types,
             EffectiveOpId[] ids,
             Map<EffectiveOpId, int[]> indexById,
-            List<int[]> cycles) {
+            List<int[]> cycles,
+            List<DeleteDependency> deleteDependencies) {
 
         List<List<DbRowOp>> cycleOps() {
             return cycles.stream().map(c -> Arrays.stream(c).mapToObj(ops::get).toList()).toList();
         }
+    }
+
+    /**
+     * The delete of a row referenced by the FK of another deleted row, waiting for the delete of that row.
+     *
+     * @param delete       the index of the delete of the referencing row
+     * @param parentDelete the index of the delete of the referenced row
+     * @param join         the FK
+     */
+    record DeleteDependency(int delete, int parentDelete, CompiledJoin join) {
     }
 
     /**
@@ -258,9 +288,13 @@ public class DefaultDbRowOpPlanner implements DbRowOpPlanner {
         private final Set<String> tablesWithDeletes;
         private final Set<String> tablesWithReferencedUpdates;
         private final Map<String, Map<CompiledJoin, String>> toOnesByEntity;
+        private final Map<DbRowOp, Set<CompiledJoin>> nulledFks;
 
         // the FKs that need the committed rows, read all together once all the operations are processed
         private final List<PendingOldParent> pendingOldParents;
+
+        // the dependencies of the deletes on the deletes of the rows they reference, to break their cycles
+        private final List<DeleteDependency> deleteDependencies;
 
         Edges(
                 List<DbRowOp> dbRows,
@@ -269,7 +303,8 @@ public class DefaultDbRowOpPlanner implements DbRowOpPlanner {
                 DbRowOpGraph graph,
                 Set<String> tablesWithDeletes,
                 Set<String> tablesWithReferencedUpdates,
-                Map<String, Map<CompiledJoin, String>> toOnesByEntity) {
+                Map<String, Map<CompiledJoin, String>> toOnesByEntity,
+                Map<DbRowOp, Set<CompiledJoin>> nulledFks) {
 
             this.dbRows = dbRows;
             this.types = types;
@@ -278,7 +313,9 @@ public class DefaultDbRowOpPlanner implements DbRowOpPlanner {
             this.tablesWithDeletes = tablesWithDeletes;
             this.tablesWithReferencedUpdates = tablesWithReferencedUpdates;
             this.toOnesByEntity = toOnesByEntity;
+            this.nulledFks = nulledFks;
             this.pendingOldParents = new ArrayList<>();
+            this.deleteDependencies = new ArrayList<>();
         }
 
         void addRelationshipEdges(Map<CompiledTable, List<CompiledJoin>> relationships, int opIndex) {
@@ -331,11 +368,12 @@ public class DefaultDbRowOpPlanner implements DbRowOpPlanner {
             Map<String, Object> joinRowFks = op.getChangeId().getEntityName().startsWith(DbPathExp.DB_PREFIX)
                     ? op.getChangeId().getIdSnapshot()
                     : null;
+            Set<CompiledJoin> nulled = nulledFks.isEmpty() ? null : nulledFks.get(op);
 
             for (CompiledJoin join : joins) {
 
-                // a deleted row matters only to the deleted rows it references
-                if (!referencesChangedTable(join, false)) {
+                // a deleted row matters only to the deleted rows it references. Not by an FK set to NULL before
+                if (!referencesChangedTable(join, false) || nulled != null && nulled.contains(join)) {
                     continue;
                 }
 
@@ -534,6 +572,7 @@ public class DefaultDbRowOpPlanner implements DbRowOpPlanner {
                 case DELETE -> {
                     if (parentOpType == DbRowOpType.DELETE) {
                         graph.add(parentIndex, opIndex);
+                        deleteDependencies.add(new DeleteDependency(opIndex, parentIndex, relationship));
                     }
                 }
             }
@@ -553,7 +592,16 @@ public class DefaultDbRowOpPlanner implements DbRowOpPlanner {
                 }
 
                 switch (types[sameIdIndex]) {
-                    case DELETE -> graph.add(opIndex, sameIdIndex);
+
+                    // an update of a deleted row, i.e. setting its FK to NULL to break a cycle of the deletes, runs
+                    // before the delete
+                    case DELETE -> {
+                        if (types[opIndex] == DbRowOpType.UPDATE && sameRow(opIndex, sameIdIndex)) {
+                            graph.add(sameIdIndex, opIndex);
+                        } else {
+                            graph.add(opIndex, sameIdIndex);
+                        }
+                    }
 
                     // an insert also runs after the update changing the PK of the row away from the id, as the id of
                     // the update is the one before the change
@@ -566,13 +614,16 @@ public class DefaultDbRowOpPlanner implements DbRowOpPlanner {
                     // an update of a row inserted in the same commit, i.e. of an insert split to break a cycle, runs
                     // after the insert. Not the update of another row, whose PK change frees the id of the insert
                     case INSERT -> {
-                        if (types[opIndex] == DbRowOpType.UPDATE && dbRows.get(opIndex).getChangeId()
-                                .equals(dbRows.get(sameIdIndex).getChangeId())) {
+                        if (types[opIndex] == DbRowOpType.UPDATE && sameRow(opIndex, sameIdIndex)) {
                             graph.add(opIndex, sameIdIndex);
                         }
                     }
                 }
             }
+        }
+
+        private boolean sameRow(int opIndex1, int opIndex2) {
+            return dbRows.get(opIndex1).getChangeId().equals(dbRows.get(opIndex2).getChangeId());
         }
 
         private static boolean changesPk(UpdateDbRowOp op) {

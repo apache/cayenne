@@ -70,7 +70,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * FK to another table: insert, delete, move, nullify
  * FK to the same table: insert, delete, nullify, re-parent, mixed with the rows of other tables
  * Tables referencing each other: insert, delete
- * Rows referencing each other: update, insert (an insert split to break the cycle)
+ * Rows referencing each other: update, insert (an insert split to break the cycle), delete (an FK set to NULL first)
  * Meaningful PK: delete and insert, change, change and insert the old PK
  * Unique key: delete and insert (not supported)
  * Flattened relationship join rows: insert, delete
@@ -317,6 +317,20 @@ public class DefaultDbRowOpPlannerIT {
             // no order of the inserts works, so the insert of the row of the table first in the batch order is split
             // into an insert without the FK and an update setting it. The statements are checked by FlushDmlIT
             assertOrder(insertOf(a), insertOf(b), updateOf(a));
+        }
+
+        @Test
+        public void deleteRowCycle() {
+            SortA a = a("a", null);
+            SortB b = b("b", a);
+            a.setB(b);
+            context.commitChanges();
+
+            context.deleteObjects(a, b);
+
+            // no order of the deletes works, so the row of the table first in the table order gets an update setting
+            // its FK to NULL before the deletes. The statements are checked by FlushDmlIT
+            assertOrder(updateOf(a), deleteOf(b), deleteOf(a));
         }
     }
 

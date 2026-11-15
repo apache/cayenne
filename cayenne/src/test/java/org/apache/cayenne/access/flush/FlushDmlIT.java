@@ -74,7 +74,7 @@ import static org.junit.jupiter.api.Assertions.fail;
  *
  * <pre>
  * Rows referencing each other: insert, with Cayenne-generated and DB-generated PKs, with no nullable FK (sent as
- *   is); delete (not supported)
+ *   is); delete
  * A row referencing itself, with a DB-generated PK (not supported)
  * Meaningful PK: change of a referenced row, a child moved to it, swap (not supported)
  * Phantom changes: no statements
@@ -186,30 +186,31 @@ public class FlushDmlIT {
         public void delete() {
             SortA a = a("a", null);
             SortB b = b("b", a);
-            context.commitChanges();
             a.setB(b);
             context.commitChanges();
 
             context.deleteObjects(a, b);
 
-            // TODO: no order of the deletes works. The cycle should be broken by an update setting an FK to null
-            //  first. For now the deletes are in the table order
-            assertIncorrectDml(List.of(Dml.delete(b), Dml.delete(a)));
+            // the row of the table first in the table order gets its FK set to NULL, and the deletes keep their order
+            assertDml(List.of(
+                    Dml.update(a).setNull("B_ID"),
+                    Dml.delete(b),
+                    Dml.delete(a)));
         }
 
         @Test
         public void deleteSameTable() {
             SortTree t1 = tree("t1", null);
             SortTree t2 = tree("t2", t1);
-            context.commitChanges();
             t1.setParent(t2);
             context.commitChanges();
 
             context.deleteObjects(t1, t2);
 
-            // TODO: no order of the deletes works. The cycle should be broken by an update setting an FK to null
-            //  first. For now any order of the deletes is produced
-            assertIncorrectDml(List.of(Dml.delete(t1)), List.of(Dml.delete(t2)));
+            // the rows are alike, so either can get its FK set to NULL
+            assertDmlAnyOf(
+                    List.of(Dml.update(t1).setNull("PARENT_ID"), Dml.delete(t2), Dml.delete(t1)),
+                    List.of(Dml.update(t2).setNull("PARENT_ID"), Dml.delete(t1), Dml.delete(t2)));
         }
 
         @Test
@@ -536,6 +537,8 @@ public class FlushDmlIT {
         private void assertValues(Statement statement) {
             values.forEach((column, expected) -> {
                 if (expected == NULL) {
+                    assertTrue(kind == Kind.INSERT || statement.columns().containsKey(column),
+                            () -> "No " + column + " written by " + statement);
                     assertTrue(statement.columns().get(column) == null,
                             () -> "Not null " + column + " written by " + statement);
                     return;
