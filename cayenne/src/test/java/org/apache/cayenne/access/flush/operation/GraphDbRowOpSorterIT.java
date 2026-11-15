@@ -71,7 +71,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * FK to the same table: insert, delete, nullify, re-parent, mixed with the rows of other tables
  * Tables referencing each other: insert, delete
  * Rows referencing each other: update
- * Meaningful PK: delete and insert, change, change and insert the old PK (not supported)
+ * Meaningful PK: delete and insert, change, change and insert the old PK
  * Unique key: delete and insert (not supported)
  * Flattened relationship join rows: insert, delete
  * Flattened attribute of a related row: insert
@@ -356,9 +356,7 @@ public class GraphDbRowOpSorterIT {
             p1.setPk(2);
             SortPk p2 = pk(1, "p2");
 
-            // TODO: the insert should wait for the update freeing its PK, as it waits for a delete. For now the inserts
-            //  come first
-            assertIncorrectOrder(chain(insertOf(p2), updateOf(p1)));
+            assertOrder(updateOf(p1), insertOf(p2));
         }
     }
 

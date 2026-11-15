@@ -491,10 +491,35 @@ public class GraphDbRowOpSorter implements DbRowOpSorter {
             }
 
             for (int sameIdIndex : indexById.get(ids[opIndex])) {
-                if (sameIdIndex != opIndex && types[sameIdIndex] == DbRowOpType.DELETE) {
-                    graph.add(opIndex, sameIdIndex);
+                if (sameIdIndex == opIndex) {
+                    continue;
+                }
+
+                switch (types[sameIdIndex]) {
+                    case DELETE -> graph.add(opIndex, sameIdIndex);
+
+                    // an insert also runs after the update changing the PK of the row away from the id, as the id of
+                    // the update is the one before the change
+                    case UPDATE -> {
+                        if (types[opIndex] == DbRowOpType.INSERT
+                                && changesPk((UpdateDbRowOp) dbRows.get(sameIdIndex))) {
+                            graph.add(opIndex, sameIdIndex);
+                        }
+                    }
+                    case INSERT -> {
+                    }
                 }
             }
+        }
+
+        private static boolean changesPk(UpdateDbRowOp op) {
+            List<CompiledColumn> pk = op.getEntity().primaryKey();
+            for (CompiledColumn column : op.getValues().getUpdatedAttributes()) {
+                if (pk.contains(column)) {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }
