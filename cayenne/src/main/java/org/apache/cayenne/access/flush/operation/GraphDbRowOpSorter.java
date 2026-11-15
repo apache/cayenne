@@ -50,22 +50,7 @@ import org.apache.cayenne.map.compiled.CompiledToOneRelationship;
 import org.apache.cayenne.util.SingleEntryMap;
 
 /**
- * DB operation sorter that orders the operations by the dependencies between their rows: builds a graph of the
- * operations, with an edge for each FK of a row referencing a row of another operation, and an edge for a delete and
- * an insert of the same meaningful PK, and sorts it topologically. So it handles the cases an order of the tables
- * can't: the reflexive tables, the tables referencing each other, and the meaningful PKs deleted and inserted again,
- * or changed along with the FKs referencing them.
- *
- * <p>The operations not depending on each other are ordered by the operation type (inserts, updates, deletes), then
- * by the table order: the {@link org.apache.cayenne.ashwood.SortWeight} of the entity classes, then the table
- * dependencies (reversed for the deletes). The operations of the same type and table are kept together as much as
- * the dependencies allow, so that they run as one batch.
- *
- * <p>The FKs of the inserted and updated rows are taken from the operations. The FKs the updated and deleted rows had
- * before the commit are only needed when they can produce a dependency: for the FKs referencing the tables with
- * deletes, or with updates of the referenced columns, in the same commit. These are taken from the object diffs, when
- * they know the committed targets of the to-one relationships, and otherwise from the committed snapshots, that may
- * need a DB query when not cached, all read together.
+ * DB operation sorter that orders the operations by the dependencies between their rows.
  *
  * @since 6.0
  */
