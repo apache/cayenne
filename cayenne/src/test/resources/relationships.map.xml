@@ -3,16 +3,6 @@
 	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	 xsi:schemaLocation="http://cayenne.apache.org/schema/15/dataMap https://cayenne.apache.org/schema/15/dataMap.xsd"
 	 defaultPackage="org.apache.cayenne.testdo.relationships">
-	<dbEntity name="CYCLE_E1">
-		<dbAttribute name="e2_id" type="INTEGER"/>
-		<dbAttribute name="id" type="INTEGER" primaryKey="true" generated="true" mandatory="true"/>
-		<dbAttribute name="text" type="VARCHAR" length="128"/>
-	</dbEntity>
-	<dbEntity name="CYCLE_E2">
-		<dbAttribute name="e1_id" type="INTEGER"/>
-		<dbAttribute name="id" type="INTEGER" primaryKey="true" generated="true" mandatory="true"/>
-		<dbAttribute name="text" type="VARCHAR" length="128"/>
-	</dbEntity>
 	<dbEntity name="FK_OF_DIFFERENT_TYPE">
 		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
 		<dbAttribute name="RELATIONSHIP_HELPER_FK" type="SMALLINT"/>
@@ -31,12 +21,6 @@
 		<dbAttribute name="NAME" type="VARCHAR" length="100"/>
 		<dbAttribute name="RELATIONSHIP_HELPER_ID" type="INTEGER" primaryKey="true" mandatory="true"/>
 	</dbEntity>
-	<objEntity name="CYCLE_E1" className="org.apache.cayenne.testdo.relationships.E1" dbEntityName="CYCLE_E1">
-		<objAttribute name="text" type="java.lang.String" dbAttributePath="text"/>
-	</objEntity>
-	<objEntity name="CYCLE_E2" className="org.apache.cayenne.testdo.relationships.E2" dbEntityName="CYCLE_E2">
-		<objAttribute name="text" type="java.lang.String" dbAttributePath="text"/>
-	</objEntity>
 	<objEntity name="FkOfDifferentType" className="org.apache.cayenne.testdo.relationships.FkOfDifferentType" dbEntityName="FK_OF_DIFFERENT_TYPE"/>
 	<objEntity name="MeaningfulFK" className="org.apache.cayenne.testdo.relationships.MeaningfulFK" dbEntityName="MEANINGFUL_FK">
 		<objAttribute name="relationshipHelperID" type="int" dbAttributePath="RELATIONSHIP_HELPER_ID"/>
@@ -47,18 +31,6 @@
 	<objEntity name="RelationshipHelper" className="org.apache.cayenne.testdo.relationships.RelationshipHelper" dbEntityName="RELATIONSHIP_HELPER">
 		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>
 	</objEntity>
-	<dbRelationship name="e2" source="CYCLE_E1" target="CYCLE_E2" foreignKey="true">
-		<dbAttributePair source="e2_id" target="id"/>
-	</dbRelationship>
-	<dbRelationship name="e2s" source="CYCLE_E1" target="CYCLE_E2" toMany="true">
-		<dbAttributePair source="id" target="e1_id"/>
-	</dbRelationship>
-	<dbRelationship name="e1" source="CYCLE_E2" target="CYCLE_E1" foreignKey="true">
-		<dbAttributePair source="e1_id" target="id"/>
-	</dbRelationship>
-	<dbRelationship name="e1s" source="CYCLE_E2" target="CYCLE_E1" toMany="true">
-		<dbAttributePair source="id" target="e2_id"/>
-	</dbRelationship>
 	<dbRelationship name="relationshipHelper" source="FK_OF_DIFFERENT_TYPE" target="RELATIONSHIP_HELPER" foreignKey="true">
 		<dbAttributePair source="RELATIONSHIP_HELPER_FK" target="RELATIONSHIP_HELPER_ID"/>
 	</dbRelationship>
@@ -83,10 +55,6 @@
 	<dbRelationship name="reflexiveAndToOnes" source="RELATIONSHIP_HELPER" target="REFLEXIVE_AND_TO_ONE" toMany="true">
 		<dbAttributePair source="RELATIONSHIP_HELPER_ID" target="RELATIONSHIP_HELPER_ID"/>
 	</dbRelationship>
-	<objRelationship name="e2" source="CYCLE_E1" target="CYCLE_E2" deleteRule="nullify" dbRelationshipPath="e2"/>
-	<objRelationship name="e2s" source="CYCLE_E1" target="CYCLE_E2" deleteRule="deny" dbRelationshipPath="e2s"/>
-	<objRelationship name="e1" source="CYCLE_E2" target="CYCLE_E1" deleteRule="nullify" dbRelationshipPath="e1"/>
-	<objRelationship name="e1s" source="CYCLE_E2" target="CYCLE_E1" deleteRule="deny" dbRelationshipPath="e1s"/>
 	<objRelationship name="relationshipHelper" source="FkOfDifferentType" target="RelationshipHelper" dbRelationshipPath="relationshipHelper"/>
 	<objRelationship name="relationshipHelper" source="MeaningfulFK" target="RelationshipHelper" dbRelationshipPath="relationshipHelper"/>
 	<objRelationship name="children" source="ReflexiveAndToOne" target="ReflexiveAndToOne" dbRelationshipPath="children"/>

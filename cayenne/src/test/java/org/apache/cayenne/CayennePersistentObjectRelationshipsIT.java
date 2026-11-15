@@ -268,24 +268,6 @@ public class CayennePersistentObjectRelationshipsIT {
     }
 
     @Test
-    public void complexInsertUpdateOrdering() {
-        Artist artist = env.context().newObject(Artist.class);
-        artist.setArtistName("a name");
-
-        env.context().commitChanges();
-
-        // Cause an update and an insert that need correct ordering
-        Painting painting = env.context().newObject(Painting.class);
-        painting.setPaintingTitle("a painting");
-        artist.addToPaintings(painting);
-
-        env.context().commitChanges();
-
-        env.context().deleteObjects(artist);
-        env.context().commitChanges();
-    }
-
-    @Test
     public void newToMany() {
         Artist artist = env.context().newObject(Artist.class);
         artist.setArtistName("test");

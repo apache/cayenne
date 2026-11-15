@@ -121,20 +121,4 @@ public class CDOReflexiveRelIT {
         env.context().commitChanges();
     }
 
-    @Test
-    public void complexInsertUpdateOrdering() {
-        ArtGroup parentGroup = env.context().newObject(ArtGroup.class);
-        parentGroup.setName("parent");
-        env.context().commitChanges();
-
-        // Check that the update and insert both work write
-        ArtGroup childGroup1 = env.context().newObject(ArtGroup.class);
-        childGroup1.setName("child1");
-        childGroup1.setParentGroup(parentGroup);
-        env.context().commitChanges();
-
-        childGroup1.setParentGroup(null);
-        env.context().commitChanges();
-    }
-
 }

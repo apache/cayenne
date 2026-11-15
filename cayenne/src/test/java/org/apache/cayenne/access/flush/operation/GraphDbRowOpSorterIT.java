@@ -64,7 +64,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * FK to another table: insert, delete, move, nullify
  * FK to the same table: insert, delete, nullify, re-parent, mixed with the rows of other tables
  * Tables referencing each other: insert, delete
- * Rows referencing each other (not supported)
+ * Rows referencing each other: update; insert (not supported)
  * Meaningful PK: delete and insert, change
  * Flattened relationship join rows: insert, delete
  * Flattened attribute of a related row: insert
@@ -225,6 +225,31 @@ public class GraphDbRowOpSorterIT {
 
             assertOrder(insertOf(p2), updateOf(child), deleteOf(p1));
         }
+
+        @Test
+        public void updateToRowCycle() {
+            SortTree t1 = tree("t1", null);
+            SortTree t2 = tree("t2", null);
+            context.commitChanges();
+
+            // the rows are committed, so the updates making them reference each other work in any order
+            t1.setParent(t2);
+            t2.setParent(t1);
+
+            assertOrder(chain(updateOf(t1)), chain(updateOf(t2)));
+        }
+
+        @Test
+        @Disabled("""
+                Not supported: no order of the inserts works, the cycle could only be broken by an \
+                insert with a null FK and an update""")
+        public void rowCycle() {
+            SortTree t1 = tree("t1", null);
+            SortTree t2 = tree("t2", t1);
+            t1.setParent(t2);
+
+            context.commitChanges();
+        }
     }
 
     /**
@@ -258,6 +283,19 @@ public class GraphDbRowOpSorterIT {
             context.deleteObjects(a1, b1, a2, b2);
 
             assertOrder(chain(deleteOf(b1), deleteOf(a1)), chain(deleteOf(a2), deleteOf(b2)));
+        }
+
+        @Test
+        public void updateToRowCycle() {
+            SortA a = a("a", null);
+            SortB b = b("b", null);
+            context.commitChanges();
+
+            // the rows are committed, so the updates making them reference each other work in any order
+            a.setB(b);
+            b.setA(a);
+
+            assertOrder(chain(updateOf(a)), chain(updateOf(b)));
         }
 
         @Test
