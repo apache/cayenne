@@ -28,6 +28,7 @@ import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.ObjectDiff.ArcOperation;
 import org.apache.cayenne.access.event.SnapshotEvent;
+import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.graph.ArcId;
@@ -387,6 +388,11 @@ public class DataContextObjectStore implements ObjectStore {
         return changes;
     }
 
+    @Override
+    public ObjectDiff getChanges(ObjectId oid) {
+        return changes.get(oid);
+    }
+
     void postprocessAfterPhantomCommit() {
         withChangesLock(() -> {
             for (ObjectId id : changes.keySet()) {
@@ -488,29 +494,92 @@ public class DataContextObjectStore implements ObjectStore {
         }
 
         DataRow row = getCachedSnapshot(oid);
-        if (row != null) {
+        if (row != null || !isFetchable(oid)) {
             return row;
         }
 
-        // a temporary id without a replacement can't match anything in the database
-        if (context.getChannel() == null || oid.isTemporary() && !oid.isReplacementIdAttached()) {
-            return null;
-        }
-
-        ObjectSelect<DataRow> query = ObjectSelect
-                .query(Persistent.class, oid.getEntityName())
-                .where(ExpressionFactory.matchAllDbExp(oid.getIdSnapshot()))
-                .fetchDataRows();
-
-        QueryContext execContext = new QueryContext(context, query, query.resolve(context.getMapping()),
-                false);
-        List<?> rows = QueryResults.firstList(context.getChannel().onQuery(execContext));
+        List<?> rows = fetchSnapshots(oid.getEntityName(), ExpressionFactory.matchAllDbExp(oid.getIdSnapshot()));
         return switch (rows.size()) {
             case 0 -> null;
             case 1 -> (DataRow) rows.getFirst();
             default -> throw new CayenneRuntimeException(
                     "Expected zero or one row for id %s, instead query matched: %d", oid, rows.size());
         };
+    }
+
+    /**
+     * Returns the snapshots for the ObjectIds, like {@link #getSnapshot(ObjectId)}, but fetching the snapshots missing
+     * from the cache with one query per entity. The ids with no matching row are not in the returned map.
+     *
+     * @since 6.0
+     */
+    @Override
+    public Map<ObjectId, DataRow> getSnapshots(Collection<ObjectId> oids) {
+
+        Map<ObjectId, DataRow> snapshots = HashMap.newHashMap(oids.size());
+        Map<String, List<ObjectId>> missingByEntity = new HashMap<>();
+
+        for (ObjectId oid : oids) {
+
+            // a nested context reads the snapshots from the parent context, there's no fetching to batch
+            DataRow row = dataRowCache != null ? getCachedSnapshot(oid) : parentContextSnapshot(oid, true);
+            if (row != null) {
+                snapshots.put(oid, row);
+            } else if (dataRowCache != null && isFetchable(oid)) {
+                missingByEntity.computeIfAbsent(oid.getEntityName(), e -> new ArrayList<>()).add(oid);
+            }
+        }
+
+        missingByEntity.forEach((entityName, missing) -> fetchSnapshots(entityName, missing, snapshots));
+        return snapshots;
+    }
+
+    private void fetchSnapshots(String entityName, List<ObjectId> oids, Map<ObjectId, DataRow> snapshots) {
+
+        // the fetched rows are matched to the ids by the id values
+        Map<Map<String, Object>, ObjectId> idsBySnapshot = HashMap.newHashMap(oids.size());
+        List<Expression> idQualifiers = new ArrayList<>(oids.size());
+        for (ObjectId oid : oids) {
+            Map<String, Object> idSnapshot = oid.getIdSnapshot();
+            idsBySnapshot.put(idSnapshot, oid);
+            idQualifiers.add(ExpressionFactory.matchAllDbExp(idSnapshot));
+        }
+
+        Collection<String> idColumns = oids.getFirst().getIdSnapshot().keySet();
+        for (Object row : fetchSnapshots(entityName, ExpressionFactory.or(idQualifiers))) {
+            DataRow dataRow = (DataRow) row;
+            Map<String, Object> rowId = HashMap.newHashMap(idColumns.size());
+            idColumns.forEach(column -> rowId.put(column, dataRow.get(column)));
+
+            ObjectId oid = idsBySnapshot.remove(rowId);
+            if (oid != null) {
+                snapshots.put(oid, dataRow);
+            }
+        }
+
+        // the rows not matched by the id values, e.g. for a difference in the value types, are fetched one by one
+        for (ObjectId oid : idsBySnapshot.values()) {
+            DataRow row = getSnapshot(oid);
+            if (row != null) {
+                snapshots.put(oid, row);
+            }
+        }
+    }
+
+    private boolean isFetchable(ObjectId oid) {
+        // a temporary id without a replacement can't match anything in the database
+        return context.getChannel() != null && !(oid.isTemporary() && !oid.isReplacementIdAttached());
+    }
+
+    private List<?> fetchSnapshots(String entityName, Expression qualifier) {
+        ObjectSelect<DataRow> query = ObjectSelect
+                .query(Persistent.class, entityName)
+                .where(qualifier)
+                .fetchDataRows();
+
+        QueryContext execContext = new QueryContext(context, query, query.resolve(context.getMapping()),
+                false);
+        return QueryResults.firstList(context.getChannel().onQuery(execContext));
     }
 
     /**

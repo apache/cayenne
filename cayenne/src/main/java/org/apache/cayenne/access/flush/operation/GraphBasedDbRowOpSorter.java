@@ -22,6 +22,7 @@ package org.apache.cayenne.access.flush.operation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -30,30 +31,40 @@ import java.util.Set;
 
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
-import org.apache.cayenne.Persistent;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.DataContextObjectStore;
 import org.apache.cayenne.access.DataDomain;
+import org.apache.cayenne.access.ObjectDiff;
 import org.apache.cayenne.access.flush.EffectiveOpId;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.exp.DbPathExp;
 import org.apache.cayenne.map.compiled.CompiledColumn;
 import org.apache.cayenne.map.compiled.CompiledColumnPair;
+import org.apache.cayenne.map.compiled.CompiledEntity;
 import org.apache.cayenne.map.compiled.CompiledJoin;
 import org.apache.cayenne.map.compiled.CompiledMapping;
+import org.apache.cayenne.map.compiled.CompiledRelationship;
 import org.apache.cayenne.map.compiled.CompiledTable;
+import org.apache.cayenne.map.compiled.CompiledToOneRelationship;
 import org.apache.cayenne.util.SingleEntryMap;
 
 /**
- * Db operation sorted that builds dependency graph and uses topological sort to get final order.
- * This in general slower than {@link DefaultDbRowOpSorter} but can handle more edge cases (like multiple meaningful
- * PKs/FKs).
+ * DB operation sorter that orders the operations by the dependencies between their rows: builds a graph of the
+ * operations, with an edge for each FK of a row referencing a row of another operation, and an edge for a delete and
+ * an insert of the same meaningful PK, and sorts it topologically. Handles the cases the table order of
+ * {@link DefaultDbRowOpSorter} can't: tables referencing each other, meaningful PKs deleted and inserted again, or
+ * changed along with the FKs referencing them.
+ *
+ * <p>The operations not depending on each other are ordered as {@link DefaultDbRowOpSorter} orders them: by the
+ * operation type and the table order. The operations of the same type and table are kept together as much as the
+ * dependencies allow, so that they run as one batch.
  *
  * <p>The FKs of the inserted and updated rows are taken from the operations. The FKs the updated and deleted rows had
- * before the commit are taken from the committed snapshots, that may need a DB query when not cached, so they are
- * only read when they can produce a dependency: for the FKs referencing the tables with deletes, or with updates of
- * the referenced columns, in the same commit.
+ * before the commit are only needed when they can produce a dependency: for the FKs referencing the tables with
+ * deletes, or with updates of the referenced columns, in the same commit. These are taken from the object diffs, when
+ * they know the committed targets of the to-one relationships, and otherwise from the committed snapshots, that may
+ * need a DB query when not cached, all read together.
  *
  * @since 4.2
  */
@@ -93,7 +104,7 @@ public class GraphBasedDbRowOpSorter implements DbRowOpSorter {
         mapping.schema().tables().forEach(entity ->
             entity.joins().forEach(dbRelationship -> {
                 if(!dbRelationship.isForeignKey()) {
-                    // TODO: can we ignore all of these relationships?
+                    // the dependencies are found from the FK side, every FK has its FK side join on its own table
                     return;
                 }
                 byEntity
@@ -102,7 +113,27 @@ public class GraphBasedDbRowOpSorter implements DbRowOpSorter {
                 dbRelationship.columnPairs().forEach(pair -> referencedColumns.add(pair.target()));
             })
         );
-        return new RelationshipIndex(mapping, byEntity, referencedColumns);
+
+        // the to-one relationships mapped to a single FK, whose committed targets the object diffs may know
+        Map<String, Map<CompiledJoin, String>> toOnesByEntity = new HashMap<>();
+        for (CompiledEntity entity : mapping.entities()) {
+            for (CompiledRelationship relationship : entity.relationships()) {
+                if (relationship instanceof CompiledToOneRelationship
+                        && relationship.joins().size() == 1
+                        && relationship.joins().getFirst().isForeignKey()) {
+                    toOnesByEntity
+                            .computeIfAbsent(entity.name(), e -> new HashMap<>())
+                            .put(relationship.joins().getFirst(), relationship.name());
+                }
+            }
+        }
+
+        return new RelationshipIndex(
+                mapping,
+                byEntity,
+                referencedColumns,
+                toOnesByEntity,
+                new DefaultDbRowOpSorter.DbRowComparator(mapping));
     }
 
     @Override
@@ -155,7 +186,8 @@ public class GraphBasedDbRowOpSorter implements DbRowOpSorter {
                 indexById,
                 new DbRowOpGraph(dbRows),
                 tablesWithDeletes,
-                tablesWithReferencedUpdates);
+                tablesWithReferencedUpdates,
+                relationships.toOnesByEntity);
 
         for (int i = 0; i < size; i++) {
             edges.addRelationshipEdges(relationships.byEntity, i);
@@ -164,9 +196,10 @@ public class GraphBasedDbRowOpSorter implements DbRowOpSorter {
             }
             edges.graph.add(i);
         }
+        edges.addPendingEdges();
 
         // sort
-        return edges.graph.topSort();
+        return edges.graph.topSort(relationships.batchOrder);
     }
 
     private static boolean updatesReferencedColumn(UpdateDbRowOp op, Set<CompiledColumn> referencedColumns) {
@@ -181,11 +214,8 @@ public class GraphBasedDbRowOpSorter implements DbRowOpSorter {
     private static boolean fkReferenceUpdated(UpdateDbRowOp parentOp, CompiledJoin join) {
         List<CompiledColumn> updatedColumns = parentOp.getValues().getUpdatedAttributes();
         for (CompiledColumnPair pair : join.columnPairs()) {
-            String targetName = pair.target().name();
-            for (CompiledColumn column : updatedColumns) {
-                if (column.name().equals(targetName)) {
-                    return true;
-                }
+            if (updatedColumns.contains(pair.target())) {
+                return true;
             }
         }
         return false;
@@ -216,19 +246,58 @@ public class GraphBasedDbRowOpSorter implements DbRowOpSorter {
     private record RelationshipIndex(
             CompiledMapping mapping,
             Map<CompiledTable, List<CompiledJoin>> byEntity,
-            Set<CompiledColumn> referencedColumns) {
+            Set<CompiledColumn> referencedColumns,
+            Map<String, Map<CompiledJoin, String>> toOnesByEntity,
+
+            // The order of the operations not depending on each other: the order of DefaultDbRowOpSorter, by the
+            // operation type and the table. Besides the order itself, it groups the operations that can run as one
+            // batch, and the graph sort keeps each group together as much as the dependencies allow. This is not
+            // cosmetic: the dependencies alone leave the independent operations in any order, and an order mixing
+            // the tables breaks the batches up, running a statement per row instead of a batch per table.
+            Comparator<DbRowOp> batchOrder) {
+    }
+
+    /**
+     * An FK of an updated or deleted row, whose value before the commit is not known to the object diff, so the
+     * committed row has to be read. For an update, the FK referencing a new parent.
+     */
+    private record PendingOldParent(int opIndex, CompiledJoin join, EffectiveOpId newParentId) {
     }
 
     /**
      * Adds the edges between the operations of one sort to the graph.
      */
-    private record Edges(
-            List<DbRowOp> dbRows,
-            DbRowOpType[] types,
-            Map<EffectiveOpId, int[]> indexById,
-            DbRowOpGraph graph,
-            Set<String> tablesWithDeletes,
-            Set<String> tablesWithReferencedUpdates) {
+    private static final class Edges {
+
+        private final List<DbRowOp> dbRows;
+        private final DbRowOpType[] types;
+        private final Map<EffectiveOpId, int[]> indexById;
+        private final DbRowOpGraph graph;
+        private final Set<String> tablesWithDeletes;
+        private final Set<String> tablesWithReferencedUpdates;
+        private final Map<String, Map<CompiledJoin, String>> toOnesByEntity;
+
+        // the FKs that need the committed rows, read all together once all the operations are processed
+        private final List<PendingOldParent> pendingOldParents;
+
+        Edges(
+                List<DbRowOp> dbRows,
+                DbRowOpType[] types,
+                Map<EffectiveOpId, int[]> indexById,
+                DbRowOpGraph graph,
+                Set<String> tablesWithDeletes,
+                Set<String> tablesWithReferencedUpdates,
+                Map<String, Map<CompiledJoin, String>> toOnesByEntity) {
+
+            this.dbRows = dbRows;
+            this.types = types;
+            this.indexById = indexById;
+            this.graph = graph;
+            this.tablesWithDeletes = tablesWithDeletes;
+            this.tablesWithReferencedUpdates = tablesWithReferencedUpdates;
+            this.toOnesByEntity = toOnesByEntity;
+            this.pendingOldParents = new ArrayList<>();
+        }
 
         void addRelationshipEdges(Map<CompiledTable, List<CompiledJoin>> relationships, int opIndex) {
             DbRowOp op = dbRows.get(opIndex);
@@ -253,9 +322,6 @@ public class GraphBasedDbRowOpSorter implements DbRowOpSorter {
             Map<String, Object> values = op.getValues().getSnapshot();
             boolean joinTableRow = op.getChangeId().getEntityName().startsWith(DbPathExp.DB_PREFIX);
 
-            // read on first need
-            CommittedRow committedRow = null;
-
             for (CompiledJoin join : joins) {
                 EffectiveOpId newParentId = effectiveIdFor(join, values);
                 addParentEdges(join, opIndex, newParentId);
@@ -267,13 +333,11 @@ public class GraphBasedDbRowOpSorter implements DbRowOpSorter {
                     continue;
                 }
 
-                if (committedRow == null) {
-                    committedRow = new CommittedRow(op.getObject());
-                }
-
-                EffectiveOpId oldParentId = effectiveIdFor(join, committedRow.fks(join));
-                if (oldParentId != null && !oldParentId.equals(newParentId)) {
-                    addParentEdges(join, opIndex, oldParentId);
+                Map<String, Object> committedFks = committedFksFromDiff(op, join);
+                if (committedFks != null) {
+                    addOldParentEdges(join, opIndex, effectiveIdFor(join, committedFks), newParentId);
+                } else {
+                    pendingOldParents.add(new PendingOldParent(opIndex, join, newParentId));
                 }
             }
         }
@@ -286,9 +350,6 @@ public class GraphBasedDbRowOpSorter implements DbRowOpSorter {
                     ? op.getChangeId().getIdSnapshot()
                     : null;
 
-            // read on first need
-            CommittedRow committedRow = null;
-
             for (CompiledJoin join : joins) {
 
                 // a deleted row matters only to the deleted rows it references
@@ -296,18 +357,127 @@ public class GraphBasedDbRowOpSorter implements DbRowOpSorter {
                     continue;
                 }
 
-                Map<String, Object> fks;
                 if (joinRowFks != null) {
-                    fks = joinRowFks;
-                } else {
-                    if (committedRow == null) {
-                        committedRow = new CommittedRow(op.getObject());
-                    }
-                    fks = committedRow.fks(join);
+                    addParentEdges(join, opIndex, effectiveIdFor(join, joinRowFks));
+                    continue;
                 }
 
-                addParentEdges(join, opIndex, effectiveIdFor(join, fks));
+                Map<String, Object> committedFks = committedFksFromDiff(op, join);
+                if (committedFks != null) {
+                    addParentEdges(join, opIndex, effectiveIdFor(join, committedFks));
+                } else {
+                    pendingOldParents.add(new PendingOldParent(opIndex, join, null));
+                }
             }
+        }
+
+        void addPendingEdges() {
+            if (pendingOldParents.isEmpty()) {
+                return;
+            }
+
+            // flush only ever handles DataContext objects of a single context
+            DataContextObjectStore store = ((DataContext) dbRows
+                    .get(pendingOldParents.getFirst().opIndex())
+                    .getObject()
+                    .getObjectContext())
+                    .getObjectStore();
+
+            Set<ObjectId> ids = new HashSet<>();
+            pendingOldParents.forEach(p -> ids.add(dbRows.get(p.opIndex()).getObject().getObjectId()));
+
+            // the committed state is in the snapshot cache (or the DB), never in the object itself
+            Map<ObjectId, DataRow> committedRows = store.getSnapshots(ids);
+
+            for (PendingOldParent pending : pendingOldParents) {
+                ObjectId id = dbRows.get(pending.opIndex()).getObject().getObjectId();
+                Map<String, Object> fks = committedFks(
+                        committedRows.get(id),
+                        store.getFlattenedIds(id),
+                        pending.join());
+                addOldParentEdges(pending.join(), pending.opIndex(), effectiveIdFor(pending.join(), fks),
+                        pending.newParentId());
+            }
+        }
+
+        private void addOldParentEdges(
+                CompiledJoin join,
+                int opIndex,
+                EffectiveOpId oldParentId,
+                EffectiveOpId newParentId) {
+
+            if (oldParentId != null && !oldParentId.equals(newParentId)) {
+                addParentEdges(join, opIndex, oldParentId);
+            }
+        }
+
+        private Map<String, Object> committedFksFromDiff(DbRowOp op, CompiledJoin join) {
+
+            // null means the diff doesn't know the committed target of the FK without a DB query
+            ObjectId id = op.getObject().getObjectId();
+
+            Map<CompiledJoin, String> toOnes = toOnesByEntity.get(id.getEntityName());
+            String relationship = toOnes != null ? toOnes.get(join) : null;
+            if (relationship == null) {
+                return null;
+            }
+
+            ObjectDiff diff = op.getObject().getObjectContext().getObjectStore().getChanges(id);
+            if (diff == null || !diff.isArcSnapshotResolved(relationship)) {
+                return null;
+            }
+
+            ObjectId target = diff.getArcSnapshotValue(relationship);
+            if (target == null) {
+                return Map.of();
+            }
+
+            // only a target id with the referenced columns tells the FK values
+            Map<String, Object> targetId = target.getIdSnapshot();
+            Map<String, Object> fks = HashMap.newHashMap(join.columnPairs().size());
+            for (CompiledColumnPair pair : join.columnPairs()) {
+                Object value = targetId.get(pair.target().name());
+                if (value == null) {
+                    return null;
+                }
+                fks.put(pair.source().name(), value);
+            }
+            return fks;
+        }
+
+        private static Map<String, Object> committedFks(
+                DataRow committedRow,
+                Collection<ObjectId> flattenedIds,
+                CompiledJoin join) {
+
+            if (committedRow == null) {
+                return Map.of();
+            }
+
+            int joinSize = join.columnPairs().size();
+            Map<String, Object> fks = joinSize == 1
+                    ? new SingleEntryMap<>(join.columnPairs().get(0).source().name())
+                    : HashMap.newHashMap(joinSize);
+
+            join.columnPairs().forEach(pair -> {
+                Object value = committedRow.get(pair.source().name());
+                if (value != null) {
+                    fks.put(pair.source().name(), value);
+                }
+            });
+
+            // the ids of the rows of the flattened attributes, mapped from target to source
+            flattenedIds.forEach(flattenedId -> {
+                Map<String, Object> idSnapshot = flattenedId.getIdSnapshot();
+                join.columnPairs().forEach(pair -> {
+                    Object value = idSnapshot.get(pair.target().name());
+                    if (value != null) {
+                        fks.put(pair.source().name(), value);
+                    }
+                });
+            });
+
+            return fks;
         }
 
         private boolean referencesChangedTable(CompiledJoin join, boolean includeReferencedUpdates) {
@@ -360,14 +530,11 @@ public class GraphBasedDbRowOpSorter implements DbRowOpSorter {
                         case INSERT -> graph.add(opIndex, parentIndex);
                         case DELETE -> graph.add(parentIndex, opIndex);
                         case UPDATE -> {
-                            // Update will only depend on the operations where FK could be affected
+                            // the update of the referenced columns of the parent must wait for the update moving the
+                            // FK away from them. Note that a meaningful PK change is only supported this way, i.e. with
+                            // the FKs referencing it set to null or to another parent: no update is generated for the
+                            // FKs to follow the PK
                             if (fkReferenceUpdated((UpdateDbRowOp) dbRows.get(parentIndex), relationship)) {
-                                // TODO: this sorting logic works only for the setting relationship to null case
-                                //       if the meaningful PK is updated we got more places to cover, before fixing
-                                //       this logic namely:
-                                //          - no update would be generated for any dependent entities for the master
-                                //            PK update
-                                //          - update would fail with constraint violation even if it is generated
                                 graph.add(parentIndex, opIndex);
                             }
                         }
@@ -388,72 +555,6 @@ public class GraphBasedDbRowOpSorter implements DbRowOpSorter {
                     graph.add(opIndex, sameIdIndex);
                 }
             }
-        }
-    }
-
-    /**
-     * The committed state of the row of an updated or deleted object, read once, on first need.
-     */
-    private static final class CommittedRow {
-
-        private final Persistent object;
-        private boolean read;
-        private DataRow dataRow;
-        private Collection<ObjectId> flattenedIds;
-
-        CommittedRow(Persistent object) {
-            this.object = object;
-        }
-
-        /**
-         * Returns the committed values of the FK columns of the join, by column name.
-         */
-        Map<String, Object> fks(CompiledJoin join) {
-            read();
-
-            if (dataRow == null) {
-                return Map.of();
-            }
-
-            int joinSize = join.columnPairs().size();
-            Map<String, Object> fks = joinSize == 1
-                    ? new SingleEntryMap<>(join.columnPairs().get(0).source().name())
-                    : HashMap.newHashMap(joinSize);
-
-            join.columnPairs().forEach(pair -> {
-                Object value = dataRow.get(pair.source().name());
-                if (value != null) {
-                    fks.put(pair.source().name(), value);
-                }
-            });
-
-            // the ids of the rows of the flattened attributes, mapped from target to source
-            flattenedIds.forEach(flattenedId -> {
-                Map<String, Object> idSnapshot = flattenedId.getIdSnapshot();
-                join.columnPairs().forEach(pair -> {
-                    Object value = idSnapshot.get(pair.target().name());
-                    if (value != null) {
-                        fks.put(pair.source().name(), value);
-                    }
-                });
-            });
-
-            return fks;
-        }
-
-        private void read() {
-            if (read) {
-                return;
-            }
-
-            read = true;
-
-            // flush only ever handles DataContext objects
-            DataContextObjectStore store = ((DataContext) object.getObjectContext()).getObjectStore();
-
-            // the committed state is in the snapshot cache (or the DB), never in the object itself
-            dataRow = store.getSnapshot(object.getObjectId());
-            flattenedIds = store.getFlattenedIds(object.getObjectId());
         }
     }
 }

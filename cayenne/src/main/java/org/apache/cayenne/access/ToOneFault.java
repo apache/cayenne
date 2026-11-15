@@ -61,7 +61,7 @@ public record ToOneFault(String relationshipName) implements Fault {
                 && context instanceof DataContext dataContext) {
 
             DataContextObjectStore store = dataContext.getObjectStore();
-            ObjectDiff diff = store.getChangesByObjectId().get(sourceObject.getObjectId());
+            ObjectDiff diff = store.getChanges(sourceObject.getObjectId());
 
             if (diff != null) {
                 // the diff is read by the merges of this object, that run under the object lock

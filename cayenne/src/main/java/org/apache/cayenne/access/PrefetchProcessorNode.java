@@ -145,7 +145,7 @@ class PrefetchProcessorNode extends PrefetchTreeNode {
             return true;
         }
 
-        ObjectDiff diff = store().getChangesByObjectId().get(object.getObjectId());
+        ObjectDiff diff = store().getChanges(object.getObjectId());
         // check that there are no pending changes for that property
         if(diff == null) {
             return true;

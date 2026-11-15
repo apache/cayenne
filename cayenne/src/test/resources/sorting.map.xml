@@ -18,6 +18,11 @@
 		<dbAttribute name="MASTER_ID" type="INTEGER"/>
 		<dbAttribute name="NAME" type="VARCHAR" length="100"/>
 	</dbEntity>
+	<dbEntity name="SORT_LINK">
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="MASTER_ID" type="INTEGER"/>
+		<dbAttribute name="TREE_ID" type="INTEGER"/>
+	</dbEntity>
 	<dbEntity name="SORT_MASTER">
 		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
 		<dbAttribute name="NAME" type="VARCHAR" length="100"/>
@@ -53,6 +58,7 @@
 		<objAttribute name="masterName" type="java.lang.String" dbAttributePath="master.NAME"/>
 		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>
 	</objEntity>
+	<objEntity name="SortLink" className="org.apache.cayenne.testdo.sorting.SortLink" dbEntityName="SORT_LINK"/>
 	<objEntity name="SortMaster" className="org.apache.cayenne.testdo.sorting.SortMaster" dbEntityName="SORT_MASTER">
 		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>
 	</objEntity>
@@ -84,6 +90,12 @@
 	<dbRelationship name="tags" source="SORT_CHILD" target="SORT_TAG" toMany="true">
 		<dbAttributePair source="ID" target="CHILD_ID"/>
 	</dbRelationship>
+	<dbRelationship name="master" source="SORT_LINK" target="SORT_MASTER" foreignKey="true">
+		<dbAttributePair source="MASTER_ID" target="ID"/>
+	</dbRelationship>
+	<dbRelationship name="tree" source="SORT_LINK" target="SORT_TREE" foreignKey="true">
+		<dbAttributePair source="TREE_ID" target="ID"/>
+	</dbRelationship>
 	<dbRelationship name="children" source="SORT_MASTER" target="SORT_CHILD" toMany="true">
 		<dbAttributePair source="ID" target="MASTER_ID"/>
 	</dbRelationship>
@@ -111,6 +123,8 @@
 	<objRelationship name="b" source="SortA" target="SortB" deleteRule="nullify" dbRelationshipPath="b"/>
 	<objRelationship name="a" source="SortB" target="SortA" deleteRule="nullify" dbRelationshipPath="a"/>
 	<objRelationship name="master" source="SortChild" target="SortMaster" deleteRule="nullify" dbRelationshipPath="master"/>
+	<objRelationship name="master" source="SortLink" target="SortMaster" dbRelationshipPath="master"/>
+	<objRelationship name="tree" source="SortLink" target="SortTree" dbRelationshipPath="tree"/>
 	<objRelationship name="children" source="SortMaster" target="SortChild" deleteRule="nullify" dbRelationshipPath="children"/>
 	<objRelationship name="taggedChildren" source="SortMaster" target="SortChild" deleteRule="nullify" dbRelationshipPath="tags.child"/>
 	<objRelationship name="children" source="SortPk" target="SortPkChild" deleteRule="nullify" dbRelationshipPath="children"/>

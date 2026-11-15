@@ -154,6 +154,18 @@ public class ObjectDiff extends NodeDiff {
         return (ObjectId) value;
     }
 
+    /**
+     * Returns whether the target a to-one relationship had before the changes is known without a DB query, i.e. is
+     * not a fault. If so, {@link #getArcSnapshotValue(String)} returns it without resolving anything.
+     *
+     * @since 6.0
+     */
+    public boolean isArcSnapshotResolved(String propertyName) {
+        return arcSnapshot != null
+                && arcSnapshot.containsKey(propertyName)
+                && !(arcSnapshot.get(propertyName) instanceof Fault);
+    }
+
     boolean containsArcSnapshot(String propertyName) {
         return arcSnapshot != null && arcSnapshot.containsKey(propertyName);
     }

@@ -28,7 +28,9 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
+import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.testdo.sorting.SortChild;
+import org.apache.cayenne.testdo.sorting.SortLink;
 import org.apache.cayenne.testdo.sorting.SortMaster;
 import org.apache.cayenne.testdo.sorting.SortTree;
 import org.apache.cayenne.unit.CayenneProjects;
@@ -41,9 +43,10 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
- * {@link GraphBasedDbRowOpSorter} reads the committed FKs of the updated and deleted rows, that are queried from the
- * DB when the snapshots are not cached. It skips the reads that can't produce a dependency. The tests make the
- * changes, then empty the snapshot cache, so that each read is a query.
+ * {@link GraphBasedDbRowOpSorter} needs the committed FKs of the updated and deleted rows. It takes them from the
+ * operations when they know them, and otherwise reads the committed snapshots, that are queried from the DB when not
+ * cached, all together. It skips the reads that can't produce a dependency. The tests empty the snapshot cache before
+ * committing, so that each read is a query.
  */
 public class GraphBasedDbRowOpSorterIT {
 
@@ -65,7 +68,7 @@ public class GraphBasedDbRowOpSorterIT {
     public void cleanUp() throws SQLException {
         // break the reference cycle first, as the tables are cleaned one at a time
         env.table("SORT_TREE", "PARENT_ID").update().set("PARENT_ID", null, Types.INTEGER).execute();
-        for (String table : List.of("SORT_CHILD", "SORT_MASTER", "SORT_TREE")) {
+        for (String table : List.of("SORT_LINK", "SORT_CHILD", "SORT_MASTER", "SORT_TREE")) {
             env.table(table).deleteAll();
         }
     }
@@ -105,8 +108,50 @@ public class GraphBasedDbRowOpSorterIT {
 
         context.deleteObjects(root, child);
 
-        // the rows reference the table with deletes, each row read once
-        assertSortQueries(2);
+        // the rows reference the table with deletes, but the parents are known to the objects, so the operations know
+        // the committed FKs
+        assertSortQueries(0);
+    }
+
+    @Test
+    public void deleteWithDeletedParentsNotResolved() {
+        createLinks();
+
+        // the relationships of the links are faults, and have no delete rules to resolve them
+        ObjectContext fresh = env.runtime().newContext();
+        fresh.deleteObjects(ObjectSelect.query(SortLink.class).select(fresh));
+        fresh.deleteObjects(ObjectSelect.query(SortMaster.class).select(fresh));
+        fresh.deleteObjects(ObjectSelect.query(SortTree.class).select(fresh));
+
+        // the committed rows of all the links are read together, each link once for both FKs
+        env.runtime().getDataDomain().getSharedSnapshotCache().clear();
+        fresh.commitChanges();
+        assertEquals(1, sorter.lastSortQueries);
+    }
+
+    @Test
+    public void deleteWithDeletedParentsNotResolvedCached() {
+        createLinks();
+
+        ObjectContext fresh = env.runtime().newContext();
+        fresh.deleteObjects(ObjectSelect.query(SortLink.class).select(fresh));
+        fresh.deleteObjects(ObjectSelect.query(SortMaster.class).select(fresh));
+        fresh.deleteObjects(ObjectSelect.query(SortTree.class).select(fresh));
+
+        // the committed rows of the links are in the cache since they were fetched
+        fresh.commitChanges();
+        assertEquals(0, sorter.lastSortQueries);
+    }
+
+    private void createLinks() {
+        SortMaster m = master("m");
+        SortTree t = tree("t", null);
+        for (int i = 0; i < 3; i++) {
+            SortLink link = context.newObject(SortLink.class);
+            link.setMaster(m);
+            link.setTree(t);
+        }
+        context.commitChanges();
     }
 
     private void assertSortQueries(int expected) {

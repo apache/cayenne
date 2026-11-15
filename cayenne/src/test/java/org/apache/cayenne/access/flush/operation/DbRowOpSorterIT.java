@@ -100,8 +100,8 @@ public class DbRowOpSorterIT {
         env.table("SORT_TREE", "PARENT_ID").update().set("PARENT_ID", null, Types.INTEGER).execute();
         env.table("SORT_A", "B_ID").update().set("B_ID", null, Types.INTEGER).execute();
         env.table("SORT_B", "A_ID").update().set("A_ID", null, Types.INTEGER).execute();
-        for (String table : List.of("SORT_TAG", "SORT_CHILD", "SORT_MASTER", "SORT_TREE", "SORT_A", "SORT_B",
-                "SORT_PK_CHILD", "SORT_PK")) {
+        for (String table : List.of("SORT_LINK", "SORT_TAG", "SORT_CHILD", "SORT_MASTER", "SORT_TREE", "SORT_A",
+                "SORT_B", "SORT_PK_CHILD", "SORT_PK")) {
             env.table(table).deleteAll();
         }
     }

@@ -21,6 +21,9 @@ package org.apache.cayenne;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+
+import org.apache.cayenne.access.ObjectDiff;
 
 /**
  * A registry of persistent objects managed by an {@link ObjectContext}, keyed by {@link ObjectId}. Also tracks the
@@ -63,6 +66,13 @@ public interface ObjectStore {
     boolean hasChanges();
 
     /**
+     * Returns the uncommitted changes of a registered object, or null if the object has no changes.
+     *
+     * @since 6.0
+     */
+    ObjectDiff getChanges(ObjectId oid);
+
+    /**
      * Returns a committed snapshot of an object with the id from the cache, or null if it is not cached. Unlike
      * {@link #getSnapshot(ObjectId)}, never fetches from the database.
      */
@@ -73,4 +83,12 @@ public interface ObjectStore {
      * if no such row exists.
      */
     DataRow getSnapshot(ObjectId oid);
+
+    /**
+     * Returns committed snapshots of the objects with the ids, like {@link #getSnapshot(ObjectId)}, fetching the ones
+     * not cached from the database. The ids with no matching rows are not in the returned map.
+     *
+     * @since 6.0
+     */
+    Map<ObjectId, DataRow> getSnapshots(Collection<ObjectId> oids);
 }

@@ -19,15 +19,18 @@
 
 package org.apache.cayenne.access.flush.operation;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
+import java.util.TreeMap;
 
 /**
- * A dependency graph of {@link DbRowOp}s, with a linear-time (Kahn's algorithm) topological sort. Vertices are
- * addressed by the index of the op in the list the graph was created with, so the graph does no hashing, no boxing,
- * and doesn't depend on {@link DbRowOp} "equals". An edge "from -> to" means that "from" depends on "to", so "to"
- * is sorted before "from".
+ * A dependency graph of {@link DbRowOp}s, with a topological sort (Kahn's algorithm) that keeps the ops of the same
+ * group together. Vertices are addressed by the index of the op in the list the graph was created with, so the graph
+ * doesn't depend on {@link DbRowOp} "equals". An edge "from -> to" means that "from" depends on "to", so "to" is
+ * sorted before "from".
  */
 class DbRowOpGraph {
 
@@ -84,70 +87,92 @@ class DbRowOpGraph {
 
     /**
      * Returns the topologically sorted ops, dependencies first. Throws an exception if a cycle is detected.
+     *
+     * <p>Of the ops whose dependencies are sorted, the next is taken from the same group as the previous one while
+     * there is one, the groups being the ops equal by the comparator, so that the ops of a group stay together as much
+     * as the dependencies allow (e.g., to run as one batch). Otherwise, it is taken from the first group by the
+     * comparator. Within a group, the ops keep their order in the list. So, without the dependencies, the result is the
+     * list stably sorted by the comparator.
      */
-    List<DbRowOp> topSort() {
-        int n = vertexCount;
-        int[] inDegree = new int[ops.size()];
+    List<DbRowOp> topSort(Comparator<DbRowOp> groupOrder) {
+        int size = ops.size();
 
-        // in-degrees, plus the order of the vertices to seed the queue with. This order (each vertex's targets
-        // first, then the vertex itself) is preserved from the original map-based implementation, as it determines
-        // the relative order of the independent ops.
-        int[] degreeOrder = new int[n];
-        int degreeOrderSize = 0;
-        boolean[] seen = new boolean[ops.size()];
-        for (int i = 0; i < n; i++) {
+        // the dependents of each op, and the number of the dependencies of each op not sorted yet
+        int[] pending = new int[size];
+        int[] dependentsStart = new int[size + 1];
+        for (int i = 0; i < vertexCount; i++) {
             int from = vertexOrder[i];
+            pending[from] = edgeCounts[from];
             int[] fromEdges = edges[from];
-            for (int e = 0, count = edgeCounts[from]; e < count; e++) {
+            for (int e = 0; e < edgeCounts[from]; e++) {
+                dependentsStart[fromEdges[e] + 1]++;
+            }
+        }
+        for (int i = 0; i < size; i++) {
+            dependentsStart[i + 1] += dependentsStart[i];
+        }
+        int[] dependents = new int[dependentsStart[size]];
+        int[] fill = new int[size];
+        for (int from = 0; from < size; from++) {
+            int[] fromEdges = edges[from];
+            for (int e = 0; e < edgeCounts[from]; e++) {
                 int to = fromEdges[e];
-                inDegree[to]++;
-                if (!seen[to]) {
-                    seen[to] = true;
-                    degreeOrder[degreeOrderSize++] = to;
+                dependents[dependentsStart[to] + fill[to]++] = from;
+            }
+        }
+
+        // The ready ops by group, each group in the list order. Picking the next op from the same group as the
+        // previous one, rather than in any order the dependencies allow, is essential: the flush only puts the
+        // consecutive operations of the same kind into one batch (see QueryCreatorVisitor), so an order that
+        // interleaves the groups turns every row into a separate statement, i.e. a DB round trip per row instead of
+        // one per batch.
+        TreeMap<DbRowOp, ArrayDeque<Integer>> ready = new TreeMap<>(groupOrder);
+        for (int i = 0; i < size; i++) {
+            if (inGraph[i] && pending[i] == 0) {
+                ready.computeIfAbsent(ops.get(i), k -> new ArrayDeque<>()).add(i);
+            }
+        }
+
+        List<DbRowOp> result = new ArrayList<>(vertexCount);
+        DbRowOp groupKey = null;
+        ArrayDeque<Integer> group = null;
+        while (true) {
+
+            // stay in the current group while it has ready ops, including the ones that became ready while sorting
+            // it, even if an earlier group by the comparator became ready, as each switch of the group ends a batch
+            if (group == null || group.isEmpty()) {
+                if (groupKey != null) {
+                    ready.remove(groupKey);
+                }
+                if (ready.isEmpty()) {
+                    break;
+                }
+                groupKey = ready.firstKey();
+                group = ready.get(groupKey);
+            }
+
+            int op = group.poll();
+            result.add(ops.get(op));
+
+            for (int d = dependentsStart[op]; d < dependentsStart[op + 1]; d++) {
+                int dependent = dependents[d];
+                if (--pending[dependent] == 0) {
+                    ready.computeIfAbsent(ops.get(dependent), k -> new ArrayDeque<>()).add(dependent);
                 }
             }
-            if (!seen[from]) {
-                seen[from] = true;
-                degreeOrder[degreeOrderSize++] = from;
-            }
         }
 
-        // each vertex is queued exactly once, so a plain array works as a FIFO queue. Seed vertices go in reverse
-        int[] queue = new int[n];
-        int tail = 0;
-        for (int i = degreeOrderSize - 1; i >= 0; i--) {
-            if (inDegree[degreeOrder[i]] == 0) {
-                queue[tail++] = degreeOrder[i];
-            }
-        }
-
-        for (int head = 0; head < tail; head++) {
-            int v = queue[head];
-            int[] vEdges = edges[v];
-            for (int e = 0, count = edgeCounts[v]; e < count; e++) {
-                int to = vEdges[e];
-                if (--inDegree[to] == 0) {
-                    queue[tail++] = to;
-                }
-            }
-        }
-
-        // if not all the vertices were queued, there was a cycle
-        if (tail != n) {
-            List<DbRowOp> remaining = new ArrayList<>(n - tail);
-            for (int i = 0; i < n; i++) {
-                if (inDegree[vertexOrder[i]] > 0) {
+        // if not all the vertices were sorted, there was a cycle
+        if (result.size() != vertexCount) {
+            List<DbRowOp> remaining = new ArrayList<>(vertexCount - result.size());
+            for (int i = 0; i < vertexCount; i++) {
+                if (pending[vertexOrder[i]] > 0) {
                     remaining.add(ops.get(vertexOrder[i]));
                 }
             }
             throw new IllegalStateException("Cycle detected in list for keys: " + remaining);
         }
 
-        // the queue has the dependents first, so reverse it
-        List<DbRowOp> result = new ArrayList<>(n);
-        for (int i = n - 1; i >= 0; i--) {
-            result.add(ops.get(queue[i]));
-        }
         return result;
     }
 }

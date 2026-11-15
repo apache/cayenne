@@ -88,7 +88,9 @@ public class GraphBasedDbRowOpSorterTest {
         DbRowOp op4 = new InsertDbRowOp(TestObjects.modifiedObject(id4), table("test1"), id4);
 
         List<DbRowOp> rows = Arrays.asList(op1, op2, op3, op4);
-        List<DbRowOp> expected = Arrays.asList(op1, op2, op3, op4);
+
+        // no dependencies between the rows, so the table order
+        List<DbRowOp> expected = Arrays.asList(op4, op2, op3, op1);
 
         List<DbRowOp> sorted = sorter.sort(rows);
         assertEquals(expected, sorted);
@@ -108,7 +110,9 @@ public class GraphBasedDbRowOpSorterTest {
         DeleteDbRowOp op4 = new DeleteDbRowOp(TestObjects.modifiedObject(id4), test, id4);
 
         List<DbRowOp> rows = Arrays.asList(op1, op2, op3, op4);
-        List<DbRowOp> expected = Arrays.asList(op3, op1, op2, op4);
+
+        // the inserts go first, except for the one of the PK deleted, that waits for the delete
+        List<DbRowOp> expected = Arrays.asList(op1, op3, op4, op2);
 
         List<DbRowOp> sorted = sorter.sort(rows);
         assertEquals(expected, sorted);
@@ -141,7 +145,9 @@ public class GraphBasedDbRowOpSorterTest {
         op[8] = new DeleteDbRowOp(TestObjects.modifiedObject(id9),  test2, id9);
         op[9] = new DeleteDbRowOp(TestObjects.modifiedObject(id10), test,  id10);
 
-        List<DbRowOp> expected = Arrays.asList(op[2], op[8], op[9], op[0], op[1], op[3], op[4], op[5], op[6], op[7]);
+        // inserts, updates, deletes (in the reverse table order), each group by table, except for the inserts of the
+        // deleted PKs, that wait for the deletes
+        List<DbRowOp> expected = Arrays.asList(op[0], op[3], op[7], op[8], op[4], op[2], op[5], op[9], op[1], op[6]);
         List<DbRowOp> sorted = sorter.sort(Arrays.asList(op));
 
         assertEquals(expected, sorted);

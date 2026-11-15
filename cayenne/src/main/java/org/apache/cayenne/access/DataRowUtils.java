@@ -190,10 +190,7 @@ class DataRowUtils {
             Persistent object,
             Map<String, Object> snapshot) {
 
-        ObjectDiff diff = context
-                .getObjectStore()
-                .getChangesByObjectId()
-                .get(object.getObjectId());
+        ObjectDiff diff = context.getObjectStore().getChanges(object.getObjectId());
 
         // an embeddable the application reset to null is recreated before the snapshot is merged into it
         for (CompiledEmbeddedAttribute embedded : entity.embeddedAttributes()) {
