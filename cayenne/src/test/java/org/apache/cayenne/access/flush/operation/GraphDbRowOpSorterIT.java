@@ -245,6 +245,21 @@ public class GraphDbRowOpSorterIT {
         }
 
         @Test
+        public void insertReferencedByUpdate() {
+            SortTree p = tree("p", null);
+            context.commitChanges();
+
+            // the new rows reference the committed one, and its update references them, which is not a cycle, as the
+            // update doesn't change the column the new rows reference. If it were one, the inserts could be released
+            // in either order
+            SortTree c = tree("c", p);
+            SortTree gc = tree("gc", c);
+            p.setParent(gc);
+
+            assertOrder(insertOf(c), insertOf(gc), updateOf(p));
+        }
+
+        @Test
         public void rowCycle() {
             SortTree t1 = tree("t1", null);
             SortTree t2 = tree("t2", t1);

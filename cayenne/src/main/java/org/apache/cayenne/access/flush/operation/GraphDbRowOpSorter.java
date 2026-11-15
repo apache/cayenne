@@ -446,8 +446,17 @@ public class GraphDbRowOpSorter implements DbRowOpSorter {
             // 3. Others delete can depend on our delete
             switch (types[opIndex]) {
                 case INSERT -> {
-                    if (parentOpType != DbRowOpType.DELETE) {
-                        graph.add(opIndex, parentIndex);
+                    switch (parentOpType) {
+                        case INSERT -> graph.add(opIndex, parentIndex);
+
+                        // the referenced row exists, so the insert waits only for an update of the referenced columns
+                        case UPDATE -> {
+                            if (fkReferenceUpdated((UpdateDbRowOp) dbRows.get(parentIndex), relationship)) {
+                                graph.add(opIndex, parentIndex);
+                            }
+                        }
+                        case DELETE -> {
+                        }
                     }
                 }
                 case UPDATE -> {
