@@ -19,15 +19,6 @@
 
 package org.apache.cayenne.access.flush;
 
-import java.sql.SQLException;
-import java.sql.Types;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectContext;
@@ -57,9 +48,16 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * The DML statements a commit sends to the DB: which rows are inserted, updated and deleted, the columns written, and
@@ -77,7 +75,8 @@ import static org.junit.jupiter.api.Assertions.fail;
  * Rows referencing each other: insert, with Cayenne-generated and DB-generated PKs, with no nullable FK (sent as
  *   is); delete
  * A row referencing itself, with a Cayenne-generated and a DB-generated PK
- * Meaningful PK: change of a referenced row, a child moved to it, swap (not supported)
+ * Meaningful PK: change of a referenced row, a child moved to it (won't fix, needs the DB to cascade the PK
+ *   updates); swap (not supported)
  * Phantom changes: no statements
  * </pre>
  */
@@ -241,8 +240,13 @@ public class FlushDmlIT {
     }
 
     /**
-     * A change of the meaningful PK of a row referenced by the other rows. Changing the PK alone works only with the
-     * FKs cascading the update, which the model doesn't know of. The referencing rows need to follow the PK.
+     * A change of the meaningful PK of a row referenced by the other rows.
+     *
+     * <p>Won't fix, by decision (CAY-3076): Cayenne only updates the PK, and doesn't make the referencing rows follow
+     * it. With the FKs checked immediately, no order of the updates works, and the
+     * alternatives are not good: inserting the row with the new PK, re-pointing the referencing rows and deleting the
+     * old row risks the unique keys of the row colliding, and the DB cascading the delete to the rows of the tables not
+     * in the model, while setting the FKs to NULL temporarily works only for the nullable FKs not in a PK.
      */
     @Nested
     public class MeaningfulPk {
@@ -255,9 +259,8 @@ public class FlushDmlIT {
 
             p.setPk(2);
 
-            // TODO: the child still references the old PK. Should be an insert of the row with the new PK, an update
-            //  of the child to reference it, and a delete of the row with the old PK
-            assertIncorrectDml(List.of(Dml.update(p).set("PK", 2)));
+            // won't fix: no update of the child, that still references the old PK, so the DB must cascade the PK update
+            assertDmlSent(List.of(Dml.update(p).set("PK", 2)));
         }
 
         @Test
@@ -269,10 +272,10 @@ public class FlushDmlIT {
             c.setParent(p);
             p.setPk(2);
 
-            // TODO: the child FK is set to the old PK of the parent, taken from its ObjectId when the change is
-            //  recorded. Should be the new PK, and with the parent referenced, the PK change done as in
-            //  "changeReferencedPk"
-            assertIncorrectDml(List.of(Dml.update(c).set("PARENT_PK", 1), Dml.update(p).set("PK", 2)));
+            // won't fix: the child FK is set to the old PK of the parent, taken from its ObjectId when the change is
+            // recorded. The child update runs before the PK update, so the DB cascading the PK update brings the child
+            // along, the same as in "changeReferencedPk"
+            assertDmlSent(List.of(Dml.update(c).set("PARENT_PK", 1), Dml.update(p).set("PK", 2)));
         }
 
         @Test

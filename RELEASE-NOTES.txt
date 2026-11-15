@@ -27,6 +27,7 @@ CAY-3068 Resolve queries ahead of execution
 CAY-3069 Combine ObjectSelect and ColumnSelect
 CAY-3072 Replace the Ashwood graph library with linear-time sorts and remove it
 CAY-3075 Unifying DbRowOpSorter
+CAY-3076 Proper DML operations for edge cases
 
 Bug fixes:
 
