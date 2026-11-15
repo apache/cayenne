@@ -111,32 +111,6 @@ public class QualifierTest {
         assertEquals(expectedSnapshot, qualifierSnapshot);
     }
 
-    @Test
-    public void sameBatch() {
-        ObjectId id1 = ObjectId.of("test", "id", 123);
-        Persistent persistent1 = TestObjects.modifiedObject(id1);
-        DbRowOp row1 = row(persistent1);
-
-        Qualifier qualifier1 = new Qualifier(row1);
-
-        ObjectId id2 = ObjectId.of("test", "id", 321);
-        Persistent persistent2 = TestObjects.modifiedObject(id2);
-        DbRowOp row2 = row(persistent2);
-
-        Qualifier qualifier2 = new Qualifier(row2);
-
-        assertTrue(qualifier1.isSameBatch(qualifier2));
-
-        ObjectId id3 = ObjectId.of("test", "id", 321);
-        Persistent persistent3 = TestObjects.modifiedObject(id3);
-        DbRowOp row3 = row(persistent3);
-
-        Qualifier qualifier3 = new Qualifier(row3);
-        qualifier3.addAdditionalQualifier(CompiledTables.column("attr"), 42);
-
-        assertFalse(qualifier1.isSameBatch(qualifier3));
-    }
-
     private DbRowOp row(Persistent persistent) {
         return new UpdateDbRowOp(persistent, CompiledTables.table("TEST"), persistent.getObjectId());
     }

@@ -19,12 +19,10 @@
 
 package org.apache.cayenne.access.flush.operation;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
+import java.util.BitSet;
 import java.util.List;
-import java.util.TreeMap;
 import java.util.function.IntPredicate;
 
 import org.slf4j.Logger;
@@ -40,11 +38,9 @@ class DbRowOpGraph {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DbRowOpGraph.class);
 
-    private static final int[] NO_EDGES = new int[0];
-
     private final List<DbRowOp> ops;
 
-    // adjacency lists, in the edge insertion order
+    // adjacency lists, in the edge insertion order, null for a vertex with no edges
     private final int[][] edges;
     private final int[] edgeCounts;
 
@@ -63,7 +59,10 @@ class DbRowOpGraph {
         this.edgeCounts = new int[size];
         this.vertexOrder = new int[size];
         this.inGraph = new boolean[size];
-        Arrays.fill(edges, NO_EDGES);
+    }
+
+    List<DbRowOp> ops() {
+        return ops;
     }
 
     /**
@@ -84,8 +83,11 @@ class DbRowOpGraph {
 
         int[] fromEdges = edges[from];
         int count = edgeCounts[from];
-        if (count == fromEdges.length) {
-            fromEdges = Arrays.copyOf(fromEdges, Math.max(4, count * 2));
+        if (fromEdges == null) {
+            fromEdges = new int[4];
+            edges[from] = fromEdges;
+        } else if (count == fromEdges.length) {
+            fromEdges = Arrays.copyOf(fromEdges, count * 2);
             edges[from] = fromEdges;
         }
         fromEdges[count] = to;
@@ -99,17 +101,17 @@ class DbRowOpGraph {
      *
      * <p>A cycle doesn't stop the sort: one op of the cycle is sorted ahead of its dependencies, so that only the edges
      * of the cycles are broken, and the DB decides if the order works (it does, e.g., with no FK constraints, or with
-     * the deferred ones). The op is the first by the comparator, then by the list order, among the ops of the cycles
-     * that depend on nothing else unsorted. The cycles broken are available from {@link #brokenCycles()} after the
-     * sort.
+     * the deferred ones). The op is the first by the group, then by the list order, among the ops of the cycles that
+     * depend on nothing else unsorted. The cycles broken are available from {@link #brokenCycles()} after the sort.
      *
      * <p>Of the ops whose dependencies are sorted, the next is taken from the same group as the previous one while
-     * there is one, the groups being the ops equal by the comparator, so that the ops of a group stay together as much
-     * as the dependencies allow (e.g., to run as one batch). Otherwise, it is taken from the first group by the
-     * comparator. Within a group, the ops keep their order in the list. So, without the dependencies, the result is the
-     * list stably sorted by the comparator.
+     * there is one, so that the ops of a group stay together as much as the dependencies allow (e.g., to run as one
+     * batch). Otherwise, it is taken from the lowest group. Within a group, the ops keep their order in the list. So,
+     * without the dependencies, the result is the list stably sorted by the group.
+     *
+     * @param groups the group of each op, by the index of the op in the list, from 0 to the number of the groups - 1
      */
-    List<DbRowOp> topSort(Comparator<DbRowOp> groupOrder) {
+    List<DbRowOp> topSort(int[] groups) {
         int size = ops.size();
         brokenCycles = List.of();
 
@@ -141,45 +143,42 @@ class DbRowOpGraph {
         // previous one, rather than in any order the dependencies allow, is essential: the flush only puts the
         // consecutive operations of the same kind into one batch (see QueryCreatorVisitor), so an order that
         // interleaves the groups turns every row into a separate statement, i.e. a DB round trip per row instead of
-        // one per batch.
-        TreeMap<DbRowOp, ArrayDeque<Integer>> ready = new TreeMap<>(groupOrder);
+        // one per batch. Each op becomes ready once, so the queues of the groups are the segments of one array, sized
+        // by the ops of each group
+        ReadyQueues ready = new ReadyQueues(groups);
         for (int i = 0; i < size; i++) {
             if (inGraph[i] && pending[i] == 0) {
-                ready.computeIfAbsent(ops.get(i), k -> new ArrayDeque<>()).add(i);
+                ready.add(i);
             }
         }
 
         List<DbRowOp> result = new ArrayList<>(vertexCount);
         CycleBreaker cycleBreaker = null;
-        DbRowOp groupKey = null;
-        ArrayDeque<Integer> group = null;
+        int group = -1;
         while (true) {
 
             // stay in the current group while it has ready ops, including the ones that became ready while sorting
-            // it, even if an earlier group by the comparator became ready, as each switch of the group ends a batch
-            if (group == null || group.isEmpty()) {
-                if (groupKey != null) {
-                    ready.remove(groupKey);
-                }
-                if (ready.isEmpty()) {
+            // it, even if a lower group became ready, as each switch of the group ends a batch
+            if (group < 0 || ready.isEmpty(group)) {
+                group = ready.lowestGroup();
+                if (group < 0) {
                     if (result.size() == vertexCount) {
                         break;
                     }
 
                     // the remaining ops are blocked by the cycles. Created on the first one, as it is rare
                     if (cycleBreaker == null) {
-                        cycleBreaker = new CycleBreaker(pending, groupOrder);
+                        cycleBreaker = new CycleBreaker(pending, groups);
                         brokenCycles = new ArrayList<>();
                     }
                     int released = cycleBreaker.release();
                     pending[released] = 0;
-                    ready.computeIfAbsent(ops.get(released), k -> new ArrayDeque<>()).add(released);
+                    ready.add(released);
+                    group = groups[released];
                 }
-                groupKey = ready.firstKey();
-                group = ready.get(groupKey);
             }
 
-            int op = group.poll();
+            int op = ready.poll(group);
             result.add(ops.get(op));
 
             for (int d = dependentsStart[op]; d < dependentsStart[op + 1]; d++) {
@@ -187,7 +186,7 @@ class DbRowOpGraph {
 
                 // a released op goes below zero, and is not made ready again
                 if (--pending[dependent] == 0) {
-                    ready.computeIfAbsent(ops.get(dependent), k -> new ArrayDeque<>()).add(dependent);
+                    ready.add(dependent);
                 }
             }
         }
@@ -195,8 +194,66 @@ class DbRowOpGraph {
         return result;
     }
 
+    // The queues of the ready ops of each group, in the order the ops become ready, and the groups with ready ops.
+    // Each op is added once at most, so the queue of a group is a segment of one array, sized by the ops of the group
+    private final class ReadyQueues {
+
+        private final int[] groups;
+        private final int[] queue;
+        private final int[] head;
+        private final int[] tail;
+        private final BitSet nonEmpty;
+
+        ReadyQueues(int[] groups) {
+            this.groups = groups;
+
+            int groupCount = 0;
+            for (int i = 0; i < vertexCount; i++) {
+                groupCount = Math.max(groupCount, groups[vertexOrder[i]] + 1);
+            }
+
+            this.head = new int[groupCount];
+            this.tail = new int[groupCount];
+            for (int i = 0; i < vertexCount; i++) {
+                int g = groups[vertexOrder[i]];
+                if (g + 1 < groupCount) {
+                    head[g + 1]++;
+                }
+            }
+            for (int g = 1; g < groupCount; g++) {
+                head[g] += head[g - 1];
+            }
+            System.arraycopy(head, 0, tail, 0, groupCount);
+
+            this.queue = new int[vertexCount];
+            this.nonEmpty = new BitSet(groupCount);
+        }
+
+        void add(int op) {
+            int g = groups[op];
+            queue[tail[g]++] = op;
+            nonEmpty.set(g);
+        }
+
+        int poll(int group) {
+            int op = queue[head[group]++];
+            if (head[group] == tail[group]) {
+                nonEmpty.clear(group);
+            }
+            return op;
+        }
+
+        boolean isEmpty(int group) {
+            return head[group] == tail[group];
+        }
+
+        int lowestGroup() {
+            return nonEmpty.nextSetBit(0);
+        }
+    }
+
     /**
-     * Returns the cycles broken by the last {@link #topSort(Comparator)}, each as the indices of the ops of a strongly
+     * Returns the cycles broken by the last {@link #topSort(int[])}, each as the indices of the ops of a strongly
      * connected component, i.e. the ops all depending on each other. Empty if there were no cycles.
      */
     List<int[]> brokenCycles() {
@@ -214,7 +271,7 @@ class DbRowOpGraph {
     private final class CycleBreaker {
 
         private final int[] pending;
-        private final Comparator<DbRowOp> groupOrder;
+        private final int[] groups;
 
         // the components of the ops unsorted on the first call, dependencies first, and the component of each op
         private final List<int[]> components;
@@ -231,10 +288,10 @@ class DbRowOpGraph {
         private final int[] callStack;
         private final int[] callEdge;
 
-        CycleBreaker(int[] pending, Comparator<DbRowOp> groupOrder) {
+        CycleBreaker(int[] pending, int[] groups) {
             int size = ops.size();
             this.pending = pending;
-            this.groupOrder = groupOrder;
+            this.groups = groups;
             this.componentOf = new int[size];
             this.index = new int[size];
             this.low = new int[size];
@@ -273,8 +330,7 @@ class DbRowOpGraph {
 
             int released = cycle[0];
             for (int v : cycle) {
-                int c = groupOrder.compare(ops.get(v), ops.get(released));
-                if (c < 0 || c == 0 && v < released) {
+                if (groups[v] < groups[released] || groups[v] == groups[released] && v < released) {
                     released = v;
                 }
             }

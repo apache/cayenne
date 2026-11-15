@@ -208,14 +208,4 @@ public class Values {
             flattenedIds.clear();
         }
     }
-
-    public boolean isSameBatch(Values other) {
-        if(updatedColumns == null) {
-            return other.updatedColumns == null;
-        }
-        if(other.updatedColumns == null) {
-            return false;
-        }
-        return updatedColumns.equals(other.updatedColumns);
-    }
 }

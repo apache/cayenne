@@ -102,6 +102,29 @@ public class DefaultDbRowOpPlannerTest {
     }
 
     @Test
+    public void groupUpdatesByBatch() {
+        DbRowOp a1 = update(1, "a");
+        DbRowOp b1 = update(2, "b");
+        DbRowOp a2 = update(3, "a");
+        DbRowOp b2 = update(4, "b", "c");
+        DbRowOp b3 = update(5, "c", "b");
+
+        // no dependencies between the rows. The updates of the same columns run as one batch, so they are kept
+        // together, the batches in the order of their first update
+        List<DbRowOp> sorted = planner.plan(List.of(a1, b1, b2, a2, b3));
+        assertEquals(List.of(a1, a2, b1, b2, b3), sorted);
+    }
+
+    private DbRowOp update(int id, String... columns) {
+        ObjectId objectId = ObjectId.of("test", "id", id);
+        UpdateDbRowOp op = new UpdateDbRowOp(TestObjects.modifiedObject(objectId), table("test"), objectId);
+        for (String column : columns) {
+            op.getValues().addValue(CompiledTables.column(column), 1, false);
+        }
+        return op;
+    }
+
+    @Test
     public void sortByOpEntity() {
         ObjectId id1 = ObjectId.of("test4", "id", 1);
         ObjectId id2 = ObjectId.of("test2", "id", 2);

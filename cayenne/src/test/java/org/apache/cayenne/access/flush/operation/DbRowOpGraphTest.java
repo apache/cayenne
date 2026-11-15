@@ -20,8 +20,8 @@
 package org.apache.cayenne.access.flush.operation;
 
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.IntStream;
 
 import org.apache.cayenne.ObjectId;
@@ -36,10 +36,17 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class DbRowOpGraphTest {
 
     // all the ops in one group
-    private static final Comparator<DbRowOp> ONE_GROUP = (o1, o2) -> 0;
+    private static final Function<List<DbRowOp>, int[]> ONE_GROUP = ops -> new int[ops.size()];
 
-    // a group per table, by table name
-    private static final Comparator<DbRowOp> BY_TABLE = Comparator.comparing(op -> op.getEntity().name());
+    // a group per table, numbered by table name
+    private static final Function<List<DbRowOp>, int[]> BY_TABLE = ops -> {
+        List<String> tables = ops.stream().map(op -> op.getEntity().name()).distinct().sorted().toList();
+        return ops.stream().mapToInt(op -> tables.indexOf(op.getEntity().name())).toArray();
+    };
+
+    private static List<DbRowOp> topSort(DbRowOpGraph graph, Function<List<DbRowOp>, int[]> groups) {
+        return graph.topSort(groups.apply(graph.ops()));
+    }
 
     private static List<DbRowOp> ops(int n) {
         return IntStream.range(0, n).mapToObj(i -> op("t", i)).toList();
@@ -62,7 +69,7 @@ public class DbRowOpGraphTest {
     @Test
     public void noEdges() {
         List<DbRowOp> ops = ops(3);
-        assertEquals(ops, graph(ops).topSort(ONE_GROUP));
+        assertEquals(ops, topSort(graph(ops), ONE_GROUP));
     }
 
     @Test
@@ -79,7 +86,7 @@ public class DbRowOpGraphTest {
             graph.add(i);
         }
 
-        List<DbRowOp> sorted = graph.topSort(ONE_GROUP);
+        List<DbRowOp> sorted = topSort(graph, ONE_GROUP);
         assertEquals(4, sorted.size());
         assertTrue(sorted.indexOf(ops.get(2)) < sorted.indexOf(ops.get(1)));
         assertTrue(sorted.indexOf(ops.get(1)) < sorted.indexOf(ops.get(0)));
@@ -93,7 +100,7 @@ public class DbRowOpGraphTest {
         DbRowOp a1 = op("a", 1);
         DbRowOp b1 = op("b", 1);
 
-        assertEquals(List.of(a0, a1, b0, b1), graph(List.of(b0, a0, b1, a1)).topSort(BY_TABLE));
+        assertEquals(List.of(a0, a1, b0, b1), topSort(graph(List.of(b0, a0, b1, a1)), BY_TABLE));
     }
 
     @Test
@@ -106,7 +113,7 @@ public class DbRowOpGraphTest {
         DbRowOpGraph graph = graph(List.of(a0, b0, a1));
         graph.add(2, 0);
 
-        assertEquals(List.of(a0, a1, b0), graph.topSort(BY_TABLE));
+        assertEquals(List.of(a0, a1, b0), topSort(graph, BY_TABLE));
     }
 
     @Test
@@ -119,7 +126,7 @@ public class DbRowOpGraphTest {
         DbRowOpGraph graph = graph(List.of(b0, a0, b1));
         graph.add(1, 0);
 
-        assertEquals(List.of(b0, b1, a0), graph.topSort(BY_TABLE));
+        assertEquals(List.of(b0, b1, a0), topSort(graph, BY_TABLE));
     }
 
     @Test
@@ -131,7 +138,7 @@ public class DbRowOpGraphTest {
         graph.add(2, 1);
 
         // the cycle is broken at the first op in the list order
-        assertEquals(ops, graph.topSort(ONE_GROUP));
+        assertEquals(ops, topSort(graph, ONE_GROUP));
     }
 
     @Test
@@ -144,7 +151,7 @@ public class DbRowOpGraphTest {
         graph.add(1, 0);
 
         // the group order wins over the list order
-        assertEquals(List.of(a0, b0), graph.topSort(BY_TABLE));
+        assertEquals(List.of(a0, b0), topSort(graph, BY_TABLE));
     }
 
     @Test
@@ -160,7 +167,7 @@ public class DbRowOpGraphTest {
         graph.add(2, 1);
         graph.add(2, 3);
 
-        assertEquals(List.of(ops.get(3), ops.get(1), ops.get(2), ops.get(0)), graph.topSort(ONE_GROUP));
+        assertEquals(List.of(ops.get(3), ops.get(1), ops.get(2), ops.get(0)), topSort(graph, ONE_GROUP));
     }
 
     @Test
@@ -175,7 +182,7 @@ public class DbRowOpGraphTest {
         graph.add(2, 3);
         graph.add(3, 2);
 
-        assertEquals(List.of(ops.get(2), ops.get(3), ops.get(0), ops.get(1)), graph.topSort(ONE_GROUP));
+        assertEquals(List.of(ops.get(2), ops.get(3), ops.get(0), ops.get(1)), topSort(graph, ONE_GROUP));
     }
 
     @Test
@@ -191,7 +198,7 @@ public class DbRowOpGraphTest {
         graph.add(3, 2);
         graph.add(4);
 
-        graph.topSort(ONE_GROUP);
+        topSort(graph, ONE_GROUP);
         List<int[]> cycles = graph.brokenCycles();
         assertEquals(2, cycles.size());
         assertEquals(List.of(2, 3), Arrays.stream(cycles.get(0)).sorted().boxed().toList());
@@ -204,7 +211,7 @@ public class DbRowOpGraphTest {
         DbRowOpGraph graph = new DbRowOpGraph(ops);
         graph.add(0, 1);
 
-        graph.topSort(ONE_GROUP);
+        topSort(graph, ONE_GROUP);
         assertTrue(graph.brokenCycles().isEmpty());
     }
 
@@ -221,7 +228,7 @@ public class DbRowOpGraphTest {
         graph.add(2, 3);
         graph.add(3, 2);
 
-        assertEquals(List.of(ops.get(2), ops.get(3), ops.get(0), ops.get(1)), graph.topSort(ONE_GROUP));
+        assertEquals(List.of(ops.get(2), ops.get(3), ops.get(0), ops.get(1)), topSort(graph, ONE_GROUP));
     }
 
     @Test
@@ -236,7 +243,7 @@ public class DbRowOpGraphTest {
         graph.add(2, 1);
         graph.add(2, 0);
 
-        assertEquals(ops, graph.topSort(ONE_GROUP));
+        assertEquals(ops, topSort(graph, ONE_GROUP));
     }
 
     @Test
@@ -250,7 +257,7 @@ public class DbRowOpGraphTest {
             graph.add(i, (i + 1) % n);
         }
 
-        List<DbRowOp> sorted = graph.topSort(ONE_GROUP);
+        List<DbRowOp> sorted = topSort(graph, ONE_GROUP);
         assertEquals(n, sorted.size());
 
         // broken at 0, then the chain from the end

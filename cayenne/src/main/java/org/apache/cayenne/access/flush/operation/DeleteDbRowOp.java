@@ -19,6 +19,9 @@
 
 package org.apache.cayenne.access.flush.operation;
 
+import java.util.List;
+
+
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.map.compiled.CompiledTable;
@@ -59,15 +62,13 @@ public class DeleteDbRowOp extends BaseDbRowOp implements DbRowOpWithQualifier {
     }
 
     @Override
-    public boolean isSameBatch(DbRowOp rowOp) {
-        if(!(rowOp instanceof DeleteDbRowOp)) {
-            return false;
-        }
-        if(!entitiesHaveSameNameAndDataMap(rowOp)) {
-            return false;
-        }
-        DeleteDbRowOp other = (DeleteDbRowOp) rowOp;
-        return qualifier.isSameBatch(other.qualifier);
+    protected BatchKey createBatchKey() {
+        return new BatchKey(
+                BatchKey.Kind.DELETE,
+                table,
+                List.of(),
+                qualifier.additionalQualifier(),
+                qualifier.isUsingOptimisticLocking());
     }
 
     @Override

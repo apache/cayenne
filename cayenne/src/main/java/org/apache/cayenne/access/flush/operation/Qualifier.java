@@ -25,7 +25,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.cayenne.ObjectId;
@@ -146,20 +145,9 @@ public class Qualifier {
         return optimisticLock;
     }
 
-    public boolean isSameBatch(Qualifier other) {
-        if(additionalQualifier == null) {
-            return other.additionalQualifier == null;
-        }
-        if(optimisticLock != other.optimisticLock) {
-            return false;
-        }
-        if(other.additionalQualifier == null) {
-            return false;
-        }
-        if(!additionalQualifier.keySet().equals(other.additionalQualifier.keySet())) {
-            return false;
-        }
-        return Objects.equals(nullNames, other.nullNames);
+    // the qualifier columns besides the PK, with their values
+    Map<CompiledColumn, Object> additionalQualifier() {
+        return additionalQualifier != null ? additionalQualifier : Map.of();
     }
 
 }

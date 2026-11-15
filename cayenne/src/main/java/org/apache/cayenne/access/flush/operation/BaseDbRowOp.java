@@ -36,6 +36,9 @@ public abstract class BaseDbRowOp implements DbRowOp {
     protected ObjectId changeId;
     protected int hashCode;
 
+    // taken once the operation is complete, i.e. at the planning of the commit, and not changing after
+    private BatchKey batchKey;
+
     protected BaseDbRowOp(Persistent object, CompiledTable table, ObjectId id) {
         this.object = Objects.requireNonNull(object);
         this.table = Objects.requireNonNull(table);
@@ -86,4 +89,21 @@ public abstract class BaseDbRowOp implements DbRowOp {
         return getEntity().name().equals(rowOp.getEntity().name())
                 && getEntity().map().name().equals(rowOp.getEntity().map().name());
     }
+
+    @Override
+    public BatchKey getBatchKey() {
+        BatchKey key = batchKey;
+        if (key == null) {
+            key = createBatchKey();
+            batchKey = key;
+        }
+        return key;
+    }
+
+    /**
+     * Creates the key of the batch the operation can run in, or returns null if it can't run in a batch.
+     *
+     * @since 6.0
+     */
+    protected abstract BatchKey createBatchKey();
 }

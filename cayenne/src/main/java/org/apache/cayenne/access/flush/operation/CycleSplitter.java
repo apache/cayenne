@@ -32,6 +32,7 @@ import org.apache.cayenne.access.flush.EffectiveOpId;
 import org.apache.cayenne.map.compiled.CompiledColumn;
 import org.apache.cayenne.map.compiled.CompiledColumnPair;
 import org.apache.cayenne.map.compiled.CompiledJoin;
+import org.apache.cayenne.map.compiled.CompiledTable;
 
 /**
  * Breaks the dependency cycles of the operations, e.g. of the rows referencing each other, by moving the writes of the
@@ -142,17 +143,10 @@ final class CycleSplitter {
     // except for the operations of the same table. So the row of the table first in the table order gets its FKs set
     // later for an insert, and earlier for a delete, while the inserts and the deletes keep their usual order
     private Integer[] candidates(int[] cycle) {
-        Comparator<DbRowOp> batchOrder = index.batchOrder();
+        Comparator<CompiledTable> tableOrder = index.tableOrder();
         Integer[] candidates = Arrays.stream(cycle).boxed().toArray(Integer[]::new);
         Arrays.sort(candidates, (v1, v2) -> {
-            DbRowOp op1 = ops.get(v1);
-            DbRowOp op2 = ops.get(v2);
-            int c = batchOrder.compare(op1, op2);
-
-            // the batch order of the deletes is the reverse table order
-            if (op1.getType() == DbRowOpType.DELETE && op2.getType() == DbRowOpType.DELETE) {
-                c = -c;
-            }
+            int c = tableOrder.compare(ops.get(v1).getEntity(), ops.get(v2).getEntity());
             return c != 0 ? c : Integer.compare(v1, v2);
         });
         return candidates;

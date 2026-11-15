@@ -22,6 +22,7 @@ package org.apache.cayenne.access.flush.operation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
@@ -186,7 +187,7 @@ public class DefaultDbRowOpPlanner implements DbRowOpPlanner {
         }
         edges.addPendingEdges();
 
-        List<DbRowOp> sorted = edges.graph.topSort(index.batchOrder());
+        List<DbRowOp> sorted = edges.graph.topSort(batches(index.tableOrder(), dbRows));
         return new SortPass(
                 dbRows,
                 sorted,
@@ -196,6 +197,51 @@ public class DefaultDbRowOpPlanner implements DbRowOpPlanner {
                 edges.graph.brokenCycles(),
                 edges.deleteDependencies,
                 edges.selfReferences);
+    }
+
+    // The batch of each operation, numbered in the order of the batches: by the operation type, the table order
+    // (reversed for the deletes), then the first operation of each batch in the list. So the operations of a batch,
+    // i.e. with equal batch keys, are one group of the sort, kept together as much as the dependencies allow. This is
+    // not cosmetic: the dependencies alone leave the independent operations in any order, and an order mixing the
+    // batches breaks them up, running a statement per row instead of a batch
+    private static int[] batches(Comparator<CompiledTable> tableOrder, List<DbRowOp> ops) {
+        int size = ops.size();
+
+        // the first operation of each batch stands for the batch. An operation with no batch key is a batch alone
+        Map<BatchKey, Integer> firstByKey = HashMap.newHashMap(size);
+        int[] firstOf = new int[size];
+        List<Integer> firsts = new ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            BatchKey key = ops.get(i).getBatchKey();
+            Integer first = key != null ? firstByKey.putIfAbsent(key, i) : null;
+            if (first == null) {
+                firstOf[i] = i;
+                firsts.add(i);
+            } else {
+                firstOf[i] = first;
+            }
+        }
+
+        // a stable sort, so the batches of a table keep the order of their first operations
+        firsts.sort((i1, i2) -> {
+            DbRowOp op1 = ops.get(i1);
+            DbRowOp op2 = ops.get(i2);
+            int c = op1.getType().compareTo(op2.getType());
+            if (c != 0) {
+                return c;
+            }
+            c = tableOrder.compare(op1.getEntity(), op2.getEntity());
+            return op1.getType() == DbRowOpType.DELETE ? -c : c;
+        });
+
+        int[] batches = new int[size];
+        for (int b = 0; b < firsts.size(); b++) {
+            batches[firsts.get(b)] = b;
+        }
+        for (int i = 0; i < size; i++) {
+            batches[i] = batches[firstOf[i]];
+        }
+        return batches;
     }
 
     private static boolean updatesReferencedColumn(UpdateDbRowOp op, Set<CompiledColumn> referencedColumns) {

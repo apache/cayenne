@@ -47,8 +47,18 @@ public interface DbRowOp {
     Persistent getObject();
 
     /**
-     * @param rowOp to check
-     * @return is this and rowOp operations belong to same sql batch
+     * Returns the key of the batch the operation can run in, or null if it can't run in a batch with other operations.
+     * The key is of a complete operation, so the operation must not change after it is taken.
+     *
+     * @since 6.0
      */
-    boolean isSameBatch(DbRowOp rowOp);
+    BatchKey getBatchKey();
+
+    /**
+     * Returns whether this and the other operation can run in one SQL batch, i.e. whether they have equal batch keys.
+     */
+    default boolean isSameBatch(DbRowOp rowOp) {
+        BatchKey key = getBatchKey();
+        return key != null && key.equals(rowOp.getBatchKey());
+    }
 }

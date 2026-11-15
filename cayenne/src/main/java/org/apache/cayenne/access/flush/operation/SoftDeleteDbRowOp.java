@@ -52,14 +52,13 @@ public class SoftDeleteDbRowOp extends DeleteDbRowOp implements DbRowOpWithValue
     }
 
     @Override
-    public boolean isSameBatch(DbRowOp rowOp) {
-        if (!(rowOp instanceof SoftDeleteDbRowOp other)) {
-            return false;
-        }
-        if (!super.isSameBatch(rowOp)) {
-            return false;
-        }
-        return values.isSameBatch(other.values);
+    protected BatchKey createBatchKey() {
+        return new BatchKey(
+                BatchKey.Kind.SOFT_DELETE,
+                table,
+                values.getUpdatedAttributes(),
+                qualifier.additionalQualifier(),
+                qualifier.isUsingOptimisticLocking());
     }
 
     @Override

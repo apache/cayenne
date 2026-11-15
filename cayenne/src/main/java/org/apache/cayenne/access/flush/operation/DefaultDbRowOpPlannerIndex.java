@@ -43,19 +43,15 @@ import org.apache.cayenne.map.compiled.CompiledToOneRelationship;
  * @param referencedColumns the columns referenced by the FKs
  * @param toOnesByEntity    the to-one relationships mapped to a single FK, by entity name and the FK join, whose
  *                          committed targets the object diffs may know
- * @param batchOrder        the order of the operations not depending on each other, by the operation type and the
- *                          table. Besides the order itself, it groups the operations that can run as one batch, and
- *                          the graph sort keeps each group together as much as the dependencies allow. This is not
- *                          cosmetic: the dependencies alone leave the independent operations in any order, and an
- *                          order mixing the tables breaks the batches up, running a statement per row instead of a
- *                          batch per table.
+ * @param tableOrder        the insert order of the tables, by their weights and dependencies, reversed for the
+ *                          deletes
  */
 record DefaultDbRowOpPlannerIndex(
         CompiledMapping mapping,
         Map<CompiledTable, List<CompiledJoin>> byEntity,
         Set<CompiledColumn> referencedColumns,
         Map<String, Map<CompiledJoin, String>> toOnesByEntity,
-        Comparator<DbRowOp> batchOrder) {
+        Comparator<CompiledTable> tableOrder) {
 
     static DefaultDbRowOpPlannerIndex of(CompiledMapping mapping) {
         return new DefaultDbRowOpPlannerIndex(
@@ -63,7 +59,7 @@ record DefaultDbRowOpPlannerIndex(
                 fkJoinsByTable(mapping),
                 referencedColumns(mapping),
                 toOnesByEntity(mapping),
-                new BatchOrder(mapping));
+                new WeightedTableComparator(mapping));
     }
 
     private static Map<CompiledTable, List<CompiledJoin>> fkJoinsByTable(CompiledMapping mapping) {
@@ -106,27 +102,5 @@ record DefaultDbRowOpPlannerIndex(
             }
         }
         return byEntity;
-    }
-
-    // inserts, updates, deletes, each by the table order, reversed for the deletes
-    private static final class BatchOrder implements Comparator<DbRowOp> {
-
-        private final Comparator<CompiledTable> tableOrder;
-
-        BatchOrder(CompiledMapping mapping) {
-            this.tableOrder = new WeightedTableComparator(mapping);
-        }
-
-        @Override
-        public int compare(DbRowOp o1, DbRowOp o2) {
-            DbRowOpType type = o1.getType();
-            int result = type.compareTo(o2.getType());
-            if (result != 0) {
-                return result;
-            }
-
-            result = tableOrder.compare(o1.getEntity(), o2.getEntity());
-            return type == DbRowOpType.DELETE ? -result : result;
-        }
     }
 }

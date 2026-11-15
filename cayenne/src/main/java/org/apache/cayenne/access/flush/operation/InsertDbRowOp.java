@@ -19,6 +19,10 @@
 
 package org.apache.cayenne.access.flush.operation;
 
+import java.util.List;
+import java.util.Map;
+
+
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.map.compiled.CompiledTable;
@@ -62,11 +66,8 @@ public class InsertDbRowOp extends BaseDbRowOp implements DbRowOpWithValues {
     }
 
     @Override
-    public boolean isSameBatch(DbRowOp rowOp) {
-        if(!(rowOp instanceof InsertDbRowOp)) {
-            return false;
-        }
-        return entitiesHaveSameNameAndDataMap(rowOp);
+    protected BatchKey createBatchKey() {
+        return new BatchKey(BatchKey.Kind.INSERT, table, List.of(), Map.of(), false);
     }
 
     @Override

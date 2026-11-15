@@ -51,8 +51,9 @@ public class DeleteInsertDbRowOp extends BaseDbRowOp {
         return insert.getType();
     }
 
+    // runs as the delete and the insert it wraps, each in its own batch
     @Override
-    public boolean isSameBatch(DbRowOp rowOp) {
-        return false;
+    protected BatchKey createBatchKey() {
+        return null;
     }
 }
