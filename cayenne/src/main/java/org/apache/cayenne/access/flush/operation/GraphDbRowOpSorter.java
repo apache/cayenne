@@ -22,7 +22,6 @@ package org.apache.cayenne.access.flush.operation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -41,12 +40,9 @@ import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.exp.DbPathExp;
 import org.apache.cayenne.map.compiled.CompiledColumn;
 import org.apache.cayenne.map.compiled.CompiledColumnPair;
-import org.apache.cayenne.map.compiled.CompiledEntity;
 import org.apache.cayenne.map.compiled.CompiledJoin;
 import org.apache.cayenne.map.compiled.CompiledMapping;
-import org.apache.cayenne.map.compiled.CompiledRelationship;
 import org.apache.cayenne.map.compiled.CompiledTable;
-import org.apache.cayenne.map.compiled.CompiledToOneRelationship;
 import org.apache.cayenne.util.SingleEntryMap;
 
 /**
@@ -58,74 +54,31 @@ public class GraphDbRowOpSorter implements DbRowOpSorter {
 
     private final Provider<DataDomain> dataDomainProvider;
 
-    // the FK-holding relationships by table of the mapping they were indexed for;
-    // rebuilt when the domain mapping is replaced
-    private volatile RelationshipIndex relationships;
+    // the index of the mapping it was built for; rebuilt when the domain mapping is replaced
+    private volatile GraphDbRowOpSorterIndex index;
 
     public GraphDbRowOpSorter(@Inject Provider<DataDomain> dataDomainProvider) {
         this.dataDomainProvider = dataDomainProvider;
     }
 
-    private RelationshipIndex initDataSync() {
+    private GraphDbRowOpSorterIndex index() {
         CompiledMapping mapping = dataDomainProvider.get().getMapping();
-        RelationshipIndex localRelationships = relationships;
-        if(localRelationships == null || localRelationships.mapping != mapping) {
+        GraphDbRowOpSorterIndex localIndex = index;
+        if (localIndex == null || localIndex.mapping() != mapping) {
             synchronized (this) {
-                localRelationships = relationships;
-                if(localRelationships == null || localRelationships.mapping != mapping) {
-                    localRelationships = initDataNoSync(mapping);
-                    relationships = localRelationships;
+                localIndex = index;
+                if (localIndex == null || localIndex.mapping() != mapping) {
+                    localIndex = GraphDbRowOpSorterIndex.of(mapping);
+                    index = localIndex;
                 }
             }
         }
-        return localRelationships;
-    }
-
-    /**
-     * Init all the data we need for faster processing actual rows.
-     */
-    private RelationshipIndex initDataNoSync(CompiledMapping mapping) {
-        Map<CompiledTable, List<CompiledJoin>> byEntity = new HashMap<>();
-        Set<CompiledColumn> referencedColumns = new HashSet<>();
-        mapping.schema().tables().forEach(entity ->
-            entity.joins().forEach(dbRelationship -> {
-                if(!dbRelationship.isForeignKey()) {
-                    // the dependencies are found from the FK side, every FK has its FK side join on its own table
-                    return;
-                }
-                byEntity
-                        .computeIfAbsent(entity, e -> new ArrayList<>())
-                        .add(dbRelationship);
-                dbRelationship.columnPairs().forEach(pair -> referencedColumns.add(pair.target()));
-            })
-        );
-
-        // the to-one relationships mapped to a single FK, whose committed targets the object diffs may know
-        Map<String, Map<CompiledJoin, String>> toOnesByEntity = new HashMap<>();
-        for (CompiledEntity entity : mapping.entities()) {
-            for (CompiledRelationship relationship : entity.relationships()) {
-                if (relationship instanceof CompiledToOneRelationship
-                        && relationship.joins().size() == 1
-                        && relationship.joins().getFirst().isForeignKey()) {
-                    toOnesByEntity
-                            .computeIfAbsent(entity.name(), e -> new HashMap<>())
-                            .put(relationship.joins().getFirst(), relationship.name());
-                }
-            }
-        }
-
-        return new RelationshipIndex(
-                mapping,
-                byEntity,
-                referencedColumns,
-                toOnesByEntity,
-                new BatchOrder(mapping));
+        return localIndex;
     }
 
     @Override
     public List<DbRowOp> sort(List<DbRowOp> dbRows) {
-        // lazy init Cayenne model data
-        RelationshipIndex relationships = initDataSync();
+        GraphDbRowOpSorterIndex index = index();
 
         // ops are addressed by their index in the list from here on
         int size = dbRows.size();
@@ -155,7 +108,7 @@ public class GraphDbRowOpSorter implements DbRowOpSorter {
             switch (types[i]) {
                 case DELETE -> tablesWithDeletes.add(op.getEntity().name());
                 case UPDATE -> {
-                    if (updatesReferencedColumn((UpdateDbRowOp) op, relationships.referencedColumns)) {
+                    if (updatesReferencedColumn((UpdateDbRowOp) op, index.referencedColumns())) {
                         tablesWithReferencedUpdates.add(op.getEntity().name());
                     }
                 }
@@ -173,10 +126,10 @@ public class GraphDbRowOpSorter implements DbRowOpSorter {
                 new DbRowOpGraph(dbRows),
                 tablesWithDeletes,
                 tablesWithReferencedUpdates,
-                relationships.toOnesByEntity);
+                index.toOnesByEntity());
 
         for (int i = 0; i < size; i++) {
-            edges.addRelationshipEdges(relationships.byEntity, i);
+            edges.addRelationshipEdges(index.byEntity(), i);
             if (hasMeaningfulIds) {
                 edges.addMeaningfulIdEdges(ids, i);
             }
@@ -185,7 +138,7 @@ public class GraphDbRowOpSorter implements DbRowOpSorter {
         edges.addPendingEdges();
 
         // sort
-        return edges.graph.topSort(relationships.batchOrder);
+        return edges.graph.topSort(index.batchOrder());
     }
 
     private static boolean updatesReferencedColumn(UpdateDbRowOp op, Set<CompiledColumn> referencedColumns) {
@@ -227,42 +180,6 @@ public class GraphDbRowOpSorter implements DbRowOpSorter {
             return null;
         }
         return new EffectiveOpId(relationship.target().name(), idMap);
-    }
-
-    private record RelationshipIndex(
-            CompiledMapping mapping,
-            Map<CompiledTable, List<CompiledJoin>> byEntity,
-            Set<CompiledColumn> referencedColumns,
-            Map<String, Map<CompiledJoin, String>> toOnesByEntity,
-
-            // The order of the operations not depending on each other, by the operation type and the table. Besides
-            // the order itself, it groups the operations that can run as one batch, and the graph sort keeps each
-            // group together as much as the dependencies allow. This is not cosmetic: the dependencies alone leave
-            // the independent operations in any order, and an order mixing the tables breaks the batches up, running
-            // a statement per row instead of a batch per table.
-            Comparator<DbRowOp> batchOrder) {
-    }
-
-    // inserts, updates, deletes, each by the table order, reversed for the deletes
-    private static final class BatchOrder implements Comparator<DbRowOp> {
-
-        private final Comparator<CompiledTable> tableOrder;
-
-        BatchOrder(CompiledMapping mapping) {
-            this.tableOrder = new WeightedTableComparator(mapping);
-        }
-
-        @Override
-        public int compare(DbRowOp o1, DbRowOp o2) {
-            DbRowOpType type = o1.getType();
-            int result = type.compareTo(o2.getType());
-            if (result != 0) {
-                return result;
-            }
-
-            result = tableOrder.compare(o1.getEntity(), o2.getEntity());
-            return type == DbRowOpType.DELETE ? -result : result;
-        }
     }
 
     /**
