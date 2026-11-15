@@ -23,7 +23,6 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.relationships.E1;
 import org.apache.cayenne.testdo.relationships.E2;
 import org.apache.cayenne.testdo.relationships.ReflexiveAndToOne;
-import org.apache.cayenne.unit.dba.OracleTestDbAdapter;
 import org.apache.cayenne.unit.CayenneProjects;
 import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -68,16 +67,9 @@ public class CircularDependencyIT {
         e1.setE2(e2);
         e2.setE1(e1);
 
+        // the rows referencing each other can't be inserted in any order, which the sorter detects before running SQL
         CayenneRuntimeException ex = assertThrows(CayenneRuntimeException.class, () -> env.context().commitChanges());
-        // TODO: Oracle adapter still does not fully support key generation.
-        if (env.testDbAdapter() instanceof OracleTestDbAdapter) {
-            assertTrue(ex.getCause().getMessage().contains("parent key not found"));
-        } else {
-            assertTrue(ex.getMessage().contains("PK is not generated"),
-                    String.format("Unexpected exception message: %s%nCause: %s - %s",
-                            ex.getMessage(), ex.getCause(),
-                            ex.getCause() != null ? ex.getCause().getMessage() : null));
-        }
+        assertTrue(ex.getMessage().contains("Cycle detected"), "Unexpected exception message: " + ex.getMessage());
     }
 
     @Test

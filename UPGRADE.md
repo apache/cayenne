@@ -186,10 +186,8 @@
    * `EntitySorter`, `EntitySorterFactory`, `AshwoodEntitySorter` and `WeightedAshwoodEntitySorter` are removed, and
      so is the Ashwood graph library (`org.apache.cayenne.ashwood.graph`). The dependency order of the tables is a
      fact of the mapping: sort tables by `CompiledTable.dependencyIndex()` for the insert order and reverse it for
-     the delete order. The flush orders its operations by `@SortWeight` and then by that index, and sorts the rows of
-     self-referencing tables (`CompiledTable.isReflexive()`) internally. `@SortWeight` moved to
-     `org.apache.cayenne.annotation.SortWeight` and is honored by default, without binding a weighted sorter; the
-     old `org.apache.cayenne.ashwood.SortWeight` is deprecated but still recognized.
+     the delete order. `@SortWeight` is honored by default, without binding a weighted sorter (see CAY-3075 below for
+     the order of the commit operations).
    * `DataDomain` is constructed with a `MappingCompiler`, gets its mapping from `recompile(dataMaps)` and keeps
      only the compiled mapping: the authored DataMaps are not retained by the runtime, so `DataDomain.getDataMaps()`,
      `getDataMap(name)`, `addDataMap(..)` and `removeDataMap(..)` are gone, and `addNode(..)` takes the names of the
@@ -199,6 +197,15 @@
      compiler synthesizes the missing reverse DbRelationships, and infers the FK side of a DbRelationship pair flagged
      on both sides or neither, logging a warning. `ValueComparisonStrategyFactory.getStrategy(..)` takes the value
      `Class` instead of an `ObjAttribute`.
+
+*  Per [CAY-3075](https://issues.apache.org/jira/browse/CAY-3075) the commit operations are ordered by a single
+   sorter, `GraphDbRowOpSorter`, bound by default. It orders the operations by the dependencies between their rows,
+   so it also handles the tables referencing each other, and the meaningful PKs deleted and inserted again, or
+   changed along with the FKs referencing them. The operations not depending on each other are ordered by the
+   operation type and the table order as before, keeping the batches together. `DefaultDbRowOpSorter` is removed,
+   and `GraphBasedDbRowOpSorter` is deprecated in favor of `GraphDbRowOpSorter`. `@SortWeight` now only orders the
+   tables whose rows don't depend on each other: a dependency between the rows of a commit can't be overridden by
+   the weights.
 
 ## Upgrading from 4.2 to 5.0
 

@@ -21,8 +21,6 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.Persistent;
-import org.apache.cayenne.access.flush.operation.DbRowOpSorter;
-import org.apache.cayenne.access.flush.operation.GraphBasedDbRowOpSorter;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.CayenneRuntime;
@@ -45,12 +43,10 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-// Default sorter fails to properly sort all the relationships in the test schema used
 public class VerticalInheritanceIT {
 
 	@RegisterExtension
-	static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.INHERITANCE_VERTICAL_PROJECT)
-	        .withExtraModules(binder -> binder.bind(DbRowOpSorter.class).to(GraphBasedDbRowOpSorter.class));
+	static final CayenneTestsEnv env = CayenneTestsEnv.forProject(CayenneProjects.INHERITANCE_VERTICAL_PROJECT);
 
 	protected CayenneRuntime runtime;
 

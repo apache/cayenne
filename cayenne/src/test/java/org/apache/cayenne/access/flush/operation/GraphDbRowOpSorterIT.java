@@ -43,12 +43,12 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
- * {@link GraphBasedDbRowOpSorter} needs the committed FKs of the updated and deleted rows. It takes them from the
+ * {@link GraphDbRowOpSorter} needs the committed FKs of the updated and deleted rows. It takes them from the
  * operations when they know them, and otherwise reads the committed snapshots, that are queried from the DB when not
  * cached, all together. It skips the reads that can't produce a dependency. The tests empty the snapshot cache before
  * committing, so that each read is a query.
  */
-public class GraphBasedDbRowOpSorterIT {
+public class GraphDbRowOpSorterIT {
 
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv
@@ -183,7 +183,7 @@ public class GraphBasedDbRowOpSorterIT {
     /**
      * Counts the queries run while sorting, i.e. the snapshots read from the DB.
      */
-    public static class QueryCountingSorter extends GraphBasedDbRowOpSorter {
+    public static class QueryCountingSorter extends GraphDbRowOpSorter {
 
         private int lastSortQueries;
 

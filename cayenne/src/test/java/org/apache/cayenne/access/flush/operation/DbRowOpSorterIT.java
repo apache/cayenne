@@ -48,50 +48,40 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EnumSource;
 
-import static org.apache.cayenne.access.flush.operation.DbRowOpSorterIT.Sorter.GRAPH;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * The cases of ordering the operations of a commit. Each case states the order of the operations it requires, and
- * passes if the DB accepts the commit, and the order holds. To catch the orders that are right by chance, the sorter
- * sorts several permutations of its input, and the order is checked in each of them. The cases supported by all the
- * sorters run with each of them, the cases supported by one sorter run with that sorter, and the cases supported by
- * none are disabled.
+ * The cases of ordering the operations of a commit by {@link GraphDbRowOpSorter}. Each case states the order of the
+ * operations it requires, and passes if the DB accepts the commit, and the order holds. To catch the orders that are
+ * right by chance, the sorter sorts several permutations of its input, and the order is checked in each of them. The
+ * cases not supported are disabled.
  *
  * <pre>
- * Case                                                   DEFAULT  GRAPH
- * FK to another table: insert, delete, move, nullify     +        +
- * FK to the same table: insert, delete                   +        +
- * FK to the same table: nullify                          +        +
- * FK to the same table: re-parent                        -        +
- * Tables referencing each other: insert, delete          -        +
- * Rows referencing each other                            -        -
- * Meaningful PK: delete and insert, change               -        +
- * Flattened relationship join rows: insert               +        +
- * Flattened relationship join rows: delete               +        +
- * Flattened attribute of a related row: insert           +        +
+ * FK to another table: insert, delete, move, nullify
+ * FK to the same table: insert, delete, nullify, re-parent, mixed with the rows of other tables
+ * Tables referencing each other: insert, delete
+ * Rows referencing each other (not supported)
+ * Meaningful PK: delete and insert, change
+ * Flattened relationship join rows: insert, delete
+ * Flattened attribute of a related row: insert
  * </pre>
  */
 public class DbRowOpSorterIT {
 
-    public enum Sorter {DEFAULT, GRAPH}
-
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv
             .forProject(CayenneProjects.SORTING_PROJECT)
-            .withExtraModules(b -> b.bind(DbRowOpSorter.class).to(SwitchableSorter.class));
+            .withExtraModules(b -> b.bind(DbRowOpSorter.class).to(PermutingSorter.class));
 
     private ObjectContext context;
-    private SwitchableSorter sorter;
+    private PermutingSorter sorter;
 
     @BeforeEach
     public void setUp() {
         context = env.context();
-        sorter = (SwitchableSorter) env.runtime().getInjector().getInstance(DbRowOpSorter.class);
+        sorter = (PermutingSorter) env.runtime().getInjector().getInstance(DbRowOpSorter.class);
     }
 
     @AfterEach
@@ -109,22 +99,16 @@ public class DbRowOpSorterIT {
     @Nested
     public class ForeignKey {
 
-        @ParameterizedTest
-        @EnumSource
-        public void insert(Sorter type) {
-            sorter.use(type);
-
+        @Test
+        public void insert() {
             SortMaster m = master("m");
             SortChild c = child("c", m);
 
             assertOrder(insertOf(m), insertOf(c));
         }
 
-        @ParameterizedTest
-        @EnumSource
-        public void delete(Sorter type) {
-            sorter.use(type);
-
+        @Test
+        public void delete() {
             SortMaster m = master("m");
             SortChild c = child("c", m);
             context.commitChanges();
@@ -134,11 +118,8 @@ public class DbRowOpSorterIT {
             assertOrder(deleteOf(c), deleteOf(m));
         }
 
-        @ParameterizedTest
-        @EnumSource
-        public void moveToNewMaster(Sorter type) {
-            sorter.use(type);
-
+        @Test
+        public void moveToNewMaster() {
             SortMaster m1 = master("m1");
             SortChild c = child("c", m1);
             context.commitChanges();
@@ -149,11 +130,8 @@ public class DbRowOpSorterIT {
             assertOrder(insertOf(m2), updateOf(c));
         }
 
-        @ParameterizedTest
-        @EnumSource
-        public void moveFromDeletedMaster(Sorter type) {
-            sorter.use(type);
-
+        @Test
+        public void moveFromDeletedMaster() {
             SortMaster m1 = master("m1");
             SortMaster m2 = master("m2");
             SortChild c = child("c", m1);
@@ -165,11 +143,8 @@ public class DbRowOpSorterIT {
             assertOrder(updateOf(c), deleteOf(m1));
         }
 
-        @ParameterizedTest
-        @EnumSource
-        public void nullifyOnDelete(Sorter type) {
-            sorter.use(type);
-
+        @Test
+        public void nullifyOnDelete() {
             SortMaster m = master("m");
             SortChild c = child("c", m);
             context.commitChanges();
@@ -184,11 +159,8 @@ public class DbRowOpSorterIT {
     @Nested
     public class Reflexive {
 
-        @ParameterizedTest
-        @EnumSource
-        public void insert(Sorter type) {
-            sorter.use(type);
-
+        @Test
+        public void insert() {
             SortTree root = tree("root", null);
             SortTree child = tree("child", root);
             SortTree grandChild = tree("grandChild", child);
@@ -196,11 +168,8 @@ public class DbRowOpSorterIT {
             assertOrder(insertOf(root), insertOf(child), insertOf(grandChild));
         }
 
-        @ParameterizedTest
-        @EnumSource
-        public void insertWithOtherTables(Sorter type) {
-            sorter.use(type);
-
+        @Test
+        public void insertWithOtherTables() {
             // SORT_MASTER is at the same dependency level as SORT_TREE, and its rows mix with the rows of SORT_TREE
             // in the commit
             master("m1");
@@ -213,11 +182,8 @@ public class DbRowOpSorterIT {
             assertOrder(insertOf(root), insertOf(child), insertOf(grandChild));
         }
 
-        @ParameterizedTest
-        @EnumSource
-        public void delete(Sorter type) {
-            sorter.use(type);
-
+        @Test
+        public void delete() {
             SortTree root = tree("root", null);
             SortTree child = tree("child", root);
             SortTree grandChild = tree("grandChild", child);
@@ -228,11 +194,8 @@ public class DbRowOpSorterIT {
             assertOrder(deleteOf(grandChild), deleteOf(child), deleteOf(root));
         }
 
-        @ParameterizedTest
-        @EnumSource
-        public void nullifyOnDelete(Sorter type) {
-            sorter.use(type);
-
+        @Test
+        public void nullifyOnDelete() {
             SortTree parent = tree("parent", null);
             SortTree child = tree("child", parent);
             context.commitChanges();
@@ -243,12 +206,8 @@ public class DbRowOpSorterIT {
             assertOrder(updateOf(child), deleteOf(parent));
         }
 
-        // TODO: not supported by DEFAULT, as it sorts the operations of a reflexive table as one block in the order of
-        //       its last operation, so the inserts, updates and deletes are reversed together
         @Test
         public void reparent() {
-            sorter.use(GRAPH);
-
             SortTree p1 = tree("p1", null);
             SortTree child = tree("child", p1);
             context.commitChanges();
@@ -268,12 +227,8 @@ public class DbRowOpSorterIT {
     @Nested
     public class TableCycle {
 
-        // TODO: not supported by DEFAULT, as it puts the tables at the same level, keeping the operations in the order
-        //       they come in
         @Test
         public void insert() {
-            sorter.use(GRAPH);
-
             SortA a1 = a("a1", null);
             SortB b1 = b("b1", a1);
             SortB b2 = b("b2", null);
@@ -282,12 +237,8 @@ public class DbRowOpSorterIT {
             assertOrder(chain(insertOf(a1), insertOf(b1)), chain(insertOf(b2), insertOf(a2)));
         }
 
-        // TODO: not supported by DEFAULT, as it puts the tables at the same level, keeping the operations in the order
-        //       they come in
         @Test
         public void delete() {
-            sorter.use(GRAPH);
-
             // inserted in two commits, as the first commit has no references, and the second only references
             // committed rows, any sorter can insert them
             SortA a1 = a("a1", null);
@@ -302,14 +253,11 @@ public class DbRowOpSorterIT {
             assertOrder(chain(deleteOf(b1), deleteOf(a1)), chain(deleteOf(a2), deleteOf(b2)));
         }
 
-        @ParameterizedTest
-        @EnumSource
+        @Test
         @Disabled("""
-                Not supported by any sorter: no order of the inserts works, the cycle could only be broken by an \
+                Not supported: no order of the inserts works, the cycle could only be broken by an \
                 insert with a null FK and an update""")
-        public void rowCycle(Sorter type) {
-            sorter.use(type);
-
+        public void rowCycle() {
             SortA a = a("a", null);
             SortB b = b("b", a);
             a.setB(b);
@@ -321,11 +269,8 @@ public class DbRowOpSorterIT {
     @Nested
     public class MeaningfulPk {
 
-        // TODO: not supported by DEFAULT, as it runs all the inserts before the deletes
         @Test
         public void deleteAndInsertSamePk() {
-            sorter.use(GRAPH);
-
             SortPk p1 = pk(1, "p1");
             context.commitChanges();
 
@@ -335,11 +280,8 @@ public class DbRowOpSorterIT {
             assertOrder(deleteOf(p1), insertOf(p2));
         }
 
-        // TODO: not supported by DEFAULT, as it runs all the inserts before the deletes
         @Test
         public void deleteAndInsertSamePkWithChild() {
-            sorter.use(GRAPH);
-
             SortPk p1 = pk(1, "p1");
             SortPkChild c1 = pkChild("c1", p1);
             context.commitChanges();
@@ -351,11 +293,8 @@ public class DbRowOpSorterIT {
             assertOrder(deleteOf(c1), deleteOf(p1), insertOf(p2), insertOf(c2));
         }
 
-        // TODO: not supported by DEFAULT, as it orders the updates by table, and updates the referenced PK first
         @Test
         public void changePkAndNullifyFk() {
-            sorter.use(GRAPH);
-
             SortPk p = pk(1, "p");
             SortPkChild c = pkChild("c", p);
             context.commitChanges();
@@ -370,11 +309,8 @@ public class DbRowOpSorterIT {
     @Nested
     public class Flattened {
 
-        @ParameterizedTest
-        @EnumSource
-        public void insert(Sorter type) {
-            sorter.use(type);
-
+        @Test
+        public void insert() {
             SortMaster m = master("m");
             SortChild c = child("c", null);
             m.addToTaggedChildren(c);
@@ -382,11 +318,8 @@ public class DbRowOpSorterIT {
             assertOrder(chain(insertOf(m), insertOf("SORT_TAG")), chain(insertOf(c), insertOf("SORT_TAG")));
         }
 
-        @ParameterizedTest
-        @EnumSource
-        public void delete(Sorter type) {
-            sorter.use(type);
-
+        @Test
+        public void delete() {
             SortMaster m = master("m");
             SortChild c = child("c", null);
             m.addToTaggedChildren(c);
@@ -398,11 +331,8 @@ public class DbRowOpSorterIT {
             assertOrder(deleteOf("SORT_TAG"), deleteOf(c));
         }
 
-        @ParameterizedTest
-        @EnumSource
-        public void attributeInsert(Sorter type) {
-            sorter.use(type);
-
+        @Test
+        public void attributeInsert() {
             // writing an attribute of the related row inserts the row
             SortFlatChild c = context.newObject(SortFlatChild.class);
             c.setName("c");
@@ -557,30 +487,18 @@ public class DbRowOpSorterIT {
     }
 
     /**
-     * Delegates to the sorter chosen by the test. Sorts several permutations of the operations, recording each result
-     * for the test to check, and returns the result for the operations in the order they came in.
+     * Sorts several permutations of the operations with {@link GraphDbRowOpSorter}, recording each result for the test
+     * to check, and returns the result for the operations in the order they came in.
      */
-    public static class SwitchableSorter implements DbRowOpSorter {
+    public static class PermutingSorter implements DbRowOpSorter {
 
         private static final int SHUFFLES = 4;
 
-        private final DbRowOpSorter defaultSorter;
-        private final DbRowOpSorter graphSorter;
-
-        private DbRowOpSorter delegate;
+        private final DbRowOpSorter delegate;
         private List<List<DbRowOp>> lastSorted = List.of();
 
-        public SwitchableSorter(@Inject Provider<DataDomain> dataDomainProvider) {
-            this.defaultSorter = new DefaultDbRowOpSorter(dataDomainProvider);
-            this.graphSorter = new GraphBasedDbRowOpSorter(dataDomainProvider);
-            this.delegate = defaultSorter;
-        }
-
-        void use(Sorter sorter) {
-            this.delegate = switch (sorter) {
-                case DEFAULT -> defaultSorter;
-                case GRAPH -> graphSorter;
-            };
+        public PermutingSorter(@Inject Provider<DataDomain> dataDomainProvider) {
+            this.delegate = new GraphDbRowOpSorter(dataDomainProvider);
         }
 
         @Override

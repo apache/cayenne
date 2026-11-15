@@ -25,13 +25,16 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * The former location of {@link org.apache.cayenne.annotation.SortWeight}. Still recognized, so that entity classes
- * annotated with it keep their weight, but new code should use the annotation in {@code org.apache.cayenne.annotation}.
+ * Orders the rows of an entity's table relative to the rows of other tables during a commit, when the rows don't
+ * depend on each other. Tables of entities with a lower weight are inserted before tables of entities with a higher
+ * weight, and deleted after them; among equal weights, the foreign key order of the tables applies. Every entity has
+ * the weight 1 unless annotated. A dependency between the rows of a commit (e.g. an FK of a row referencing another
+ * row of the commit) always takes precedence over the weights.
+ *
+ * <p>Place it on the entity class. It is honored by the runtime without any configuration.
  *
  * @since 3.1, since 4.0 moved to cayenne-server from cayenne-lifecycle
- * @deprecated in favor of {@link org.apache.cayenne.annotation.SortWeight}
  */
-@Deprecated(since = "6.0")
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented

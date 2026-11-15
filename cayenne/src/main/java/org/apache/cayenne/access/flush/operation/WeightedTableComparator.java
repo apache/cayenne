@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.access.flush.operation;
 
-import org.apache.cayenne.annotation.SortWeight;
+import org.apache.cayenne.ashwood.SortWeight;
 import org.apache.cayenne.map.compiled.CompiledEntity;
 import org.apache.cayenne.map.compiled.CompiledMapping;
 import org.apache.cayenne.map.compiled.CompiledTable;
@@ -29,9 +29,9 @@ import java.util.Map;
 
 /**
  * The insert order of the tables of a compiled mapping: by the {@link SortWeight} of their entity classes, then by
- * the {@link CompiledTable#dependencyIndex() dependency index}, then by name, so that the rows of a table are kept
- * together when sorted, as the rows of a reflexive table are sorted as one block. Built once per mapping, as all of
- * these are facts of the mapping and its classes. The delete order is the reverse.
+ * the {@link CompiledTable#dependencyIndex() dependency index}, then by name, so that distinct tables are never equal,
+ * and the rows of a table are kept together when sorted, to run as one batch. Built once per mapping, as all of these
+ * are facts of the mapping and its classes. The delete order is the reverse.
  */
 // TODO: this should go away eventually. Manual weights belong in the "compiled" layer. Also, hopefully we can do
 //  a better joh analyzing operation ordering (and creating non-conflicting operations), making @SOrtWeight unneeded
@@ -55,17 +55,11 @@ final class WeightedTableComparator implements Comparator<CompiledTable> {
     }
 
     /**
-     * The weight declared on an entity class, by the current annotation or by its deprecated predecessor, or the
-     * default when it declares none.
+     * The weight declared on an entity class, or the default when it declares none.
      */
-    @SuppressWarnings("deprecation")
     static int weightOf(Class<?> type) {
         SortWeight weight = type.getAnnotation(SortWeight.class);
-        if (weight != null) {
-            return weight.value();
-        }
-        org.apache.cayenne.ashwood.SortWeight deprecated = type.getAnnotation(org.apache.cayenne.ashwood.SortWeight.class);
-        return deprecated != null ? deprecated.value() : DEFAULT_WEIGHT;
+        return weight != null ? weight.value() : DEFAULT_WEIGHT;
     }
 
     @Override

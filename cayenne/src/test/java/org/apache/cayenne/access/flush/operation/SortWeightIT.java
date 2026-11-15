@@ -19,6 +19,7 @@
 package org.apache.cayenne.access.flush.operation;
 
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.ashwood.SortWeight;
 import org.apache.cayenne.map.compiled.CompiledMapping;
 import org.apache.cayenne.map.compiled.CompiledTable;
 import org.apache.cayenne.testdo.weighted_sort.SortDep;
@@ -35,9 +36,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * {@code @SortWeight} on an entity class overrides the FK order of the tables in a flush, with no configuration.
- * In the test model SORT_DEP references SORT_ROOT, and SortRoot carries {@code @SortWeight(2)}, which puts its
- * table after SORT_DEP on insert, the reverse of what the foreign key says.
+ * {@code @SortWeight} on an entity class overrides the FK order of the tables in a flush for the rows that don't
+ * depend on each other, with no configuration. In the test model SORT_DEP references SORT_ROOT, and SortRoot carries
+ * {@code @SortWeight(2)}, which puts its table after SORT_DEP on insert, the reverse of what the foreign key says.
  */
 public class SortWeightIT {
 
@@ -70,14 +71,22 @@ public class SortWeightIT {
         ObjectContext context = env.context();
         SortRoot root = context.newObject(SortRoot.class);
         SortDep dep = context.newObject(SortDep.class);
-        dep.setRoot(root);
+        SortRoot deletedRoot = context.newObject(SortRoot.class);
+        SortDep deletedDep = context.newObject(SortDep.class);
 
+        // no FK values in the operations, so the order is only by the table weights
         DbRowOp insertRoot = new InsertDbRowOp(root, mapping.schema().table("SORT_ROOT"), root.getObjectId());
         DbRowOp insertDep = new InsertDbRowOp(dep, mapping.schema().table("SORT_DEP"), dep.getObjectId());
-        DbRowOp deleteRoot = new DeleteDbRowOp(root, mapping.schema().table("SORT_ROOT"), root.getObjectId());
-        DbRowOp deleteDep = new DeleteDbRowOp(dep, mapping.schema().table("SORT_DEP"), dep.getObjectId());
+        DbRowOp deleteRoot = new DeleteDbRowOp(
+                deletedRoot,
+                mapping.schema().table("SORT_ROOT"),
+                deletedRoot.getObjectId());
+        DbRowOp deleteDep = new DeleteDbRowOp(
+                deletedDep,
+                mapping.schema().table("SORT_DEP"),
+                deletedDep.getObjectId());
 
-        DefaultDbRowOpSorter sorter = new DefaultDbRowOpSorter(() -> env.runtime().getDataDomain());
+        GraphDbRowOpSorter sorter = new GraphDbRowOpSorter(() -> env.runtime().getDataDomain());
         List<DbRowOp> sorted = sorter.sort(new ArrayList<>(List.of(deleteRoot, insertRoot, deleteDep, insertDep)));
 
         // inserts first, the heavier SortRoot after SortDep; deletes last, in the reverse table order
@@ -86,29 +95,15 @@ public class SortWeightIT {
     }
 
     @Test
-    public void deprecatedAnnotationIsRecognized() {
+    public void weightOf() {
         assertEquals(1, WeightedTableComparator.weightOf(Unweighted.class));
-        assertEquals(3, WeightedTableComparator.weightOf(NewAnnotation.class));
-        assertEquals(4, WeightedTableComparator.weightOf(OldAnnotation.class));
-        // the current annotation wins when a class carries both
-        assertEquals(3, WeightedTableComparator.weightOf(BothAnnotations.class));
+        assertEquals(4, WeightedTableComparator.weightOf(Weighted.class));
     }
 
     private static class Unweighted {
     }
 
-    @org.apache.cayenne.annotation.SortWeight(3)
-    private static class NewAnnotation {
-    }
-
-    @SuppressWarnings("deprecation")
-    @org.apache.cayenne.ashwood.SortWeight(4)
-    private static class OldAnnotation {
-    }
-
-    @SuppressWarnings("deprecation")
-    @org.apache.cayenne.annotation.SortWeight(3)
-    @org.apache.cayenne.ashwood.SortWeight(4)
-    private static class BothAnnotations {
+    @SortWeight(4)
+    private static class Weighted {
     }
 }

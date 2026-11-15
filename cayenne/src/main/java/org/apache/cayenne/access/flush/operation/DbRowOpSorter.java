@@ -23,7 +23,7 @@ import java.util.List;
 
 /**
  * Sorter of {@link DbRowOp} operations.
- * @see DefaultDbRowOpSorter default implementation.
+ * @see GraphDbRowOpSorter default implementation.
  *
  * @since 4.2
  */
