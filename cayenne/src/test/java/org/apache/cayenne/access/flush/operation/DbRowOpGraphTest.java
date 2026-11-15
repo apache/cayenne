@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.access.flush.operation;
 
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -175,6 +176,36 @@ public class DbRowOpGraphTest {
         graph.add(3, 2);
 
         assertEquals(List.of(ops.get(2), ops.get(3), ops.get(0), ops.get(1)), graph.topSort(ONE_GROUP));
+    }
+
+    @Test
+    public void brokenCycles() {
+        List<DbRowOp> ops = ops(5);
+        DbRowOpGraph graph = new DbRowOpGraph(ops);
+
+        // 0 <-> 1 -> 2 <-> 3, 4 with no edges
+        graph.add(0, 1);
+        graph.add(1, 0);
+        graph.add(1, 2);
+        graph.add(2, 3);
+        graph.add(3, 2);
+        graph.add(4);
+
+        graph.topSort(ONE_GROUP);
+        List<int[]> cycles = graph.brokenCycles();
+        assertEquals(2, cycles.size());
+        assertEquals(List.of(2, 3), Arrays.stream(cycles.get(0)).sorted().boxed().toList());
+        assertEquals(List.of(0, 1), Arrays.stream(cycles.get(1)).sorted().boxed().toList());
+    }
+
+    @Test
+    public void noBrokenCycles() {
+        List<DbRowOp> ops = ops(2);
+        DbRowOpGraph graph = new DbRowOpGraph(ops);
+        graph.add(0, 1);
+
+        graph.topSort(ONE_GROUP);
+        assertTrue(graph.brokenCycles().isEmpty());
     }
 
     @Test

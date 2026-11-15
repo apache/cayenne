@@ -44,31 +44,36 @@ import org.apache.cayenne.map.compiled.CompiledJoin;
 import org.apache.cayenne.map.compiled.CompiledMapping;
 import org.apache.cayenne.map.compiled.CompiledTable;
 import org.apache.cayenne.util.SingleEntryMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * DB operation sorter that orders the operations by the dependencies between their rows.
+ * DB operation planner that orders the operations by the dependencies between their rows, replacing the operations
+ * of the dependency cycles by the operations that can be ordered, when possible.
  *
  * @since 6.0
  */
-public class GraphDbRowOpSorter implements DbRowOpSorter {
+public class DefaultDbRowOpPlanner implements DbRowOpPlanner {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultDbRowOpPlanner.class);
 
     private final Provider<DataDomain> dataDomainProvider;
 
     // the index of the mapping it was built for; rebuilt when the domain mapping is replaced
-    private volatile GraphDbRowOpSorterIndex index;
+    private volatile DefaultDbRowOpPlannerIndex index;
 
-    public GraphDbRowOpSorter(@Inject Provider<DataDomain> dataDomainProvider) {
+    public DefaultDbRowOpPlanner(@Inject Provider<DataDomain> dataDomainProvider) {
         this.dataDomainProvider = dataDomainProvider;
     }
 
-    private GraphDbRowOpSorterIndex index() {
+    private DefaultDbRowOpPlannerIndex index() {
         CompiledMapping mapping = dataDomainProvider.get().getMapping();
-        GraphDbRowOpSorterIndex localIndex = index;
+        DefaultDbRowOpPlannerIndex localIndex = index;
         if (localIndex == null || localIndex.mapping() != mapping) {
             synchronized (this) {
                 localIndex = index;
                 if (localIndex == null || localIndex.mapping() != mapping) {
-                    localIndex = GraphDbRowOpSorterIndex.of(mapping);
+                    localIndex = DefaultDbRowOpPlannerIndex.of(mapping);
                     index = localIndex;
                 }
             }
@@ -76,9 +81,39 @@ public class GraphDbRowOpSorter implements DbRowOpSorter {
         return localIndex;
     }
 
+    /**
+     * Orders the operations. The operations with dependency cycles, i.e. with no order satisfying all the dependencies,
+     * are replaced by the operations that can be ordered when possible: an insert of a cycle is split into an insert
+     * with its nullable FKs referencing the cycle set to NULL, and an update setting them after the rows they reference
+     * are inserted. So the result may have more operations than the input. The input operations are not changed.
+     * The cycles that can't be resolved this way are broken by sorting one of their operations ahead of its
+     * dependencies, and run as such, as the DB may still accept them, e.g. with deferred FK constraints.
+     */
     @Override
-    public List<DbRowOp> sort(List<DbRowOp> dbRows) {
-        GraphDbRowOpSorterIndex index = index();
+    public List<DbRowOp> plan(List<DbRowOp> dbRows) {
+        DefaultDbRowOpPlannerIndex index = index();
+
+        List<DbRowOp> ops = dbRows;
+        while (true) {
+            SortPass pass = sortPass(index, ops);
+            if (pass.cycles().isEmpty()) {
+                return pass.sorted();
+            }
+
+            // each pass splits an insert of each of the cycles it found, unless it already split an insert of the
+            // same cycle, and the next pass finds the cycles left
+            List<DbRowOp> split = InsertCycleSplitter.split(index, ops, pass);
+            if (split == null) {
+                LOGGER.warn("""
+                        Dependency cycles of the operations that can't be broken. Sending the operations in an order \
+                        the DB may reject: {}""", pass.cycleOps());
+                return pass.sorted();
+            }
+            ops = split;
+        }
+    }
+
+    private SortPass sortPass(DefaultDbRowOpPlannerIndex index, List<DbRowOp> dbRows) {
 
         // ops are addressed by their index in the list from here on
         int size = dbRows.size();
@@ -137,8 +172,8 @@ public class GraphDbRowOpSorter implements DbRowOpSorter {
         }
         edges.addPendingEdges();
 
-        // sort
-        return edges.graph.topSort(index.batchOrder());
+        List<DbRowOp> sorted = edges.graph.topSort(index.batchOrder());
+        return new SortPass(dbRows, sorted, types, ids, indexById, edges.graph.brokenCycles());
     }
 
     private static boolean updatesReferencedColumn(UpdateDbRowOp op, Set<CompiledColumn> referencedColumns) {
@@ -150,7 +185,7 @@ public class GraphDbRowOpSorter implements DbRowOpSorter {
         return false;
     }
 
-    private static boolean fkReferenceUpdated(UpdateDbRowOp parentOp, CompiledJoin join) {
+    static boolean fkReferenceUpdated(UpdateDbRowOp parentOp, CompiledJoin join) {
         List<CompiledColumn> updatedColumns = parentOp.getValues().getUpdatedAttributes();
         for (CompiledColumnPair pair : join.columnPairs()) {
             if (updatedColumns.contains(pair.target())) {
@@ -164,7 +199,7 @@ public class GraphDbRowOpSorter implements DbRowOpSorter {
         return new EffectiveOpId(op.getEntity().name(), op.getChangeId());
     }
 
-    private static EffectiveOpId effectiveIdFor(CompiledJoin relationship, Map<String, Object> opSnapshot) {
+    static EffectiveOpId effectiveIdFor(CompiledJoin relationship, Map<String, Object> opSnapshot) {
         int len = relationship.columnPairs().size();
         Map<String, Object> idMap = len == 1
                 ? new SingleEntryMap<>(relationship.columnPairs().get(0).target().name())
@@ -180,6 +215,28 @@ public class GraphDbRowOpSorter implements DbRowOpSorter {
             return null;
         }
         return new EffectiveOpId(relationship.target().name(), idMap);
+    }
+
+    /**
+     * The result of sorting a list of operations, with the facts of the operations the sort used, addressed by their
+     * index in the list.
+     *
+     * @param ops       the operations sorted
+     * @param sorted    the sorted operations
+     * @param cycles    the dependency cycles broken by the sort, each as the indices of the operations depending on
+     *                  each other
+     */
+    record SortPass(
+            List<DbRowOp> ops,
+            List<DbRowOp> sorted,
+            DbRowOpType[] types,
+            EffectiveOpId[] ids,
+            Map<EffectiveOpId, int[]> indexById,
+            List<int[]> cycles) {
+
+        List<List<DbRowOp>> cycleOps() {
+            return cycles.stream().map(c -> Arrays.stream(c).mapToObj(ops::get).toList()).toList();
+        }
     }
 
     /**
@@ -506,7 +563,13 @@ public class GraphDbRowOpSorter implements DbRowOpSorter {
                             graph.add(opIndex, sameIdIndex);
                         }
                     }
+                    // an update of a row inserted in the same commit, i.e. of an insert split to break a cycle, runs
+                    // after the insert. Not the update of another row, whose PK change frees the id of the insert
                     case INSERT -> {
+                        if (types[opIndex] == DbRowOpType.UPDATE && dbRows.get(opIndex).getChangeId()
+                                .equals(dbRows.get(sameIdIndex).getChangeId())) {
+                            graph.add(opIndex, sameIdIndex);
+                        }
                     }
                 }
             }

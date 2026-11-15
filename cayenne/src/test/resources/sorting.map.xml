@@ -13,9 +13,19 @@
 		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
 		<dbAttribute name="NAME" type="VARCHAR" length="100"/>
 	</dbEntity>
+	<dbEntity name="SORT_C">
+		<dbAttribute name="D_ID" type="INTEGER" mandatory="true"/>
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="NAME" type="VARCHAR" length="100"/>
+	</dbEntity>
 	<dbEntity name="SORT_CHILD">
 		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
 		<dbAttribute name="MASTER_ID" type="INTEGER"/>
+		<dbAttribute name="NAME" type="VARCHAR" length="100"/>
+	</dbEntity>
+	<dbEntity name="SORT_D">
+		<dbAttribute name="C_ID" type="INTEGER" mandatory="true"/>
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
 		<dbAttribute name="NAME" type="VARCHAR" length="100"/>
 	</dbEntity>
 	<dbEntity name="SORT_GEN_TREE">
@@ -65,7 +75,13 @@
 	<objEntity name="SortB" className="org.apache.cayenne.testdo.sorting.SortB" dbEntityName="SORT_B">
 		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>
 	</objEntity>
+	<objEntity name="SortC" className="org.apache.cayenne.testdo.sorting.SortC" dbEntityName="SORT_C">
+		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>
+	</objEntity>
 	<objEntity name="SortChild" className="org.apache.cayenne.testdo.sorting.SortChild" dbEntityName="SORT_CHILD">
+		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>
+	</objEntity>
+	<objEntity name="SortD" className="org.apache.cayenne.testdo.sorting.SortD" dbEntityName="SORT_D">
 		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>
 	</objEntity>
 	<objEntity name="SortFlatChild" className="org.apache.cayenne.testdo.sorting.SortFlatChild" dbEntityName="SORT_CHILD">
@@ -107,11 +123,23 @@
 	<dbRelationship name="fromA" source="SORT_B" target="SORT_A" toMany="true">
 		<dbAttributePair source="ID" target="B_ID"/>
 	</dbRelationship>
+	<dbRelationship name="d" source="SORT_C" target="SORT_D" foreignKey="true">
+		<dbAttributePair source="D_ID" target="ID"/>
+	</dbRelationship>
+	<dbRelationship name="fromD" source="SORT_C" target="SORT_D" toMany="true">
+		<dbAttributePair source="ID" target="C_ID"/>
+	</dbRelationship>
 	<dbRelationship name="master" source="SORT_CHILD" target="SORT_MASTER" foreignKey="true">
 		<dbAttributePair source="MASTER_ID" target="ID"/>
 	</dbRelationship>
 	<dbRelationship name="tags" source="SORT_CHILD" target="SORT_TAG" toMany="true">
 		<dbAttributePair source="ID" target="CHILD_ID"/>
+	</dbRelationship>
+	<dbRelationship name="c" source="SORT_D" target="SORT_C" foreignKey="true">
+		<dbAttributePair source="C_ID" target="ID"/>
+	</dbRelationship>
+	<dbRelationship name="fromC" source="SORT_D" target="SORT_C" toMany="true">
+		<dbAttributePair source="ID" target="D_ID"/>
 	</dbRelationship>
 	<dbRelationship name="children" source="SORT_GEN_TREE" target="SORT_GEN_TREE" toMany="true">
 		<dbAttributePair source="ID" target="PARENT_ID"/>
@@ -163,7 +191,9 @@
 	</dbRelationship>
 	<objRelationship name="b" source="SortA" target="SortB" deleteRule="nullify" dbRelationshipPath="b"/>
 	<objRelationship name="a" source="SortB" target="SortA" deleteRule="nullify" dbRelationshipPath="a"/>
+	<objRelationship name="d" source="SortC" target="SortD" deleteRule="nullify" dbRelationshipPath="d"/>
 	<objRelationship name="master" source="SortChild" target="SortMaster" deleteRule="nullify" dbRelationshipPath="master"/>
+	<objRelationship name="c" source="SortD" target="SortC" deleteRule="nullify" dbRelationshipPath="c"/>
 	<objRelationship name="children" source="SortGenTree" target="SortGenTree" deleteRule="nullify" dbRelationshipPath="children"/>
 	<objRelationship name="parent" source="SortGenTree" target="SortGenTree" deleteRule="nullify" dbRelationshipPath="parent"/>
 	<objRelationship name="master" source="SortLink" target="SortMaster" dbRelationshipPath="master"/>

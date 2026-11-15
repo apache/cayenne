@@ -53,6 +53,9 @@ class DbRowOpGraph {
     private final boolean[] inGraph;
     private int vertexCount;
 
+    // the cycles broken by the last sort, each as the ops of a strongly connected component
+    private List<int[]> brokenCycles = List.of();
+
     DbRowOpGraph(List<DbRowOp> ops) {
         int size = ops.size();
         this.ops = ops;
@@ -97,7 +100,8 @@ class DbRowOpGraph {
      * <p>A cycle doesn't stop the sort: one op of the cycle is sorted ahead of its dependencies, so that only the edges
      * of the cycles are broken, and the DB decides if the order works (it does, e.g., with no FK constraints, or with
      * the deferred ones). The op is the first by the comparator, then by the list order, among the ops of the cycles
-     * that depend on nothing else unsorted.
+     * that depend on nothing else unsorted. The cycles broken are available from {@link #brokenCycles()} after the
+     * sort.
      *
      * <p>Of the ops whose dependencies are sorted, the next is taken from the same group as the previous one while
      * there is one, the groups being the ops equal by the comparator, so that the ops of a group stay together as much
@@ -107,6 +111,7 @@ class DbRowOpGraph {
      */
     List<DbRowOp> topSort(Comparator<DbRowOp> groupOrder) {
         int size = ops.size();
+        brokenCycles = List.of();
 
         // the dependents of each op, and the number of the dependencies of each op not sorted yet
         int[] pending = new int[size];
@@ -164,6 +169,7 @@ class DbRowOpGraph {
                     // the remaining ops are blocked by the cycles. Created on the first one, as it is rare
                     if (cycleBreaker == null) {
                         cycleBreaker = new CycleBreaker(pending, groupOrder);
+                        brokenCycles = new ArrayList<>();
                     }
                     int released = cycleBreaker.release();
                     pending[released] = 0;
@@ -187,6 +193,14 @@ class DbRowOpGraph {
         }
 
         return result;
+    }
+
+    /**
+     * Returns the cycles broken by the last {@link #topSort(Comparator)}, each as the indices of the ops of a strongly
+     * connected component, i.e. the ops all depending on each other. Empty if there were no cycles.
+     */
+    List<int[]> brokenCycles() {
+        return brokenCycles;
     }
 
     /**
@@ -255,6 +269,7 @@ class DbRowOpGraph {
             // first component found, that depends on nothing else, is a cycle
             int component = current;
             int[] cycle = components(unsorted, v -> pending[v] > 0 && componentOf[v] == component, true).getFirst();
+            brokenCycles.add(cycle);
 
             int released = cycle[0];
             for (int v : cycle) {

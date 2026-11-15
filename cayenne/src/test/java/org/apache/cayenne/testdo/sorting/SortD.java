@@ -17,20 +17,10 @@
  *  under the License.
  ****************************************************************/
 
-package org.apache.cayenne.access.flush.operation;
+package org.apache.cayenne.testdo.sorting;
 
-import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.di.Provider;
+import org.apache.cayenne.testdo.sorting.auto._SortD;
 
-/**
- * @since 4.2
- * @deprecated since 6.0 in favor of {@link GraphDbRowOpSorter}, the default sorter
- */
-@Deprecated(since = "6.0")
-public class GraphBasedDbRowOpSorter extends GraphDbRowOpSorter {
+public class SortD extends _SortD {
 
-    public GraphBasedDbRowOpSorter(@Inject Provider<DataDomain> dataDomainProvider) {
-        super(dataDomainProvider);
-    }
 }

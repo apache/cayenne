@@ -86,8 +86,8 @@ public class SortWeightIT {
                 mapping.schema().table("SORT_DEP"),
                 deletedDep.getObjectId());
 
-        GraphDbRowOpSorter sorter = new GraphDbRowOpSorter(() -> env.runtime().getDataDomain());
-        List<DbRowOp> sorted = sorter.sort(new ArrayList<>(List.of(deleteRoot, insertRoot, deleteDep, insertDep)));
+        DefaultDbRowOpPlanner planner = new DefaultDbRowOpPlanner(() -> env.runtime().getDataDomain());
+        List<DbRowOp> sorted = planner.plan(new ArrayList<>(List.of(deleteRoot, insertRoot, deleteDep, insertDep)));
 
         // inserts first, the heavier SortRoot after SortDep; deletes last, in the reverse table order
         assertEquals(List.of(insertDep, insertRoot, deleteRoot, deleteDep), sorted);

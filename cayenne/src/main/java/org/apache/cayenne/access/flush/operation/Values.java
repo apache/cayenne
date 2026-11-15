@@ -20,6 +20,7 @@
 package org.apache.cayenne.access.flush.operation;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -114,6 +115,26 @@ public class Values {
                      return id;
                 }));
             }
+        }
+    }
+
+    /**
+     * Copies these values to two other rows, the values of the given columns to one, and the rest, with the flattened
+     * ids, to the other, e.g. to split an insert into an insert without some columns and an update setting them. These
+     * values stay as they are.
+     *
+     * @since 6.0
+     */
+    public void splitTo(Values kept, Values moved, Collection<CompiledColumn> movedColumns) {
+        for (CompiledColumn column : getUpdatedAttributes()) {
+            String name = column.name();
+            boolean fk = fkSnapshot != null && fkSnapshot.containsKey(name);
+            Object value = fk ? fkSnapshot.get(name) : attributeSnapshot.get(name);
+            (movedColumns.contains(column) ? moved : kept).addValue(column, value, fk);
+        }
+
+        if (flattenedIds != null) {
+            flattenedIds.forEach(kept::addFlattenedId);
         }
     }
 

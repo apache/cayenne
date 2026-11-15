@@ -57,9 +57,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * The cases of ordering the operations of a commit by {@link GraphDbRowOpSorter}. Each case states the order of the
+ * The cases of ordering the operations of a commit by {@link DefaultDbRowOpPlanner}. Each case states the order of the
  * operations it requires, and passes if the DB accepts the commit, and the order holds. To catch the orders that are
- * right by chance, the sorter sorts several permutations of its input, and the order is checked in each of them.
+ * right by chance, the planner orders several permutations of its input, and the order is checked in each of them.
  *
  * <p>The cases that need more than an order of the operations produced from the object changes, e.g. the rows
  * referencing each other, are in {@link org.apache.cayenne.access.flush.FlushDmlIT}. The cases not supported yet,
@@ -70,32 +70,32 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * FK to another table: insert, delete, move, nullify
  * FK to the same table: insert, delete, nullify, re-parent, mixed with the rows of other tables
  * Tables referencing each other: insert, delete
- * Rows referencing each other: update
+ * Rows referencing each other: update, insert (an insert split to break the cycle)
  * Meaningful PK: delete and insert, change, change and insert the old PK
  * Unique key: delete and insert (not supported)
  * Flattened relationship join rows: insert, delete
  * Flattened attribute of a related row: insert
  * </pre>
  *
- * <p>Besides the order, the sorter needs the committed FKs of the updated and deleted rows. It takes them from the
+ * <p>Besides the order, the planner needs the committed FKs of the updated and deleted rows. It takes them from the
  * object diffs when they know them, and otherwise reads the committed snapshots, that are queried from the DB when
  * not cached, all together. It skips the reads that can't produce a dependency. The {@link SnapshotReads} tests check
  * the number of these queries.
  */
-public class GraphDbRowOpSorterIT {
+public class DefaultDbRowOpPlannerIT {
 
     @RegisterExtension
     static final CayenneTestsEnv env = CayenneTestsEnv
             .forProject(CayenneProjects.SORTING_PROJECT)
-            .withExtraModules(b -> b.bind(DbRowOpSorter.class).to(PermutingSorter.class));
+            .withExtraModules(b -> b.bind(DbRowOpPlanner.class).to(PermutingPlanner.class));
 
     private ObjectContext context;
-    private PermutingSorter sorter;
+    private PermutingPlanner planner;
 
     @BeforeEach
     public void setUp() {
         context = env.context();
-        sorter = (PermutingSorter) env.runtime().getInjector().getInstance(DbRowOpSorter.class);
+        planner = (PermutingPlanner) env.runtime().getInjector().getInstance(DbRowOpPlanner.class);
     }
 
     @AfterEach
@@ -282,7 +282,7 @@ public class GraphDbRowOpSorterIT {
         @Test
         public void delete() {
             // inserted in two commits, as the first commit has no references, and the second only references
-            // committed rows, any sorter can insert them
+            // committed rows, any planner can insert them
             SortA a1 = a("a1", null);
             SortB b2 = b("b2", null);
             context.commitChanges();
@@ -306,6 +306,17 @@ public class GraphDbRowOpSorterIT {
             b.setA(a);
 
             assertOrder(chain(updateOf(a)), chain(updateOf(b)));
+        }
+
+        @Test
+        public void insertRowCycle() {
+            SortA a = a("a", null);
+            SortB b = b("b", a);
+            a.setB(b);
+
+            // no order of the inserts works, so the insert of the row of the table first in the batch order is split
+            // into an insert without the FK and an update setting it. The statements are checked by FlushDmlIT
+            assertOrder(insertOf(a), insertOf(b), updateOf(a));
         }
     }
 
@@ -476,7 +487,7 @@ public class GraphDbRowOpSorterIT {
             // the committed rows of all the links are read together, each link once for both FKs
             env.runtime().getDataDomain().getSharedSnapshotCache().clear();
             fresh.commitChanges();
-            assertEquals(1, sorter.lastSortQueries);
+            assertEquals(1, planner.lastSortQueries);
         }
 
         @Test
@@ -490,7 +501,7 @@ public class GraphDbRowOpSorterIT {
 
             // the committed rows of the links are in the cache since they were fetched
             fresh.commitChanges();
-            assertEquals(0, sorter.lastSortQueries);
+            assertEquals(0, planner.lastSortQueries);
         }
 
         private void createLinks() {
@@ -507,7 +518,7 @@ public class GraphDbRowOpSorterIT {
         private void assertSortQueries(int expected) {
             env.runtime().getDataDomain().getSharedSnapshotCache().clear();
             context.commitChanges();
-            assertEquals(expected, sorter.lastSortQueries);
+            assertEquals(expected, planner.lastSortQueries);
         }
     }
 
@@ -576,7 +587,7 @@ public class GraphDbRowOpSorterIT {
 
     /**
      * Commits the changes, and checks that the operations of each chain come in the chain order in every permutation
-     * the sorter sorted.
+     * the planner ordered.
      */
     @SafeVarargs
     private void assertOrder(List<Op>... chains) {
@@ -590,11 +601,11 @@ public class GraphDbRowOpSorterIT {
     }
 
     /**
-     * Commits the changes of a case the sorter doesn't support yet, i.e. no order of its operations satisfies all their
-     * dependencies, and checks that the chains are the only operations, in the order the sorter produces now. Not a
-     * correct order, but the one to track: a change of the sorting fails the case, that can then check the correct
-     * order with {@link #assertOrder(List[])}. The commit result is not checked, as it depends on the DB: with the FK
-     * constraints checked immediately, the DB rejects the commit, while without them, or with the deferred or
+     * Commits the changes of a case the planner doesn't support yet, i.e. no order of its operations satisfies all
+     * their dependencies, and checks that the chains are the only operations, in the order the planner produces now.
+     * Not a correct order, but the one to track: a change of the sorting fails the case, that can then check the
+     * correct order with {@link #assertOrder(List[])}. The commit result is not checked, as it depends on the DB: with
+     * the FK constraints checked immediately, the DB rejects the commit, while without them, or with the deferred or
      * cascading ones (the test schema on HSQL cascades the deletes), the DB accepts it.
      */
     @SafeVarargs
@@ -615,7 +626,7 @@ public class GraphDbRowOpSorterIT {
     }
 
     private List<List<DbRowOp>> sortedPermutations() {
-        List<List<DbRowOp>> sorted = sorter.lastSorted;
+        List<List<DbRowOp>> sorted = planner.lastSorted;
         assertTrue(sorted.size() > 1, "Nothing was sorted");
         return sorted;
     }
@@ -688,26 +699,26 @@ public class GraphDbRowOpSorterIT {
     }
 
     /**
-     * Sorts several permutations of the operations with {@link GraphDbRowOpSorter}, recording each result and the
+     * Sorts several permutations of the operations with {@link DefaultDbRowOpPlanner}, recording each result and the
      * queries of the first sort for the test to check, and returns the result for the operations in the order they
      * came in.
      */
-    public static class PermutingSorter implements DbRowOpSorter {
+    public static class PermutingPlanner implements DbRowOpPlanner {
 
         private static final int SHUFFLES = 4;
 
-        private final DbRowOpSorter delegate;
+        private final DbRowOpPlanner delegate;
         private List<List<DbRowOp>> lastSorted = List.of();
 
         // the queries run while sorting the operations as they came in, i.e. the snapshots read from the DB
         private int lastSortQueries;
 
-        public PermutingSorter(@Inject Provider<DataDomain> dataDomainProvider) {
-            this.delegate = new GraphDbRowOpSorter(dataDomainProvider);
+        public PermutingPlanner(@Inject Provider<DataDomain> dataDomainProvider) {
+            this.delegate = new DefaultDbRowOpPlanner(dataDomainProvider);
         }
 
         @Override
-        public List<DbRowOp> sort(List<DbRowOp> ops) {
+        public List<DbRowOp> plan(List<DbRowOp> ops) {
             List<List<DbRowOp>> permutations = new ArrayList<>();
             permutations.add(new ArrayList<>(ops));
 
@@ -725,9 +736,9 @@ public class GraphDbRowOpSorterIT {
 
             List<List<DbRowOp>> sorted = new ArrayList<>(permutations.size());
             // only the first sort is counted, as the snapshots it reads from the DB may be cached for the others
-            lastSortQueries = env.runWithQueryCounter(() -> sorted.add(delegate.sort(permutations.getFirst())));
+            lastSortQueries = env.runWithQueryCounter(() -> sorted.add(delegate.plan(permutations.getFirst())));
             for (List<DbRowOp> permutation : permutations.subList(1, permutations.size())) {
-                sorted.add(delegate.sort(permutation));
+                sorted.add(delegate.plan(permutation));
             }
 
             this.lastSorted = sorted;

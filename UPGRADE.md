@@ -198,14 +198,14 @@
      on both sides or neither, logging a warning. `ValueComparisonStrategyFactory.getStrategy(..)` takes the value
      `Class` instead of an `ObjAttribute`.
 
-*  Per [CAY-3075](https://issues.apache.org/jira/browse/CAY-3075) the commit operations are ordered by a single
-   sorter, `GraphDbRowOpSorter`, bound by default. It orders the operations by the dependencies between their rows,
-   so it also handles the tables referencing each other, and the meaningful PKs deleted and inserted again, or
-   changed along with the FKs referencing them. The operations not depending on each other are ordered by the
-   operation type and the table order as before, keeping the batches together. `DefaultDbRowOpSorter` is removed,
-   and `GraphBasedDbRowOpSorter` is deprecated in favor of `GraphDbRowOpSorter`. `@SortWeight` still orders the
-   tables, but when a row references a row of another table in the same commit, it is inserted after that row (and
-   deleted before it), regardless of the weights.
+*  Per [CAY-3075](https://issues.apache.org/jira/browse/CAY-3075) and
+   [CAY-3076](https://issues.apache.org/jira/browse/CAY-3076) the commit operations are ordered by the dependencies
+   between their rows, so the commits that failed with the 5.0 default sorter now work, e.g. with tables or rows
+   referencing each other, or with meaningful PK changes. Most apps need no changes. If you bound
+   `GraphBasedDbRowOpSorter` explicitly, remove the binding, as the default does it now. A custom
+   `DbRowOpSorter` becomes a `DbRowOpPlanner` (`sort(..)` is `plan(..)`, and the same for an override of
+   `DefaultDataDomainFlushAction.sort(..)`). With `@SortWeight`, a row referencing another row of the same commit is
+   now inserted after it (and deleted before it), regardless of the weights.
 
 ## Upgrading from 4.2 to 5.0
 

@@ -42,12 +42,12 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class GraphDbRowOpSorterTest {
+public class DefaultDbRowOpPlannerTest {
     private CompiledMapping mapping;
-    private DbRowOpSorter sorter;
+    private DbRowOpPlanner planner;
 
     @BeforeEach
-    public void createSorter() {
+    public void createPlanner() {
         // unrelated tables, and a "reflexive" table referencing itself
         DataMap map = new DataMap("M");
         for (String name : List.of("test", "test1", "test2", "test3", "test4", "reflexive")) {
@@ -65,13 +65,13 @@ public class GraphDbRowOpSorterTest {
         mapping = TestMappings.compile(map);
         DataDomain dataDomain = TestDomains.of(mapping);
 
-        sorter = new GraphDbRowOpSorter(() -> dataDomain);
+        planner = new DefaultDbRowOpPlanner(() -> dataDomain);
     }
 
     @Test
     public void sortEmptyList() {
         List<DbRowOp> rows = new ArrayList<>();
-        List<DbRowOp> sorted = sorter.sort(rows);
+        List<DbRowOp> sorted = planner.plan(rows);
         assertTrue(sorted.isEmpty());
     }
 
@@ -97,7 +97,7 @@ public class GraphDbRowOpSorterTest {
         // no dependencies between the rows, so inserts, updates, deletes, each kept together
         List<DbRowOp> expected = Arrays.asList(op1, op4, op2, op5, op3, op6);
 
-        List<DbRowOp> sorted = sorter.sort(rows);
+        List<DbRowOp> sorted = planner.plan(rows);
         assertEquals(expected, sorted);
     }
 
@@ -118,7 +118,7 @@ public class GraphDbRowOpSorterTest {
         // no dependencies between the rows, so the table order
         List<DbRowOp> expected = Arrays.asList(op4, op2, op3, op1);
 
-        List<DbRowOp> sorted = sorter.sort(rows);
+        List<DbRowOp> sorted = planner.plan(rows);
         assertEquals(expected, sorted);
     }
 
@@ -140,7 +140,7 @@ public class GraphDbRowOpSorterTest {
         // the inserts go first, except for the one of the PK deleted, that waits for the delete
         List<DbRowOp> expected = Arrays.asList(op1, op3, op4, op2);
 
-        List<DbRowOp> sorted = sorter.sort(rows);
+        List<DbRowOp> sorted = planner.plan(rows);
         assertEquals(expected, sorted);
     }
 
@@ -174,7 +174,7 @@ public class GraphDbRowOpSorterTest {
         // inserts, updates, deletes (in the reverse table order), each group by table, except for the inserts of the
         // deleted PKs, that wait for the deletes
         List<DbRowOp> expected = Arrays.asList(op[0], op[3], op[7], op[8], op[4], op[2], op[5], op[9], op[1], op[6]);
-        List<DbRowOp> sorted = sorter.sort(Arrays.asList(op));
+        List<DbRowOp> sorted = planner.plan(Arrays.asList(op));
 
         assertEquals(expected, sorted);
     }
@@ -195,7 +195,7 @@ public class GraphDbRowOpSorterTest {
         List<DbRowOp> rows = Arrays.asList(op1, op2, op3, op4);
         List<DbRowOp> expected = Arrays.asList(op1, op2, op3, op4);
 
-        List<DbRowOp> sorted = sorter.sort(rows);
+        List<DbRowOp> sorted = planner.plan(rows);
         assertEquals(expected, sorted); // no actual sorting is done
     }
 

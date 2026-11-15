@@ -20,7 +20,7 @@
 package org.apache.cayenne.access.flush;
 
 import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.access.flush.operation.DbRowOpSorter;
+import org.apache.cayenne.access.flush.operation.DbRowOpPlanner;
 import org.apache.cayenne.access.flush.operation.DeleteDbRowOpFactory;
 import org.apache.cayenne.di.Inject;
 
@@ -32,13 +32,13 @@ import org.apache.cayenne.di.Inject;
 public class DefaultDataDomainFlushActionFactory implements DataDomainFlushActionFactory {
 
     @Inject
-    private DbRowOpSorter operationSorter;
+    private DbRowOpPlanner operationPlanner;
 
     @Inject
     private DeleteDbRowOpFactory deleteDbRowOpFactory;
 
     @Override
     public DataDomainFlushAction createFlushAction(DataDomain dataDomain) {
-        return new DefaultDataDomainFlushAction(dataDomain, operationSorter, deleteDbRowOpFactory);
+        return new DefaultDataDomainFlushAction(dataDomain, operationPlanner, deleteDbRowOpFactory);
     }
 }

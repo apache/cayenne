@@ -22,12 +22,18 @@ package org.apache.cayenne.access.flush.operation;
 import java.util.List;
 
 /**
- * Sorter of {@link DbRowOp} operations.
- * @see GraphDbRowOpSorter default implementation.
+ * Plans the DB operations of a commit: returns the operations to execute, in the order to execute them. Besides
+ * ordering the operations by the dependencies between their rows, a planner may replace some of them and add more,
+ * e.g. to break a dependency cycle of the inserts by inserting a row without an FK and updating the FK after.
  *
- * @since 4.2
+ * <p>A planner must not change the operations passed to it, or the list. An operation it adds or replaces must be for
+ * the same object and have the same change id as the operation it is made from, as the flush matches the operations
+ * executed and the operations of the object changes by these.
+ *
+ * @see DefaultDbRowOpPlanner the default implementation
+ * @since 6.0
  */
-public interface DbRowOpSorter {
+public interface DbRowOpPlanner {
 
-    List<DbRowOp> sort(List<DbRowOp> dbRows);
+    List<DbRowOp> plan(List<DbRowOp> ops);
 }

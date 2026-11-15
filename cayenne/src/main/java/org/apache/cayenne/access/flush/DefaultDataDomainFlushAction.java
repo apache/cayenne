@@ -30,7 +30,7 @@ import org.apache.cayenne.access.ObjectStoreGraphDiff;
 import org.apache.cayenne.access.StatementContext;
 import org.apache.cayenne.access.flush.operation.DbRowOp;
 import org.apache.cayenne.access.flush.operation.DbRowOpMerger;
-import org.apache.cayenne.access.flush.operation.DbRowOpSorter;
+import org.apache.cayenne.access.flush.operation.DbRowOpPlanner;
 import org.apache.cayenne.access.flush.operation.DbRowOpVisitor;
 import org.apache.cayenne.access.flush.operation.DeleteDbRowOp;
 import org.apache.cayenne.access.flush.operation.DeleteDbRowOpFactory;
@@ -60,13 +60,13 @@ import java.util.Set;
 public class DefaultDataDomainFlushAction implements DataDomainFlushAction {
 
     protected final DataDomain dataDomain;
-    protected final DbRowOpSorter dbRowOpSorter;
+    protected final DbRowOpPlanner dbRowOpPlanner;
     protected final DeleteDbRowOpFactory deleteDbRowOpFactory;
 
-    protected DefaultDataDomainFlushAction(DataDomain dataDomain, DbRowOpSorter dbRowOpSorter,
+    protected DefaultDataDomainFlushAction(DataDomain dataDomain, DbRowOpPlanner dbRowOpPlanner,
                                            DeleteDbRowOpFactory deleteDbRowOpFactory) {
         this.dataDomain = dataDomain;
-        this.dbRowOpSorter = dbRowOpSorter;
+        this.dbRowOpPlanner = dbRowOpPlanner;
         this.deleteDbRowOpFactory = deleteDbRowOpFactory;
     }
 
@@ -86,10 +86,10 @@ public class DefaultDataDomainFlushAction implements DataDomainFlushAction {
         updateObjectIds(dbRowOps);
         List<DbRowOp> deduplicatedOps = mergeSameObjectIds(dbRowOps);
         List<DbRowOp> filteredOps = filterOps(deduplicatedOps);
-        List<DbRowOp> sortedOps = sort(filteredOps);
-        List<ResolvedBatch> batches = createQueries(sortedOps);
+        List<DbRowOp> plannedOps = plan(filteredOps);
+        List<ResolvedBatch> batches = createQueries(plannedOps);
         executeQueries(batches);
-        createReplacementIds(objectStore, afterCommitDiff, sortedOps);
+        createReplacementIds(objectStore, afterCommitDiff, plannedOps);
         // note: we are using here not filtered operations, but the original ones,
         // as we need them all for the postprocessing
         postprocess(context, objectStoreGraphDiff, afterCommitDiff, deduplicatedOps);
@@ -165,13 +165,15 @@ public class DefaultDataDomainFlushAction implements DataDomainFlushAction {
     }
 
     /**
-     * Sort all operations
+     * Plans the operations to execute: orders them, and may replace some of them and add more.
+     *
      * @param dbRowOps collection of {@link DbRowOp}
-     * @return sorted collection of operations
-     * @see DbRowOpSorter interface and it's default implementation
+     * @return the operations to execute, in order
+     * @see DbRowOpPlanner
+     * @since 6.0
      */
-    protected List<DbRowOp> sort(List<DbRowOp> dbRowOps) {
-        return dbRowOpSorter.sort(dbRowOps);
+    protected List<DbRowOp> plan(List<DbRowOp> dbRowOps) {
+        return dbRowOpPlanner.plan(dbRowOps);
     }
 
     /**

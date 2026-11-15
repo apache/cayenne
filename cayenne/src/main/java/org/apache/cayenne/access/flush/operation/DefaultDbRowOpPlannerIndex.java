@@ -36,7 +36,7 @@ import org.apache.cayenne.map.compiled.CompiledTable;
 import org.apache.cayenne.map.compiled.CompiledToOneRelationship;
 
 /**
- * The facts of a compiled mapping {@link GraphDbRowOpSorter} needs to sort the operations, built once per mapping.
+ * The facts of a compiled mapping {@link DefaultDbRowOpPlanner} needs to sort the operations, built once per mapping.
  *
  * @param mapping           the mapping the index is built for
  * @param byEntity          the FK-holding joins by table
@@ -50,15 +50,15 @@ import org.apache.cayenne.map.compiled.CompiledToOneRelationship;
  *                          order mixing the tables breaks the batches up, running a statement per row instead of a
  *                          batch per table.
  */
-record GraphDbRowOpSorterIndex(
+record DefaultDbRowOpPlannerIndex(
         CompiledMapping mapping,
         Map<CompiledTable, List<CompiledJoin>> byEntity,
         Set<CompiledColumn> referencedColumns,
         Map<String, Map<CompiledJoin, String>> toOnesByEntity,
         Comparator<DbRowOp> batchOrder) {
 
-    static GraphDbRowOpSorterIndex of(CompiledMapping mapping) {
-        return new GraphDbRowOpSorterIndex(
+    static DefaultDbRowOpPlannerIndex of(CompiledMapping mapping) {
+        return new DefaultDbRowOpPlannerIndex(
                 mapping,
                 fkJoinsByTable(mapping),
                 referencedColumns(mapping),
