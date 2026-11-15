@@ -203,9 +203,9 @@
    so it also handles the tables referencing each other, and the meaningful PKs deleted and inserted again, or
    changed along with the FKs referencing them. The operations not depending on each other are ordered by the
    operation type and the table order as before, keeping the batches together. `DefaultDbRowOpSorter` is removed,
-   and `GraphBasedDbRowOpSorter` is deprecated in favor of `GraphDbRowOpSorter`. `@SortWeight` now only orders the
-   tables whose rows don't depend on each other: a dependency between the rows of a commit can't be overridden by
-   the weights.
+   and `GraphBasedDbRowOpSorter` is deprecated in favor of `GraphDbRowOpSorter`. `@SortWeight` still orders the
+   tables, but when a row references a row of another table in the same commit, it is inserted after that row (and
+   deleted before it), regardless of the weights.
 
 ## Upgrading from 4.2 to 5.0
 
