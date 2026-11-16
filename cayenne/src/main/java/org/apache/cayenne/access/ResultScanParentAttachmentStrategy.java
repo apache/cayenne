@@ -25,6 +25,7 @@ import org.apache.cayenne.map.compiled.CompiledColumnPair;
 import org.apache.cayenne.map.compiled.CompiledJoin;
 import org.apache.cayenne.map.compiled.CompiledRelationship;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -88,11 +89,11 @@ class ResultScanParentAttachmentStrategy implements ParentAttachmentStrategy {
         if (joins.length > 1) {
             List<Object> values = new ArrayList<>(joins.length);
             for (int i = 0; i < joins.length; i++) {
-                values.add(targetReader.get(row, i));
+                values.add(key(targetReader.get(row, i)));
             }
             key = values;
         } else {
-            key = targetReader.get(row, 0);
+            key = key(targetReader.get(row, 0));
         }
 
         List<Persistent> parents = partitionByChild.get(key);
@@ -134,15 +135,23 @@ class ResultScanParentAttachmentStrategy implements ParentAttachmentStrategy {
             if (joins.length > 1) {
                 List<Object> values = new ArrayList<>(joins.length);
                 for (int j = 0; j < joins.length; j++) {
-                    values.add(sourceReader.get(row, j));
+                    values.add(key(sourceReader.get(row, j)));
                 }
                 key = values;
             } else {
-                key = sourceReader.get(row, 0);
+                key = key(sourceReader.get(row, 0));
             }
 
             List<Persistent> parents = partitionByChild.computeIfAbsent(key, k -> new ArrayList<>());
             parents.add(objects.get(i));
         }
+    }
+
+    /**
+     * Converts a join value to a map key. A byte[] (e.g. a binary PK) has identity equals/hashCode, so it is wrapped
+     * in a ByteBuffer that compares by content.
+     */
+    private static Object key(Object value) {
+        return value instanceof byte[] bytes ? ByteBuffer.wrap(bytes) : value;
     }
 }
