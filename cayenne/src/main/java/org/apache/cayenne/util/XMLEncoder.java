@@ -33,7 +33,7 @@ import java.util.Map;
  *      XMLEncoder encoder = new XMLEncoder(writer);
  *      encoder
  *          .start("tag").attribute("name", "tag_name_attribute")
- *          .start("nested_tag").attribute("name", "nested_tag_name).cdata("tag text element").end()
+ *          .start("nested_tag").attribute("name", "nested_tag_name").cdata("tag text element").end()
  *          .end();
  * }</pre>
  *
@@ -271,53 +271,6 @@ public class XMLEncoder {
         }
         for (XMLSerializable value : map.values()) {
             value.encodeAsXML(this);
-        }
-        return this;
-    }
-
-    /**
-     * Prints a common XML element - property with name and value.
-     * @since 4.1
-     */
-    public XMLEncoder property(String name, String value) {
-        if(Util.isEmptyString(value)) {
-            return this;
-        }
-        start("property").attribute("name", name).attribute("value", value).end();
-        indentLine = true;
-        return this;
-    }
-
-    /**
-     * Prints a common XML element - property with name and value.
-     * @since 4.1
-     */
-    public XMLEncoder property(String name, boolean b) {
-        if(!b) {
-            return this;
-        }
-        return property(name, "true");
-    }
-
-    /**
-     * Prints a common XML element - property with name and value.
-     * @since 4.1
-     */
-    public XMLEncoder property(String name, int i) {
-        if(i == 0) {
-            return this;
-        }
-        return property(name, String.valueOf(i));
-    }
-
-    /**
-     * Prints common XML element - tag with name and text value (&lt;tag>value&lt;/tag>)
-     * If value is empty, nothing will be printed.
-     * @since 4.1
-     */
-    public XMLEncoder simpleTag(String tag, String value) {
-        if (!Util.isEmptyString(value)) {
-            start(tag).cdata(value).end();
         }
         return this;
     }

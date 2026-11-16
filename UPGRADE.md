@@ -208,7 +208,8 @@
 
 *  Per [CAY-3077](https://issues.apache.org/jira/browse/CAY-3077) `XMLSerializable.encodeAsXML(..)` and
    `XMLEncoder.nested(..)` no longer take a `ProjectNodeVisitor` delegate, and `EmptyProjectNodeVisitor` is removed.
-   Drop the second argument from the calls.
+   Drop the second argument from the calls. The unused `XMLEncoder.property(..)` and `XMLEncoder.simpleTag(..)` are
+   removed.
 
 *  Per [CAY-3075](https://issues.apache.org/jira/browse/CAY-3075) and
    [CAY-3076](https://issues.apache.org/jira/browse/CAY-3076) the commit operations are ordered by the dependencies

@@ -30,6 +30,8 @@ import org.apache.cayenne.project.cgen.CgenPaths;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.URLResource;
 import org.apache.cayenne.util.Util;
+import org.apache.cayenne.util.XMLEncoder;
+import org.apache.cayenne.util.XMLSerializable;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -256,7 +258,14 @@ public class FileProjectSaver implements ProjectSaver {
     }
 
     void saveToTempFile(SaveUnit unit, PrintWriter printWriter) {
-        unit.node.acceptVisitor(new ConfigurationSaver(printWriter));
+        if (!(unit.node instanceof XMLSerializable serializable)) {
+            throw new CayenneRuntimeException("Can't save a project node of type '%s'",
+                    unit.node.getClass().getName());
+        }
+
+        XMLEncoder encoder = new XMLEncoder(printWriter, "\t");
+        encoder.println("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
+        serializable.encodeAsXML(encoder);
     }
 
     void saveCommit(Collection<SaveUnit> units) {
