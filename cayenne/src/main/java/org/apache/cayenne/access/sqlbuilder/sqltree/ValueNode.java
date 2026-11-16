@@ -88,7 +88,10 @@ public class ValueNode extends Node {
                 case double[] doubles -> appendValue(doubles, buffer, context);
                 case boolean[] booleans -> appendValue(booleans, buffer, context);
                 case Object[] objects -> appendValue(objects, buffer, context);
-                // append byte[] array as a single object
+                // append byte[] array as a single object for a binary column (e.g. a binary PK in an IN list)
+                case byte[] bytes when attribute != null && TypesMapping.isBinary(attribute.getType()) ->
+                        appendObjectValue(buffer, context, bytes);
+                // otherwise treat byte[] as a list of byte values
                 case byte[] bytes -> appendValue(bytes, buffer, context);
                 default -> throw new CayenneRuntimeException("Unsupported array type %s", val.getClass().getName());
             }

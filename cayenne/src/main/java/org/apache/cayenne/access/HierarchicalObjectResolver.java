@@ -35,12 +35,14 @@ import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.reflect.ClassDescriptor;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Processes a number of DataRow sets corresponding to a given prefetch tree, resolving
@@ -253,7 +255,7 @@ class HierarchicalObjectResolver {
             if (joins.size() == 1 && values.size() > 1) {
                 currentQuery.and( ExpressionFactory.inDbExp(
                     pathPrefix.dot(joins.get(0).getTargetName()).value(),
-                    values.stream().flatMap(List::stream).collect(Collectors.toSet())
+                    distinctValues(values)
                 ));
             } else { // Handle a single value or compound prefetch ID predicates
             	// SQL: ... (field1=? and field2=? ...) OR (field1=? and field2=? ...) etc
@@ -276,6 +278,19 @@ class HierarchicalObjectResolver {
 
                 currentQuery.or(ExpressionFactory.or(qualifiers));
             }
+        }
+
+        /**
+         * Returns the distinct values of single-column keys. A byte[] (e.g. a binary PK) has identity equals, so it
+         * is compared by content.
+         */
+        private static Collection<Object> distinctValues(Set<List<Object>> values) {
+            Map<Object, Object> distinct = new LinkedHashMap<>();
+            for (List<Object> joinValues : values) {
+                Object value = joinValues.get(0);
+                distinct.putIfAbsent(value instanceof byte[] bytes ? ByteBuffer.wrap(bytes) : value, value);
+            }
+            return distinct.values();
         }
 
         @Override
