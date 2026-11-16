@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.map;
 
-import org.apache.cayenne.project.EmptyProjectNodeVisitor;
 import org.apache.cayenne.util.XMLEncoder;
 import org.junit.jupiter.api.Test;
 
@@ -227,7 +226,7 @@ public class DbRelationshipTest {
 
     private String encode(DbRelationship relationship) {
         StringWriter out = new StringWriter();
-        relationship.encodeAsXML(new XMLEncoder(new PrintWriter(out)), new EmptyProjectNodeVisitor());
+        relationship.encodeAsXML(new XMLEncoder(new PrintWriter(out)));
         return out.toString();
     }
 }

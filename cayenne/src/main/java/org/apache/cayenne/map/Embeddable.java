@@ -155,11 +155,11 @@ public class Embeddable implements ProjectNode, XMLSerializable, Commentable {
 	 * {@link XMLSerializable} implementation that generates XML for embeddable.
 	 */
 	@Override
-	public void encodeAsXML(XMLEncoder encoder, ProjectNodeVisitor<?> delegate) {
+	public void encodeAsXML(XMLEncoder encoder) {
 		encoder.start("embeddable")
 				.attribute("className", getClassName())
 				.textTag("comment", getComment())
-				.nested(attributes, delegate)
+				.nested(attributes)
 				.end();
 	}
 }

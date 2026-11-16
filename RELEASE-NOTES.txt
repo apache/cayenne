@@ -29,6 +29,7 @@ CAY-3072 Replace the Ashwood graph library with linear-time sorts and remove it
 CAY-3074 Fold the project XML extensions (info, cgen, dbimport, validation) into the core model and schema
 CAY-3075 Unifying DbRowOpSorter
 CAY-3076 Proper DML operations for edge cases
+CAY-3077 Drop the ProjectNodeVisitor delegate parameter from XML encoding
 
 Bug fixes:
 

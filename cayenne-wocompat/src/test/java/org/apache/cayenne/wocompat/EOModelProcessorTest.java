@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.wocompat;
 
-import org.apache.cayenne.project.EmptyProjectNodeVisitor;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
@@ -190,7 +189,7 @@ public class EOModelProcessorTest {
 
         // storing data map may uncover some inconsistencies
         PrintWriter mockupWriter = new NullPrintWriter();
-        map.encodeAsXML(new XMLEncoder(mockupWriter), new EmptyProjectNodeVisitor());
+        map.encodeAsXML(new XMLEncoder(mockupWriter));
     }
 
     class NullPrintWriter extends PrintWriter {

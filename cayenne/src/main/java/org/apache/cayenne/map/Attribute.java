@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.map;
 
-import org.apache.cayenne.project.ProjectNodeVisitor;
 import org.apache.cayenne.util.ToStringBuilder;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
@@ -60,7 +59,7 @@ public abstract class Attribute<
     }
 
     @Override
-    public abstract void encodeAsXML(XMLEncoder encoder, ProjectNodeVisitor<?> delegate);
+    public abstract void encodeAsXML(XMLEncoder encoder);
 
     /**
      * Returns parent entity that holds this attribute.

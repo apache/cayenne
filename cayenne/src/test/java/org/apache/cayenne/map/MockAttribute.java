@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.map;
 
-import org.apache.cayenne.project.ProjectNodeVisitor;
 import org.apache.cayenne.util.XMLEncoder;
 
 public class MockAttribute extends Attribute<MockEntity, MockAttribute, MockRelationship> {
@@ -33,7 +32,7 @@ public class MockAttribute extends Attribute<MockEntity, MockAttribute, MockRela
     }
 
     @Override
-    public void encodeAsXML(XMLEncoder encoder, ProjectNodeVisitor delegate) {
+    public void encodeAsXML(XMLEncoder encoder) {
     }
 
 }

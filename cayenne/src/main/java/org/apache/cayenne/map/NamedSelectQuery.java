@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.map;
 
-import org.apache.cayenne.project.ProjectNodeVisitor;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.util.XMLEncoder;
@@ -88,7 +87,7 @@ public final class NamedSelectQuery extends NamedQuery {
     }
 
     @Override
-    public void encodeAsXML(XMLEncoder encoder, ProjectNodeVisitor<?> delegate) {
+    public void encodeAsXML(XMLEncoder encoder) {
         encoder.start("objectQuery")
                 .attribute("name", getName())
                 .attribute("cacheStrategy", cacheStrategy != QueryCacheStrategy.NO_CACHE ? cacheStrategy.name() : null)

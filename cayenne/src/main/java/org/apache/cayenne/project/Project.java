@@ -63,7 +63,7 @@ public class Project implements ProjectNode, XMLSerializable {
 	}
 
 	@Override
-	public void encodeAsXML(XMLEncoder encoder, ProjectNodeVisitor<?> delegate) {
+	public void encodeAsXML(XMLEncoder encoder) {
 
 		encoder.start("project")
 				.attribute("xmlns", SCHEMA_XSD)

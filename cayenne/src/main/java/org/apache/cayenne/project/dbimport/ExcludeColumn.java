@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.project.dbimport;
 
-import org.apache.cayenne.project.ProjectNodeVisitor;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
 
@@ -39,7 +38,7 @@ public class ExcludeColumn extends PatternParam implements XMLSerializable {
     }
 
     @Override
-    public void encodeAsXML(XMLEncoder encoder, ProjectNodeVisitor delegate) {
+    public void encodeAsXML(XMLEncoder encoder) {
         encoder.textTag("excludeColumn", this.getPattern());
     }
 }

@@ -20,7 +20,6 @@
 package org.apache.cayenne.project.xml;
 
 import org.apache.cayenne.map.DataMap;
-import org.apache.cayenne.project.EmptyProjectNodeVisitor;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.dbimport.PatternParam;
 import org.apache.cayenne.util.XMLEncoder;
@@ -54,7 +53,7 @@ final class XMLTestUtils {
     static String encode(XMLSerializable serializable) {
         StringWriter out = new StringWriter();
         try (PrintWriter writer = new PrintWriter(out)) {
-            serializable.encodeAsXML(new XMLEncoder(writer, "\t"), new EmptyProjectNodeVisitor());
+            serializable.encodeAsXML(new XMLEncoder(writer, "\t"));
         }
         return out.toString();
     }

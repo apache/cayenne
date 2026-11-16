@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.map;
 
-import org.apache.cayenne.project.ProjectNodeVisitor;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.resolved.ResolvedQuery;
@@ -117,7 +116,7 @@ public final class NamedProcedureQuery extends NamedQuery {
     }
 
     @Override
-    public void encodeAsXML(XMLEncoder encoder, ProjectNodeVisitor<?> delegate) {
+    public void encodeAsXML(XMLEncoder encoder) {
         encoder.start("procedureQuery")
                 .attribute("name", getName())
                 .attribute("root", NamedQuery.PROCEDURE_ROOT);

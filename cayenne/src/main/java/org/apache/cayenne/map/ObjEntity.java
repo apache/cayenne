@@ -100,7 +100,7 @@ public class ObjEntity extends Entity<ObjEntity, ObjAttribute, ObjRelationship> 
      * @since 1.1
      */
     @Override
-    public void encodeAsXML(XMLEncoder encoder, ProjectNodeVisitor delegate) {
+    public void encodeAsXML(XMLEncoder encoder) {
         encoder.start("objEntity").attribute("name", getName());
 
         // additionally validate that super entity exists
@@ -131,7 +131,7 @@ public class ObjEntity extends Entity<ObjEntity, ObjAttribute, ObjRelationship> 
         encoder.textTag("comment", getComment());
 
         if (qualifier != null) {
-            encoder.start("qualifier").nested(qualifier, delegate).end();
+            encoder.start("qualifier").nested(qualifier).end();
         }
 
         // divide attributes by type
@@ -147,8 +147,8 @@ public class ObjEntity extends Entity<ObjEntity, ObjAttribute, ObjRelationship> 
         });
 
         // store attributes
-        encoder.nested(embAttributes, delegate);
-        encoder.nested(objAttributes, delegate);
+        encoder.nested(embAttributes);
+        encoder.nested(objAttributes);
 
         for (Map.Entry<String, CayennePath> override : attributeOverrides.entrySet()) {
             encoder.start("attributeOverride")

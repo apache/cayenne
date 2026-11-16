@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.project.dbimport;
 
-import org.apache.cayenne.project.EmptyProjectNodeVisitor;
 import org.apache.cayenne.util.XMLEncoder;
 import org.junit.jupiter.api.Test;
 
@@ -121,7 +120,7 @@ public class ReverseEngineeringTest {
     private static String encode(ReverseEngineering reverseEngineering) {
         StringWriter out = new StringWriter();
         try (PrintWriter writer = new PrintWriter(out)) {
-            reverseEngineering.encodeAsXML(new XMLEncoder(writer, "\t"), new EmptyProjectNodeVisitor());
+            reverseEngineering.encodeAsXML(new XMLEncoder(writer, "\t"));
         }
         return out.toString().replace(System.lineSeparator(), "\n");
     }

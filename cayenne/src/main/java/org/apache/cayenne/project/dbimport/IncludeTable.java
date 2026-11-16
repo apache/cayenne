@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.project.dbimport;
 
-import org.apache.cayenne.project.ProjectNodeVisitor;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
 
@@ -101,11 +100,11 @@ public class IncludeTable extends PatternParam implements XMLSerializable {
     }
 
     @Override
-    public void encodeAsXML(XMLEncoder encoder, ProjectNodeVisitor delegate) {
+    public void encodeAsXML(XMLEncoder encoder) {
         encoder.start("includeTable")
             .textTag("name", this.getPattern())
-            .nested(this.getIncludeColumns(), delegate)
-            .nested(this.getExcludeColumns(), delegate)
+            .nested(this.getIncludeColumns())
+            .nested(this.getExcludeColumns())
         .end();
     }
 

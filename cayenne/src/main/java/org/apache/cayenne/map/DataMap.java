@@ -161,7 +161,7 @@ public class DataMap implements ProjectNode, XMLSerializable, MappingNamespace, 
      * @since 1.1
      */
     @Override
-    public void encodeAsXML(XMLEncoder encoder, ProjectNodeVisitor<?>delegate) {
+    public void encodeAsXML(XMLEncoder encoder) {
         encoder.start("dataMap")
                 .attribute("xmlns", SCHEMA_XSD)
                 .attribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance", true)
@@ -173,20 +173,20 @@ public class DataMap implements ProjectNode, XMLSerializable, MappingNamespace, 
                 .attribute("defaultSuperclass", defaultSuperclass, true)
                 .attribute("quoteSqlIdentifiers", quotingSQLIdentifiers ? "true" : null, true)
                 .textTag("comment", getComment())
-                .nested(new TreeMap<>(getEmbeddableMap()), delegate)
-                .nested(new TreeMap<>(getProcedureMap()), delegate)
-                .nested(new TreeMap<>(getDbEntityMap()), delegate)
-                .nested(new TreeMap<>(getObjEntityMap()), delegate);
+                .nested(new TreeMap<>(getEmbeddableMap()))
+                .nested(new TreeMap<>(getProcedureMap()))
+                .nested(new TreeMap<>(getDbEntityMap()))
+                .nested(new TreeMap<>(getObjEntityMap()));
 
         // and finally relationships
-        encodeDbRelationshipsAsXML(encoder, delegate);
-        encodeObjRelationshipsAsXML(encoder, delegate);
+        encodeDbRelationshipsAsXML(encoder);
+        encodeObjRelationshipsAsXML(encoder);
 
         // named queries after the relationships just to keep logic from older versions
-        encoder.nested(new TreeMap<>(getNamedQueryMap()), delegate);
+        encoder.nested(new TreeMap<>(getNamedQueryMap()));
 
         // tool-only settings after everything the runtime uses
-        encoder.nested(reverseEngineering, delegate);
+        encoder.nested(reverseEngineering);
         for (CgenDescriptor descriptor : cgenDescriptors) {
             descriptor.encodeAsXML(encoder, this);
         }
@@ -195,22 +195,22 @@ public class DataMap implements ProjectNode, XMLSerializable, MappingNamespace, 
     }
 
     // stores relationships for the map of entities
-    private void encodeDbRelationshipsAsXML(XMLEncoder encoder, ProjectNodeVisitor<?> delegate) {
+    private void encodeDbRelationshipsAsXML(XMLEncoder encoder) {
         for (DbEntity entity : new TreeMap<>(getDbEntityMap()).values()) {
             entity.getRelationships().stream()
                     .filter(r -> !r.isRuntime())
                     .sorted(Comparator.comparing(Relationship::getName))
-                    .forEach(r -> r.encodeAsXML(encoder, delegate));
+                    .forEach(r -> r.encodeAsXML(encoder));
         }
     }
 
     // stores relationships for the map of entities
-    private void encodeObjRelationshipsAsXML(XMLEncoder encoder, ProjectNodeVisitor<?> delegate) {
+    private void encodeObjRelationshipsAsXML(XMLEncoder encoder) {
         for (ObjEntity entity : new TreeMap<>(getObjEntityMap()).values()) {
             entity.getDeclaredRelationships().stream()
                     .filter(r -> !r.isRuntime())
                     .sorted(Comparator.comparing(Relationship::getName))
-                    .forEach(r -> r.encodeAsXML(encoder, delegate));
+                    .forEach(r -> r.encodeAsXML(encoder));
         }
     }
 

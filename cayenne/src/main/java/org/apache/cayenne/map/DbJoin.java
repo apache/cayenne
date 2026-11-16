@@ -20,7 +20,6 @@
 package org.apache.cayenne.map;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.project.ProjectNodeVisitor;
 import org.apache.cayenne.util.ToStringBuilder;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
@@ -95,7 +94,7 @@ public class DbJoin implements XMLSerializable {
      * Prints itself as XML to the provided XMLEncoder.
      */
     @Override
-    public void encodeAsXML(XMLEncoder encoder, ProjectNodeVisitor<?> delegate) {
+    public void encodeAsXML(XMLEncoder encoder) {
         encoder.start("dbAttributePair")
                 .attribute("source", getSourceName())
                 .attribute("target", getTargetName())

@@ -27,7 +27,6 @@ import java.util.List;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.project.DataMapLoader;
-import org.apache.cayenne.project.EmptyProjectNodeVisitor;
 import org.apache.cayenne.exp.ExpressionException;
 import org.apache.cayenne.exp.path.CayennePath;
 import org.apache.cayenne.resource.URLResource;
@@ -90,7 +89,7 @@ public class ObjRelationshipIT {
         r.setCollectionType("java.util.Map");
         r.setMapKey("bla");
 
-        r.encodeAsXML(encoder, new EmptyProjectNodeVisitor());
+        r.encodeAsXML(encoder);
         out.close();
 
         String lineBreak = System.getProperty("line.separator");

@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.map;
 
-import org.apache.cayenne.project.ProjectNodeVisitor;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.QueryCacheStrategy;
@@ -134,7 +133,7 @@ public final class NamedSQLQuery extends NamedQuery {
     }
 
     @Override
-    public void encodeAsXML(XMLEncoder encoder, ProjectNodeVisitor<?> delegate) {
+    public void encodeAsXML(XMLEncoder encoder) {
         encoder.start("sqlQuery").attribute("name", getName());
 
         String rootString = null;
@@ -198,7 +197,7 @@ public final class NamedSQLQuery extends NamedQuery {
             node.setPhantom(false);
         }
 
-        encoder.nested(prefetchTree, delegate);
+        encoder.nested(prefetchTree);
 
         encoder.end();
     }

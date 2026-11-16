@@ -19,7 +19,6 @@
 
 package org.apache.cayenne.project.dbimport;
 
-import org.apache.cayenne.project.ProjectNodeVisitor;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
 
@@ -46,16 +45,16 @@ public class Catalog extends SchemaContainer implements XMLSerializable {
     }
 
     @Override
-    public void encodeAsXML(XMLEncoder encoder, ProjectNodeVisitor delegate) {
+    public void encodeAsXML(XMLEncoder encoder) {
         encoder.start("catalog")
-            .nested(this.getIncludeTables(), delegate)
-            .nested(this.getExcludeTables(), delegate)
-            .nested(this.getIncludeColumns(), delegate)
-            .nested(this.getExcludeColumns(), delegate)
-            .nested(this.getIncludeProcedures(), delegate)
-            .nested(this.getExcludeProcedures(), delegate)
+            .nested(this.getIncludeTables())
+            .nested(this.getExcludeTables())
+            .nested(this.getIncludeColumns())
+            .nested(this.getExcludeColumns())
+            .nested(this.getIncludeProcedures())
+            .nested(this.getExcludeProcedures())
             .textTag("name", this.getName())
-            .nested(this.getSchemas(), delegate)
+            .nested(this.getSchemas())
         .end();
     }
 }

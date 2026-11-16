@@ -114,7 +114,7 @@ public class ObjAttribute extends Attribute<ObjEntity, ObjAttribute, ObjRelation
      * @since 1.1
      */
     @Override
-    public void encodeAsXML(XMLEncoder encoder, ProjectNodeVisitor<?> delegate) {
+    public void encodeAsXML(XMLEncoder encoder) {
         encoder.start("objAttribute")
                 .attribute("name", getName())
                 .attribute("type", getType())

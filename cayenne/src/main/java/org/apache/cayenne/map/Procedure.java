@@ -90,14 +90,14 @@ public class Procedure implements ProjectNode, XMLSerializable, Commentable {
      * @since 1.1
      */
     @Override
-    public void encodeAsXML(XMLEncoder encoder, ProjectNodeVisitor delegate) {
+    public void encodeAsXML(XMLEncoder encoder) {
         encoder.start("procedure")
                 .attribute("name", getName())
                 .attribute("schema", getSchema())
                 .attribute("catalog", getCatalog())
                 .attribute("returningValue", isReturningValue())
                 .textTag("comment", getComment())
-                .nested(getCallParameters(), delegate)
+                .nested(getCallParameters())
                 .end();
     }
 

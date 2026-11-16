@@ -18,8 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.modeler.toolkit.copypaste;
 
-import org.apache.cayenne.project.ProjectNodeVisitor;
-import org.apache.cayenne.project.EmptyProjectNodeVisitor;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
 
@@ -52,15 +50,14 @@ public class CMTransferable implements Transferable {
         } else {
             StringWriter out = new StringWriter();
             XMLEncoder encoder = new XMLEncoder(new PrintWriter(out), "\t");
-            ProjectNodeVisitor visitor = new EmptyProjectNodeVisitor();
 
             encoder.println("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
 
             if (data instanceof XMLSerializable) {
-                ((XMLSerializable) data).encodeAsXML(encoder, visitor);
+                ((XMLSerializable) data).encodeAsXML(encoder);
             } else if (data instanceof List) {
                 for (Object o : (List<?>) data) {
-                    ((XMLSerializable) o).encodeAsXML(encoder, visitor);
+                    ((XMLSerializable) o).encodeAsXML(encoder);
                 }
             }
 

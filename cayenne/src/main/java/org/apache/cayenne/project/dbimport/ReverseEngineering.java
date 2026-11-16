@@ -24,7 +24,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.cayenne.project.ProjectNodeVisitor;
 import org.apache.cayenne.util.XMLEncoder;
 import org.apache.cayenne.util.XMLSerializable;
 
@@ -277,16 +276,16 @@ public class ReverseEngineering extends SchemaContainer implements XMLSerializab
     }
 
     @Override
-    public void encodeAsXML(XMLEncoder encoder, ProjectNodeVisitor delegate) {
+    public void encodeAsXML(XMLEncoder encoder) {
         encoder.start("dbImport")
-                .nested(this.getIncludeTables(), delegate)
-                .nested(this.getExcludeTables(), delegate)
-                .nested(this.getIncludeColumns(), delegate)
-                .nested(this.getExcludeColumns(), delegate)
-                .nested(this.getIncludeProcedures(), delegate)
-                .nested(this.getExcludeProcedures(), delegate)
-                .nested(this.getCatalogs(), delegate)
-                .nested(this.getSchemas(), delegate);
+                .nested(this.getIncludeTables())
+                .nested(this.getExcludeTables())
+                .nested(this.getIncludeColumns())
+                .nested(this.getExcludeColumns())
+                .nested(this.getIncludeProcedures())
+                .nested(this.getExcludeProcedures())
+                .nested(this.getCatalogs())
+                .nested(this.getSchemas());
         String[] tableTypes = this.getTableTypes();
         if(tableTypes.length != 0) {
             encoder.start("tableTypes");

@@ -95,7 +95,7 @@ public class DbAttribute extends Attribute<DbEntity, DbAttribute, DbRelationship
      * @since 1.1
      */
     @Override
-    public void encodeAsXML(XMLEncoder encoder, ProjectNodeVisitor delegate) {
+    public void encodeAsXML(XMLEncoder encoder) {
 
         encoder.start("dbAttribute").attribute("name", getName());
 

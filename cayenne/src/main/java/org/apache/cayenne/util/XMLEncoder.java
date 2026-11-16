@@ -19,8 +19,6 @@
 
 package org.apache.cayenne.util;
 
-import org.apache.cayenne.project.ProjectNodeVisitor;
-
 import java.io.PrintWriter;
 import java.util.Collection;
 import java.util.Deque;
@@ -237,29 +235,27 @@ public class XMLEncoder {
     /**
      * @since 4.1
      * @param object nested object to serialize
-     * @param delegate visitor
      * @return this
      */
-    public XMLEncoder nested(XMLSerializable object, ProjectNodeVisitor<?> delegate) {
+    public XMLEncoder nested(XMLSerializable object) {
         if(object == null) {
             return this;
         }
-        object.encodeAsXML(this, delegate);
+        object.encodeAsXML(this);
         return this;
     }
 
     /**
      * @since 4.1
      * @param collection of nested objects
-     * @param delegate visitor
      * @return this
      */
-    public XMLEncoder nested(Collection<? extends XMLSerializable> collection, ProjectNodeVisitor<?> delegate) {
+    public XMLEncoder nested(Collection<? extends XMLSerializable> collection) {
         if(collection == null) {
             return this;
         }
         for (XMLSerializable value : collection) {
-            value.encodeAsXML(this, delegate);
+            value.encodeAsXML(this);
         }
         return this;
     }
@@ -267,15 +263,14 @@ public class XMLEncoder {
     /**
      * @since 4.1
      * @param map of nested objects
-     * @param delegate visitor
      * @return this
      */
-    public XMLEncoder nested(Map<?, ? extends XMLSerializable> map, ProjectNodeVisitor<?> delegate) {
+    public XMLEncoder nested(Map<?, ? extends XMLSerializable> map) {
         if(map == null) {
             return this;
         }
         for (XMLSerializable value : map.values()) {
-            value.encodeAsXML(this, delegate);
+            value.encodeAsXML(this);
         }
         return this;
     }

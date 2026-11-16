@@ -18,7 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.map;
 
-import org.apache.cayenne.project.EmptyProjectNodeVisitor;
 import org.apache.cayenne.util.XMLEncoder;
 import org.junit.jupiter.api.Test;
 
@@ -80,7 +79,7 @@ public class DbEntityTest {
 
         StringWriter out = new StringWriter();
         XMLEncoder encoder = new XMLEncoder(new PrintWriter(out));
-        entity.encodeAsXML(encoder, new EmptyProjectNodeVisitor());
+        entity.encodeAsXML(encoder);
 
         String ls = System.lineSeparator();
 

@@ -19,7 +19,6 @@
 package org.apache.cayenne.map;
 
 import org.apache.cayenne.CayenneRuntimeException;
-import org.apache.cayenne.project.ProjectNodeVisitor;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
 
@@ -71,7 +70,7 @@ public class EmbeddedAttribute extends ObjAttribute {
     }
 
     @Override
-    public void encodeAsXML(XMLEncoder encoder, ProjectNodeVisitor delegate) {
+    public void encodeAsXML(XMLEncoder encoder) {
         encoder.start("embeddedAttribute")
                 .attribute("name", getName())
                 .attribute("type", getType())

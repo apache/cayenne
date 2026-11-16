@@ -98,7 +98,7 @@ public class DbEntity extends Entity<DbEntity, DbAttribute, DbRelationship> impl
      * @since 1.1
      */
     @Override
-    public void encodeAsXML(XMLEncoder encoder, ProjectNodeVisitor delegate) {
+    public void encodeAsXML(XMLEncoder encoder) {
         encoder.start("dbEntity").attribute("name", getName());
 
         if (getSchema() != null && getSchema().trim().length() > 0) {
@@ -110,15 +110,15 @@ public class DbEntity extends Entity<DbEntity, DbAttribute, DbRelationship> impl
 
         encoder.textTag("comment", getComment());
 
-        encoder.nested(new TreeMap<>(getAttributeMap()), delegate);
+        encoder.nested(new TreeMap<>(getAttributeMap()));
 
         if (getPrimaryKeyGenerator() != null) {
-            getPrimaryKeyGenerator().encodeAsXML(encoder, delegate);
+            getPrimaryKeyGenerator().encodeAsXML(encoder);
         }
 
         if (getQualifier() != null) {
             encoder.start("qualifier");
-            getQualifier().encodeAsXML(encoder, delegate);
+            getQualifier().encodeAsXML(encoder);
             encoder.end();
         }
 

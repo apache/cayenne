@@ -206,6 +206,10 @@
    The runtime doesn't load these parts: code that needs them loads the project with
    `CoreModule.extend(binder).loadFullProjectModel()`.
 
+*  Per [CAY-3077](https://issues.apache.org/jira/browse/CAY-3077) `XMLSerializable.encodeAsXML(..)` and
+   `XMLEncoder.nested(..)` no longer take a `ProjectNodeVisitor` delegate, and `EmptyProjectNodeVisitor` is removed.
+   Drop the second argument from the calls.
+
 *  Per [CAY-3075](https://issues.apache.org/jira/browse/CAY-3075) and
    [CAY-3076](https://issues.apache.org/jira/browse/CAY-3076) the commit operations are ordered by the dependencies
    between their rows, so the commits that failed with the 5.0 default sorter now work, e.g. with tables or rows

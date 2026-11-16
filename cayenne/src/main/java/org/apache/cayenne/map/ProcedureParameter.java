@@ -95,7 +95,7 @@ public class ProcedureParameter implements ProjectNode, XMLSerializable, Comment
      * @since 1.1
      */
     @Override
-    public void encodeAsXML(XMLEncoder encoder, ProjectNodeVisitor delegate) {
+    public void encodeAsXML(XMLEncoder encoder) {
         encoder.start("procedureParameter")
                 .attribute("name", getName())
                 .attribute("type", TypesMapping.getSqlNameByType(getType()))

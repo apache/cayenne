@@ -22,7 +22,6 @@ package org.apache.cayenne.map;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-import org.apache.cayenne.project.EmptyProjectNodeVisitor;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.util.XMLEncoder;
 import org.junit.jupiter.api.Test;
@@ -163,7 +162,7 @@ public class NamedSelectQueryTest {
 
     private static String encode(NamedSelectQuery namedQuery) {
         StringWriter out = new StringWriter();
-        namedQuery.encodeAsXML(new XMLEncoder(new PrintWriter(out)), new EmptyProjectNodeVisitor());
+        namedQuery.encodeAsXML(new XMLEncoder(new PrintWriter(out)));
         return out.toString();
     }
 }

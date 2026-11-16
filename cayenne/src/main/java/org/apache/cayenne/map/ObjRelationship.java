@@ -102,7 +102,7 @@ public class ObjRelationship extends Relationship<ObjEntity, ObjAttribute, ObjRe
      * @since 1.1
      */
     @Override
-    public void encodeAsXML(XMLEncoder encoder, ProjectNodeVisitor<?> delegate) {
+    public void encodeAsXML(XMLEncoder encoder) {
         ObjEntity source = getSourceEntity();
         if (source == null) {
             return;
