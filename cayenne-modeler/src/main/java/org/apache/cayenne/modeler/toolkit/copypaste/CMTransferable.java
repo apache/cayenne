@@ -53,10 +53,10 @@ public class CMTransferable implements Transferable {
 
             encoder.println("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
 
-            if (data instanceof XMLSerializable) {
-                ((XMLSerializable) data).encodeAsXML(encoder);
-            } else if (data instanceof List) {
-                for (Object o : (List<?>) data) {
+            if (data instanceof XMLSerializable ser) {
+                ser.encodeAsXML(encoder);
+            } else if (data instanceof List<?> l) {
+                for (Object o : l) {
                     ((XMLSerializable) o).encodeAsXML(encoder);
                 }
             }

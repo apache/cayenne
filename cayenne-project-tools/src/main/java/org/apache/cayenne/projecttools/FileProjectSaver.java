@@ -99,9 +99,8 @@ public class FileProjectSaver implements ProjectSaver {
         for (ProjectNode node : nodes) {
             String targetLocation = nameMapper.configurationLocation(node);
 
-            if (node instanceof DataMap) {
-				DataMap dataMapNode = ((DataMap) node);
-				dataMapNode.setLocation(targetLocation);
+            if (node instanceof DataMap dataMapNode) {
+                dataMapNode.setLocation(targetLocation);
 			}
 
             Resource targetResource = baseResource.getRelativeResource(targetLocation);
