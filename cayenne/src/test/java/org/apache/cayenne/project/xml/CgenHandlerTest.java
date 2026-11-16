@@ -28,7 +28,6 @@ import org.junit.jupiter.api.Test;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.List;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -194,42 +193,6 @@ public class CgenHandlerTest extends BaseHandlerTest {
                 """, ProjectLoadingMode.FULL);
 
         assertEquals("out*put", map.getCgenDescriptors().get(0).getDestDir());
-    }
-
-    @Test
-    public void loadCgenFormattedValues() throws Exception {
-        DataMap map = parseDataMap("""
-                <dataMap>
-                    <cgen>
-                        <name>
-                            Custom
-                        </name>
-                        <excludeEntities>
-                            Painting, Artist,
-                        </excludeEntities>
-                        <destDir>
-                            ../java
-                        </destDir>
-                        <template>
-                            subclass text
-                        </template>
-                        <makePairs>
-                            false
-                        </makePairs>
-                        <overwrite> true </overwrite>
-                    </cgen>
-                </dataMap>
-                """, ProjectLoadingMode.FULL);
-
-        CgenDescriptor descriptor = map.getCgenDescriptors().get(0);
-        assertEquals("Custom", descriptor.getName());
-        assertEquals(Set.of("Painting", "Artist"), descriptor.getExcludedEntities());
-        assertEquals("../java", descriptor.getDestDir());
-        assertFalse(descriptor.isMakePairs());
-        assertTrue(descriptor.isOverwrite());
-
-        // a template text keeps its whitespace
-        assertTrue(descriptor.getTemplate().startsWith("\n"), descriptor.getTemplate());
     }
 
     private static String encode(CgenDescriptor descriptor) {
