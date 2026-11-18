@@ -34,7 +34,7 @@ import org.apache.cayenne.query.EntityResultSegment;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.resolved.ResolvedQuery;
 import org.apache.cayenne.query.ResultSegment;
-import java.util.Objects;
+import org.apache.cayenne.util.IdValues;
 
 /**
  * FaultList that is used for paginated column queries, see the column methods of {@link ObjectSelect}.
@@ -199,7 +199,7 @@ class MixedResultIncrementalFaultList<E> extends IncrementalFaultList<E> {
             if(!(object instanceof Object[])){
                 return false;
             }
-            return Arrays.equals((Object[])object, (Object[])objectInTheList);
+            return Arrays.deepEquals((Object[])object, (Object[])objectInTheList);
         }
 
         @Override
@@ -217,7 +217,7 @@ class MixedResultIncrementalFaultList<E> extends IncrementalFaultList<E> {
                 }
 
                 for (Map.Entry<?, ?> entry : id.entrySet()) {
-                    if (!Objects.deepEquals(entry.getValue(), map.get(entry.getKey()))) {
+                    if (!IdValues.idEquals(entry.getValue(), map.get(entry.getKey()))) {
                         return false;
                     }
                 }
@@ -225,7 +225,7 @@ class MixedResultIncrementalFaultList<E> extends IncrementalFaultList<E> {
                 return false;
             } else {
                 for(Object id : map.values()) {
-                    if (!dataInTheList[dataIdx++].equals(id)) {
+                    if (!IdValues.idEquals(dataInTheList[dataIdx++], id)) {
                         return false;
                     }
                 }

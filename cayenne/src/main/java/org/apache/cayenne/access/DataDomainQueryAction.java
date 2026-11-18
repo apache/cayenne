@@ -47,6 +47,7 @@ import org.apache.cayenne.reflect.DefaultConstructor;
 import org.apache.cayenne.tx.BaseTransaction;
 import org.apache.cayenne.tx.ReadOnlyTransaction;
 import org.apache.cayenne.tx.Transaction;
+import org.apache.cayenne.util.IdValues;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -541,8 +542,8 @@ class DataDomainQueryAction {
 
             // distinct filtering
             if (!(resolved instanceof ResolvedSelect select && select.suppressingDistinct())) {
-                Set<List<?>> seen = HashSet.newHashSet(result.size());
-                result.removeIf(objects -> !seen.add(Arrays.asList(objects)));
+                Set<Object> seen = HashSet.newHashSet(result.size());
+                result.removeIf(objects -> !seen.add(IdValues.valueTupleKey(objects)));
             }
 
             return result;

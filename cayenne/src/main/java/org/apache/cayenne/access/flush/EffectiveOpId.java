@@ -21,6 +21,7 @@ package org.apache.cayenne.access.flush;
 
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.access.DeferredValue;
+import org.apache.cayenne.util.IdValues;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -79,14 +80,14 @@ public class EffectiveOpId {
         }
 
         if (!entityName.equals(that.entityName)) return false;
-        return snapshot.equals(that.snapshot);
+        return IdValues.idSnapshotEquals(snapshot, that.snapshot);
 
     }
 
     @Override
     public int hashCode() {
         int result = entityName.hashCode();
-        result = 31 * result + snapshot.hashCode();
+        result = 31 * result + IdValues.idSnapshotHashCode(snapshot);
         return result;
     }
 

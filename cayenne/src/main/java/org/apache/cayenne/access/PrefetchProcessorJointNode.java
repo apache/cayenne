@@ -35,6 +35,7 @@ import org.apache.cayenne.map.compiled.CompiledAttribute;
 import org.apache.cayenne.map.compiled.CompiledEntity;
 import org.apache.cayenne.map.compiled.CompiledRelationship;
 import org.apache.cayenne.query.PrefetchTreeNode;
+import org.apache.cayenne.util.IdValues;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -99,8 +100,7 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
 
     /**
      * Returns a key of the flat row's object for {@link #getResolved(Object)} and {@link #putResolved(Object,
-     * Persistent)}: the PK value of a single-column PK, or a list of the PK values in the PK column order. The key
-     * is only meaningful within this node, as the column names are not a part of it.
+     * Persistent)}, built from its PK values. Only meaningful within this node.
      */
     Object idFromFlatRow(DataRow flatRow) {
 
@@ -109,7 +109,7 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
         // this is reasonable to expect...
 
         if (idIndices.length == 1) {
-            return flatReader.get(flatRow, idIndices[0]);
+            return IdValues.valueKey(flatReader.get(flatRow, idIndices[0]));
         }
 
         Object[] id = new Object[idIndices.length];
@@ -117,8 +117,8 @@ class PrefetchProcessorJointNode extends PrefetchProcessorNode {
             id[i] = flatReader.get(flatRow, idIndices[i]);
         }
 
-        // Arrays.asList: a value-based key, unlike List.of it allows nulls, which an outer join produces
-        return Arrays.asList(id);
+        // may contain nulls (outer join)
+        return IdValues.valueTupleKey(id);
     }
 
     /**

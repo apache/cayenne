@@ -24,8 +24,8 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.map.compiled.CompiledColumnPair;
 import org.apache.cayenne.map.compiled.CompiledJoin;
 import org.apache.cayenne.map.compiled.CompiledRelationship;
+import org.apache.cayenne.util.IdValues;
 
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -85,18 +85,7 @@ class ResultScanParentAttachmentStrategy implements ParentAttachmentStrategy {
             indexParents();
         }
 
-        Object key;
-        if (joins.length > 1) {
-            List<Object> values = new ArrayList<>(joins.length);
-            for (int i = 0; i < joins.length; i++) {
-                values.add(key(targetReader.get(row, i)));
-            }
-            key = values;
-        } else {
-            key = key(targetReader.get(row, 0));
-        }
-
-        List<Persistent> parents = partitionByChild.get(key);
+        List<Persistent> parents = partitionByChild.get(joinKey(targetReader, row));
         if (parents != null) {
             // the FK is in the parent row, so the association is as old as the parent rows
             long version = parentNode.rowsVersion();
@@ -129,29 +118,22 @@ class ResultScanParentAttachmentStrategy implements ParentAttachmentStrategy {
         int size = objects.size();
         for (int i = 0; i < size; i++) {
 
-            DataRow row = rows.get(i);
-
-            Object key;
-            if (joins.length > 1) {
-                List<Object> values = new ArrayList<>(joins.length);
-                for (int j = 0; j < joins.length; j++) {
-                    values.add(key(sourceReader.get(row, j)));
-                }
-                key = values;
-            } else {
-                key = key(sourceReader.get(row, 0));
-            }
-
-            List<Persistent> parents = partitionByChild.computeIfAbsent(key, k -> new ArrayList<>());
+            List<Persistent> parents = partitionByChild.computeIfAbsent(
+                    joinKey(sourceReader, rows.get(i)), k -> new ArrayList<>());
             parents.add(objects.get(i));
         }
     }
 
-    /**
-     * Converts a join value to a map key. A byte[] (e.g. a binary PK) has identity equals/hashCode, so it is wrapped
-     * in a ByteBuffer that compares by content.
-     */
-    private static Object key(Object value) {
-        return value instanceof byte[] bytes ? ByteBuffer.wrap(bytes) : value;
+    /** Returns a map key for the join values of the row. */
+    private Object joinKey(DataRowLayout.Reader reader, DataRow row) {
+        if (joins.length == 1) {
+            return IdValues.idKey(reader.get(row, 0));
+        }
+
+        Object[] values = new Object[joins.length];
+        for (int i = 0; i < joins.length; i++) {
+            values[i] = reader.get(row, i);
+        }
+        return IdValues.idTupleKey(values);
     }
 }

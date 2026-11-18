@@ -8,23 +8,66 @@
 		<dbAttribute name="BIN_ID" type="VARBINARY" primaryKey="true" mandatory="true" length="32"/>
 		<dbAttribute name="NAME" type="VARCHAR" length="10"/>
 	</dbEntity>
+	<dbEntity name="BINARY_PK_COMPOUND">
+		<dbAttribute name="BIN_ID" type="VARBINARY" primaryKey="true" mandatory="true" length="32"/>
+		<dbAttribute name="NAME" type="VARCHAR" length="10"/>
+		<dbAttribute name="NUM" type="INTEGER" primaryKey="true" mandatory="true"/>
+	</dbEntity>
+	<dbEntity name="BINARY_PK_COMPOUND_DETAIL">
+		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
+		<dbAttribute name="MASTER_BIN_ID" type="VARBINARY" length="32"/>
+		<dbAttribute name="MASTER_NUM" type="INTEGER"/>
+		<dbAttribute name="NAME" type="VARCHAR" length="10"/>
+	</dbEntity>
 	<dbEntity name="BINARY_PK_TEST2">
 		<dbAttribute name="DETAIL_NAME" type="VARCHAR" length="10"/>
 		<dbAttribute name="FK_ID" type="VARBINARY" length="32"/>
 		<dbAttribute name="ID" type="INTEGER" primaryKey="true" mandatory="true"/>
 	</dbEntity>
+	<dbEntity name="BINARY_PK_TEST3">
+		<dbAttribute name="BIN_ID" type="VARBINARY" primaryKey="true" mandatory="true" length="32"/>
+		<dbAttribute name="MASTER_FK" type="VARBINARY" length="32"/>
+		<dbAttribute name="NAME" type="VARCHAR" length="10"/>
+	</dbEntity>
+	<objEntity name="BinaryPKCompound" className="org.apache.cayenne.testdo.binary_pk.BinaryPKCompound" dbEntityName="BINARY_PK_COMPOUND">
+		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>
+	</objEntity>
+	<objEntity name="BinaryPKCompoundDetail" className="org.apache.cayenne.testdo.binary_pk.BinaryPKCompoundDetail" dbEntityName="BINARY_PK_COMPOUND_DETAIL">
+		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>
+	</objEntity>
 	<objEntity name="BinaryPKTest1" className="org.apache.cayenne.testdo.binary_pk.BinaryPKTest1" dbEntityName="BINARY_PK_TEST1">
 		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>
 	</objEntity>
 	<objEntity name="BinaryPKTest2" className="org.apache.cayenne.testdo.binary_pk.BinaryPKTest2" dbEntityName="BINARY_PK_TEST2">
 		<objAttribute name="detailName" type="java.lang.String" dbAttributePath="DETAIL_NAME"/>
 	</objEntity>
+	<objEntity name="BinaryPKTest3" className="org.apache.cayenne.testdo.binary_pk.BinaryPKTest3" dbEntityName="BINARY_PK_TEST3">
+		<objAttribute name="name" type="java.lang.String" dbAttributePath="NAME"/>
+	</objEntity>
+	<dbRelationship name="details" source="BINARY_PK_COMPOUND" target="BINARY_PK_COMPOUND_DETAIL" toMany="true">
+		<dbAttributePair source="BIN_ID" target="MASTER_BIN_ID"/>
+		<dbAttributePair source="NUM" target="MASTER_NUM"/>
+	</dbRelationship>
+	<dbRelationship name="master" source="BINARY_PK_COMPOUND_DETAIL" target="BINARY_PK_COMPOUND" foreignKey="true">
+		<dbAttributePair source="MASTER_BIN_ID" target="BIN_ID"/>
+		<dbAttributePair source="MASTER_NUM" target="NUM"/>
+	</dbRelationship>
+	<dbRelationship name="binaryPKChildren" source="BINARY_PK_TEST1" target="BINARY_PK_TEST3" toMany="true">
+		<dbAttributePair source="BIN_ID" target="MASTER_FK"/>
+	</dbRelationship>
 	<dbRelationship name="binaryPKDetails" source="BINARY_PK_TEST1" target="BINARY_PK_TEST2" toMany="true">
 		<dbAttributePair source="BIN_ID" target="FK_ID"/>
+	</dbRelationship>
+	<dbRelationship name="binaryPKMaster" source="BINARY_PK_TEST3" target="BINARY_PK_TEST1" foreignKey="true">
+		<dbAttributePair source="MASTER_FK" target="BIN_ID"/>
 	</dbRelationship>
 	<dbRelationship name="binaryPKMaster" source="BINARY_PK_TEST2" target="BINARY_PK_TEST1" foreignKey="true">
 		<dbAttributePair source="FK_ID" target="BIN_ID"/>
 	</dbRelationship>
+	<objRelationship name="details" source="BinaryPKCompound" target="BinaryPKCompoundDetail" dbRelationshipPath="details"/>
+	<objRelationship name="master" source="BinaryPKCompoundDetail" target="BinaryPKCompound" dbRelationshipPath="master"/>
+	<objRelationship name="binaryPKChildren" source="BinaryPKTest1" target="BinaryPKTest3" collectionType="java.util.Map" dbRelationshipPath="binaryPKChildren"/>
 	<objRelationship name="binaryPKDetails" source="BinaryPKTest1" target="BinaryPKTest2" dbRelationshipPath="binaryPKDetails"/>
 	<objRelationship name="binaryPKMaster" source="BinaryPKTest2" target="BinaryPKTest1" dbRelationshipPath="binaryPKMaster"/>
+	<objRelationship name="binaryPKMaster" source="BinaryPKTest3" target="BinaryPKTest1" dbRelationshipPath="binaryPKMaster"/>
 </dataMap>

@@ -20,16 +20,14 @@ package org.apache.cayenne.access.jdbc;
 
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ResultIterator;
-import org.apache.cayenne.map.compiled.CompiledColumn;
 import org.apache.cayenne.map.compiled.CompiledTable;
+import org.apache.cayenne.util.IdValues;
 import org.apache.cayenne.util.ResultIteratorIterator;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
@@ -45,7 +43,7 @@ public class DistinctResultIterator<T> implements ResultIterator<T> {
 
     private final ResultIterator<T> delegate;
     private final Set<Object> fetchedIds;
-    private final CompiledTable defaultTable;
+    private final String[] pkNames;
     private final boolean compareFullRows;
 
     private T nextDataRow;
@@ -66,7 +64,7 @@ public class DistinctResultIterator<T> implements ResultIterator<T> {
         }
 
         this.delegate = delegate;
-        this.defaultTable = defaultTable;
+        this.pkNames = defaultTable.primaryKeyNames().toArray(String[]::new);
         this.fetchedIds = new HashSet<>();
         this.compareFullRows = compareFullRows;
 
@@ -118,6 +116,18 @@ public class DistinctResultIterator<T> implements ResultIterator<T> {
         return row;
     }
 
+    private Object idKey(DataRow row) {
+        if (pkNames.length == 1) {
+            return IdValues.valueKey(row.get(pkNames[0]));
+        }
+
+        Object[] id = new Object[pkNames.length];
+        for (int i = 0; i < pkNames.length; i++) {
+            id[i] = row.get(pkNames[i]);
+        }
+        return IdValues.valueTupleKey(id);
+    }
+
     /**
      * @since 3.0
      */
@@ -143,7 +153,8 @@ public class DistinctResultIterator<T> implements ResultIterator<T> {
         while (delegate.hasNextRow()) {
             T next = delegate.nextRow();
 
-            if (fetchedIds.add(next)) {
+            Object key = next instanceof Object[] row ? IdValues.valueTupleKey(row) : next;
+            if (fetchedIds.add(key)) {
                 this.nextDataRow = next;
                 break;
             }
@@ -155,16 +166,7 @@ public class DistinctResultIterator<T> implements ResultIterator<T> {
         while (delegate.hasNextRow()) {
             T next = delegate.nextRow();
 
-            // create id map...
-            // TODO: this can be optimized by creating an array with id keys
-            // to avoid iterating over default entity attributes...
-
-            Map<String, Object> id = new HashMap<>();
-            for (final CompiledColumn pk : defaultTable.primaryKey()) {
-                id.put(pk.name(), ((DataRow) next).get(pk.name()));
-            }
-
-            if (fetchedIds.add(id)) {
+            if (fetchedIds.add(idKey((DataRow) next))) {
                 this.nextDataRow = next;
                 break;
             }

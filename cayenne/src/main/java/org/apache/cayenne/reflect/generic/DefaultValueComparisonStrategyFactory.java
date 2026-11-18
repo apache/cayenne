@@ -22,8 +22,7 @@ package org.apache.cayenne.reflect.generic;
 import org.apache.cayenne.access.types.ValueObjectType;
 import org.apache.cayenne.access.types.ValueObjectTypeRegistry;
 import org.apache.cayenne.di.Inject;
-
-import java.util.Objects;
+import org.apache.cayenne.util.IdValues;
 
 /**
  * @since 4.2
@@ -66,7 +65,7 @@ public class DefaultValueComparisonStrategyFactory implements ValueComparisonStr
     static class DefaultValueComparisonStrategy implements ValueComparisonStrategy<Object> {
         @Override
         public boolean equals(Object a, Object b) {
-            return Objects.equals(a, b);
+            return IdValues.valueEquals(a, b);
         }
     }
 }

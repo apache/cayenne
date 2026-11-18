@@ -20,6 +20,8 @@
 package org.apache.cayenne.access.flush;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.cayenne.ObjectId;
 import org.junit.jupiter.api.Test;
@@ -47,4 +49,29 @@ public class EffectiveOpIdTest {
         assertNotEquals(effectiveOpId1, effectiveOpId3);
     }
 
+    @Test
+    public void equalsBinaryKey() {
+        EffectiveOpId id1 = new EffectiveOpId("test", Map.of("pk", new byte[]{1, 2, 3}));
+        EffectiveOpId id2 = new EffectiveOpId("test", Map.of("pk", new byte[]{1, 2, 3}));
+        EffectiveOpId id3 = new EffectiveOpId("test", Map.of("pk", new byte[]{1, 2, 4}));
+
+        assertEquals(id1, id2);
+        assertEquals(id1.hashCode(), id2.hashCode());
+        assertNotEquals(id1, id3);
+    }
+
+    @Test
+    public void equalsCompoundBinaryKey() {
+        Map<String, Object> s1 = new HashMap<>();
+        s1.put("a", new byte[]{1, 2, 3});
+        s1.put("b", 5);
+        Map<String, Object> s2 = new HashMap<>();
+        s2.put("a", new byte[]{1, 2, 3});
+        s2.put("b", 5L);
+
+        EffectiveOpId id1 = new EffectiveOpId("test", s1);
+        EffectiveOpId id2 = new EffectiveOpId("test", s2);
+        assertEquals(id1, id2);
+        assertEquals(id1.hashCode(), id2.hashCode());
+    }
 }

@@ -31,6 +31,7 @@ import java.util.function.Function;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.util.ConversionUtil;
+import org.apache.cayenne.util.IdValues;
 import org.apache.cayenne.util.Util;
 import org.apache.cayenne.util.XMLEncoder;
 
@@ -109,7 +110,7 @@ public abstract sealed class Expression implements XMLSerializable permits Aggre
 		int result = getClass().getName().hashCode();
 		int opCount = getOperandCount();
 		for (int i = 0; i < opCount; i++) {
-			result = 31 * result + Objects.hashCode(getOperand(i));
+			result = 31 * result + IdValues.valueHashCode(getOperand(i));
 		}
 		return result;
 	}
