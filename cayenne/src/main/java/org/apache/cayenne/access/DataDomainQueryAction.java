@@ -57,6 +57,7 @@ import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
 import org.apache.cayenne.tx.BaseTransaction;
 import org.apache.cayenne.tx.ReadOnlyTransaction;
 import org.apache.cayenne.tx.Transaction;
+import org.apache.cayenne.util.IdValues;
 import org.apache.cayenne.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -674,8 +675,8 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
 
             // distinct filtering
             if (!metadata.isSuppressingDistinct()) {
-                Set<List<?>> seen = HashSet.newHashSet(result.size());
-                result.removeIf(objects -> !seen.add(Arrays.asList(objects)));
+                Set<Object> seen = HashSet.newHashSet(result.size());
+                result.removeIf(objects -> !seen.add(IdValues.valueTupleKey(objects)));
             }
 
             return result;

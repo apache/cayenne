@@ -20,6 +20,7 @@
 package org.apache.cayenne.access.flush.operation;
 
 import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.util.IdValues;
 
 import java.util.Map;
 import java.util.Objects;
@@ -103,12 +104,12 @@ public class OpIdFactory {
             if(!Objects.equals(originalId.getEntityName(), other.getEntityName())) {
                 return false;
             }
-            return originalId.getReplacementIdMap().equals(other.getReplacementIdMap());
+            return IdValues.idSnapshotEquals(originalId.getReplacementIdMap(), other.getReplacementIdMap());
         }
 
         @Override
         public int hashCode() {
-            return 31 * getEntityName().hashCode() + originalId.getReplacementIdMap().hashCode();
+            return 31 * getEntityName().hashCode() + IdValues.idSnapshotHashCode(originalId.getReplacementIdMap());
         }
 
         @Override

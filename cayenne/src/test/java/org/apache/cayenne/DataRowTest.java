@@ -204,4 +204,25 @@ public class DataRowTest {
     public void lengthMismatch() {
         assertThrows(IllegalArgumentException.class, () -> DataRow.of("E", ABC, new Object[]{1}, 1));
     }
+
+    @Test
+    public void equalsAndHashCodeArrayValues() {
+        DataRow row = rowOf(new byte[]{1, 2, 3}, null, "x");
+        DataRow sameLayout = rowOf(new byte[]{1, 2, 3}, null, "x");
+        DataRow otherLayout = rowOf(DataRowLayout.of("c", "a", "b"), "x", new byte[]{1, 2, 3}, null);
+        DataRow otherContent = rowOf(new byte[]{1, 2, 4}, null, "x");
+
+        assertEquals(row, sameLayout);
+        assertEquals(row.hashCode(), sameLayout.hashCode());
+        assertEquals(row, otherLayout);
+        assertEquals(otherLayout, row);
+        assertEquals(row.hashCode(), otherLayout.hashCode());
+        assertNotEquals(row, otherContent);
+    }
+
+    @Test
+    public void toStringArrayValues() {
+        DataRow row = rowOf(new byte[]{1, 2, 10, -1}, null, "x");
+        assertTrue(row.toString().contains("a=01020AFF, b=null, c=x"), row.toString());
+    }
 }

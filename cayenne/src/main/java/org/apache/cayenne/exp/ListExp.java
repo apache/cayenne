@@ -163,7 +163,7 @@ public final class ListExp extends Expression {
 
 	@Override
 	public int hashCode() {
-		return Arrays.hashCode(values);
+		return Arrays.deepHashCode(values);
 	}
 
 	@Override

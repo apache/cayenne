@@ -388,4 +388,17 @@ public class ExpressionTest {
 		Expression exp4 = ExpressionFactory.exp("a = 123.0f");
 		assertEquals("a = 123.0f", exp4.toString());
 	}
+
+	@Test
+	public void equalsAndHashCodeArrayOperands() {
+		Expression e1 = ExpressionFactory.matchDbExp("BIN_ID", new byte[]{1, 2, 3});
+		Expression e2 = ExpressionFactory.matchDbExp("BIN_ID", new byte[]{1, 2, 3});
+		assertEquals(e1, e2);
+		assertEquals(e1.hashCode(), e2.hashCode());
+
+		Expression in1 = ExpressionFactory.inDbExp("BIN_ID", new byte[]{1, 2, 3}, new byte[]{4, 5});
+		Expression in2 = ExpressionFactory.inDbExp("BIN_ID", new byte[]{1, 2, 3}, new byte[]{4, 5});
+		assertEquals(in1, in2);
+		assertEquals(in1.hashCode(), in2.hashCode());
+	}
 }

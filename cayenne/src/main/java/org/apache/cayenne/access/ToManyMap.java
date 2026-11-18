@@ -20,7 +20,6 @@
 package org.apache.cayenne.access;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -57,7 +56,7 @@ class ToManyMap<K, V> extends ToManyHolder<V> implements Map<K, V> {
         // resolve on the fly if owner is transient... Can't do it in constructor, as
         // object may be in an inconsistent state during construction time
         if (isTransientParent()) {
-            objectMap = new HashMap<>();
+            objectMap = new ContentKeyMap<>();
             return false;
         }
 
@@ -98,7 +97,7 @@ class ToManyMap<K, V> extends ToManyHolder<V> implements Map<K, V> {
      */
     @SuppressWarnings("unchecked")
     protected Map<K, V> indexCollection(Collection<V> collection) {
-        Map<K, V> map = HashMap.newHashMap(collection.size());
+        Map<K, V> map = new ContentKeyMap<>(collection.size());
 
         for (V next : collection) {
             K key = (K) mapKeyAccessor.getValue(next);

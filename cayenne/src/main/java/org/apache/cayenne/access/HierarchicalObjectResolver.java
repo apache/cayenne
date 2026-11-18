@@ -34,13 +34,15 @@ import org.apache.cayenne.query.PrefetchSelectQuery;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.QueryMetadata;
 import org.apache.cayenne.reflect.ClassDescriptor;
+import org.apache.cayenne.util.IdValues;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Processes a number of DataRow sets corresponding to a given prefetch tree, resolving
@@ -162,33 +164,33 @@ class HierarchicalObjectResolver {
             List<PrefetchSelectQuery<DataRow>> queries = new ArrayList<>();
             PrefetchSelectQuery<DataRow> currentQuery = null;
             int qualifiersCount = 0;
-            Set<List<Object>> values = new HashSet<>();
+            Map<Object, Object[]> values = new LinkedHashMap<>();
 
             for (DataRow dataRow : parentDataRows) {
                 // handling too big qualifiers
                 if (currentQuery == null
                         || (maxIdQualifierSize > 0 && qualifiersCount + joins.size() > maxIdQualifierSize)) {
 
-                    createDisjointByIdPrefetchQualifier(pathPrefix, currentQuery, joins, values);
+                    createDisjointByIdPrefetchQualifier(pathPrefix, currentQuery, joins, values.values());
 
                     currentQuery = new PrefetchSelectQuery<>(node.getPath(), relationship);
                     currentQuery.fetchDataRows();
                     queries.add(currentQuery);
                     qualifiersCount = 0;
-                    values = new HashSet<>();
+                    values = new LinkedHashMap<>();
                 }
 
-                List<Object> joinValues = new ArrayList<>(joins.size());
-                for (int i = 0; i < joins.size(); i++) {
-                    joinValues.add(keyReader.get(dataRow, i));
+                Object[] joinValues = new Object[joins.size()];
+                for (int i = 0; i < joinValues.length; i++) {
+                    joinValues[i] = keyReader.get(dataRow, i);
                 }
 
-                if(values.add(joinValues)) {
+                if (values.putIfAbsent(IdValues.valueTupleKey(joinValues), joinValues) == null) {
                     qualifiersCount += joins.size();
                 }
             }
             // add final part of values
-            createDisjointByIdPrefetchQualifier(pathPrefix, currentQuery, joins, values);
+            createDisjointByIdPrefetchQualifier(pathPrefix, currentQuery, joins, values.values());
 
             PrefetchTreeNode jointSubtree = node.cloneJointSubtree();
 
@@ -244,7 +246,7 @@ class HierarchicalObjectResolver {
         }
 
         private void createDisjointByIdPrefetchQualifier(CayennePath pathPrefix, PrefetchSelectQuery<?> currentQuery,
-                                                         List<DbJoin> joins, Set<List<Object>> values) {
+                                                         List<DbJoin> joins, Collection<Object[]> values) {
             if (currentQuery == null) return;
 
              // Use an IN clause for the list of prefetch IDs, when the
@@ -253,18 +255,18 @@ class HierarchicalObjectResolver {
             if (joins.size() == 1 && values.size() > 1) {
                 currentQuery.and( ExpressionFactory.inDbExp(
                     pathPrefix.dot(joins.get(0).getTargetName()).value(),
-                    values.stream().flatMap(List::stream).collect(Collectors.toSet())
+                    values.stream().map(joinValues -> joinValues[0]).toList()
                 ));
             } else { // Handle a single value or compound prefetch ID predicates
             	// SQL: ... (field1=? and field2=? ...) OR (field1=? and field2=? ...) etc
             	Expression allJoinsQualifier;
                 Expression[] qualifiers = new Expression[values.size()];
                 int i = 0;
-                for(List<Object> joinValues : values) {
+                for(Object[] joinValues : values) {
                     allJoinsQualifier = null;
                     for(int j=0; j<joins.size(); j++) {
                         Expression joinQualifier = ExpressionFactory
-                                .matchDbExp(pathPrefix.dot(joins.get(j).getTargetName()).value(), joinValues.get(j));
+                                .matchDbExp(pathPrefix.dot(joins.get(j).getTargetName()).value(), joinValues[j]);
                         if (allJoinsQualifier == null) {
                             allJoinsQualifier = joinQualifier;
                         } else {

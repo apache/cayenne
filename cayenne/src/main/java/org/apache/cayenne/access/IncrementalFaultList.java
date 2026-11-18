@@ -27,6 +27,7 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryMetadata;
+import org.apache.cayenne.util.IdValues;
 import java.util.Objects;
 
 import java.util.ArrayList;
@@ -761,7 +762,7 @@ public class IncrementalFaultList<E> implements List<E> {
 				// due to object uniquing this should be sufficient
 				return object == objectInTheList;
 			} else {
-				return ((Persistent) object).getObjectId().getIdSnapshot().equals(objectInTheList);
+				return idMatches((Persistent) object, objectInTheList);
 			}
 		}
 
@@ -771,8 +772,13 @@ public class IncrementalFaultList<E> implements List<E> {
 				return false;
 			}
 
-			Persistent persistent = (Persistent) object;
-			return persistent.getObjectId().getIdSnapshot().equals(objectInTheList);
+			return idMatches((Persistent) object, objectInTheList);
+		}
+
+		@SuppressWarnings("unchecked")
+		private boolean idMatches(Persistent object, Object idInTheList) {
+			return idInTheList instanceof Map
+					&& IdValues.idSnapshotEquals(object.getObjectId().getIdSnapshot(), (Map<String, ?>) idInTheList);
 		}
 	}
 

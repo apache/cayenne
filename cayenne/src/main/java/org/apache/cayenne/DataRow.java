@@ -19,6 +19,8 @@
 
 package org.apache.cayenne;
 
+import org.apache.cayenne.util.IdValues;
+
 import java.io.Serializable;
 import java.util.AbstractCollection;
 import java.util.AbstractMap;
@@ -277,7 +279,7 @@ public final class DataRow implements Map<String, Object>, Serializable {
 
     /**
      * Compares the rows as maps, i.e. by their keys and values and regardless of their entity names, versions or the
-     * order of their columns.
+     * order of their columns. Array values are compared by content.
      */
     @Override
     public boolean equals(Object o) {
@@ -285,7 +287,12 @@ public final class DataRow implements Map<String, Object>, Serializable {
             return true;
         }
         if (o instanceof DataRow other && other.layout == layout) {
-            return Arrays.equals(values, other.values);
+            for (int i = 0; i < values.length; i++) {
+                if (!IdValues.valueEquals(values[i], other.values[i])) {
+                    return false;
+                }
+            }
+            return true;
         }
         if (!(o instanceof Map<?, ?> map) || map.size() != values.length) {
             return false;
@@ -297,7 +304,7 @@ public final class DataRow implements Map<String, Object>, Serializable {
                 if (map.get(name) != null || !map.containsKey(name)) {
                     return false;
                 }
-            } else if (!value.equals(map.get(name))) {
+            } else if (!IdValues.valueEquals(value, map.get(name))) {
                 return false;
             }
         }
@@ -309,7 +316,7 @@ public final class DataRow implements Map<String, Object>, Serializable {
         // the Map contract: the sum of the entry hashes, each being the key hash xor the value hash
         int h = 0;
         for (int i = 0; i < values.length; i++) {
-            h += layout.nameAt(i).hashCode() ^ Objects.hashCode(values[i]);
+            h += layout.nameAt(i).hashCode() ^ IdValues.valueHashCode(values[i]);
         }
         return h;
     }
@@ -322,7 +329,7 @@ public final class DataRow implements Map<String, Object>, Serializable {
             if (i > 0) {
                 buffer.append(", ");
             }
-            buffer.append(layout.nameAt(i)).append('=').append(values[i]);
+            IdValues.append(buffer.append(layout.nameAt(i)).append('='), values[i]);
         }
         return buffer.append("}, version=").append(version).append(']').toString();
     }

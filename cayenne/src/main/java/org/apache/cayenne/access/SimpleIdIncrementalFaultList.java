@@ -28,6 +28,7 @@ import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryMetadata;
+import org.apache.cayenne.util.IdValues;
 
 /**
  * A paginated list that implements a strategy for retrieval of entities with a single PK
@@ -84,7 +85,7 @@ class SimpleIdIncrementalFaultList<E> extends IncrementalFaultList<E> {
                 Map<String, Object> idSnapshot = persistent.getObjectId().getIdSnapshot();
 
                 return idSnapshot.size() == 1
-                        && objectInTheList.equals(idSnapshot.get(pk.getName()));
+                        && IdValues.idEquals(objectInTheList, idSnapshot.get(pk.getName()));
             }
         }
 
@@ -98,7 +99,7 @@ class SimpleIdIncrementalFaultList<E> extends IncrementalFaultList<E> {
             Map<String, Object> idSnapshot = persistent.getObjectId().getIdSnapshot();
 
             return idSnapshot.size() == 1
-                    && objectInTheList.equals(idSnapshot.get(pk.getName()));
+                    && IdValues.idEquals(objectInTheList, idSnapshot.get(pk.getName()));
         }
     }
 
@@ -119,7 +120,7 @@ class SimpleIdIncrementalFaultList<E> extends IncrementalFaultList<E> {
 
                 Map<?, ?> map = (Map<?, ?>) object;
 
-                return objectInTheList.equals(map.get(pk.getName()));
+                return IdValues.idEquals(objectInTheList, map.get(pk.getName()));
             }
 
             return false;
@@ -133,7 +134,7 @@ class SimpleIdIncrementalFaultList<E> extends IncrementalFaultList<E> {
             }
 
             Map<?, ?> map = (Map<?, ?>) object;
-            return objectInTheList.equals(map.get(pk.getName()));
+            return IdValues.idEquals(objectInTheList, map.get(pk.getName()));
         }
     }
 }

@@ -22,6 +22,7 @@ package org.apache.cayenne.exp;
 import java.io.IOException;
 
 import org.apache.cayenne.Persistent;
+import org.apache.cayenne.util.IdValues;
 
 /**
  * A plain value in the place of an expression, e.g. a constant select column or a whole where clause. A value that is
@@ -89,12 +90,12 @@ public final class ScalarExp extends Expression {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ScalarExp other = (ScalarExp) o;
-        return value != null ? value.equals(other.value) : other.value == null;
+        return IdValues.valueEquals(value, other.value);
     }
 
     @Override
     public int hashCode() {
-        return value != null ? value.hashCode() : 0;
+        return IdValues.valueHashCode(value);
     }
 
     @Override
