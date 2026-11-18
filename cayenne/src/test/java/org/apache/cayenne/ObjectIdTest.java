@@ -294,4 +294,31 @@ public class ObjectIdTest {
         assertEquals(i1, i2);
         assertEquals(i1.toString(), i2.toString());
     }
+
+    @Test
+    public void toStringBinaryKey() {
+        ObjectId i1 = ObjectId.of("E", "ID", new byte[]{1, 2, 10, -1});
+        ObjectId i2 = ObjectId.of("E", "ID", new byte[]{1, 2, 10, -1});
+
+        assertEquals("<ObjectId:E, ID=01020AFF>", i1.toString());
+        assertEquals(i1, i2);
+        assertEquals(i1.toString(), i2.toString());
+    }
+
+    @Test
+    public void toStringCompoundBinaryKey() {
+        Map<String, Object> m1 = new HashMap<>();
+        m1.put("a", new byte[]{1, 2, 10, -1});
+        m1.put("b", 5);
+        ObjectId i1 = ObjectId.of("E", m1);
+
+        Map<String, Object> m2 = new HashMap<>();
+        m2.put("b", 5);
+        m2.put("a", new byte[]{1, 2, 10, -1});
+        ObjectId i2 = ObjectId.of("E", m2);
+
+        assertEquals("<ObjectId:E, a=01020AFF, b=5>", i1.toString());
+        assertEquals(i1, i2);
+        assertEquals(i1.toString(), i2.toString());
+    }
 }

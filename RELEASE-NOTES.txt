@@ -16,6 +16,7 @@ Bug Fixes:
 
 CAY-3071 DataNodeSQLAction could lose update count info
 CAY-3073 AI plugin / MCP db import schema description inconsistencies
+CAY-3080 ObjectId.toString() prints binary key values as object identity
 
 ----------------------------------
 Release: 5.0-RC1
