@@ -19,6 +19,7 @@
 
 package org.apache.cayenne;
 
+import org.apache.cayenne.util.IDUtil;
 import org.apache.cayenne.util.SingleEntryMap;
 
 import java.util.Arrays;
@@ -87,7 +88,24 @@ class ObjectIdSingle implements ObjectId {
 
     @Override
     public String toString() {
-        return "<ObjectId:" + entityName + ", " + keyName + "=" + value + ">";
+        StringBuilder buffer = new StringBuilder().append("<ObjectId:").append(entityName).append(", ")
+                .append(keyName).append("=");
+        appendIdValue(buffer, value);
+        return buffer.append(">").toString();
+    }
+
+    /**
+     * Appends an id value for {@link #toString()}, printing a byte[] (e.g. a binary PK) as a hex string, so that equal
+     * ids produce the same string.
+     */
+    static void appendIdValue(StringBuilder buffer, Object value) {
+        if (value instanceof byte[] bytes) {
+            for (byte b : bytes) {
+                IDUtil.appendFormattedByte(buffer, b);
+            }
+        } else {
+            buffer.append(value);
+        }
     }
 
     String getKeyName() {

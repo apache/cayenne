@@ -17,6 +17,7 @@ Bug Fixes:
 CAY-3071 DataNodeSQLAction could lose update count info
 CAY-3073 AI plugin / MCP db import schema description inconsistencies
 CAY-3078 Disjoint to-one prefetch doesn't attach parents over binary keys
+CAY-3080 ObjectId.toString() prints binary key values as object identity
 
 ----------------------------------
 Release: 5.0-RC1

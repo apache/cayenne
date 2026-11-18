@@ -213,7 +213,8 @@ class ObjectIdCompound implements ObjectId {
         String[] keys = objectIdKeys.keySet().toArray(new String[0]);
         Arrays.sort(keys);
         for (String key : keys) {
-            buffer.append(", ").append(key).append("=").append(objectIdKeys.get(key));
+            buffer.append(", ").append(key).append("=");
+            ObjectIdSingle.appendIdValue(buffer, objectIdKeys.get(key));
         }
         return buffer.append(">").toString();
     }
