@@ -21,6 +21,7 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.query.ObjectSelect;
+import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.binary_pk.BinaryPKTest1;
 import org.apache.cayenne.testdo.binary_pk.BinaryPKTest2;
 import org.apache.cayenne.unit.CayenneProjects;
@@ -28,7 +29,12 @@ import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class DataContextBinaryPKIT {
@@ -79,5 +85,64 @@ public class DataContextBinaryPKIT {
         assertNotNull(fetchedMaster);
         assertEquals(PersistenceState.HOLLOW, fetchedMaster.getPersistenceState());
         assertEquals("master1", fetchedMaster.getName());
+    }
+
+    @Test
+    public void disjointPrefetchToOneBinaryPK() throws SQLException {
+        if (!env.testDbAdapter().supportsBinaryPK()) {
+            return;
+        }
+
+        TableHelper tMaster = masterTable();
+        TableHelper tDetail = detailTable();
+        tMaster.insert(new byte[]{1, 2, 3}, "master1");
+        tMaster.insert(new byte[]{4, 5, 6}, "master2");
+        tDetail.insert(1, new byte[]{1, 2, 3}, "detail1");
+        tDetail.insert(2, new byte[]{4, 5, 6}, "detail2");
+
+        List<BinaryPKTest2> details = ObjectSelect.query(BinaryPKTest2.class)
+                .prefetch(BinaryPKTest2.TO_BINARY_PKMASTER.disjoint())
+                .orderBy(BinaryPKTest2.DETAIL_NAME.asc())
+                .select(env.context());
+        assertEquals(2, details.size());
+
+        env.runWithQueriesBlocked(() -> {
+            assertPrefetchedMaster("master1", details.get(0));
+            assertPrefetchedMaster("master2", details.get(1));
+        });
+    }
+
+    @Test
+    public void disjointByIdPrefetchToOneBinaryPK() throws SQLException {
+        if (!env.testDbAdapter().supportsBinaryPK()) {
+            return;
+        }
+
+        // a single key, so that the prefetch query is a plain "=" and not an IN list
+        masterTable().insert(new byte[]{1, 2, 3}, "master1");
+        detailTable().insert(1, new byte[]{1, 2, 3}, "detail1");
+
+        List<BinaryPKTest2> details = ObjectSelect.query(BinaryPKTest2.class)
+                .prefetch(BinaryPKTest2.TO_BINARY_PKMASTER.disjointById())
+                .select(env.context());
+        assertEquals(1, details.size());
+
+        env.runWithQueriesBlocked(() -> assertPrefetchedMaster("master1", details.get(0)));
+    }
+
+    private TableHelper masterTable() {
+        return env.table("BINARY_PK_TEST1").setColumns("BIN_ID", "NAME")
+                .setColumnTypes(Types.VARBINARY, Types.VARCHAR);
+    }
+
+    private TableHelper detailTable() {
+        return env.table("BINARY_PK_TEST2").setColumns("ID", "FK_ID", "DETAIL_NAME")
+                .setColumnTypes(Types.INTEGER, Types.VARBINARY, Types.VARCHAR);
+    }
+
+    private static void assertPrefetchedMaster(String expectedName, BinaryPKTest2 detail) {
+        BinaryPKTest1 master = assertInstanceOf(BinaryPKTest1.class, detail.readPropertyDirectly("toBinaryPKMaster"));
+        assertEquals(PersistenceState.COMMITTED, master.getPersistenceState());
+        assertEquals(expectedName, master.getName());
     }
 }
