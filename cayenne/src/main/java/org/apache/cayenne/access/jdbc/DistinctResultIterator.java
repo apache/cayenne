@@ -153,7 +153,7 @@ public class DistinctResultIterator<T> implements ResultIterator<T> {
         while (delegate.hasNextRow()) {
             T next = delegate.nextRow();
 
-            Object key = next instanceof Object[] row ? IdValues.valueTupleKey(row) : next;
+            Object key = next instanceof Object[] row ? IdValues.valueTupleKey(row) : IdValues.valueKey(next);
             if (fetchedIds.add(key)) {
                 this.nextDataRow = next;
                 break;

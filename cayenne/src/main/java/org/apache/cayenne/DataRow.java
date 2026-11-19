@@ -279,7 +279,7 @@ public final class DataRow implements Map<String, Object>, Serializable {
 
     /**
      * Compares the rows as maps, i.e. by their keys and values and regardless of their entity names, versions or the
-     * order of their columns. Array values are compared by content.
+     * order of their columns. Array values are compared by content, unlike in other Map implementations.
      */
     @Override
     public boolean equals(Object o) {
@@ -313,7 +313,7 @@ public final class DataRow implements Map<String, Object>, Serializable {
 
     @Override
     public int hashCode() {
-        // the Map contract: the sum of the entry hashes, each being the key hash xor the value hash
+        // like Map.hashCode, but arrays are hashed by content
         int h = 0;
         for (int i = 0; i < values.length; i++) {
             h += layout.nameAt(i).hashCode() ^ IdValues.valueHashCode(values[i]);

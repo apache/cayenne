@@ -135,6 +135,10 @@ abstract class Evaluator {
 
                 // compare the PK value the same way as a "db:" path value
                 Object pk = Cayenne.pkForObject(lhsPersistent);
+                if (pk instanceof Number && !(rhs instanceof Number)) {
+                    // the BigDecimal evaluator would throw converting a non-numeric value
+                    return false;
+                }
                 return evaluator(pk).eq(pk, rhs);
             }
         });
