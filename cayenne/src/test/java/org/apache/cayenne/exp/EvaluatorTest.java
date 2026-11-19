@@ -229,6 +229,45 @@ public class EvaluatorTest {
         assertFalse(e.eq(lhs, rhs2));
         assertFalse(e.eq(lhs, rhsId2));
         assertFalse(e.eq(lhs, 4));
+
+        assertTrue(e.eq(lhs, 3L));
+        assertTrue(e.eq(lhs, new BigDecimal("3")));
+        assertTrue(e.eq(lhs, Map.of("k", 3L)));
+        assertFalse(e.eq(lhs, 3.5));
+        assertFalse(e.eq(lhs, Map.of("k", 4L)));
+    }
+
+    @Test
+    public void evaluator_ByteArray() {
+        byte[] lhs = {1, 2, 3};
+        Evaluator e = Evaluator.evaluator(lhs);
+        assertNotNull(e);
+        assertTrue(e.eq(lhs, new byte[]{1, 2, 3}));
+        assertFalse(e.eq(lhs, new byte[]{1, 2, 4}));
+        assertFalse(e.eq(lhs, "010203"));
+        assertFalse(e.eq(lhs, null));
+    }
+
+    @Test
+    public void evaluator_Persistent_BinaryId() {
+
+        ObjectId lhsId = ObjectId.of("X", "k", new byte[]{1, 2, 3});
+        Persistent lhs = TestObjects.committedObject(lhsId);
+
+        Evaluator e = Evaluator.evaluator(lhs);
+        assertNotNull(e);
+
+        ObjectId rhsId1 = ObjectId.of("X", "k", new byte[]{1, 2, 3});
+        Persistent rhs1 = TestObjects.committedObject(rhsId1);
+
+        assertTrue(e.eq(lhs, rhs1));
+        assertTrue(e.eq(lhs, rhsId1));
+        assertTrue(e.eq(lhs, new byte[]{1, 2, 3}));
+        assertTrue(e.eq(lhs, Map.of("k", new byte[]{1, 2, 3})));
+
+        assertFalse(e.eq(lhs, new byte[]{1, 2, 4}));
+        assertFalse(e.eq(lhs, Map.of("k", new byte[]{1, 2, 4})));
+        assertFalse(e.eq(lhs, 5));
     }
 
     @Test

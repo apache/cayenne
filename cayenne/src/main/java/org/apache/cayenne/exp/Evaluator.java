@@ -31,6 +31,7 @@ import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.Persistent;
 import org.apache.cayenne.util.ConversionUtil;
+import org.apache.cayenne.util.IdValues;
 
 /**
  * Performs argument conversions for a calling binary expression, so that the
@@ -93,7 +94,7 @@ abstract class Evaluator {
         DEFAULT_EVALUATOR = new NonNullLhsEvaluator(new Evaluator() {
             @Override
             boolean eq(Object lhs, Object rhs) {
-                return lhs.equals(rhs);
+                return IdValues.valueEquals(lhs, rhs);
             }
 
             @Override
@@ -109,6 +110,7 @@ abstract class Evaluator {
                 return null;
             }
 
+            @SuppressWarnings("unchecked")
             @Override
             boolean eq(Object lhs, Object rhs) {
 
@@ -123,7 +125,7 @@ abstract class Evaluator {
                 }
 
                 if (rhs instanceof Map) {
-                    return lhsPersistent.getObjectId().getIdSnapshot().equals(rhs);
+                    return IdValues.idSnapshotEquals(lhsPersistent.getObjectId().getIdSnapshot(), (Map<String, ?>) rhs);
                 }
 
                 if (lhsPersistent.getObjectId().getIdSnapshot().size() != 1) {
@@ -131,19 +133,9 @@ abstract class Evaluator {
                     return false;
                 }
 
-                if (rhs instanceof Number) {
-
-                    // only care about whole numbers
-                    if (rhs instanceof Integer) {
-                        return Cayenne.longPKForObject(lhsPersistent) == ((Number) rhs).longValue();
-                    }
-
-                    if (rhs instanceof Long) {
-                        return Cayenne.longPKForObject(lhsPersistent) == ((Number) rhs).longValue();
-                    }
-                }
-
-                return Cayenne.pkForObject(lhsPersistent).equals(rhs);
+                // compare the PK value the same way as a "db:" path value
+                Object pk = Cayenne.pkForObject(lhsPersistent);
+                return evaluator(pk).eq(pk, rhs);
             }
         });
 

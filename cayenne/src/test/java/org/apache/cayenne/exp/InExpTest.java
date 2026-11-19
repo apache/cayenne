@@ -22,6 +22,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.junit.jupiter.api.Test;
@@ -67,6 +69,28 @@ public class InExpTest {
 		Painting noMatch = new Painting();
 		assertFalse(in.match(noMatch));
 		assertFalse(notIn.match(noMatch));
+	}
+
+	@Test
+	public void evaluate_ByteArray() {
+		Map<String, Object> row = Map.of("BIN_ID", new byte[] {1, 2, 3});
+		List<byte[]> matching = List.of(new byte[] {4, 5}, new byte[] {1, 2, 3});
+		List<byte[]> notMatching = List.of(new byte[] {4, 5}, new byte[] {1, 2});
+
+		assertTrue(ExpressionFactory.exp("db:BIN_ID in $ids", matching).match(row));
+		assertFalse(ExpressionFactory.exp("db:BIN_ID not in $ids", matching).match(row));
+		assertFalse(ExpressionFactory.exp("db:BIN_ID in $ids", notMatching).match(row));
+		assertTrue(ExpressionFactory.exp("db:BIN_ID not in $ids", notMatching).match(row));
+	}
+
+	@Test
+	public void evaluate_SingleByteArray() {
+		Map<String, Object> row = Map.of("BIN_ID", new byte[] {1, 2, 3});
+
+		assertTrue(ExpressionFactory.exp("db:BIN_ID in $id", (Object) new byte[] {1, 2, 3}).match(row));
+		assertFalse(ExpressionFactory.exp("db:BIN_ID not in $id", (Object) new byte[] {1, 2, 3}).match(row));
+		assertFalse(ExpressionFactory.exp("db:BIN_ID in $id", (Object) new byte[] {4, 5}).match(row));
+		assertTrue(ExpressionFactory.exp("db:BIN_ID not in $id", (Object) new byte[] {4, 5}).match(row));
 	}
 
 }
