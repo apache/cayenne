@@ -29,6 +29,7 @@ import org.apache.cayenne.map.compiled.CompiledEntity;
 import org.apache.cayenne.map.compiled.CompiledProcedure;
 import org.apache.cayenne.query.resolved.ResolvedProcedure;
 import org.apache.cayenne.query.resolved.ResolvedQuery;
+import org.apache.cayenne.util.IdValues;
 import org.apache.cayenne.util.ToStringBuilder;
 
 import java.util.ArrayList;
@@ -278,7 +279,8 @@ public class ProcedureQuery<T> implements Query<T> {
             List<String> keys = new ArrayList<>(parameters.keySet());
             Collections.sort(keys);
             for (String parameterKey : keys) {
-                key.append('/').append(parameterKey).append('=').append(parameters.get(parameterKey));
+                key.append('/').append(parameterKey).append('=');
+                IdValues.appendCacheKeyValue(key, parameters.get(parameterKey));
             }
         }
 

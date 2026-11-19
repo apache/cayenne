@@ -30,6 +30,7 @@ import org.apache.cayenne.map.compiled.CompiledMapping;
 import org.apache.cayenne.map.compiled.CompiledEntity;
 import org.apache.cayenne.query.resolved.ResolvedQuery;
 import org.apache.cayenne.query.resolved.ResolvedSQL;
+import org.apache.cayenne.util.IdValues;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -383,12 +384,13 @@ public class SQLQuery<T> implements Query<T> {
             List<String> keys = new ArrayList<>(parameters.keySet());
             Collections.sort(keys);
             for (String parameterKey : keys) {
-                key.append('/').append(parameterKey).append('=').append(parameters.get(parameterKey));
+                key.append('/').append(parameterKey).append('=');
+                IdValues.appendCacheKeyValue(key, parameters.get(parameterKey));
             }
         }
 
         for (Object parameter : positionalParameters) {
-            key.append("/p:").append(parameter);
+            IdValues.appendCacheKeyValue(key.append("/p:"), parameter);
         }
 
         if (offset > 0 || limit > 0) {

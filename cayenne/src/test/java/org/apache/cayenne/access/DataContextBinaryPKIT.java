@@ -20,6 +20,7 @@
 package org.apache.cayenne.access;
 
 import org.apache.cayenne.PersistenceState;
+import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.binary_pk.BinaryPKTest1;
@@ -36,6 +37,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 public class DataContextBinaryPKIT {
 
@@ -128,6 +130,29 @@ public class DataContextBinaryPKIT {
         assertEquals(1, details.size());
 
         env.runWithQueriesBlocked(() -> assertPrefetchedMaster("master1", details.get(0)));
+    }
+
+    @Test
+    public void localCacheBinaryQualifier() throws SQLException {
+        if (!env.testDbAdapter().supportsBinaryPK()) {
+            return;
+        }
+
+        masterTable().insert(new byte[]{1, 2, 3}, "master1");
+        masterTable().insert(new byte[]{4, 5, 6}, "master2");
+
+        DataContext context = env.context();
+        BinaryPKTest1 master = selectMasterCached(context, new byte[]{4, 5, 6});
+        assertEquals("master2", master.getName());
+
+        env.runWithQueriesBlocked(() -> assertSame(master, selectMasterCached(context, new byte[]{4, 5, 6})));
+    }
+
+    private static BinaryPKTest1 selectMasterCached(DataContext context, byte[] key) {
+        return ObjectSelect.query(BinaryPKTest1.class)
+                .where(ExpressionFactory.matchDbExp(BinaryPKTest1.BIN_ID_PK_COLUMN, key))
+                .localCache()
+                .selectOne(context);
     }
 
     private TableHelper masterTable() {

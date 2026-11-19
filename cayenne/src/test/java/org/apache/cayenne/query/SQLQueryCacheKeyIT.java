@@ -25,6 +25,10 @@ import org.apache.cayenne.query.resolved.ResolvedQuery;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
+import java.util.List;
+import java.util.Map;
+
+import static org.apache.cayenne.query.ObjectSelect_CacheKeyIT.assertKeyedByContent;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -98,6 +102,18 @@ public class SQLQueryCacheKeyIT {
         q2.cacheStrategy(QueryCacheStrategy.SHARED_CACHE);
 
         assertEquals(cacheKey(q1.resolve(env.mapping())), cacheKey(q2.resolve(env.mapping())));
+    }
+
+    @Test
+    public void binaryParameter() {
+        assertKeyedByContent(bytes -> cacheKey(SQLQuery.query(Artist.class, "SELECT ME").param("id", bytes)));
+        assertKeyedByContent(bytes -> cacheKey(
+                SQLQuery.query(Artist.class, "SELECT ME").params(Map.of("ids", List.of(bytes)))));
+        assertKeyedByContent(bytes -> cacheKey(SQLQuery.query(Artist.class, "SELECT ME").paramsArray(bytes)));
+    }
+
+    private static String cacheKey(SQLQuery<Artist> query) {
+        return cacheKey(query.localCache().resolve(env.mapping()));
     }
 
     private static String cacheKey(ResolvedQuery resolved) {

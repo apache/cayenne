@@ -20,7 +20,9 @@
 package org.apache.cayenne.util;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HexFormat;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
 
@@ -213,6 +215,28 @@ public final class IdValues {
             buffer.append(value);
         }
         return buffer;
+    }
+
+    /**
+     * Appends a query parameter value to a cache key. A byte[] is printed by content, as x'HEX'.
+     */
+    public static StringBuilder appendCacheKeyValue(StringBuilder out, Object value) {
+        switch (value) {
+            case byte[] bytes -> appendId(out.append("x'"), bytes).append('\'');
+            case Collection<?> values -> {
+                out.append('[');
+                Iterator<?> it = values.iterator();
+                while (it.hasNext()) {
+                    appendCacheKeyValue(out, it.next());
+                    if (it.hasNext()) {
+                        out.append(", ");
+                    }
+                }
+                out.append(']');
+            }
+            case null, default -> out.append(value);
+        }
+        return out;
     }
 
     private static void appendHex(StringBuilder buffer, byte[] bytes, int count) {

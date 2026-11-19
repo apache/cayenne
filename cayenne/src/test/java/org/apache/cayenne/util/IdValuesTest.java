@@ -181,6 +181,16 @@ public class IdValuesTest {
     }
 
     @Test
+    public void appendCacheKeyValue() {
+        assertEquals("x'01020AFF'",
+                IdValues.appendCacheKeyValue(new StringBuilder(), new byte[]{1, 2, 10, -1}).toString());
+        assertEquals("[x'01', a, 5, null]", IdValues.appendCacheKeyValue(new StringBuilder(),
+                Arrays.asList(new byte[]{1}, "a", 5, null)).toString());
+        assertEquals("[a, b]", IdValues.appendCacheKeyValue(new StringBuilder(), List.of("a", "b")).toString());
+        assertEquals("null", IdValues.appendCacheKeyValue(new StringBuilder(), null).toString());
+    }
+
+    @Test
     public void idTupleKeyDoesNotChangeInput() {
         Object[] tuple = {5, new byte[]{1}};
         IdValues.idTupleKey(tuple);

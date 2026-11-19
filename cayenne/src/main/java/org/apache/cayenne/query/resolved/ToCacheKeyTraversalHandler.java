@@ -29,6 +29,7 @@ import org.apache.cayenne.exp.TraversalHandler;
 import org.apache.cayenne.exp.FunctionCallExp;
 import org.apache.cayenne.exp.ScalarExp;
 import org.apache.cayenne.exp.SubqueryExp;
+import org.apache.cayenne.util.IdValues;
 
 import java.util.function.Function;
 
@@ -120,7 +121,7 @@ class ToCacheKeyTraversalHandler implements TraversalHandler {
         } else {
             ValueObjectType<Object, ?> valueObjectType;
             if (registry == null || (valueObjectType = registry.getValueType(leaf.getClass())) == null) {
-                out.append(leaf);
+                IdValues.appendCacheKeyValue(out, leaf);
             } else {
                 out.append(valueObjectType.toCacheKey(leaf));
             }
