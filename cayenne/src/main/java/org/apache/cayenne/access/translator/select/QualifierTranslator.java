@@ -643,7 +643,7 @@ class QualifierTranslator implements TraversalHandler {
 
         for (CompiledColumn column : columns) {
             Object nextValue = valueSnapshot.get(column.name());
-            eq = table(alias).column(column).eq(value(nextValue));
+            eq = table(alias).column(column).eq(value(nextValue).attribute(column));
             if (expressionNodeBuilder == null) {
                 expressionNodeBuilder = eq;
             } else {
@@ -743,6 +743,10 @@ class QualifierTranslator implements TraversalHandler {
             } else if (op instanceof DbPathExp) {
                 result = pathTranslator.translatePath(context.getSelect().table(), ((DbPathExp) op).getPath());
                 break;
+            } else if (op instanceof FullObjectExp) {
+                // a compound PK is matched column by column in createMultiPkMatch()
+                Collection<CompiledColumn> pks = context.getSelect().table().primaryKey();
+                return pks.size() == 1 ? pks.iterator().next() : null;
             }
         }
 

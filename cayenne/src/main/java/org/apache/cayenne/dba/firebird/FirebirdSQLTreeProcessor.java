@@ -80,7 +80,8 @@ public class FirebirdSQLTreeProcessor extends BaseSQLTreeProcessor {
 
         ValueNode valueNode = (ValueNode)childNode;
         Object value = valueNode.getValue();
-        if(!value.getClass().isArray()) {
+        // a byte[] parameter is a single binary value
+        if(!value.getClass().isArray() || value instanceof byte[]) {
             return;
         }
 
@@ -117,10 +118,6 @@ public class FirebirdSQLTreeProcessor extends BaseSQLTreeProcessor {
             }
         } else if(value instanceof boolean[]) {
             for(boolean[] slice : ArrayUtil.sliceArray((boolean[])value, FIREBIRD_IN_BATCH_SIZE)) {
-                newChildren.add(newSliceNode(child, arg, valueNode, slice));
-            }
-        } else if(value instanceof byte[]) {
-            for(byte[] slice : ArrayUtil.sliceArray((byte[])value, FIREBIRD_IN_BATCH_SIZE)) {
                 newChildren.add(newSliceNode(child, arg, valueNode, slice));
             }
         }

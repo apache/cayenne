@@ -40,7 +40,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 /**
- * Prefetches over single and compound binary keys. "disjoint by id" IN qualifiers over binary keys are CAY-3079.
+ * Prefetches over single and compound binary keys.
  */
 public class DataContextBinaryPKPrefetchIT {
 
