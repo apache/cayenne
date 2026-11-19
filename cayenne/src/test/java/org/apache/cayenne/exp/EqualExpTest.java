@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
+import java.util.Map;
 
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
@@ -54,6 +55,13 @@ public class EqualExpTest {
 		Artist noMatch = new Artist();
 		noMatch.setArtistName("abc");
 		assertFalse(equalToNull.match(noMatch));
+	}
+
+	@Test
+	public void evaluate_ByteArray() {
+		Map<String, Object> row = Map.of("BIN_ID", new byte[] {1, 2, 3});
+		assertTrue(ExpressionFactory.exp("db:BIN_ID = $id", (Object) new byte[] {1, 2, 3}).match(row));
+		assertFalse(ExpressionFactory.exp("db:BIN_ID = $id", (Object) new byte[] {1, 2, 4}).match(row));
 	}
 
 	@Test

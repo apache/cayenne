@@ -189,6 +189,26 @@ public class DataContextBinaryPKInListIT {
     }
 
     @Test
+    public void inMemory() {
+        if (!supported()) {
+            return;
+        }
+
+        List<BinaryPKTest1> masters = selectMasters(null);
+
+        assertMasters(ExpressionFactory.inDbExp(BinaryPKTest1.BIN_ID_PK_COLUMN, KEY1, KEY3).filterObjects(masters),
+                "master1", "master3");
+        assertMasters(ExpressionFactory.notInDbExp(BinaryPKTest1.BIN_ID_PK_COLUMN, KEY1, KEY3).filterObjects(masters),
+                "master2");
+        assertMasters(ExpressionFactory.matchDbExp(BinaryPKTest1.BIN_ID_PK_COLUMN, KEY2).filterObjects(masters),
+                "master2");
+        assertMasters(ExpressionFactory.exp("db:BIN_ID in $id", (Object) KEY2).filterObjects(masters), "master2");
+        assertMasters(BinaryPKTest1.BIN_ID_PK_PROPERTY.in(KEY1, KEY3).filterObjects(masters), "master1", "master3");
+        assertMasters(BinaryPKTest1.SELF.idsIn(KEY1, KEY3).filterObjects(masters), "master1", "master3");
+        assertMasters(BinaryPKTest1.SELF.eq(masters.get(1)).filterObjects(masters), "master2");
+    }
+
+    @Test
     public void compoundSelfEqObjectId() {
         if (!supported()) {
             return;

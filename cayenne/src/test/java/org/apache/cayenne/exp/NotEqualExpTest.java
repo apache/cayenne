@@ -21,6 +21,8 @@ package org.apache.cayenne.exp;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.Map;
+
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.junit.jupiter.api.Test;
 
@@ -51,6 +53,13 @@ public class NotEqualExpTest {
 		Artist noMatch = new Artist();
 		noMatch.setArtistName("123");
 		assertTrue(notEqualToNull.match(noMatch), "Failed: " + notEqualToNull);
+	}
+
+	@Test
+	public void evaluate_ByteArray() {
+		Map<String, Object> row = Map.of("BIN_ID", new byte[] {1, 2, 3});
+		assertFalse(ExpressionFactory.exp("db:BIN_ID != $id", (Object) new byte[] {1, 2, 3}).match(row));
+		assertTrue(ExpressionFactory.exp("db:BIN_ID != $id", (Object) new byte[] {1, 2, 4}).match(row));
 	}
 
 }

@@ -46,9 +46,14 @@ public final class InExp extends ConditionExp {
 			return Boolean.FALSE;
 		}
 
-		Object[] objects = (Object[]) evaluatedChildren[1];
+		Evaluator evaluator = Evaluator.evaluator(o);
+		if (!(evaluatedChildren[1] instanceof Object[] objects)) {
+			// a single value, e.g. a byte[] bound to "in $id"
+			return evaluator.eq(o, evaluatedChildren[1]);
+		}
+
 		for (Object object : objects) {
-			if (object != null && Evaluator.evaluator(o).eq(o, object)) {
+			if (object != null && evaluator.eq(o, object)) {
 				return Boolean.TRUE;
 			}
 		}
