@@ -24,6 +24,11 @@ import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
+import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
+
+import static org.apache.cayenne.query.ObjectSelect_CacheKeyIT.assertKeyedByContent;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -99,5 +104,19 @@ public class SQLTemplateCacheKeyIT {
         assertEquals(q1.getMetaData(env.entityResolver()).getCacheKey(), q2
                 .getMetaData(env.entityResolver())
                 .getCacheKey());
+    }
+
+    @Test
+    public void binaryParameter() {
+        assertKeyedByContent(bytes -> cacheKey(q -> q.setParams(Map.of("id", bytes))));
+        assertKeyedByContent(bytes -> cacheKey(q -> q.setParams(Map.of("ids", List.of(bytes)))));
+        assertKeyedByContent(bytes -> cacheKey(q -> q.setParamsArray(bytes)));
+    }
+
+    private static String cacheKey(Consumer<SQLTemplate> parameters) {
+        SQLTemplate query = new SQLTemplate(Artist.class, "SELECT ME");
+        query.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
+        parameters.accept(query);
+        return query.getMetaData(env.entityResolver()).getCacheKey();
     }
 }

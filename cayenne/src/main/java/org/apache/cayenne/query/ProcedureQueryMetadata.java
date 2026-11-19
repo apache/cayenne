@@ -85,7 +85,7 @@ class ProcedureQueryMetadata extends BaseQueryMetadata {
                     Collections.sort(keys);
 
                     for(String parameterKey : keys) {
-                        key.append('/').append(parameterKey).append('=').append(
+                        ToCacheKeyTraversalHandler.appendValue(key.append('/').append(parameterKey).append('='),
                                 parameters.get(parameterKey));
                     }
                 }

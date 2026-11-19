@@ -25,6 +25,9 @@ import org.apache.cayenne.unit.CayenneTestsEnv;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
+import java.util.List;
+
+import static org.apache.cayenne.query.ObjectSelect_CacheKeyIT.assertKeyedByContent;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -109,5 +112,18 @@ public class ProcedureQueryCacheKeyIT {
         assertEquals(q1.getMetaData(resolver).getCacheKey(), q2
                 .getMetaData(resolver)
                 .getCacheKey());
+    }
+
+    @Test
+    public void binaryParameter() {
+        assertKeyedByContent(bytes -> cacheKey("id", bytes));
+        assertKeyedByContent(bytes -> cacheKey("ids", List.of(bytes)));
+    }
+
+    private static String cacheKey(String name, Object value) {
+        ProcedureQuery query = new ProcedureQuery("ABC", Artist.class);
+        query.setCacheStrategy(QueryCacheStrategy.LOCAL_CACHE);
+        query.addParameter(name, value);
+        return query.getMetaData(env.runtime().getDataDomain().getEntityResolver()).getCacheKey();
     }
 }

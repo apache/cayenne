@@ -28,7 +28,10 @@ import org.apache.cayenne.exp.TraversalHandler;
 import org.apache.cayenne.exp.FunctionCallExp;
 import org.apache.cayenne.exp.ScalarExp;
 import org.apache.cayenne.exp.SubqueryExp;
+import org.apache.cayenne.util.IdValues;
 
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.function.Function;
 
 /**
@@ -119,10 +122,32 @@ class ToCacheKeyTraversalHandler implements TraversalHandler {
         } else {
             ValueObjectType<Object, ?> valueObjectType;
             if (registry == null || (valueObjectType = registry.getValueType(leaf.getClass())) == null) {
-                out.append(leaf);
+                appendValue(out, leaf);
             } else {
                 out.append(valueObjectType.toCacheKey(leaf));
             }
         }
+    }
+
+    /**
+     * Appends a parameter value to a cache key. A byte[] is printed by content, as x'HEX'.
+     */
+    static StringBuilder appendValue(StringBuilder out, Object value) {
+        switch (value) {
+            case byte[] bytes -> IdValues.appendId(out.append("x'"), bytes).append('\'');
+            case Collection<?> values -> {
+                out.append('[');
+                Iterator<?> it = values.iterator();
+                while (it.hasNext()) {
+                    appendValue(out, it.next());
+                    if (it.hasNext()) {
+                        out.append(", ");
+                    }
+                }
+                out.append(']');
+            }
+            case null, default -> out.append(value);
+        }
+        return out;
     }
 }

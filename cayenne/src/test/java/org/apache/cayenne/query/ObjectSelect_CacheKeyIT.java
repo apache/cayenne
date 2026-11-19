@@ -30,6 +30,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.util.List;
+import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -360,5 +361,27 @@ public class ObjectSelect_CacheKeyIT {
                 .select(context);
         assertEquals(1, over500.size());
         assertEquals("artist2", over500.get(0).getArtistName());
+    }
+
+    @Test
+    public void binaryValue() {
+        assertKeyedByContent(bytes -> ObjectSelect.query(Artist.class)
+                .where(ExpressionFactory.exp("db:ARTIST_ID = $id", (Object) bytes))
+                .localCache()
+                .getMetaData(env.entityResolver())
+                .getCacheKey());
+
+        assertKeyedByContent(bytes -> ObjectSelect.query(Artist.class)
+                .where(ExpressionFactory.exp("db:ARTIST_ID in $ids", List.of(bytes)))
+                .localCache()
+                .getMetaData(env.entityResolver())
+                .getCacheKey());
+    }
+
+    static void assertKeyedByContent(Function<byte[], String> cacheKey) {
+        String key = cacheKey.apply(new byte[]{1, 2, 3});
+        assertEquals(key, cacheKey.apply(new byte[]{1, 2, 3}));
+        assertNotEquals(key, cacheKey.apply(new byte[]{1, 2, 4}));
+        assertFalse(key.contains("[B@"), key);
     }
 }

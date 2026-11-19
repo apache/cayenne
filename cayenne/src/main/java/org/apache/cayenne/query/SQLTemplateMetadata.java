@@ -86,12 +86,13 @@ public class SQLTemplateMetadata extends BaseQueryMetadata {
 					Collections.sort(keys);
 
 					for (String parameterKey : keys) {
-						key.append('/').append(parameterKey).append('=').append(parameters.get(parameterKey));
+						ToCacheKeyTraversalHandler.appendValue(key.append('/').append(parameterKey).append('='),
+								parameters.get(parameterKey));
 					}
 				}
 
 				for (Object parameter : query.getPositionalParams()) {
-					key.append("/p:").append(parameter);
+					ToCacheKeyTraversalHandler.appendValue(key.append("/p:"), parameter);
 				}
 
 				if (query.getFetchOffset() > 0 || query.getFetchLimit() > 0) {
