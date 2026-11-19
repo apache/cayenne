@@ -321,4 +321,17 @@ public class ObjectIdTest {
         assertEquals(i1, i2);
         assertEquals(i1.toString(), i2.toString());
     }
+
+    @Test
+    public void toStringLongBinaryKeyNotTruncated() {
+        byte[] k1 = new byte[40];
+        byte[] k2 = new byte[40];
+        k2[39] = 1;
+
+        ObjectId i1 = ObjectId.of("E", "ID", k1);
+        ObjectId i2 = ObjectId.of("E", "ID", k2);
+
+        assertNotEquals(i1, i2);
+        assertNotEquals(i1.toString(), i2.toString());
+    }
 }

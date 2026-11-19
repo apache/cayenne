@@ -19,7 +19,7 @@
 
 package org.apache.cayenne;
 
-import org.apache.cayenne.util.Util;
+import org.apache.cayenne.util.IdValues;
 
 import java.util.Objects;
 
@@ -54,7 +54,7 @@ class ObjectIdCompound implements ObjectId {
     ObjectIdCompound(String entityName, Map<String, ?> idMap) {
         this.entityName = entityName;
 
-        if (idMap == null || idMap.size() == 0) {
+        if (idMap == null || idMap.isEmpty()) {
             this.objectIdKeys = Collections.emptyMap();
             return;
         }
@@ -113,32 +113,15 @@ class ObjectIdCompound implements ObjectId {
             return true;
         }
 
-        if (!(object instanceof ObjectIdCompound)) {
+        if (!(object instanceof ObjectIdCompound id)) {
             return false;
         }
 
-        ObjectIdCompound id = (ObjectIdCompound) object;
         if (!Objects.equals(entityName, id.entityName)) {
             return false;
         }
 
-        if (id.objectIdKeys.size() != objectIdKeys.size()) {
-            return false;
-        }
-
-        for (Map.Entry<String, ?> entry : objectIdKeys.entrySet()) {
-            String entryKey = entry.getKey();
-            Object entryValue = entry.getValue();
-
-            if (entryValue == null
-                    && (id.objectIdKeys.get(entryKey) != null || !id.objectIdKeys.containsKey(entryKey))) {
-                return false;
-            } else if (!Util.idValueEquals(entryValue, id.objectIdKeys.get(entryKey))) {
-                return false;
-            }
-        }
-
-        return true;
+        return IdValues.idSnapshotEquals(objectIdKeys, id.objectIdKeys);
     }
 
     @Override
@@ -154,8 +137,7 @@ class ObjectIdCompound implements ObjectId {
         for (int i = 0; i < keys.length; i++) {
             result = 31 * result + i;
             Object value = objectIdKeys.get(keys[i]);
-            // reconcile all numeric types via long; use content hash for arrays
-            result = 31 * result + (value instanceof Number n ? Long.hashCode(n.longValue()) : ObjectIdSingle.deepHashCode(value));
+            result = 31 * result + IdValues.idHashCode(value);
         }
         return hashCode = result;
     }
@@ -214,7 +196,7 @@ class ObjectIdCompound implements ObjectId {
         Arrays.sort(keys);
         for (String key : keys) {
             buffer.append(", ").append(key).append("=");
-            ObjectIdSingle.appendIdValue(buffer, objectIdKeys.get(key));
+            IdValues.appendId(buffer, objectIdKeys.get(key));
         }
         return buffer.append(">").toString();
     }

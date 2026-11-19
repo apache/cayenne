@@ -19,10 +19,9 @@
 
 package org.apache.cayenne;
 
-import org.apache.cayenne.util.IDUtil;
+import org.apache.cayenne.util.IdValues;
 import org.apache.cayenne.util.SingleEntryMap;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
@@ -90,22 +89,8 @@ class ObjectIdSingle implements ObjectId {
     public String toString() {
         StringBuilder buffer = new StringBuilder().append("<ObjectId:").append(entityName).append(", ")
                 .append(keyName).append("=");
-        appendIdValue(buffer, value);
+        IdValues.appendId(buffer, value);
         return buffer.append(">").toString();
-    }
-
-    /**
-     * Appends an id value for {@link #toString()}, printing a byte[] (e.g. a binary PK) as a hex string, so that equal
-     * ids produce the same string.
-     */
-    static void appendIdValue(StringBuilder buffer, Object value) {
-        if (value instanceof byte[] bytes) {
-            for (byte b : bytes) {
-                IDUtil.appendFormattedByte(buffer, b);
-            }
-        } else {
-            buffer.append(value);
-        }
     }
 
     String getKeyName() {
@@ -128,27 +113,14 @@ class ObjectIdSingle implements ObjectId {
         if (!Objects.equals(entityName, that.entityName)) {
             return false;
         }
-        return Objects.deepEquals(value, that.value);
+        return IdValues.valueEquals(value, that.value);
     }
 
     @Override
     public int hashCode() {
         if (hashCode == 0) {
-            hashCode = 31 * Objects.hashCode(entityName) + deepHashCode(value);
+            hashCode = 31 * Objects.hashCode(entityName) + IdValues.valueHashCode(value);
         }
         return hashCode;
-    }
-
-    static int deepHashCode(Object v) {
-        if (v instanceof byte[] a) return Arrays.hashCode(a);
-        if (v instanceof int[] a) return Arrays.hashCode(a);
-        if (v instanceof long[] a) return Arrays.hashCode(a);
-        if (v instanceof short[] a) return Arrays.hashCode(a);
-        if (v instanceof char[] a) return Arrays.hashCode(a);
-        if (v instanceof float[] a) return Arrays.hashCode(a);
-        if (v instanceof double[] a) return Arrays.hashCode(a);
-        if (v instanceof boolean[] a) return Arrays.hashCode(a);
-        if (v instanceof Object[] a) return Arrays.deepHashCode(a);
-        return Objects.hashCode(v);
     }
 }
