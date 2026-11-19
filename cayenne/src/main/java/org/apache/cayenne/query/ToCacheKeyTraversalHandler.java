@@ -133,6 +133,11 @@ class ToCacheKeyTraversalHandler implements TraversalHandler {
      * Appends a parameter value to a cache key. A byte[] is printed by content, as x'HEX'.
      */
     static StringBuilder appendValue(StringBuilder out, Object value) {
+        // class checks first: a failed interface check (Collection) is slow on JDK 21
+        if (value instanceof String || value instanceof Number) {
+            return out.append(value);
+        }
+
         switch (value) {
             case byte[] bytes -> IdValues.appendId(out.append("x'"), bytes).append('\'');
             case Collection<?> values -> {

@@ -45,9 +45,31 @@ public class IdValuesTest {
                 new byte[]{1, 2, 3}, new byte[]{1, 2, 3}, new byte[]{1, 2, 4}, new byte[0],
                 new int[]{1, 2}, new int[]{1, 2},
                 new Object[]{new byte[]{1}, "a"}, new Object[]{new byte[]{1}, "a"},
+                largeBytes(0), largeBytes(0), largeBytes(1),
+                new Object[]{largeBytes(0)}, new Object[]{largeBytes(0)}, new Object[]{largeBytes(1)},
                 UUID1, UUID.fromString(UUID1.toString()),
                 "a", new String("a"), "b",
                 null);
+    }
+
+    // differ only in the middle, which isn't hashed
+    private static byte[] largeBytes(int middle) {
+        byte[] bytes = new byte[100];
+        bytes[50] = (byte) middle;
+        return bytes;
+    }
+
+    @Test
+    public void largeBytesHashedByLengthAndEnds() {
+        assertEquals(IdValues.valueHashCode(largeBytes(0)), IdValues.valueHashCode(largeBytes(1)));
+        assertFalse(IdValues.valueKey(largeBytes(0)).equals(IdValues.valueKey(largeBytes(1))));
+
+        byte[] shorter = Arrays.copyOf(largeBytes(0), 99);
+        assertFalse(IdValues.valueHashCode(largeBytes(0)) == IdValues.valueHashCode(shorter));
+
+        byte[] otherEnd = largeBytes(0);
+        otherEnd[99] = 1;
+        assertFalse(IdValues.valueHashCode(largeBytes(0)) == IdValues.valueHashCode(otherEnd));
     }
 
     @Test

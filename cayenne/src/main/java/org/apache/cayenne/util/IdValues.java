@@ -34,6 +34,7 @@ import java.util.Objects;
 public final class IdValues {
 
     private static final int MAX_PRINTED_BYTES = 32;
+    private static final int HASHED_END_BYTES = 32;
 
     private IdValues() {
     }
@@ -139,7 +140,8 @@ public final class IdValues {
     }
 
     /**
-     * Hash code consistent with {@link #valueEquals(Object, Object)}.
+     * Hash code consistent with {@link #valueEquals(Object, Object)}. A byte[] longer than 64 bytes (e.g. a BLOB) is
+     * hashed by its length and its first and last 32 bytes, so hashing doesn't depend on its size.
      */
     public static int valueHashCode(Object value) {
         if (value == null || !value.getClass().isArray()) {
@@ -147,8 +149,8 @@ public final class IdValues {
         }
 
         return switch (value) {
-            case byte[] a -> Arrays.hashCode(a);
-            case Object[] a -> Arrays.deepHashCode(a);
+            case byte[] a -> bytesHashCode(a);
+            case Object[] a -> objectsHashCode(a);
             case int[] a -> Arrays.hashCode(a);
             case long[] a -> Arrays.hashCode(a);
             case short[] a -> Arrays.hashCode(a);
@@ -158,6 +160,30 @@ public final class IdValues {
             case boolean[] a -> Arrays.hashCode(a);
             default -> value.hashCode();
         };
+    }
+
+    // like Arrays.deepHashCode, but bounded for nested byte[]
+    private static int objectsHashCode(Object[] values) {
+        int h = 1;
+        for (Object value : values) {
+            h = 31 * h + valueHashCode(value);
+        }
+        return h;
+    }
+
+    private static int bytesHashCode(byte[] bytes) {
+        if (bytes.length <= 2 * HASHED_END_BYTES) {
+            return Arrays.hashCode(bytes);
+        }
+
+        int h = bytes.length;
+        for (int i = 0; i < HASHED_END_BYTES; i++) {
+            h = 31 * h + bytes[i];
+        }
+        for (int i = bytes.length - HASHED_END_BYTES; i < bytes.length; i++) {
+            h = 31 * h + bytes[i];
+        }
+        return h;
     }
 
     /**
