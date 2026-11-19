@@ -171,6 +171,16 @@ public class IdValuesTest {
     }
 
     @Test
+    public void appendIdDoesNotTruncate() {
+        byte[] bytes = new byte[100];
+        Arrays.fill(bytes, (byte) 1);
+
+        assertEquals("01".repeat(100), IdValues.appendId(new StringBuilder(), bytes).toString());
+        assertEquals("5", IdValues.appendId(new StringBuilder(), 5).toString());
+        assertEquals("null", IdValues.appendId(new StringBuilder(), null).toString());
+    }
+
+    @Test
     public void idTupleKeyDoesNotChangeInput() {
         Object[] tuple = {5, new byte[]{1}};
         IdValues.idTupleKey(tuple);

@@ -180,11 +180,8 @@ public final class IdValues {
     public static StringBuilder append(StringBuilder buffer, Object value) {
         switch (value) {
             case byte[] bytes -> {
-                int printed = Math.min(bytes.length, MAX_PRINTED_BYTES);
-                for (int i = 0; i < printed; i++) {
-                    IDUtil.appendFormattedByte(buffer, bytes[i]);
-                }
-                if (printed < bytes.length) {
+                appendHex(buffer, bytes, Math.min(bytes.length, MAX_PRINTED_BYTES));
+                if (bytes.length > MAX_PRINTED_BYTES) {
                     buffer.append("...(").append(bytes.length).append(" bytes)");
                 }
             }
@@ -201,6 +198,25 @@ public final class IdValues {
             case null, default -> buffer.append(value);
         }
         return buffer;
+    }
+
+    /**
+     * Appends a key value, printing a byte[] as hex in full, so that equal ids print the same (ObjectId.toString is
+     * used in query cache keys).
+     */
+    public static StringBuilder appendId(StringBuilder buffer, Object value) {
+        if (value instanceof byte[] bytes) {
+            appendHex(buffer, bytes, bytes.length);
+        } else {
+            buffer.append(value);
+        }
+        return buffer;
+    }
+
+    private static void appendHex(StringBuilder buffer, byte[] bytes, int count) {
+        for (int i = 0; i < count; i++) {
+            IDUtil.appendFormattedByte(buffer, bytes[i]);
+        }
     }
 
     private record ArrayKey(Object array) {
