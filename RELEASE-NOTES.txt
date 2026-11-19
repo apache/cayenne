@@ -42,6 +42,7 @@ CAY-3073 AI plugin / MCP db import schema description inconsistencies
 CAY-3078 Disjoint to-one prefetch doesn't attach parents over binary keys
 CAY-3079 IN qualifier binds each byte of a binary value as a separate parameter
 CAY-3080 ObjectId.toString() prints binary key values as object identity
+CAY-3081 incorrect handling of byte[] values
 
 ----------------------------------
 Release: 5.0-RC1
