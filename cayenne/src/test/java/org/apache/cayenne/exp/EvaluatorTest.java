@@ -26,6 +26,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -274,6 +275,26 @@ public class EvaluatorTest {
         assertFalse(e.eq(lhs, new byte[]{1, 2, 4}));
         assertFalse(e.eq(lhs, Map.of("k", new byte[]{1, 2, 4})));
         assertFalse(e.eq(lhs, 5));
+    }
+
+    @Test
+    public void evaluator_Persistent_BigDecimalId() {
+
+        ObjectId lhsId = ObjectId.of("X", "k", new BigDecimal("3"));
+        Persistent lhs = mock(Persistent.class);
+        when(lhs.getObjectId()).thenReturn(lhsId);
+
+        Evaluator e = Evaluator.evaluator(lhs);
+        assertNotNull(e);
+
+        assertTrue(e.eq(lhs, 3));
+        assertTrue(e.eq(lhs, 3L));
+        assertTrue(e.eq(lhs, new BigDecimal("3.00")));
+
+        assertFalse(e.eq(lhs, 4L));
+        assertFalse(e.eq(lhs, "3"));
+        assertFalse(e.eq(lhs, new byte[]{3}));
+        assertFalse(e.eq(lhs, UUID.randomUUID()));
     }
 
     @Test

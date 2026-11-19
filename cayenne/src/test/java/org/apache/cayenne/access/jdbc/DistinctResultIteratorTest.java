@@ -33,6 +33,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 public class DistinctResultIteratorTest {
 
@@ -96,6 +97,19 @@ public class DistinctResultIteratorTest {
             assertEquals(2, distinct.size());
             assertEquals("a", distinct.get(0)[1]);
             assertEquals("b", distinct.get(1)[1]);
+        }
+    }
+
+    @Test
+    public void distinctFullScalarRowsBinaryValues() {
+        List<byte[]> rows = List.of(new byte[]{1, 2, 3}, new byte[]{1, 2, 3}, new byte[]{1, 2, 4});
+
+        try (DistinctResultIterator<byte[]> it =
+                     new DistinctResultIterator<>(new ListIterator<>(rows), binaryPkEntity(), true)) {
+            List<byte[]> distinct = it.allRows();
+            assertEquals(2, distinct.size());
+            assertSame(rows.get(0), distinct.get(0));
+            assertSame(rows.get(2), distinct.get(1));
         }
     }
 
