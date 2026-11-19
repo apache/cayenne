@@ -554,7 +554,7 @@ class QualifierTranslator implements TraversalHandler {
 
         for (DbAttribute attribute : attributes) {
             Object nextValue = valueSnapshot.get(attribute.getName());
-            eq = table(alias).column(attribute).eq(value(nextValue));
+            eq = table(alias).column(attribute).eq(value(nextValue).attribute(attribute));
             if (expressionNodeBuilder == null) {
                 expressionNodeBuilder = eq;
             } else {
@@ -654,6 +654,10 @@ class QualifierTranslator implements TraversalHandler {
             } else if (op instanceof DbPathExp) {
                 result = pathTranslator.translatePath(context.getMetadata().getDbEntity(), ((DbPathExp) op).getPath());
                 break;
+            } else if (op instanceof FullObjectExp) {
+                // a compound PK is matched column by column in createMultiPkMatch()
+                Collection<DbAttribute> pks = context.getMetadata().getDbEntity().getPrimaryKeys();
+                return pks.size() == 1 ? pks.iterator().next() : null;
             }
         }
 

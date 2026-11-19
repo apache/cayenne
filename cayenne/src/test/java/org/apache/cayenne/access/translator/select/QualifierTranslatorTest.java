@@ -20,6 +20,7 @@
 package org.apache.cayenne.access.translator.select;
 
 import org.apache.cayenne.CayenneRuntimeException;
+import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.access.sqlbuilder.SQLGenerationVisitor;
 import org.apache.cayenne.access.sqlbuilder.DefaultSQLAppendable;
 import org.apache.cayenne.access.sqlbuilder.sqltree.*;
@@ -36,17 +37,20 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class QualifierTranslatorTest {
 
+    private DbEntity dbEntity;
     private QualifierTranslator translator;
 
     @BeforeEach
     public void prepareTranslator() {
-        DbEntity dbEntity = new DbEntity();
+        dbEntity = new DbEntity();
         dbEntity.setName("mock");
 
         DbAttribute dbAttributeA = new DbAttribute();
@@ -465,6 +469,35 @@ public class QualifierTranslatorTest {
         assertInstanceOf(ColumnNode.class, fullObj);
         ColumnNode columnNode = (ColumnNode)fullObj;
         assertEquals("b", columnNode.getColumn());
+    }
+
+    @Test
+    public void translateFullObjectInHasPkAttribute() {
+        Node in = translator.translate(ExpressionFactory.inExp(ExpressionFactory.fullObjectExp(), 1, 2));
+        assertInstanceOf(InNode.class, in);
+        ValueNode value = assertInstanceOf(ValueNode.class, in.getChild(1));
+        assertSame(dbEntity.getAttribute("b"), value.getAttribute());
+    }
+
+    @Test
+    public void translateFullObjectCompoundMatchHasAttributes() {
+        dbEntity.getAttribute("a").setPrimaryKey(true);
+
+        Node match = translator.translate(ExpressionFactory.matchExp(ExpressionFactory.fullObjectExp(),
+                ObjectId.of("mock", Map.of("a", 1, "b", 2))));
+
+        Map<DbAttribute, Object> values = new HashMap<>();
+        collectValues(match, values);
+        assertEquals(Map.of(dbEntity.getAttribute("a"), 1, dbEntity.getAttribute("b"), 2), values);
+    }
+
+    private static void collectValues(Node node, Map<DbAttribute, Object> values) {
+        if (node instanceof ValueNode value) {
+            values.put(value.getAttribute(), value.getValue());
+        }
+        for (int i = 0; i < node.getChildrenCount(); i++) {
+            collectValues(node.getChild(i), values);
+        }
     }
 
     @Test

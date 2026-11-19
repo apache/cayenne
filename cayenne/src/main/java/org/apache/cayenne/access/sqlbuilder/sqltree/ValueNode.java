@@ -88,18 +88,24 @@ public class ValueNode extends Node {
                 case double[] doubles -> appendValue(doubles, buffer, context);
                 case boolean[] booleans -> appendValue(booleans, buffer, context);
                 case Object[] objects -> appendValue(objects, buffer, context);
-                // append byte[] array as a single object
-                case byte[] bytes -> appendValue(bytes, buffer, context);
+                // a byte[] is one binary value, unless the column is known and not binary
+                case byte[] bytes when attribute != null && !TypesMapping.isBinary(attribute.getType()) ->
+                        appendValue(bytes, buffer, context);
+                case byte[] bytes -> appendObjectValue(buffer, context, bytes);
                 default -> throw new CayenneRuntimeException("Unsupported array type %s", val.getClass().getName());
             }
         } else {
-            switch (val) {
-                case Persistent persistent -> appendValue(persistent, buffer, context);
-                case ObjectId objectId -> appendValue(objectId, buffer, context);
-                case Supplier<?> supplier -> appendValue(supplier.get(), buffer, context);
-                case CharSequence charSequence -> appendStringValue(buffer, context, charSequence);
-                default -> appendObjectValue(buffer, context, val);
-            }
+            appendSingleValue(val, buffer, context);
+        }
+    }
+
+    private void appendSingleValue(Object val, SQLAppendable buffer, SQLGenerationContext context) {
+        switch (val) {
+            case Persistent persistent -> appendValue(persistent, buffer, context);
+            case ObjectId objectId -> appendValue(objectId, buffer, context);
+            case Supplier<?> supplier -> appendValue(supplier.get(), buffer, context);
+            case CharSequence charSequence -> appendStringValue(buffer, context, charSequence);
+            default -> appendObjectValue(buffer, context, val);
         }
     }
 
@@ -148,7 +154,11 @@ public class ValueNode extends Node {
 
     private void appendValue(ObjectId value, SQLAppendable buffer, SQLGenerationContext context) {
         for (Object idVal : value.getIdSnapshot().values()) {
-            appendValue(idVal, buffer, context);
+            if (idVal == null) {
+                appendNullValue(buffer);
+            } else {
+                appendSingleValue(idVal, buffer, context);
+            }
         }
     }
 
