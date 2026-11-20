@@ -19,6 +19,8 @@
 
 package org.apache.cayenne.access;
 
+import org.apache.cayenne.DataRow;
+import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.query.ObjectSelect;
@@ -32,7 +34,9 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -153,6 +157,68 @@ public class DataContextBinaryPKIT {
                 .where(ExpressionFactory.matchDbExp(BinaryPKTest1.BIN_ID_PK_COLUMN, key))
                 .localCache()
                 .selectOne(context);
+    }
+
+    @Test
+    public void byIdBinaryPK() throws SQLException {
+        if (!env.testDbAdapter().supportsBinaryPK()) {
+            return;
+        }
+
+        masterTable().insert(new byte[]{1, 2, 3}, "master1");
+        masterTable().insert(new byte[]{4, 5, 6}, "master2");
+
+        BinaryPKTest1 master = ObjectSelect.query(BinaryPKTest1.class)
+                .byId(new byte[]{4, 5, 6})
+                .selectOne(env.context());
+        assertEquals("master2", master.getName());
+    }
+
+    @Test
+    public void byIdsBinaryPK() throws SQLException {
+        if (!env.testDbAdapter().supportsBinaryPK()) {
+            return;
+        }
+
+        masterTable().insert(new byte[]{1, 2, 3}, "master1");
+        masterTable().insert(new byte[]{4, 5, 6}, "master2");
+        masterTable().insert(new byte[]{7, 8, 9}, "master3");
+
+        List<BinaryPKTest1> scalars = ObjectSelect.query(BinaryPKTest1.class)
+                .byIds(new byte[]{1, 2, 3}, new byte[]{7, 8, 9})
+                .orderBy(BinaryPKTest1.NAME.asc())
+                .select(env.context());
+        assertEquals(List.of("master1", "master3"), scalars.stream().map(BinaryPKTest1::getName).toList());
+
+        List<BinaryPKTest1> ids = ObjectSelect.query(BinaryPKTest1.class)
+                .byIds(ObjectId.of("BinaryPKTest1", "BIN_ID", new byte[]{4, 5, 6}), new byte[]{7, 8, 9})
+                .orderBy(BinaryPKTest1.NAME.asc())
+                .select(env.context());
+        assertEquals(List.of("master2", "master3"), ids.stream().map(BinaryPKTest1::getName).toList());
+    }
+
+    @Test
+    public void snapshotsFetchedWithOneQuery() throws SQLException {
+        if (!env.testDbAdapter().supportsBinaryPK()) {
+            return;
+        }
+
+        masterTable().insert(new byte[]{1, 2, 3}, "master1");
+        masterTable().insert(new byte[]{4, 5, 6}, "master2");
+        masterTable().insert(new byte[]{7, 8, 9}, "master3");
+
+        List<ObjectId> ids = List.of(
+                ObjectId.of("BinaryPKTest1", "BIN_ID", new byte[]{1, 2, 3}),
+                ObjectId.of("BinaryPKTest1", "BIN_ID", new byte[]{4, 5, 6}),
+                ObjectId.of("BinaryPKTest1", "BIN_ID", new byte[]{7, 8, 9}));
+
+        DataContext context = env.context();
+        Map<ObjectId, DataRow> snapshots = new HashMap<>();
+        int queries = env.runWithQueryCounter(() -> snapshots.putAll(context.getObjectStore().getSnapshots(ids)));
+
+        assertEquals(1, queries);
+        assertEquals(3, snapshots.size());
+        assertEquals("master2", snapshots.get(ids.get(1)).get("NAME"));
     }
 
     private TableHelper masterTable() {

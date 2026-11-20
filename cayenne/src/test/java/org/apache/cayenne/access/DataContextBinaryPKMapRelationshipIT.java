@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.access;
 
+import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.query.ObjectSelect;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.binary_pk.BinaryPKTest1;
@@ -132,5 +133,27 @@ public class DataContextBinaryPKMapRelationshipIT {
         assertSame(child1, children.remove(CHILD1.clone()));
         assertEquals(1, children.size());
         assertFalse(children.containsKey(CHILD1.clone()));
+    }
+
+    @Test
+    public void newChildRemappedOnCommit() {
+        if (!supported()) {
+            return;
+        }
+
+        DataContext context = env.context();
+        BinaryPKTest1 master = ObjectSelect.query(BinaryPKTest1.class)
+                .where(BinaryPKTest1.NAME.eq("master2"))
+                .selectOne(context);
+        Map<Object, BinaryPKTest3> children = master.getBinaryPKChildren();
+
+        BinaryPKTest3 child = context.newObject(BinaryPKTest3.class);
+        child.setName("child4");
+        child.setBinaryPKMaster(master);
+        context.commitChanges();
+
+        byte[] key = ((byte[]) Cayenne.pkForObject(child)).clone();
+        assertEquals(2, children.size());
+        assertSame(child, children.get(key));
     }
 }

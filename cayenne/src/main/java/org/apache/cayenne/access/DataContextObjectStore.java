@@ -44,6 +44,7 @@ import org.apache.cayenne.map.compiled.CompiledRelationship;
 import org.apache.cayenne.map.compiled.CompiledToManyRelationship;
 import org.apache.cayenne.map.compiled.CompiledToOneRelationship;
 import org.apache.cayenne.query.ObjectSelect;
+import org.apache.cayenne.util.IdValues;
 
 
 import java.util.ArrayList;
@@ -56,6 +57,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -537,21 +539,18 @@ public class DataContextObjectStore implements ObjectStore {
     private void fetchSnapshots(String entityName, List<ObjectId> oids, Map<ObjectId, DataRow> snapshots) {
 
         // the fetched rows are matched to the ids by the id values
-        Map<Map<String, Object>, ObjectId> idsBySnapshot = HashMap.newHashMap(oids.size());
+        String[] idColumns = oids.getFirst().getIdSnapshot().keySet().toArray(String[]::new);
+        Map<Object, ObjectId> idsBySnapshot = HashMap.newHashMap(oids.size());
         List<Expression> idQualifiers = new ArrayList<>(oids.size());
         for (ObjectId oid : oids) {
             Map<String, Object> idSnapshot = oid.getIdSnapshot();
-            idsBySnapshot.put(idSnapshot, oid);
+            idsBySnapshot.put(idKey(idColumns, idSnapshot::get), oid);
             idQualifiers.add(ExpressionFactory.matchAllDbExp(idSnapshot));
         }
 
-        Collection<String> idColumns = oids.getFirst().getIdSnapshot().keySet();
         for (Object row : fetchSnapshots(entityName, ExpressionFactory.or(idQualifiers))) {
             DataRow dataRow = (DataRow) row;
-            Map<String, Object> rowId = HashMap.newHashMap(idColumns.size());
-            idColumns.forEach(column -> rowId.put(column, dataRow.get(column)));
-
-            ObjectId oid = idsBySnapshot.remove(rowId);
+            ObjectId oid = idsBySnapshot.remove(idKey(idColumns, dataRow::get));
             if (oid != null) {
                 snapshots.put(oid, dataRow);
             }
@@ -564,6 +563,14 @@ public class DataContextObjectStore implements ObjectStore {
                 snapshots.put(oid, row);
             }
         }
+    }
+
+    private static Object idKey(String[] idColumns, Function<String, Object> values) {
+        Object[] tuple = new Object[idColumns.length];
+        for (int i = 0; i < idColumns.length; i++) {
+            tuple[i] = values.apply(idColumns[i]);
+        }
+        return IdValues.idTupleKey(tuple);
     }
 
     private boolean isFetchable(ObjectId oid) {
