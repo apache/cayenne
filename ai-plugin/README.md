@@ -27,13 +27,14 @@ This plugin teaches Claude how to:
 - Polish the reverse-engineered Object-layer names (entities, attributes, relationships) into idiomatic Java, fixing the few cases the deterministic name generator can't.
 - Regenerate Java entity classes from a DataMap.
 - Run a full DB sync — import, name cleanup, and class regeneration — as a single end-to-end workflow.
+- Upgrade a project saved by an older Cayenne version, and make the code changes the upgrade requires.
 - Bootstrap `CayenneRuntime` in a Java application and write `ObjectSelect` / `SQLQuery` queries.
 
 The plugin assumes downstream **users of Cayenne** writing their own Java apps. It does *not* cover contributor workflows for hacking on Cayenne itself.
 
 ## Install
 
-**Cayenne 6.0.** The plugin is versioned with Cayenne: `apache-cayenne-6` targets Cayenne 6.0, and its XML-editing, runtime, and query skills teach 6.0 idioms and API. Projects on Cayenne 5.0 should install `apache-cayenne-5` instead, which is the same plugin from the `STABLE-5.0` branch. There is no unversioned plugin; pick the one matching the project's Cayenne major version. The MCP server ships with CayenneModeler 5.0 and later; skills that depend on it (`cayenne-cgen`, `cayenne-modeler`, `cayenne-db-import`, `cayenne-full-db-sync`) will not work against earlier Cayenne versions. For Cayenne 4.x and older, this plugin is not the right tool.
+**Cayenne 6.0.** The plugin is versioned with Cayenne: `apache-cayenne-6` targets Cayenne 6.0, and its XML-editing, runtime, and query skills teach 6.0 idioms and API. Projects on Cayenne 5.0 should install `apache-cayenne-5` instead, which is the same plugin from the `STABLE-5.0` branch. There is no unversioned plugin; pick the one matching the project's Cayenne major version. The MCP server ships with CayenneModeler 5.0 and later; skills that depend on it (`cayenne-cgen`, `cayenne-modeler`, `cayenne-db-import`, `cayenne-full-db-sync`, `cayenne-upgrade`) will not work against earlier Cayenne versions. For Cayenne 4.x and older, this plugin is not the right tool.
 
 The plugin is distributed from the Apache Cayenne GitHub repository: **https://github.com/apache/cayenne**. Inside Claude Code:
 
@@ -67,6 +68,7 @@ ai-plugin/
 │   ├── cayenne-model-naming/    # polish Obj-layer names after import / on request
 │   ├── cayenne-cgen/            # regenerate Java classes via MCP
 │   ├── cayenne-full-db-sync/    # orchestrate import → name cleanup → cgen
+│   ├── cayenne-upgrade/         # upgrade an old project via MCP, fix the code
 │   ├── cayenne-modeler/         # open the GUI on a project
 │   ├── cayenne-runtime/         # bootstrap CayenneRuntime in an app
 │   └── cayenne-query/           # write ObjectSelect / SQLQuery queries
@@ -90,6 +92,7 @@ ORM workflows go through:
 1. Direct XML edits — primary path for a-la-carte Object-layer model changes (and DB-layer changes only when you explicitly don't use DB import).
 2. MCP `dbimport_run` — the DB layer of the model, of any size, imported from the database.
 3. MCP `cgen_run` — class generation.
-4. MCP `open_project` → CayenneModeler GUI — upgrading mappings saved by an older Cayenne version, first-time DB connection setup, and visual editing.
+4. MCP `upgrade_project` — upgrading projects saved by an older Cayenne version.
+5. MCP `open_project` → CayenneModeler GUI — first-time DB connection setup, and visual editing.
 
 and will NOT use Maven or Gradle plugins

@@ -20,6 +20,7 @@
 package org.apache.cayenne.project.upgrade;
 
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import javax.xml.xpath.XPath;
@@ -100,8 +101,68 @@ public final class UpgradeHandler_V13 implements UpgradeHandler {
             upgradeUnit.recordChange("""
                     DataNode '%s' was removed from the project along with its connection parameters. \
                     Starting with project version 13, DataNodes are configured in code via \
-                    CayenneRuntimeBuilder.addDataNode(..)""".formatted(node.getAttribute("name")), true);
+                    CayenneRuntimeBuilder.addDataNode(..)""".formatted(node.getAttribute("name")),
+                    nodeDetails(node), true);
         }
+    }
+
+    // the node settings needed to recreate it in code, except for the password
+    private List<String> nodeDetails(Element node) {
+        List<String> details = new ArrayList<>();
+        addAttributeDetail(details, node, "adapter", "adapter");
+        addAttributeDetail(details, node, "factory", "DataSource factory");
+        addAttributeDetail(details, node, "parameters", "DataSource factory parameters");
+        addAttributeDetail(details, node, "schema-update-strategy", "schema update strategy");
+
+        for (Element child : childElements(node)) {
+            switch (localName(child)) {
+                case "map-ref" -> details.add("DataMap: " + child.getAttribute("name"));
+                case "data-source" -> {
+                    for (Element setting : childElements(child)) {
+                        switch (localName(setting)) {
+                            case "driver" -> addAttributeDetail(details, setting, "value", "JDBC driver");
+                            case "url" -> addAttributeDetail(details, setting, "value", "JDBC URL");
+                            case "connectionPool" -> {
+                                addAttributeDetail(details, setting, "min", "min connections");
+                                addAttributeDetail(details, setting, "max", "max connections");
+                            }
+                            case "login" -> {
+                                addAttributeDetail(details, setting, "userName", "user name");
+                                if (!setting.getAttribute("password").isEmpty()) {
+                                    details.add("password: set in the old project, not shown");
+                                }
+                            }
+                            default -> {
+                            }
+                        }
+                    }
+                }
+                default -> {
+                }
+            }
+        }
+        return details;
+    }
+
+    private void addAttributeDetail(List<String> details, Element element, String attribute, String label) {
+        String value = element.getAttribute(attribute).trim();
+        if (!value.isEmpty()) {
+            details.add(label + ": " + value);
+        }
+    }
+
+    private static String localName(Element element) {
+        return element.getLocalName() != null ? element.getLocalName() : element.getNodeName();
+    }
+
+    private List<Element> childElements(Element parent) {
+        List<Element> elements = new ArrayList<>();
+        for (Node child = parent.getFirstChild(); child != null; child = child.getNextSibling()) {
+            if (child instanceof Element element) {
+                elements.add(element);
+            }
+        }
+        return elements;
     }
 
     private void removeDataNodeInspections(UpgradeContext upgradeUnit) {

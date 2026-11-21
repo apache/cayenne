@@ -179,3 +179,45 @@ Required.
 - `launched` — Modeler process started and confirmed the project load; `handshake` is populated
 - `validation_failed` — a pre-flight check failed (project missing, jar location unresolved, no Modeler installation discovered); `resolved` and `handshake` are `null`
 - `error` — Modeler was spawned but failed to confirm the load: it exited early, the handshake timed out, or `ProcessBuilder` itself failed; `resolved` is populated when available, `handshake` is `null`
+
+## `upgrade_project`
+
+Upgrades a project saved by an older Cayenne version to the current format, the same way CayenneModeler does when it opens such a project. Rewrites the project descriptor and every DataMap XML in place, and deletes the files the project no longer needs. Unlike the other tools, the result has no `validation` block: every failure is reported as `status: "error"` with an error code.
+
+### Input
+
+```json
+{
+  "projectPath": "string (absolute path to cayenne-*.xml)"
+}
+```
+
+Required.
+
+### Output
+
+```json
+{
+  "status": "upgraded | up_to_date | error",
+  "fromVersion": "string (project version before the upgrade; null if it couldn't be read)",
+  "toVersion": "string (current project version)",
+  "changes": [
+    {
+      "message":        "string (what happened and what to do about it)",
+      "details":        ["string (\"label: value\" facts the upgraded project no longer has)"],
+      "affectsRuntime": true
+    }
+  ],
+  "error": {
+    "code":    "project_not_found | project_parse_failed | intermediate_upgrade_needed | downgrade_needed | upgrade_failed",
+    "message": "string"
+  }
+}
+```
+
+`status` semantics:
+- `upgraded` — the project files were rewritten; `changes` lists every change the upgrade made
+- `up_to_date` — the project is already in the current format; nothing was touched, `changes` is empty
+- `error` — the project was not upgraded; `changes` is empty. `intermediate_upgrade_needed` means the project is too old to upgrade directly, and the message names the older Cayenne release whose Modeler must upgrade it first. `downgrade_needed` means the project was saved by a newer Cayenne
+
+A change with `affectsRuntime: true` removed or altered a part of the project that has no automatic replacement (e.g. a DataNode, now configured in code), so the application code must change to keep working. Its `details` hold the information needed for that, e.g. the connection settings of a removed DataNode (never the password), the text of a removed query, or the removed callback methods.

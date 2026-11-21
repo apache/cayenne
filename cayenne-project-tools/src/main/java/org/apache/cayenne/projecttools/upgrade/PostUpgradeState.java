@@ -18,19 +18,16 @@
  ****************************************************************/
 package org.apache.cayenne.projecttools.upgrade;
 
+import org.apache.cayenne.project.upgrade.UpgradeChange;
 import org.apache.cayenne.resource.Resource;
 
 import java.util.List;
 
 /**
- * A result of a project upgrade: the resource of the upgraded project plus optional messages from individual upgrade
- * handlers, describing manual steps the user must perform to complete the upgrade.
+ * A result of a project upgrade: the resource of the upgraded project plus the changes made by the upgrade, including
+ * those that require manual steps from the user to complete the upgrade.
  *
  * @since 5.0
  */
-public record PostUpgradeState(Resource resource, List<String> messages) {
-
-    public PostUpgradeState {
-        messages = List.copyOf(messages);
-    }
+public record PostUpgradeState(Resource resource, List<UpgradeChange> changes) {
 }

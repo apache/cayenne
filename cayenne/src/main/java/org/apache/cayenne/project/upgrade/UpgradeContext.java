@@ -39,15 +39,13 @@ public class UpgradeContext {
 
     private final Resource source;
     private final Document document;
-    private final List<String> changeNotifications;
-    private final List<String> changesAffectingRuntime;
+    private final List<UpgradeChange> changes;
     private final List<String> obsoleteFiles;
 
     public UpgradeContext(Resource source, Document document) {
         this.source = source;
         this.document = document;
-        this.changeNotifications = new ArrayList<>();
-        this.changesAffectingRuntime = new ArrayList<>();
+        this.changes = new ArrayList<>();
         this.obsoleteFiles = new ArrayList<>();
     }
 
@@ -59,21 +57,30 @@ public class UpgradeContext {
      * Returns the upgraded document if the upgrade was lossless, i.e. made no changes that may affect runtime. Such a
      * document can be loaded as is, without saving it or involving the user.
      *
-     * @throws ConfigurationException if the upgrade was not lossless, and so requires the project to be upgraded in
-     *                                CayenneModeler
+     * @throws ConfigurationException if the upgrade was not lossless, and so requires the project files to be
+     *                                upgraded, with the user completing the manual steps
      * @since 5.0
      */
     public Document getDocumentIfLossless() {
-        if (!changesAffectingRuntime.isEmpty()) {
+        StringBuilder changesText = new StringBuilder();
+        for (UpgradeChange change : changes) {
+            if (change.affectsRuntime()) {
+                changesText.append("\n\n").append(change.message());
+                change.details().forEach(d -> changesText.append("\n  ").append(d));
+            }
+        }
+
+        if (!changesText.isEmpty()) {
             throw new ConfigurationException("""
                     Unable to upgrade configuration from %s in memory, as the upgrade requires manual changes. \
-                    Open the project in CayenneModeler to upgrade it. %s""",
-                    source.getURL(), String.join(" ", changesAffectingRuntime));
+                    Upgrade the project files with CayenneModeler or the Cayenne MCP server.%s""",
+                    source.getURL(), changesText);
         }
 
         LOGGER.warn("""
                 Configuration {} was created with an older version of Cayenne and was upgraded to project \
-                version {} in memory. Open the project in CayenneModeler to upgrade its XML permanently""",
+                version {} in memory. Upgrade the project files with CayenneModeler or the Cayenne MCP server \
+                to make it permanent""",
                 source.getURL(), UpgradeHandler.CURRENT_VERSION);
 
         return document;
@@ -87,29 +94,22 @@ public class UpgradeContext {
     }
 
     /**
-     * Records a message about manual steps that the user needs to take after the upgrade.
+     * Records a change that the user needs to know about. A change that may affect the runtime must be described
+     * fully, as the upgraded project no longer has the information needed to recreate the removed or altered part in
+     * code: the message says what happened and what to do, and the details list the facts, such as the settings of a
+     * removed DataNode, one per line, as "label: value". Never put secrets (e.g. passwords) in the details.
      *
-     * @since 5.0
+     * @since 6.0
      */
-    public void recordChange(String message, boolean mayAffectRuntime) {
-        changeNotifications.add(message);
-        if (mayAffectRuntime) {
-            changesAffectingRuntime.add(message);
-        }
+    public void recordChange(String message, List<String> details, boolean mayAffectRuntime) {
+        changes.add(new UpgradeChange(message, details, mayAffectRuntime));
     }
 
     /**
-     * @since 5.0
+     * @since 6.0
      */
-    public List<String> getChangeNotifications() {
-        return changeNotifications;
-    }
-
-    /**
-     * @since 5.0
-     */
-    public List<String> getChangesAffectingRuntime() {
-        return changesAffectingRuntime;
+    public List<UpgradeChange> getChanges() {
+        return changes;
     }
 
     /**

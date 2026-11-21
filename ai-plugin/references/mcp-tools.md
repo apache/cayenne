@@ -20,7 +20,7 @@
 
 The Cayenne MCP server (`cayenne-mcp-server` module) exposes Cayenne operations to AI agents over stdio.
 
-**Availability: Cayenne 5.0+ only.** The MCP server is a new component shipped alongside CayenneModeler starting with the 5.0 release. There is no MCP server for Cayenne 4.x or earlier — skills that depend on these tools (`cayenne-cgen`, `cayenne-modeler`, `cayenne-db-import`) cannot be used against pre-5.0 projects.
+**Availability: Cayenne 5.0+ only.** The MCP server is a new component shipped alongside CayenneModeler starting with the 5.0 release. There is no MCP server for Cayenne 4.x or earlier — skills that depend on these tools (`cayenne-cgen`, `cayenne-modeler`, `cayenne-db-import`, `cayenne-upgrade`) cannot be used against pre-5.0 projects. The `upgrade_project` tool is available starting with the 6.0 MCP server.
 
 Setup is documented in `cayenne-mcp-server/README.md` at the repo root. Quick form for Claude Code:
 
@@ -147,15 +147,55 @@ Launches CayenneModeler with a project file pre-loaded.
 
 **Returns:** JSON object with `status` (`ok` / `error`), and on error a `code` indicating the failure (e.g., `modeler_not_found`, `project_not_found`, `handshake_timeout`).
 
-**When to call:** for reverse-engineering workflows (drives the user through the Modeler's import dialog), bulk visual editing, or when the user explicitly asks to open the Modeler.
+**When to call:** for reverse-engineering workflows (drives the user through the Modeler's import dialog), bulk visual editing, or when the user explicitly asks to open the Modeler. Not for upgrading old projects — that's `upgrade_project`.
 
 **Don't call it** as a fallback for simple XML edits — direct edits via the `cayenne-modeling` skill are faster and don't require the user to switch context.
 
 **Source:** `cayenne-mcp-server/src/main/java/org/apache/cayenne/mcp/tools/openproject/OpenProjectTool.java`.
 
+## Tool: `upgrade_project`
+
+Upgrades a project saved by an older Cayenne version to the current format: rewrites the project descriptor and every DataMap XML in place, and deletes the files the project no longer needs (e.g. old diagram layouts). Runs the same upgrade as CayenneModeler does when it opens an old project, without the GUI.
+
+**Arguments:**
+
+| Name | Type | Required | Description |
+|---|---|---|---|
+| `projectPath` | string | yes | Absolute path to the top-level Cayenne project descriptor (`cayenne-*.xml`), **not** a DataMap file. |
+
+**Returns:** JSON object with fields:
+
+```json
+{
+  "status": "upgraded | up_to_date | error",
+  "fromVersion": "12",
+  "toVersion": "15",
+  "changes": [{
+    "message": "DataNode 'main' was removed from the project along with its connection parameters. Starting with project version 13, DataNodes are configured in code via CayenneRuntimeBuilder.addDataNode(..)",
+    "details": ["adapter: org.apache.cayenne.dba.postgres.PostgresAdapter", "DataMap: main", "JDBC driver: org.postgresql.Driver", "JDBC URL: jdbc:postgresql://localhost/app", "user name: app"],
+    "affectsRuntime": true
+  }],
+  "error": null
+}
+```
+
+- `changes` lists every change the upgrade made. A change with `affectsRuntime: true` removed or altered a part of the project that has no automatic replacement — the application code must change to keep working. Its `details` hold the facts the upgraded project no longer has (connection settings, query text, callback methods, ...), one `label: value` line each. Passwords are never included.
+
+**Failure modes** (`status: "error"`):
+
+| Error code | Meaning | Remediation |
+|---|---|---|
+| `project_not_found` | `projectPath` not readable | Verify path. |
+| `project_parse_failed` | The project version can't be read | Confirm the file is a `cayenne-*.xml`. |
+| `intermediate_upgrade_needed` | The project is too old to upgrade directly | The message names the older Cayenne release whose Modeler must upgrade it first. |
+| `downgrade_needed` | The project was saved by a newer Cayenne | Use a newer CayenneModeler / MCP server. |
+| `upgrade_failed` | The upgrade threw | Relay the message. |
+
+**Source:** `cayenne-mcp-server/src/main/java/org/apache/cayenne/mcp/tools/upgrade/UpgradeProjectTool.java`.
+
 ## Detecting whether the server is connected
 
-The MCP tools surface in this session under names `mcp__cayenne__cgen_run`, `mcp__cayenne__open_project`, and `mcp__cayenne__dbimport_run`. If they are not in the available tools, the server is not registered.
+The MCP tools surface in this session under names `mcp__cayenne__cgen_run`, `mcp__cayenne__open_project`, `mcp__cayenne__dbimport_run`, and `mcp__cayenne__upgrade_project`. If they are not in the available tools, the server is not registered.
 
 When unavailable:
 

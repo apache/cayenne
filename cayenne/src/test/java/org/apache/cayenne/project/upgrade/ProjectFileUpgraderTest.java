@@ -113,7 +113,7 @@ public class ProjectFileUpgraderTest {
 
         // the version 9 fixture has a DataNode, which version 13 removes without a replacement
         assertEquals(0, root.getElementsByTagName("node").getLength());
-        assertEquals(1, context.getChangesAffectingRuntime().size());
+        assertEquals(1, context.getChanges().stream().filter(UpgradeChange::affectsRuntime).count());
     }
 
     @Test

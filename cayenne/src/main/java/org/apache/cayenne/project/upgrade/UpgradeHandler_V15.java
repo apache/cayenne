@@ -105,7 +105,7 @@ public final class UpgradeHandler_V15 implements UpgradeHandler {
             if (hasDbImport) {
                 config.getParentNode().removeChild(config);
                 upgradeUnit.recordChange("The legacy 'config' tag of the reverse engineering settings was removed, "
-                        + "as the DataMap has a 'dbImport' tag that replaces it", false);
+                        + "as the DataMap has a 'dbImport' tag that replaces it", List.of(), false);
             } else {
                 upgradeUnit.getDocument().renameNode(config, null, "dbImport");
                 hasDbImport = true;
@@ -133,7 +133,7 @@ public final class UpgradeHandler_V15 implements UpgradeHandler {
                 }
             } else {
                 upgradeUnit.recordChange("Property '%s' of %s was removed, as only comments are supported"
-                        .formatted(name, describe(parent)), false);
+                        .formatted(name, describe(parent)), List.of(), false);
             }
             parent.removeChild(property);
         }
@@ -228,10 +228,10 @@ public final class UpgradeHandler_V15 implements UpgradeHandler {
             }
 
             if (!callbacks.isEmpty()) {
-                upgradeUnit.recordChange(("Callbacks mapped on ObjEntity '%s' were removed (%s). To keep them "
+                upgradeUnit.recordChange(("Callbacks mapped on ObjEntity '%s' were removed. To keep them "
                         + "working, implement the callback interfaces from 'org.apache.cayenne.lifecycle' in the "
                         + "Persistent class, e.g. PostAddAware")
-                        .formatted(entity.getAttribute("name"), String.join(", ", callbacks)), true);
+                        .formatted(entity.getAttribute("name")), callbacks, true);
             }
         }
     }
@@ -294,7 +294,7 @@ public final class UpgradeHandler_V15 implements UpgradeHandler {
 
         upgradeUnit.recordChange(("DbRelationship '%s' from '%s' to '%s' was added as the reverse of '%s', to mark "
                 + "the side that holds the foreign key").formatted(reverse.getAttribute("name"), source, target,
-                relationship.getAttribute("name")), false);
+                relationship.getAttribute("name")), List.of(), false);
         return reverse;
     }
 

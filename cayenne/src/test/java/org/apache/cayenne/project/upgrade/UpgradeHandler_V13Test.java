@@ -77,11 +77,26 @@ public class UpgradeHandler_V13Test extends BaseUpgradeHandlerTest {
         assertEquals(List.of("DATA_CHANNEL_NO_NAME"), excludeNames,
                 "DATA_NODE_* and DATA_MAP_NODE_LINKAGE excludes must be removed, others preserved");
 
-        assertEquals(2, unit.getChangeNotifications().size(), "one post-upgrade message per removed node");
-        assertTrue(unit.getChangeNotifications().get(0).contains("'node1'"));
-        assertTrue(unit.getChangeNotifications().get(1).contains("'node2'"));
-        assertEquals(unit.getChangeNotifications(), unit.getChangesAffectingRuntime(),
-                "DataNode removal has no automatic replacement, so it is destructive");
+        List<UpgradeChange> changes = unit.getChanges();
+        assertEquals(2, changes.size(), "one post-upgrade message per removed node");
+        assertTrue(changes.get(0).message().contains("'node1'"));
+        assertTrue(changes.get(1).message().contains("'node2'"));
+        changes.forEach(c -> assertTrue(c.affectsRuntime(),
+                "DataNode removal has no automatic replacement, so it is destructive"));
+
+        // the details keep the node settings, that are no longer in the project
+        assertEquals(List.of(
+                "adapter: org.example.test.Adapter",
+                "DataSource factory: org.apache.cayenne.configuration.runtime.XMLPoolingDataSourceFactory",
+                "DataMap: map1",
+                "JDBC driver: org.hsqldb.jdbcDriver",
+                "JDBC URL: jdbc:hsqldb:mem:testdb",
+                "min connections: 1",
+                "max connections: 1",
+                "user name: sa"), changes.get(0).details());
+        assertEquals(List.of(
+                "DataSource factory: org.apache.cayenne.configuration.runtime.JNDIDataSourceFactory",
+                "DataSource factory parameters: jdbc/testdb"), changes.get(1).details());
     }
 
     @Test

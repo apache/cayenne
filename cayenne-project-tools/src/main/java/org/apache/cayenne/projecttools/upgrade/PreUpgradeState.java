@@ -23,11 +23,19 @@ import org.apache.cayenne.project.upgrade.UpgradeType;
 /**
  * An object providing upgrade information about a specific project in the context of enclosing Cayenne runtime.
  *
+ * @param requiredUpgrade            the kind of upgrade the project needs
+ * @param projectVersion             the current version of the project
+ * @param supportedVersion           the project version that this Cayenne release works with
+ * @param intermediateUpgradeVersion for {@link UpgradeType#INTERMEDIATE_UPGRADE_NEEDED}, the oldest project version
+ *                                   that this release can upgrade, or null
+ * @param intermediateUpgradeRelease for {@link UpgradeType#INTERMEDIATE_UPGRADE_NEEDED}, the Cayenne release, whose
+ *                                   CayenneModeler can do the intermediate upgrade, or null if unknown (since 6.0)
  * @since 3.1
  */
 public record PreUpgradeState(
         UpgradeType requiredUpgrade,
         String projectVersion,
         String supportedVersion,
-        String intermediateUpgradeVersion) {
+        String intermediateUpgradeVersion,
+        String intermediateUpgradeRelease) {
 }

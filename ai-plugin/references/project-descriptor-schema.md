@@ -72,8 +72,8 @@ runtime is created: `CayenneRuntimeBuilder.defaultDataNode(..)` and `addDataNode
 This keeps DB credentials out of XML and lets the app pick the DataSource per environment (test, dev, prod).
 
 The `<node>`, `<map-ref>` and `<data-source>` elements of the 4.x descriptors are gone. An old descriptor that
-still has them can't be upgraded in memory by the runtime: open it in CayenneModeler, which drops the nodes and
-reports each removal, and move the connection into the code.
+still has them can't be upgraded in memory by the runtime: upgrade it with the `cayenne-upgrade` skill, which drops
+the nodes, reports each removal with its connection settings, and moves the connection into the code.
 
 ## Anti-patterns
 

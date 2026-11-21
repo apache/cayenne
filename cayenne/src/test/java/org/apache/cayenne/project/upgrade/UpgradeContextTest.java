@@ -21,6 +21,8 @@ package org.apache.cayenne.project.upgrade;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -29,12 +31,12 @@ public class UpgradeContextTest {
     @Test
     public void recordChange() {
         UpgradeContext context = new UpgradeContext(null, null);
-        context.recordChange("info", false);
-        context.recordChange("destructive", true);
+        context.recordChange("info", List.of(), false);
+        context.recordChange("destructive", List.of("a: b"), true);
 
-        assertEquals(2, context.getChangeNotifications().size());
-        assertEquals(1, context.getChangesAffectingRuntime().size());
-        assertEquals("destructive", context.getChangesAffectingRuntime().getFirst());
+        assertEquals(List.of(
+                new UpgradeChange("info", List.of(), false),
+                new UpgradeChange("destructive", List.of("a: b"), true)), context.getChanges());
         assertTrue(context.getObsoleteFiles().isEmpty());
     }
 }

@@ -26,6 +26,7 @@ import org.apache.cayenne.modeler.toolkit.filechooser.FileFilters;
 import org.apache.cayenne.modeler.ui.MainFrame;
 import org.apache.cayenne.modeler.ui.errors.ErrorDialog;
 import org.apache.cayenne.project.Project;
+import org.apache.cayenne.project.upgrade.UpgradeChange;
 import org.apache.cayenne.projecttools.upgrade.PostUpgradeState;
 import org.apache.cayenne.projecttools.upgrade.PreUpgradeState;
 import org.apache.cayenne.projecttools.upgrade.ProjectUpgrader;
@@ -43,21 +44,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.net.URL;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
 
 public class OpenProjectAction extends AppAction {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OpenProjectAction.class);
-
-    private static final Map<String, String> PROJECT_TO_MODELER_VERSION;
-
-    static {
-        // Correspondence between project version and latest Modeler version that can upgrade it.
-        // Modeler v4.1 can handle versions from 3.1 and 4.0 (including intermediate versions) modeler.
-        PROJECT_TO_MODELER_VERSION = Map.of("1.0", "v3.0", "1.1", "v3.0", "1.2", "v3.0", "2.0", "v3.0", "3.0.0.1", "v3.1",
-                "6", "v4.2", "7", "v4.2", "8", "v4.2");
-    }
 
     public OpenProjectAction(Application application) {
         super(application, "Open Project");
@@ -140,16 +133,14 @@ public class OpenProjectAction extends AppAction {
             URL url = file.toURI().toURL();
             Resource rootSource = new URLResource(url);
 
-            List<String> upgradeMessages = List.of();
+            List<UpgradeChange> upgradeChanges = List.of();
 
             ProjectUpgrader projectUpgrader = app.getUpgradeService();
             PreUpgradeState metaData = projectUpgrader.checkUpgradeNeeded(rootSource);
             switch (metaData.requiredUpgrade()) {
                 case INTERMEDIATE_UPGRADE_NEEDED:
-                    String modelerVersion = PROJECT_TO_MODELER_VERSION.get(metaData.projectVersion());
-                    if (modelerVersion == null) {
-                        modelerVersion = "";
-                    }
+                    String release = metaData.intermediateUpgradeRelease();
+                    String modelerVersion = release != null ? "v" + release : "";
                     JOptionPane.showMessageDialog(app.getFrame(),
                             "Open the project in the older Modeler " + modelerVersion
                                     + " to do an intermediate upgrade\nbefore you can upgrade to latest version.",
@@ -168,7 +159,7 @@ public class OpenProjectAction extends AppAction {
                     if (processUpgrades()) {
                         PostUpgradeState postUpgrade = projectUpgrader.upgrade(rootSource);
                         rootSource = postUpgrade.resource();
-                        upgradeMessages = postUpgrade.messages();
+                        upgradeChanges = postUpgrade.changes();
                     } else {
                         CloseProjectAction.closeProject(app, false);
                         return;
@@ -178,6 +169,7 @@ public class OpenProjectAction extends AppAction {
 
             openProjectResource(rootSource, controller, mcpHandshakeNonce);
 
+            List<String> upgradeMessages = upgradeMessages(upgradeChanges);
             if (!upgradeMessages.isEmpty()) {
                 showPostUpgradeMessages(upgradeMessages);
             }
@@ -195,12 +187,22 @@ public class OpenProjectAction extends AppAction {
         return project;
     }
 
+    // the changes that may affect the runtime go first, each followed by its details
+    private static List<String> upgradeMessages(List<UpgradeChange> changes) {
+        return changes.stream()
+                .sorted(Comparator.comparing(c -> !c.affectsRuntime()))
+                .map(c -> c.details().isEmpty()
+                        ? c.message()
+                        : c.message() + c.details().stream().map(d -> "\n    " + d).collect(Collectors.joining()))
+                .toList();
+    }
+
     private void showPostUpgradeMessages(List<String> messages) {
         JTextArea messageText = new JTextArea(String.join("\n\n", messages));
         messageText.setEditable(false);
         messageText.setLineWrap(true);
         messageText.setWrapStyleWord(true);
-        messageText.setRows(8);
+        messageText.setRows(15);
         messageText.setColumns(60);
 
         JScrollPane messageScroll = new JScrollPane(

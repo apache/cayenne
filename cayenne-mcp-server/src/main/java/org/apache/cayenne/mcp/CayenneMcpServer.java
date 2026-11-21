@@ -28,6 +28,7 @@ import org.apache.cayenne.modeler.pref.PrefsLocator;
 import org.apache.cayenne.mcp.tools.cgen.CgenRunTool;
 import org.apache.cayenne.mcp.tools.dbimport.DbImportRunTool;
 import org.apache.cayenne.mcp.tools.openproject.OpenProjectTool;
+import org.apache.cayenne.mcp.tools.upgrade.UpgradeProjectTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,6 +60,7 @@ public class CayenneMcpServer {
                 .tools(CgenRunTool.spec(jsonMapper))
                 .tools(DbImportRunTool.spec(jsonMapper, prefsLocator))
                 .tools(OpenProjectTool.spec(jsonMapper, prefsLocator))
+                .tools(UpgradeProjectTool.spec(jsonMapper))
                 .build();
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {

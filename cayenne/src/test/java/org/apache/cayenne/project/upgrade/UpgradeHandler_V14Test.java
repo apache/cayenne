@@ -125,15 +125,22 @@ public class UpgradeHandler_V14Test extends BaseUpgradeHandlerTest {
                 queries.stream().map(Element::getNodeName).toList());
         queries.forEach(q -> assertFalse(q.hasAttribute("type"), q.getAttribute("name")));
         queries.forEach(q -> assertEquals(root.getNamespaceURI(), q.getNamespaceURI(), q.getAttribute("name")));
-        List<String> notifications = unit.getChangeNotifications();
-        assertEquals(5, notifications.size(), notifications.toString());
-        assertTrue(notifications.get(0).contains("'NoRoot'"), notifications.toString());
-        assertTrue(notifications.get(1).contains("'Ejbql1'"), notifications.toString());
-        assertTrue(notifications.get(2).contains("'Ejbql2'"), notifications.toString());
-        assertTrue(notifications.get(3).contains("fetch limit of 10") && notifications.get(3).contains("'Template'"),
-                notifications.toString());
-        assertTrue(notifications.get(4).contains("'UnknownType'"), notifications.toString());
-        assertEquals(notifications, unit.getChangesAffectingRuntime());
+        List<UpgradeChange> changes = unit.getChanges();
+        assertEquals(5, changes.size(), changes.toString());
+        assertTrue(changes.get(0).message().contains("'NoRoot'"), changes.toString());
+        assertEquals(List.of("type: SelectQuery", "qualifier: artistName = \"a\""), changes.get(0).details());
+        assertTrue(changes.get(1).message().contains("'Ejbql1'"), changes.toString());
+        assertEquals(List.of(
+                "type: EJBQLQuery",
+                "cayenne.GenericSelectQuery.cacheStrategy: SHARED_CACHE",
+                "ejbql: select a from Artist a"), changes.get(1).details());
+        assertTrue(changes.get(2).message().contains("'Ejbql2'"), changes.toString());
+        assertEquals(List.of("type: EJBQLQuery", "ejbql: select count(a) from Artist a"), changes.get(2).details());
+        assertTrue(changes.get(3).message().contains("fetch limit of 10")
+                && changes.get(3).message().contains("'Template'"), changes.toString());
+        assertTrue(changes.get(4).message().contains("'UnknownType'"), changes.toString());
+        assertEquals(List.of("type: NoSuchQuery"), changes.get(4).details());
+        changes.forEach(c -> assertTrue(c.affectsRuntime(), c.toString()));
 
         Element allClauses = queries.get(0);
         assertFalse(allClauses.hasAttribute("root"));

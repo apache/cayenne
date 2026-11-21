@@ -140,7 +140,8 @@ public final class UpgradeHandler_V12 implements UpgradeHandler {
                 toRemove.add(element);
                 upgradeUnit.addObsoleteFile(href);
                 upgradeUnit.recordChange(
-                        "The 'graph' diagram layout is no longer supported and was removed from the project", false);
+                        "The 'graph' diagram layout is no longer supported and was removed from the project",
+                        List.of(), false);
             }
         }
         for (Element element : toRemove) {

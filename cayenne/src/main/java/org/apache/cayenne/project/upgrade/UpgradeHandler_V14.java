@@ -304,7 +304,7 @@ public final class UpgradeHandler_V14 implements UpgradeHandler {
             upgradeUnit.recordChange("""
                     Query '%s' was removed from the DataMap, as EJBQL queries are no longer supported. \
                     Replace it with an ObjectSelect parsed from a String"""
-                    .formatted(query.getAttribute("name")), true);
+                    .formatted(query.getAttribute("name")), queryDetails(query), true);
         }
     }
 
@@ -319,7 +319,7 @@ public final class UpgradeHandler_V14 implements UpgradeHandler {
                 upgradeUnit.recordChange("""
                         Query '%s' was removed from the DataMap, as it has no root ObjEntity. Starting with project \
                         version 14, a select query is stored as a String that starts with its root entity"""
-                        .formatted(name), true);
+                        .formatted(name), queryDetails(query), true);
                 continue;
             }
 
@@ -363,7 +363,7 @@ public final class UpgradeHandler_V14 implements UpgradeHandler {
             if (queryTag == null) {
                 query.getParentNode().removeChild(query);
                 upgradeUnit.recordChange("Query '%s' was removed from the DataMap, as its type is not supported"
-                        .formatted(name), true);
+                        .formatted(name), queryDetails(query), true);
                 continue;
             }
 
@@ -429,8 +429,40 @@ public final class UpgradeHandler_V14 implements UpgradeHandler {
         if (label != null) {
             upgradeUnit.recordChange("""
                     The %s of %s was removed from the SQL query '%s', as it is no longer supported in the DataMap. \
-                    Make it a part of the query SQL""".formatted(label, value, queryName), true);
+                    Make it a part of the query SQL""".formatted(label, value, queryName), List.of(), true);
         }
+    }
+
+    // the definition of a removed query, so that it can be recreated in code
+    private List<String> queryDetails(Element query) {
+        List<String> details = new ArrayList<>();
+        NamedNodeMap attributes = query.getAttributes();
+        for (int i = 0; i < attributes.getLength(); i++) {
+            Node attribute = attributes.item(i);
+            if (!attribute.getNodeName().equals("name")) {
+                details.add(attribute.getNodeName() + ": " + attribute.getNodeValue());
+            }
+        }
+
+        for (Element child : childElements(query)) {
+            if (localName(child).equals("property")) {
+                details.add(child.getAttribute("name") + ": " + child.getAttribute("value"));
+                continue;
+            }
+
+            StringBuilder label = new StringBuilder(localName(child));
+            NamedNodeMap childAttributes = child.getAttributes();
+            for (int i = 0; i < childAttributes.getLength(); i++) {
+                Node attribute = childAttributes.item(i);
+                label.append(i == 0 ? " (" : ", ")
+                        .append(attribute.getNodeName()).append('=').append(attribute.getNodeValue());
+            }
+            if (childAttributes.getLength() > 0) {
+                label.append(')');
+            }
+            details.add(label + ": " + child.getTextContent().trim());
+        }
+        return details;
     }
 
     /**

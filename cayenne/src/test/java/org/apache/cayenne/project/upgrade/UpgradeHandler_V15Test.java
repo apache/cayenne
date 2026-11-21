@@ -177,15 +177,15 @@ public class UpgradeHandler_V15Test extends BaseUpgradeHandlerTest {
         assertEquals(List.of("objAttribute"), childNames(elements(document, "/dataMap/objEntity[@name='Artist']").get(0)));
 
         // only the removed callbacks are a lossy change
-        List<String> notifications = unit.getChangeNotifications();
-        assertEquals(4, notifications.size(), notifications.toString());
-        assertTrue(notifications.get(0).contains("legacy 'config' tag"), notifications.toString());
-        assertTrue(notifications.get(1).contains("'label' of objEntity 'Artist'"), notifications.toString());
-        assertTrue(notifications.get(2).contains("'artist'"), notifications.toString());
-        assertTrue(notifications.get(3).contains("'Artist'"), notifications.toString());
-        assertTrue(notifications.get(3).contains("postAdd: onPostAdd, prePersist: onPrePersist, postLoad: onPostLoad"),
-                notifications.toString());
-        assertEquals(List.of(notifications.get(3)), unit.getChangesAffectingRuntime());
+        List<UpgradeChange> changes = unit.getChanges();
+        assertEquals(4, changes.size(), changes.toString());
+        assertTrue(changes.get(0).message().contains("legacy 'config' tag"), changes.toString());
+        assertTrue(changes.get(1).message().contains("'label' of objEntity 'Artist'"), changes.toString());
+        assertTrue(changes.get(2).message().contains("'artist'"), changes.toString());
+        assertTrue(changes.get(3).message().contains("'Artist'"), changes.toString());
+        assertEquals(List.of("postAdd: onPostAdd", "prePersist: onPrePersist", "postLoad: onPostLoad"),
+                changes.get(3).details());
+        assertEquals(List.of(changes.get(3)), changes.stream().filter(UpgradeChange::affectsRuntime).toList());
     }
 
     private String comment(Element parent) {

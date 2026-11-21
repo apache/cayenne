@@ -26,6 +26,7 @@ import org.apache.cayenne.project.ProjectLoadingMode;
 import org.apache.cayenne.project.DataMapLoader;
 import org.apache.cayenne.project.cgen.CgenDescriptor;
 import org.apache.cayenne.project.dbimport.ReverseEngineering;
+import org.apache.cayenne.project.upgrade.UpgradeChange;
 import org.apache.cayenne.project.upgrade.UpgradeType;
 import org.apache.cayenne.project.upgrade.ProjectFileUpgrader;
 import org.apache.cayenne.project.xml.XMLProjectLoader;
@@ -57,6 +58,7 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -81,6 +83,11 @@ public class DefaultProjectUpgraderTest {
         assertEquals("5", state.projectVersion());
         assertEquals("15", state.supportedVersion());
         assertEquals("9", state.intermediateUpgradeVersion());
+        assertNull(state.intermediateUpgradeRelease());
+
+        state = upgrader.checkUpgradeNeeded(projectWithVersion("8"));
+        assertEquals(UpgradeType.INTERMEDIATE_UPGRADE_NEEDED, state.requiredUpgrade());
+        assertEquals("4.2", state.intermediateUpgradeRelease());
 
         state = upgrader.checkUpgradeNeeded(projectWithVersion("11"));
         assertEquals(UpgradeType.UPGRADE_NEEDED, state.requiredUpgrade());
@@ -101,10 +108,7 @@ public class DefaultProjectUpgraderTest {
         assertEquals(UpgradeType.UPGRADE_NEEDED, upgrader.checkUpgradeNeeded(resource).requiredUpgrade());
 
         PostUpgradeState state = upgrader.upgrade(resource);
-
-        assertEquals(2, state.messages().size(), state.messages().toString());
-        assertTrue(state.messages().get(0).contains("'graph' diagram layout"), state.messages().toString());
-        assertTrue(state.messages().get(1).contains("DataNode 'node1'"), state.messages().toString());
+        assertChanges(state);
 
         // files are rewritten in the current version, the obsolete graph file is deleted
         String project = Files.readString(projectFile.toPath());
@@ -153,6 +157,16 @@ public class DefaultProjectUpgraderTest {
         // the removed inspection is dropped, and the renamed one has its new name
         assertEquals(List.of("PROJECT_NO_NAME", "DB_ENTITY_NO_PK"),
                 List.copyOf(loadedProject.getDisabledInspections()));
+    }
+
+    private static void assertChanges(PostUpgradeState state) {
+        List<UpgradeChange> changes = state.changes();
+        assertEquals(2, changes.size(), changes.toString());
+        assertTrue(changes.get(0).message().contains("'graph' diagram layout"));
+        assertFalse(changes.get(0).affectsRuntime());
+        assertTrue(changes.get(1).message().contains("DataNode 'node1'"));
+        assertTrue(changes.get(1).affectsRuntime());
+        assertFalse(changes.get(1).details().isEmpty());
     }
 
     @Test

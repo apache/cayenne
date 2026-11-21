@@ -23,6 +23,7 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.project.Project;
 import org.apache.cayenne.project.ProjectLoader;
 import org.apache.cayenne.project.ProjectLoadingMode;
+import org.apache.cayenne.project.upgrade.UpgradeChange;
 import org.apache.cayenne.project.upgrade.UpgradeContext;
 import org.apache.cayenne.project.upgrade.ProjectFileUpgrader;
 import org.apache.cayenne.project.upgrade.UpgradeHandler;
@@ -51,9 +52,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 /**
  * Upgrades project files permanently, rewriting the XML on disk. The actual upgrade is done by the
@@ -64,6 +64,17 @@ import java.util.Set;
 public class DefaultProjectUpgrader implements ProjectUpgrader {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultProjectUpgrader.class);
+
+    // the latest Cayenne release whose CayenneModeler can upgrade a given old project version
+    private static final Map<String, String> INTERMEDIATE_UPGRADE_RELEASES = Map.of(
+            "1.0", "3.0",
+            "1.1", "3.0",
+            "1.2", "3.0",
+            "2.0", "3.0",
+            "3.0.0.1", "3.1",
+            "6", "4.2",
+            "7", "4.2",
+            "8", "4.2");
 
     @Inject
     private ProjectSaver projectSaver;
@@ -81,10 +92,13 @@ public class DefaultProjectUpgrader implements ProjectUpgrader {
     public PreUpgradeState checkUpgradeNeeded(Resource resource) {
         String version = upgrader.readVersion(resource);
         UpgradeType upgradeType = upgrader.checkUpgradeNeeded(version);
-        String intermediateVersion = upgradeType == UpgradeType.INTERMEDIATE_UPGRADE_NEEDED
-                ? UpgradeHandler.MIN_SUPPORTED_VERSION
-                : null;
-        return new PreUpgradeState(upgradeType, version, UpgradeHandler.CURRENT_VERSION, intermediateVersion);
+        boolean intermediate = upgradeType == UpgradeType.INTERMEDIATE_UPGRADE_NEEDED;
+        return new PreUpgradeState(
+                upgradeType,
+                version,
+                UpgradeHandler.CURRENT_VERSION,
+                intermediate ? UpgradeHandler.MIN_SUPPORTED_VERSION : null,
+                intermediate ? INTERMEDIATE_UPGRADE_RELEASES.get(version) : null);
     }
 
     @Override
@@ -115,15 +129,8 @@ public class DefaultProjectUpgrader implements ProjectUpgrader {
         Project project = loadProject(resource);
         projectSaver.save(project);
 
-        return new PostUpgradeState(resource, collectPostUpgradeMessages(contexts));
-    }
-
-    protected static List<String> collectPostUpgradeMessages(List<UpgradeContext> contexts) {
-        Set<String> messages = new LinkedHashSet<>();
-        for (UpgradeContext context : contexts) {
-            messages.addAll(context.getChangeNotifications());
-        }
-        return new ArrayList<>(messages);
+        List<UpgradeChange> changes = contexts.stream().flatMap(c -> c.getChanges().stream()).toList();
+        return new PostUpgradeState(resource, changes);
     }
 
     protected Project loadProject(Resource resource) {
