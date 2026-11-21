@@ -96,7 +96,7 @@ public class MainFrame extends AppFrame {
         super(app);
         this.globalActions = this.app.getActionManager();
 
-        setIconImage(IconFactory.buildIcon("CayenneModeler.png").getImage());
+        setIconImages(IconFactory.appIcons());
         getContentPane().setLayout(new BorderLayout());
         this.menuBar = new MainMenuBar(app);
         setJMenuBar(menuBar);

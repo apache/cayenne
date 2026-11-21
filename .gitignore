@@ -6,6 +6,7 @@ out
 .externalToolBuilders
 .DS_Store
 derby.log
+dependency-reduced-pom.xml
 .metadata
 bin/
 .idea

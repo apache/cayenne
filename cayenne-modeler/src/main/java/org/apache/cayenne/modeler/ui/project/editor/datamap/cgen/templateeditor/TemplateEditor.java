@@ -52,7 +52,6 @@ import java.io.Writer;
 public class TemplateEditor extends AppFrame {
 
     private static final String VELOCITY_KEY = "text/velocity";
-    private static final ImageIcon modelerIcon = IconFactory.buildIcon("CayenneModeler.png");
     private static final Icon saveIcon = IconFactory.buildIcon("icon-save.png");
     private static final Icon resetToDefaultIcon = IconFactory.buildIcon("icon-undo.png");
     private static final Icon findIcon = IconFactory.buildIcon("icon-query.png");
@@ -107,7 +106,7 @@ public class TemplateEditor extends AppFrame {
         this.templateSaver = new EditorTemplateSaver(configuration);
         this.actionConfigurator = new PreviewActionConfigurator(this);
 
-        setIconImage(modelerIcon.getImage());
+        setIconImages(IconFactory.appIcons());
         mapVelocityTokenMaker();
         initLayout();
         initBindings();

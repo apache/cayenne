@@ -37,6 +37,8 @@ import java.awt.image.FilteredImageSource;
 import java.awt.image.ImageProducer;
 import java.awt.image.RGBImageFilter;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 
@@ -45,6 +47,7 @@ public class IconFactory {
     private static final String IMAGES_PATH = "org/apache/cayenne/modeler/images/";
     private static final JComponent DUMMY_PANEL = new JPanel();
     private static final RGBImageFilter DISABLED_FILTER = new DisabledFilter();
+    private static final int[] APP_ICON_SIZES = {16, 32, 64, 128, 256, 512};
 
     private static final Icon projectIcon = IconFactory.buildIcon("icon-dom.png");
     private static final Icon mapIcon = IconFactory.buildIcon("icon-datamap.png");
@@ -66,6 +69,17 @@ public class IconFactory {
         ImageProducer producer = new FilteredImageSource(img.getSource(), DISABLED_FILTER);
         Image resultImage = DUMMY_PANEL.createImage(producer);
         return new ImageIcon(resultImage);
+    }
+
+    /**
+     * Returns the Modeler app icon in all the available sizes, smallest first, for the OS to pick the best fit from.
+     *
+     * @since 6.0
+     */
+    public static List<Image> appIcons() {
+        return Arrays.stream(APP_ICON_SIZES)
+                .mapToObj(size -> buildIcon("CayenneModeler-" + size + ".png").getImage())
+                .toList();
     }
 
     /**

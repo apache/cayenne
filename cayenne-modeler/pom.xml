@@ -89,7 +89,8 @@
 
 	<build>
 		<plugins>
-			<!-- This ensures LICENSE and NOTICE inclusion in all jars -->
+			<!-- This ensures LICENSE and NOTICE inclusion in all jars. The binary flavor, as the jar bundles the
+				 third-party dependencies -->
 			<plugin>
 				<artifactId>maven-remote-resources-plugin</artifactId>
 				<executions>
@@ -97,6 +98,53 @@
 						<goals>
 							<goal>process</goal>
 						</goals>
+						<configuration>
+							<properties>
+								<binary>true</binary>
+							</properties>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- The main artifact is a runnable jar with all the dependencies included, so that the Modeler can be
+				 fetched from a Maven repository and started with "java -jar" -->
+			<plugin>
+				<artifactId>maven-shade-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<shadedArtifactAttached>false</shadedArtifactAttached>
+							<createDependencyReducedPom>true</createDependencyReducedPom>
+							<filters>
+								<filter>
+									<artifact>*:*</artifact>
+									<excludes>
+										<exclude>META-INF/*.SF</exclude>
+										<exclude>META-INF/*.DSA</exclude>
+										<exclude>META-INF/*.RSA</exclude>
+									</excludes>
+								</filter>
+							</filters>
+							<transformers>
+								<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+									<mainClass>org.apache.cayenne.modeler.Main</mainClass>
+									<manifestEntries>
+										<Implementation-Version>${project.version}</Implementation-Version>
+										<Enable-Native-Access>ALL-UNNAMED</Enable-Native-Access>
+									</manifestEntries>
+								</transformer>
+								<transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+								<transformer implementation="org.apache.maven.plugins.shade.resource.ApacheLicenseResourceTransformer" />
+								<transformer implementation="org.apache.maven.plugins.shade.resource.ApacheNoticeResourceTransformer">
+									<addHeader>false</addHeader>
+								</transformer>
+							</transformers>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
@@ -133,6 +181,10 @@
 									<name>CayenneModeler</name>
 									<mainClass>org.apache.cayenne.modeler.Main</mainClass>
 									<os>java</os>
+									<!-- the module jar already bundles all the dependencies -->
+									<includes>
+										<include>org.apache.cayenne:cayenne-modeler:</include>
+									</includes>
 									<manifestEntries>
 										<Enable-Native-Access>ALL-UNNAMED</Enable-Native-Access>
 									</manifestEntries>
@@ -168,6 +220,10 @@
 									<os>mac</os>
 									<jvm0>21</jvm0>
 									<jvm0Options>-Xmx500m -Dapple.laf.useScreenMenuBar=true --enable-native-access=ALL-UNNAMED</jvm0Options>
+									<!-- the module jar already bundles all the dependencies -->
+									<includes>
+										<include>org.apache.cayenne:cayenne-modeler:</include>
+									</includes>
 								</configuration>
 							</execution>
 						</executions>
@@ -200,6 +256,10 @@
 									<os>windows</os>
 									<jvm0>21</jvm0>
 									<jvm0Options>-Xmx500m --enable-native-access=ALL-UNNAMED</jvm0Options>
+									<!-- the module jar already bundles all the dependencies -->
+									<includes>
+										<include>org.apache.cayenne:cayenne-modeler:</include>
+									</includes>
 								</configuration>
 							</execution>
 						</executions>

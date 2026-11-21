@@ -21,6 +21,7 @@ package org.apache.cayenne.modeler.platform.mac;
 import org.apache.cayenne.modeler.Application;
 import org.apache.cayenne.modeler.platform.GenericUIInitializer;
 import org.apache.cayenne.modeler.service.action.GlobalActions;
+import org.apache.cayenne.modeler.toolkit.icon.IconFactory;
 import org.apache.cayenne.modeler.toolkit.filechooser.CMFileChooserFactory;
 import org.apache.cayenne.modeler.ui.action.AboutAction;
 import org.apache.cayenne.modeler.ui.action.ConfigurePreferencesAction;
@@ -41,6 +42,19 @@ public class MacUIInitializer extends GenericUIInitializer {
     public void beforeSwingLaunch() {
         // must be set before the L&F initializes — it reads this property during init
         System.setProperty("apple.awt.application.name", "CayenneModeler");
+
+        // the .app launcher passes it as a JVM option. Default it for the Modeler started with "java -jar", but let
+        // an explicit "false" keep the menus in the window
+        if (System.getProperty("apple.laf.useScreenMenuBar") == null) {
+            System.setProperty("apple.laf.useScreenMenuBar", "true");
+        }
+
+        // the Modeler started with "java -jar" would get a generic Java icon. The .app has the icon in its bundle, and
+        // this is the same image. Done before the L&F setup: AWT starts at "Taskbar.getTaskbar()", which is when the
+        // Dock shows the generic icon, so it is replaced right away and not a second later, after the L&F setup
+        if (Taskbar.isTaskbarSupported() && Taskbar.getTaskbar().isSupported(Taskbar.Feature.ICON_IMAGE)) {
+            Taskbar.getTaskbar().setIconImage(IconFactory.appIcons().getLast());
+        }
 
         super.beforeSwingLaunch();
     }
