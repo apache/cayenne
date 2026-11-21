@@ -20,7 +20,11 @@ package org.apache.cayenne.mcp;
 
 import org.junit.jupiter.api.Test;
 
+import java.nio.file.Path;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class CayenneMcpOptionsTest {
@@ -56,5 +60,17 @@ public class CayenneMcpOptionsTest {
     public void longVersion() {
         CayenneMcpOptions opts = CayenneMcpOptions.parse(new String[]{"--version"});
         assertTrue(opts.isVersion());
+    }
+
+    @Test
+    public void cacheDir() {
+        CayenneMcpOptions opts = CayenneMcpOptions.parse(new String[]{"--cache-dir", "/tmp/cayenne-cache"});
+        assertEquals(Path.of("/tmp/cayenne-cache"), opts.getCacheDir());
+    }
+
+    @Test
+    public void cacheDirDefault() {
+        assertNull(CayenneMcpOptions.parse(new String[0]).getCacheDir());
+        assertNull(CayenneMcpOptions.parse(new String[]{"--cache-dir", ""}).getCacheDir());
     }
 }

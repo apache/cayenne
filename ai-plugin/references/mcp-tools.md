@@ -20,15 +20,9 @@
 
 The Cayenne MCP server (`cayenne-mcp-server` module) exposes Cayenne operations to AI agents over stdio.
 
-**Availability: Cayenne 5.0+ only.** The MCP server is a new component shipped alongside CayenneModeler starting with the 5.0 release. There is no MCP server for Cayenne 4.x or earlier — skills that depend on these tools (`cayenne-cgen`, `cayenne-modeler`, `cayenne-db-import`, `cayenne-upgrade`) cannot be used against pre-5.0 projects. The `upgrade_project` tool is available starting with the 6.0 MCP server.
+**Availability: Cayenne 5.0+ only.** The MCP server first shipped with Cayenne 5.0. There is no MCP server for Cayenne 4.x or earlier — skills that depend on these tools (`cayenne-cgen`, `cayenne-modeler`, `cayenne-db-import`, `cayenne-upgrade`) cannot be used against pre-5.0 projects. The `upgrade_project` tool is available starting with the 6.0 MCP server.
 
-Setup is documented in `cayenne-mcp-server/README.md` at the repo root. Quick form for Claude Code:
-
-```bash
-claude mcp add cayenne --scope user -- java -jar /path/to/CayenneMCPServer.jar
-```
-
-Verify the server is registered with `claude mcp list` — you should see an entry named `cayenne` (the MCP server alias from the `claude mcp add cayenne` command above) showing as connected. This is unrelated to the plugin name `apache-cayenne-6`.
+**Setup: none.** This plugin comes with the server. It declares an MCP server named `cayenne`, started by `mcp/CayenneMcpLauncher.java` in the plugin. On the first start, the launcher takes the `org.apache.cayenne:cayenne-mcp-server` jar of the plugin's Cayenne version from the local Maven repository, or else downloads it from Maven Central (or the Apache snapshots repository) and caches it in the plugin's data directory, where the server also caches the CayenneModeler jar it downloads for `open_project`. The only requirement is Java 21 or newer on the `PATH`. CayenneModeler is only needed for `open_project`.
 
 ## Tool: `cgen_run`
 
@@ -137,15 +131,24 @@ Launches CayenneModeler with a project file pre-loaded.
 | Name | Type | Required | Description |
 |---|---|---|---|
 | `projectPath` | string | yes | Absolute path to the top-level Cayenne project descriptor (`cayenne-*.xml`). |
-
 **Behavior:**
 
-1. Locates the bundled CayenneModeler installation alongside the running MCP jar.
+1. Picks the CayenneModeler of the server's own version: the Modeler the MCP jar is bundled with (when the server was set up from a Modeler download), or else the runnable `org.apache.cayenne:cayenne-modeler` jar from the local Maven repository or downloaded from Maven Central (Apache snapshots for a snapshot version) and cached. The first download takes a few seconds. So a project is never opened, and possibly saved, by a Modeler of another version.
 2. Spawns it with `--mcp-handshake <nonce>`.
 3. Waits up to ~15 seconds for the Modeler to write a `java.util.prefs.Preferences` handshake confirming successful project load.
 4. Returns once the handshake fires or times out.
 
-**Returns:** JSON object with `status` (`ok` / `error`), and on error a `code` indicating the failure (e.g., `modeler_not_found`, `project_not_found`, `handshake_timeout`).
+**Returns:** JSON object with `status` (`launched` / `validation_failed` / `error`), `resolved` (the Modeler used: `modelerPath`, and `source` — `bundled` or `downloaded`), and on failure an `error` with a `code` and a `message`.
+
+**Failure modes:**
+
+| Error code | Meaning | Remediation |
+|---|---|---|
+| `modeler_download_failed` | The Modeler jar couldn't be downloaded | Relay the message: usually no network, or a proxy blocking `repo1.maven.org`. Once fixed, call again. |
+| `modeler_not_found` | The server isn't bundled with a Modeler, and is a development build whose Modeler can't be downloaded | Relay the message. |
+| `project_not_found` | `projectPath` not readable | Verify path. |
+| `launch_failed` / `launch_exited_early` | The Modeler process failed to start or exited early | Relay the message. |
+| `launch_not_confirmed` | No handshake within the timeout | The Modeler may still be loading; tell the user to check the GUI. Don't retry. |
 
 **When to call:** for reverse-engineering workflows (drives the user through the Modeler's import dialog), bulk visual editing, or when the user explicitly asks to open the Modeler. Not for upgrading old projects — that's `upgrade_project`.
 
@@ -195,9 +198,26 @@ Upgrades a project saved by an older Cayenne version to the current format: rewr
 
 ## Detecting whether the server is connected
 
-The MCP tools surface in this session under names `mcp__cayenne__cgen_run`, `mcp__cayenne__open_project`, `mcp__cayenne__dbimport_run`, and `mcp__cayenne__upgrade_project`. If they are not in the available tools, the server is not registered.
+The tools come from this plugin's `cayenne` server. Claude Code prefixes their names with the server and the plugin
+name, e.g. `mcp__plugin_apache-cayenne-6_cayenne__cgen_run`. The prefix depends on the name the plugin was installed
+under, so look the tools up by the tool name (`cgen_run`, `dbimport_run`, `open_project`, `upgrade_project`).
 
-When unavailable:
+A Cayenne MCP server registered by hand (`claude mcp add cayenne ...`, tools named like `mcp__cayenne__cgen_run`) is a
+different server, often of another Cayenne version (e.g. the 5.0 one, used by the `apache-cayenne-5` plugin). Don't
+use its tools for this plugin's workflows.
+
+## When the MCP server is unavailable
+
+If this plugin's tools are not available, the server failed to start. Tell the user to check it with `/mcp`, which
+shows the error. The usual causes:
+
+- **No Java 21 or newer on the `PATH`.** Install it, then reconnect the server in `/mcp`.
+- **No network on the first start.** The server jar is downloaded once, from `repo1.maven.org` (or
+  `repository.apache.org` for snapshots). Behind a proxy, the system proxy settings are used. Once the network is
+  fixed, reconnect the server in `/mcp`.
+
+Then:
 
 - Do **not** fall back to `mvn cayenne:cgen` or any Gradle equivalent — those build plugins are practically deprecated and are intentionally out of scope for this Claude Code plugin.
-- Point the user at `cayenne-mcp-server/README.md` for setup and stop.
+- Do **not** use the tools of a hand-registered `cayenne` server instead.
+- Stop.

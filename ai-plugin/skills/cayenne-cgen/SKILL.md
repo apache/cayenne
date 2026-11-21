@@ -1,6 +1,6 @@
 ---
 name: cayenne-cgen
-description: "Use this skill whenever the user wants to (re)generate Cayenne entity Java classes from a DataMap. Trigger on phrases like 'generate Java classes', 'regenerate entities', 'run cgen', 'create the entity classes', 'why is the Artist class missing fields', 'where did the `_Abstract*` classes come from', 'sync the entity classes with the model', or any request to materialize Java from the DataMap. Also trigger as a follow-up after modeling changes (someone added an entity, attribute, or relationship and now the Java side is stale). This skill exclusively uses the `mcp__cayenne__cgen_run` MCP tool — it does NOT use `mvn cayenne:cgen` or the Gradle cgen task."
+description: "Use this skill whenever the user wants to (re)generate Cayenne entity Java classes from a DataMap. Trigger on phrases like 'generate Java classes', 'regenerate entities', 'run cgen', 'create the entity classes', 'why is the Artist class missing fields', 'where did the `_Abstract*` classes come from', 'sync the entity classes with the model', or any request to materialize Java from the DataMap. Also trigger as a follow-up after modeling changes (someone added an entity, attribute, or relationship and now the Java side is stale). This skill exclusively uses the `cgen_run` MCP tool — it does NOT use `mvn cayenne:cgen` or the Gradle cgen task."
 ---
 
 <!--
@@ -23,7 +23,7 @@ description: "Use this skill whenever the user wants to (re)generate Cayenne ent
 -->
 # cayenne-cgen
 
-Run Cayenne's class generator on a DataMap via the `mcp__cayenne__cgen_run` MCP tool. The tool reads the embedded `<cgen>` block in the DataMap to determine destination, mode, templates, etc.; **if no block is present the tool generates anyway using a sensible default config** (all entities, `makePairs=true`, destination derived from the Maven layout). A missing `<cgen>` block is **not** an error and must never stop you from running the tool.
+Run Cayenne's class generator on a DataMap via the `cgen_run` MCP tool. The tool reads the embedded `<cgen>` block in the DataMap to determine destination, mode, templates, etc.; **if no block is present the tool generates anyway using a sensible default config** (all entities, `makePairs=true`, destination derived from the Maven layout). A missing `<cgen>` block is **not** an error and must never stop you from running the tool.
 
 ## Required reading
 
@@ -45,7 +45,7 @@ If the user named the DataMap directly (e.g. "regenerate classes for the custome
 ## Step 2 — Call `cgen_run`
 
 ```
-mcp__cayenne__cgen_run({
+cgen_run({
   "projectPath": "<absolute path to cayenne-*.xml>",
   "dataMap": "<map name from the descriptor>"
 })
@@ -53,7 +53,7 @@ mcp__cayenne__cgen_run({
 
 Call the tool directly for each DataMap — never inspect the DataMap for a `<cgen>` block first, and never treat its absence as a blocker. The tool generates with a default config when no block exists.
 
-If the tool is not available (MCP server not registered), surface `cayenne-mcp-server/README.md` and stop. **Do not** suggest `mvn cayenne:cgen` or the Gradle cgen task.
+If the tool is not available, follow "When the MCP server is unavailable" in `mcp-tools.md` and stop. **Do not** suggest `mvn cayenne:cgen` or the Gradle cgen task.
 
 ## Step 3 — Surface the result
 
@@ -74,6 +74,6 @@ cgen always runs in full, but rewrites a file only when the generated contents d
 ## Anti-patterns
 
 - **Do not** pre-check the DataMap for a `<cgen>` block before calling `cgen_run`, and **do not** add a block before running. A missing block is not an error — the tool generates with defaults. Only add a `<cgen>` block afterward if the user wants to persist or customize the config.
-- **Do not** suggest Maven (`mvn cayenne:cgen`) or Gradle (`cayenneCgen`) goals when MCP is unavailable. Those build plugins are out of scope. Point at MCP setup instead.
+- **Do not** suggest Maven (`mvn cayenne:cgen`) or Gradle (`cayenneCgen`) goals when MCP is unavailable. Those build plugins are out of scope.
 - **Do not** edit `_<Entity>.java` files. Generated superclasses. Edit `<Entity>.java` subclasses.
 - **Do not** confuse `projectPath` and `dataMap` arguments. `projectPath` is a file system path to `cayenne-*.xml`. `dataMap` is a logical name (e.g. `mydb`), not a path to `mydb.map.xml`.

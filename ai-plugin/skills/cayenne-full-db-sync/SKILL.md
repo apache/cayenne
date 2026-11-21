@@ -1,6 +1,6 @@
 ---
 name: cayenne-full-db-sync
-description: "Use this skill when the user wants to bring their WHOLE Cayenne project in line with the database in one shot — the mapping, the Object-layer names, and the generated Java classes together. This is the end-to-end 'sync with the DB' workflow, and it orchestrates three skills in order: `cayenne-db-import` (import schema metadata into the DataMap) → `cayenne-model-naming` (polish the just-imported names) → `cayenne-cgen` (regenerate Java classes). Trigger on holistic phrases like 'sync my project with the database', 'sync with the DB', 'my schema changed, update everything', 'update my entities/classes from the database', 'reverse engineer and regenerate the classes', 'import the new tables and rebuild the entities', 'full DB sync', 'bring the model and classes up to date with the DB'. The distinguishing signal is scope: the user wants the whole project (mapping + names + Java code), not just one stage. For the *model/mapping only* (no name cleanup, no class generation) use `cayenne-db-import`; to (re)generate classes alone use `cayenne-cgen`; to clean names alone use `cayenne-model-naming`. Uses the `mcp__cayenne__dbimport_run` and `mcp__cayenne__cgen_run` MCP tools via the sub-skills; does NOT use Maven or Gradle goals."
+description: "Use this skill when the user wants to bring their WHOLE Cayenne project in line with the database in one shot — the mapping, the Object-layer names, and the generated Java classes together. This is the end-to-end 'sync with the DB' workflow, and it orchestrates three skills in order: `cayenne-db-import` (import schema metadata into the DataMap) → `cayenne-model-naming` (polish the just-imported names) → `cayenne-cgen` (regenerate Java classes). Trigger on holistic phrases like 'sync my project with the database', 'sync with the DB', 'my schema changed, update everything', 'update my entities/classes from the database', 'reverse engineer and regenerate the classes', 'import the new tables and rebuild the entities', 'full DB sync', 'bring the model and classes up to date with the DB'. The distinguishing signal is scope: the user wants the whole project (mapping + names + Java code), not just one stage. For the *model/mapping only* (no name cleanup, no class generation) use `cayenne-db-import`; to (re)generate classes alone use `cayenne-cgen`; to clean names alone use `cayenne-model-naming`. Uses the `dbimport_run` and `cgen_run` MCP tools via the sub-skills; does NOT use Maven or Gradle goals."
 ---
 
 <!--
@@ -131,5 +131,5 @@ and to save the project in the Modeler if it's open.
 - **Don't rewrite the whole model during a sync.** Naming stays in changed-only scope (import
   additions), never an entire-model pass, unless the user explicitly asks for one.
 - **Don't suggest `mvn cayenne:cdbimport` / `cayenne:cgen` or the Gradle tasks.** The sub-skills use
-  the MCP tools exclusively; if the server isn't connected, they point at `cayenne-mcp-server/README.md`
-  and stop.
+  the MCP tools exclusively; if the server isn't connected, they follow "When the MCP server is
+  unavailable" in `mcp-tools.md` and stop.

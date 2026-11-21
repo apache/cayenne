@@ -7,6 +7,11 @@ operations to AI coding agents over stdio. Here is a sample session:
 ## Requirements
 Java 21 or later must be available on the system PATH.
 
+## Claude Code
+
+With Claude Code, install the `apache-cayenne-6` plugin instead of setting up the server by hand. The plugin comes with
+the server: it downloads the server jar from Maven Central on the first start. See `ai-plugin/README.md`.
+
 ## Finding the JAR
 
 The MCP server is distributed with platform-specific CayenneModeler download. The JAR location depends on how CayenneModeler was installed.
@@ -31,6 +36,14 @@ Downloads are available at https://cayenne.apache.org/download/.
 <install-dir>/bin/CayenneMCPServer.jar
 ```
 
+### Maven Central
+
+The server is also published as a runnable jar, `org.apache.cayenne:cayenne-mcp-server`. Such a jar is not bundled with
+a Modeler, so to open projects in the GUI, it downloads the runnable CayenneModeler jar of the same version
+(`org.apache.cayenne:cayenne-modeler`) from Maven Central the first time, caches it in `~/.cayenne/modeler` (or the directory given with
+`--cache-dir <dir>`), and runs it
+with `java -jar`.
+
 ### Development build (own Cayenne source)
 
 Build the module first:
@@ -47,7 +60,7 @@ mvn clean package -pl cayenne-mcp-server -am -DskipTests
 The server communicates over **stdio** and is launched on demand by the client.
 Replace `/path/to/CayenneMCPServer.jar` with the actual path from the section above.
 
-### Claude Code
+### Claude Code (without the plugin)
 
 By default `claude mcp add` registers the server for the current project only. Use `--scope user` to make it available across all projects for your OS user:
 

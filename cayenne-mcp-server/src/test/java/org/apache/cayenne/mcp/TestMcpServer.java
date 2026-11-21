@@ -42,7 +42,7 @@ public class TestMcpServer {
             PipedInputStream clientIn = new PipedInputStream(serverOut);
 
             Thread serverThread = new Thread(
-                    () -> new CayenneMcpServer().run("test", serverIn, serverOut),
+                    () -> new CayenneMcpServer().run("test", null, serverIn, serverOut),
                     "mcp-server");
             serverThread.setDaemon(true);
             serverThread.start();

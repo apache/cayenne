@@ -16,30 +16,22 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.mcp.tools.openproject;
-
-import java.net.URL;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.security.CodeSource;
-import java.security.ProtectionDomain;
+package org.apache.cayenne.mcp.tools.openproject.protocol;
 
 /**
- * Resolves the directory that contains the running MCP server jar. Used as the
- * starting point for {@link ModelerDiscovery}.
+ * Where the {@code open_project} tool got the CayenneModeler from.
  *
- * @since 5.0
+ * @since 6.0
  */
-final class McpJarLocator {
-
-    private McpJarLocator() {
-    }
+public enum OpenProjectModelerSource {
 
     /**
-     * Returns the directory containing the jar the given class was loaded from, or {@code null} in exotic launch configurations where the
-     * protection domain has no resolvable location.
+     * The Modeler installation the running MCP jar is bundled with.
      */
+    bundled,
 
+    /**
+     * The runnable Modeler jar of the server version, fetched from a Maven repository (or found in the local cache).
+     */
+    downloaded
 }

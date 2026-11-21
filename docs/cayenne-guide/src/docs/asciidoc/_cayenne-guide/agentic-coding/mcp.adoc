@@ -15,8 +15,15 @@
 === Cayenne MCP Server
 
 The MCP server is a self-contained, stdio-based process that the AI agent launches on demand. It works with most agents
-(not only Claude). The MCP server is bundled with the platform-specific CayenneModeler and requires Java 21 or
-later on the system `PATH`. So to get it, first download the Modeler at https://cayenne.apache.org/download/ .
+(not only Claude). It requires Java 21 or later on the system `PATH`.
+
+NOTE: If you are using Claude Code with the `apache-cayenne-6` plugin, the MCP server comes with the plugin, and the
+setup steps below are not needed.
+
+For other agents, the MCP server is bundled with the platform-specific CayenneModeler. So to get it, first download the
+Modeler at https://cayenne.apache.org/download/ . (The server is also published to Maven Central as
+`org.apache.cayenne:cayenne-mcp-server`, a runnable jar. When used outside of a Modeler download, it downloads the
+CayenneModeler of its version from Maven Central the first time it needs it.)
 
 MCP runnable jar is `CayenneMCPServer.jar`. Its location is OS-dependent (you will need this location in the next step):
 
@@ -84,11 +91,15 @@ capabilities and possible prompts. All tools operate on a Cayenne project descri
 absolute paths — agents should resolve relative paths against the current workspace before invoking.
 
 If you are using the `apache-cayenne-6` Claude Code plugin, its skills (`cayenne-cgen`, `cayenne-modeler`, `cayenne-db-import`, `cayenne-upgrade`)
-call these tools automatically. You can verify the server is available with `claude mcp list` — look for an entry named `cayenne`.
+call these tools automatically. You can check that the plugin's server is running with `/mcp` — look for the
+`plugin:apache-cayenne-6:cayenne` entry.
 
 ===== open_project
 
 Launches CayenneModeler with the given project file pre-loaded. The call is non-blocking; the server waits for the Modeler to confirm a successful project load via a short startup handshake, then returns.
+
+The server uses the Modeler it is bundled with. If it isn't bundled with one, it downloads the CayenneModeler of its own
+version from Maven Central the first time (which takes a few seconds), and runs it with `java -jar`.
 
 .Parameters
 [cols="1,1,3", options="header"]

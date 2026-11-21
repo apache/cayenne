@@ -21,10 +21,9 @@ package org.apache.cayenne.mcp.tools.openproject;
 import io.modelcontextprotocol.json.McpJsonMapper;
 import io.modelcontextprotocol.server.McpServerFeatures;
 import io.modelcontextprotocol.spec.McpSchema;
-import org.apache.cayenne.mcp.tools.openproject.ModelerDiscovery.DiscoveryResult;
-import org.apache.cayenne.mcp.tools.openproject.ModelerDiscovery.Found;
-import org.apache.cayenne.mcp.tools.openproject.ModelerDiscovery.NotFound;
 import org.apache.cayenne.mcp.tools.openproject.ModelerLauncher.LaunchResult;
+import org.apache.cayenne.mcp.tools.openproject.ModelerResolver.Resolved;
+import org.apache.cayenne.mcp.tools.openproject.ModelerResolver.Unresolved;
 import org.apache.cayenne.mcp.tools.openproject.HandshakeWatcher.HandshakeData;
 import org.apache.cayenne.mcp.tools.openproject.HandshakeWatcher.WatchResult;
 import org.apache.cayenne.mcp.tools.openproject.protocol.OpenProjectError;
@@ -51,7 +50,7 @@ import java.util.UUID;
 
 /**
  * MCP tool that launches CayenneModeler with a project file pre-loaded. The tool
- * locates the Modeler installation alongside the running MCP jar, spawns it with
+ * picks a Modeler of the same version as the server (see {@link ModelerResolver}), spawns it with
  * {@code --mcp-handshake <nonce>}, and waits for the Modeler to confirm
  * successful project load via a {@link java.util.prefs.Preferences} handshake.
  *
@@ -64,13 +63,30 @@ public class OpenProjectTool {
     static final Duration HANDSHAKE_TIMEOUT = Duration.ofSeconds(15);
 
     private final PrefsLocator prefsLocator;
+    private final ModelerResolver modelerResolver;
 
-    public OpenProjectTool(PrefsLocator prefsLocator) {
+    OpenProjectTool(PrefsLocator prefsLocator, ModelerResolver modelerResolver) {
         this.prefsLocator = prefsLocator;
+        this.modelerResolver = modelerResolver;
     }
 
-    public static McpServerFeatures.SyncToolSpecification spec(McpJsonMapper jsonMapper, PrefsLocator prefsLocator) {
-        OpenProjectTool tool = new OpenProjectTool(prefsLocator);
+    /**
+     * @param serverVersion the MCP server version, that is also the version of the Modeler to open projects in
+     * @param cacheDir      a directory to cache the downloaded Modeler in, or {@code null} for the default one
+     */
+    public static McpServerFeatures.SyncToolSpecification spec(
+            McpJsonMapper jsonMapper,
+            PrefsLocator prefsLocator,
+            String serverVersion,
+            Path cacheDir) {
+
+        ModelerResolver resolver = new ModelerResolver(
+                OsKind.detect(),
+                mcpJarDir(),
+                serverVersion,
+                ModelerDownloader.create(cacheDir));
+
+        OpenProjectTool tool = new OpenProjectTool(prefsLocator, resolver);
 
         McpSchema.Tool descriptor = McpSchema.Tool.builder(
                         NAME,
@@ -85,7 +101,9 @@ public class OpenProjectTool {
                         ))
                 .description("""
                         Launch CayenneModeler with the given project file. Non-blocking; waits for \
-                        the Modeler to report a startup handshake before returning.""")
+                        the Modeler to report a startup handshake before returning. Uses the Modeler the server \
+                        is bundled with, or else downloads the Modeler of the server version on the first call, \
+                        which takes a few seconds longer.""")
                 .build();
 
         return new McpServerFeatures.SyncToolSpecification(descriptor, (exchange, request) -> {
@@ -123,50 +141,38 @@ public class OpenProjectTool {
         } catch (RuntimeException e) {
             return validationFailed(OpenProjectErrorCode.project_not_found,
                     "Invalid path '%s': %s".formatted(projectPath, e.getMessage()),
-                    new OpenProjectValidation(false, null, null));
+                    new OpenProjectValidation(false, null));
         }
         if (!Files.isReadable(projectFile)) {
             return validationFailed(OpenProjectErrorCode.project_not_found,
                     "No readable file at " + projectPath,
-                    new OpenProjectValidation(false, null, null));
+                    new OpenProjectValidation(false, null));
         }
 
-        // Step 2 — locate the MCP jar's directory.
-        Path mcpDir = mcpJarDir();
-        if (mcpDir == null) {
-            return validationFailed(OpenProjectErrorCode.mcp_jar_location_unresolved,
-                    "Could not resolve the running MCP server jar's location",
-                    new OpenProjectValidation(true, false, null));
-        }
-
-        // Step 3 — discover a Modeler installation.
-        OsKind osKind = OsKind.detect();
-        DiscoveryResult discovery = ModelerDiscovery.discover(mcpDir, osKind);
-        return switch (discovery) {
-            case Found f -> launchAndAwait(f, projectFile);
-            case NotFound nf -> validationFailed(OpenProjectErrorCode.modeler_not_found,
-                    "No CayenneModeler installation found relative to MCP jar at %s. Probes: %s"
-                            .formatted(mcpDir, String.join("; ", nf.probeNotes())),
-                    new OpenProjectValidation(true, true, false));
+        // Step 2 — pick a Modeler.
+        return switch (modelerResolver.resolve()) {
+            case Resolved r -> launchAndAwait(r, projectFile);
+            case Unresolved u -> validationFailed(u.code(), u.message(), new OpenProjectValidation(true, false));
         };
     }
 
     /**
-     * Steps 4-5 of the open-project flow: spawn the Modeler with the handshake nonce
+     * Steps 3-4 of the open-project flow: spawn the Modeler with the handshake nonce
      * and wait for it to confirm a successful project load.
      */
-    private OpenProjectResult launchAndAwait(Found found, Path projectFile) {
-        OpenProjectValidation allPassed = new OpenProjectValidation(true, true, true);
+    private OpenProjectResult launchAndAwait(Resolved modeler, Path projectFile) {
+        OpenProjectValidation allPassed = new OpenProjectValidation(true, true);
 
-        // Step 4 — launch.
+        // Step 3 — launch.
         String nonce = UUID.randomUUID().toString().replace("-", "");
         LaunchResult launch;
         try {
-            launch = ModelerLauncher.launch(found.launcherKind(), found.launcher(), projectFile, nonce);
+            launch = ModelerLauncher.launch(
+                    modeler.found().launcherKind(), modeler.found().launcher(), projectFile, nonce);
         } catch (IOException e) {
             return new OpenProjectResult(
                     "error",
-                    new OpenProjectResolved(found.distribution(), found.launcher().toString(), List.of()),
+                    resolved(modeler, List.of()),
                     allPassed,
                     null,
                     new OpenProjectError(OpenProjectErrorCode.launch_failed,
@@ -174,12 +180,9 @@ public class OpenProjectTool {
             );
         }
 
-        OpenProjectResolved resolved = new OpenProjectResolved(
-                found.distribution(),
-                found.launcher().toString(),
-                launch.command());
+        OpenProjectResolved resolved = resolved(modeler, launch.command());
 
-        // Step 5 — wait for the handshake.
+        // Step 4 — wait for the handshake.
         WatchResult watch = HandshakeWatcher.await(nonce, () -> true, HANDSHAKE_TIMEOUT, prefsLocator);
 
         return switch (watch.outcome()) {
@@ -222,6 +225,14 @@ public class OpenProjectTool {
                     new OpenProjectError(OpenProjectErrorCode.launch_not_confirmed,
                             "Handshake did not appear within %ds".formatted(HANDSHAKE_TIMEOUT.toSeconds())));
         };
+    }
+
+    private static OpenProjectResolved resolved(Resolved modeler, List<String> command) {
+        return new OpenProjectResolved(
+                modeler.found().distribution(),
+                modeler.source(),
+                modeler.found().launcher().toString(),
+                command);
     }
 
     private static OpenProjectResult validationFailed(

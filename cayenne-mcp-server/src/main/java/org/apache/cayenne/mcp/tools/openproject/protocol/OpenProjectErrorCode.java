@@ -26,9 +26,8 @@ package org.apache.cayenne.mcp.tools.openproject.protocol;
  */
 public enum OpenProjectErrorCode {
     project_not_found,
-    mcp_jar_location_unresolved,
     modeler_not_found,
-    modeler_not_built,
+    modeler_download_failed,
     launch_failed,
     launch_exited_early,
     launch_not_confirmed

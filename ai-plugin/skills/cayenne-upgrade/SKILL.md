@@ -1,6 +1,6 @@
 ---
 name: cayenne-upgrade
-description: "Use this skill when the user wants to upgrade a Cayenne project saved by an older Cayenne version to the current format, or to upgrade their application to a newer Cayenne release. Trigger on phrases like 'upgrade the project', 'upgrade my Cayenne mapping', 'migrate the model to Cayenne 6', 'upgrade to Cayenne 6', 'bump the Cayenne version', 'the project was created with an older Cayenne', or when another skill finds a project descriptor or DataMap in an older format. The skill upgrades the project XML via the `mcp__cayenne__upgrade_project` MCP tool (no CayenneModeler needed), then makes the code changes the upgrade requires, guided by the changes the tool reports and by UPGRADE.md. Do NOT upgrade the XML by hand."
+description: "Use this skill when the user wants to upgrade a Cayenne project saved by an older Cayenne version to the current format, or to upgrade their application to a newer Cayenne release. Trigger on phrases like 'upgrade the project', 'upgrade my Cayenne mapping', 'migrate the model to Cayenne 6', 'upgrade to Cayenne 6', 'bump the Cayenne version', 'the project was created with an older Cayenne', or when another skill finds a project descriptor or DataMap in an older format. The skill upgrades the project XML via the `upgrade_project` MCP tool (no CayenneModeler needed), then makes the code changes the upgrade requires, guided by the changes the tool reports and by UPGRADE.md. Do NOT upgrade the XML by hand."
 ---
 
 <!--
@@ -23,7 +23,7 @@ description: "Use this skill when the user wants to upgrade a Cayenne project sa
 -->
 # cayenne-upgrade
 
-Upgrade a Cayenne project to the current format with the `mcp__cayenne__upgrade_project` MCP tool, and bring the
+Upgrade a Cayenne project to the current format with the `upgrade_project` MCP tool, and bring the
 application code in line with it.
 
 An upgrade can be **destructive**: some parts of an old project have no equivalent in the current format, and the
@@ -43,8 +43,8 @@ Recreating those parts in code is this skill's job — an upgrade isn't done unt
 The tool needs an **absolute path** to the top-level project descriptor (`cayenne-*.xml`). Use `project-layout.md`
 to find it. If there are several descriptors, upgrade each, one at a time.
 
-If the `mcp__cayenne__upgrade_project` tool is not available, the MCP server is not registered, or is older than 6.0.
-Point the user at `cayenne-mcp-server/README.md` and stop. Do not upgrade the XML by hand.
+If the `upgrade_project` tool is not available, follow "When the MCP server is unavailable" in `mcp-tools.md` and
+stop. Do not upgrade the XML by hand.
 
 ## Step 2 — Make the upgrade reversible
 
@@ -60,7 +60,7 @@ is the undo.
 ## Step 3 — Upgrade
 
 ```
-mcp__cayenne__upgrade_project({ "projectPath": "<absolute path>" })
+upgrade_project({ "projectPath": "<absolute path>" })
 ```
 
 | `status` / `error.code` | Action |

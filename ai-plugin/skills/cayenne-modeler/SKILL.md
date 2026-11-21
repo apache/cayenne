@@ -23,7 +23,7 @@ description: "Use this skill when the user explicitly wants to open CayenneModel
 -->
 # cayenne-modeler
 
-Launch CayenneModeler with a Cayenne project file pre-loaded, via the `mcp__cayenne__open_project` MCP tool.
+Launch CayenneModeler with a Cayenne project file pre-loaded, via the `open_project` MCP tool.
 
 ## Required reading
 
@@ -44,24 +44,25 @@ For starting fresh, option 2 is simpler — but `open_project` does require an e
 ## Step 2 — Call `open_project`
 
 ```
-mcp__cayenne__open_project({ "projectPath": "<absolute path to cayenne-*.xml>" })
+open_project({ "projectPath": "<absolute path to cayenne-*.xml>" })
 ```
 
-If the tool is not available (MCP server not registered), surface `cayenne-mcp-server/README.md` and stop. Do not attempt to launch CayenneModeler by any other means — the bundled launcher relies on the MCP server's discovery of the Modeler installation.
+If the tool is not available, follow "When the MCP server is unavailable" in `mcp-tools.md` and stop. Do not attempt to launch CayenneModeler by any other means — the MCP server picks the Modeler of its own Cayenne version and confirms the project load.
 
-The tool spawns the Modeler asynchronously, then waits up to ~15 seconds for a startup handshake. Possible return codes:
+The tool gets the Modeler on its own (see `open_project` in `mcp-tools.md`; the first call may download it, which takes a few seconds), spawns it, then waits up to ~15 seconds for a startup handshake. Possible outcomes:
 
-| Code | Meaning |
+| `status` / `error.code` | Meaning |
 |---|---|
-| `ok` | Modeler launched and loaded the project. |
-| `modeler_not_found` | The MCP jar is not co-located with a Modeler installation. User needs to install CayenneModeler properly. |
+| `launched` | Modeler launched and loaded the project. |
+| `modeler_download_failed` | The Modeler couldn't be downloaded. Relay the message — usually a network or proxy problem — and call again once it's fixed. |
+| `modeler_not_found` | A development build of the server, with no Modeler to download. Relay the message. |
 | `project_not_found` | The `projectPath` doesn't exist or isn't readable. |
-| `handshake_timeout` | The Modeler started but didn't confirm load within the timeout. Often this means it's still loading — the user can check the GUI directly. |
-| `launch_failed` | Process spawn failed. Surface the error message. |
+| `launch_not_confirmed` | The Modeler started but didn't confirm the load within the timeout. Often it's still loading — the user can check the GUI directly. |
+| `launch_failed`, `launch_exited_early` | The Modeler process failed to start or exited. Surface the error message. |
 
 ## Step 3 — Hand off to the user
 
-Once `open_project` returns `ok`, the user is in the GUI. From here, depending on intent:
+Once `open_project` returns `launched`, the user is in the GUI. From here, depending on intent:
 
 - **Reverse engineering**: that's the `cayenne-db-import` skill's job to walk them through. Do not duplicate that workflow here — just open and step out.
 - **Visual layout / bulk editing**: tell the user what tab to navigate to (e.g., DataMap → ObjEntity for entity-level edits, DataMap → Class Generation for cgen config) and let them work. Don't try to script GUI actions.
@@ -77,5 +78,5 @@ Once `open_project` returns `ok`, the user is in the GUI. From here, depending o
 ## Anti-patterns
 
 - **Do not** trigger as a generic fallback for "Cayenne tasks." This skill is for explicit user requests or inherently visual workflows. The `cayenne-modeling` skill handles most modeling intent.
-- **Do not** retry `open_project` on `handshake_timeout` — the Modeler may still be loading. Tell the user to check the GUI window directly.
-- **Do not** attempt to launch CayenneModeler outside the MCP tool (no `java -jar` direct calls, no opening a `.dmg`, no `open -a CayenneModeler`). The MCP tool's launcher knows where the installation lives.
+- **Do not** retry `open_project` on `launch_not_confirmed` — the Modeler may still be loading. Tell the user to check the GUI window directly.
+- **Do not** attempt to launch CayenneModeler outside the MCP tool (no `java -jar` direct calls, no opening a `.dmg`, no `open -a CayenneModeler`). The MCP tool finds the installation and checks its version.

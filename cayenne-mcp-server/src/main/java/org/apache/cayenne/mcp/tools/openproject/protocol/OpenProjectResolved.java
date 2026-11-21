@@ -21,13 +21,14 @@ package org.apache.cayenne.mcp.tools.openproject.protocol;
 import java.util.List;
 
 /**
- * What the tool resolved before launching: which distribution layout matched,
+ * What the tool resolved before launching: which distribution layout matched, where the Modeler came from,
  * the path to the launcher, and the exact argv handed to {@code ProcessBuilder}.
  *
  * @since 5.0
  */
 public record OpenProjectResolved(
         OpenProjectDistribution distribution,
+        OpenProjectModelerSource source,
         String modelerPath,
         List<String> command
 ) {}

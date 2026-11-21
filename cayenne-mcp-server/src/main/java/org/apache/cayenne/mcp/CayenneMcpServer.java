@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Path;
 import java.util.ServiceLoader;
 
 /**
@@ -43,7 +44,10 @@ public class CayenneMcpServer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CayenneMcpServer.class);
 
-    public void run(String version, InputStream in, OutputStream out) {
+    /**
+     * @param cacheDir a directory to cache the downloaded files in, or {@code null} for the default one
+     */
+    public void run(String version, Path cacheDir, InputStream in, OutputStream out) {
         LOGGER.info("Starting Cayenne MCP server {}", version);
 
         McpJsonMapper jsonMapper = ServiceLoader.load(McpJsonMapperSupplier.class)
@@ -59,7 +63,7 @@ public class CayenneMcpServer {
                 .capabilities(McpSchema.ServerCapabilities.builder().tools(true).build())
                 .tools(CgenRunTool.spec(jsonMapper))
                 .tools(DbImportRunTool.spec(jsonMapper, prefsLocator))
-                .tools(OpenProjectTool.spec(jsonMapper, prefsLocator))
+                .tools(OpenProjectTool.spec(jsonMapper, prefsLocator, version, cacheDir))
                 .tools(UpgradeProjectTool.spec(jsonMapper))
                 .build();
 

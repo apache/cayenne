@@ -29,7 +29,9 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class OpenProjectValidationTest {
 
-    private final OpenProjectTool tool = new OpenProjectTool(new PrefsLocator());
+    private final OpenProjectTool tool = new OpenProjectTool(
+            new PrefsLocator(),
+            new ModelerResolver(OsKind.OTHER, null, "dev", null));
 
     @Test
     public void projectNotFound() {
@@ -41,7 +43,6 @@ public class OpenProjectValidationTest {
         assertNull(result.handshake());
 
         assertFalse(result.validation().projectFound());
-        assertNull(result.validation().mcpJarLocated());
         assertNull(result.validation().modelerFound());
     }
 }

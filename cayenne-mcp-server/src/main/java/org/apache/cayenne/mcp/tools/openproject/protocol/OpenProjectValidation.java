@@ -26,6 +26,5 @@ package org.apache.cayenne.mcp.tools.openproject.protocol;
  */
 public record OpenProjectValidation(
         Boolean projectFound,
-        Boolean mcpJarLocated,
         Boolean modelerFound
 ) {}

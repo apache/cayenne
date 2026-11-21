@@ -25,7 +25,12 @@
 ----
 
 The plugin adds skills for DataMap editing, class generation, reverse engineering, query writing, and runtime setup.
-The skills work best with the MCP server present (see the next chapter).
+It also comes with the Cayenne MCP server (see the next chapter), so there is nothing else to install: on the first start,
+the plugin downloads the server jar of its Cayenne version from Maven Central. The server requires Java 21 or later on
+the system `PATH`.
+
+Opening projects in CayenneModeler needs no separate install either: the first time, the MCP server downloads the
+CayenneModeler of the same version from Maven Central.
 
 The plugin is versioned with Cayenne: `apache-cayenne-6` is for Cayenne 6.0. A project on Cayenne 5.0 should install
 `apache-cayenne-5` from the same marketplace instead. There is no unversioned plugin.

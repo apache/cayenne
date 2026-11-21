@@ -28,6 +28,12 @@ public class CayenneMcpMain {
     public static void main(String[] args) {
         McpLoggingHandler.routeLogsToStderr();
 
+        // the server may download CayenneModeler. Honor the OS proxy settings, unless told otherwise. Must be set
+        // before the first network call
+        if (System.getProperty("java.net.useSystemProxies") == null) {
+            System.setProperty("java.net.useSystemProxies", "true");
+        }
+
         CayenneMcpOptions opts = CayenneMcpOptions.parse(args);
 
         String version = version();
@@ -36,8 +42,10 @@ public class CayenneMcpMain {
             System.err.println("Usage: java -jar CayenneMCPServer.jar [options]");
             System.err.println();
             System.err.println("Options:");
-            System.err.println("  -h, --help     Print this help and exit.");
-            System.err.println("  -V, --version  Print the server version and exit.");
+            System.err.println("  -h, --help         Print this help and exit.");
+            System.err.println("  -V, --version      Print the server version and exit.");
+            System.err.println("  --cache-dir <dir>  Directory to cache the downloaded CayenneModeler in.");
+            System.err.println("                     Default is ~/.cayenne/modeler.");
             System.exit(0);
         }
 
@@ -46,7 +54,7 @@ public class CayenneMcpMain {
             System.exit(0);
         }
 
-        new CayenneMcpServer().run(version, System.in, System.out);
+        new CayenneMcpServer().run(version, opts.getCacheDir(), System.in, System.out);
     }
 
     static String version() {

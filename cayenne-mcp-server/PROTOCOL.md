@@ -146,19 +146,24 @@ Launches CayenneModeler with a project file pre-loaded and blocks until the Mode
 
 Required.
 
+The Modeler is of the server's own version: the Modeler installation the server jar is bundled with, or else the
+runnable `org.apache.cayenne:cayenne-modeler` jar of the server version, from the local Maven repository, or downloaded
+from Maven Central (Apache snapshots for a snapshot version) and cached in `~/.cayenne/modeler`
+(or the server's `--cache-dir`).
+
 ### Output
 
 ```json
 {
   "status": "launched | validation_failed | error",
   "resolved": {
-    "distribution": "mac | windows | generic | source_tree",
-    "modelerPath":  "string (path to the launcher binary)",
-    "command":      ["string", "..."]
+    "distribution":   "mac | windows | generic",
+    "source":         "bundled | downloaded",
+    "modelerPath":    "string (path to the launcher binary)",
+    "command":        ["string", "..."]
   },
   "validation": {
     "projectFound":   true,
-    "mcpJarLocated":  true,
     "modelerFound":   true
   },
   "handshake": {
@@ -169,7 +174,7 @@ Required.
     "waitMs":              0
   },
   "error": {
-    "code":    "project_not_found | mcp_jar_location_unresolved | modeler_not_found | modeler_not_built | launch_failed | launch_exited_early | launch_not_confirmed",
+    "code":    "project_not_found | modeler_not_found | modeler_download_failed | launch_failed | launch_exited_early | launch_not_confirmed",
     "message": "string"
   }
 }
@@ -177,7 +182,7 @@ Required.
 
 `status` semantics:
 - `launched` — Modeler process started and confirmed the project load; `handshake` is populated
-- `validation_failed` — a pre-flight check failed (project missing, jar location unresolved, no Modeler installation discovered); `resolved` and `handshake` are `null`
+- `validation_failed` — a pre-flight check failed (project missing, the server isn't bundled with a Modeler and can't download one); `resolved` and `handshake` are `null`
 - `error` — Modeler was spawned but failed to confirm the load: it exited early, the handshake timed out, or `ProcessBuilder` itself failed; `resolved` is populated when available, `handshake` is `null`
 
 ## `upgrade_project`

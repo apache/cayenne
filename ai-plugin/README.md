@@ -34,7 +34,7 @@ The plugin assumes downstream **users of Cayenne** writing their own Java apps. 
 
 ## Install
 
-**Cayenne 6.0.** The plugin is versioned with Cayenne: `apache-cayenne-6` targets Cayenne 6.0, and its XML-editing, runtime, and query skills teach 6.0 idioms and API. Projects on Cayenne 5.0 should install `apache-cayenne-5` instead, which is the same plugin from the `STABLE-5.0` branch. There is no unversioned plugin; pick the one matching the project's Cayenne major version. The MCP server ships with CayenneModeler 5.0 and later; skills that depend on it (`cayenne-cgen`, `cayenne-modeler`, `cayenne-db-import`, `cayenne-full-db-sync`, `cayenne-upgrade`) will not work against earlier Cayenne versions. For Cayenne 4.x and older, this plugin is not the right tool.
+**Cayenne 6.0.** The plugin is versioned with Cayenne: `apache-cayenne-6` targets Cayenne 6.0, and its XML-editing, runtime, and query skills teach 6.0 idioms and API. Projects on Cayenne 5.0 should install `apache-cayenne-5` instead, which is the same plugin from the `STABLE-5.0` branch. There is no unversioned plugin; pick the one matching the project's Cayenne major version. The skills that drive the Cayenne MCP server (`cayenne-cgen`, `cayenne-modeler`, `cayenne-db-import`, `cayenne-full-db-sync`, `cayenne-upgrade`) will not work against Cayenne versions earlier than 5.0. For Cayenne 4.x and older, this plugin is not the right tool.
 
 The plugin is distributed from the Apache Cayenne GitHub repository: **https://github.com/apache/cayenne**. Inside Claude Code:
 
@@ -47,20 +47,22 @@ The plugin is distributed from the Apache Cayenne GitHub repository: **https://g
 
 # or, for a project on Cayenne 5.0
 /plugin install apache-cayenne-5@apache-cayenne
-
-# Install the MCP server (requires a local CayenneModeler install)
-claude mcp add cayenne --scope user -- java -jar /path/to/CayenneMCPServer.jar
 ```
 
-Full MCP setup instructions: the "Cayenne MCP Server" chapter of the Cayenne Guide, https://cayenne.apache.org/docs/6.0/cayenne-guide/
+That's it. The plugin comes with the Cayenne MCP server: on the first start it downloads the server jar of its Cayenne version from Maven Central and caches it. The only requirement is **Java 21 or newer** on the `PATH`. The `apache-cayenne-5` plugin is different: it needs its MCP server set up by hand, as described in its own README.
 
-That's it. The skills detect the MCP server at runtime; if it isn't connected they point back at this README instead of falling back to Maven or Gradle goals.
+Opening a project in CayenneModeler needs no install either: the first time, the server downloads the CayenneModeler jar of the same version from Maven Central (unless the server itself came from a Modeler download, in which case it uses that Modeler). Both jars are cached in the plugin's data directory (`${CLAUDE_PLUGIN_DATA}`), which Claude Code removes with the plugin.
+
+When working on Cayenne itself, `mvn install` of `cayenne-mcp-server` and `cayenne-modeler` is enough: the jars of the plugin's version found in the local Maven repository (`~/.m2`) are used instead of the downloaded ones.
+
+If the server can't start, the skills point at `/mcp` for the error instead of falling back to Maven or Gradle goals.
 
 ## What's in here
 
 ```
 ai-plugin/
-├── .claude-plugin/plugin.json   # manifest
+├── .claude-plugin/plugin.json   # manifest, incl. the MCP server declaration
+├── mcp/CayenneMcpLauncher.java  # downloads, caches and starts the Cayenne MCP server
 ├── README.md                    # this file
 ├── skills/                      # auto-triggering workflows
 │   ├── cayenne-modeling/        # edit *.map.xml and cayenne-*.xml

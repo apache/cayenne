@@ -18,7 +18,7 @@
 -->
 # Class generation config (`<cgen>`)
 
-Reference for the embedded `<cgen>` block inside a DataMap that drives `mcp__cayenne__cgen_run`.
+Reference for the embedded `<cgen>` block inside a DataMap that drives `cgen_run`.
 
 ## XML shape (embedded in a DataMap)
 
@@ -40,7 +40,7 @@ Reference for the embedded `<cgen>` block inside a DataMap that drives `mcp__cay
 </dataMap>
 ```
 
-`<cgen>` is in the DataMap namespace, with no `xmlns` of its own. It goes last in the DataMap, after `<dbImport>` if there is one. A DataMap may have several `<cgen>` blocks with different `<name>`s; `mcp__cayenne__cgen_run` uses the first one. In a version 15 DataMap, a `<cgen>` with an `xmlns` of its own was written by a 6.0 snapshot build and is ignored — see "Files written by a 6.0 snapshot build" in `datamap-schema.md`.
+`<cgen>` is in the DataMap namespace, with no `xmlns` of its own. It goes last in the DataMap, after `<dbImport>` if there is one. A DataMap may have several `<cgen>` blocks with different `<name>`s; `cgen_run` uses the first one. In a version 15 DataMap, a `<cgen>` with an `xmlns` of its own was written by a 6.0 snapshot build and is ignored — see "Files written by a 6.0 snapshot build" in `datamap-schema.md`.
 
 Every child element is optional; a missing one takes its default. The children that are present must follow this order: `<name>`, `<excludeEntities>`, `<excludeEmbeddables>`, `<destDir>`, `<mode>`, `<template>`, `<superTemplate>`, `<embeddableTemplate>`, `<embeddableSuperTemplate>`, `<dataMapTemplate>`, `<dataMapSuperTemplate>`, `<outputPattern>`, `<makePairs>`, `<usePkgPath>`, `<overwrite>`, `<createPropertyNames>`, `<superPkg>`, `<createPKProperties>`, `<externalToolConfig>`. Write the values without surrounding whitespace, and `true` / `false` in lowercase. The tables below group the fields by topic, not in this order.
 
@@ -105,7 +105,7 @@ Custom templates are rare. Skip unless the user explicitly asks for them.
 
 In CayenneModeler: select the DataMap → "Class Generation" tab. Every field above has a UI control. Saving the project persists them back as `<cgen>` in the DataMap.
 
-## How `mcp__cayenne__cgen_run` uses this
+## How `cgen_run` uses this
 
 The MCP tool:
 
