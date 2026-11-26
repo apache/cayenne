@@ -43,8 +43,7 @@ import org.apache.cayenne.map.compiled.CompiledToOneRelationship;
  * @param referencedColumns the columns referenced by the FKs
  * @param toOnesByEntity    the to-one relationships mapped to a single FK, by entity name and the FK join, whose
  *                          committed targets the object diffs may know
- * @param tableOrder        the insert order of the tables, by their weights and dependencies, reversed for the
- *                          deletes
+ * @param tableOrder        the insert order of the tables, by their dependencies, reversed for the deletes
  */
 record DefaultDbRowOpPlannerIndex(
         CompiledMapping mapping,
@@ -59,7 +58,15 @@ record DefaultDbRowOpPlannerIndex(
                 fkJoinsByTable(mapping),
                 referencedColumns(mapping),
                 toOnesByEntity(mapping),
-                new WeightedTableComparator(mapping));
+                dependencyOrder());
+    }
+
+    // by the dependency index, then by name, so that distinct tables are never equal, and the rows of a table are kept
+    // together when sorted, to run as one batch
+    private static Comparator<CompiledTable> dependencyOrder() {
+        return Comparator.comparingInt(CompiledTable::dependencyIndex)
+                .thenComparing(CompiledTable::name)
+                .thenComparing(t -> t.map().name());
     }
 
     private static Map<CompiledTable, List<CompiledJoin>> fkJoinsByTable(CompiledMapping mapping) {

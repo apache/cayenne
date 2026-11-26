@@ -33,6 +33,7 @@ CAY-3077 Drop the ProjectNodeVisitor delegate parameter from XML encoding
 CAY-3083 Cayenne MCP to handle project upgrades
 CAY-3084 Bootstrap MCP and Modeler from the AI plugin
 CAY-3085 Publish cayenne-modeler artifact as a jar with dependencies
+CAY-3086 Remove @SortWeight support
 
 Bug fixes:
 

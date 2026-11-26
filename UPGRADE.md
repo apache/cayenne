@@ -186,8 +186,7 @@
    * `EntitySorter`, `EntitySorterFactory`, `AshwoodEntitySorter` and `WeightedAshwoodEntitySorter` are removed, and
      so is the Ashwood graph library (`org.apache.cayenne.ashwood.graph`). The dependency order of the tables is a
      fact of the mapping: sort tables by `CompiledTable.dependencyIndex()` for the insert order and reverse it for
-     the delete order. `@SortWeight` is honored by default, without binding a weighted sorter (see CAY-3075 below for
-     the order of the commit operations).
+     the delete order. `@SortWeight` is removed (see CAY-3086 below).
    * `DataDomain` is constructed with a `MappingCompiler`, gets its mapping from `recompile(dataMaps)` and keeps
      only the compiled mapping: the authored DataMaps are not retained by the runtime, so `DataDomain.getDataMaps()`,
      `getDataMap(name)`, `addDataMap(..)` and `removeDataMap(..)` are gone, and `addNode(..)` takes the names of the
@@ -217,8 +216,11 @@
    referencing each other, or with meaningful PK changes. Most apps need no changes. If you bound
    `GraphBasedDbRowOpSorter` explicitly, remove the binding, as the default does it now. A custom
    `DbRowOpSorter` becomes a `DbRowOpPlanner` (`sort(..)` is `plan(..)`, and the same for an override of
-   `DefaultDataDomainFlushAction.sort(..)`). With `@SortWeight`, a row referencing another row of the same commit is
-   now inserted after it (and deleted before it), regardless of the weights.
+   `DefaultDataDomainFlushAction.sort(..)`).
+
+*  Per [CAY-3086](https://issues.apache.org/jira/browse/CAY-3086) the `@SortWeight` annotation is removed, as the
+   commit operations are now ordered by the dependencies between their rows (see CAY-3075 above). Remove it from the
+   entity classes. The tables of the rows that don't depend on each other are ordered by their foreign keys.
 
 ## Upgrading from 4.2 to 5.0
 
