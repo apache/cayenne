@@ -238,7 +238,9 @@ public class JdbcPkGenerator implements PkGenerator {
         switch (pk.jdbcType()) {
             case Types.BINARY:
             case Types.VARBINARY:
-                return IDUtil.pseudoUniqueSecureByteSequence(pk.maxLength());
+            case Types.LONGVARBINARY:
+            case Types.BLOB:
+                return binaryPk(pk);
         }
 
         CompiledKeySequence keySequence = table.keySequence();
@@ -281,6 +283,24 @@ public class JdbcPkGenerator implements PkGenerator {
             // leaving it up to the user to ensure that PK does not exceed max int...
             return value.intValue();
         }
+    }
+
+    /**
+     * Generates a binary key of the column length, or of 16 bytes if the length is not set.
+     */
+    private static byte[] binaryPk(CompiledColumn pk) {
+        int length = pk.maxLength() > 0 ? pk.maxLength() : 16;
+        if (length < 16) {
+            throw new CayenneRuntimeException("Can't generate a binary PK for %s.%s: length %d is less than 16 bytes",
+                    pk.table().name(), pk.name(), length);
+        }
+
+        // a trailing 0x00 may be trimmed on read (see ByteArrayType), which would change the key
+        byte[] bytes;
+        do {
+            bytes = IDUtil.pseudoUniqueSecureByteSequence(length);
+        } while (bytes[length - 1] == 0);
+        return bytes;
     }
 
     /**
