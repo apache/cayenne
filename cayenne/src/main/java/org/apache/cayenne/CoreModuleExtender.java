@@ -154,8 +154,8 @@ public class CoreModuleExtender {
     }
 
     /**
-     * Configures the stack to load the full project model, including its tool-only parts. Needed by the tools that
-     * read, save or upgrade the project.
+     * Configures the stack to load the full project model, including comments, cgen and DB import pieces. Those are not
+     * used in runtime and are skipped by default.
      *
      * @since 6.0
      */
